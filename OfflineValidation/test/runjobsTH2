@@ -1,0 +1,4 @@
+rm -f log/peak_TH2.log
+cmsRun cfg/trackerOfflineValidation_PEAK_TH2_cfg.py >& log/peak_TH2.log &
+rm -f log/deco_TH2.log
+cmsRun cfg/trackerOfflineValidation_DECO_TH2_cfg.py >& log/deco_TH2.log &

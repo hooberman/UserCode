@@ -1,0 +1,32 @@
+#!/bin/csh -f
+
+if($1 == '') then
+    source getdirs
+else
+    source getdirs $1
+endif
+
+
+echo "Copying peakdir"
+cp -r $peakdir/ crabjobs/$dir/.
+rm -r $peakdir/
+ln -s crabjobs/$dir/$peakdir
+
+echo "Copying decodir"
+cp -r $decodir/ crabjobs/$dir/.
+rm -r $decodir/
+ln -s crabjobs/$dir/$decodir
+
+echo "Copying peakdirTH2"
+cp -r $peakdirTH2/ crabjobs/$dir/.
+rm -r $peakdirTH2/
+ln -s crabjobs/$dir/$peakdirTH2
+
+echo "Copying decodirTH2"
+cp -r $decodirTH2/ crabjobs/$dir/.
+rm -r $decodirTH2/
+ln -s crabjobs/$dir/$decodirTH2
+
+
+
+

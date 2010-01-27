@@ -1,0 +1,6 @@
+#!/bin/csh -f
+
+cd $1/res/
+hadd -f $2_crab.root $2_crab_*.root
+rm -f $2_crab_*.root
+cd ../../

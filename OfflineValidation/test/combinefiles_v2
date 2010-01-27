@@ -1,0 +1,62 @@
+#!/bin/csh -f
+
+setenv combineallfiles      0  #combine all files
+setenv combinepeakfiles     1  #combine peak files
+setenv combinedecofiles     1  #combine deco files
+setenv combinepeakTH2files  1  #combine peakTH2 files
+setenv combinedecoTH2files  1  #combine decoTH2 files
+setenv combineallfiles2     0  #combine all files round 2
+
+source getdirs
+
+if($combineallfiles == 1) then
+
+    echo "Combining peakdir files"
+    hadd -f crabjobs/$dir/root/peak.root     $peakdir/res/*.root >& crabjobs/$dir/log/combinepeak.txt &
+
+    echo "Combining decodir files"
+    hadd -f crabjobs/$dir/root/deco.root     $decodir/res/*.root >& crabjobs/$dir/log/combinedeco.txt &
+
+    echo "Combining peakdirTH2 files"
+    hadd -f crabjobs/$dir/root/peak_TH2.root $peakdirTH2/res/*.root >& crabjobs/$dir/log/combinepeak_TH2.txt &
+
+    echo "Combining decodirTH2 files"
+    hadd -f crabjobs/$dir/root/deco_TH2.root $decodirTH2/res/*.root >& crabjobs/$dir/log/combinedeco_TH2.txt &
+
+endif
+
+if($combinepeakfiles == 1) then
+    echo "Combining peakdir files"
+    foreach i (0 1 2 3 4 5 6 7 8 9)
+	hadd -f crabjobs/$dir/root/peak_i$i.root     $peakdir/res/*$i.root >& crabjobs/$dir/log/combinepeak_$i.txt &
+    end
+endif
+
+if($combinedecofiles == 1) then
+    echo "Combining decodir files"
+    foreach i (0 1 2 3 4 5 6 7 8 9)
+	hadd -f crabjobs/$dir/root/deco_i$i.root     $decodir/res/*$i.root >& crabjobs/$dir/log/combinedeco_$i.txt &
+    end
+endif
+
+if($combinepeakTH2files == 1) then
+    echo "Combining peakdirTH2 files"
+    foreach i (0 1 2 3 4 5 6 7 8 9)
+	hadd -f crabjobs/$dir/root/peakTH2_i$i.root $peakdirTH2/res/*$i.root >& crabjobs/$dir/log/combinepeak_TH2_$i.txt &
+    end
+endif
+
+if($combinedecoTH2files == 1) then
+    echo "Combining decodirTH2 files"
+    foreach i (0 1 2 3 4 5 6 7 8 9)
+	hadd -f crabjobs/$dir/root/decoTH2_i$i.root $decodirTH2/res/*$i.root >& crabjobs/$dir/log/combinedeco_TH2_$i.txt &
+    end
+endif
+
+if($combineallfiles2 == 1) then
+    echo "Combining files round 2"
+    hadd -f crabjobs/$dir/root/peak.root     crabjobs/$dir/root/peak_i*.root     >& crabjobs/$dir/log/combinepeak.txt &
+    hadd -f crabjobs/$dir/root/deco.root     crabjobs/$dir/root/deco_i*.root     >& crabjobs/$dir/log/combinedeco.txt &
+    hadd -f crabjobs/$dir/root/peak_TH2.root crabjobs/$dir/root/peakTH2_i*.root  >& crabjobs/$dir/log/combinepeak_TH2.txt &
+    hadd -f crabjobs/$dir/root/deco_TH2.root crabjobs/$dir/root/decoTH2_i*.root  >& crabjobs/$dir/log/combinedeco_TH2.txt &
+endif

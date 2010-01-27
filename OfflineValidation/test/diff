@@ -1,0 +1,105 @@
+1,3d0
+< import FWCore.ParameterSet.Config as cms
+< import FWCore.ParameterSet.VarParsing as VarParsing
+< import os
+5c2
+< process = cms.Process("OfflineValidator")
+---
+> import FWCore.ParameterSet.Config as cms
+7c4,7
+< options = VarParsing.VarParsing ()
+---
+> process = cms.Process("OfflineValidator") 
+>    
+> #process.load("Alignment.OfflineValidation.DataSetCRAFT09_109011_109624_cff")
+> process.load("Alignment.OfflineValidation.DataSetCRAFT09_38Tpeak_TP_cff")
+9,61d8
+< options.register ("mode",
+<                   "setmode", # default value
+<                   VarParsing.VarParsing.multiplicity.singleton,
+<                   VarParsing.VarParsing.varType.string,
+<                   "readout mode peak/deco")
+< 
+< options.register ("rootfilename",
+<                   "temp.root", # default value
+<                   VarParsing.VarParsing.multiplicity.singleton,
+<                   VarParsing.VarParsing.varType.string,
+<                   "name of root file")
+< 
+< options.register ("nevents",
+<                   1000, # default value
+<                   VarParsing.VarParsing.multiplicity.singleton,
+<                   VarParsing.VarParsing.varType.int,
+<                   "number of events")
+< 
+< options.register ("bookTH1",
+<                   0, # default value
+<                   VarParsing.VarParsing.multiplicity.singleton,
+<                   VarParsing.VarParsing.varType.int,
+<                   "book 1D histos")
+< 
+< options.register ("bookTH2",
+<                   0, # default value
+<                   VarParsing.VarParsing.multiplicity.singleton,
+<                   VarParsing.VarParsing.varType.int,
+<                   "book 2D histos")
+< 
+< options.parseArguments()
+< mode=options.mode
+< rootfilename=options.rootfilename
+< nevents=options.nevents
+< bookTH1=bool(options.bookTH1)
+< bookTH2=bool(options.bookTH2)
+< 
+< print "writing",nevents,"events to rootfile", rootfilename
+< if bookTH1==True:
+<     print "booking 1D histos"
+< if bookTH2==True:
+<     print "booking 2D histos"
+<     
+< if mode=="peak":
+<     process.load("Alignment.OfflineValidation.DataSetCRAFT09_38Tpeak_TP_cff")
+<     print "Input peak data"
+< elif mode=="deco":
+<     process.load("Alignment.OfflineValidation.DataSetCRAFT09_38Tdec_TP_cff")
+<     print "Input deco data"
+< else:
+<     print "ERROR MODE SET TO",mode,"EXITING"
+<     sys.exit(1)
+<     
+71c18
+<     input = cms.untracked.int32(nevents)
+---
+>     input = cms.untracked.int32(100)
+77,78c24
+<     #fileName = cms.string('rootfiles/peak.root'),
+<     fileName = cms.string(rootfilename),             
+---
+>     fileName = cms.string('peak.root'),
+226d171
+< 
+232a178
+>                                         #connect = cms.string('sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_TRACKERALIGN/HIP/bonato/CMSSW_3_2_2_patch2/src/Alignment/HIPAlignmentAlgorithm/HIPv4_Step2_SSTduPXLdets_smallAPE/alignments.db'),
+260,262c206,208
+< process.TrackerOfflineValidation.bookTH1 = cms.bool(bookTH1)
+< process.TrackerOfflineValidation.bookTH2 = cms.bool(bookTH2)
+< process.TrackerOfflineValidation.debug = cms.bool(False)
+---
+> process.TrackerOfflineValidation.bookTH1 = cms.bool(True)
+> process.TrackerOfflineValidation.bookTH2 = cms.bool(True)
+> process.TrackerOfflineValidation.debug = cms.bool(True)
+289c235
+<     Nbinx = cms.int32(50), xmin = cms.double(-500), xmax = cms.double(500)
+---
+>     Nbinx = cms.int32(100), xmin = cms.double(-1000), xmax = cms.double(1000)
+344,353d289
+< 
+< 
+< 
+< #connect = cms.string('sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_TRACKERALIGN/HIP/bonato/CMSSW_3_2_2_patch2/src/Alignment/HIPAlignmentAlgorithm/HIPv4_Step2_SSTduPXLdets_smallAPE/alignments.db'),
+< #Merged Official DECO
+< #connect = cms.string('sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_TRACKERALIGN/HIP/eaguiloc/ALCA_merged_3/alignments.db'),
+< #Merged Official PEAK
+< #connect = cms.string('sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_TRACKERALIGN/PayLoads/CRAFT09/111462-infty/TrackerAlignment_2009_v1_prompt.db'),
+< 
+< 

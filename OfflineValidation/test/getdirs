@@ -1,0 +1,15 @@
+#!/bin/csh -f
+
+if($1 == '') then
+    setenv peakdir    `cat dirs.txt | awk '{print $1}'`
+    setenv decodir    `cat dirs.txt | awk '{print $2}'`
+    setenv peakdirTH2 `cat dirs.txt | awk '{print $3}'`
+    setenv decodirTH2 `cat dirs.txt | awk '{print $4}'`
+    setenv dir        `cat dirs.txt | awk '{print $5}'`
+else 
+    setenv peakdir    `cat crabjobs/trial$1/dirs.txt | awk '{print $1}'`
+    setenv decodir    `cat crabjobs/trial$1/dirs.txt | awk '{print $2}'`
+    setenv peakdirTH2 `cat crabjobs/trial$1/dirs.txt | awk '{print $3}'`
+    setenv decodirTH2 `cat crabjobs/trial$1/dirs.txt | awk '{print $4}'`
+    setenv dir        `cat crabjobs/trial$1/dirs.txt | awk '{print $5}'`
+endif
