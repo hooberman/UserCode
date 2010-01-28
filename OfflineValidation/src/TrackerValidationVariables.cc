@@ -100,26 +100,20 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
   LogDebug("TrackerValidationVariables") << "trajColl->size(): " << trajCollectionHandle->size() ;
 
   int nit=0;
-
-  //cout<<"trajColl->size() "<<trajCollectionHandle->size()<<endl;
-
-
-  for(std::vector<Trajectory>::const_iterator it = trajCollectionHandle->begin(), itEnd = trajCollectionHandle->end(); 
-      it!=itEnd;++it){
-
-    //cout<<"Trajectory "<<nit<<endl;
+  
+  for(std::vector<Trajectory>::const_iterator it = trajCollectionHandle->begin(), 
+	itEnd = trajCollectionHandle->end();  it!=itEnd;++it){
+    
     nit++;
     int nitTraj=0;
-
+    
     const std::vector<TrajectoryMeasurement> &tmColl = it->measurements();
     for(std::vector<TrajectoryMeasurement>::const_iterator itTraj = tmColl.begin(), itTrajEnd = tmColl.end(); 
 	itTraj != itTrajEnd; ++itTraj) {
 
-      //cout<<"Trajectory measurement "<<nitTraj<<endl;
       nitTraj++;
-
-      if(! itTraj->updatedState().isValid()) continue;
       
+      if(! itTraj->updatedState().isValid()) continue;
       
       TrajectoryStateOnSurface tsos = tsoscomb( itTraj->forwardPredictedState(), itTraj->backwardPredictedState() );
       TransientTrackingRecHit::ConstRecHitPointer hit    = itTraj->recHit();
@@ -140,26 +134,27 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
       if(IntSubDetID == StripSubdetector::TIB || IntSubDetID == StripSubdetector::TOB || 
 	 IntSubDetID == StripSubdetector::TID || IntSubDetID == StripSubdetector::TEC) {
 
+	int ec = 0;
+	if(IntSubDetID == StripSubdetector::TEC){
+
+	  TECDetId tecID(IntRawDetID);
+	  int ring  = tecID.ring();
+	  if     (ring == 5 || ring ==6 || ring ==7) ec=1;
+	  else if(ring >0 && ring<5)                 ec=2;
+	  else {cout<<"ERROR RINGNUM "<<ring<<endl;}
+	}
+
 	const StripGeomDetUnit* theStripDet = dynamic_cast<const StripGeomDetUnit*>( tkGeom_->idToDet( hit->geographicalId() ) );
 
 	LocalVector drift = shallow::drift( theStripDet, *magneticField_, *SiStripLorentzAngle_);    
 	float localtheta = (theStripDet->toLocal(tsos.globalDirection())).theta(); 
 	float localphi   = (theStripDet->toLocal(tsos.globalDirection())).phi();   
-	//cout<<"localtheta "<<localtheta<<" localphi "<<localphi<<endl;
-
+	
 	globalZofunitlocalY = (theStripDet->toGlobal(LocalVector(0,1,0))).z();
-
+	
 	float tanTrackAngle = tan(localtheta)*cos(localphi);
 	float tanLorentzAngle = drift.x()/drift.z();
 	if(tanTrackAngle<tanLorentzAngle) trackOrientation=-1.;
-
-	//float tracktheta    = atan(tantracktheta);
-	//string subdet;
-	//if(IntSubDetID == StripSubdetector::TIB) subdet="TIB";
-	//if(IntSubDetID == StripSubdetector::TOB) subdet="TOB";
-	//if(IntSubDetID == StripSubdetector::TEC) subdet="TEC";
-	//if(IntSubDetID == StripSubdetector::TID) subdet="TID";
-	//cout<<subdet<<" tanTrackAngle "<<tanTrackAngle<<" tanLorentzAngle "<<tanLorentzAngle<<endl;
 
 	hitStruct.tanTrackAngle   = tanTrackAngle;
 	hitStruct.tanLorentzAngle = tanLorentzAngle;
@@ -168,6 +163,7 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	hitStruct.x               = theStripDet->toGlobal(hit->localPosition()).x();
 	hitStruct.y               = theStripDet->toGlobal(hit->localPosition()).y();
 	hitStruct.z               = theStripDet->toGlobal(hit->localPosition()).z();
+	hitStruct.ectype          = ec;
 
 	const SiStripRecHit2D* stripHit = dynamic_cast<const SiStripRecHit2D*> ( hit->hit() );   
 	const SiStripCluster *const stripCluster = stripHit->cluster().operator->(); 
@@ -186,34 +182,11 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	hitStruct.charge  = charge;
 	hitStruct.nstrips = nstrips;
 
-	/*
-	//printout for fireworks
-	string det;
-	if(IntSubDetID == StripSubdetector::TIB) det="TIB";
-	if(IntSubDetID == StripSubdetector::TOB) det="TOB";
-	if(IntSubDetID == StripSubdetector::TID) det="TID";
-	if(IntSubDetID == StripSubdetector::TEC) det="TEC";
-	float xhit   = theStripDet->toGlobal(hit->localPosition()).x();
-	float yhit   = theStripDet->toGlobal(hit->localPosition()).y();
-	float zhit   = theStripDet->toGlobal(hit->localPosition()).z();
-	float rhit=sqrt(xhit+xhit+yhit*yhit);
-	cout<<"Det "<<det
-	    <<" id "<<IntSubDetID
-	    <<" rawid "<<IntRawDetID
-	    <<" r "<<rhit
-	    <<" z "<<zhit
-	    <<" ring "<<this->getHisto(zhit)<<endl;
-	cout<<"theta "<<localtheta
-	    <<" phi "<<localphi
-	    <<" tanTrackAngle "<<tanTrackAngle
-	    <<" tanLorentzAngle "<<tanLorentzAngle
-	    <<" trackOrientation "<<trackOrientation<<endl;*/
       }
       //-------------------------------------------------------------------------------------------
       
 
       //first calculate residuals in cartesian coordinates in the local module coordinate system
-      
       LocalPoint lPHit = hit->localPosition();
       LocalPoint lPTrk = tsos.localPosition();
       

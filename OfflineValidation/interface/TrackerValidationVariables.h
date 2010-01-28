@@ -24,7 +24,7 @@ class TrackerValidationVariables  {
 	 resYprime(-999.), resYprimeErr(-999.), phi(-999.), eta(-999.), tanTrackAngle(-999.), tanLorentzAngle(-999.), 
 	 uOrientation(-999.), vOrientation(-999.), wOrientation(-999.), dusign(-999.),
 	 x(-999.), y(-999.), z(-999.), localtheta(-999.), localphi(-999.), dttime(-999.), dttimeerr(-999.), 
-	 ndt(-999), hcaltime(-999.), hcaltimeerr(-999.), nvalidmu(-999), charge(-999.), nstrips(-999), p(-999.),
+	 ndt(-999), ectype(-999), hcaltime(-999.), hcaltimeerr(-999.), nvalidmu(-999), charge(-999.), nstrips(-999), p(-999.),
 	 rawDetId(0), overlapres(std::make_pair(0,-999.)) {}
     float resX;
     float resY;
@@ -50,6 +50,7 @@ class TrackerValidationVariables  {
     float dttime;
     float dttimeerr;
     int ndt;
+    int ectype;
     float hcaltime;
     float hcaltimeerr;
     int nvalidmu;

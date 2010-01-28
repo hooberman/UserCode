@@ -13,7 +13,7 @@
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: TrackerOfflineValidation.cc,v 1.27 2009/03/26 18:26:37 hauk Exp $
+// $Id: TrackerOfflineValidation.cc,v 1.1 2010/01/27 13:48:18 benhoob Exp $
 //
 //
 
@@ -92,13 +92,9 @@ private:
 
   
   struct ModuleHistos{
-    ModuleHistos() :  //ResHisto(), 
-		      //NormResHisto(), 
+    ModuleHistos() :  
 		      ResXprimeHisto(), 
 		      ResXprimeHisto2(), 
-		      //NormResXprimeHisto(), 
-		      //ResYprimeHisto(), 
-		      //NormResYprimeHisto(),
 		      tanTrackAngleHisto(), 
 		      tanLorentzAngleHisto(),
 		      deltaTanHisto(),
@@ -108,22 +104,14 @@ private:
 		      ResXprimeOverThetaHisto2(), 
 		      ResXprimeVsThetaHisto(),
 		      duvstrkangleHisto(),
-		      duvslorangleHisto(),
+		      //duvslorangleHisto(),
 		      HitEtaHisto(), 
-		      //HitXHisto(), 
-		      //HitYHisto(), 
 		      HitZHisto(),
 		      uOrientationHisto(), 
 		      vOrientationHisto(), 
 		      wOrientationHisto(), 
-		      //vminusdusignHisto(),
 		      localphiHisto(), 
 		      localthetaHisto(),
-		      //uzHisto(),
-		      //vzHisto(),
-		      //wzHisto(),
-		      //du_zHisto(),
-		      //dw_zHisto(),
 		      dttimeHisto(), 
 		      dttimeerrHisto(),
 		      ndtHisto(),
@@ -137,13 +125,9 @@ private:
 
     {}
 
-    //TH1* ResHisto;
-    //TH1* NormResHisto;
+  
     TH1* ResXprimeHisto;
     TH1* ResXprimeHisto2[2];
-    //TH1* NormResXprimeHisto;
-    //TH1* ResYprimeHisto;
-    //TH1* NormResYprimeHisto;
     TH1* tanTrackAngleHisto;
     TH1* tanLorentzAngleHisto;
     TH1* deltaTanHisto;
@@ -155,20 +139,15 @@ private:
     TH2* duvstrkangleHisto;
     TH2* duvslorangleHisto;
     TH1* HitEtaHisto;
-    //TH1* HitXHisto;
-    //TH1* HitYHisto;
+  
     TH1* HitZHisto;
     TH1* uOrientationHisto;
     TH1* vOrientationHisto;
     TH1* wOrientationHisto;
-    //TH1* vminusdusignHisto;
+  
     TH1* localphiHisto;
     TH1* localthetaHisto;
-    //TH2* uzHisto;
-    //TH2* vzHisto;
-    //TH2* wzHisto;
-    //TH1* du_zHisto[12];
-    //TH1* dw_zHisto[12];
+ 
     TH1* dttimeHisto;
     TH1* dttimeerrHisto;
     TH1* ndtHisto;
@@ -188,35 +167,22 @@ private:
     SummaryContainer() : sumXResiduals_(), 
 			 sumXResiduals2_(), 
 			 summaryXResiduals_(), 
-			 //sumNormXResiduals_(), 
-			 //summaryNormXResiduals_(),
-			 //sumYResiduals_(), 
-			 //summaryYResiduals_() ,
-			 //sumNormYResiduals_(), 
-			 //summaryNormYResiduals_(), 
 			 sumTanTrackAngle_(), 
 			 sumTanLorentzAngle_(),
 			 sumdeltaTan_(),
 			 sumResXprimeOverTheta_(), 
+			 sumResXprimeOverTheta_thick_(), 
+			 sumResXprimeOverTheta_thin_(), 
 			 sumResXprimeOverTheta2_(), 
 			 sumResXprimeVsTheta_(),
-			 //sumduvstrkangle_(),
-			 //sumduvslorangle_(),
+			 sumduvstrkangle_(),
 			 sumHitEta_(), 
-			 //sumHitX_(), 
-			 //sumHitY_(), 
 			 sumHitZ_(),
 			 sumuOrientation_(), 
 			 sumvOrientation_(), 
 			 sumwOrientation_(), 
-			 //sumvminusdusign_(),
 			 sumlocalphi_(), 
 			 sumlocaltheta_(),
-			 //sumuz_(),
-			 //sumvz_(),
-			 //sumwz_(),
-			 //sumdu_z_(),
-			 //sumdw_z_(),
 			 sumdttime_(),
 			 sumdttimeerr_(),
 			 sumndt_(),
@@ -231,35 +197,22 @@ private:
     TH1* sumXResiduals_;
     TH1* sumXResiduals2_[2];
     TH1* summaryXResiduals_;
-    //TH1* sumNormXResiduals_;
-    //TH1* summaryNormXResiduals_;
-    //TH1* sumYResiduals_;
-    //TH1* summaryYResiduals_;
-    //TH1* sumNormYResiduals_;
-    //TH1* summaryNormYResiduals_;
     TH1* sumTanTrackAngle_;
     TH1* sumTanLorentzAngle_;
     TH1* sumdeltaTan_;
     TH1* sumResXprimeOverTheta_;
+    TH1* sumResXprimeOverTheta_thick_;
+    TH1* sumResXprimeOverTheta_thin_;
     TH1* sumResXprimeOverTheta2_[2];
     TH2* sumResXprimeVsTheta_;
-    //TH2* sumduvstrkangle_;
-    //TH2* sumduvslorangle_;
+    TH2* sumduvstrkangle_;
     TH1 *sumHitEta_;
-    //TH1 *sumHitX_;
-    //TH1 *sumHitY_;
     TH1 *sumHitZ_;
     TH1* sumuOrientation_;
     TH1* sumvOrientation_;
     TH1* sumwOrientation_;
-    //TH1* sumvminusdusign_;
     TH1* sumlocalphi_;
     TH1* sumlocaltheta_;
-    //TH2* sumuz_;
-    //TH2* sumvz_;
-    //TH2* sumwz_;
-    //TH1* sumdu_z_[12];
-    //TH1* sumdw_z_[12];
     TH1* sumdttime_;
     TH1* sumdttimeerr_;
     TH1* sumndt_;
@@ -269,8 +222,7 @@ private:
     TH1* sumcharge_;
     TH1* sumnstrips_;
     TH2* sumchargevsdttime_;
-};
-
+  };
 
   // 
   // ------------- private member function -------------
@@ -615,21 +567,12 @@ TrackerOfflineValidation::bookDirHists( TFileDirectory &tfd, const Alignable& al
     LogDebug("TrackerOfflineValidation") << "StructureName = " << structurename;
     std::stringstream dirname;
     if(structurename=="Strip") structurename="MyStrip";
-//     else{
-//       if(removePixel_ && structurename=="Pixel"){
-// 	cout<<"TrackerOfflineValidation::bookDirHists skip pixel"<<endl;
-// 	continue;
-//       }
-//     }
-
 
     dirname << structurename;
    
     // add no suffix counter to Strip and Pixel, just aesthetics
-    //if (structurename != "Strip" && structurename != "Pixel") dirname << "_" << i+1;
     if (structurename != "MyStrip" && structurename != "Pixel") dirname << "_" << i+1;
-    //cout<<"TrackerOfflineValidation::bookDirHists dirname "<<dirname.str()<<endl;
-
+    
     if(debug_)dout<<endl;
 
     if (structurename.find("Endcap",0) != std::string::npos )   {
@@ -699,9 +642,13 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
     tahistotitle, 
     lahistotitle,
     resxprimeoverthetahistoname, 
+    resxprimeoverthetathickhistoname, 
+    resxprimeoverthetathinhistoname, 
     resxprimeoverthetahistoname2[2], 
     resxprimevsthetahistoname,
     resxprimeoverthetahistotitle, 
+    resxprimeoverthetathinhistotitle, 
+    resxprimeoverthetathickhistotitle, 
     resxprimeoverthetahistotitle2[2], 
     resxprimevsthetahistotitle,
     uorientationhistoname, 
@@ -712,14 +659,8 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
     worientationhistotitle,
     hitetahistoname, 
     hitetahistotitle, 
-    //hitxhistoname, 
-    //hitxhistotitle,
-    //hityhistoname, 
-    //hityhistotitle, 
     hitzhistoname, 
     hitzhistotitle,
-    //vminusdusignhistoname, 
-    //vminusdusignhistotitle,
     localthetahistoname, 
     localthetahistotitle,
     localphihistoname, 
@@ -834,19 +775,11 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
   hitetahistoname << "h_hiteta_subdet_" << subdetandlayer.first 
 		  << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
   
-  //hitxhistoname << "h_hitx_subdet_" << subdetandlayer.first 
-  //	<< wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
-
-  //hityhistoname << "h_hity_subdet_" << subdetandlayer.first 
-  //	<< wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
-
   hitzhistoname << "h_hitz_subdet_" << subdetandlayer.first 
 		<< wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
   
   xprimehistoname << "h_xprime_residuals_subdet_" << subdetandlayer.first 
 		  << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
-
-
 
   yprimehistoname << "h_yprime_residuals_subdet_" << subdetandlayer.first 
 		  << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
@@ -870,6 +803,12 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
   resxprimeoverthetahistoname << "h_xprimeovertheta_subdet_" << subdetandlayer.first 
 			      << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
 
+  resxprimeoverthetathickhistoname << "h_xprimeoverthetathick_subdet_" << subdetandlayer.first 
+				   << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
+
+  resxprimeoverthetathinhistoname  << "h_xprimeoverthetathin_subdet_" << subdetandlayer.first 
+				   << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
+
   resxprimevsthetahistoname << "h_xprimevstheta_subdet_" << subdetandlayer.first 
 			    << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
 
@@ -887,9 +826,6 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 
   worientationhistoname << "h_wOrientation_subdet_" << subdetandlayer.first 
 			<< wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
-
-  //vminusdusignhistoname << "h_vminusdusign_subdet_" << subdetandlayer.first 
-  //			<< wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
 
   localthetahistoname << "h_localtheta_subdet_" << subdetandlayer.first 
 			<< wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
@@ -916,6 +852,10 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 
   resxprimeoverthetahistotitle << "Residual/#Delta tan(#theta) for module " << id.rawId() << ";(x_{pred} - x_{rec})/(tan(#theta_{track})-tan(#theta_{LA}) [cm]";
 
+  resxprimeoverthetathickhistotitle << "Residual/#Delta tan(#theta) (think) for module " << id.rawId() << ";(x_{pred} - x_{rec})/(tan(#theta_{track})-tan(#theta_{LA}) [cm]";
+  
+  resxprimeoverthetathinhistotitle  << "Residual/#Delta tan(#theta) (thin) for module " << id.rawId() << ";(x_{pred} - x_{rec})/(tan(#theta_{track})-tan(#theta_{LA}) [cm]";
+
   resxprimevsthetahistotitle << "Residual vs. #Delta tan(#theta) for module " << id.rawId() << ";(x_{pred} - x_{rec}) [cm]";
  
 
@@ -925,7 +865,6 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
   uorientationhistotitle << "uOrientation " << id.rawId() << "; uOrientation";
   vorientationhistotitle << "vOrientation " << id.rawId() << "; vOrientation";
   worientationhistotitle << "wOrientation " << id.rawId() << "; wOrientation";
-  //vminusdusignhistotitle << "vminusdusign " << id.rawId() << "; vOrientation-dusign";
   localthetahistotitle << "localtheta " << id.rawId() << "; tan(#theta)";
   localphihistotitle << "localphi " << id.rawId() << "; cos(#phi)";
   dttimehistotitle << "DT time " << id.rawId() << "; time";
@@ -934,8 +873,6 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
   hcaltimehistotitle << "HCAL time " << id.rawId() << "; time";
 
   hitetahistotitle << "Hit Eta " << id.rawId() << "; #eta";
-  //hitxhistotitle << "Hit X " << id.rawId() << "; x";
-  //hityhistotitle << "Hit Y " << id.rawId() << "; y";
   hitzhistotitle << "Hit Z " << id.rawId() << "; z";
   uzhistotitle << "uOrientation vs. Hit Z "<< id.rawId();
   vzhistotitle << "vOrientation vs. Hit Z "<< id.rawId();
@@ -959,16 +896,10 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 							resxprimevsthetahistoname.str().c_str(),resxprimevsthetahistotitle.str().c_str(),
 							40, -2, 2, 40, -200, 200);
  
-      /*
+      
       histStruct.duvstrkangleHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
 						    duvstrkanglehistoname.str().c_str(),duvstrkanglehistotitle.str().c_str(),
-						    50, -5, 5, nbins, xmin, xmax);
-
-      histStruct.duvslorangleHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
-						    duvsloranglehistoname.str().c_str(),duvsloranglehistotitle.str().c_str(),
-						    50, -0.5, 0.5, nbins, xmin, xmax);
-
-      */
+						    40, -2, 2, 40, -200, 200);
 
       if(debug_) cout<<"Booked "<<resxprimevsthetahistoname.str()<<endl;
       
@@ -983,19 +914,7 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
       histStruct.dwvsdttimeHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
 						  dwvsdttimehistoname.str().c_str(),dwvsdttimehistotitle.str().c_str(),
 						  50, -25, 25, 50, -1000, 1000);
-      /*
-      histStruct.uzHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
-					    uzhistoname.str().c_str(),uzhistotitle.str().c_str(),
-					    12, -110, 110, 3, -1.5, 1.5);
-      
-      histStruct.vzHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
-					    vzhistoname.str().c_str(),vzhistotitle.str().c_str(),
-					    12, -110, 110, 3, -1.5, 1.5);
-      
-      histStruct.wzHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
-					    wzhistoname.str().c_str(),wzhistotitle.str().c_str(),
-					    12, -110, 110, 3, -1.5, 1.5);
-      */
+   
     }
     //book all TH1 histos
     if(bookTH1_){
@@ -1085,7 +1004,14 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 							  100, -1000, 1000);
 
 
+      histStruct.ResXprimeOverThetaHisto_thick = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+								resxprimeoverthetathickhistoname.str().c_str(),resxprimeoverthetathickhistotitle.str().c_str(),
+								100, -1000, 1000);
 
+      histStruct.ResXprimeOverThetaHisto_thin  = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+								resxprimeoverthetathinhistoname.str().c_str(),resxprimeoverthetathinhistotitle.str().c_str(),
+								100, -1000, 1000);
+      
       histStruct.uOrientationHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
 						    uorientationhistoname.str().c_str(),uorientationhistotitle.str().c_str(),
 						    3, -1.5, 1.5);
@@ -1455,14 +1381,12 @@ TrackerOfflineValidation::analyze(const edm::Event& iEvent, const edm::EventSetu
 	
 	if(it->resXprime != -999. && it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.) {
 	  if(fabs(it->tanTrackAngle-it->tanLorentzAngle>0)){
-	    histStruct.ResXprimeVsThetaHisto->Fill(it->tanTrackAngle-it->tanLorentzAngle,10000*it->resXprime);
-	    //histStruct.duvstrkangleHisto->Fill(it->tanTrackAngle,10000*it->resXprime);
-	    //histStruct.duvslorangleHisto->Fill(it->tanLorentzAngle,10000*it->resXprime);
+	    histStruct.ResXprimeVsThetaHisto -> Fill(it->tanTrackAngle-it->tanLorentzAngle, 10000*it->resXprime);
+	    histStruct.duvstrkangleHisto     -> Fill(it->tanTrackAngle,                     10000*it->resXprime);
 	  }
 	  if(fabs(it->tanTrackAngle-it->tanLorentzAngle<0)){
-	    histStruct.ResXprimeVsThetaHisto->Fill(it->tanTrackAngle-it->tanLorentzAngle,-10000*it->resXprime);
-	    //histStruct.duvstrkangleHisto->Fill(it->tanTrackAngle,-10000*it->resXprime);
-	    //histStruct.duvslorangleHisto->Fill(it->tanLorentzAngle,-10000*it->resXprime);
+	    histStruct.ResXprimeVsThetaHisto -> Fill(it->tanTrackAngle-it->tanLorentzAngle, -10000*it->resXprime);
+	    histStruct.duvstrkangleHisto     -> Fill(it->tanTrackAngle,                     -10000*it->resXprime);
 	  }
 	}
 	
@@ -1480,13 +1404,6 @@ TrackerOfflineValidation::analyze(const edm::Event& iEvent, const edm::EventSetu
 	  }
 	}
 	
-	/*
-	if(it->z != -999.){
-	  if(it->uOrientation != -999.) histStruct.uzHisto->Fill(it->z,it->uOrientation);
-	  if(it->vOrientation != -999.) histStruct.vzHisto->Fill(it->z,it->vOrientation);
-	  if(it->wOrientation != -999.) histStruct.wzHisto->Fill(it->z,it->wOrientation);
-	}
-	*/
 	if(debug_) cout<<"Filled TH2"<<endl;
       }
       
@@ -1530,7 +1447,9 @@ TrackerOfflineValidation::analyze(const edm::Event& iEvent, const edm::EventSetu
 	  if(it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.){
 	    float deltaTanTheta=it->tanTrackAngle-it->tanLorentzAngle;
 	    if(deltaTanTheta != 0) histStruct.ResXprimeOverThetaHisto->Fill(10000*it->resXprime/fabs(deltaTanTheta));
-	  
+	    if(it->ectype == 1)    histStruct.ResXprimeOverThetaHisto_thick -> Fill(10000*it->resXprime/fabs(deltaTanTheta)); 
+	    if(it->ectype == 2)    histStruct.ResXprimeOverThetaHisto_thin  -> Fill(10000*it->resXprime/fabs(deltaTanTheta)); 
+	    
 	    int ih=0;
 	    if(deltaTanTheta<0)ih=1;
 	    histStruct.ResXprimeHisto2[ih]->Fill(10000*it->resXprime);
@@ -1670,7 +1589,7 @@ TrackerOfflineValidation::collateSummaryHists( TFileDirectory &tfd, const Aligna
 	if(bookTH2_){
 	  if(debug_) cout<<"Add sumResXprimeVsTheta to v_levelProfiles"<<endl;
 	  v_levelProfiles[iComp].sumResXprimeVsTheta_->Add(v_profiles[n].sumResXprimeVsTheta_);
-	  //v_levelProfiles[iComp].sumduvstrkangle_->Add(v_profiles[n].sumduvstrkangle_);
+	  v_levelProfiles[iComp].sumduvstrkangle_->Add(v_profiles[n].sumduvstrkangle_);
 	  //v_levelProfiles[iComp].sumduvslorangle_->Add(v_profiles[n].sumduvslorangle_);
 	  //v_levelProfiles[iComp].sumuz_->Add(v_profiles[n].sumuz_);
 	  //v_levelProfiles[iComp].sumvz_->Add(v_profiles[n].sumvz_);
@@ -1689,6 +1608,8 @@ TrackerOfflineValidation::collateSummaryHists( TFileDirectory &tfd, const Aligna
 	  v_levelProfiles[iComp].sumTanLorentzAngle_->Add(v_profiles[n].sumTanLorentzAngle_);
 	  v_levelProfiles[iComp].sumdeltaTan_->Add(v_profiles[n].sumdeltaTan_);
 	  v_levelProfiles[iComp].sumResXprimeOverTheta_->Add(v_profiles[n].sumResXprimeOverTheta_);
+	  v_levelProfiles[iComp].sumResXprimeOverTheta_thick_->Add(v_profiles[n].sumResXprimeOverTheta_thick_);
+	  v_levelProfiles[iComp].sumResXprimeOverTheta_thin_ ->Add(v_profiles[n].sumResXprimeOverTheta_thin_);
 	  v_levelProfiles[iComp].sumHitEta_->Add(v_profiles[n].sumHitEta_);
 	  //v_levelProfiles[iComp].sumHitX_->Add(v_profiles[n].sumHitX_);
 	  //v_levelProfiles[iComp].sumHitY_->Add(v_profiles[n].sumHitY_);
@@ -1839,6 +1760,8 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
   const TString hcaltimeTitle(Form("HCAL Time for %s %d in %s;", aliTypeName, i, typeName));
   const TString etaTitle(Form("Hit Eta for %s %d in %s;", aliTypeName, i, typeName));
   const TString resxprimeoverthetaTitle(Form("x Residual Over #Delta tan(#theta) for %s %d in %s;", aliTypeName, i, typeName));
+  const TString resxprimeoverthetaThickTitle(Form("x Residual Over #Delta tan(#theta) (thick) for %s %d in %s;", aliTypeName, i, typeName));
+  const TString resxprimeoverthetaThinTitle(Form("x Residual Over #Delta tan(#theta) (thin) for %s %d in %s;", aliTypeName, i, typeName));
   const TString resxprimevsthetaTitle(Form("x Residual vs. #Delta tan(#theta) for %s %d in %s;", aliTypeName, i, typeName));
   const TString dutrkTitle(Form("#Delta_{u} vs. tan(#theta_{trk}) for %s %d in %s;", aliTypeName, i, typeName));
   const TString dulorTitle(Form("#Delta_{u} vs. tan(#theta_{LA}) for %s %d in %s;", aliTypeName, i, typeName));
@@ -1858,15 +1781,15 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
 						       resxprimevsthetaTitle,
 						       40, -2, 2, 40, -200, 200);
 
-    /*
-      sumContainer.sumduvstrkangle_ = tfd.make<TH2F>(Form("h_duvstrkangle_%s_%d", aliTypeName, i),
-      dutrkTitle,
-      50, -5., 5., nbins, xmin, xmax);
-      
-      sumContainer.sumduvslorangle_ = tfd.make<TH2F>(Form("h_duvslorangle_%s_%d", aliTypeName, i),
-      dulorTitle,
-      50, -0.5, 0.5, nbins, xmin, xmax);
-    */
+    
+    sumContainer.sumduvstrkangle_ = tfd.make<TH2F>(Form("h_duvstrkangle_%s_%d", aliTypeName, i),
+						   dutrkTitle,
+						   40, -2, 2, 40, -200, 200);
+    
+//       sumContainer.sumduvslorangle_ = tfd.make<TH2F>(Form("h_duvslorangle_%s_%d", aliTypeName, i),
+// 						     dulorTitle,
+// 						     50, -0.5, 0.5, nbins, xmin, xmax);
+    
     
 
     sumContainer.sumduvsdttime_ = tfd.make<TH2F>(Form("h_duvsdttime_%s_%d", aliTypeName, i),
@@ -1961,7 +1884,15 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
     sumContainer.sumResXprimeOverTheta_ = tfd.make<TH1F>(Form("h_resXprimeOverTheta_%s_%d", aliTypeName, i),
 							 resxprimeoverthetaTitle,
 							 100, -1000, 1000);
- 
+
+    sumContainer.sumResXprimeOverTheta_thick_ = tfd.make<TH1F>(Form("h_resXprimeOverThetaThick_%s_%d", aliTypeName, i),
+							       resxprimeoverthetaTitle,
+							       100, -1000, 1000);
+
+    sumContainer.sumResXprimeOverTheta_thin_  = tfd.make<TH1F>(Form("h_resXprimeOverThetaThin_%s_%d", aliTypeName, i),
+							       resxprimeoverthetaTitle,
+							       100, -1000, 1000);
+    
     sumContainer.sumuOrientation_ = tfd.make<TH1F>(Form("h_uOrientation_%s_%d", aliTypeName, i),
 						   uoTitle,
 						   3, -1.5, 1.5);
@@ -2058,7 +1989,7 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
       if(bookTH2_){
 	if(debug_) cout<<"Add ResXprimeVsThetaHisto to sumResXprimeVsTheta"<<endl;
 	sumContainer.sumResXprimeVsTheta_->Add(histStruct.ResXprimeVsThetaHisto);
-	//sumContainer.sumduvstrkangle_->Add(histStruct.duvstrkangleHisto);
+	sumContainer.sumduvstrkangle_->Add(histStruct.duvstrkangleHisto);
 	//sumContainer.sumduvslorangle_->Add(histStruct.duvslorangleHisto);
 	//sumContainer.sumuz_->Add(histStruct.uzHisto);
 	//sumContainer.sumvz_->Add(histStruct.vzHisto);
@@ -2079,6 +2010,8 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
 	sumContainer.sumdeltaTan_->Add(histStruct.deltaTanHisto);
 	//sumContainer.sumNormXResiduals_->Add(histStruct.NormResXprimeHisto);
 	sumContainer.sumResXprimeOverTheta_->Add(histStruct.ResXprimeOverThetaHisto);
+	sumContainer.sumResXprimeOverTheta_thick_->Add(histStruct.ResXprimeOverThetaHisto_thick);
+	sumContainer.sumResXprimeOverTheta_thin_ ->Add(histStruct.ResXprimeOverThetaHisto_thin);
 	sumContainer.sumuOrientation_->Add(histStruct.uOrientationHisto);
 	sumContainer.sumvOrientation_->Add(histStruct.vOrientationHisto);
 	sumContainer.sumwOrientation_->Add(histStruct.wOrientationHisto);
@@ -2122,7 +2055,7 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
 	if(bookTH2_){
 	  if(debug_) cout<<"Add ResXprimeVsThetaHisto to sumResXprimeVsTheta"<<endl;
 	  sumContainer.sumResXprimeVsTheta_->Add(histStruct.ResXprimeVsThetaHisto);
-	  //sumContainer.sumduvstrkangle_->Add(histStruct.duvstrkangleHisto);
+	  sumContainer.sumduvstrkangle_->Add(histStruct.duvstrkangleHisto);
 	  //sumContainer.sumduvslorangle_->Add(histStruct.duvslorangleHisto);
 	  //sumContainer.sumuz_->Add(histStruct.uzHisto);
 	  //sumContainer.sumvz_->Add(histStruct.vzHisto);
@@ -2143,6 +2076,8 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
 	  sumContainer.sumdeltaTan_->Add(histStruct.deltaTanHisto);
 	  //sumContainer.sumNormXResiduals_->Add(histStruct.NormResXprimeHisto);
 	  sumContainer.sumResXprimeOverTheta_->Add(histStruct.ResXprimeOverThetaHisto);
+	  sumContainer.sumResXprimeOverTheta_thick_->Add(histStruct.ResXprimeOverThetaHisto_thick);
+	  sumContainer.sumResXprimeOverTheta_thin_ ->Add(histStruct.ResXprimeOverThetaHisto_thin);
 	  sumContainer.sumuOrientation_->Add(histStruct.uOrientationHisto);
 	  sumContainer.sumvOrientation_->Add(histStruct.vOrientationHisto);
 	  sumContainer.sumwOrientation_->Add(histStruct.wOrientationHisto);
