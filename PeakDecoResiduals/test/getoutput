@@ -1,0 +1,24 @@
+#!/bin/csh -f
+
+if($1 == '') then
+    source getdirs
+else
+    source getdirs $1
+endif
+
+echo "Getting peakdir"
+crab -status    -c $peakdir
+crab -getoutput -c $peakdir
+
+echo "Getting decodir"
+crab -status    -c $decodir
+crab -getoutput -c $decodir
+
+echo "Getting peakdirTH2"
+crab -status    -c $peakdirTH2
+crab -getoutput -c $peakdirTH2
+
+echo "Getting decodirTH2"
+crab -status    -c $decodirTH2
+crab -getoutput -c $decodirTH2
+

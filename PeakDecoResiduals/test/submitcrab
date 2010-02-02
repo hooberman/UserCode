@@ -1,0 +1,67 @@
+#!/bin/csh -f
+
+setenv dir trial`ls -l crabjobs/ | wc | awk '{print $1}'`
+echo "Submitting to directory" $dir 
+
+mkdir crabjobs/$dir/
+mkdir crabjobs/$dir/root/
+mkdir crabjobs/$dir/plots/
+mkdir crabjobs/$dir/log/
+mkdir crabjobs/$dir/src/
+mkdir crabjobs/$dir/cfg/
+
+cp cfg/crab_peak.cfg crabjobs/$dir/cfg/.
+cp cfg/crab_deco.cfg crabjobs/$dir/cfg/.
+cp cfg/crab_peak_TH2.cfg crabjobs/$dir/cfg/.
+cp cfg/crab_deco_TH2.cfg crabjobs/$dir/cfg/.
+cp cfg/trackerOfflineValidation_crab_cfg.py     crabjobs/$dir/cfg/.
+cp cfg/trackerOfflineValidation_TH2_crab_cfg.py crabjobs/$dir/cfg/.
+cp ../plugins/TrackerOfflineValidation.cc       crabjobs/$dir/src/.
+cp ../src/TrackerValidationVariables.cc         crabjobs/$dir/src/.
+
+echo "Creating peak job"
+crab -create -cfg cfg/crab_peak.cfg
+setenv peakdir `ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
+echo "Copying peakdir"
+cp -r $peakdir/ crabjobs/$dir/.
+rm -r $peakdir/
+ln -s crabjobs/$dir/$peakdir
+echo "Submitting peak job" $peakdir
+echo "PEAK" > $peakdir/NOTES
+crab -submit all -c
+
+echo "Creating deco job"
+crab -create -cfg cfg/crab_deco.cfg
+setenv decodir `ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
+echo "Copying decodir"
+cp -r $decodir/ crabjobs/$dir/.
+rm -r $decodir/
+ln -s crabjobs/$dir/$decodir
+echo "Submitting deco job" $decodir
+echo "DECO" > $decodir/NOTES
+crab -submit all -c
+
+echo "Creating peak TH2 job"
+crab -create -cfg cfg/crab_peak_TH2.cfg
+setenv peakdirTH2 `ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
+echo "Copying peakdirTH2"
+cp -r $peakdirTH2/ crabjobs/$dir/.
+rm -r $peakdirTH2/
+ln -s crabjobs/$dir/$peakdirTH2
+echo "Submitting peak TH2 job" $peakdirTH2
+echo "PEAKTH2" > $peakdirTH2/NOTES
+crab -submit all -c
+
+echo "Creating deco TH2 job"
+crab -create -cfg cfg/crab_deco_TH2.cfg
+setenv decodirTH2 `ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
+echo "Copying decodirTH2"
+cp -r $decodirTH2/ crabjobs/$dir/.
+rm -r $decodirTH2/
+ln -s crabjobs/$dir/$decodirTH2
+echo "Submitting deco TH2 job" $decodirTH2
+echo "DECOTH2" > $decodirTH2/NOTES
+crab -submit all -c
+
+echo $peakdir $decodir $peakdirTH2 $decodirTH2 $dir >! dirs.txt
+cp dirs.txt crabjobs/$dir/.
