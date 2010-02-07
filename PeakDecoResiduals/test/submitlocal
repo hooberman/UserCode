@@ -1,34 +1,24 @@
 #!/bin/csh -f
 
 if($1 == '') then
-    setenv nevents 100
+    setenv nevents 1000
 else 
     setenv nevents $1
 endif
 
-setenv dir trial`ls -l localjobs/ | wc | awk '{print $1}'`
-echo "Submitting" $nevents "events to directory" $dir 
+source copycfg
+echo "Submitting" $nevents "events"
 
-setenv rootdir localjobs/$dir/root
-setenv logdir localjobs/$dir/log
+mkdir /tmp/benhoob/root/
+mkdir /tmp/benhoob/log/
+ln -s /tmp/benhoob/root
+ln -s /tmp/benhoob/log
 
-mkdir localjobs/$dir/
-mkdir localjobs/$dir/root/
-mkdir localjobs/$dir/log/
-mkdir localjobs/$dir/src/
-mkdir localjobs/$dir/cfg/
-mkdir localjobs/$dir/plots/
+cmsRun cfg/collisions_peak_cfg.py      >& /tmp/benhoob/log/peak.log     &
+cmsRun cfg/collisions_deco_cfg.py      >& /tmp/benhoob/log/deco.log     &
+cmsRun cfg/collisions_peak_TH2_cfg.py  >& /tmp/benhoob/log/peak_TH2.log &
+cmsRun cfg/collisions_deco_TH2_cfg.py  >& /tmp/benhoob/log/deco_TH2.log &
 
-echo $dir "delete ResXprimeHisto " > localjobs/$dir/NOTES
 
-cp cfg/trackerOfflineValidation_cfg.py localjobs/$dir/cfg/.
-cp ../plugins/TrackerOfflineValidation.cc localjobs/$dir/src/.
-cp ../src/TrackerValidationVariables.cc localjobs/$dir/src/.
 
-cmsRun cfg/offlineValidation_col_cfg.py >& $logdir/peak.log &
-
-#cmsRun cfg/trackerOfflineValidation_cfg.py mode='peak' rootfilename=${rootdir}/peak.root     nevents=${nevents} bookTH1=1 bookTH2=0 >& $logdir/peak.log &
-#cmsRun cfg/trackerOfflineValidation_cfg.py mode='deco' rootfilename=${rootdir}/deco.root     nevents=${nevents} bookTH1=1 bookTH2=0 >& $logdir/deco.log &
-#cmsRun cfg/trackerOfflineValidation_cfg.py mode='peak' rootfilename=${rootdir}/peak_TH2.root nevents=${nevents} bookTH1=0 bookTH2=1 >& $logdir/peak_TH2.log &
-#cmsRun cfg/trackerOfflineValidation_cfg.py mode='deco' rootfilename=${rootdir}/deco_TH2.root nevents=${nevents} bookTH1=0 bookTH2=1 >& $logdir/deco_TH2.log &
 

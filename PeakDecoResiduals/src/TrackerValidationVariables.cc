@@ -1,4 +1,3 @@
-
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/Common/interface/Handle.h"
 
@@ -49,13 +48,13 @@
 #include "Geometry/CommonTopologies/interface/StripTopology.h"
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"  
 #include "Alignment/TrackerAlignment/interface/TrackerAlignableId.h"
-#include "Alignment/OfflineValidation/interface/TrackerValidationVariables.h"
+#include "Alignment/PeakDecoResiduals/interface/TrackerValidationVariables.h"
 
 #include "CondFormats/SiStripObjects/interface/SiStripLorentzAngle.h"
 #include "CondFormats/DataRecord/interface/SiStripLorentzAngleRcd.h"
 
 //#include "CalibTracker/SiStripCommon/interface/ShallowTrackClustersProducer.h"
-#include "Alignment/OfflineValidation/interface/ShallowTools.h"
+#include "Alignment/PeakDecoResiduals/interface/ShallowTools.h"
 
 //#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
 //#include "DataFormats/TrackerRecHit2D/interface/ProjectedSiStripRecHit2D.h"
@@ -316,21 +315,27 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	hitStruct.vOrientation = vOrientation;
 	hitStruct.wOrientation = wOrientation;
 
-	//Read in DT/ECAL/HCAL time
-	timeStruct ts;
-	setTime(iEvent,ts);
-	if(debug_){
-	  cout<<"Number of muons "<<ts.nmu<<endl;
-	  cout<<"DT time   "<<ts.dttime<<"+/-"<<ts.dttimeerr<<" # DT measurements "<<ts.ndt<<endl;
-	  cout<<"ECAL time "<<ts.ecaltime<<"+/-"<<ts.ecaltimeerr<<" for ECAL energy "<<ts.ecalenergy<<endl;
-	  cout<<"HCAL time "<<ts.hcaltime<<"+/-"<<ts.hcaltimeerr<<" for ECAL energy "<<ts.hcalenergy<<endl;
-	}
+// 	//Read in DT/ECAL/HCAL time
+// 	timeStruct ts;
+// 	setTime(iEvent,ts);
+// 	if(debug_){
+// 	  cout<<"Number of muons "<<ts.nmu<<endl;
+// 	  cout<<"DT time   "<<ts.dttime<<"+/-"<<ts.dttimeerr<<" # DT measurements "<<ts.ndt<<endl;
+// 	  cout<<"ECAL time "<<ts.ecaltime<<"+/-"<<ts.ecaltimeerr<<" for ECAL energy "<<ts.ecalenergy<<endl;
+// 	  cout<<"HCAL time "<<ts.hcaltime<<"+/-"<<ts.hcaltimeerr<<" for ECAL energy "<<ts.hcalenergy<<endl;
+// 	}
 
-	hitStruct.dttime     = ts.dttime;
-	hitStruct.dttimeerr  = ts.dttimeerr;
-	hitStruct.ndt        = ts.ndt;
-	hitStruct.hcaltime   = ts.hcaltime;
-	hitStruct.nvalidmu   = ts.nvalidmu;
+// 	hitStruct.dttime     = ts.dttime;
+// 	hitStruct.dttimeerr  = ts.dttimeerr;
+// 	hitStruct.ndt        = ts.ndt;
+// 	hitStruct.hcaltime   = ts.hcaltime;
+// 	hitStruct.nvalidmu   = ts.nvalidmu;
+
+	hitStruct.dttime     = -1;
+	hitStruct.dttimeerr  = -1;
+	hitStruct.ndt        = -1;
+	hitStruct.hcaltime   = -1;
+	hitStruct.nvalidmu   = -1;
 
 	float dusign=0.;
 	if(IntSubDetID == StripSubdetector::TOB){
@@ -558,71 +563,3 @@ void TrackerValidationVariables::fillTrackQuantities(const edm::Event& iEvent,
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-/*
-void TrackerValidationVariables::setHCALTime(const edm::Event& iEvent, std::vector<float> &x){
- 
-  x.clear();
-  edm::Handle<reco::MuonCollection> muH;
-  //try {
-  // iEvent.getByLabel("muonsWitht0Correction",muH);
-  iEvent.getByLabel("muons1Leg",muH);
-  //}catch (...) {;}
-  const reco::MuonCollection& muonsT0 = *(muH.product()); 
-  
-  cout << endl<< "Event "<<iEvent.id().event()<<" Number of muons = " << muonsT0.size() << "-----------------------------------------"<<endl;
-  //if(muonsT0.size()<1) return -1000.;  
-  //reco::MuonCollection muonsT0filtered;
-  //float e3x3_ecal = -9999.;
-
-  float energy_ecal = -9999.; 
- 
-  float time_ecal = -9999.; 
-  float timeerr_ecal = -9999.; 
-  float time_hcal = -9999.;
-  float timeerr_hcal = -9999.;
- 
-  if(muonsT0.size()>0){
-    for (unsigned int i=0; i<muonsT0.size(); i++) {
-      
-      bool hasCaloEnergyInfo = muonsT0[i].isEnergyValid();
-      if (hasCaloEnergyInfo) {
-	energy_ecal = muonsT0[i].calEnergy().em;	
-	time_ecal = muonsT0[i].calEnergy().ecal_time;
-	timeerr_ecal = muonsT0[i].calEnergy().ecal_timeError;
-	
-	//e3x3_ecal = muonsT0[i].calEnergy().emS9;
-	time_hcal = muonsT0[i].calEnergy().hcal_time;
-      }
-      
-      if(hasCaloEnergyInfo)cout<<"****Muon "<<i<<" ecal time "<<time_ecal<<" ecal energy "<<energy_ecal<<" hcal time "<<time_hcal<<endl;
-      else                 cout<<"no CaloEnergyInfo"<<endl;
-    }
-    
-    bool hasCaloEnergyInfo = muonsT0[0].isEnergyValid();
-    if (hasCaloEnergyInfo) {
-      time_ecal = muonsT0[0].calEnergy().ecal_time;
-      energy_ecal = muonsT0[0].calEnergy().em;
-      e3x3_ecal = muonsT0[0].calEnergy().emS9;
-      time_hcal = muonsT0[0].calEnergy().hcal_time;
-    }
-  }
-
-  x.push_back((float)muonsT0.size());
-  x.push_back(time_ecal);
-  x.push_back(energy_ecal);
-  x.push_back(e3x3_ecal);
-  x.push_back(time_hcal);
-   
-}
-*/

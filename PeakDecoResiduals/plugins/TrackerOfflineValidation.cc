@@ -5,15 +5,15 @@
 // 
 /**\class TrackerOfflineValidation TrackerOfflineValidation.cc Alignment/Validator/src/TrackerOfflineValidation.cc
 
- Description: <one line class summary>
+Description: <one line class summary>
 
- Implementation:
-     <Notes on implementation>
+Implementation:
+<Notes on implementation>
 */
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: TrackerOfflineValidation.cc,v 1.3 2010/02/02 08:18:59 benhoob Exp $
+// $Id: TrackerOfflineValidation.cc,v 1.1 2010/02/02 14:43:54 benhoob Exp $
 //
 //
 
@@ -45,8 +45,8 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "Alignment/OfflineValidation/interface/TrackerValidationVariables.h"
-#include "Alignment/OfflineValidation/interface/TkOffTreeVariables.h"
+#include "Alignment/PeakDecoResiduals/interface/TrackerValidationVariables.h"
+#include "Alignment/PeakDecoResiduals/interface/TkOffTreeVariables.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
 #include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
@@ -93,38 +93,38 @@ private:
   
   struct ModuleHistos{
     ModuleHistos() :  
-		      ResXprimeHisto(), 
-		      ResXprimeHisto2(), 
-		      //tanTrackAngleHisto(), 
-		      //tanLorentzAngleHisto(),
-		      //deltaTanHisto(),
-		      ResXprimeOverThetaHisto(), 
-		      ResXprimeOverThetaHisto_thick(), 
-		      ResXprimeOverThetaHisto_thin(), 
-		      ResXprimeOverThetaHisto2(), 
-		      ResXprimeVsThetaHisto(),
-		      ResXprimeVsThetaHisto_vp(),
-		      ResXprimeVsThetaHisto_vm(),
-		      ResXprimeVsTrkThetaHisto_vp(),
-		      ResXprimeVsTrkThetaHisto_vm(),
-		      duvstrkangleHisto(),
-		      //duvslorangleHisto(),
-		      //HitEtaHisto(), 
-		      //HitZHisto(),
-		      //uOrientationHisto(), 
-		      //vOrientationHisto(), 
-		      //wOrientationHisto(), 
-		      //localphiHisto(), 
-		      //localthetaHisto(),
-		      dttimeHisto(), 
-		      dttimeerrHisto(),
-		      ndtHisto(),
-		      //hcaltimeHisto(),
-		      duvsdttimeHisto(),
-		      dwvsdttimeHisto(),
-		      chargeHisto(),
-		      nstripsHisto(),
-		      chargevsdttimeHisto()
+      ResXprimeHisto(), 
+      ResXprimeHisto2(), 
+      //tanTrackAngleHisto(), 
+      //tanLorentzAngleHisto(),
+      //deltaTanHisto(),
+      ResXprimeOverThetaHisto(), 
+      ResXprimeOverThetaHisto_thick(), 
+      ResXprimeOverThetaHisto_thin(), 
+      ResXprimeOverThetaHisto2(), 
+      ResXprimeVsThetaHisto(),
+      ResXprimeVsThetaHisto_vp(),
+      ResXprimeVsThetaHisto_vm(),
+      ResXprimeVsTrkThetaHisto_vp(),
+      ResXprimeVsTrkThetaHisto_vm(),
+      duvstrkangleHisto(),
+      //duvslorangleHisto(),
+      //HitEtaHisto(), 
+      //HitZHisto(),
+      //uOrientationHisto(), 
+      //vOrientationHisto(), 
+      //wOrientationHisto(), 
+      //localphiHisto(), 
+      //localthetaHisto(),
+      dttimeHisto(), 
+      dttimeerrHisto(),
+      ndtHisto(),
+      //hcaltimeHisto(),
+      duvsdttimeHisto(),
+      dwvsdttimeHisto(),
+      chargeHisto(),
+      nstripsHisto(),
+      chargevsdttimeHisto()
       
 
     {}
@@ -291,7 +291,7 @@ private:
   float Fwhm(const TH1* hist) const;
   std::pair<float,float> fitResiduals(TH1 *hist) const; //, float meantmp, float rmstmp);
   float getMedian( const TH1 *hist) const; 
- // From MillePedeAlignmentMonitor: Get Index for Arbitary vector<class> by name
+  // From MillePedeAlignmentMonitor: Get Index for Arbitary vector<class> by name
   template <class OBJECT_TYPE>  
   int GetIndex(const std::vector<OBJECT_TYPE*> &vec, const TString &name);
 
@@ -315,6 +315,7 @@ private:
   bool bookTH2_;
   bool debug_;
   bool fillTree_;
+  bool runOnCosmics_;
   //bool removePixel_;
   std::map< std::pair<uint32_t, uint32_t >, TH1*> hOverlappResidual;
 
@@ -334,7 +335,7 @@ private:
   std::map<int,TrackerOfflineValidation::ModuleHistos> mTobResiduals_;
   std::map<int,TrackerOfflineValidation::ModuleHistos> mTecResiduals_;
 
-  ofstream ofile;
+  //ofstream ofile;
 
 };
 
@@ -386,16 +387,17 @@ TrackerOfflineValidation::TrackerOfflineValidation(const edm::ParameterSet& iCon
     bookTH1_(parset_.getParameter<bool>("bookTH1")),
     bookTH2_(parset_.getParameter<bool>("bookTH2")),
     debug_(parset_.getParameter<bool>("debug")),
-    fillTree_(parset_.getParameter<bool>("fillTree"))
-  //,
-  //removePixel_(parset_.getParameter<bool>("removePixel"))
+    fillTree_(parset_.getParameter<bool>("fillTree")),
+    runOnCosmics_(parset_.getParameter<bool>("runOnCosmics"))
+						  //,
+						  //removePixel_(parset_.getParameter<bool>("removePixel"))
   
 {
 
   //string datasetName                = iConfig.getParameter<std::string>("datasetName");
-  string datasetName="/Cosmics/CRAFT09-TrackingPointing-CRAFT09_R_V4_CosmicsSeq_v1/RAW-RECO";
-  ofile.open("events.txt",ios::trunc);
-  ofile<<datasetName<<endl;
+  //string datasetName="/Cosmics/CRAFT09-TrackingPointing-CRAFT09_R_V4_CosmicsSeq_v1/RAW-RECO";
+  //ofile.open("events.txt",ios::trunc);
+  //ofile<<datasetName<<endl;
 
   if(bookTH1_) cout<<"Booking TH1 histos"<<endl;
   else         cout<<"Not Booking TH1 histos"<<endl;
@@ -403,15 +405,15 @@ TrackerOfflineValidation::TrackerOfflineValidation(const edm::ParameterSet& iCon
   else         cout<<"Not Booking TH2 histos"<<endl;
   if(debug_)   cout<<"Print debug statements"<<endl;
 
- //now do what ever initialization is needed
+  //now do what ever initialization is needed
 }
 
 
 TrackerOfflineValidation::~TrackerOfflineValidation()
 {
   if(debug_) cout<<"TrackerOfflineValidation::~TrackerOfflineValidation"<<endl;
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
+  // do anything here that needs to be done at desctruction time
+  // (e.g. close files, deallocate resources etc.)
   for( std::vector<TH1*>::const_iterator it = vDeleteObjects_.begin(), itEnd = vDeleteObjects_.end();it != itEnd; ++it) delete *it;
   for( std::vector<TH2*>::const_iterator itTH2 = vDeleteObjectsTH2_.begin(), itEndTH2 = vDeleteObjectsTH2_.end();itTH2 != itEndTH2; ++itTH2) delete *itTH2;
 }
@@ -449,7 +451,7 @@ TrackerOfflineValidation::checkBookHists(const edm::EventSetup &es)
     this->bookGlobalHists(trackglobal);
     
     // recursively book histogramms on lowest level
-//     this->bookDirHists(static_cast<TFileDirectory&>(*fs), aliTracker, aliobjid);  
+    //     this->bookDirHists(static_cast<TFileDirectory&>(*fs), aliTracker, aliobjid);  
     this->bookDirHists(*fs, aliTracker, aliobjid);  
   } else { // histograms booked, but changed TrackerGeometry?
     edm::LogWarning("GeometryChange") << "@SUB=checkBookHists"
@@ -594,12 +596,12 @@ TrackerOfflineValidation::bookDirHists( TFileDirectory &tfd, const Alignable& al
       bookDirHists( f, *(alivec)[i], aliobjid);
       if(debug_)dout<<endl;
     } else if( !(this->isDetOrDetUnit( (alivec)[i]->alignableObjectId()) )
-	      || alivec[i]->components().size() > 1) {      
+	       || alivec[i]->components().size() > 1) {      
       TFileDirectory f = tfd.mkdir((dirname.str()).c_str());
       bookHists(tfd, *(alivec)[i], ali.alignableObjectId() , i, aliobjid);
-     if(debug_)dout<<endl;
-     bookDirHists( f, *(alivec)[i], aliobjid);
-     if(debug_)dout<<endl;
+      if(debug_)dout<<endl;
+      bookDirHists( f, *(alivec)[i], aliobjid);
+      if(debug_)dout<<endl;
     } else {
       if(debug_)dout<<endl;
       bookHists(tfd, *(alivec)[i], ali.alignableObjectId() , i, aliobjid);
@@ -767,10 +769,10 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 		  << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
 
   dttimeerrhistoname << "h_dttimeerr_subdet_" << subdetandlayer.first 
-		  << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
+		     << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
 
   ndthistoname << "h_ndt_subdet_" << subdetandlayer.first 
-		  << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
+	       << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
 
   hcaltimehistoname << "h_hcaltime_subdet_" << subdetandlayer.first 
 		    << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
@@ -840,10 +842,10 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 			<< wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
 
   localthetahistoname << "h_localtheta_subdet_" << subdetandlayer.first 
-			<< wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
+		      << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
 
   localphihistoname << "h_localphi_subdet_" << subdetandlayer.first 
-			<< wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
+		    << wheel_or_layer << subdetandlayer.second << "_module_" << id.rawId();
 
   histotitle << "Residual for module " << id.rawId() << ";x_{pred} - x_{rec} [cm]";
 
@@ -931,48 +933,49 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 
       if(debug_) cout<<"Booked "<<resxprimevsthetahistoname.str()<<endl;
       
-      histStruct.duvsdttimeHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
-						  duvsdttimehistoname.str().c_str(),duvsdttimehistotitle.str().c_str(),
-						  50, -25, 25, 50, -500, 500);
-
-      histStruct.chargevsdttimeHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
-						      chargevsdttimehistoname.str().c_str(),chargevsdttimehistotitle.str().c_str(),
-						      50, -25, 25, 50, 0, 1000);
-
-      histStruct.dwvsdttimeHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
-						  dwvsdttimehistoname.str().c_str(),dwvsdttimehistotitle.str().c_str(),
-						  50, -25, 25, 50, -1000, 1000);
-   
+      if(runOnCosmics_){
+	histStruct.duvsdttimeHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
+						    duvsdttimehistoname.str().c_str(),duvsdttimehistotitle.str().c_str(),
+						    50, -25, 25, 50, -500, 500);
+	
+	histStruct.chargevsdttimeHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
+							chargevsdttimehistoname.str().c_str(),chargevsdttimehistotitle.str().c_str(),
+							50, -25, 25, 50, 0, 1000);
+	
+	histStruct.dwvsdttimeHisto = this->bookTH2F(moduleLevelHistsTransient_, tfd, 
+						    dwvsdttimehistoname.str().c_str(),dwvsdttimehistotitle.str().c_str(),
+						    50, -25, 25, 50, -1000, 1000);
+      }
     }
     //book all TH1 histos
     if(bookTH1_){
 
       // decide via cfg if hists in local coordinates should be booked
       /*
-      if(lCoorHistOn_) {
+	if(lCoorHistOn_) {
 	this->getBinning(id.subdetId(), XResidual, nbins, xmin, xmax);
 	histStruct.ResHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-					     histoname.str().c_str(),histotitle.str().c_str(),		     
-					     nbins, xmin, xmax);
+	histoname.str().c_str(),histotitle.str().c_str(),		     
+	nbins, xmin, xmax);
 	//cout<<"Booking ResHisto "<<histoname.str()<<endl;
 	this->getBinning(id.subdetId(), NormXResidual, nbins, xmin, xmax);
 	histStruct.NormResHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd,
-						 normhistoname.str().c_str(),normhistotitle.str().c_str(),
-						 nbins, xmin, xmax);
-      } 
+	normhistoname.str().c_str(),normhistotitle.str().c_str(),
+	nbins, xmin, xmax);
+	} 
       */
 
-//       histStruct.tanTrackAngleHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						     tahistoname.str().c_str(),tahistotitle.str().c_str(),
-// 						     100, -5, 5);
+      //       histStruct.tanTrackAngleHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						     tahistoname.str().c_str(),tahistotitle.str().c_str(),
+      // 						     100, -5, 5);
 
-//       histStruct.deltaTanHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						dthistoname.str().c_str(),dthistotitle.str().c_str(),
-// 						100, -5, 5);
+      //       histStruct.deltaTanHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						dthistoname.str().c_str(),dthistotitle.str().c_str(),
+      // 						100, -5, 5);
 
-//       histStruct.HitEtaHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 					      hitetahistoname.str().c_str(),hitetahistotitle.str().c_str(),
-// 					      100, -5, 5);
+      //       histStruct.HitEtaHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 					      hitetahistoname.str().c_str(),hitetahistotitle.str().c_str(),
+      // 					      100, -5, 5);
 
       histStruct.dttimeHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
 					      dttimehistoname.str().c_str(),dttimehistotitle.str().c_str(),
@@ -994,38 +997,38 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 					       nstripshistoname.str().c_str(),nstripshistotitle.str().c_str(),
 					       10, 0, 10);
 
-//       histStruct.hcaltimeHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						hcaltimehistoname.str().c_str(),hcaltimehistotitle.str().c_str(),
-// 						200, -100, 100);
+      //       histStruct.hcaltimeHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						hcaltimehistoname.str().c_str(),hcaltimehistotitle.str().c_str(),
+      // 						200, -100, 100);
       /*
-      for(int ihist=0;ihist<12;ihist++){
+	for(int ihist=0;ihist<12;ihist++){
 	histStruct.du_zHisto[ihist] = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-						     duzhistoname[ihist].str().c_str(),duzhistotitle[ihist].str().c_str(),
-						     50, -500, 500);
+	duzhistoname[ihist].str().c_str(),duzhistotitle[ihist].str().c_str(),
+	50, -500, 500);
 
 	histStruct.dw_zHisto[ihist] = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-						     dwzhistoname[ihist].str().c_str(),dwzhistotitle[ihist].str().c_str(),
-						     50, -1000, 1000);
-      }
+	dwzhistoname[ihist].str().c_str(),dwzhistotitle[ihist].str().c_str(),
+	50, -1000, 1000);
+	}
       */
 
       /*
-      histStruct.HitXHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-					    hitxhistoname.str().c_str(),hitxhistotitle.str().c_str(),
-					    1000, -100, 100);
+	histStruct.HitXHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+	hitxhistoname.str().c_str(),hitxhistotitle.str().c_str(),
+	1000, -100, 100);
 
-      histStruct.HitYHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-					    hityhistoname.str().c_str(),hityhistotitle.str().c_str(),
-					    1000, -100, 100);
+	histStruct.HitYHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+	hityhistoname.str().c_str(),hityhistotitle.str().c_str(),
+	1000, -100, 100);
       */
 
-//       histStruct.HitZHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 					    hitzhistoname.str().c_str(),hitzhistotitle.str().c_str(),
-// 					    100, -100, 100);
+      //       histStruct.HitZHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 					    hitzhistoname.str().c_str(),hitzhistotitle.str().c_str(),
+      // 					    100, -100, 100);
     
-//       histStruct.tanLorentzAngleHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						       lahistoname.str().c_str(),lahistotitle.str().c_str(),
-// 						       100, -0.5, 0.5);
+      //       histStruct.tanLorentzAngleHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						       lahistoname.str().c_str(),lahistotitle.str().c_str(),
+      // 						       100, -0.5, 0.5);
 
       histStruct.ResXprimeOverThetaHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
 							  resxprimeoverthetahistoname.str().c_str(),resxprimeoverthetahistotitle.str().c_str(),
@@ -1040,29 +1043,29 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 								resxprimeoverthetathinhistoname.str().c_str(),resxprimeoverthetathinhistotitle.str().c_str(),
 								100, -1000, 1000);
       
-//       histStruct.uOrientationHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						    uorientationhistoname.str().c_str(),uorientationhistotitle.str().c_str(),
-// 						    3, -1.5, 1.5);
+      //       histStruct.uOrientationHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						    uorientationhistoname.str().c_str(),uorientationhistotitle.str().c_str(),
+      // 						    3, -1.5, 1.5);
 
-//       histStruct.vOrientationHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						    vorientationhistoname.str().c_str(),vorientationhistotitle.str().c_str(),
-// 						    3, -1.5, 1.5);
+      //       histStruct.vOrientationHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						    vorientationhistoname.str().c_str(),vorientationhistotitle.str().c_str(),
+      // 						    3, -1.5, 1.5);
 
-//       histStruct.wOrientationHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						    worientationhistoname.str().c_str(),worientationhistotitle.str().c_str(),
-// 						    3, -1.5, 1.5);
+      //       histStruct.wOrientationHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						    worientationhistoname.str().c_str(),worientationhistotitle.str().c_str(),
+      // 						    3, -1.5, 1.5);
 
-//       histStruct.vminusdusignHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						    vminusdusignhistoname.str().c_str(),vminusdusignhistotitle.str().c_str(),
-// 						    5, -2.5, 2.5);
+      //       histStruct.vminusdusignHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						    vminusdusignhistoname.str().c_str(),vminusdusignhistotitle.str().c_str(),
+      // 						    5, -2.5, 2.5);
 
-//       histStruct.localthetaHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						  localthetahistoname.str().c_str(),localthetahistotitle.str().c_str(),
-// 						  100, -5, 5);
+      //       histStruct.localthetaHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						  localthetahistoname.str().c_str(),localthetahistotitle.str().c_str(),
+      // 						  100, -5, 5);
 
-//       histStruct.localphiHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-// 						localphihistoname.str().c_str(),localphihistotitle.str().c_str(),
-// 						100, -1, 1);
+      //       histStruct.localphiHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+      // 						localphihistoname.str().c_str(),localphihistotitle.str().c_str(),
+      // 						100, -1, 1);
 
       this->getBinning(id.subdetId(), XprimeResidual, nbins, xmin, xmax);
       histStruct.ResXprimeHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
@@ -1081,22 +1084,22 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
       }	
       
       /*
-      this->getBinning(id.subdetId(), NormXprimeResidual, nbins, xmin, xmax);
-      histStruct.NormResXprimeHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-						     normxprimehistoname.str().c_str(),normxprimehistotitle.str().c_str(),
-						     nbins, xmin, xmax);
+	this->getBinning(id.subdetId(), NormXprimeResidual, nbins, xmin, xmax);
+	histStruct.NormResXprimeHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
+	normxprimehistoname.str().c_str(),normxprimehistotitle.str().c_str(),
+	nbins, xmin, xmax);
       */
       /*
-      if( this->isPixel(subdetandlayer.first) || stripYResiduals_ ) {
+	if( this->isPixel(subdetandlayer.first) || stripYResiduals_ ) {
 	this->getBinning(id.subdetId(), YprimeResidual, nbins, xmin, xmax);
 	histStruct.ResYprimeHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd,
-						   yprimehistoname.str().c_str(),yprimehistotitle.str().c_str(),
-						   nbins, xmin, xmax);
+	yprimehistoname.str().c_str(),yprimehistotitle.str().c_str(),
+	nbins, xmin, xmax);
 	this->getBinning(id.subdetId(), NormYprimeResidual, nbins, xmin, xmax);
 	histStruct.NormResYprimeHisto = this->bookTH1F(moduleLevelHistsTransient_, tfd, 
-						       normyprimehistoname.str().c_str(),normyprimehistotitle.str().c_str(),
-						       nbins, xmin, xmax);
-      }
+	normyprimehistoname.str().c_str(),normyprimehistotitle.str().c_str(),
+	nbins, xmin, xmax);
+	}
       */
     }
     if(debug_)cout<<"End of bookHists"<<endl;
@@ -1105,7 +1108,7 @@ TrackerOfflineValidation::bookHists(TFileDirectory &tfd, const Alignable& ali, a
 }
 
 TH1* TrackerOfflineValidation::bookTH1F(bool isTransient, TFileDirectory& tfd, const char* histName, const char* histTitle, 
-		int nBinsX, double lowX, double highX)
+					int nBinsX, double lowX, double highX)
 {
   if(isTransient) {
     vDeleteObjects_.push_back(new TH1F(histName, histTitle, nBinsX, lowX, highX));
@@ -1119,7 +1122,7 @@ TH1* TrackerOfflineValidation::bookTH1F(bool isTransient, TFileDirectory& tfd, c
 
 
 TH2* TrackerOfflineValidation::bookTH2F(bool isTransient, TFileDirectory& tfd, const char* histName, const char* histTitle, 
-		int nBinsX, double lowX, double highX,int nBinsY, double lowY, double highY)
+					int nBinsX, double lowX, double highX,int nBinsY, double lowY, double highY)
 {
   if(isTransient) {
     vDeleteObjectsTH2_.push_back(new TH2F(histName, histTitle, nBinsX, lowX, highX, nBinsY, lowY, highY));
@@ -1241,11 +1244,11 @@ TrackerOfflineValidation::summarizeBinInContainer( int bin, uint32_t subDetId,
   // takes two summary Containers and sets summaryBins for all histogramms
   this->setSummaryBin(bin, targetContainer.summaryXResiduals_, sourceContainer.ResXprimeHisto);
   /*
-  this->setSummaryBin(bin, targetContainer.summaryNormXResiduals_, sourceContainer.NormResXprimeHisto);
-  if( this->isPixel(subDetId) || stripYResiduals_ ) {
+    this->setSummaryBin(bin, targetContainer.summaryNormXResiduals_, sourceContainer.NormResXprimeHisto);
+    if( this->isPixel(subDetId) || stripYResiduals_ ) {
     this->setSummaryBin(bin, targetContainer.summaryYResiduals_, sourceContainer.ResYprimeHisto);
     this->setSummaryBin(bin, targetContainer.summaryNormYResiduals_, sourceContainer.NormResYprimeHisto);
-  }
+    }
   */
 }
 
@@ -1291,7 +1294,7 @@ TrackerOfflineValidation::analyze(const edm::Event& iEvent, const edm::EventSetu
   int evt_lumiBlock                 = iEvent.luminosityBlock() ;  
   int evt_event                     = iEvent.id().event()      ;
   
-  ofile<<evt_run<<" "<<evt_lumiBlock<<" "<<evt_event<<endl;
+  //ofile<<evt_run<<" "<<evt_lumiBlock<<" "<<evt_event<<endl;
 
 
   if (useOverflowForRMS_)TH1::StatOverflows(kTRUE);
@@ -1399,146 +1402,152 @@ TrackerOfflineValidation::analyze(const edm::Event& iEvent, const edm::EventSetu
     
     if(debug_)cout<<"nvalidmu "<<it->nvalidmu<<" ndt "<<it->ndt<<" dttimeerr "<<it->dttimeerr<<endl;
     
-    if(it->nvalidmu==1 && it->ndt>=25 &&  it->dttimeerr<10){
+    if(runOnCosmics_){
+      if(it->nvalidmu==1 && it->ndt>=25 &&  it->dttimeerr<10) continue;
+    }
+
+    //if(it->nvalidmu==1 && it->ndt>=25 &&  it->dttimeerr<10){
       
-      if(bookTH2_){
-	if(debug_){
-	  cout<<"Fill TH2 "<<it->resXprime<<" tanTrackAngle "<<it->tanTrackAngle<<" tanLorentzAngle "<<it->tanLorentzAngle<<endl;
-	  if(it->resXprime == -999.) cout<<"Invalid residual deltaTanTheta "<<it->tanTrackAngle-it->tanLorentzAngle<<endl;
-	}
-	
-	if(it->resXprime != -999. && it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.) {
-	  if(fabs(it->tanTrackAngle-it->tanLorentzAngle>0)){
-	    histStruct.ResXprimeVsThetaHisto -> Fill(it->tanTrackAngle-it->tanLorentzAngle, 10000*it->resXprime);
-	    histStruct.duvstrkangleHisto     -> Fill(it->tanTrackAngle,                     10000*it->resXprime);
-	    if(it->vOrientation < 0){
-	      histStruct.ResXprimeVsThetaHisto_vm    -> Fill(it->tanTrackAngle-it->tanLorentzAngle, 10000*it->resXprime);
-	      histStruct.ResXprimeVsTrkThetaHisto_vm -> Fill(it->tanTrackAngle,                     10000*it->resXprime);
-	    }
-	    if(it->vOrientation > 0){
-	      histStruct.ResXprimeVsThetaHisto_vp    -> Fill(it->tanTrackAngle-it->tanLorentzAngle, 10000*it->resXprime);
-	      histStruct.ResXprimeVsTrkThetaHisto_vp -> Fill(it->tanTrackAngle,                     10000*it->resXprime);
-	    }
+    if(bookTH2_){
+      if(debug_){
+	cout<<"Fill TH2 "<<it->resXprime<<" tanTrackAngle "<<it->tanTrackAngle<<" tanLorentzAngle "<<it->tanLorentzAngle<<endl;
+	if(it->resXprime == -999.) cout<<"Invalid residual deltaTanTheta "<<it->tanTrackAngle-it->tanLorentzAngle<<endl;
+      }
+      
+      if(it->resXprime != -999. && it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.) {
+	if(fabs(it->tanTrackAngle-it->tanLorentzAngle>0)){
+	  histStruct.ResXprimeVsThetaHisto -> Fill(it->tanTrackAngle-it->tanLorentzAngle, 10000*it->resXprime);
+	  histStruct.duvstrkangleHisto     -> Fill(it->tanTrackAngle,                     10000*it->resXprime);
+	  if(it->vOrientation < 0){
+	    histStruct.ResXprimeVsThetaHisto_vm    -> Fill(it->tanTrackAngle-it->tanLorentzAngle, 10000*it->resXprime);
+	    histStruct.ResXprimeVsTrkThetaHisto_vm -> Fill(it->tanTrackAngle,                     10000*it->resXprime);
 	  }
-	  if(fabs(it->tanTrackAngle-it->tanLorentzAngle<0)){
-	    histStruct.ResXprimeVsThetaHisto -> Fill(it->tanTrackAngle-it->tanLorentzAngle, -10000*it->resXprime);
-	    histStruct.duvstrkangleHisto     -> Fill(it->tanTrackAngle,                     -10000*it->resXprime);
-	    if(it->vOrientation < 0){
-	      histStruct.ResXprimeVsThetaHisto_vm    -> Fill(it->tanTrackAngle-it->tanLorentzAngle, -10000*it->resXprime);
-	      histStruct.ResXprimeVsTrkThetaHisto_vm -> Fill(it->tanTrackAngle,                     -10000*it->resXprime);
-	    }
-	    if(it->vOrientation > 0){
-	      histStruct.ResXprimeVsThetaHisto_vp    -> Fill(it->tanTrackAngle-it->tanLorentzAngle, -10000*it->resXprime);
-	      histStruct.ResXprimeVsTrkThetaHisto_vp -> Fill(it->tanTrackAngle,                     -10000*it->resXprime);
-	    }
+	  if(it->vOrientation > 0){
+	    histStruct.ResXprimeVsThetaHisto_vp    -> Fill(it->tanTrackAngle-it->tanLorentzAngle, 10000*it->resXprime);
+	    histStruct.ResXprimeVsTrkThetaHisto_vp -> Fill(it->tanTrackAngle,                     10000*it->resXprime);
 	  }
 	}
+	if(fabs(it->tanTrackAngle-it->tanLorentzAngle<0)){
+	  histStruct.ResXprimeVsThetaHisto -> Fill(it->tanTrackAngle-it->tanLorentzAngle, -10000*it->resXprime);
+	  histStruct.duvstrkangleHisto     -> Fill(it->tanTrackAngle,                     -10000*it->resXprime);
+	  if(it->vOrientation < 0){
+	    histStruct.ResXprimeVsThetaHisto_vm    -> Fill(it->tanTrackAngle-it->tanLorentzAngle, -10000*it->resXprime);
+	    histStruct.ResXprimeVsTrkThetaHisto_vm -> Fill(it->tanTrackAngle,                     -10000*it->resXprime);
+	  }
+	  if(it->vOrientation > 0){
+	    histStruct.ResXprimeVsThetaHisto_vp    -> Fill(it->tanTrackAngle-it->tanLorentzAngle, -10000*it->resXprime);
+	    histStruct.ResXprimeVsTrkThetaHisto_vp -> Fill(it->tanTrackAngle,                     -10000*it->resXprime);
+	  }
+	}
+      }
 	
+      if(runOnCosmics_){
 	if(it->charge != -999. && it->dttime != -999.){
 	  histStruct.chargevsdttimeHisto->Fill(it->dttime,it->charge);
 	}
-
+	
 	if(it->resXprime != -999. && it->dttime != -999.){
 	  histStruct.duvsdttimeHisto->Fill(it->dttime,10000*it->resXprime);
-
+	  
 	  if(it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.){
 	    float deltaTanTheta=it->tanTrackAngle-it->tanLorentzAngle;
 	    if(deltaTanTheta != 0) histStruct.dwvsdttimeHisto->Fill(it->dttime,10000*it->resXprime/fabs(deltaTanTheta));
 	    
 	  }
 	}
-	
-	if(debug_) cout<<"Filled TH2"<<endl;
       }
-      
-      //fill TH1 histos
-      if(bookTH1_){
-	// fill histos in local coordinates if set in cf
-	/*
-	  if(lCoorHistOn_) {
-	  histStruct.ResHisto->Fill(it->resX);
-	  if(it->resErrX != 0) histStruct.NormResHisto->Fill(it->resX/it->resErrX);
-	  }
-	*/
-	//if(it->x != -999.) histStruct.HitXHisto->Fill(it->x);
-	//if(it->y != -999.) histStruct.HitYHisto->Fill(it->y);
 
-	if(it->dttime != -999)         histStruct.dttimeHisto->  Fill(it->dttime);
-	//if(it->hcaltime != -999)       histStruct.hcaltimeHisto->Fill(it->hcaltime);
-	//if(it->z != -999.)             histStruct.HitZHisto->    Fill(it->z);
-	//if(it->eta != -999.)           histStruct.HitEtaHisto->  Fill(it->eta);
-	if(it->charge != -999.)        histStruct.chargeHisto->  Fill(it->charge);
-	if(it->nstrips != -999)        histStruct.nstripsHisto-> Fill(it->nstrips);
-	
-	//if(it->uOrientation != -999.)   histStruct.uOrientationHisto->Fill(it->uOrientation);
-	//if(it->vOrientation != -999.)   histStruct.vOrientationHisto->Fill(it->vOrientation);
-	//if(it->vOrientation != -999. && it->dusign != -999.) histStruct.vminusdusignHisto->Fill(it->vOrientation-it->dusign);
-	//if(it->wOrientation != -999.)   histStruct.wOrientationHisto->Fill(it->wOrientation);
-	//if(it->localtheta != -999.)     histStruct.localthetaHisto->Fill(tan(it->localtheta));
-	//if(it->localphi != -999.)       histStruct.localphiHisto->Fill(cos(it->localphi));
-	
-	/*
-	if(it->z != -999. && it->resXprime!=-999. && it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.){
-	  float dw=it->resXprime/fabs(it->tanTrackAngle-it->tanLorentzAngle);
-	  histStruct.du_zHisto[this->getHisto(it->z)]->Fill(10000*it->resXprime);
-	  histStruct.dw_zHisto[this->getHisto(it->z)]->Fill(10000*dw);
-	}
-	*/
-
-	if(it->resXprime != -999.) {
-	  histStruct.ResXprimeHisto->Fill(10000*it->resXprime);
-	  
-	  if(it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.){
-	    float deltaTanTheta=it->tanTrackAngle-it->tanLorentzAngle;
-	    if(deltaTanTheta != 0) histStruct.ResXprimeOverThetaHisto->Fill(10000*it->resXprime/fabs(deltaTanTheta));
-	    if(it->ectype == 1)    histStruct.ResXprimeOverThetaHisto_thick -> Fill(10000*it->resXprime/fabs(deltaTanTheta)); 
-	    if(it->ectype == 2)    histStruct.ResXprimeOverThetaHisto_thin  -> Fill(10000*it->resXprime/fabs(deltaTanTheta)); 
-	    
-	    int ih=0;
-	    if(deltaTanTheta<0)ih=1;
-	    histStruct.ResXprimeHisto2[ih]->Fill(10000*it->resXprime);
-	    if(deltaTanTheta != 0) histStruct.ResXprimeOverThetaHisto2[ih]->Fill(10000*it->resXprime/fabs(deltaTanTheta));
-	    
-	  }
-	  /*
-	    if(it->resXprimeErr != 0 && it->resXprimeErr != -999 ) {	
-	    histStruct.NormResXprimeHisto->Fill(it->resXprime/it->resXprimeErr);
-	    } 
-	  */
-	}
-	/*
-	  if(it->resYprime != -999.) {
-	  if( this->isPixel(detid.subdetId())  || stripYResiduals_ ) {
-	  histStruct.ResYprimeHisto->Fill(it->resYprime);
-	  if(it->resYprimeErr != 0 && it->resYprimeErr != -999. ) {	
-	  histStruct.NormResYprimeHisto->Fill(it->resYprime/it->resYprimeErr);
-	  } 
-	  }
-	  }
-	*/
-
-// 	if(it->tanTrackAngle != -999.)	                                  histStruct.tanTrackAngleHisto->Fill(it->tanTrackAngle);
-// 	if(it->tanLorentzAngle != -999.)	                          histStruct.tanLorentzAngleHisto->Fill(it->tanLorentzAngle);
-//      if(it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.)	  histStruct.deltaTanHisto->Fill(it->tanTrackAngle-it->tanLorentzAngle);
-	
-
-	if(overlappOn_) {
-	  std::pair<uint32_t,uint32_t> tmp_pair(std::make_pair(it->rawDetId, it->overlapres.first));
-	  if(it->overlapres.first != 0 ) {
-	    if( hOverlappResidual[tmp_pair] ) {
-	      hOverlappResidual[tmp_pair]->Fill(it->overlapres.second);
-	    } else if( hOverlappResidual[std::make_pair( it->overlapres.first, it->rawDetId) ]) {
-	      hOverlappResidual[std::make_pair( it->overlapres.first, it->rawDetId) ]->Fill(it->overlapres.second);
-	    } else {
-	      TFileDirectory tfd = fs->mkdir("OverlappResiduals");
-	      hOverlappResidual[tmp_pair] = tfd.make<TH1F>(Form("hOverlappResidual_%d_%d",tmp_pair.first,tmp_pair.second),
-							   "Overlapp Residuals",100,-50,50);
-	      hOverlappResidual[tmp_pair]->Fill(it->overlapres.second);
-	    }
-	  }
-	} // end overlappOn
-      }
+      if(debug_) cout<<"Filled TH2"<<endl;
     }
+      
+    //fill TH1 histos
+    if(bookTH1_){
+      // fill histos in local coordinates if set in cf
+      /*
+	if(lCoorHistOn_) {
+	histStruct.ResHisto->Fill(it->resX);
+	if(it->resErrX != 0) histStruct.NormResHisto->Fill(it->resX/it->resErrX);
+	}
+      */
+      //if(it->x != -999.) histStruct.HitXHisto->Fill(it->x);
+      //if(it->y != -999.) histStruct.HitYHisto->Fill(it->y);
+
+      if(it->dttime != -999)         histStruct.dttimeHisto->  Fill(it->dttime);
+      //if(it->hcaltime != -999)       histStruct.hcaltimeHisto->Fill(it->hcaltime);
+      //if(it->z != -999.)             histStruct.HitZHisto->    Fill(it->z);
+      //if(it->eta != -999.)           histStruct.HitEtaHisto->  Fill(it->eta);
+      if(it->charge != -999.)        histStruct.chargeHisto->  Fill(it->charge);
+      if(it->nstrips != -999)        histStruct.nstripsHisto-> Fill(it->nstrips);
+	
+      //if(it->uOrientation != -999.)   histStruct.uOrientationHisto->Fill(it->uOrientation);
+      //if(it->vOrientation != -999.)   histStruct.vOrientationHisto->Fill(it->vOrientation);
+      //if(it->vOrientation != -999. && it->dusign != -999.) histStruct.vminusdusignHisto->Fill(it->vOrientation-it->dusign);
+      //if(it->wOrientation != -999.)   histStruct.wOrientationHisto->Fill(it->wOrientation);
+      //if(it->localtheta != -999.)     histStruct.localthetaHisto->Fill(tan(it->localtheta));
+      //if(it->localphi != -999.)       histStruct.localphiHisto->Fill(cos(it->localphi));
+	
+      /*
+	if(it->z != -999. && it->resXprime!=-999. && it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.){
+	float dw=it->resXprime/fabs(it->tanTrackAngle-it->tanLorentzAngle);
+	histStruct.du_zHisto[this->getHisto(it->z)]->Fill(10000*it->resXprime);
+	histStruct.dw_zHisto[this->getHisto(it->z)]->Fill(10000*dw);
+	}
+      */
+
+      if(it->resXprime != -999.) {
+	histStruct.ResXprimeHisto->Fill(10000*it->resXprime);
+	  
+	if(it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.){
+	  float deltaTanTheta=it->tanTrackAngle-it->tanLorentzAngle;
+	  if(deltaTanTheta != 0) histStruct.ResXprimeOverThetaHisto->Fill(10000*it->resXprime/fabs(deltaTanTheta));
+	  if(it->ectype == 1)    histStruct.ResXprimeOverThetaHisto_thick -> Fill(10000*it->resXprime/fabs(deltaTanTheta)); 
+	  if(it->ectype == 2)    histStruct.ResXprimeOverThetaHisto_thin  -> Fill(10000*it->resXprime/fabs(deltaTanTheta)); 
+	    
+	  int ih=0;
+	  if(deltaTanTheta<0)ih=1;
+	  histStruct.ResXprimeHisto2[ih]->Fill(10000*it->resXprime);
+	  if(deltaTanTheta != 0) histStruct.ResXprimeOverThetaHisto2[ih]->Fill(10000*it->resXprime/fabs(deltaTanTheta));
+	    
+	}
+	/*
+	  if(it->resXprimeErr != 0 && it->resXprimeErr != -999 ) {	
+	  histStruct.NormResXprimeHisto->Fill(it->resXprime/it->resXprimeErr);
+	  } 
+	*/
+      }
+      /*
+	if(it->resYprime != -999.) {
+	if( this->isPixel(detid.subdetId())  || stripYResiduals_ ) {
+	histStruct.ResYprimeHisto->Fill(it->resYprime);
+	if(it->resYprimeErr != 0 && it->resYprimeErr != -999. ) {	
+	histStruct.NormResYprimeHisto->Fill(it->resYprime/it->resYprimeErr);
+	} 
+	}
+	}
+      */
+
+      // 	if(it->tanTrackAngle != -999.)	                                  histStruct.tanTrackAngleHisto->Fill(it->tanTrackAngle);
+      // 	if(it->tanLorentzAngle != -999.)	                          histStruct.tanLorentzAngleHisto->Fill(it->tanLorentzAngle);
+      //      if(it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.)	  histStruct.deltaTanHisto->Fill(it->tanTrackAngle-it->tanLorentzAngle);
+	
+
+      if(overlappOn_) {
+	std::pair<uint32_t,uint32_t> tmp_pair(std::make_pair(it->rawDetId, it->overlapres.first));
+	if(it->overlapres.first != 0 ) {
+	  if( hOverlappResidual[tmp_pair] ) {
+	    hOverlappResidual[tmp_pair]->Fill(it->overlapres.second);
+	  } else if( hOverlappResidual[std::make_pair( it->overlapres.first, it->rawDetId) ]) {
+	    hOverlappResidual[std::make_pair( it->overlapres.first, it->rawDetId) ]->Fill(it->overlapres.second);
+	  } else {
+	    TFileDirectory tfd = fs->mkdir("OverlappResiduals");
+	    hOverlappResidual[tmp_pair] = tfd.make<TH1F>(Form("hOverlappResidual_%d_%d",tmp_pair.first,tmp_pair.second),
+							 "Overlapp Residuals",100,-50,50);
+	    hOverlappResidual[tmp_pair]->Fill(it->overlapres.second);
+	  }
+	}
+      } // end overlappOn
+    }
+    //}
   }
   if(debug_) cout<<"End TrackerOfflineValidation::analyze"<<endl;
   if (useOverflowForRMS_) TH1::StatOverflows(kFALSE);  
@@ -1551,7 +1560,7 @@ void
 TrackerOfflineValidation::endJob()
 {
   if(debug_) cout<<"TrackerOfflineValidation::endJob"<<endl;
-  ofile.close();
+  //ofile.close();
 
   AlignableTracker aliTracker(&(*tkGeom_));
   edm::Service<TFileService> fs;   
@@ -1567,12 +1576,12 @@ TrackerOfflineValidation::endJob()
 
   if(debug_) cout<<"fill TTree"<<endl;
   if(bookTH1_ && fillTree_){
-//     this->fillTree(*tree, mPxbResiduals_, *treeMemPtr, *tkGeom_);
-//     this->fillTree(*tree, mPxeResiduals_, *treeMemPtr, *tkGeom_);
-//     this->fillTree(*tree, mTibResiduals_, *treeMemPtr, *tkGeom_);
-//     this->fillTree(*tree, mTidResiduals_, *treeMemPtr, *tkGeom_);
-//     this->fillTree(*tree, mTobResiduals_, *treeMemPtr, *tkGeom_);
-//     this->fillTree(*tree, mTecResiduals_, *treeMemPtr, *tkGeom_);
+    //     this->fillTree(*tree, mPxbResiduals_, *treeMemPtr, *tkGeom_);
+    //     this->fillTree(*tree, mPxeResiduals_, *treeMemPtr, *tkGeom_);
+    //     this->fillTree(*tree, mTibResiduals_, *treeMemPtr, *tkGeom_);
+    //     this->fillTree(*tree, mTidResiduals_, *treeMemPtr, *tkGeom_);
+    //     this->fillTree(*tree, mTobResiduals_, *treeMemPtr, *tkGeom_);
+    //     this->fillTree(*tree, mTecResiduals_, *treeMemPtr, *tkGeom_);
   }
   delete treeMemPtr; treeMemPtr = 0;
 
@@ -1608,12 +1617,12 @@ TrackerOfflineValidation::collateSummaryHists( TFileDirectory &tfd, const Aligna
     LogDebug("TrackerOfflineValidation") << "StructureName = " << structurename;
     std::stringstream dirname;
     if(structurename=="Strip") structurename="MyStrip";   
-//     else{
-//       if(removePixel_ && structurename=="Pixel"){
-// 	cout<<"TrackerOfflineValidation::collateSummaryHists skip pixel"<<endl;
-// 	continue;
-//       }
-//     }
+    //     else{
+    //       if(removePixel_ && structurename=="Pixel"){
+    // 	cout<<"TrackerOfflineValidation::collateSummaryHists skip pixel"<<endl;
+    // 	continue;
+    //       }
+    //     }
     dirname << structurename;
     
     // add no suffix counter to strip and pixel -> just aesthetics
@@ -1643,9 +1652,11 @@ TrackerOfflineValidation::collateSummaryHists( TFileDirectory &tfd, const Aligna
 	  //v_levelProfiles[iComp].sumuz_->Add(v_profiles[n].sumuz_);
 	  //v_levelProfiles[iComp].sumvz_->Add(v_profiles[n].sumvz_);
 	  //v_levelProfiles[iComp].sumwz_->Add(v_profiles[n].sumwz_);
-	  v_levelProfiles[iComp].sumduvsdttime_->Add(v_profiles[n].sumduvsdttime_);
-	  v_levelProfiles[iComp].sumdwvsdttime_->Add(v_profiles[n].sumdwvsdttime_);
-	  v_levelProfiles[iComp].sumchargevsdttime_->Add(v_profiles[n].sumchargevsdttime_);
+	  if(runOnCosmics_){
+	    v_levelProfiles[iComp].sumduvsdttime_->Add(v_profiles[n].sumduvsdttime_);
+	    v_levelProfiles[iComp].sumdwvsdttime_->Add(v_profiles[n].sumdwvsdttime_);
+	    v_levelProfiles[iComp].sumchargevsdttime_->Add(v_profiles[n].sumchargevsdttime_);
+	  }
 	}
 	if(bookTH1_){
 	  v_levelProfiles[iComp].sumXResiduals_->Add(v_profiles[n].sumXResiduals_);
@@ -1677,10 +1688,10 @@ TrackerOfflineValidation::collateSummaryHists( TFileDirectory &tfd, const Aligna
 	  v_levelProfiles[iComp].sumcharge_->Add(v_profiles[n].sumcharge_);
 	  v_levelProfiles[iComp].sumnstrips_->Add(v_profiles[n].sumnstrips_);
 	  /*
-	  for(int ihist=0;ihist<12;ihist++){
+	    for(int ihist=0;ihist<12;ihist++){
 	    v_levelProfiles[iComp].sumdu_z_[ihist]->Add(v_profiles[n].sumdu_z_[ihist]);
 	    v_levelProfiles[iComp].sumdw_z_[ihist]->Add(v_profiles[n].sumdw_z_[ihist]);
-	  }
+	    }
 	  */
 	  //if (hY)     hY->Add(v_profiles[n].sumYResiduals_);         // only if existing
 	  //if (hNormY) hNormY->Add(v_profiles[n].sumNormYResiduals_); // dito (pxl, stripYResiduals_)
@@ -1734,17 +1745,17 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
 						     aliSize, 0.5, aliSize+0.5);
 
     /*
-    sumContainer.summaryNormXResiduals_ = tfd.make<TH1F>(Form("h_summaryNormX%s_%d",aliTypeName,i), 
-							 title + "#LT #Delta x'/#sigma #GT",
-							 aliSize,0.5,aliSize+0.5);
-    if (bookResidY) {
+      sumContainer.summaryNormXResiduals_ = tfd.make<TH1F>(Form("h_summaryNormX%s_%d",aliTypeName,i), 
+      title + "#LT #Delta x'/#sigma #GT",
+      aliSize,0.5,aliSize+0.5);
+      if (bookResidY) {
       sumContainer.summaryYResiduals_ = tfd.make<TH1F>(Form("h_summaryY%s_%d",aliTypeName,i), 
-						       title + "#LT #Delta y' #GT",
-						       aliSize, 0.5, aliSize+0.5);
+      title + "#LT #Delta y' #GT",
+      aliSize, 0.5, aliSize+0.5);
       sumContainer.summaryNormYResiduals_ = tfd.make<TH1F>(Form("h_summaryNormY%s_%d",aliTypeName,i), 
-							   title + "#LT #Delta y'/#sigma #GT",
-							   aliSize,0.5,aliSize+0.5);
-    }
+      title + "#LT #Delta y'/#sigma #GT",
+      aliSize,0.5,aliSize+0.5);
+      }
     */
   } else if (subtype == align::AlignableDet && subcompSize > 1) { // fixed: was aliSize before
     if (subcompSize != 2) { // strange... expect only 2 DetUnits in DS layers
@@ -1759,18 +1770,18 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
       = tfd.make<TH1F>(Form("h_summaryX%s_%d", aliTypeName, i), 
 		       title + "#LT #Delta x' #GT", (2*aliSize), 0.5, 2*aliSize+0.5);
     /*
-    sumContainer.summaryNormXResiduals_ 
+      sumContainer.summaryNormXResiduals_ 
       = tfd.make<TH1F>(Form("h_summaryNormX%s_%d", aliTypeName, i), 
-		       title + "#LT #Delta x'/#sigma #GT", (2*aliSize), 0.5, 2*aliSize+0.5);
+      title + "#LT #Delta x'/#sigma #GT", (2*aliSize), 0.5, 2*aliSize+0.5);
 
-    if (bookResidY) {
+      if (bookResidY) {
       sumContainer.summaryYResiduals_ 
-	= tfd.make<TH1F>(Form("h_summaryY%s_%d", aliTypeName, i), 
-			 title + "#LT #Delta y' #GT", (2*aliSize), 0.5, 2*aliSize+0.5);
+      = tfd.make<TH1F>(Form("h_summaryY%s_%d", aliTypeName, i), 
+      title + "#LT #Delta y' #GT", (2*aliSize), 0.5, 2*aliSize+0.5);
       sumContainer.summaryNormYResiduals_ 
-	= tfd.make<TH1F>(Form("h_summaryNormY%s_%d", aliTypeName, i), 
-			 title + "#LT #Delta y'/#sigma #GT", (2*aliSize), 0.5, 2*aliSize+0.5);
-    }
+      = tfd.make<TH1F>(Form("h_summaryNormY%s_%d", aliTypeName, i), 
+      title + "#LT #Delta y'/#sigma #GT", (2*aliSize), 0.5, 2*aliSize+0.5);
+      }
     */
   } else {
     edm::LogError("TrackerOfflineValidation") << "@SUB=TrackerOfflineValidation::bookSummaryHists" 
@@ -1813,10 +1824,10 @@ TrackerOfflineValidation::bookSummaryHists(TFileDirectory &tfd, const Alignable&
   const TString resxprimeoverthetaThinTitle(Form("x Residual Over #Delta tan(#theta) (thin) for %s %d in %s;", aliTypeName, i, typeName));
   const TString resxprimevsthetaTitle(Form("x Residual vs. #Delta tan(#theta) for %s %d in %s;", aliTypeName, i, typeName));
 
-const TString resxprimevsthetavmTitle(Form("x Residual vs. #Delta tan(#theta) (v-) for %s %d in %s;", aliTypeName, i, typeName));
-const TString resxprimevsthetavpTitle(Form("x Residual vs. #Delta tan(#theta) (v+) for %s %d in %s;", aliTypeName, i, typeName));
-const TString resxprimevstrkthetavmTitle(Form("x Residual vs. tan(#theta_{trk}) (v-) for %s %d in %s;", aliTypeName, i, typeName));
-const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) (v+) for %s %d in %s;", aliTypeName, i, typeName));
+  const TString resxprimevsthetavmTitle(Form("x Residual vs. #Delta tan(#theta) (v-) for %s %d in %s;", aliTypeName, i, typeName));
+  const TString resxprimevsthetavpTitle(Form("x Residual vs. #Delta tan(#theta) (v+) for %s %d in %s;", aliTypeName, i, typeName));
+  const TString resxprimevstrkthetavmTitle(Form("x Residual vs. tan(#theta_{trk}) (v-) for %s %d in %s;", aliTypeName, i, typeName));
+  const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) (v+) for %s %d in %s;", aliTypeName, i, typeName));
 
   const TString dutrkTitle(Form("#Delta_{u} vs. tan(#theta_{trk}) for %s %d in %s;", aliTypeName, i, typeName));
   const TString dulorTitle(Form("#Delta_{u} vs. tan(#theta_{LA}) for %s %d in %s;", aliTypeName, i, typeName));
@@ -1856,36 +1867,36 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
 						   dutrkTitle,
 						   40, -2, 2, 40, -200, 200);
     
-//       sumContainer.sumduvslorangle_ = tfd.make<TH2F>(Form("h_duvslorangle_%s_%d", aliTypeName, i),
-// 						     dulorTitle,
-// 						     50, -0.5, 0.5, nbins, xmin, xmax);
+    //       sumContainer.sumduvslorangle_ = tfd.make<TH2F>(Form("h_duvslorangle_%s_%d", aliTypeName, i),
+    // 						     dulorTitle,
+    // 						     50, -0.5, 0.5, nbins, xmin, xmax);
     
     
-
-    sumContainer.sumduvsdttime_ = tfd.make<TH2F>(Form("h_duvsdttime_%s_%d", aliTypeName, i),
-						 dudtTitle,
-						 50, -25, 25, 50, -500, 500);
-    
-    sumContainer.sumdwvsdttime_ = tfd.make<TH2F>(Form("h_dwvsdttime_%s_%d", aliTypeName, i),
-						 dwdtTitle,
-						 50, -25, 25, 50, -1000, 1000);
-
-    sumContainer.sumchargevsdttime_ = tfd.make<TH2F>(Form("h_chargevsdttime_%s_%d", aliTypeName, i),
-						     chargedttimeTitle,
-						     50, -25, 25, 50, 0, 1000);
-    
+    if(runOnCosmics_){
+      sumContainer.sumduvsdttime_ = tfd.make<TH2F>(Form("h_duvsdttime_%s_%d", aliTypeName, i),
+						   dudtTitle,
+						   50, -25, 25, 50, -500, 500);
+      
+      sumContainer.sumdwvsdttime_ = tfd.make<TH2F>(Form("h_dwvsdttime_%s_%d", aliTypeName, i),
+						   dwdtTitle,
+						   50, -25, 25, 50, -1000, 1000);
+      
+      sumContainer.sumchargevsdttime_ = tfd.make<TH2F>(Form("h_chargevsdttime_%s_%d", aliTypeName, i),
+						       chargedttimeTitle,
+						       50, -25, 25, 50, 0, 1000);
+    }
     /*
-    sumContainer.sumuz_ = tfd.make<TH2F>(Form("h_uz_%s_%d", aliTypeName, i),
-					 uzTitle,
-					 12, -110, 110, 3, -1.5, 1.5);
+      sumContainer.sumuz_ = tfd.make<TH2F>(Form("h_uz_%s_%d", aliTypeName, i),
+      uzTitle,
+      12, -110, 110, 3, -1.5, 1.5);
 
-    sumContainer.sumvz_ = tfd.make<TH2F>(Form("h_vz_%s_%d", aliTypeName, i),
-					 vzTitle,
-					 12, -110, 110, 3, -1.5, 1.5);
+      sumContainer.sumvz_ = tfd.make<TH2F>(Form("h_vz_%s_%d", aliTypeName, i),
+      vzTitle,
+      12, -110, 110, 3, -1.5, 1.5);
 
-    sumContainer.sumwz_ = tfd.make<TH2F>(Form("h_wz_%s_%d", aliTypeName, i),
-					 wzTitle,
-					 12, -110, 110, 3, -1.5, 1.5);
+      sumContainer.sumwz_ = tfd.make<TH2F>(Form("h_wz_%s_%d", aliTypeName, i),
+      wzTitle,
+      12, -110, 110, 3, -1.5, 1.5);
 
     */
     if(debug_) cout<<"Booked summary hist"<<endl;
@@ -1914,8 +1925,8 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
 					     200, -100, 100);
 
     sumContainer.sumndt_ = tfd.make<TH1F>(Form("h_ndt_%s_%d", aliTypeName, i),
-					     ndtTitle,
-					     100, 0, 100);
+					  ndtTitle,
+					  100, 0, 100);
 
     sumContainer.sumcharge_ = tfd.make<TH1F>(Form("h_charge_%s_%d", aliTypeName, i),
 					     chargeTitle,
@@ -1929,21 +1940,21 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
 						dttimeerrTitle,
 						100, 0, 100);
        
-//     sumContainer.sumhcaltime_ = tfd.make<TH1F>(Form("h_hcaltime_%s_%d", aliTypeName, i),
-// 					       hcaltimeTitle,
-// 					       200, -100, 100);
+    //     sumContainer.sumhcaltime_ = tfd.make<TH1F>(Form("h_hcaltime_%s_%d", aliTypeName, i),
+    // 					       hcaltimeTitle,
+    // 					       200, -100, 100);
     
     if(debug_) cout<<"Booked summary histos A"<<endl;
 
-//     sumContainer.sumTanTrackAngle_ = tfd.make<TH1F>(Form("h_tanTrackAngle_%s_%d", aliTypeName, i),
-// 						    taTitle,
-// 						    100, -5, 5);
-//     sumContainer.sumdeltaTan_ = tfd.make<TH1F>(Form("h_deltatan_%s_%d", aliTypeName, i),
-// 					       dtTitle,
-// 					       100, -5, 5);
-//     sumContainer.sumTanLorentzAngle_ = tfd.make<TH1F>(Form("h_tanLorentzAngle_%s_%d", aliTypeName, i),
-// 						      laTitle,
-// 						      100, -0.5, 0.5);
+    //     sumContainer.sumTanTrackAngle_ = tfd.make<TH1F>(Form("h_tanTrackAngle_%s_%d", aliTypeName, i),
+    // 						    taTitle,
+    // 						    100, -5, 5);
+    //     sumContainer.sumdeltaTan_ = tfd.make<TH1F>(Form("h_deltatan_%s_%d", aliTypeName, i),
+    // 					       dtTitle,
+    // 					       100, -5, 5);
+    //     sumContainer.sumTanLorentzAngle_ = tfd.make<TH1F>(Form("h_tanLorentzAngle_%s_%d", aliTypeName, i),
+    // 						      laTitle,
+    // 						      100, -0.5, 0.5);
 
   
     if(debug_) cout<<"Booked summary histos B"<<endl;
@@ -1960,82 +1971,82 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
 							       resxprimeoverthetaTitle,
 							       100, -1000, 1000);
     
-//     sumContainer.sumuOrientation_ = tfd.make<TH1F>(Form("h_uOrientation_%s_%d", aliTypeName, i),
-// 						   uoTitle,
-// 						   3, -1.5, 1.5);
+    //     sumContainer.sumuOrientation_ = tfd.make<TH1F>(Form("h_uOrientation_%s_%d", aliTypeName, i),
+    // 						   uoTitle,
+    // 						   3, -1.5, 1.5);
 
-//     sumContainer.sumvOrientation_ = tfd.make<TH1F>(Form("h_vOrientation_%s_%d", aliTypeName, i),
-// 						   voTitle,
-// 						   3, -1.5, 1.5);
+    //     sumContainer.sumvOrientation_ = tfd.make<TH1F>(Form("h_vOrientation_%s_%d", aliTypeName, i),
+    // 						   voTitle,
+    // 						   3, -1.5, 1.5);
 
-//     sumContainer.sumvminusdusign_ = tfd.make<TH1F>(Form("h_vminusdusign_%s_%d", aliTypeName, i),
-// 						   vdTitle,
-// 						   5, -2.5, 2.5);
+    //     sumContainer.sumvminusdusign_ = tfd.make<TH1F>(Form("h_vminusdusign_%s_%d", aliTypeName, i),
+    // 						   vdTitle,
+    // 						   5, -2.5, 2.5);
   
-//     sumContainer.sumwOrientation_ = tfd.make<TH1F>(Form("h_wOrientation_%s_%d", aliTypeName, i),
-// 						   woTitle,
-// 						   3, -1.5, 1.5);
+    //     sumContainer.sumwOrientation_ = tfd.make<TH1F>(Form("h_wOrientation_%s_%d", aliTypeName, i),
+    // 						   woTitle,
+    // 						   3, -1.5, 1.5);
 
-//     sumContainer.sumlocaltheta_ = tfd.make<TH1F>(Form("h_localtheta_%s_%d", aliTypeName, i),
-// 						   ltTitle,
-// 						   100, -5, 5);
+    //     sumContainer.sumlocaltheta_ = tfd.make<TH1F>(Form("h_localtheta_%s_%d", aliTypeName, i),
+    // 						   ltTitle,
+    // 						   100, -5, 5);
 
-//     if(debug_) cout<<"Booked summary histos C"<<endl;
+    //     if(debug_) cout<<"Booked summary histos C"<<endl;
 
-//     sumContainer.sumlocalphi_ = tfd.make<TH1F>(Form("h_localphi_%s_%d", aliTypeName, i),
-// 						   lpTitle,
-// 						   100, -1, 1);
+    //     sumContainer.sumlocalphi_ = tfd.make<TH1F>(Form("h_localphi_%s_%d", aliTypeName, i),
+    // 						   lpTitle,
+    // 						   100, -1, 1);
 
     /*
-    for(int ihist=0;ihist<12;ihist++){
+      for(int ihist=0;ihist<12;ihist++){
       sumContainer.sumdu_z_[ihist] = tfd.make<TH1F>(Form("h_duz_%i_%s_%d", ihist, aliTypeName, i),
-						    Form("delta(u) for Module %i for %s %d in %s;", ihist, aliTypeName, i, typeName),
-						    50, -500, 500);
+      Form("delta(u) for Module %i for %s %d in %s;", ihist, aliTypeName, i, typeName),
+      50, -500, 500);
 
       sumContainer.sumdw_z_[ihist] = tfd.make<TH1F>(Form("h_dwz_%i_%s_%d", ihist, aliTypeName, i),
-						    Form("delta(w) for Module %i for %s %d in %s;", ihist, aliTypeName, i, typeName),
-						    50, -1000, 1000);
+      Form("delta(w) for Module %i for %s %d in %s;", ihist, aliTypeName, i, typeName),
+      50, -1000, 1000);
 
-    }
+      }
     */
 
     if(debug_) cout<<"Booked summary histos D"<<endl;
     /*
-    sumContainer.sumHitX_ = tfd.make<TH1F>(Form("h_hitx_%s_%d", aliTypeName, i),
-					   xTitle,
-					   1000, -100, 100);
+      sumContainer.sumHitX_ = tfd.make<TH1F>(Form("h_hitx_%s_%d", aliTypeName, i),
+      xTitle,
+      1000, -100, 100);
 
-    sumContainer.sumHitY_ = tfd.make<TH1F>(Form("h_hity_%s_%d", aliTypeName, i),
-					   yTitle,
-					   1000, -100, 100);
+      sumContainer.sumHitY_ = tfd.make<TH1F>(Form("h_hity_%s_%d", aliTypeName, i),
+      yTitle,
+      1000, -100, 100);
     */
-//     sumContainer.sumHitZ_ = tfd.make<TH1F>(Form("h_hitz_%s_%d", aliTypeName, i),
-// 					   zTitle,
-// 					   100, -100, 100);
+    //     sumContainer.sumHitZ_ = tfd.make<TH1F>(Form("h_hitz_%s_%d", aliTypeName, i),
+    // 					   zTitle,
+    // 					   100, -100, 100);
 
-//     sumContainer.sumHitEta_ = tfd.make<TH1F>(Form("h_hiteta_%s_%d", aliTypeName, i),
-// 					     etaTitle,
-// 					     100, -5, 5);
+    //     sumContainer.sumHitEta_ = tfd.make<TH1F>(Form("h_hiteta_%s_%d", aliTypeName, i),
+    // 					     etaTitle,
+    // 					     100, -5, 5);
   
 
     if(debug_) cout<<"Booked all summary histos"<<endl;
     //cout<<"Make sumXResiduals "<<Form("h_Xprime_%s_%d", aliTypeName, i)<<" title "<<sumTitle<<endl;
     /*
-    this->getBinning(aliDetId.subdetId(), NormXprimeResidual, nbins, xmin, xmax);
-    sumContainer.sumNormXResiduals_ = tfd.make<TH1F>(Form("h_NormXprime_%s_%d",aliTypeName,i), 
-						     sumTitle + xTitHists.NormResXprimeHisto->GetXaxis()->GetTitle(),
-						     nbins, xmin, xmax);
-    if (bookResidY) {
+      this->getBinning(aliDetId.subdetId(), NormXprimeResidual, nbins, xmin, xmax);
+      sumContainer.sumNormXResiduals_ = tfd.make<TH1F>(Form("h_NormXprime_%s_%d",aliTypeName,i), 
+      sumTitle + xTitHists.NormResXprimeHisto->GetXaxis()->GetTitle(),
+      nbins, xmin, xmax);
+      if (bookResidY) {
       this->getBinning(aliDetId.subdetId(), YprimeResidual, nbins, xmin, xmax);
       sumContainer.sumYResiduals_ = tfd.make<TH1F>(Form("h_Yprime_%s_%d",aliTypeName,i), 
-						   sumTitle + xTitHists.ResYprimeHisto->GetXaxis()->GetTitle(),
-						   nbins, xmin, xmax);
+      sumTitle + xTitHists.ResYprimeHisto->GetXaxis()->GetTitle(),
+      nbins, xmin, xmax);
     
       this->getBinning(aliDetId.subdetId(), NormYprimeResidual, nbins, xmin, xmax);
       sumContainer.sumNormYResiduals_ = tfd.make<TH1F>(Form("h_NormYprime_%s_%d",aliTypeName,i), 
-						       sumTitle + xTitHists.NormResYprimeHisto->GetXaxis()->GetTitle(),
-						       nbins, xmin, xmax);
-    }
+      sumTitle + xTitHists.NormResYprimeHisto->GetXaxis()->GetTitle(),
+      nbins, xmin, xmax);
+      }
     */
   }
   // If we are at the lowest level, we already sum up and fill the summary.
@@ -2047,7 +2058,7 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
   if(debug_) cout<<"subcompSize "<<subcompSize<<" alignableDet "<<adet<<" alignableDetUnit "<<adetu<<endl;
   if( (  subtype == align::AlignableDet && subcompSize == 1) || subtype  == align::AlignableDetUnit ) {
     if(debug_) cout<<"Sum histo type 1"<<endl;
-   for(uint k = 0; k < aliSize; ++k) {
+    for(uint k = 0; k < aliSize; ++k) {
       if(debug_) cout<<"det "<<k<<endl;
       DetId detid = ali.components()[k]->id();
       ModuleHistos &histStruct = this->getHistStructFromMap(detid);
@@ -2065,9 +2076,11 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
 	//sumContainer.sumuz_->Add(histStruct.uzHisto);
 	//sumContainer.sumvz_->Add(histStruct.vzHisto);
 	//sumContainer.sumwz_->Add(histStruct.wzHisto);
-	sumContainer.sumduvsdttime_->Add(histStruct.duvsdttimeHisto);
-	sumContainer.sumdwvsdttime_->Add(histStruct.dwvsdttimeHisto);
-	sumContainer.sumchargevsdttime_->Add(histStruct.chargevsdttimeHisto);
+	if(runOnCosmics_){
+	  sumContainer.sumduvsdttime_->Add(histStruct.duvsdttimeHisto);
+	  sumContainer.sumdwvsdttime_->Add(histStruct.dwvsdttimeHisto);
+	  sumContainer.sumchargevsdttime_->Add(histStruct.chargevsdttimeHisto);
+	}
       }
       if(bookTH1_){
 	sumContainer.sumXResiduals_->Add(histStruct.ResXprimeHisto);
@@ -2093,10 +2106,10 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
 	//sumContainer.sumHitX_->Add(histStruct.HitXHisto);
 	//sumContainer.sumHitY_->Add(histStruct.HitYHisto);
 	/*      
- 	for(int ihist=0;ihist<12;ihist++){
-	  sumContainer.sumdu_z_[ihist]->Add(histStruct.du_zHisto[ihist]);
-	  sumContainer.sumdw_z_[ihist]->Add(histStruct.dw_zHisto[ihist]);
-	}
+		for(int ihist=0;ihist<12;ihist++){
+		sumContainer.sumdu_z_[ihist]->Add(histStruct.du_zHisto[ihist]);
+		sumContainer.sumdw_z_[ihist]->Add(histStruct.dw_zHisto[ihist]);
+		}
 	*/
 	//sumContainer.sumHitZ_->Add(histStruct.HitZHisto);
 	sumContainer.sumdttime_->Add(histStruct.dttimeHisto);
@@ -2107,10 +2120,10 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
 	//sumContainer.sumhcaltime_->Add(histStruct.hcaltimeHisto);
 	
 	/*
-	if( this->isPixel(detid.subdetId()) || stripYResiduals_ ) {
+	  if( this->isPixel(detid.subdetId()) || stripYResiduals_ ) {
 	  sumContainer.sumYResiduals_->Add(histStruct.ResYprimeHisto);
 	  sumContainer.sumNormYResiduals_->Add(histStruct.NormResYprimeHisto);
-	}
+	  }
 	*/
       }
     }
@@ -2135,9 +2148,11 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
 	  //sumContainer.sumuz_->Add(histStruct.uzHisto);
 	  //sumContainer.sumvz_->Add(histStruct.vzHisto);
 	  //sumContainer.sumwz_->Add(histStruct.wzHisto);
-	  sumContainer.sumduvsdttime_->Add(histStruct.duvsdttimeHisto);
-	  sumContainer.sumdwvsdttime_->Add(histStruct.dwvsdttimeHisto);
-	  sumContainer.sumchargevsdttime_->Add(histStruct.chargevsdttimeHisto);
+	  if(runOnCosmics_){
+	    sumContainer.sumduvsdttime_->Add(histStruct.duvsdttimeHisto);
+	    sumContainer.sumdwvsdttime_->Add(histStruct.dwvsdttimeHisto);
+	    sumContainer.sumchargevsdttime_->Add(histStruct.chargevsdttimeHisto);
+	  }
 	}
 	if(bookTH1_){
 	  if(debug_)cout<<"Begin summing containers"<<endl;
@@ -2169,18 +2184,18 @@ const TString resxprimevstrkthetavpTitle(Form("x Residual vs. tan(#theta_{trk}) 
 	  sumContainer.sumcharge_->Add(histStruct.chargeHisto);
 	  sumContainer.sumnstrips_->Add(histStruct.nstripsHisto);
 	  /*
-	  for(int ihist=0;ihist<12;ihist++){
+	    for(int ihist=0;ihist<12;ihist++){
 	    sumContainer.sumdu_z_[ihist]->Add(histStruct.du_zHisto[ihist]);
 	    sumContainer.sumdw_z_[ihist]->Add(histStruct.dw_zHisto[ihist]);
-	  }
+	    }
 	  */
 	  //sumContainer.sumHitZ_->Add(histStruct.HitZHisto);
 	
 	  /*
-	  if( this->isPixel(detid.subdetId()) || stripYResiduals_ ) {
+	    if( this->isPixel(detid.subdetId()) || stripYResiduals_ ) {
 	    sumContainer.sumYResiduals_->Add( histStruct.ResYprimeHisto);
 	    sumContainer.sumNormYResiduals_->Add( histStruct.NormResYprimeHisto);
-	  }
+	    }
 	  */
 	  if(debug_)cout<<"Finished summing containers"<<endl;
 	}
@@ -2224,192 +2239,192 @@ TrackerOfflineValidation::Fwhm (const TH1* hist) const
 
 ////////////////////////////////////////////////////////////////////////////////////
 /*
-void 
-TrackerOfflineValidation::fillTree(TTree &tree,
-				   const std::map<int, TrackerOfflineValidation::ModuleHistos> &moduleHist_,
-				   TkOffTreeVariables &treeMem, const TrackerGeometry &tkgeom)
-{
+  void 
+  TrackerOfflineValidation::fillTree(TTree &tree,
+  const std::map<int, TrackerOfflineValidation::ModuleHistos> &moduleHist_,
+  TkOffTreeVariables &treeMem, const TrackerGeometry &tkgeom)
+  {
  
   for(std::map<int, TrackerOfflineValidation::ModuleHistos>::const_iterator it = moduleHist_.begin(), 
-	itEnd= moduleHist_.end(); it != itEnd;++it ) { 
-    treeMem.clear(); // make empty/default
-    //variables concerning the tracker components/hierarchy levels
-    DetId detId_ = it->first;
-    treeMem.moduleId = detId_;
-    treeMem.subDetId = detId_.subdetId();
-    treeMem.isDoubleSide =0;
+  itEnd= moduleHist_.end(); it != itEnd;++it ) { 
+  treeMem.clear(); // make empty/default
+  //variables concerning the tracker components/hierarchy levels
+  DetId detId_ = it->first;
+  treeMem.moduleId = detId_;
+  treeMem.subDetId = detId_.subdetId();
+  treeMem.isDoubleSide =0;
 
-    if(treeMem.subDetId == PixelSubdetector::PixelBarrel){
-      PXBDetId pxbId(detId_); 
-      treeMem.layer = pxbId.layer(); 
-      treeMem.rod = pxbId.ladder();
+  if(treeMem.subDetId == PixelSubdetector::PixelBarrel){
+  PXBDetId pxbId(detId_); 
+  treeMem.layer = pxbId.layer(); 
+  treeMem.rod = pxbId.ladder();
   
-    } else if(treeMem.subDetId == PixelSubdetector::PixelEndcap){
-      PXFDetId pxfId(detId_); 
-      treeMem.layer = pxfId.disk(); 
-      treeMem.side = pxfId.side();
-      treeMem.blade = pxfId.blade(); 
-      treeMem.panel = pxfId.panel();
+  } else if(treeMem.subDetId == PixelSubdetector::PixelEndcap){
+  PXFDetId pxfId(detId_); 
+  treeMem.layer = pxfId.disk(); 
+  treeMem.side = pxfId.side();
+  treeMem.blade = pxfId.blade(); 
+  treeMem.panel = pxfId.panel();
 
-    } else if(treeMem.subDetId == StripSubdetector::TIB){
-      TIBDetId tibId(detId_); 
-      treeMem.layer = tibId.layer(); 
-      treeMem.side = tibId.string()[0];
-      treeMem.rod = tibId.string()[2]; 
-      treeMem.outerInner = tibId.string()[1]; 
-      treeMem.isStereo = tibId.stereo();
-      treeMem.isDoubleSide = tibId.isDoubleSide();
-    } else if(treeMem.subDetId == StripSubdetector::TID){
-      TIDDetId tidId(detId_); 
-      treeMem.layer = tidId.wheel(); 
-      treeMem.side = tidId.side();
-      treeMem.ring = tidId.ring(); 
-      treeMem.outerInner = tidId.module()[0]; 
-      treeMem.isStereo = tidId.stereo();
-      treeMem.isDoubleSide = tidId.isDoubleSide();
-    } else if(treeMem.subDetId == StripSubdetector::TOB){
-      TOBDetId tobId(detId_); 
-      treeMem.layer = tobId.layer(); 
-      treeMem.side = tobId.rod()[0];
-      treeMem.rod = tobId.rod()[1]; 
-      treeMem.isStereo = tobId.stereo();
-      treeMem.isDoubleSide = tobId.isDoubleSide();
-    } else if(treeMem.subDetId == StripSubdetector::TEC) {
-      TECDetId tecId(detId_); 
-      treeMem.layer = tecId.wheel(); 
-      treeMem.side  = tecId.side();
-      treeMem.ring  = tecId.ring(); 
-      treeMem.petal = tecId.petal()[1]; 
-      treeMem.outerInner = tecId.petal()[0];
-      treeMem.isStereo = tecId.stereo();
-      treeMem.isDoubleSide = tecId.isDoubleSide(); 
-    }
-    
-    //variables concerning the tracker geometry
-    
-    const Surface::PositionType &gPModule = tkgeom.idToDet(detId_)->position();
-    treeMem.posPhi = gPModule.phi();
-    treeMem.posEta = gPModule.eta();
-    treeMem.posR   = gPModule.perp();
-    treeMem.posX   = gPModule.x();
-    treeMem.posY   = gPModule.y();
-    treeMem.posZ   = gPModule.z();
- 
-    const Surface& surface =  tkgeom.idToDet(detId_)->surface();
-    
-    //global Orientation of local coordinate system of dets/detUnits   
-    LocalPoint  lUDirection(1.,0.,0.), lVDirection(0.,1.,0.), lWDirection(0.,0.,1.);
-    GlobalPoint gUDirection = surface.toGlobal(lUDirection),
-                gVDirection = surface.toGlobal(lVDirection),
-		gWDirection = surface.toGlobal(lWDirection);
-    double dR(999.), dPhi(999.), dZ(999.);
-    if(treeMem.subDetId==PixelSubdetector::PixelBarrel || treeMem.subDetId==StripSubdetector::TIB || treeMem.subDetId==StripSubdetector::TOB){
-      dR = gWDirection.perp() - gPModule.perp();
-      dPhi = deltaPhi(gUDirection.phi(),gPModule.phi());
-      dZ = gVDirection.z() - gPModule.z();
-      if(dZ>=0.)treeMem.rOrZDirection = 1; else treeMem.rOrZDirection = -1;
-    }else if(treeMem.subDetId==PixelSubdetector::PixelEndcap){
-      dR = gUDirection.perp() - gPModule.perp();
-      dPhi = deltaPhi(gVDirection.phi(),gPModule.phi());
-      dZ = gWDirection.z() - gPModule.z();
-      if(dR>=0.)treeMem.rOrZDirection = 1; else treeMem.rOrZDirection = -1;
-    }else if(treeMem.subDetId==StripSubdetector::TID || treeMem.subDetId==StripSubdetector::TEC){
-      dR = gVDirection.perp() - gPModule.perp();
-      dPhi = deltaPhi(gUDirection.phi(),gPModule.phi());
-      dZ = gWDirection.z() - gPModule.z();
-      if(dR>=0.)treeMem.rOrZDirection = 1; else treeMem.rOrZDirection = -1;
-    }
-    if(dR>=0.)treeMem.rDirection = 1; else treeMem.rDirection = -1;
-    if(dPhi>=0.)treeMem.phiDirection = 1; else treeMem.phiDirection = -1;
-    if(dZ>=0.)treeMem.zDirection = 1; else treeMem.zDirection = -1;
-    
-    
-    //mean and RMS values (extracted from histograms(Xprime on module level)
-    treeMem.entries = static_cast<UInt_t>(it->second.ResXprimeHisto->GetEntries());
-    treeMem.meanX = it->second.ResXprimeHisto->GetMean();
-    treeMem.rmsX  = it->second.ResXprimeHisto->GetRMS();
-    //treeMem.sigmaX = Fwhm(it->second.ResXprimeHisto)/2.355;
-    if (useFit_) {
-      
-      //call fit function which returns mean and sigma from the fit
-      //for absolute residuals
-      std::pair<float,float> fitResult1 = this->fitResiduals(it->second.ResXprimeHisto);
-      treeMem.fitMeanX = fitResult1.first;
-      treeMem.fitSigmaX = fitResult1.second;
-      //for normalized residuals
-      //std::pair<float,float> fitResult2 = this->fitResiduals(it->second.NormResXprimeHisto);
-      //treeMem.fitMeanNormX = fitResult2.first;
-      //treeMem.fitSigmaNormX = fitResult2.second;
-    }
-    //get median for absolute residuals
-    treeMem.medianX   = this->getMedian(it->second.ResXprimeHisto);
-
-
-    int numberOfBins=it->second.ResXprimeHisto->GetNbinsX();
-    treeMem.numberOfUnderflows = it->second.ResXprimeHisto->GetBinContent(0);
-    treeMem.numberOfOverflows = it->second.ResXprimeHisto->GetBinContent(numberOfBins+1);
-    treeMem.numberOfOutliers =  it->second.ResXprimeHisto->GetBinContent(0)+it->second.ResXprimeHisto->GetBinContent(numberOfBins+1);
-    //mean and RMS values (extracted from histograms(normalized Xprime on module level)
-    //treeMem.meanNormX = it->second.NormResXprimeHisto->GetMean();
-    //treeMem.rmsNormX = it->second.NormResXprimeHisto->GetRMS();
-
-    double stats[20];
-    //it->second.NormResXprimeHisto->GetStats(stats);
-    // GF  treeMem.chi2PerDofX = stats[3]/(stats[0]-1);
-    if (stats[0]) treeMem.chi2PerDofX = stats[3]/stats[0];
-    
-    //treeMem.sigmaNormX = Fwhm(it->second.NormResXprimeHisto)/2.355;
-    treeMem.histNameX = it->second.ResXprimeHisto->GetName();
-    //treeMem.histNameNormX = it->second.NormResXprimeHisto->GetName();
-    
-
-    // fill tree variables in local coordinates if set in cfg
-    if(lCoorHistOn_) {
-      //treeMem.meanLocalX = it->second.ResHisto->GetMean();
-      //treeMem.rmsLocalX = it->second.ResHisto->GetRMS();
-      //treeMem.meanNormLocalX = it->second.NormResHisto->GetMean();
-      //treeMem.rmsNormLocalX = it->second.NormResHisto->GetRMS();
-
-      //treeMem.histNameLocalX = it->second.ResHisto->GetName();
-      //treeMem.histNameNormLocalX = it->second.NormResHisto->GetName();
-    }
-
-    // mean and RMS values in local y (extracted from histograms(normalized Yprime on module level)
-    // might exist in pixel only
-       
-//     if (it->second.ResYprimeHisto) {//(stripYResiduals_){
-//       TH1 *h = it->second.ResYprimeHisto;
-//       treeMem.meanY = h->GetMean();
-//       treeMem.rmsY  = h->GetRMS();
-      
-//       if (useFit_) { // fit function which returns mean and sigma from the fit
-// 	std::pair<float,float> fitMeanSigma = this->fitResiduals(h);
-// 	treeMem.fitMeanY  = fitMeanSigma.first;
-// 	treeMem.fitSigmaY = fitMeanSigma.second;
-//       }
-//       //get median for absolute residuals
-//       treeMem.medianY   = this->getMedian(h);
-
-//       treeMem.histNameY = h->GetName();
-//     }
-//     if (it->second.NormResYprimeHisto) {
-//       //TH1 *h = it->second.NormResYprimeHisto;
-//       //treeMem.meanNormY = h->GetMean();
-//       //treeMem.rmsNormY  = h->GetRMS();
-//       h->GetStats(stats); // stats buffer defined above
-//       if (stats[0]) treeMem.chi2PerDofY = stats[3]/stats[0];
-
-//       if (useFit_) { // fit function which returns mean and sigma from the fit
-// 	std::pair<float,float> fitMeanSigma = this->fitResiduals(h);
-// 	treeMem.fitMeanNormY  = fitMeanSigma.first;
-// 	treeMem.fitSigmaNormY = fitMeanSigma.second;
-//       }
-//       treeMem.histNameNormY = h->GetName();
-//     }
-    
-    tree.Fill();
+  } else if(treeMem.subDetId == StripSubdetector::TIB){
+  TIBDetId tibId(detId_); 
+  treeMem.layer = tibId.layer(); 
+  treeMem.side = tibId.string()[0];
+  treeMem.rod = tibId.string()[2]; 
+  treeMem.outerInner = tibId.string()[1]; 
+  treeMem.isStereo = tibId.stereo();
+  treeMem.isDoubleSide = tibId.isDoubleSide();
+  } else if(treeMem.subDetId == StripSubdetector::TID){
+  TIDDetId tidId(detId_); 
+  treeMem.layer = tidId.wheel(); 
+  treeMem.side = tidId.side();
+  treeMem.ring = tidId.ring(); 
+  treeMem.outerInner = tidId.module()[0]; 
+  treeMem.isStereo = tidId.stereo();
+  treeMem.isDoubleSide = tidId.isDoubleSide();
+  } else if(treeMem.subDetId == StripSubdetector::TOB){
+  TOBDetId tobId(detId_); 
+  treeMem.layer = tobId.layer(); 
+  treeMem.side = tobId.rod()[0];
+  treeMem.rod = tobId.rod()[1]; 
+  treeMem.isStereo = tobId.stereo();
+  treeMem.isDoubleSide = tobId.isDoubleSide();
+  } else if(treeMem.subDetId == StripSubdetector::TEC) {
+  TECDetId tecId(detId_); 
+  treeMem.layer = tecId.wheel(); 
+  treeMem.side  = tecId.side();
+  treeMem.ring  = tecId.ring(); 
+  treeMem.petal = tecId.petal()[1]; 
+  treeMem.outerInner = tecId.petal()[0];
+  treeMem.isStereo = tecId.stereo();
+  treeMem.isDoubleSide = tecId.isDoubleSide(); 
   }
-}
+    
+  //variables concerning the tracker geometry
+    
+  const Surface::PositionType &gPModule = tkgeom.idToDet(detId_)->position();
+  treeMem.posPhi = gPModule.phi();
+  treeMem.posEta = gPModule.eta();
+  treeMem.posR   = gPModule.perp();
+  treeMem.posX   = gPModule.x();
+  treeMem.posY   = gPModule.y();
+  treeMem.posZ   = gPModule.z();
+ 
+  const Surface& surface =  tkgeom.idToDet(detId_)->surface();
+    
+  //global Orientation of local coordinate system of dets/detUnits   
+  LocalPoint  lUDirection(1.,0.,0.), lVDirection(0.,1.,0.), lWDirection(0.,0.,1.);
+  GlobalPoint gUDirection = surface.toGlobal(lUDirection),
+  gVDirection = surface.toGlobal(lVDirection),
+  gWDirection = surface.toGlobal(lWDirection);
+  double dR(999.), dPhi(999.), dZ(999.);
+  if(treeMem.subDetId==PixelSubdetector::PixelBarrel || treeMem.subDetId==StripSubdetector::TIB || treeMem.subDetId==StripSubdetector::TOB){
+  dR = gWDirection.perp() - gPModule.perp();
+  dPhi = deltaPhi(gUDirection.phi(),gPModule.phi());
+  dZ = gVDirection.z() - gPModule.z();
+  if(dZ>=0.)treeMem.rOrZDirection = 1; else treeMem.rOrZDirection = -1;
+  }else if(treeMem.subDetId==PixelSubdetector::PixelEndcap){
+  dR = gUDirection.perp() - gPModule.perp();
+  dPhi = deltaPhi(gVDirection.phi(),gPModule.phi());
+  dZ = gWDirection.z() - gPModule.z();
+  if(dR>=0.)treeMem.rOrZDirection = 1; else treeMem.rOrZDirection = -1;
+  }else if(treeMem.subDetId==StripSubdetector::TID || treeMem.subDetId==StripSubdetector::TEC){
+  dR = gVDirection.perp() - gPModule.perp();
+  dPhi = deltaPhi(gUDirection.phi(),gPModule.phi());
+  dZ = gWDirection.z() - gPModule.z();
+  if(dR>=0.)treeMem.rOrZDirection = 1; else treeMem.rOrZDirection = -1;
+  }
+  if(dR>=0.)treeMem.rDirection = 1; else treeMem.rDirection = -1;
+  if(dPhi>=0.)treeMem.phiDirection = 1; else treeMem.phiDirection = -1;
+  if(dZ>=0.)treeMem.zDirection = 1; else treeMem.zDirection = -1;
+    
+    
+  //mean and RMS values (extracted from histograms(Xprime on module level)
+  treeMem.entries = static_cast<UInt_t>(it->second.ResXprimeHisto->GetEntries());
+  treeMem.meanX = it->second.ResXprimeHisto->GetMean();
+  treeMem.rmsX  = it->second.ResXprimeHisto->GetRMS();
+  //treeMem.sigmaX = Fwhm(it->second.ResXprimeHisto)/2.355;
+  if (useFit_) {
+      
+  //call fit function which returns mean and sigma from the fit
+  //for absolute residuals
+  std::pair<float,float> fitResult1 = this->fitResiduals(it->second.ResXprimeHisto);
+  treeMem.fitMeanX = fitResult1.first;
+  treeMem.fitSigmaX = fitResult1.second;
+  //for normalized residuals
+  //std::pair<float,float> fitResult2 = this->fitResiduals(it->second.NormResXprimeHisto);
+  //treeMem.fitMeanNormX = fitResult2.first;
+  //treeMem.fitSigmaNormX = fitResult2.second;
+  }
+  //get median for absolute residuals
+  treeMem.medianX   = this->getMedian(it->second.ResXprimeHisto);
+
+
+  int numberOfBins=it->second.ResXprimeHisto->GetNbinsX();
+  treeMem.numberOfUnderflows = it->second.ResXprimeHisto->GetBinContent(0);
+  treeMem.numberOfOverflows = it->second.ResXprimeHisto->GetBinContent(numberOfBins+1);
+  treeMem.numberOfOutliers =  it->second.ResXprimeHisto->GetBinContent(0)+it->second.ResXprimeHisto->GetBinContent(numberOfBins+1);
+  //mean and RMS values (extracted from histograms(normalized Xprime on module level)
+  //treeMem.meanNormX = it->second.NormResXprimeHisto->GetMean();
+  //treeMem.rmsNormX = it->second.NormResXprimeHisto->GetRMS();
+
+  double stats[20];
+  //it->second.NormResXprimeHisto->GetStats(stats);
+  // GF  treeMem.chi2PerDofX = stats[3]/(stats[0]-1);
+  if (stats[0]) treeMem.chi2PerDofX = stats[3]/stats[0];
+    
+  //treeMem.sigmaNormX = Fwhm(it->second.NormResXprimeHisto)/2.355;
+  treeMem.histNameX = it->second.ResXprimeHisto->GetName();
+  //treeMem.histNameNormX = it->second.NormResXprimeHisto->GetName();
+    
+
+  // fill tree variables in local coordinates if set in cfg
+  if(lCoorHistOn_) {
+  //treeMem.meanLocalX = it->second.ResHisto->GetMean();
+  //treeMem.rmsLocalX = it->second.ResHisto->GetRMS();
+  //treeMem.meanNormLocalX = it->second.NormResHisto->GetMean();
+  //treeMem.rmsNormLocalX = it->second.NormResHisto->GetRMS();
+
+  //treeMem.histNameLocalX = it->second.ResHisto->GetName();
+  //treeMem.histNameNormLocalX = it->second.NormResHisto->GetName();
+  }
+
+  // mean and RMS values in local y (extracted from histograms(normalized Yprime on module level)
+  // might exist in pixel only
+       
+  //     if (it->second.ResYprimeHisto) {//(stripYResiduals_){
+  //       TH1 *h = it->second.ResYprimeHisto;
+  //       treeMem.meanY = h->GetMean();
+  //       treeMem.rmsY  = h->GetRMS();
+      
+  //       if (useFit_) { // fit function which returns mean and sigma from the fit
+  // 	std::pair<float,float> fitMeanSigma = this->fitResiduals(h);
+  // 	treeMem.fitMeanY  = fitMeanSigma.first;
+  // 	treeMem.fitSigmaY = fitMeanSigma.second;
+  //       }
+  //       //get median for absolute residuals
+  //       treeMem.medianY   = this->getMedian(h);
+
+  //       treeMem.histNameY = h->GetName();
+  //     }
+  //     if (it->second.NormResYprimeHisto) {
+  //       //TH1 *h = it->second.NormResYprimeHisto;
+  //       //treeMem.meanNormY = h->GetMean();
+  //       //treeMem.rmsNormY  = h->GetRMS();
+  //       h->GetStats(stats); // stats buffer defined above
+  //       if (stats[0]) treeMem.chi2PerDofY = stats[3]/stats[0];
+
+  //       if (useFit_) { // fit function which returns mean and sigma from the fit
+  // 	std::pair<float,float> fitMeanSigma = this->fitResiduals(h);
+  // 	treeMem.fitMeanNormY  = fitMeanSigma.first;
+  // 	treeMem.fitSigmaNormY = fitMeanSigma.second;
+  //       }
+  //       treeMem.histNameNormY = h->GetName();
+  //     }
+    
+  tree.Fill();
+  }
+  }
 */
 
 std::pair<float,float> 

@@ -1,5 +1,5 @@
 
-#include "Alignment/OfflineValidation/interface/ShallowTools.h"
+#include "Alignment/PeakDecoResiduals/interface/ShallowTools.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "DataFormats/SiStripCluster/interface/SiStripCluster.h"

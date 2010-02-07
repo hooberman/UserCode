@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 # i.e. in Validator.cfg replace 'module demo = Validator {} '
 # with 'include "anlyzerDir/Validator/data/Validator.cfi" '.
 # (Remember that filenames are case sensitive.)
-TrackerOfflineValidation = cms.EDFilter("TrackerOfflineValidation",
+PeakDecoResiduals = cms.EDFilter("TrackerOfflineValidation",
     Tracks = cms.InputTag("TrackRefitter"),
     trajectoryInput           = cms.string('TrackRefitter'),
     localCoorHistosOn         = cms.bool(False),

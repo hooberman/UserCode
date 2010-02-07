@@ -1,4 +1,4 @@
-#!/bin/csh -f
+op#!/bin/csh -f
 
 #TOB
 cat scripts/decovspeak.C >! scripts/decovspeak_TOB.C
