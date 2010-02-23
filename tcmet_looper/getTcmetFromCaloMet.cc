@@ -57,7 +57,7 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
 	correctSumEtForMuon( mus_gfit_p4().at(i), i );
       }
       
-      else if(isGoodTrack( i )){
+      else if(isGoodTrack( mus_trkidx().at(i))){
 	correctMETforPion  ( mus_trkidx().at(i) , rf);
 	correctSumEtForPion( mus_trkidx().at(i) , rf);
       }
@@ -69,7 +69,7 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
 	correctSumEtForMuon( mus_trk_p4().at(i), i );
       }
 
-      else if(isGoodTrack( i )){
+      else if(isGoodTrack( mus_trkidx().at(i))){
 	correctMETforPion  ( mus_trkidx().at(i) , rf);
 	correctSumEtForPion( mus_trkidx().at(i) , rf);
       }
@@ -80,7 +80,7 @@ metStruct getTcmetFromCaloMet(TH2F* rf){
 	correctMETforMuon  ( mus_p4().at(i), i );
 	correctSumEtForMuon( mus_p4().at(i), i );
       }
-      else if(isGoodTrack( i )){
+      else if(isGoodTrack( mus_trkidx().at(i))){
 	correctMETforPion  ( mus_trkidx().at(i) , rf);
 	correctSumEtForPion( mus_trkidx().at(i) , rf);
       }
