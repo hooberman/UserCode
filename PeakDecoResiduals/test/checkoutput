@@ -10,9 +10,6 @@ echo "Getting peakdir"
 crab -status    -c $peakdir
 echo "Getting decodir"
 crab -status    -c $decodir
-echo "Getting peakdirTH2"
-crab -status    -c $peakdirTH2
-echo "Getting decodirTH2"
-crab -status    -c $decodirTH2
+
 
 

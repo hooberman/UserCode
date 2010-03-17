@@ -1,2 +1,2 @@
 echo ""
-cat crabjobs/*/NOTES
+cat $basedir/*/NOTES
