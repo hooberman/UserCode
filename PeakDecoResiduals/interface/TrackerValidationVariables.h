@@ -100,7 +100,7 @@ class TrackerValidationVariables  {
   TrackerValidationVariables(const edm::EventSetup&, const edm::ParameterSet&);
   ~TrackerValidationVariables();
   //void fillHitQuantities(const edm::Event&, std::vector<AVHitStruct> & v_avhitout );
-  void fillHitQuantities(const edm::Event&, const edm::EventSetup&, std::vector<AVHitStruct> & v_avhitout );
+  void fillHitQuantities(const edm::Event&, const edm::EventSetup&, std::vector<AVHitStruct> & v_avhitout, bool runOnCosmics_ );
   int getHisto(float z);
   void setTime(const edm::Event&, timeStruct &ts);
   //float getHCALTime(const edm::Event&);

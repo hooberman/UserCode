@@ -1,3 +1,4 @@
+
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/Common/interface/Handle.h"
 
@@ -35,8 +36,8 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/Records/interface/TransientRecHitRecord.h"
 #include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
-//#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2D.h"
-//#include "DataFormats/TrackerRecHit1D/interface/SiStripRecHit1D.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2D.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit1D.h"
 
 
 #include "MagneticField/Engine/interface/MagneticField.h"
@@ -54,14 +55,11 @@
 #include "CondFormats/DataRecord/interface/SiStripLorentzAngleRcd.h"
 
 //#include "CalibTracker/SiStripCommon/interface/ShallowTrackClustersProducer.h"
-#include "Alignment/PeakDecoResiduals/interface/ShallowTools.h"
+#include "CalibTracker/SiStripCommon/interface/ShallowTools.h"
 
-//#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
-//#include "DataFormats/TrackerRecHit2D/interface/ProjectedSiStripRecHit2D.h"
-//#include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
-//#include "DataFormats/TrackerRecHit1D/interface/SiStripRecHit1DCollection.h"
-//#include "DataFormats/TrackerRecHit1D/interface/ProjectedSiStripRecHit1D.h"
-//#include "DataFormats/TrackerRecHit1D/interface/SiStripMatchedRecHit1DCollection.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
+#include "DataFormats/TrackerRecHit2D/interface/ProjectedSiStripRecHit2D.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 
 bool debug_=false;
 
@@ -94,7 +92,7 @@ TrackerValidationVariables::TrackerValidationVariables(const edm::EventSetup& es
 TrackerValidationVariables::~TrackerValidationVariables() {}
 
 //void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, std::vector<AVHitStruct>& v_avhitout ){
-void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, const edm::EventSetup& iSetup, std::vector<AVHitStruct>& v_avhitout ){ 
+void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, const edm::EventSetup& iSetup, std::vector<AVHitStruct>& v_avhitout, bool runOnCosmics_){ 
 
   edm::Handle<std::vector<Trajectory> > trajCollectionHandle;
   iEvent.getByLabel(conf_.getParameter<std::string>("trajectoryInput"),trajCollectionHandle);
@@ -168,27 +166,42 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	hitStruct.z               = theStripDet->toGlobal(hit->localPosition()).z();
 	hitStruct.ectype          = ec;
 
-// 	//const SiStripRecHit2D* stripHit = dynamic_cast<const SiStripRecHit2D*> ( hit->hit() );   
-// 	const SiStripRecHit1D* stripHit = dynamic_cast<const SiStripRecHit1D*> ( hit->hit() );   
-// 	const SiStripCluster *const stripCluster = stripHit->cluster().operator->(); 
-	  
-// 	float charge=0;
-// 	int nstrips=0;
-// 	const std::vector<uint8_t>& amplitudes_ =  stripCluster->amplitudes();
-// 	for(size_t i=0; i<amplitudes_.size();i++){
-// 	  if (amplitudes_[i]>0){
-// 	    charge+=amplitudes_[i];
-// 	    nstrips++;
-// 	  }
-	  
-// 	}
+	const SiStripRecHit1D* stripHit1D = dynamic_cast<const SiStripRecHit1D*> ( hit->hit() );   
+	const SiStripRecHit2D* stripHit2D = dynamic_cast<const SiStripRecHit2D*> ( hit->hit() );   
 
-// 	hitStruct.charge  = charge;
-// 	hitStruct.nstrips = nstrips;
+	float charge=0;
+	int nstrips=0;
+	
+	if(stripHit1D){
+	  const SiStripCluster *const stripCluster1D = stripHit1D->cluster().operator->(); 
+	  const std::vector<uint8_t>& amplitudes1D_ =  stripCluster1D->amplitudes();
+	  
+	  for(size_t i=0; i<amplitudes1D_.size();i++){
+	    if (amplitudes1D_[i]>0){
+	      charge+=amplitudes1D_[i];
+	      nstrips++;
+	    }
+	  }
+	}else if(stripHit2D){
+	  const SiStripCluster *const stripCluster2D = stripHit2D->cluster().operator->(); 
+	  const std::vector<uint8_t>& amplitudes2D_ =  stripCluster2D->amplitudes();
+	  
+	  for(size_t i=0; i<amplitudes2D_.size();i++){
+	    if (amplitudes2D_[i]>0){
+	      charge+=amplitudes2D_[i];
+	      nstrips++;
+	    }
+	  }
+	}
 
+
+	hitStruct.charge  = charge;
+	hitStruct.nstrips = nstrips;
+
+	
       }
-      //-------------------------------------------------------------------------------------------
-      
+
+      //----------------------------------------------------------------------------------------
 
       //first calculate residuals in cartesian coordinates in the local module coordinate system
       LocalPoint lPHit = hit->localPosition();
@@ -203,8 +216,8 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
       //check for negative error values: track error can have negative value, if matrix inversion fails (very rare case)
       //hit error should always give positive values
       if(errHit.xx()<0. || errHit.yy()<0. || errTrk.xx()<0. || errTrk.yy()<0.){
-        edm::LogError("Negative error Value")<<"@SUB=TrackerValidationVariables::fillHitQuantities"
-	                                     <<"One of the squared error methods gives negative result"
+	edm::LogError("Negative error Value")<<"@SUB=TrackerValidationVariables::fillHitQuantities"
+					     <<"One of the squared error methods gives negative result"
 					     <<"\n\terrHit.xx()\terrHit.yy()\terrTrk.xx()\terrTrk.yy()"
 					     <<"\n\t"<<errHit.xx()<<"\t"<<errHit.yy()<<"\t"<<errTrk.xx()<<"\t"<<errTrk.yy();
 	continue;
@@ -226,7 +239,7 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
       float resXprimeErr(999.F), resYprimeErr(999.F);
       
       if(hit->detUnit()){ // is it a single physical module?
-        const GeomDetUnit& detUnit = *(hit->detUnit());
+	const GeomDetUnit& detUnit = *(hit->detUnit());
 	float uOrientation(-999.F), vOrientation(-999.F);
 	float resXTopol(999.F), resYTopol(999.F);
 
@@ -234,8 +247,8 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	const Surface& surface = hit->detUnit()->surface();
 	LocalPoint lPModule(0.,0.,0.), lUDirection(1.,0.,0.), lVDirection(0.,1.,0.);
 	GlobalPoint gPModule    = surface.toGlobal(lPModule),
-	            gUDirection = surface.toGlobal(lUDirection),
-	            gVDirection = surface.toGlobal(lVDirection);
+	  gUDirection = surface.toGlobal(lUDirection),
+	  gVDirection = surface.toGlobal(lVDirection);
 	
 	if(IntSubDetID == PixelSubdetector::PixelBarrel || IntSubDetID == StripSubdetector::TIB || IntSubDetID == StripSubdetector::TOB) {
 	  uOrientation = deltaPhi(gUDirection.phi(),gPModule.phi()) >= 0. ? +1.F : -1.F;
@@ -265,77 +278,84 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	  const RadialStripTopology& topol = dynamic_cast<const RadialStripTopology&>(detUnit.topology());
 	  
 	  MeasurementPoint measHitPos = topol.measurementPosition(lPHit);
-          MeasurementPoint measTrkPos = topol.measurementPosition(lPTrk);
+	  MeasurementPoint measTrkPos = topol.measurementPosition(lPTrk);
 	  
 	  MeasurementError measHitErr = topol.measurementError(lPHit,errHit);
-          MeasurementError measTrkErr = topol.measurementError(lPTrk,errTrk);
+	  MeasurementError measTrkErr = topol.measurementError(lPTrk,errTrk);
 	  
 	  if(measHitErr.uu()<0. || measHitErr.vv()<0. || measTrkErr.uu()<0. || measTrkErr.vv()<0.){
 	    edm::LogError("Negative error Value")<<"@SUB=TrackerValidationVariables::fillHitQuantities"
-	                                         <<"One of the squared error methods gives negative result"
-	                                         <<"\n\tmeasHitErr.uu()\tmeasHitErr.vv()\tmeasTrkErr.uu()\tmeasTrkErr.vv()"
-		                                 <<"\n\t"<<measHitErr.uu()<<"\t"<<measHitErr.vv()<<"\t"<<measTrkErr.uu()<<"\t"<<measTrkErr.vv();
+						 <<"One of the squared error methods gives negative result"
+						 <<"\n\tmeasHitErr.uu()\tmeasHitErr.vv()\tmeasTrkErr.uu()\tmeasTrkErr.vv()"
+						 <<"\n\t"<<measHitErr.uu()<<"\t"<<measHitErr.vv()<<"\t"<<measTrkErr.uu()<<"\t"<<measTrkErr.vv();
 	    continue;
 	  }
 	  
 	  float localStripLengthHit = topol.localStripLength(lPHit);
 	  float localStripLengthTrk = topol.localStripLength(lPTrk);
-          float phiHit = topol.stripAngle(measHitPos.x());
+	  float phiHit = topol.stripAngle(measHitPos.x());
 	  float phiTrk = topol.stripAngle(measTrkPos.x());
-          float r_0 = topol.originToIntersection();
+	  float r_0 = topol.originToIntersection();
 	  
 	  
-	  resXTopol = (phiTrk-phiHit)*r_0;
+	  //resXTopol = (phiTrk-phiHit)*r_0;
+	  resXTopol = (phiHit-phiTrk)*r_0; //*uOrientation;
 	  //resYTopol = measTrkPos.y()*localStripLengthTrk - measHitPos.y()*localStripLengthHit;
 	  float cosPhiHit(cos(phiHit)), cosPhiTrk(cos(phiTrk)),
-	        sinPhiHit(sin(phiHit)), sinPhiTrk(sin(phiTrk));
+	    sinPhiHit(sin(phiHit)), sinPhiTrk(sin(phiTrk));
 	  float l_0 = r_0 - topol.detHeight()/2;
 	  resYTopol = measTrkPos.y()*localStripLengthTrk - measHitPos.y()*localStripLengthHit + l_0*(1/cosPhiTrk - 1/cosPhiHit);
 	  
 	  
 	  resXprimeErr = std::sqrt(measHitErr.uu()+measTrkErr.uu())*topol.angularWidth()*r_0;
-          //resYprimeErr = std::sqrt(measHitErr.vv()*localStripLengthHit*localStripLengthHit + measTrkErr.vv()*localStripLengthTrk*localStripLengthTrk);
+	  //resYprimeErr = std::sqrt(measHitErr.vv()*localStripLengthHit*localStripLengthHit + measTrkErr.vv()*localStripLengthTrk*localStripLengthTrk);
 	  float helpSummand = l_0*l_0*topol.angularWidth()*topol.angularWidth()*(sinPhiHit*sinPhiHit/pow(cosPhiHit,4)*measHitErr.uu()
-	                                                                       + sinPhiTrk*sinPhiTrk/pow(cosPhiTrk,4)*measTrkErr.uu() );
+										 + sinPhiTrk*sinPhiTrk/pow(cosPhiTrk,4)*measTrkErr.uu() );
 	  resYprimeErr = std::sqrt(measHitErr.vv()*localStripLengthHit*localStripLengthHit
-	                         + measTrkErr.vv()*localStripLengthTrk*localStripLengthTrk + helpSummand );
+				   + measTrkErr.vv()*localStripLengthTrk*localStripLengthTrk + helpSummand );
 	  
 	} else {
 	  edm::LogWarning("TrackerValidationVariables") << "@SUB=TrackerValidationVariables::fillHitQuantities" 
-	                                                << "No valid tracker subdetector " << IntSubDetID;
+							<< "No valid tracker subdetector " << IntSubDetID;
 	  continue;
 	}
 	
 	//vOrientation=-1.;
 	float wOrientation=uOrientation*vOrientation;
 	//cout<<"orientation: u "<<uOrientation<<" v "<<vOrientation<<" w "<<wOrientation<<endl;
-	resXprime = resXTopol*trackOrientation;
+	//resXprime = resXTopol*trackOrientation;
+	resXprime = resXTopol;
 	resYprime = resYTopol*vOrientation;
 	hitStruct.uOrientation = uOrientation;
 	hitStruct.vOrientation = vOrientation;
 	hitStruct.wOrientation = wOrientation;
+	
+	
+	if(runOnCosmics_){
+	  //Read in DT/ECAL/HCAL time
+	  timeStruct ts;
+	  setTime(iEvent,ts);
+	  if(debug_){
+	    cout<<"Number of muons "<<ts.nmu<<endl;
+	    cout<<"DT time   "<<ts.dttime<<"+/-"<<ts.dttimeerr<<" # DT measurements "<<ts.ndt<<endl;
+	    cout<<"ECAL time "<<ts.ecaltime<<"+/-"<<ts.ecaltimeerr<<" for ECAL energy "<<ts.ecalenergy<<endl;
+	    cout<<"HCAL time "<<ts.hcaltime<<"+/-"<<ts.hcaltimeerr<<" for ECAL energy "<<ts.hcalenergy<<endl;
+	  }
+ 	  
+	  hitStruct.dttime     = ts.dttime;
+	  hitStruct.dttimeerr  = ts.dttimeerr;
+	  hitStruct.ndt        = ts.ndt;
+	  hitStruct.hcaltime   = ts.hcaltime;
+	  hitStruct.nvalidmu   = ts.nvalidmu;
+	}
+	else{
+	  hitStruct.dttime     = -999.;
+	  hitStruct.dttimeerr  = -999.;
+	  hitStruct.ndt        = -999;
+	  hitStruct.hcaltime   = -999.;
+	  hitStruct.nvalidmu   = -999;
+	}
 
-// 	//Read in DT/ECAL/HCAL time
-// 	timeStruct ts;
-// 	setTime(iEvent,ts);
-// 	if(debug_){
-// 	  cout<<"Number of muons "<<ts.nmu<<endl;
-// 	  cout<<"DT time   "<<ts.dttime<<"+/-"<<ts.dttimeerr<<" # DT measurements "<<ts.ndt<<endl;
-// 	  cout<<"ECAL time "<<ts.ecaltime<<"+/-"<<ts.ecaltimeerr<<" for ECAL energy "<<ts.ecalenergy<<endl;
-// 	  cout<<"HCAL time "<<ts.hcaltime<<"+/-"<<ts.hcaltimeerr<<" for ECAL energy "<<ts.hcalenergy<<endl;
-// 	}
-
-// 	hitStruct.dttime     = ts.dttime;
-// 	hitStruct.dttimeerr  = ts.dttimeerr;
-// 	hitStruct.ndt        = ts.ndt;
-// 	hitStruct.hcaltime   = ts.hcaltime;
-// 	hitStruct.nvalidmu   = ts.nvalidmu;
-
-	hitStruct.dttime     = -1;
-	hitStruct.dttimeerr  = -1;
-	hitStruct.ndt        = -1;
-	hitStruct.hcaltime   = -1;
-	hitStruct.nvalidmu   = -1;
 
 	float dusign=0.;
 	if(IntSubDetID == StripSubdetector::TOB){
@@ -442,6 +462,63 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
     } 
   }  
 }
+/*
+  float getDTTime(const edm::Event& iEvent , bool debug){
+
+  //Get muon
+  edm::Handle<reco::MuonCollection> muH;
+  iEvent.getByLabel("muons1Leg",muH);
+  const reco::MuonCollection& muonsT0 = *(muH.product()); 
+  
+  if(debug) cout << endl<< "Event "<<iEvent.id().event()
+  <<" Number of muons = " << muonsT0.size() <<endl;
+		  
+  float time       = -9999.;
+  float time_error = -9999.;
+  float time_ndof  = -9999.;
+  int imuon        = 0;
+  int nvalidmu     = 0;
+
+  //If a muon is found, loop over muons
+  if(muonsT0.size()>0){
+  for (unsigned int i=0; i<muonsT0.size(); i++) {
+
+  //Get muon time quantities
+  reco::MuonTime mt0 = muonsT0[i].time();
+  time       = mt0.timeAtIpInOut;
+  time_error = mt0.timeAtIpInOutErr;
+  time_ndof  = mt0.nDof;
+
+  //There should only be one muon with ndof>0. Perform check anyways
+  if(time_ndof>0){
+  nvalidmu++;
+  imuon=i;
+  }
+      
+  if(debug){
+  cout<<"***** Muon" << i << " *****"<<endl;
+  cout<<"DT time   "<<time<<"+/-"<<time_error<<" for "<<time_ndof<<" DT measurements"<<endl;
+  }
+  }
+  }
+
+  //Get dt time quantities for muon with ndof>0
+  if(nvalidmu == 1){
+  reco::MuonTime mt0 = muonsT0[imuon].time();
+  time       = mt0.timeAtIpInOut;     //time
+  time_error = mt0.timeAtIpInOutErr;  //error on DT time (we believe this is overestimated)
+  time_ndof  = mt0.nDof;              //# DT measurements used for time calculation
+
+  return time;
+  }else{
+  if(debug) cout<<"ERROR :"<<nvalidmu<<" muons found"<<endl;
+  return -9999.;
+  }
+  }
+*/
+
+
+
 
 void TrackerValidationVariables::setTime(const edm::Event& iEvent, timeStruct &ts){
   
@@ -486,7 +563,7 @@ void TrackerValidationVariables::setTime(const edm::Event& iEvent, timeStruct &t
       time_ecal    = muonsT0[i].calEnergy().ecal_time;
       timeerr_ecal = 0.;    //timeerr_ecal = muonsT0[i].calEnergy().ecal_timeError;
 
-     //HCAL time
+      //HCAL time
       energy_hcal  = muonsT0[i].calEnergy().had;	
       time_hcal    = muonsT0[i].calEnergy().hcal_time;
       timeerr_hcal = 0.;    //timeerr_hcal = muonsT0[i].calEnergy().hcal_timeError;
@@ -531,7 +608,7 @@ void TrackerValidationVariables::setTime(const edm::Event& iEvent, timeStruct &t
 }
 
 void TrackerValidationVariables::fillTrackQuantities(const edm::Event& iEvent,
-					std::vector<AVTrackStruct>& v_avtrackout)
+						     std::vector<AVTrackStruct>& v_avtrackout)
 {
   // get track collection from the event
   edm::InputTag TkTag = conf_.getParameter<edm::InputTag>("Tracks");
@@ -563,3 +640,244 @@ void TrackerValidationVariables::fillTrackQuantities(const edm::Event& iEvent,
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+/*
+  void TrackerValidationVariables::setHCALTime(const edm::Event& iEvent, std::vector<float> &x){
+ 
+  x.clear();
+  edm::Handle<reco::MuonCollection> muH;
+  //try {
+  // iEvent.getByLabel("muonsWitht0Correction",muH);
+  iEvent.getByLabel("muons1Leg",muH);
+  //}catch (...) {;}
+  const reco::MuonCollection& muonsT0 = *(muH.product()); 
+  
+  cout << endl<< "Event "<<iEvent.id().event()<<" Number of muons = " << muonsT0.size() << "-----------------------------------------"<<endl;
+  //if(muonsT0.size()<1) return -1000.;  
+  //reco::MuonCollection muonsT0filtered;
+  //float e3x3_ecal = -9999.;
+
+  float energy_ecal = -9999.; 
+ 
+  float time_ecal = -9999.; 
+  float timeerr_ecal = -9999.; 
+  float time_hcal = -9999.;
+  float timeerr_hcal = -9999.;
+ 
+  if(muonsT0.size()>0){
+  for (unsigned int i=0; i<muonsT0.size(); i++) {
+      
+  bool hasCaloEnergyInfo = muonsT0[i].isEnergyValid();
+  if (hasCaloEnergyInfo) {
+  energy_ecal = muonsT0[i].calEnergy().em;	
+  time_ecal = muonsT0[i].calEnergy().ecal_time;
+  timeerr_ecal = muonsT0[i].calEnergy().ecal_timeError;
+	
+  //e3x3_ecal = muonsT0[i].calEnergy().emS9;
+  time_hcal = muonsT0[i].calEnergy().hcal_time;
+  }
+      
+  if(hasCaloEnergyInfo)cout<<"****Muon "<<i<<" ecal time "<<time_ecal<<" ecal energy "<<energy_ecal<<" hcal time "<<time_hcal<<endl;
+  else                 cout<<"no CaloEnergyInfo"<<endl;
+  }
+    
+  bool hasCaloEnergyInfo = muonsT0[0].isEnergyValid();
+  if (hasCaloEnergyInfo) {
+  time_ecal = muonsT0[0].calEnergy().ecal_time;
+  energy_ecal = muonsT0[0].calEnergy().em;
+  e3x3_ecal = muonsT0[0].calEnergy().emS9;
+  time_hcal = muonsT0[0].calEnergy().hcal_time;
+  }
+  }
+
+  x.push_back((float)muonsT0.size());
+  x.push_back(time_ecal);
+  x.push_back(energy_ecal);
+  x.push_back(e3x3_ecal);
+  x.push_back(time_hcal);
+   
+  }
+*/
+
+
+  
+/*
+//-------------------------------------------------------------------------------------------
+//code to calculate unbiased residuals
+
+const Trajectory* traj = (*it).first;
+const reco::Track* track = (*it).second;
+                 
+//float pt    = track->pt();
+//float eta   = track->eta();
+//float phi   = track->phi();
+//float p     = track->p();
+//float chi2n = track->normalizedChi2();
+//int   nhit  = track->numberOfValidHits();
+//float d0    = track->d0();
+//float dz    = track->dz();
+
+//int nhpxb   = track->hitPattern().numberOfValidPixelBarrelHits();
+//int nhpxf   = track->hitPattern().numberOfValidPixelEndcapHits();
+
+//if (verbose) edm::LogInfo("Alignment") << "New track pt,eta,phi,chi2n,hits: " << pt <<","<< eta <<","<< phi <<","<< chi2n << ","<<nhit;
+////edm::LogWarning("Alignment") << "New track pt,eta,phi,chi2n,hits: " << pt <<","<< eta <<","<< phi <<","<< chi2n << ","<<nhit;
+
+//       // fill track parameters in root tree
+//       if (itr<MAXREC) {
+// 	m_Nhits[itr]=nhit;
+// 	m_Pt[itr]=pt;
+// 	m_P[itr]=p;
+// 	m_Eta[itr]=eta;
+// 	m_Phi[itr]=phi;
+// 	m_Chi2n[itr]=chi2n;
+// 	m_nhPXB[itr]=nhpxb;
+// 	m_nhPXF[itr]=nhpxf;
+// 	m_d0[itr]=d0;
+// 	m_dz[itr]=dz;
+// 	itr++;
+// 	m_Ntracks=itr;
+//       }
+
+vector<const TransientTrackingRecHit*> hitvec;
+vector<TrajectoryStateOnSurface> tsosvec;
+
+// loop over measurements       
+vector<TrajectoryMeasurement> measurements = traj->measurements();
+for (vector<TrajectoryMeasurement>::iterator im=measurements.begin();
+im!=measurements.end(); im++) {
+TrajectoryMeasurement meas = *im;
+const TransientTrackingRecHit* ttrhit = &(*meas.recHit());
+  
+TrajectoryStateOnSurface tsos = tsoscomb.combine(meas.forwardPredictedState(),
+meas.backwardPredictedState());
+  
+if(tsos.isValid()){
+hitvec.push_back(ttrhit);
+//tsosvec.push_back(tsos);
+tsosvec.push_back(tsos);
+}
+}
+}
+
+vector<TrajectoryStateOnSurface>::const_iterator itsos=tsosvec.begin();
+vector<const TransientTrackingRecHit*>::const_iterator ihit=hitvec.begin();
+
+// loop over vectors(hit,tsos)
+while (itsos != tsosvec.end()) 
+{
+// get AlignableDet for this hit
+const GeomDet* det=(*ihit)->det();
+AlignableDetOrUnitPtr alidet = 
+theAlignableDetAccessor->alignableFromGeomDet(det);
+
+// get relevant Alignable
+Alignable* ali=aap.alignableFromAlignableDet(alidet);
+
+if (ali!=0) {
+// get trajectory impact point
+LocalPoint alvec = (*itsos).localPosition();
+AlgebraicVector pos(2);
+pos[0]=alvec.x(); // local x
+pos[1]=alvec.y(); // local y
+
+// get impact point covariance
+//AlgebraicSymMatrix ipcovmat(2);
+//ipcovmat[0][0] = (*itsos).localError().positionError().xx();
+//ipcovmat[1][1] = (*itsos).localError().positionError().yy();
+//ipcovmat[0][1] = (*itsos).localError().positionError().xy();
+
+// get hit local position and covariance
+AlgebraicVector coor(2);
+coor[0] = (*ihit)->localPosition().x();
+coor[1] = (*ihit)->localPosition().y();
+
+//AlgebraicSymMatrix covmat(2);
+//covmat[0][0] = (*ihit)->localPositionError().xx();
+//covmat[1][1] = (*ihit)->localPositionError().yy();
+//covmat[0][1] = (*ihit)->localPositionError().xy();
+
+// add hit and impact point covariance matrices
+//covmat = covmat + ipcovmat;
+
+// calculate the x pull and y pull of this hit
+//double xpull = 0.;
+//double ypull = 0.;
+float myresidual = coor[0] - pos[0]; 
+
+
+//----------------------------------------------------------------------------------------
+*/
+
+
+
+
+/*
+//-------------------------------------------------------------------------------------------
+//code to calculate unbiased residuals
+
+const Trajectory* traj = (*it).first;
+const reco::Track* track = (*it).second;
+ 
+vector<const TransientTrackingRecHit*> hitvec;
+vector<TrajectoryStateOnSurface> tsosvec;
+
+// loop over measurements       
+vector<TrajectoryMeasurement> measurements = traj->measurements();
+for (vector<TrajectoryMeasurement>::iterator im=measurements.begin();
+im!=measurements.end(); im++) {
+TrajectoryMeasurement meas = *im;
+const TransientTrackingRecHit* ttrhit = &(*meas.recHit());
+  
+TrajectoryStateOnSurface tsos = tsoscomb.combine(meas.forwardPredictedState(),
+meas.backwardPredictedState());
+  
+if(tsos.isValid()){
+hitvec.push_back(ttrhit);
+//tsosvec.push_back(tsos);
+tsosvec.push_back(tsos);
+}
+}
+}
+
+vector<TrajectoryStateOnSurface>::const_iterator itsos=tsosvec.begin();
+vector<const TransientTrackingRecHit*>::const_iterator ihit=hitvec.begin();
+
+// loop over vectors(hit,tsos)
+while (itsos != tsosvec.end()){ 
+      
+// get AlignableDet for this hit
+const GeomDet* det=(*ihit)->det();
+AlignableDetOrUnitPtr alidet = 
+theAlignableDetAccessor->alignableFromGeomDet(det);
+      
+// get relevant Alignable
+Alignable* ali=aap.alignableFromAlignableDet(alidet);
+      
+if (ali!=0) {
+	
+// get trajectory impact point
+LocalPoint alvec = (*itsos).localPosition();
+AlgebraicVector pos(2);
+pos[0]=alvec.x(); // local x
+pos[1]=alvec.y(); // local y
+	
+// get hit local position and covariance
+AlgebraicVector coor(2);
+coor[0] = (*ihit)->localPosition().x();
+coor[1] = (*ihit)->localPosition().y();
+	
+float unbiasedresidual = coor[0] - pos[0]; 
+}
+}
+*/

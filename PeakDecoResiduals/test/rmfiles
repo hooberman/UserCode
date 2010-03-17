@@ -12,10 +12,3 @@ rm $peakdir/res/*.root
 echo "Removing decodir files: " $decodir
 rm $decodir/res/*.root 
 
-echo "Removing peakdirTH2 files: " $peakdirTH2
-rm $peakdirTH2/res/*.root 
-
-echo "Removing decodirTH2 files: " $decodirTH2
-rm $decodirTH2/res/*.root 
-
-
