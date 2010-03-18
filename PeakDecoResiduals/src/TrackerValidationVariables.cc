@@ -37,7 +37,7 @@
 #include "TrackingTools/Records/interface/TransientRecHitRecord.h"
 #include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2D.h"
-//#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit1D.h"
+#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit1D.h"
 
 
 #include "MagneticField/Engine/interface/MagneticField.h"
@@ -53,9 +53,6 @@
 
 #include "CondFormats/SiStripObjects/interface/SiStripLorentzAngle.h"
 #include "CondFormats/DataRecord/interface/SiStripLorentzAngleRcd.h"
-
-//#include "CalibTracker/SiStripCommon/interface/ShallowTrackClustersProducer.h"
-//#include "CalibTracker/SiStripCommon/interface/ShallowTools.h"
 #include "Alignment/PeakDecoResiduals/interface/ShallowTools.h"
 
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
@@ -167,23 +164,23 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	hitStruct.z               = theStripDet->toGlobal(hit->localPosition()).z();
 	hitStruct.ectype          = ec;
 
-	//const SiStripRecHit1D* stripHit1D = dynamic_cast<const SiStripRecHit1D*> ( hit->hit() );   
+	const SiStripRecHit1D* stripHit1D = dynamic_cast<const SiStripRecHit1D*> ( hit->hit() );   
 	const SiStripRecHit2D* stripHit2D = dynamic_cast<const SiStripRecHit2D*> ( hit->hit() );   
 
 	float charge=0;
 	int nstrips=0;
 	
-// 	if(stripHit1D){
-// 	  const SiStripCluster *const stripCluster1D = stripHit1D->cluster().operator->(); 
-// 	  const std::vector<uint8_t>& amplitudes1D_ =  stripCluster1D->amplitudes();
+	if(stripHit1D){
+	  const SiStripCluster *const stripCluster1D = stripHit1D->cluster().operator->(); 
+	  const std::vector<uint8_t>& amplitudes1D_ =  stripCluster1D->amplitudes();
 	  
-// 	  for(size_t i=0; i<amplitudes1D_.size();i++){
-// 	    if (amplitudes1D_[i]>0){
-// 	      charge+=amplitudes1D_[i];
-// 	      nstrips++;
-// 	    }
-// 	  }
-// 	}else if(stripHit2D){
+	  for(size_t i=0; i<amplitudes1D_.size();i++){
+	    if (amplitudes1D_[i]>0){
+	      charge+=amplitudes1D_[i];
+	      nstrips++;
+	    }
+	  }
+	}else if(stripHit2D){
 	  const SiStripCluster *const stripCluster2D = stripHit2D->cluster().operator->(); 
 	  const std::vector<uint8_t>& amplitudes2D_ =  stripCluster2D->amplitudes();
 	  
@@ -193,13 +190,10 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	      nstrips++;
 	    }
 	  }
-	  //}
-
-
+	}
+	
 	hitStruct.charge  = charge;
 	hitStruct.nstrips = nstrips;
-
-	
       }
 
       //----------------------------------------------------------------------------------------
@@ -463,62 +457,6 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
     } 
   }  
 }
-/*
-  float getDTTime(const edm::Event& iEvent , bool debug){
-
-  //Get muon
-  edm::Handle<reco::MuonCollection> muH;
-  iEvent.getByLabel("muons1Leg",muH);
-  const reco::MuonCollection& muonsT0 = *(muH.product()); 
-  
-  if(debug) cout << endl<< "Event "<<iEvent.id().event()
-  <<" Number of muons = " << muonsT0.size() <<endl;
-		  
-  float time       = -9999.;
-  float time_error = -9999.;
-  float time_ndof  = -9999.;
-  int imuon        = 0;
-  int nvalidmu     = 0;
-
-  //If a muon is found, loop over muons
-  if(muonsT0.size()>0){
-  for (unsigned int i=0; i<muonsT0.size(); i++) {
-
-  //Get muon time quantities
-  reco::MuonTime mt0 = muonsT0[i].time();
-  time       = mt0.timeAtIpInOut;
-  time_error = mt0.timeAtIpInOutErr;
-  time_ndof  = mt0.nDof;
-
-  //There should only be one muon with ndof>0. Perform check anyways
-  if(time_ndof>0){
-  nvalidmu++;
-  imuon=i;
-  }
-      
-  if(debug){
-  cout<<"***** Muon" << i << " *****"<<endl;
-  cout<<"DT time   "<<time<<"+/-"<<time_error<<" for "<<time_ndof<<" DT measurements"<<endl;
-  }
-  }
-  }
-
-  //Get dt time quantities for muon with ndof>0
-  if(nvalidmu == 1){
-  reco::MuonTime mt0 = muonsT0[imuon].time();
-  time       = mt0.timeAtIpInOut;     //time
-  time_error = mt0.timeAtIpInOutErr;  //error on DT time (we believe this is overestimated)
-  time_ndof  = mt0.nDof;              //# DT measurements used for time calculation
-
-  return time;
-  }else{
-  if(debug) cout<<"ERROR :"<<nvalidmu<<" muons found"<<endl;
-  return -9999.;
-  }
-  }
-*/
-
-
 
 
 void TrackerValidationVariables::setTime(const edm::Event& iEvent, timeStruct &ts){
@@ -643,242 +581,3 @@ void TrackerValidationVariables::fillTrackQuantities(const edm::Event& iEvent,
 }
 
 
-
-
-
-
-
-
-
-
-
-/*
-  void TrackerValidationVariables::setHCALTime(const edm::Event& iEvent, std::vector<float> &x){
- 
-  x.clear();
-  edm::Handle<reco::MuonCollection> muH;
-  //try {
-  // iEvent.getByLabel("muonsWitht0Correction",muH);
-  iEvent.getByLabel("muons1Leg",muH);
-  //}catch (...) {;}
-  const reco::MuonCollection& muonsT0 = *(muH.product()); 
-  
-  cout << endl<< "Event "<<iEvent.id().event()<<" Number of muons = " << muonsT0.size() << "-----------------------------------------"<<endl;
-  //if(muonsT0.size()<1) return -1000.;  
-  //reco::MuonCollection muonsT0filtered;
-  //float e3x3_ecal = -9999.;
-
-  float energy_ecal = -9999.; 
- 
-  float time_ecal = -9999.; 
-  float timeerr_ecal = -9999.; 
-  float time_hcal = -9999.;
-  float timeerr_hcal = -9999.;
- 
-  if(muonsT0.size()>0){
-  for (unsigned int i=0; i<muonsT0.size(); i++) {
-      
-  bool hasCaloEnergyInfo = muonsT0[i].isEnergyValid();
-  if (hasCaloEnergyInfo) {
-  energy_ecal = muonsT0[i].calEnergy().em;	
-  time_ecal = muonsT0[i].calEnergy().ecal_time;
-  timeerr_ecal = muonsT0[i].calEnergy().ecal_timeError;
-	
-  //e3x3_ecal = muonsT0[i].calEnergy().emS9;
-  time_hcal = muonsT0[i].calEnergy().hcal_time;
-  }
-      
-  if(hasCaloEnergyInfo)cout<<"****Muon "<<i<<" ecal time "<<time_ecal<<" ecal energy "<<energy_ecal<<" hcal time "<<time_hcal<<endl;
-  else                 cout<<"no CaloEnergyInfo"<<endl;
-  }
-    
-  bool hasCaloEnergyInfo = muonsT0[0].isEnergyValid();
-  if (hasCaloEnergyInfo) {
-  time_ecal = muonsT0[0].calEnergy().ecal_time;
-  energy_ecal = muonsT0[0].calEnergy().em;
-  e3x3_ecal = muonsT0[0].calEnergy().emS9;
-  time_hcal = muonsT0[0].calEnergy().hcal_time;
-  }
-  }
-
-  x.push_back((float)muonsT0.size());
-  x.push_back(time_ecal);
-  x.push_back(energy_ecal);
-  x.push_back(e3x3_ecal);
-  x.push_back(time_hcal);
-   
-  }
-*/
-
-
-  
-/*
-//-------------------------------------------------------------------------------------------
-//code to calculate unbiased residuals
-
-const Trajectory* traj = (*it).first;
-const reco::Track* track = (*it).second;
-                 
-//float pt    = track->pt();
-//float eta   = track->eta();
-//float phi   = track->phi();
-//float p     = track->p();
-//float chi2n = track->normalizedChi2();
-//int   nhit  = track->numberOfValidHits();
-//float d0    = track->d0();
-//float dz    = track->dz();
-
-//int nhpxb   = track->hitPattern().numberOfValidPixelBarrelHits();
-//int nhpxf   = track->hitPattern().numberOfValidPixelEndcapHits();
-
-//if (verbose) edm::LogInfo("Alignment") << "New track pt,eta,phi,chi2n,hits: " << pt <<","<< eta <<","<< phi <<","<< chi2n << ","<<nhit;
-////edm::LogWarning("Alignment") << "New track pt,eta,phi,chi2n,hits: " << pt <<","<< eta <<","<< phi <<","<< chi2n << ","<<nhit;
-
-//       // fill track parameters in root tree
-//       if (itr<MAXREC) {
-// 	m_Nhits[itr]=nhit;
-// 	m_Pt[itr]=pt;
-// 	m_P[itr]=p;
-// 	m_Eta[itr]=eta;
-// 	m_Phi[itr]=phi;
-// 	m_Chi2n[itr]=chi2n;
-// 	m_nhPXB[itr]=nhpxb;
-// 	m_nhPXF[itr]=nhpxf;
-// 	m_d0[itr]=d0;
-// 	m_dz[itr]=dz;
-// 	itr++;
-// 	m_Ntracks=itr;
-//       }
-
-vector<const TransientTrackingRecHit*> hitvec;
-vector<TrajectoryStateOnSurface> tsosvec;
-
-// loop over measurements       
-vector<TrajectoryMeasurement> measurements = traj->measurements();
-for (vector<TrajectoryMeasurement>::iterator im=measurements.begin();
-im!=measurements.end(); im++) {
-TrajectoryMeasurement meas = *im;
-const TransientTrackingRecHit* ttrhit = &(*meas.recHit());
-  
-TrajectoryStateOnSurface tsos = tsoscomb.combine(meas.forwardPredictedState(),
-meas.backwardPredictedState());
-  
-if(tsos.isValid()){
-hitvec.push_back(ttrhit);
-//tsosvec.push_back(tsos);
-tsosvec.push_back(tsos);
-}
-}
-}
-
-vector<TrajectoryStateOnSurface>::const_iterator itsos=tsosvec.begin();
-vector<const TransientTrackingRecHit*>::const_iterator ihit=hitvec.begin();
-
-// loop over vectors(hit,tsos)
-while (itsos != tsosvec.end()) 
-{
-// get AlignableDet for this hit
-const GeomDet* det=(*ihit)->det();
-AlignableDetOrUnitPtr alidet = 
-theAlignableDetAccessor->alignableFromGeomDet(det);
-
-// get relevant Alignable
-Alignable* ali=aap.alignableFromAlignableDet(alidet);
-
-if (ali!=0) {
-// get trajectory impact point
-LocalPoint alvec = (*itsos).localPosition();
-AlgebraicVector pos(2);
-pos[0]=alvec.x(); // local x
-pos[1]=alvec.y(); // local y
-
-// get impact point covariance
-//AlgebraicSymMatrix ipcovmat(2);
-//ipcovmat[0][0] = (*itsos).localError().positionError().xx();
-//ipcovmat[1][1] = (*itsos).localError().positionError().yy();
-//ipcovmat[0][1] = (*itsos).localError().positionError().xy();
-
-// get hit local position and covariance
-AlgebraicVector coor(2);
-coor[0] = (*ihit)->localPosition().x();
-coor[1] = (*ihit)->localPosition().y();
-
-//AlgebraicSymMatrix covmat(2);
-//covmat[0][0] = (*ihit)->localPositionError().xx();
-//covmat[1][1] = (*ihit)->localPositionError().yy();
-//covmat[0][1] = (*ihit)->localPositionError().xy();
-
-// add hit and impact point covariance matrices
-//covmat = covmat + ipcovmat;
-
-// calculate the x pull and y pull of this hit
-//double xpull = 0.;
-//double ypull = 0.;
-float myresidual = coor[0] - pos[0]; 
-
-
-//----------------------------------------------------------------------------------------
-*/
-
-
-
-
-/*
-//-------------------------------------------------------------------------------------------
-//code to calculate unbiased residuals
-
-const Trajectory* traj = (*it).first;
-const reco::Track* track = (*it).second;
- 
-vector<const TransientTrackingRecHit*> hitvec;
-vector<TrajectoryStateOnSurface> tsosvec;
-
-// loop over measurements       
-vector<TrajectoryMeasurement> measurements = traj->measurements();
-for (vector<TrajectoryMeasurement>::iterator im=measurements.begin();
-im!=measurements.end(); im++) {
-TrajectoryMeasurement meas = *im;
-const TransientTrackingRecHit* ttrhit = &(*meas.recHit());
-  
-TrajectoryStateOnSurface tsos = tsoscomb.combine(meas.forwardPredictedState(),
-meas.backwardPredictedState());
-  
-if(tsos.isValid()){
-hitvec.push_back(ttrhit);
-//tsosvec.push_back(tsos);
-tsosvec.push_back(tsos);
-}
-}
-}
-
-vector<TrajectoryStateOnSurface>::const_iterator itsos=tsosvec.begin();
-vector<const TransientTrackingRecHit*>::const_iterator ihit=hitvec.begin();
-
-// loop over vectors(hit,tsos)
-while (itsos != tsosvec.end()){ 
-      
-// get AlignableDet for this hit
-const GeomDet* det=(*ihit)->det();
-AlignableDetOrUnitPtr alidet = 
-theAlignableDetAccessor->alignableFromGeomDet(det);
-      
-// get relevant Alignable
-Alignable* ali=aap.alignableFromAlignableDet(alidet);
-      
-if (ali!=0) {
-	
-// get trajectory impact point
-LocalPoint alvec = (*itsos).localPosition();
-AlgebraicVector pos(2);
-pos[0]=alvec.x(); // local x
-pos[1]=alvec.y(); // local y
-	
-// get hit local position and covariance
-AlgebraicVector coor(2);
-coor[0] = (*ihit)->localPosition().x();
-coor[1] = (*ihit)->localPosition().y();
-	
-float unbiasedresidual = coor[0] - pos[0]; 
-}
-}
-*/
