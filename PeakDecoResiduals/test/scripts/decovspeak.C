@@ -24,7 +24,7 @@
   //string dir        = "peaksqlite";  //peak sqlite file
   //string dir        = "nosqlite";  //no sqlite file
   //string dir        = "decosqlite";  //deco sqlite file
-  string dir="crabjobs/trial30";
+  string dir="crabjobs/trial31";
   gROOT->LoadMacro("scripts/fround.C");
   int ncan=21;
   TCanvas *can[ncan];

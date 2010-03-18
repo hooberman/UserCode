@@ -37,7 +37,7 @@
 #include "TrackingTools/Records/interface/TransientRecHitRecord.h"
 #include "TrackingTools/GeomPropagators/interface/AnalyticalPropagator.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2D.h"
-#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit1D.h"
+//#include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit1D.h"
 
 
 #include "MagneticField/Engine/interface/MagneticField.h"
@@ -55,7 +55,8 @@
 #include "CondFormats/DataRecord/interface/SiStripLorentzAngleRcd.h"
 
 //#include "CalibTracker/SiStripCommon/interface/ShallowTrackClustersProducer.h"
-#include "CalibTracker/SiStripCommon/interface/ShallowTools.h"
+//#include "CalibTracker/SiStripCommon/interface/ShallowTools.h"
+#include "Alignment/PeakDecoResiduals/interface/ShallowTools.h"
 
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/ProjectedSiStripRecHit2D.h"
@@ -166,23 +167,23 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	hitStruct.z               = theStripDet->toGlobal(hit->localPosition()).z();
 	hitStruct.ectype          = ec;
 
-	const SiStripRecHit1D* stripHit1D = dynamic_cast<const SiStripRecHit1D*> ( hit->hit() );   
+	//const SiStripRecHit1D* stripHit1D = dynamic_cast<const SiStripRecHit1D*> ( hit->hit() );   
 	const SiStripRecHit2D* stripHit2D = dynamic_cast<const SiStripRecHit2D*> ( hit->hit() );   
 
 	float charge=0;
 	int nstrips=0;
 	
-	if(stripHit1D){
-	  const SiStripCluster *const stripCluster1D = stripHit1D->cluster().operator->(); 
-	  const std::vector<uint8_t>& amplitudes1D_ =  stripCluster1D->amplitudes();
+// 	if(stripHit1D){
+// 	  const SiStripCluster *const stripCluster1D = stripHit1D->cluster().operator->(); 
+// 	  const std::vector<uint8_t>& amplitudes1D_ =  stripCluster1D->amplitudes();
 	  
-	  for(size_t i=0; i<amplitudes1D_.size();i++){
-	    if (amplitudes1D_[i]>0){
-	      charge+=amplitudes1D_[i];
-	      nstrips++;
-	    }
-	  }
-	}else if(stripHit2D){
+// 	  for(size_t i=0; i<amplitudes1D_.size();i++){
+// 	    if (amplitudes1D_[i]>0){
+// 	      charge+=amplitudes1D_[i];
+// 	      nstrips++;
+// 	    }
+// 	  }
+// 	}else if(stripHit2D){
 	  const SiStripCluster *const stripCluster2D = stripHit2D->cluster().operator->(); 
 	  const std::vector<uint8_t>& amplitudes2D_ =  stripCluster2D->amplitudes();
 	  
@@ -192,7 +193,7 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	      nstrips++;
 	    }
 	  }
-	}
+	  //}
 
 
 	hitStruct.charge  = charge;
