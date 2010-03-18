@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("OfflineValidator")
 
-process.load("inputfile")
+process.load("Alignment.PeakDecoResiduals.DataSetMinBias_38Tpeak_cff")
 
 #process.source.inputCommands = cms.untracked.vstring('keep *', 'drop *_MEtoEDMConverter_*_*') # hack to get rid of the memory consumption problem in 2_2_X and beond
 process.options = cms.untracked.PSet(
@@ -16,32 +16,32 @@ process.options = cms.untracked.PSet(
  ## Maximum number of Events
  ## 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(nevents)
+    input = cms.untracked.int32(-1)
     )
 
-lumisToProcess = cms.untracked.VLuminosityBlockRange(
-    '124275:3-124275:30',
-    '124230:26-124230:max',
-    '124120:1-124120:max',
-    '124030:1-124030:max',
-    '124027:24-124027:max',
-    '124025:3-124025:13',
-    '124024:2-124024:83',
-    '124023:38-124023:96',
-    '124022:66-124022:179',
-    '124020:12-124020:94',
-    '124009:1-124009:68',
-    '124008:1-124008:max',
-    '124006:1-124006:max',
-    '123908:2-123908:12',
-    '123906:18-123906:28',
-    '123818:2-123818:42',
-    '123815:8-123815:max',
-    '123732:62-123732:109',
-    '123615:70-123615:max',
-    '123596:2-123596:max',
-    '123592:2-123592:12'
-    )
+#lumisToProcess = cms.untracked.VLuminosityBlockRange(
+#    #'124275:3-124275:30',
+#    '124230:26-124230:max',
+#    '124120:1-124120:max',
+#    '124030:1-124030:max',
+#    '124027:24-124027:max',
+#    '124025:3-124025:13',
+#    '124024:2-124024:83',
+#    '124023:38-124023:96',
+#    '124022:66-124022:179',
+#    '124020:12-124020:94',
+#    '124009:1-124009:68',
+#    '124008:1-124008:max',
+#    '124006:1-124006:max',
+#    '123908:2-123908:12',
+#    '123906:18-123906:28',
+#    '123818:2-123818:42',
+#    '123815:8-123815:max',
+#    '123732:62-123732:109',
+#    '123615:70-123615:max',
+#    '123596:2-123596:max',
+#    '123592:2-123592:12'
+#    )
 
  ##   
  ## Messages & Convenience
@@ -201,102 +201,20 @@ process.es_prefer_APE = cms.ESPrefer("PoolDBESSource", "APE")
 ## to apply misalignments
 #TrackerDigiGeometryESModule.applyAlignment = True
    
-#process.load("Alignment.OfflineValidation.TrackerOfflineValidation_Standalone_cff")
-#process.TrackerOfflineValidationStandalone.Tracks = 'TrackRefitter2'
-#process.TrackerOfflineValidationStandalone.trajectoryInput = 'TrackRefitter2'
-#process.TrackerOfflineValidationStandalone.moduleLevelHistsTransient = True
-
 ### Load and Configure PeakDecoResiduals
-process.load("Alignment.PeakDecoResiduals.TrackerOfflineValidation_cfi")
+process.load("Alignment.PeakDecoResiduals.PeakDecoResiduals_cfi")
 process.PeakDecoResiduals.Tracks = 'TrackRefitter2'
 process.PeakDecoResiduals.trajectoryInput = 'TrackRefitter2'
-process.PeakDecoResiduals.moduleLevelHistsTransient = cms.bool(True)
-process.PeakDecoResiduals.localCoorHistosOn = cms.bool(True)
-process.PeakDecoResiduals.bookTH1 = cms.bool(bookTH1bool)
-process.PeakDecoResiduals.bookTH2 = cms.bool(bookTH2bool)
 process.PeakDecoResiduals.debug = cms.bool(False)
-process.PeakDecoResiduals.fillTree = cms.bool(False)
 process.PeakDecoResiduals.runOnCosmics = cms.bool(False)
-
-# Normalized X Residuals, normal local coordinates (Strip)
-process.PeakDecoResiduals.TH1NormXResStripModules = cms.PSet(
-    Nbinx = cms.int32(1), xmin = cms.double(-3.0), xmax = cms.double(3.0)
-)
-
-# X Residuals, normal local coordinates (Strip)                      
-process.PeakDecoResiduals.TH1XResStripModules = cms.PSet(
-    Nbinx = cms.int32(1), xmin = cms.double(-0.5), xmax = cms.double(0.5)
-)
-
-# Normalized X Residuals, native coordinates (Strip)
-process.PeakDecoResiduals.TH1NormXprimeResStripModules = cms.PSet(
-    Nbinx = cms.int32(1), xmin = cms.double(-3.0), xmax = cms.double(3.0)
-)
-
-# X Residuals, native coordinates (Strip)
-process.PeakDecoResiduals.TH1XprimeResStripModules = cms.PSet(
-#    Nbinx = cms.int32(2000), xmin = cms.double(-0.5), xmax = cms.double(0.5)
-    Nbinx = cms.int32(200), xmin = cms.double(-1000), xmax = cms.double(1000)
-)
-
-# X Residuals vs Theta, native coordinates (Strip)
-process.PeakDecoResiduals.TH2XprimevsThetaStripModules = cms.PSet(
-    #    Nbinx = cms.int32(2000), xmin = cms.double(-0.5), xmax = cms.double(0.5)
-    Nbinx = cms.int32(50), xmin = cms.double(-500), xmax = cms.double(500)
-)
-
-# X Residuals vs Theta, native coordinates (Pixel)
-process.PeakDecoResiduals.TH2XprimevsThetaPixelModules = cms.PSet(
-    #    Nbinx = cms.int32(2000), xmin = cms.double(-0.5), xmax = cms.double(0.5)
-    Nbinx = cms.int32(1), xmin = cms.double(-1000), xmax = cms.double(1000)
-)
-
-# Normalized Y Residuals, native coordinates (Strip -> hardly defined)
-process.PeakDecoResiduals.TH1NormYResStripModules = cms.PSet(
-    Nbinx = cms.int32(1), xmin = cms.double(-3.0), xmax = cms.double(3.0)
-)
-# -> very broad distributions expected                                         
-process.PeakDecoResiduals.TH1YResStripModules = cms.PSet(
-    Nbinx = cms.int32(1), xmin = cms.double(-10.0), xmax = cms.double(10.0)
-)
-
-# Normalized X residuals normal local coordinates (Pixel)                                        
-process.PeakDecoResiduals.TH1NormXResPixelModules = cms.PSet(
-    Nbinx = cms.int32(1), xmin = cms.double(-3.0), xmax = cms.double(3.0)
-)
-# X residuals normal local coordinates (Pixel)                                        
-process.PeakDecoResiduals.TH1XResPixelModules = cms.PSet(
-    Nbinx = cms.int32(1), xmin = cms.double(-0.5), xmax = cms.double(0.5)
-)
-# Normalized X residuals native coordinates (Pixel)                                        
-process.PeakDecoResiduals.TH1NormXprimeResPixelModules = cms.PSet(
-    Nbinx = cms.int32(1), xmin = cms.double(-3.0), xmax = cms.double(3.0)
-)
-# X residuals native coordinates (Pixel)                                        
-process.PeakDecoResiduals.TH1XprimeResPixelModules = cms.PSet(
-#    Nbinx = cms.int32(2000), xmin = cms.double(-0.5), xmax = cms.double(0.5)
-    Nbinx = cms.int32(1), xmin = cms.double(-0.1), xmax = cms.double(0.1)
-)                                        
-# Normalized Y residuals native coordinates (Pixel)                                         
-process.PeakDecoResiduals.TH1NormYResPixelModules = cms.PSet(
-    Nbinx = cms.int32(1), xmin = cms.double(-3.0), xmax = cms.double(3.0)
-)
-# Y residuals native coordinates (Pixel)                                         
-process.PeakDecoResiduals.TH1YResPixelModules = cms.PSet(
-#    Nbinx = cms.int32(2000), xmin = cms.double(-0.5), xmax = cms.double(0.5)
-    Nbinx = cms.int32(1), xmin = cms.double(-0.1), xmax = cms.double(0.1)
-)
 
 
 #process.TFileService.fileName = '/tmp/benhoob/temp.root'
 process.load("PhysicsTools.UtilAlgos.TFileService_cfi")
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("rootfilename"),
+                                   fileName = cms.string("temp.root"),
                                    closeFileFast = cms.untracked.bool(True)
                                    )
-
-#process.p = cms.Path(process.offlineBeamSpot*process.TrackRefitter1*process.TrackerTrackHitFilter*process.HitFilteredTracks
-#                     *process.AlignmentTrackSelector*process.TrackRefitter2*process.seqTrackerOfflineValidationStandalone)
 
 process.p = cms.Path(process.offlineBeamSpot*process.TrackRefitter1*process.TrackerTrackHitFilter*process.HitFilteredTracks
                      *process.AlignmentTrackSelector*process.TrackRefitter2*process.PeakDecoResiduals)
