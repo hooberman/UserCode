@@ -207,7 +207,7 @@ process.PeakDecoResiduals.Tracks = 'TrackRefitter2'
 process.PeakDecoResiduals.trajectoryInput = 'TrackRefitter2'
 process.PeakDecoResiduals.debug = cms.bool(False)
 process.PeakDecoResiduals.runOnCosmics = cms.bool(False)
-process.PeakDecoResiduals.createTree = cms.bool(False)
+process.PeakDecoResiduals.createTree = cms.bool(True)
 
 
 #process.TFileService.fileName = '/tmp/benhoob/temp.root'
@@ -217,6 +217,11 @@ process.TFileService = cms.Service("TFileService",
                                    closeFileFast = cms.untracked.bool(True)
                                    )
 
-process.p = cms.Path(process.offlineBeamSpot*process.TrackRefitter1*process.TrackerTrackHitFilter*process.HitFilteredTracks
-                     *process.AlignmentTrackSelector*process.TrackRefitter2*process.PeakDecoResiduals)
+process.p = cms.Path(process.offlineBeamSpot*
+                     process.TrackRefitter1*
+                     process.TrackerTrackHitFilter*
+                     process.HitFilteredTracks*
+                     process.AlignmentTrackSelector*
+                     process.TrackRefitter2*
+                     process.PeakDecoResiduals)
 

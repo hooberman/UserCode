@@ -1,12 +1,12 @@
 #!/bin/csh -f
 
-setenv basedir   /tmp/benhoob
+setenv basedir   crabjobs
 setenv dir trial`ls -l ${basedir}/ | wc | awk '{print $1}'`
 echo "Submitting to directory" $basedir/$dir 
 
 mkdir $basedir/$dir/
 
-echo $dir "test single peak v deco" > $basedir/$dir/NOTES
+echo $dir "2009 peak/deco data. 3.8T alignment. Add ntuple" > $basedir/$dir/NOTES
 
 mkdir $basedir/$dir/root/
 mkdir $basedir/$dir/plots/

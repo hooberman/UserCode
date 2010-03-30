@@ -8,6 +8,6 @@ if($1 == '') then
 else 
     setenv peakdir    `cat $basedir/trial$1/dirs.txt | awk '{print $1}'`
     setenv decodir    `cat $basedir/trial$1/dirs.txt | awk '{print $2}'`
-    setenv dir        `cat $basedir/trial$1/dirs.txt | awk '{print $3}'`
-    setenv basedir    `cat $basedir/trial$1/dirs.txt | awk '{print $4}'`
+    setenv basedir    `cat $basedir/trial$1/dirs.txt | awk '{print $3}'`    
+    setenv dir        `cat $basedir/trial$1/dirs.txt | awk '{print $4}'`
 endif

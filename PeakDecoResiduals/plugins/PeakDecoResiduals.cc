@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.2 2010/02/07 17:35:28 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.1 2010/03/17 15:46:48 benhoob Exp $
 //
 //
 
@@ -606,9 +606,9 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       }
     }
     
-    if(it->x != -999.) hhitx[subdetint]->Fill(it->x);
-    if(it->y != -999.) hhity[subdetint]->Fill(it->y);
-    if(it->z != -999.) hhitz[subdetint]->Fill(it->z);
+    if(it->hitx != -999.) hhitx[subdetint]->Fill(it->hitx);
+    if(it->hity != -999.) hhity[subdetint]->Fill(it->hity);
+    if(it->hitz != -999.) hhitz[subdetint]->Fill(it->hitz);
 
     if(it->dttime != -999)  hdttime[subdetint]->  Fill(it->dttime);
     if(it->charge != -999.) hcharge[subdetint]->  Fill(it->charge);
@@ -657,10 +657,10 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       u_           = (int)it->uOrientation;
       v_           = (int)it->vOrientation;
       w_           = (int)it->wOrientation;
-      x_           = it->x;
-      y_           = it->y;
-      z_           = it->z;
-      r_           = sqrt(pow(it->x,2) + pow(it->y,2));
+      x_           = it->hitx;
+      y_           = it->hity;
+      z_           = it->hitz;
+      r_           = sqrt(pow(it->hitx,2) + pow(it->hity,2));
       outTree->Fill();
     }
   }

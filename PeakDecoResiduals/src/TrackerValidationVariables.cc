@@ -63,21 +63,7 @@ bool debug_=false;
 
 TrackerValidationVariables::TrackerValidationVariables(){}
 
-int TrackerValidationVariables::getHisto(float z){
-  if(z<-92.)             return 0;
-  if(z>=-92. && z<-73.)  return 1;
-  if(z>=-73. && z<-55.)  return 2;
-  if(z>=-55. && z<-37.)  return 3;
-  if(z>=-37. && z<-18.)  return 4;
-  if(z>=-18. && z<-0.)   return 5;
-  if(z>=0.   && z<18.)   return 6;
-  if(z>=18.  && z<37.)   return 7;
-  if(z>=37.  && z<55.)   return 8;
-  if(z>=55.  && z<73.)   return 9;
-  if(z>=73.  && z<92.)   return 10;
-  if(z>=92.)             return 11;
-  return 0;
-}
+
 
 TrackerValidationVariables::TrackerValidationVariables(const edm::EventSetup& es, const edm::ParameterSet& iSetup) 
   : conf_(iSetup)
@@ -125,44 +111,24 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
       uint IntSubDetID = (hit_detId.subdetId());
       
       if(IntSubDetID == 0) continue;
-      
-      float trackOrientation=1.;
-      float globalZofunitlocalY=-100.;      
 
       //Added by Ben-------------------------------------------------------------------------------
       if(IntSubDetID == StripSubdetector::TIB || IntSubDetID == StripSubdetector::TOB || 
 	 IntSubDetID == StripSubdetector::TID || IntSubDetID == StripSubdetector::TEC) {
-
-	int ec = 0;
-	if(IntSubDetID == StripSubdetector::TEC){
-
-	  TECDetId tecID(IntRawDetID);
-	  int ring  = tecID.ring();
-	  if     (ring == 5 || ring ==6 || ring ==7) ec=1;
-	  else if(ring >0 && ring<5)                 ec=2;
-	  else {cout<<"ERROR RINGNUM "<<ring<<endl;}
-	}
-
+	
 	const StripGeomDetUnit* theStripDet = dynamic_cast<const StripGeomDetUnit*>( tkGeom_->idToDet( hit->geographicalId() ) );
 
 	LocalVector drift = shallow::drift( theStripDet, *magneticField_, *SiStripLorentzAngle_);    
 	float localtheta = (theStripDet->toLocal(tsos.globalDirection())).theta(); 
 	float localphi   = (theStripDet->toLocal(tsos.globalDirection())).phi();   
 	
-	globalZofunitlocalY = (theStripDet->toGlobal(LocalVector(0,1,0))).z();
-	
-	float tanTrackAngle = tan(localtheta)*cos(localphi);
-	float tanLorentzAngle = drift.x()/drift.z();
-	if(tanTrackAngle<tanLorentzAngle) trackOrientation=-1.;
-
-	hitStruct.tanTrackAngle   = tanTrackAngle;
-	hitStruct.tanLorentzAngle = tanLorentzAngle;
+	hitStruct.tanTrackAngle   = tan(localtheta)*cos(localphi);
+	hitStruct.tanLorentzAngle = drift.x()/drift.z();
 	hitStruct.localtheta      = localtheta;
 	hitStruct.localphi        = localphi;
-	hitStruct.x               = theStripDet->toGlobal(hit->localPosition()).x();
-	hitStruct.y               = theStripDet->toGlobal(hit->localPosition()).y();
-	hitStruct.z               = theStripDet->toGlobal(hit->localPosition()).z();
-	hitStruct.ectype          = ec;
+	hitStruct.hitx            = theStripDet->toGlobal(hit->localPosition()).x();
+	hitStruct.hity            = theStripDet->toGlobal(hit->localPosition()).y();
+	hitStruct.hitz            = theStripDet->toGlobal(hit->localPosition()).z();
 
 	const SiStripRecHit1D* stripHit1D = dynamic_cast<const SiStripRecHit1D*> ( hit->hit() );   
 	const SiStripRecHit2D* stripHit2D = dynamic_cast<const SiStripRecHit2D*> ( hit->hit() );   
@@ -235,7 +201,7 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
       
       if(hit->detUnit()){ // is it a single physical module?
 	const GeomDetUnit& detUnit = *(hit->detUnit());
-	float uOrientation(-999.F), vOrientation(-999.F);
+	float uOrientation(-999.F), vOrientation(-999.F), wOrientation(-999.F);
 	float resXTopol(999.F), resYTopol(999.F);
 
 
@@ -248,25 +214,23 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	if(IntSubDetID == PixelSubdetector::PixelBarrel || IntSubDetID == StripSubdetector::TIB || IntSubDetID == StripSubdetector::TOB) {
 	  uOrientation = deltaPhi(gUDirection.phi(),gPModule.phi()) >= 0. ? +1.F : -1.F;
 	  vOrientation = gVDirection.z() - gPModule.z() >= 0 ? +1.F : -1.F;
+	  wOrientation = uOrientation * vOrientation;
 	  resXTopol = res.x();
 	  resYTopol = res.y();
 	  resXprimeErr = resXErr;
 	  resYprimeErr = resYErr;
-	  //if(StripSubdetector::TIB || IntSubDetID == StripSubdetector::TOB){
-	  //cout<<"Barrel: uOrientation "<<uOrientation<<" vOrientation "<<vOrientation<<" globalZofunitlocalY "<<globalZofunitlocalY<<endl;
-	  //}
-
 	} else if (IntSubDetID == PixelSubdetector::PixelEndcap) {
 	  uOrientation = gUDirection.perp() - gPModule.perp() >= 0 ? +1.F : -1.F;
 	  vOrientation = deltaPhi(gVDirection.phi(),gPModule.phi()) >= 0. ? +1.F : -1.F;
+	  wOrientation = -1 * uOrientation * vOrientation;
 	  resXTopol = res.x();
 	  resYTopol = res.y();
 	  resXprimeErr = resXErr;
 	  resYprimeErr = resYErr;
 	} else if (IntSubDetID == StripSubdetector::TID || IntSubDetID == StripSubdetector::TEC) {
 	  uOrientation = deltaPhi(gUDirection.phi(),gPModule.phi()) >= 0. ? +1.F : -1.F;
-	  vOrientation = gVDirection.perp() - gPModule.perp() >= 0. ? +1.F : -1.F;
-	
+	  vOrientation = gVDirection.perp() - gPModule.perp() >= 0. ? +1.F : -1.F;	
+	  wOrientation = -1 * uOrientation * vOrientation;
 	  //cout<<"Endcap: uOrientation "<<uOrientation<<" vOrientation "<<vOrientation<<" globalZofunitlocalY "<<globalZofunitlocalY<<endl;
 	  	  
 	  if(!dynamic_cast<const RadialStripTopology*>(&detUnit.topology()))continue;
@@ -315,28 +279,18 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	  continue;
 	}
 	
-	//vOrientation=-1.;
-	float wOrientation=uOrientation*vOrientation;
-	//cout<<"orientation: u "<<uOrientation<<" v "<<vOrientation<<" w "<<wOrientation<<endl;
-	//resXprime = resXTopol*trackOrientation;
 	resXprime = resXTopol;
 	resYprime = resYTopol*vOrientation;
 	hitStruct.uOrientation = uOrientation;
 	hitStruct.vOrientation = vOrientation;
 	hitStruct.wOrientation = wOrientation;
 	
-	
+	//Read in DT time for cosmics
 	if(runOnCosmics_){
-	  //Read in DT/ECAL/HCAL time
+	  
 	  timeStruct ts;
 	  setTime(iEvent,ts);
-	  if(debug_){
-	    cout<<"Number of muons "<<ts.nmu<<endl;
-	    cout<<"DT time   "<<ts.dttime<<"+/-"<<ts.dttimeerr<<" # DT measurements "<<ts.ndt<<endl;
-	    cout<<"ECAL time "<<ts.ecaltime<<"+/-"<<ts.ecaltimeerr<<" for ECAL energy "<<ts.ecalenergy<<endl;
-	    cout<<"HCAL time "<<ts.hcaltime<<"+/-"<<ts.hcaltimeerr<<" for ECAL energy "<<ts.hcalenergy<<endl;
-	  }
- 	  
+	  
 	  hitStruct.dttime     = ts.dttime;
 	  hitStruct.dttimeerr  = ts.dttimeerr;
 	  hitStruct.ndt        = ts.ndt;
@@ -349,28 +303,6 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	  hitStruct.ndt        = -999;
 	  hitStruct.hcaltime   = -999.;
 	  hitStruct.nvalidmu   = -999;
-	}
-
-
-	float dusign=0.;
-	if(IntSubDetID == StripSubdetector::TOB){
-	  dusign=1.;
-	  const DetId& id = hit->geographicalId();
-	  if((id&0x1e000000)==0x1a000000) {
-	    int mod =(id&0x0000001c) >> 2;
-	    int side = (id&0x00003000) >> 12;
-	    if(side==1 && (mod == 5 || mod == 6)) dusign = -1.;
-	    if(side==2 && (mod == 1 || mod == 2 || mod == 3 || mod == 4)) dusign = -1.;
-	  }
-	  //cout<<"u "<<uOrientation<<" v "<<vOrientation<<" w "<<uOrientation*vOrientation<<" dusign "<<dusign<<endl;
-	  //float duumcorr = duum * dusign;
-	}
-	hitStruct.dusign = dusign;
-
-	if(IntSubDetID == StripSubdetector::TOB && debug_){
-	  cout<<"-------------------------------------------"<<endl;
-	  cout<<"z "<<hitStruct.z<<" zbin "<<this->getHisto(hitStruct.z)<<" vOrientation "<<vOrientation
-	      <<" dusign "<<dusign<<" trackOrientation "<<trackOrientation<<" res "<<resXprime<<endl;
 	}
 	
       }else{ // not a detUnit, so must be a virtual 2D-Module
@@ -388,14 +320,7 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
       hitStruct.phi = tsos.globalDirection().phi();
       hitStruct.eta = tsos.globalDirection().eta();
 
-      if(IntSubDetID == StripSubdetector::TOB && debug_){
-	cout<<"z "<<hitStruct.z<<" zbin "<<this->getHisto(hitStruct.z)<<" vOrientation "<<hitStruct.vOrientation
-	    <<" dusign "<<hitStruct.dusign<<" res "<<hitStruct.resXprime<<endl;
-      }
 
-      //cout<<"theta "<<tsos.globalDirection().theta()<<" phi "<<tsos.globalDirection().phi()<<endl<<endl;
-      
-      
       // first try for overlapp residuals
       // based on Code from Keith and Wolfgang
       if(itTraj+1 != itTrajEnd) {
