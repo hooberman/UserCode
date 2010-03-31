@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.1 2010/03/17 15:46:48 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.2 2010/03/30 14:43:04 benhoob Exp $
 //
 //
 
@@ -172,7 +172,9 @@ private:
   Int_t   front_;
   Int_t   layer_;
   Int_t   rod_;
- 
+  Int_t   evt_;
+  Int_t   lumiblock_;
+  Int_t   run_;
 };
 
 //
@@ -241,6 +243,10 @@ PeakDecoResiduals::PeakDecoResiduals(const edm::ParameterSet& iConfig)
     outTree->Branch("front",      &front_,       "front/I");
     outTree->Branch("layer",      &layer_,       "layer/I");
     outTree->Branch("rod",        &rod_,         "rod/I");
+    outTree->Branch("evt",        &evt_,         "evt/I");
+    outTree->Branch("run",        &run_,         "run/I");
+    outTree->Branch("lumiblock",  &lumiblock_,   "lumiblock/I");
+
     
   }
 }
@@ -428,11 +434,10 @@ void
 PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
-
   if(debug_) cout<<"PeakDecoResiduals::analyze"<<endl;
   int evt_run                       = iEvent.id().run()        ;
   int evt_lumiBlock                 = iEvent.luminosityBlock() ;  
-  //int evt_event                     = iEvent.id().event()      ;
+  int evt_event                     = iEvent.id().event()      ;
 
   //cout<<"PeakDecoResiduals Run: "<<evt_run<<" LumiBlock: "<<evt_lumiBlock<<endl;
 
@@ -661,6 +666,9 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       y_           = it->hity;
       z_           = it->hitz;
       r_           = sqrt(pow(it->hitx,2) + pow(it->hity,2));
+      evt_         = evt_event;      
+      lumiblock_   = evt_lumiBlock;
+      run_         = evt_run;
       outTree->Fill();
     }
   }

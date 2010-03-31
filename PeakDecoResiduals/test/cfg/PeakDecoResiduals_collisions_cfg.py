@@ -178,7 +178,7 @@ from CalibTracker.Configuration.Common.PoolDBESSource_cfi import poolDBESSource
 import CalibTracker.Configuration.Common.PoolDBESSource_cfi
 process.trackerAlignment =  CalibTracker.Configuration.Common.PoolDBESSource_cfi.poolDBESSource.clone(
     #connect = cms.string('sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_TRACKERALIGN/HIP/eaguiloc/Merged_1st_900GeV/alignments_iter15.db'),
-    connect = cms.string('sqlite_file:TrackerAlignment_2009_v1_prompt.db'),
+    connect = cms.string('sqlite_file:TrackerAlignment_2009_v1_prompt_NEW.db'),
     timetype = cms.string("runnumber"),
     toGet = cms.VPSet(cms.PSet(record = cms.string('TrackerAlignmentRcd'),
                                tag = cms.string('Alignments')
