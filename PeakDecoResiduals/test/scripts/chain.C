@@ -22,28 +22,29 @@ int getDTSlice(float t){
 }
 
 void chain(){
+   
+  enum subdetenum      { PixelBarrel = 0, PixelEndcap = 1, TIB = 2, TID = 3,
+			 TOB = 4, TECthick = 5, TECthin = 6};
 
-  gStyle->SetOptStat(0);
-  gStyle->SetOptFit(0);
-  //gROOT->SetStyle("Plain");
-  //gStyle->SetPalette(1);
-  bool writeTFile = false;
-  bool printgif   = false;
-  //int  subdet     = 2; //2 TIB, 4 TOB
-  const int nlayers = 4;
-  //const int nlayers = 0;
+  int detlayers[] = {0,0,4,0,6,0,0};
+
+  bool writeTFile   = false;
+  bool printgif     = false;
+  int  mysubdet     = TOB; 
+  int  ndiv         = 1;
+  const int nlayers = detlayers[mysubdet];
+
 
   //Configure variables to plot--------------------------
   vector<char*> cantitles;
   //cantitles.push_back("du_dw");
   //cantitles.push_back("nstripsvstantrk");
-  //cantitles.push_back("nstripsvstantrktgraph");
-  //cantitles.push_back("nstripsvstantrktgraphdt");
-  //cantitles.push_back("tanladt");
+  cantitles.push_back("nstripsvstantrktgraph");
+  cantitles.push_back("nstripsvstantrktgraphdt");
+  cantitles.push_back("tanladt");
   //cantitles.push_back("duvsdtantheta_tgraph");
   //cantitles.push_back("duvsdtantheta_layers_tgraph");
   
-
   const int ncan = cantitles.size();
 
   TCanvas *can[ncan];
@@ -66,6 +67,8 @@ void chain(){
   gROOT->LoadMacro("scripts/plotHists.C"); 
   gROOT->LoadMacro("scripts/plotHistsTH2.C");
   gROOT->ProcessLine(".L scripts/getTGraphFromTH2.C+");
+  //gROOT->SetStyle("Plain");
+  //gStyle->SetPalette(1);
 
   //dummy legend------------------------------------------
   TH1F *h1=new TH1F("h1","h1",1,0,1);
@@ -74,50 +77,43 @@ void chain(){
   TH1F *h2=new TH1F("h2","h2",1,0,1);
   h2->SetMarkerColor(4);
 
-  TLegend *leg1=new TLegend(0.15,0.55,0.35,0.85);
+  TLegend *leg1=new TLegend(0.15,0.55,0.45,0.85);
   leg1->AddEntry(h1,"PEAK");
   leg1->AddEntry(h2,"DECO");
   leg1->SetBorderSize(1);
   leg1->SetFillColor(0);
   
   //Set directories---------------------------------------
-  char* peakdir = getenv("peakdir");
-  char* decodir = getenv("decodir");
+  char* basedir = getenv("basedir");
+  char* dir     = getenv("dir");
 
-  if(!peakdir){
-    cout<<"Can't find peakdir. Exiting"<<endl;
+  if(!basedir){
+    cout<<"Can't find basedir. Exiting"<<endl;
     exit(0);
   }
-  if(!decodir){
-    cout<<"Can't find decodir. Exiting"<<endl;
+  if(!dir){
+    cout<<"Can't find dir. Exiting"<<endl;
     exit(0);
   }
 
-  cout<<"Peak directory "<<peakdir<<endl;
-  cout<<"Deco directory "<<decodir<<endl;
+  cout<<"Reading files from: "<<basedir<<"/"<<dir<<endl;
 
   //Declare histos-----------------------------------------
   TH1F* dupeak = new TH1F("dupeak","dupeak",500,-500,500);
   TH1F* dudeco = new TH1F("dudeco","dudeco",500,-500,500);
   TH1F* dwpeak = new TH1F("dwpeak","dwpeak",1000,-1000,1000);
   TH1F* dwdeco = new TH1F("dwdeco","dwdeco",1000,-1000,1000);
-  //TH1F* dwpeak = new TH1F("dwpeak","dwpeak",500,-2000,2000);
-  //TH1F* dwdeco = new TH1F("dwdeco","dwdeco",500,-2000,2000);
-
+  
   TH2F* duthetapeakp = new TH2F("duthetapeakp","duthetapeakp",100,-2,2,200,-500,500);
   TH2F* duthetapeakm = new TH2F("duthetapeakm","duthetapeakm",100,-2,2,200,-500,500);
   TH2F* duthetadecop = new TH2F("duthetadecop","duthetadecop",100,-2,2,200,-500,500);
   TH2F* duthetadecom = new TH2F("duthetadecom","duthetadecom",100,-2,2,200,-500,500);
 
-  TH2F* duthetapeakp_layer[6]; 
-  TH2F* duthetapeakm_layer[6]; 
-  TH2F* duthetadecop_layer[6];
-  TH2F* duthetadecom_layer[6]; 
+  TH2F* duthetapeakp_layer[nlayers];
+  TH2F* duthetapeakm_layer[nlayers];
+  TH2F* duthetadecop_layer[nlayers];
+  TH2F* duthetadecom_layer[nlayers];
 
-//   TH1F* tanlapeakp_layer[6]; 
-//   TH1F* tanlapeakm_layer[6]; 
-//   TH1F* tanladecop_layer[6];
-//   TH1F* tanladecom_layer[6]; 
 
   TH1F* tanlapeak_layer[nlayers];
   TH1F* tanladeco_layer[nlayers];
@@ -128,10 +124,6 @@ void chain(){
     duthetadecop_layer[ih] = new TH2F(Form("duthetadecop_%i",ih),Form("duthetadecop_%i",ih),100,-2,2,200,-500,500);
     duthetadecom_layer[ih] = new TH2F(Form("duthetadecom_%i",ih),Form("duthetadecom_%i",ih),100,-2,2,200,-500,500);
 
-//     tanlapeakp_layer[ih]   = new TH1F(Form("tanlapeakp_%i",ih),Form("tanlapeakp_%i",ih),10000,0.0,0.2);
-//     tanlapeakm_layer[ih]   = new TH1F(Form("tanlapeakm_%i",ih),Form("tanlapeakm_%i",ih),10000,0.0,0.2);
-//     tanladecop_layer[ih]   = new TH1F(Form("tanladecop_%i",ih),Form("tanladecop_%i",ih),10000,0.0,0.2);
-//     tanladecom_layer[ih]   = new TH1F(Form("tanladecom_%i",ih),Form("tanladecom_%i",ih),10000,0.0,0.2);
     tanlapeak_layer[ih]    = new TH1F(Form("tanlapeak_%i",ih), Form("tanlapeak_%i",ih), 10000,0.0,0.2);
     tanladeco_layer[ih]    = new TH1F(Form("tanladeco_%i",ih), Form("tanladeco_%i",ih), 10000,0.0,0.2);
   }
@@ -152,7 +144,7 @@ void chain(){
 
   //Make TChains------------------------------------------
   TChain *chpeak = new TChain("PeakDecoResiduals/t","Tree");
-  chpeak->Add(Form("%s/res/*.root",peakdir));
+  chpeak->Add(Form("%s/%s/root/peak.root",basedir,dir));
   int npeaktot = chpeak->GetEntries();
   int npeak = 0;
 
@@ -185,8 +177,8 @@ void chain(){
     tpeak->SetBranchAddress("layer"  ,  &layerP);
     tpeak->SetBranchAddress("tanla"  ,  &tanlaP);
     
-    unsigned int npeakentries = tpeak->GetEntries();
-    //unsigned int npeakentries = tpeak->GetEntries()/10;
+    unsigned int npeakentries = tpeak->GetEntries()/ndiv;
+    
     
     for(unsigned int i = 0; i < npeakentries; ++i) {
       
@@ -195,7 +187,7 @@ void chain(){
 
       tpeak->GetEntry(i);
       
-      if(subdetP == 2){
+      if(subdetP == mysubdet){
     
 	dupeak->Fill(dtanthP > 0 ? duP : -duP);
 	dwpeak->Fill(dwP);
@@ -203,17 +195,22 @@ void chain(){
 	if(getDTSlice(dttimeP)>-1)
 	  dttimepeak_dt[getDTSlice(dttimeP)]->Fill(dttimeP);
 
-	tanlapeak_layer[layerP-1]->Fill(vP > 0 ? -tanlaP : tanlaP);
+	if(mysubdet == TIB || mysubdet == TOB)
+	  tanlapeak_layer[layerP-1]->Fill(vP > 0 ? -tanlaP : tanlaP);
 
 	if(vP>0){
 	  duthetapeakp->Fill(dtanthP,duP);
-	  duthetapeakp_layer[layerP-1]->Fill(dtanthP,duP);
+	  if(mysubdet == TIB || mysubdet == TOB)
+	    duthetapeakp_layer[layerP-1]->Fill(dtanthP,duP);
 	  nstripstantrkpeak->Fill(tantrkP,nstripsP);
-	  if(getDTSlice(dttimeP)>-1)
-	    nstripstantrkpeak_dt[getDTSlice(dttimeP)]->Fill(tantrkP,nstripsP);
+	  if(getDTSlice(dttimeP)>-1){
+            //cout<<"DTSlice "<<getDTSlice(dttimeP)<<endl;
+            nstripstantrkpeak_dt[getDTSlice(dttimeP)]->Fill(tantrkP,nstripsP);
+          }
 	}else{
 	  duthetapeakm->Fill(dtanthP,duP);
-	  duthetapeakm_layer[layerP-1]->Fill(dtanthP,duP);
+	  if(mysubdet == TIB || mysubdet == TOB)
+	    duthetapeakm_layer[layerP-1]->Fill(dtanthP,duP);
 	  nstripstantrkpeak->Fill(-tantrkP,nstripsP);
 	  if(getDTSlice(dttimeP)>-1)
 	    nstripstantrkpeak_dt[getDTSlice(dttimeP)]->Fill(-tantrkP,nstripsP);
@@ -226,7 +223,7 @@ void chain(){
   }
 
   TChain *chdeco = new TChain("PeakDecoResiduals/t","Tree");
-  chdeco->Add(Form("%s/res/*.root",decodir));
+  chdeco->Add(Form("%s/%s/root/deco.root",basedir,dir));
   int ndecotot = chdeco->GetEntries();
   int ndeco = 0;
 
@@ -259,8 +256,7 @@ void chain(){
     tdeco->SetBranchAddress("layer"  ,  &layerD);
     tdeco->SetBranchAddress("tanla"  ,  &tanlaD);
 
-    unsigned int ndecoentries = tdeco->GetEntries();
-    //unsigned int ndecoentries = tdeco->GetEntries()/10;
+    unsigned int ndecoentries = tdeco->GetEntries()/ndiv;
     
     for(unsigned int i = 0; i < ndecoentries; ++i) {
 
@@ -269,7 +265,7 @@ void chain(){
       
       tdeco->GetEntry(i);
       
-      if(subdetD == 2){
+      if(subdetD == mysubdet){
      
 	dudeco->Fill(dtanthD > 0 ? duD : -duD);
 	dwdeco->Fill(dwD);
@@ -277,17 +273,20 @@ void chain(){
 	if(getDTSlice(dttimeD)>-1)
 	  dttimedeco_dt[getDTSlice(dttimeD)]->Fill(dttimeD);
 
-	tanladeco_layer[layerD-1]->Fill(vD > 0 ? -tanlaD : tanlaD);
+	
+	if(mysubdet == TIB || mysubdet == TOB)
+	  tanladeco_layer[layerD-1]->Fill(vD > 0 ? -tanlaD : tanlaD);
 	
 	if(vD>0){
 	  duthetadecop->Fill(dtanthD,duD);
-	  duthetadecop_layer[layerD-1]->Fill(dtanthD,duD);
-	  nstripstantrkdeco->Fill(tantrkD, nstripsD);
+	  if(mysubdet == TIB || mysubdet == TOB)
+	    nstripstantrkdeco->Fill(tantrkD, nstripsD);
 	  if(getDTSlice(dttimeD)>-1)
 	    nstripstantrkdeco_dt[getDTSlice(dttimeD)]->Fill(tantrkD, nstripsD);
 	}else{
 	  duthetadecom->Fill(dtanthD,duD);
-	  duthetadecom_layer[layerD-1]->Fill(dtanthD,duD);
+	  if(mysubdet == TIB || mysubdet == TOB)
+	    duthetadecom_layer[layerD-1]->Fill(dtanthD,duD);
 	  nstripstantrkdeco->Fill(-tantrkD,nstripsD);
 	  if(getDTSlice(dttimeD)>-1)
 	    nstripstantrkdeco_dt[getDTSlice(dttimeD)]->Fill(-tantrkD,nstripsD);
@@ -539,7 +538,7 @@ void chain(){
     glapeak->SetMarkerColor(2);
     glapeak->SetLineColor(2);
     glapeak->SetMarkerStyle(8);
-    glapeak->SetMarkerSize(0.1);
+    glapeak->SetMarkerSize(1);
     glapeak->Draw("AP");
     glapeak->SetTitle("tan(#theta_{LA}) from Cluster Width");
     glapeak->GetYaxis()->SetTitle("tan(#theta_{LA})");
@@ -550,7 +549,7 @@ void chain(){
     gladeco->SetMarkerColor(4);
     gladeco->SetLineColor(4);
     gladeco->SetMarkerStyle(8);
-    gladeco->SetMarkerSize(0.1);
+    gladeco->SetMarkerSize(1);
     gladeco->Draw("sameP");
    
     idx++;

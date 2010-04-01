@@ -1,96 +1,57 @@
-// #ifndef __CINT__
-// #include "TChain.h"
-// #include "TROOT.h"
-// #include "TStyle.h"
-// #include "TSystem.h"
-// #include "TCanvas.h"
-// #include "TFile.h"
-// #include "TH2.h"
-// #include "TGraphErrors.h"
-// #include "TMultiGraph.h"
-// #include "histtools.h"
-// #include <iostream>
-// #include <fstream>
-// #endif
+TGraphErrors* averageTGraph(TGraphErrors* g1, TGraphErrors *g2);
 
-// using namespace std;
+inline double fround(double n, unsigned d){
+  return floor(n * pow(10., d) + .5) / pow(10., d);
+}
 
-// void decovspeak(bool skipFWLite = true){
-{
+bool draw(char* var, vector<char*> cantitles){
+  
+  for(int i=0;i<cantitles.size();i++) {
+    if(strcmp(var,cantitles.at(i)) == 0) return true;
+  }
+  return false;
+}
+
+void decovspeak(){
+
   //Config params-----------------------------------------------
   bool printeps=false;
-  bool printgif=false;
+  bool printgif=true;
   bool fit=false;
-  //string dir        = "peaksqlite";  //peak sqlite file
-  //string dir        = "nosqlite";  //no sqlite file
-  //string dir        = "decosqlite";  //deco sqlite file
-  string dir="crabjobs/trial1";
-  gROOT->LoadMacro("scripts/fround.C");
-  int ncan=21;
-  TCanvas *can[ncan];
-  bool drawcan[ncan];
-  string cantitles[ncan]={
-    "deltau_deltaw",
-    "dtquantities",
-    "charge_nstrips",
-    "deltawEC",
-    "duvsdtantheta",
-    "dwvsdttime",
-    "chargevsdttime",
-    "duvsdtanthetasplit",
-    "duvstrkthetasplit",
-    "dwvsdt_tgraph",
-    "chargevsdttime_tgraph",
-    "duvsdtantheta_tgraph",
-    "duvstrktheta_tgraph",
-    "duvsdtanthetaall_tgraph",
-    "duvsdtanthetaproj",
-    "duvstrkthetaproj",
-    "duvsdtanthetasplitTEC",
-    "duvstrkthetaprojy",
-    "dtanlavsdttime",
-    "dwTEC",
-    "deltatanLAdt"
+
+  string dir="crabjobs/trial3";
+
+  vector<char*> cantitles;
+  cantitles.push_back("du_dw");                    //delta u, delta w TH1s
+  //cantitles.push_back("dtquantities");             //DT time TH1s
+  //cantitles.push_back("charge_nstrips");           //charge, nstrips TH1s
+  //cantitles.push_back("deltawEC");                 //delta w for EC TH1s
+  //cantitles.push_back("duvsdtantheta");            //du vs. delta tan theta TH2
+  //cantitles.push_back("dwvsdttime");               //dw vs. dt time TH2
+  //cantitles.push_back("chargevsdttime");           //charge vs dt time TH2
+  cantitles.push_back("duvsdtanthetasplit");       //v+/- split du vs. delta tan(theta) TH2s
+  //cantitles.push_back("duvstrkthetasplit");        //v+/- split du vs. tan(theta_trk)   TH2
+  //cantitles.push_back("dwvsdt_tgraph");            //dw vs. dt time TGraphs
+  //cantitles.push_back("chargevsdttime_tgraph");    //charge vs. dt time TGraphs
+  cantitles.push_back("duvsdtantheta_tgraph");     //v+/- split du vs. delta tan(theta) TGraphs
+  //cantitles.push_back("duvstrktheta_tgraph");      //v+/- split du vs. tan(theta_trk)   TGraphs
+  //cantitles.push_back("duvsdtanthetaall_tgraph");  //du vs. delta tan(theta)         
+  //cantitles.push_back("duvsdtanthetaproj");        //v+/- split du vs. delta tan(theta) & projections
+  //cantitles.push_back("duvstrkthetaproj");         //v+/- split du vs. tan(thetatrk) & projections 
+  //cantitles.push_back("duvstrkthetaprojy");        //v+/v- split du vs. dtantheta & Y projections
+  //cantitles.push_back("dtanladt");                   //delta tan(LA) vs. DT time
+  //cantitles.push_back("deltatanLAdt");             //time dependence of delta tan(LA)
     
-  };
-  
-  //draw canvases
-  drawcan[0]   = true;  //delta u, delta w TH1s
-  drawcan[1]   = false;  //DT time TH1s
-  drawcan[2]   = false;  //charge, nstrips TH1s
-  drawcan[3]   = false;  //delta w for EC TH1s
-  drawcan[4]   = false;  //du vs. delta tan theta TH2
-  drawcan[5]   = false;  //dw vs. dt time TH2
-  drawcan[6]   = false;  //charge vs dt time TH2
-  drawcan[7]   = false;   //v+/- split du vs. delta tan(theta) TH2s
-  drawcan[8]   = false;  //v+/- split du vs. tan(theta_trk)   TH2
-  drawcan[9]   = false;  //dw vs. dt time TGraphs
-  drawcan[10]  = false;  //charge vs. dt time TGraphs
-  drawcan[11]  = true;  //v+/- split du vs. delta tan(theta) TGraphs
-  drawcan[12]  = false;  //v+/- split du vs. tan(theta_trk)   TGraphs
-  drawcan[13]  = false;  //du vs. delta tan(theta)           
-  drawcan[14]  = false;   //v+/- split du vs. delta tan(theta) & projections
-  drawcan[15]  = false;   //v+/- split du vs. tan(thetatrk) & projections
-  drawcan[16]  = false;   //du vs. delta tan(theta) TH2s (TEC)
-  drawcan[17]  = false;   //v+/v- split du vs. dtantheta & Y projections
-  drawcan[18]  = false;   //delta tan(LA) vs. DT time
-  drawcan[19]  = false;   //dw TEC
-  drawcan[20]  = false;    //time dependence of delta tan(LA)
-  
+  const unsigned int ncan = cantitles.size();
+  TCanvas *can[ncan];
+  int idx = 0;
 
   //open root files---------------------------------------------
   string decofile    = dir+"/root/deco.root";
   string peakfile    = dir+"/root/peak.root";
-  //string decofileTH2 = dir+"/root/deco_TH2.root";
-  //string peakfileTH2 = dir+"/root/peak_TH2.root";
-  //string decofile = "crabjobs/trial17/root/deco.root";
-  //string peakfile = "crabjobs/trial15/root/deco.root";
-
-  TFile fdeco(decofile.c_str());
-  TFile fpeak(peakfile.c_str());
-  //TFile fdecoTH2(decofileTH2.c_str());
-  //TFile fpeakTH2(peakfileTH2.c_str());
-
+  TFile *fdeco = TFile::Open(decofile.c_str());
+  TFile *fpeak = TFile::Open(peakfile.c_str());
+  
   //load macros and set style-----------------------------------
   gROOT->LoadMacro("scripts/cloneHist.C");
   gROOT->LoadMacro("scripts/setStats.C");
@@ -118,8 +79,8 @@
   leg1->SetBorderSize(1);
   leg1->SetFillColor(0);
 
-  //get 1D histos-----------------------------------------------
-  fpeak.cd();
+  //get histos-----------------------------------------------
+  fpeak->cd();
   PeakDecoResiduals->cd();
   PeakDecoResiduals->cd();
   TH1F *dupeak =            (TH1F*)du_TOB->Clone();
@@ -129,44 +90,18 @@
   TH1F *ndtpeak =           (TH1F*)ndt_TOB->Clone();
   TH1F *chargepeak =        (TH1F*)charge_TOB->Clone(); 
   TH1F *nstripspeak =       (TH1F*)nstrips_TOB->Clone(); 
-  TH1F *dwpeak_TECthick =   (TH1F*)dw_TECthick->Clone(); 
-  TH1F *dw2peak_TECthick =   (TH1F*)resxoverdtanth_TECthick->Clone(); 
-  //TH1F *dwpeak_EC5thick =   (TH1F*)dw_TECthick->Clone(); 
-  TH1F *dwpeak_TECthin =    (TH1F*)dw_TECthin->Clone(); 
-  TH1F *dw2peak_TECthin =    (TH1F*)resxoverdtanth_TECthin->Clone(); 
-  //TH1F *dwpeak_EC5thin =    (TH1F*)dw_TECthin->Clone(); 
   TH2F* duthetapeak =       (TH2F*)duvsdtantheta_TOB->Clone();
-  //TH2F* dutrkpeak =       (TH2F*)duvstrkangle_TOB->Clone();
-  //TH2F* dulorpeak =       (TH2F*)duvslorangle_TOB->Clone();
   TH2F* duvsdtpeak =        (TH2F*)duvsdttime_TOB->Clone();
   TH2F* dwvsdtpeak =        (TH2F*)dwvsdttime_TOB->Clone();
   TH2F* chvsdtpeak =        (TH2F*)chargevsdttime_TOB->Clone();
-  //TH2F* duthetapeakp =      (TH2F*)duvsdtantheta_vp_TOB->Clone();
-  //TH2F* duthetapeakm =      (TH2F*)duvsdtantheta_vm_TOB->Clone();
-  //TH2F* dutrkpeakp =        (TH2F*)duvstrktheta_vp_TOB->Clone();
-  //TH2F* dutrkpeakm =        (TH2F*)duvstrktheta_vm_TOB->Clone();
-  
   TH2F* duthetapeakp =      (TH2F*)duvsdtantheta_TOB_vp_wp->Clone();
   duthetapeakp       -> Add((TH2F*)duvsdtantheta_TOB_vp_wm->Clone());
   TH2F* duthetapeakm =      (TH2F*)duvsdtantheta_TOB_vm_wp->Clone();
   duthetapeakm       -> Add((TH2F*)duvsdtantheta_TOB_vm_wm->Clone());
-
-  //TH2F* duthetapeakp =      (TH2F*)duvsdtantheta_vp_dt_TOB_3->Clone();
-  //TH2F* duthetapeakm =      (TH2F*)duvsdtantheta_vm_dt_TOB_3->Clone();
-
   TH2F* dutrkpeakp   =      (TH2F*)duvstrktheta_TOB_vp_wp->Clone();
   dutrkpeakp         -> Add((TH2F*)duvstrktheta_TOB_vp_wm->Clone());
   TH2F* dutrkpeakm   =      (TH2F*)duvstrktheta_TOB_vm_wp->Clone();
   dutrkpeakm         -> Add((TH2F*)duvstrktheta_TOB_vm_wm->Clone());
-  TH2F* duthetapeak_TECthick =  (TH2F*)duvsdtantheta_TECthick->Clone();
-  TH2F* duthetapeak_TECthin =  (TH2F*)duvsdtantheta_TECthin->Clone();
-  //TH2F* duthetapeak_TEC =  (TH2F*)duvsdtantheta_TECthick->Clone();
-  //TH2F* duthetapeakp_TEC =  (TH2F*)duvsdtantheta_vp_TECthick->Clone();
-  //TH2F* duthetapeakp_TEC =  (TH2F*)duvsdtantheta_vp_TECthin->Clone();
-  //duthetapeakp_TEC       -> Add((TH2F*)duvsdtantheta_vp_TECthin->Clone());
-  //TH2F* duthetapeakm_TEC =  (TH2F*)duvsdtantheta_vm_TECthick->Clone();
-  //TH2F* duthetapeakm_TEC =  (TH2F*)duvsdtantheta_vm_TECthin->Clone();
-  //duthetapeakm_TEC       -> Add((TH2F*)duvsdtantheta_vm_TECthin->Clone());
   
   TH2F* h_vp_peak[8];
   TH2F* h_vm_peak[8];
@@ -178,8 +113,7 @@
       Get(Form("PeakDecoResiduals/PeakDecoResiduals/duvsdtantheta_vm_dt_TOB_%i",ih));
   }
 
-
-  fdeco.cd();
+  fdeco->cd();
   PeakDecoResiduals->cd();
   PeakDecoResiduals->cd();
   TH1F *dudeco =            (TH1F*)du_TOB->Clone();
@@ -189,45 +123,18 @@
   TH1F *ndtdeco =           (TH1F*)ndt_TOB->Clone();
   TH1F *chargedeco =        (TH1F*)charge_TOB->Clone(); 
   TH1F *nstripsdeco =       (TH1F*)nstrips_TOB->Clone(); 
-  TH1F *dwdeco_TECthick =   (TH1F*)dw_TECthick->Clone(); 
-  TH1F *dw2deco_TECthick =   (TH1F*)resxoverdtanth_TECthick->Clone(); 
-  //TH1F *dwdeco_EC5thick =   (TH1F*)dw_TECthick->Clone(); 
-  TH1F *dwdeco_TECthin =    (TH1F*)dw_TECthin->Clone(); 
-  TH1F *dw2deco_TECthin =    (TH1F*)resxoverdtanth_TECthin->Clone(); 
-  //TH1F *dwdeco_EC5thin =    (TH1F*)dw_TECthin->Clone(); 
   TH2F* duthetadeco =       (TH2F*)duvsdtantheta_TOB->Clone();
-  //TH2F* dutrkdeco =       (TH2F*)duvstrkangle_TOB->Clone();
-  //TH2F* dulordeco =       (TH2F*)duvslorangle_TOB->Clone();
   TH2F* duvsdtdeco =        (TH2F*)duvsdttime_TOB->Clone();
   TH2F* dwvsdtdeco =        (TH2F*)dwvsdttime_TOB->Clone();
   TH2F* chvsdtdeco =        (TH2F*)chargevsdttime_TOB->Clone();
-  //TH2F* duthetadecop =      (TH2F*)duvsdtantheta_vp_TOB->Clone();
-  //TH2F* duthetadecom =      (TH2F*)duvsdtantheta_vm_TOB->Clone();
-  //TH2F* dutrkdecop =        (TH2F*)duvstrktheta_vp_TOB->Clone();
-  //TH2F* dutrkdecom =        (TH2F*)duvstrktheta_vm_TOB->Clone();
-
   TH2F* duthetadecop =      (TH2F*)duvsdtantheta_TOB_vp_wp->Clone();
   duthetadecop       -> Add((TH2F*)duvsdtantheta_TOB_vp_wm->Clone());
   TH2F* duthetadecom =      (TH2F*)duvsdtantheta_TOB_vm_wp->Clone();
   duthetadecom       -> Add((TH2F*)duvsdtantheta_TOB_vm_wm->Clone());
-
-  //TH2F* duthetadecop =      (TH2F*)duvsdtantheta_vp_dt_TOB_3->Clone();
-  //TH2F* duthetadecom =      (TH2F*)duvsdtantheta_vm_dt_TOB_3->Clone();
-
-
   TH2F* dutrkdecop   =      (TH2F*)duvstrktheta_TOB_vp_wp->Clone();
   dutrkdecop         -> Add((TH2F*)duvstrktheta_TOB_vp_wm->Clone());
   TH2F* dutrkdecom   =      (TH2F*)duvstrktheta_TOB_vm_wp->Clone();
   dutrkdecom         -> Add((TH2F*)duvstrktheta_TOB_vm_wm->Clone());
-
-  TH2F* duthetadeco_TECthick =  (TH2F*)duvsdtantheta_TECthick->Clone();
-  TH2F* duthetadeco_TECthin  =  (TH2F*)duvsdtantheta_TECthin->Clone();
-  //TH2F* duthetadecop_TEC =  (TH2F*)duvsdtantheta_vp_TECthick->Clone();
-  //TH2F* duthetadecop_TEC =  (TH2F*)duvsdtantheta_vp_TECthin->Clone();
-  //duthetadecop_TEC       -> Add((TH2F*)duvsdtantheta_vp_TECthin->Clone());
-  //TH2F* duthetadecom_TEC =  (TH2F*)duvsdtantheta_vm_TECthick->Clone();
-  //TH2F* duthetadecom_TEC =  (TH2F*)duvsdtantheta_vm_TECthin->Clone();
-  //duthetadecom_TEC       -> Add((TH2F*)duvsdtantheta_vm_TECthin->Clone());
 
   TH2F* h_vp_deco[8];
   TH2F* h_vm_deco[8];
@@ -240,33 +147,38 @@
 
   }
 
+  //delta u, delta w TH1s---------------------------------------------------
 
-  //delta u, delta w TH1s
-  if(drawcan[0]){
-    can[0]=new TCanvas(cantitles[0].c_str(),cantitles[0].c_str(),dx,dy);
-    can[0]->Divide(2,1);
+  if(draw("du_dw",cantitles)){
+
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),dx,dy);
+    can[idx]->Divide(2,1);
     
-    can[0]->cd(1);
+    can[idx]->cd(1);
     setStats(dupeak,dudeco,0.5,0.65,0.15,false);  
     plotHists(dupeak,dudeco,"TOB","#Delta u [#mum]",-500,500,1,3);
     leg1->Draw();
-    can[0]->cd(2);
+    can[idx]->cd(2);
     setStats(dwpeak,dwdeco,0.5,0.65,0.15,false);  
     plotHists(dwpeak,dwdeco,"TOB","#Delta w [#mum]",-1000,1000,1,3);
     leg1->Draw();
-  }
 
-  //DT quantities
-  if(drawcan[1]){
-    can[1]=new TCanvas(cantitles[1].c_str(),cantitles[1].c_str(),dx,2*dy);
-    can[1]->Divide(2,2);
+    idx++;
+  }
+  
+  //DT quantities------------------------------------------------------------
+
+  if(draw("dtquantities",cantitles)){
+ 
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),dx,2*dy);
+    can[idx]->Divide(2,2);
     
-    can[1]->cd(1);
+    can[idx]->cd(1);
     setStats(dttimepeak,dttimedeco,0.5,0.65,0.15,false);  
     plotHists(dttimepeak,dttimedeco,"TOB","DT time (ns)",-50,50,1,0);
     leg1->Draw();
   
-    can[1]->cd(2);
+    can[idx]->cd(2);
     setStats(dttimeerrpeak,dttimeerrdeco,0.5,0.65,0.15,false);  
     plotHists(dttimeerrpeak,dttimeerrdeco,"TOB","#delta DT time (ns)",0,100,1,0);
   
@@ -277,155 +189,123 @@
     leg2->SetFillColor(0);
     leg2->Draw();
     
-    can[1]->cd(3);
+    can[idx]->cd(3);
     setStats(ndtpeak,ndtdeco,0.5,0.65,0.15,false);  
     plotHists(ndtpeak,ndtdeco,"TOB","n DT Hits",0,50,1,0);
     leg1->Draw();
+    
+    idx++;
   }
 	
-  //charge, nstrips
-  if(drawcan[2]){
-    can[2]=new TCanvas(cantitles[2].c_str(),cantitles[2].c_str(),dx,dy);
-    can[2]->Divide(2,1);
+  //charge, nstrips------------------------------------------------------------
 
-    can[2]->cd(1);
+  if(draw("charge_nstrips",cantitles)){
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),dx,dy);
+    can[idx]->Divide(2,1);
+
+    can[idx]->cd(1);
     setStats(chargepeak,chargedeco,0.5,0.65,0.15,false);  
     plotHists(chargepeak,chargedeco,"TOB","Charge",0,1000,1,0);
-    can[2]->cd(2);
+    can[idx]->cd(2);
     setStats(nstripspeak,nstripsdeco,0.5,0.65,0.15,false);  
     plotHists(nstripspeak,nstripsdeco,"TOB","NStrips",0,10,1,0);
+
+    idx++;
   }
   
-  //delta w for EC
-  if(drawcan[3]){
-    TCanvas *can[3]=new TCanvas(cantitles[3].c_str(),cantitles[3].c_str(),1200,900);
-    can[3]->Divide(2,2);
- 
-    can[3]->cd(1);
-    setStats(dwpeak_EC4thick,dwdeco_EC4thick,0.5,0.65,0.15,false);  
-    //plotHists(dwpeak_EC4thick,dwdeco_EC4thick,"TEC4 (thick)","#Delta w [#mum]",-1000,1000,1,3); //FIX ME
-    //leg1->Draw();
-    //     can[3]->cd(2);
-    //     setStats(dwpeak_EC4thin,dwdeco_EC4thin,0.5,0.65,0.15,false);  
-    //     plotHists(dwpeak_EC4thin,dwdeco_EC4thin,"TEC4 (thin)","#Delta w [#mum]",-1000,1000,1,3);
-    //     leg1->Draw();
-    //     can[3]->cd(3);
-    //     setStats(dwpeak_EC5thick,dwdeco_EC5thick,0.5,0.65,0.15,false);  
-    //     plotHists(dwpeak_EC5thick,dwdeco_EC5thick,"TEC5 (thick)","#Delta w [#mum]",-1000,1000,1,3);
-    //     leg1->Draw();
-    //     can[3]->cd(4);
-    //     setStats(dwpeak_EC5thin,dwdeco_EC5thin,0.5,0.65,0.15,false);  
-    //     plotHists(dwpeak_EC5thin,dwdeco_EC5thin,"TEC5 (thin)","#Delta w [#mum]",-1000,1000,1,3);
-    //     leg1->Draw();
-  }
 
-  //get 2D histos-----------------------------------------------
-  //   gStyle->SetOptStat(0);
-  //   fpeakTH2.cd();
-  //   TrackerOfflineValidation->cd();
-  //   MyStrip->cd();
-  //   TH2F* duthetapeak =  (TH2F*)h_resXprimeVsTheta_TOBBarrel_3->Clone();
-  //   //TH2F* dutrkpeak =  (TH2F*)h_duvstrkangle_TOBBarrel_3->Clone();
-  //   //TH2F* dulorpeak =  (TH2F*)h_duvslorangle_TOBBarrel_3->Clone();
-  //   TH2F* duvsdtpeak =   (TH2F*)h_duvsdttime_TOBBarrel_3->Clone();
-  //   TH2F* dwvsdtpeak =   (TH2F*)h_dwvsdttime_TOBBarrel_3->Clone();
-  //   TH2F* chvsdtpeak =   (TH2F*)h_chargevsdttime_TOBBarrel_3->Clone();
-  //   TH2F* duthetapeakp = (TH2F*)h_resXprimeVsTheta_vp_TOBBarrel_3->Clone();
-  //   TH2F* duthetapeakm = (TH2F*)h_resXprimeVsTheta_vm_TOBBarrel_3->Clone();
-  //   TH2F* dutrkpeakp =   (TH2F*)h_resXprimeVsTrkTheta_vp_TOBBarrel_3->Clone();
-  //   TH2F* dutrkpeakm =   (TH2F*)h_resXprimeVsTrkTheta_vm_TOBBarrel_3->Clone();
+  //du vs. delta tan theta TH2-------------------------------------------------
 
-  //   fdecoTH2.cd();
-  //   TrackerOfflineValidation->cd();
-  //   MyStrip->cd();
-  //   TH2F* duthetadeco =  (TH2F*)h_resXprimeVsTheta_TOBBarrel_3->Clone();
-  //   //TH2F* dutrkdeco =  (TH2F*)h_duvstrkangle_TOBBarrel_3->Clone();
-  //   //TH2F* dulordeco =  (TH2F*)h_duvslorangle_TOBBarrel_3->Clone();
-  //   TH2F* duvsdtdeco =   (TH2F*)h_duvsdttime_TOBBarrel_3->Clone();
-  //   TH2F* dwvsdtdeco =   (TH2F*)h_dwvsdttime_TOBBarrel_3->Clone();
-  //   TH2F* chvsdtdeco =   (TH2F*)h_chargevsdttime_TOBBarrel_3->Clone();
-  //   TH2F* duthetadecop = (TH2F*)h_resXprimeVsTheta_vp_TOBBarrel_3->Clone();
-  //   TH2F* duthetadecom = (TH2F*)h_resXprimeVsTheta_vm_TOBBarrel_3->Clone();
-  //   TH2F* dutrkdecop =   (TH2F*)h_resXprimeVsTrkTheta_vp_TOBBarrel_3->Clone();
-  //   TH2F* dutrkdecom =   (TH2F*)h_resXprimeVsTrkTheta_vm_TOBBarrel_3->Clone();
-
-  //draw 2D histo-----------------------------------------------
-
-  //du vs. delta tan theta TH2
-  if(drawcan[4]){
-    can[4]=new TCanvas(cantitles[4].c_str(),cantitles[4].c_str(),dx,dy);
-    can[4]->Divide(2,1);
+  if(draw("",cantitles)){
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),dx,dy);
+    can[idx]->Divide(2,1);
     
     plotHistsTH2(duthetapeak,
 		 "TOB PEAK","tan(#theta_{trk})-tan(#theta_{L})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[4],1);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],1);
     plotHistsTH2(duthetadeco,
 		 "TOB DECO","tan(#theta_{trk})-tan(#theta_{L})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[4],2);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],2);
+  
+    idx++;
   }
   
-  //dw vs. dt time TH2
-  if(drawcan[5]){
-    can[5]=new TCanvas(cantitles[5].c_str(),cantitles[5].c_str(),dx,dy);
-    can[5]->Divide(2,1);
+  //dw vs. dt time TH2---------------------------------------------------------
+
+  if(draw("",cantitles)){
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),dx,dy);
+    can[idx]->Divide(2,1);
   
     plotHistsTH2(dwvsdtpeak,
 		 "TOB PEAK","DT Time [ns]",
-		 "#Delta w [#mum]",-25,25,-500,500,0,can[5],1);
+		 "#Delta w [#mum]",-25,25,-500,500,0,can[idx],1);
     plotHistsTH2(dwvsdtdeco,
 		 "TOB DECO","DT Time [ns]",
-		 "#Delta w [#mum]",-25,25,-500,500,0,can[5],2);
+		 "#Delta w [#mum]",-25,25,-500,500,0,can[idx],2);
+
+    idx++;
   }
 
-  //charge vs. dt time TH2
-  if(drawcan[6]){
-    can[6]=new TCanvas(cantitles[6].c_str(),cantitles[6].c_str(),dx,dy);
-    can[6]->Divide(2,1);
+  //charge vs. dt time TH2------------------------------------------------------
+  
+  if(draw("",cantitles)){
+     
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),dx,dy);
+    can[idx]->Divide(2,1);
 
     plotHistsTH2(chvsdtpeak,
 		 "TOB PEAK","DT Time [ns]",
-		 "Charge",-25,25,0,500,0,can[6],1);
+		 "Charge",-25,25,0,500,0,can[idx],1);
     plotHistsTH2(chvsdtdeco,
 		 "TOB DECO","DT Time [ns]",
-		 "Charge",-25,25,0,500,0,can[6],2);
+		 "Charge",-25,25,0,500,0,can[idx],2);
+
+    idx++;
   }
   
-  //du vs. delta tan(theta) split v+/v- histos
-  if(drawcan[7]){
-    can[7]=new TCanvas(cantitles[7].c_str(),cantitles[7].c_str(),1200,900);
-    can[7]->Divide(2,2);
+  //du vs. delta tan(theta) split v+/v- histos-----------------------------------
+
+  if(draw("",cantitles)){
+
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),1200,900);
+    can[idx]->Divide(2,2);
 
     plotHistsTH2(duthetapeakp,
 		 "TOB PEAK (v+)","tan(#theta_{trk})-tan(#theta_{L})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[7],1);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],1);
     plotHistsTH2(duthetadecop,
 		 "TOB DECO (v+)","tan(#theta_{trk})-tan(#theta_{L})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[7],2);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],2);
     plotHistsTH2(duthetapeakm,
 		 "TOB PEAK (v-)","tan(#theta_{trk})-tan(#theta_{L})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[7],3);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],3);
     plotHistsTH2(duthetadecom,
 		 "TOB DECO (v-)","tan(#theta_{trk})-tan(#theta_{L})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[7],4);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],4);
+    idx++;
   }
 
-  //du vs. tan(theta_trk) split v+/v- histos
-  if(drawcan[8]){
-    can[8]=new TCanvas(cantitles[8].c_str(),cantitles[8].c_str(),1200,900);
-    can[8]->Divide(2,2);
+  //du vs. tan(theta_trk) split v+/v- histos-------------------------------------
+  
+  if(draw("",cantitles)){
+  
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),1200,900);
+    can[idx]->Divide(2,2);
  
     plotHistsTH2(dutrkpeakp,
 		 "TOB PEAK (v+)","tan(#theta_{trk})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[8],1);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],1);
     plotHistsTH2(dutrkdecop,
 		 "TOB DECO (v+)","tan(#theta_{trk})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[8],2);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],2);
     plotHistsTH2(dutrkpeakm,
 		 "TOB PEAK (v-)","tan(#theta_{trk})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[8],3);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],3);
     plotHistsTH2(dutrkdecom,
 		 "TOB DECO (v-)","tan(#theta_{trk})",
-		 "#Delta u [#mum]",-2,2,-200,200,0,can[8],4);
+		 "#Delta u [#mum]",-2,2,-200,200,0,can[idx],4);
+
+    idx++;
   }
 
   //divide du vs. DT time histos into DT slices
@@ -488,10 +368,12 @@
 
   TLine *line=new TLine;
   
-  //TGraph <dw> vs. <dt time>
-  if(drawcan[9]){
-    TCanvas *can[9]=new TCanvas(cantitles[9].c_str(),cantitles[9].c_str(),600,450);
-    can[9]->cd();
+  //TGraph <dw> vs. <dt time>------------------------------------------------------
+
+  if(draw("",cantitles)){
+   
+    TCanvas *can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),600,450);
+    can[idx]->cd();
 
     dwvsdtpeak->SetName("dwvsdtpeak");
     TGraphErrors *gpeak = getTGraphFromTH2(dwvsdtpeak,dtbins,0);
@@ -532,12 +414,16 @@
     t->DrawLatex(0.15,0.75,speak.str().c_str());
     t->SetTextColor(4);
     t->DrawLatex(0.15,0.65,sdeco.str().c_str());
+
+    idx++;
   }
   
-  //TGraph <charge> vs. <dt time>
-  if(drawcan[10]){
-    TCanvas *can[10]=new TCanvas(cantitles[10].c_str(),cantitles[10].c_str(),800,600);
-    can[10]->cd();
+  //TGraph <charge> vs. <dt time>--------------------------------------------------
+
+  if(draw("",cantitles)){
+
+    TCanvas *can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),800,600);
+    can[idx]->cd();
 
     chvsdtdeco->SetName("chvsdtpeak");
     TGraphErrors *gchpeak = getTGraphFromTH2(chvsdtpeak,dtbins,0);
@@ -561,26 +447,61 @@
     mgch->GetXaxis()->SetTitle("<DT Time> [ns]");
     mgch->GetYaxis()->SetTitle("<Cluster Charge>");
     mgch->SetTitle("TOB");
+
+    idx++;
   }
+ 
 
   //TGraph du vs. delta tan theta----------------------------------------
-  if(drawcan[11]){
+  if(draw("duvsdtantheta_tgraph",cantitles)){
+    
     bool addbpcorr = false; //add tgraph for BP-corrected deco
     float size = 0.1;
-    can[11]=new TCanvas(cantitles[11].c_str(),cantitles[11].c_str(),1200,450);
-    can[11]->Divide(2,1);
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),1200,450);
+    can[idx]->Divide(2,1);
   
-    can[11]->cd(1);
+    can[idx]->cd(1);
     vector<float> thetabins;
-    thetabins.push_back(-1.);
-    thetabins.push_back(-0.75);
+//     thetabins.push_back(-1.);
+//     thetabins.push_back(-0.75);
+//     thetabins.push_back(-0.5);
+//     thetabins.push_back(-0.25);
+//     thetabins.push_back(0.);
+//     thetabins.push_back(0.25);
+//     thetabins.push_back(0.5);
+//     thetabins.push_back(0.75);
+//     thetabins.push_back(1.);
+
+    thetabins.push_back(-0.9);
+    thetabins.push_back(-0.7);
     thetabins.push_back(-0.5);
-    thetabins.push_back(-0.25);
-    thetabins.push_back(0.);
-    thetabins.push_back(0.25);
+    thetabins.push_back(-0.3);
+    thetabins.push_back(-0.1);
+    thetabins.push_back(0.1);
+    thetabins.push_back(0.3);
     thetabins.push_back(0.5);
-    thetabins.push_back(0.75);
-    thetabins.push_back(1.);
+    thetabins.push_back(0.7);
+    thetabins.push_back(0.9);
+
+//     thetabins.push_back(-0.9);
+//     thetabins.push_back(-0.8);
+//     thetabins.push_back(-0.7);
+//     thetabins.push_back(-0.6);
+//     thetabins.push_back(-0.5);
+//     thetabins.push_back(-0.4);
+//     thetabins.push_back(-0.3);
+//     thetabins.push_back(-0.2);
+//     thetabins.push_back(-0.1);
+//     thetabins.push_back(0.);
+//     thetabins.push_back(0.1);
+//     thetabins.push_back(0.2);
+//     thetabins.push_back(0.3);
+//     thetabins.push_back(0.4);
+//     thetabins.push_back(0.5);
+//     thetabins.push_back(0.6);
+//     thetabins.push_back(0.7);
+//     thetabins.push_back(0.8);
+//     thetabins.push_back(0.9);
     
     duthetapeakp->SetName("duthetapeakp");
     TGraphErrors *gduthetapeakp = getTGraphFromTH2(duthetapeakp,thetabins,0);
@@ -650,7 +571,7 @@
     mgdtp->GetXaxis()->SetTitle("<tan(#theta_{trk})-tan(#theta_{LA})>");
     mgdtp->GetYaxis()->SetTitle("<#Deltau> [#mum]");
     mgdtp->SetTitle("TOB");
-    mgdtp->GetXaxis()->SetLimits(-1,1);
+    //mgdtp->GetXaxis()->SetLimits(-1,1);
     mgdtp->GetYaxis()->SetLimits(-20,20);
     mgdtp->SetMinimum(-20);
     mgdtp->SetMaximum(20);
@@ -670,7 +591,7 @@
     //line->DrawLine(-1,0,1,0);
     //line->DrawLine(0,-20,0,20);
     
-    can[11]->cd(2);
+    can[idx]->cd(2);
     duthetapeakm->SetName("duthetapeakm");
     TGraphErrors *gduthetapeakm = getTGraphFromTH2(duthetapeakm,thetabins,0);
     gduthetapeakm->SetMarkerColor(2);
@@ -733,7 +654,7 @@
     mgdtm->GetXaxis()->SetTitle("<tan(#theta_{trk})-tan(#theta_{LA})>");
     mgdtm->GetYaxis()->SetTitle("<#Deltau> [#mum]");
     mgdtm->SetTitle("TOB");
-    mgdtm->GetXaxis()->SetLimits(-1,1);
+    //mgdtm->GetXaxis()->SetLimits(-1,1);
     mgdtm->GetYaxis()->SetLimits(-20,20);
     mgdtm->SetMinimum(-20);
     mgdtm->SetMaximum(20);
@@ -752,8 +673,10 @@
 
     //line->DrawLine(-1,0,1,0);
     //line->DrawLine(0,-20,0,20);
-  }
 
+    idx++;
+  }
+  /*
   //TGraph du vs. trk theta----------------------------------------
   if(drawcan[12]){
     can[12]=new TCanvas(cantitles[12].c_str(),cantitles[12].c_str(),1200,450);
@@ -870,15 +793,26 @@
     can[13]->cd();
     
     vector<float> thetabins;
-    thetabins.push_back(-1.);
-    thetabins.push_back(-0.75);
+//     thetabins.push_back(-1.);
+//     thetabins.push_back(-0.75);
+//     thetabins.push_back(-0.5);
+//     thetabins.push_back(-0.25);
+//     thetabins.push_back(0.);
+//     thetabins.push_back(0.25);
+//     thetabins.push_back(0.5);
+//     thetabins.push_back(0.75);
+//     thetabins.push_back(1.);
+
+    thetabins.push_back(-0.9);
+    thetabins.push_back(-0.7);
     thetabins.push_back(-0.5);
-    thetabins.push_back(-0.25);
-    thetabins.push_back(0.);
-    thetabins.push_back(0.25);
+    thetabins.push_back(-0.3);
+    thetabins.push_back(-0.1);
+    thetabins.push_back(0.1);
+    thetabins.push_back(0.3);
     thetabins.push_back(0.5);
-    thetabins.push_back(0.75);
-    thetabins.push_back(1.);
+    thetabins.push_back(0.7);
+    thetabins.push_back(0.9);
     
     duthetapeak->SetName("duthetapeak");
     TGraphErrors *gduthetapeak = getTGraphFromTH2(duthetapeak,thetabins,0);
@@ -1409,18 +1343,20 @@
     setStats(dw2peak_TECthin,dw2deco_TECthin,0.5,0.65,0.15,false);  
     plotHists(dw2peak_TECthin,dw2deco_TECthin,"TEC thin","#Delta w [#mum]",-1000,1000,1,3);
   }
-
-  if(drawcan[20]){
-    can[20]=new TCanvas(cantitles[20].c_str(),cantitles[20].c_str(),1200,450);
-    can[20]->Divide(2,1);
+  */
+ 
+  
+  if(draw("dtanladt",cantitles)){
+    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),1200,450);
+    can[idx]->Divide(2,1);
    
     //    can[20]->cd(1);
     //    h_vp_peak[0]->Draw("colz");
-    //    can[20]->cd(2);
+    //    can[idx]->cd(2);
     //    h_vm_peak[0]->Draw("colz");
-    //    can[20]->cd(3);
+    //    can[idx]->cd(3);
     //    h_vp_deco[0]->Draw("colz");
-    //    can[20]->cd(4);
+    //    can[idx]->cd(4);
     //    h_vm_deco[0]->Draw("colz");
 
     vector<float> thetabins;
@@ -1512,10 +1448,10 @@
       dtanla_vp_peak[i]    = b_vp_peak[i]/(250.-m_vp_peak[i]);
       dtanlaerr_vp_peak[i] = berr_vp_peak[i]/(250.-m_vp_peak[i]);
      
-      //can[20]->cd(1);
+      //can[idx]->cd(1);
       //g_vp_peak[i]->Draw("AP");
 
-      g_vm_peak[i] = getTGraphFromTH2(h_vm_peak[i],thetabins,0);
+      g_vm_peak[i] = getTGraphFromTH2(h_vm_peak[i],thetabins,0,1);
       g_vm_peak[i]->SetMarkerColor(2);
       g_vm_peak[i]->SetLineColor(2);
       g_vm_peak[i]->SetMarkerStyle(8);
@@ -1533,7 +1469,7 @@
       dtanla_vm_peak[i]    = b_vm_peak[i]/(250.-m_vm_peak[i]);
       dtanlaerr_vm_peak[i] = berr_vm_peak[i]/(250.-m_vm_peak[i]);
 
-      //can[20]->cd(2);
+      //can[idx]->cd(2);
       //g_vm_peak[i]->Draw("AP");
 
      
@@ -1555,10 +1491,10 @@
       dtanla_vp_deco[i]    = b_vp_deco[i]/(250.-m_vp_deco[i]);
       dtanlaerr_vp_deco[i] = berr_vp_deco[i]/(250.-m_vp_deco[i]);
 
-      //can[20]->cd(3);
+      //can[idx]->cd(3);
       //g_vp_deco[i]->Draw("AP");
 
-      g_vm_deco[i] = getTGraphFromTH2(h_vm_deco[i],thetabins,0);
+      g_vm_deco[i] = getTGraphFromTH2(h_vm_deco[i],thetabins,0,1);
       g_vm_deco[i]->SetMarkerColor(2);
       g_vm_deco[i]->SetLineColor(2);
       g_vm_deco[i]->SetMarkerStyle(8);
@@ -1576,7 +1512,7 @@
       dtanla_vm_deco[i]    = b_vm_deco[i]/(250.-m_vm_deco[i]);
       dtanlaerr_vm_deco[i] = berr_vm_deco[i]/(250.-m_vm_deco[i]);
 
-      //can[20]->cd(4);
+      //can[idx]->cd(4);
       //g_vm_deco[i]->Draw("AP");
 
     }
@@ -1641,47 +1577,101 @@
     gtot_vm_deco->SetMarkerStyle(20);
     gtot_vm_deco->SetMarkerSize(0.5);
 
-    can[20]->cd(1);
+    can[idx]->cd(1);
     TMultiGraph *gtot_vp=new TMultiGraph();
     gtot_vp->Add(gtot_vp_peak);
     gtot_vp->Add(gtot_vp_deco);
     gtot_vp->SetTitle("TOB (V+)");
     gtot_vp->Draw("AP");
     gtot_vp->GetXaxis()->SetTitle("DT Time (ns)");
-    //gtot_vp->GetYaxis()->SetTitle("y-int (#mum)");
-    gtot_vp->GetYaxis()->SetTitle("#Deltatan(LA)");
+    gtot_vp->GetYaxis()->SetTitle("#Deltatan(#theta_{LA})");
     gtot_vp->GetXaxis()->SetTitleSize(0.05);
     gtot_vp->GetYaxis()->SetTitleSize(0.05);
     gtot_vp->Draw("AP");
 
-    can[20]->cd(2);
+    can[idx]->cd(2);
     TMultiGraph *gtot_vm=new TMultiGraph();
     gtot_vm->Add(gtot_vm_peak);
     gtot_vm->Add(gtot_vm_deco);
     gtot_vm->SetTitle("TOB (V-)");
     gtot_vm->Draw("AP");
     gtot_vm->GetXaxis()->SetTitle("DT Time (ns)");
-    //gtot_vm->GetYaxis()->SetTitle("y-int (#mum)");
-    gtot_vm->GetYaxis()->SetTitle("#Deltatan(LA)");
+    gtot_vm->GetYaxis()->SetTitle("#Deltatan(#theta_{LA})");
     gtot_vm->GetXaxis()->SetTitleSize(0.05);
     gtot_vm->GetYaxis()->SetTitleSize(0.05);
     gtot_vm->Draw("AP");
      
-  }
+    idx++;
 
+    TCanvas *ctemp = new TCanvas("ctemp","",800,600);
+    ctemp->cd();
+    TGraphErrors *gpeak = averageTGraph(gtot_vp_peak,gtot_vm_peak);
+    TGraphErrors *gdeco = averageTGraph(gtot_vp_deco,gtot_vm_deco);
+    
+    gpeak->SetLineColor(6);
+    gpeak->SetMarkerColor(6);
+    gdeco->SetLineColor(8);
+    gdeco->SetMarkerColor(8);
+    gpeak->SetMarkerStyle(20);
+    gpeak->SetMarkerSize(0.5);
+    gdeco->SetMarkerStyle(20);
+    gdeco->SetMarkerSize(0.5);
+   
+    gpeak->SetTitle("TOB");
+    gpeak->GetXaxis()->SetTitle("DT Time (ns)");
+    gpeak->GetYaxis()->SetTitle("#Deltatan(#theta_{LA})");
+    gpeak->Draw("AP");
+    gdeco->Draw("sameP");
+    gpeak->GetYaxis()->SetRangeUser(-0.11,-0.05);
+    
+ }
 
-
+  
   for(int ican=0;ican<ncan;ican++){
-    if(drawcan[ican]){
-      can[ican]->Modified();
-      can[ican]->Update();
-      if(printgif) can[ican]->Print(Form("%s/plots/%s.gif",dir,cantitles[ican]));
-    }
+    can[ican]->Modified();
+    can[ican]->Update();
+    if(printgif) can[ican]->Print(Form("%s/plots/%s_TOB.gif",dir,cantitles[ican]));
+  
   }
 }
 
 
+TGraphErrors* averageTGraph(TGraphErrors* g1, TGraphErrors *g2){
 
+  Double_t* x1  = g1->GetX();
+  Double_t* y1  = g1->GetY();
+  Double_t* ex1 = g1->GetEX();
+  Double_t* ey1 = g1->GetEY();
+  Int_t n1      = g1->GetN();
+  
+  Double_t* x2  = g2->GetX();
+  Double_t* y2  = g2->GetY();
+  Double_t* ex2 = g2->GetEX();
+  Double_t* ey2 = g2->GetEY();
+  Int_t n2      = g2->GetN();
+
+  assert(n1 == n2);
+  
+  Double_t* x  = new Double_t[n1];
+  Double_t* y  = new Double_t[n1];
+  Double_t* ex = new Double_t[n1];
+  Double_t* ey = new Double_t[n1];
+
+  for(int i = 0 ; i < n1 ; i++){
+
+    ex[i] = sqrt( 1. / ( 1. / pow(ex1[i],2) + 1. / pow(ex2[i],2) ) );
+    x[i]  = (x1[i] / pow(ex1[i],2) + x2[i] / pow(ex2[i],2) ) * pow(ex[i],2);
+
+    ey[i] = sqrt( 1. / ( 1. / pow(ey1[i],2) + 1. / pow(ey2[i],2) ) );
+    y[i]  = (y1[i] / pow(ey1[i],2) + y2[i] / pow(ey2[i],2) ) * pow(ey[i],2) - 0.09095;
+
+    ex[i] = 0.;
+  }
+
+  TGraphErrors *g = new TGraphErrors(n1,x,y,ex,ey);
+  return g;
+
+}
 
 
 
