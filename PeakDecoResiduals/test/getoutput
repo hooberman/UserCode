@@ -6,9 +6,9 @@ else
     source getdirs $1
 endif
 
-echo "Getting peakdir"
-crab -status    -c $peakdir
-crab -getoutput -c $peakdir
+#echo "Getting peakdir"
+#crab -status    -c $peakdir
+#crab -getoutput -c $peakdir
 
 echo "Getting decodir"
 crab -status    -c $decodir

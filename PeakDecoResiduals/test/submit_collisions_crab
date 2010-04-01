@@ -6,7 +6,7 @@ echo "Submitting to directory" $basedir/$dir
 
 mkdir $basedir/$dir/
 
-echo $dir "2009 peak/deco data. 3.8T alignment. Add ntuple" > $basedir/$dir/NOTES
+echo $dir "7 TeV data from 3/30 run 132440" > $basedir/$dir/NOTES
 
 mkdir $basedir/$dir/root/
 mkdir $basedir/$dir/plots/
@@ -21,16 +21,16 @@ cp ../plugins/PeakDecoResiduals.cc                 $basedir/$dir/src/.
 cp ../src/TrackerValidationVariables.cc            $basedir/$dir/src/.
 cp ../interface/TrackerValidationVariables.h       $basedir/$dir/src/.
 
-echo "Creating peak job"
-crab -create -cfg cfg/PeakDecoResiduals_collisions_crab_peak.cfg
-setenv peakdir `ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
-echo "Copying peakdir"
-cp -r $peakdir/ $basedir/$dir/.
-rm -r $peakdir/
-ln -s $basedir/$dir/$peakdir
-echo "Submitting peak job" $peakdir
-echo "PEAK" > $peakdir/NOTES
-crab -submit all -c
+#echo "Creating peak job"
+#crab -create -cfg cfg/PeakDecoResiduals_collisions_crab_peak.cfg
+#setenv peakdir `ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
+#echo "Copying peakdir"
+#cp -r $peakdir/ $basedir/$dir/.
+#rm -r $peakdir/
+#ln -s $basedir/$dir/$peakdir
+#echo "Submitting peak job" $peakdir
+#echo "PEAK" > $peakdir/NOTES
+#crab -submit all -c
 
 echo "Creating deco job"
 crab -create -cfg cfg/PeakDecoResiduals_collisions_crab_deco.cfg
@@ -43,5 +43,6 @@ echo "Submitting deco job" $decodir
 echo "DECO" > $decodir/NOTES
 crab -submit all -c
 
+setenv peakdir NOPEAKDIR
 echo $peakdir $decodir $basedir $dir >! dirs.txt
 cp dirs.txt $basedir/$dir/.

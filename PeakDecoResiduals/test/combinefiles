@@ -6,8 +6,8 @@ else
     source getdirs $1
 endif
 
-echo "Combining peakdir files"
-hadd -f $basedir/$dir/root/peak.root  $peakdir/res/temp*.root >! $basedir/$dir/log/combinepeak.txt &
+#echo "Combining peakdir files"
+#hadd -f $basedir/$dir/root/peak.root  $peakdir/res/temp*.root >! $basedir/$dir/log/combinepeak.txt &
 
 echo "Combining decodir files"
 hadd -f $basedir/$dir/root/deco.root  $decodir/res/temp*.root >! $basedir/$dir/log/combinedeco.txt &

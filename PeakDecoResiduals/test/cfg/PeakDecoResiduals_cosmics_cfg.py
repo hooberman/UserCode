@@ -4,7 +4,8 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("OfflineValidator") 
    
 #process.load("Alignment.PeakDecoResiduals.DataSetCRAFT09_109011_109624_cff")
-process.load("Alignment.PeakDecoResiduals.DataSetCRAFT09_38Tpeak_TP_cff")
+#process.load("Alignment.PeakDecoResiduals.DataSetCRAFT09_38Tpeak_TP_cff")
+process.load("Alignment.PeakDecoResiduals.DataSet_Cosmics_Feb10_38Tpeak_cff")
 #process.load("Alignment.PeakDecoResiduals.DataSetCRAFT09_38Tdec_TP_cff")
 
 #process.source.inputCommands = cms.untracked.vstring('keep *', 'drop *_MEtoEDMConverter_*_*') # hack to get rid of the memory consumption problem in 2_2_X and beond
@@ -16,7 +17,7 @@ process.options = cms.untracked.PSet(
 
 ### Maximum number of Events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
  )
 
 ### Output File Configuration
@@ -92,8 +93,8 @@ process.TrackerTrackHitFilter.usePixelQualityFlag= True
 
 #now we give the TrackCandidate coming out of the TrackerTrackHitFilter to the track producer
 import RecoTracker.TrackProducer.CTFFinalFitWithMaterialP5_cff
-process.HitFilteredTracks = RecoTracker.TrackProducer.CTFFinalFitWithMaterialP5_cff.ctfWithMaterialTracksP5.clone(
-#process.HitFilteredTracks = RecoTracker.TrackProducer.CTFFinalFitWithMaterialP5_cff.ctfWithMaterialTracksCosmics.clone(
+#process.HitFilteredTracks = RecoTracker.TrackProducer.CTFFinalFitWithMaterialP5_cff.ctfWithMaterialTracksP5.clone(
+process.HitFilteredTracks = RecoTracker.TrackProducer.CTFFinalFitWithMaterialP5_cff.ctfWithMaterialTracksCosmics.clone(
     src = 'TrackerTrackHitFilter',
 ###    TrajectoryInEvent = True,
     TTRHBuilder = "WithAngleAndTemplate"    
@@ -126,7 +127,8 @@ process.load("RecoVertex.BeamSpotProducer.BeamSpot_cff")
  
 ### GlobalTag Conditions (if needed)
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = "CRAFT09_R_V4::All"
+process.GlobalTag.globaltag = "GR10_P_V2COS::All"
+#process.GlobalTag.globaltag = "CRAFT09_R_V4::All"
 #process.GlobalTag.globaltag = "GR09_31X_V4P::All"
 #process.GlobalTag.connect="frontier://FrontierProd/CMS_COND_31X_FROM21X"
 #process.GlobalTag.connect="frontier://FrontierProd/CMS_COND_31X_GLOBALTAG"
@@ -173,7 +175,9 @@ process.es_prefer_ZeroAPE = cms.ESPrefer("PoolDBESSource", "ZeroAPE")
 from CondCore.DBCommon.CondDBSetup_cfi import *
 process.trackerAlignment = cms.ESSource("PoolDBESSource",CondDBSetup,
                                         #PEAK CRAFT09 3.8T
-                                        connect = cms.string('sqlite_file:TrackerAlignment_2009_v1_prompt.db'),
+                                        #connect = cms.string('sqlite_file:TrackerAlignment_2009_v1_prompt.db'),
+                                        #PEAK FEB2010 cosmics 3.8T
+                                        connect = cms.string('sqlite_file:TrackerAlignment_Feb2010Cosmics_38T.db'),
                                         #PEAK CRAFT09 0T
                                         #connect = cms.string('sqlite_file:TrackerAlignment_CRAFT09_0T.db'),
                                         timetype = cms.string("runnumber"),

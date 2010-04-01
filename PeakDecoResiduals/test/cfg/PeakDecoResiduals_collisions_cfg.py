@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("OfflineValidator")
 
-process.load("Alignment.PeakDecoResiduals.DataSetMinBias_38Tpeak_cff")
+process.load("Alignment.PeakDecoResiduals.DataSetMinBias_Mar30_2010_dec_cff")
 
 #process.source.inputCommands = cms.untracked.vstring('keep *', 'drop *_MEtoEDMConverter_*_*') # hack to get rid of the memory consumption problem in 2_2_X and beond
 process.options = cms.untracked.PSet(
@@ -16,7 +16,7 @@ process.options = cms.untracked.PSet(
  ## Maximum number of Events
  ## 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
     )
 
 #lumisToProcess = cms.untracked.VLuminosityBlockRange(
@@ -154,9 +154,9 @@ process.load("RecoVertex.BeamSpotProducer.BeamSpot_cff")
  ## GlobalTag Conditions (if needed)
  ##
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = "GR09_R_34X_V2::All"
+#process.GlobalTag.globaltag = "GR09_R_34X_V2::All"
 #process.GlobalTag.globaltag = "GR09_R_V6A::All"
-
+process.GlobalTag.globaltag = "GR10_P_V4::All"
 
 #use lorentz angle from global tag
   
@@ -178,7 +178,7 @@ from CalibTracker.Configuration.Common.PoolDBESSource_cfi import poolDBESSource
 import CalibTracker.Configuration.Common.PoolDBESSource_cfi
 process.trackerAlignment =  CalibTracker.Configuration.Common.PoolDBESSource_cfi.poolDBESSource.clone(
     #connect = cms.string('sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_TRACKERALIGN/HIP/eaguiloc/Merged_1st_900GeV/alignments_iter15.db'),
-    connect = cms.string('sqlite_file:TrackerAlignment_2009_v1_prompt_NEW.db'),
+    connect = cms.string('sqlite_file:TrackerAlignment_Feb2010Cosmics_38T.db'),
     timetype = cms.string("runnumber"),
     toGet = cms.VPSet(cms.PSet(record = cms.string('TrackerAlignmentRcd'),
                                tag = cms.string('Alignments')
