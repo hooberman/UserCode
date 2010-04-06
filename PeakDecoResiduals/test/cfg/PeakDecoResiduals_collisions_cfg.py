@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("OfflineValidator")
 
-process.load("Alignment.PeakDecoResiduals.DataSetMinBias_Mar30_2010_dec_cff")
+process.load("Alignment.PeakDecoResiduals.DataSetMinBias_2010_dec_cff")
 
 #process.source.inputCommands = cms.untracked.vstring('keep *', 'drop *_MEtoEDMConverter_*_*') # hack to get rid of the memory consumption problem in 2_2_X and beond
 process.options = cms.untracked.PSet(

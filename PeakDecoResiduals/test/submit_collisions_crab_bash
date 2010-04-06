@@ -1,7 +1,7 @@
 #!/bin/csh -f
 
-setenv basedir   crabjobs
-setenv dir trial`ls -l ${basedir}/ | wc | awk '{print $1}'`
+export basedir=crabjobs
+export dir=trial`ls -l ${basedir}/ | wc | awk '{print $1}'`
 echo "Submitting to directory" $basedir/$dir 
 
 mkdir $basedir/$dir/
@@ -23,7 +23,7 @@ cp ../interface/TrackerValidationVariables.h       $basedir/$dir/src/.
 
 #echo "Creating peak job"
 #crab -create -cfg cfg/PeakDecoResiduals_collisions_crab_peak.cfg
-#setenv peakdir `ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
+#export peakdir=`ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
 #echo "Copying peakdir"
 #cp -r $peakdir/ $basedir/$dir/.
 #rm -r $peakdir/
@@ -34,7 +34,7 @@ cp ../interface/TrackerValidationVariables.h       $basedir/$dir/src/.
 
 echo "Creating deco job"
 crab -create -cfg cfg/PeakDecoResiduals_collisions_crab_deco.cfg
-setenv decodir `ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
+export decodir=`ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
 echo "Copying decodir"
 cp -r $decodir/ $basedir/$dir/.
 rm -r $decodir/
@@ -43,6 +43,6 @@ echo "Submitting deco job" $decodir
 echo "DECO" > $decodir/NOTES
 crab -submit all -c
 
-setenv peakdir NOPEAKDIR
-echo $peakdir $decodir $basedir $dir >! dirs.txt
+export peakdir=NOPEAKDIR
+echo $peakdir $decodir $basedir $dir >& dirs.txt
 cp dirs.txt $basedir/$dir/.
