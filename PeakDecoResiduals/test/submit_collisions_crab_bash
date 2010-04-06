@@ -1,12 +1,12 @@
 #!/bin/csh -f
 
-export basedir=crabjobs
+export basedir=/nfs-3/userdata/benhoob/crabjobs/
 export dir=trial`ls -l ${basedir}/ | wc | awk '{print $1}'`
 echo "Submitting to directory" $basedir/$dir 
 
 mkdir $basedir/$dir/
 
-echo $dir "/MinimumBias/Commissioning10-GOODCOLL-v7/RAW-RECO processed 2010-04-06" > $basedir/$dir/NOTES
+echo $dir "/MinimumBias/Commissioning10-Apr1Skim_GOODCOLL-v1/RAW-RECO  2010-04-06 CMSSW_3_5_6 Feb2010 cosmics alignment." > $basedir/$dir/NOTES
 
 mkdir $basedir/$dir/root/
 mkdir $basedir/$dir/plots/
@@ -34,8 +34,8 @@ cp ../interface/TrackerValidationVariables.h       $basedir/$dir/src/.
 
 echo "Creating deco job"
 crab -create -cfg cfg/PeakDecoResiduals_collisions_crab_deco.cfg
-export decodir=`ls -ltrd crab_* | tail -1 | awk '{print $9}' | sed 's/\///g'`
-echo "Copying decodir"
+export decodir=`ls -ltrd crab_* | tail -2 | awk '{print $9}'`
+echo "Copying decodir" $decodir
 cp -r $decodir/ $basedir/$dir/.
 rm -r $decodir/
 ln -s $basedir/$dir/$decodir

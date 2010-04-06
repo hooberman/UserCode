@@ -6,7 +6,7 @@ echo "Submitting to directory" $basedir/$dir
 
 mkdir $basedir/$dir/
 
-echo $dir "/MinimumBias/Commissioning10-GOODCOLL-v7/RAW-RECO processed 2010-04-06" > $basedir/$dir/NOTES
+echo $dir "/MinimumBias/Commissioning10-GOODCOLL-v8/RAW-RECO processed 2010-04-06" > $basedir/$dir/NOTES
 
 mkdir $basedir/$dir/root/
 mkdir $basedir/$dir/plots/
