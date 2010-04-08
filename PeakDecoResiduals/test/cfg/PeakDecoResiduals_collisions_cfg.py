@@ -156,9 +156,16 @@ process.load("RecoVertex.BeamSpotProducer.BeamSpot_cff")
  ## GlobalTag Conditions (if needed)
  ##
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-#process.GlobalTag.globaltag = "GR09_R_34X_V2::All"
-#process.GlobalTag.globaltag = "GR09_R_V6A::All"
+###/MinimumBias/Commissioning10-GOODCOLL-v8/RAW-RECO 
 process.GlobalTag.globaltag = "GR10_P_V4::All"
+
+###/MinimumBias/Commissioning10-Apr1Skim_GOODCOLL-v1/RAW-RECO
+#process.GlobalTag.globaltag = "GR_R_35X_V6::All" 
+
+###/MinimumBias/BeamCommissioning09-BSCNOBEAMHALO-Mar3rdSkim_v2/RAW-RECO
+#process.GlobalTag.globaltag = "GR09_R_35_V2B::All"
+
+
 
 #use lorentz angle from global tag
   

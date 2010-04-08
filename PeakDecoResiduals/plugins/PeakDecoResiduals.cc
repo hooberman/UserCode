@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.2 2010/03/30 14:43:04 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.3 2010/03/31 15:42:52 benhoob Exp $
 //
 //
 
@@ -319,9 +319,9 @@ void PeakDecoResiduals::BookHists(TFileDirectory &tfd){
     hlocalphi[idet]           = tfd.make<TH1F>(Form("localphi_%s",det[idet]),   
 					 Form("localphi (%s)",det[idet]),50,-1,1);
     hdu[idet]                 = tfd.make<TH1F>(Form("du_%s",det[idet]),   
-					 Form("du (%s)",det[idet]),1000,-500,500);
+					 Form("du (%s)",det[idet]),2000,-1000,1000);
     hdw[idet]                 = tfd.make<TH1F>(Form("dw_%s",det[idet]),   
-					 Form("dw (%s)",det[idet]),1000,-1000,1000);
+					 Form("dw (%s)",det[idet]),4000,-2000,2000);
 
     hresxoverdtanth[idet]                 = tfd.make<TH1F>(Form("resxoverdtanth_%s",det[idet]),   
 							   Form("resxoverdtanth (%s)",det[idet]),1000,-1000,1000);
