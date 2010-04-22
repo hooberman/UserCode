@@ -58,6 +58,9 @@
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2DCollection.h"
 #include "DataFormats/TrackerRecHit2D/interface/ProjectedSiStripRecHit2D.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
+#include "TrackingTools/PatternTools/interface/TrajTrackAssociation.h"
+
+
 
 bool debug_=false;
 
@@ -78,6 +81,12 @@ TrackerValidationVariables::~TrackerValidationVariables() {}
 //void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, std::vector<AVHitStruct>& v_avhitout ){
 void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, const edm::EventSetup& iSetup, std::vector<AVHitStruct>& v_avhitout, bool runOnCosmics_){ 
 
+  //get the map
+  //edm::Handle<TrajTrackAssociationCollection> match;
+  //iEvent.getByLabel("generalTracks",match);
+  //const TrajTrackAssociationCollection ttac = *(match.product());
+
+  
   edm::Handle<std::vector<Trajectory> > trajCollectionHandle;
   iEvent.getByLabel(conf_.getParameter<std::string>("trajectoryInput"),trajCollectionHandle);
   
@@ -95,12 +104,13 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
     const std::vector<TrajectoryMeasurement> &tmColl = it->measurements();
     for(std::vector<TrajectoryMeasurement>::const_iterator itTraj = tmColl.begin(), itTrajEnd = tmColl.end(); 
 	itTraj != itTrajEnd; ++itTraj) {
-
+      
       nitTraj++;
       
       if(! itTraj->updatedState().isValid()) continue;
       
       TrajectoryStateOnSurface tsos = tsoscomb( itTraj->forwardPredictedState(), itTraj->backwardPredictedState() );
+      
       TransientTrackingRecHit::ConstRecHitPointer hit    = itTraj->recHit();
       
       if(! hit->isValid() || hit->geographicalId().det() != DetId::Tracker ) continue; 
@@ -111,6 +121,45 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
       uint IntSubDetID = (hit_detId.subdetId());
       
       if(IntSubDetID == 0) continue;
+
+//       cout << "traj " << nitTraj << endl;
+//       cout << "globalMomentum ( " 
+// 	   << tsos.globalMomentum().x() << " , " 
+// 	   << tsos.globalMomentum().y() << " , " 
+// 	   << tsos.globalMomentum().z() << " )" 
+// 	   << " mom " << tsos.globalMomentum().mag() 
+// 	   << " pt " << tsos.globalMomentum().perp() 
+// 	   << " pt " << sqrt( pow(tsos.globalMomentum().x(),2) + pow(tsos.globalMomentum().y(),2)  ) << endl;
+      
+
+      hitStruct.trkmom = tsos.globalMomentum().mag();
+      hitStruct.trkpt  = tsos.globalMomentum().perp();
+      
+      /*
+      //Loop over map entries
+      for(TrajTrackAssociationCollection::const_iterator it = ttac.begin(); it != ttac.end() ; ++it){
+	const edm::Ref<std::vector<Trajectory> > traj_iterator = it->key; 
+
+	// Trajectory Map, extract Trajectory for this track
+	reco::TrackRef trackref = it->val;
+
+// 	cout << "--->trackMom ( " 
+// 	     << trackref.px() << " , "
+// 	     << trackref.py() << " , "
+// 	     << trackref.pz() << " )" << endl;
+
+	// TrajectoryStateOnSurface tsos_map = tsoscomb( traj_iterator->forwardPredictedState(), traj_iterator->backwardPredictedState() );
+
+// 	cout << "--> globalPosition ( " 
+// 	     << tsos_map.globalPosition().x() << " , " 
+// 	     << tsos_map.globalPosition().y() << " , " 
+// 	     << tsos_map.globalPosition().z() << " )" << endl;
+
+	if( itTraj == traj_iterator ) cout << "MATCH" << endl;
+      }
+      */
+
+
 
       //Added by Ben-------------------------------------------------------------------------------
       if(IntSubDetID == StripSubdetector::TIB || IntSubDetID == StripSubdetector::TOB || 

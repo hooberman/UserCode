@@ -51,6 +51,8 @@ class TrackerValidationVariables  {
       nstrips(-999), 
       p(-999.),
       rawDetId(0), 
+      trkmom(-9999), 
+      trkpt(-9999), 
       overlapres(std::make_pair(0,-999.)) {}
 
     float resX;
@@ -83,6 +85,8 @@ class TrackerValidationVariables  {
     int   nstrips;
     float p;
     uint32_t rawDetId;
+    float trkmom;
+    float trkpt;
     std::pair<uint,float> overlapres;
   };
   struct AVTrackStruct{

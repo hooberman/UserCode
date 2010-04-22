@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.3 2010/03/31 15:42:52 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.4 2010/04/08 12:48:53 benhoob Exp $
 //
 //
 
@@ -84,12 +84,18 @@ private:
 
   TH2F* hlumivsrun;      
   TH1F* hdttime[7];            
+  TH1F* htrkmom[7];            
+  TH1F* htrkpt[7];            
+  TH2F* htrkpt_tantrk[7];            
   TH1F* hdttimeerr[7];         
   TH1F* hndt[7];               
   TH2F* hduvsdtantheta[7];
+  TProfile* hduvsdtantheta_prof[7];
   TH2F* hresxvsdtantheta[7];
   TH2F* hduvstrktheta[7];      
-  TH2F* hduvsdtantheta_vw[7][2][2];  
+  //TH2F* hduvsdtantheta_vw[7][2][2];  
+  TH2F* hduvsdtantheta_vw[7][2][2][10];  
+  TProfile* hduvsdtantheta_vw_prof[7][2][2];  
   TH2F* hduvstrktheta_vw[7][2][2];   
   TH2F* hduvsdtantheta_vp_dt[7][8];  
   TH2F* hduvsdtantheta_vm_dt[7][8];
@@ -175,6 +181,9 @@ private:
   Int_t   evt_;
   Int_t   lumiblock_;
   Int_t   run_;
+  Float_t trkmom_;
+  Float_t trkpt_;
+
 };
 
 //
@@ -220,9 +229,9 @@ PeakDecoResiduals::PeakDecoResiduals(const edm::ParameterSet& iConfig)
     outTree->Branch("dtanth",     &dtanth_,      "dtanth/F");
     outTree->Branch("tantrk",     &tantrk_,      "tantrk/F");
     outTree->Branch("tanla",      &tanla_,       "tanla/F");
-    outTree->Branch("dttime",     &dttime_,      "dttime/F");
-    outTree->Branch("dttimeerr",  &dttimeerr_,   "dttimeerr/F");
-    outTree->Branch("ndt",        &ndt_,         "ndt/I");
+    //outTree->Branch("dttime",     &dttime_,      "dttime/F");
+    //outTree->Branch("dttimeerr",  &dttimeerr_,   "dttimeerr/F");
+    //outTree->Branch("ndt",        &ndt_,         "ndt/I");
     outTree->Branch("charge",     &charge_,      "charge/F");
     outTree->Branch("nstrips",    &nstrips_,     "nstrips/I");
     outTree->Branch("u",          &u_,           "u/I");
@@ -246,6 +255,8 @@ PeakDecoResiduals::PeakDecoResiduals(const edm::ParameterSet& iConfig)
     outTree->Branch("evt",        &evt_,         "evt/I");
     outTree->Branch("run",        &run_,         "run/I");
     outTree->Branch("lumiblock",  &lumiblock_,   "lumiblock/I");
+    outTree->Branch("trkmom",     &trkmom_,      "trkmom/F");
+    outTree->Branch("trkpt",      &trkpt_,       "trkpt/F");
 
     
   }
@@ -272,75 +283,85 @@ void PeakDecoResiduals::BookHists(TFileDirectory &tfd){
   const char* v[3]    = {"all","vp","vm"};
   const char* vdir[2] = {"vp","vm"};
   const char* wdir[2] = {"wp","wm"};
+  const char* layers[10] = {"all","layer1","layer2","layer3","layer4",
+			    "layer5","layer6","layer7","layer8","layer9"};
 
   hlumivsrun      = tfd.make<TH2F>("lumivsrun","lumivsrun",1000,123500,124500,1000,0,1000);
 
   for(int idet=0;idet<7;idet++){
 
-    hdttime[idet]             = tfd.make<TH1F>(Form("dttime_%s",det[idet]),            
-					 Form("dttime (%s)",det[idet]),100,-50,50);
+    htrkmom[idet]             = tfd.make<TH1F>(Form("trkmom_%s",det[idet]),            
+					       Form("trkmom (%s)",det[idet]),500,0,50);
+    htrkpt[idet]              = tfd.make<TH1F>(Form("trkpt_%s",det[idet]),            
+					       Form("trkpt (%s)",det[idet]),500,0,50);
+    htrkpt_tantrk[idet]       = tfd.make<TH2F>(Form("trkpt_tantrk_%s",det[idet]),            
+					       Form("trkpt_tantrk (%s)",det[idet]),500,0,50,100,-2,2);
     hdttimeerr[idet]          = tfd.make<TH1F>(Form("dttimeerr_%s",det[idet]),         
-					 Form("dttimeerr (%s)",det[idet]),50,0,50);
+					       Form("dttimeerr (%s)",det[idet]),50,0,50);
     hndt[idet]                = tfd.make<TH1F>(Form("ndt_%s",det[idet]),               
-					 Form("ndt (%s)",det[idet]),100,0,100);
+					       Form("ndt (%s)",det[idet]),100,0,100);
     hduvsdtantheta[idet]      = tfd.make<TH2F>(Form("duvsdtantheta_%s",det[idet]),     
-					 Form("duvsdtantheta (%s)",det[idet]),100,-2,2,200,-500,500);
-
-    hresxvsdtantheta[idet]      = tfd.make<TH2F>(Form("resxvsdtantheta_%s",det[idet]),     
-						 Form("resxvsdtantheta (%s)",det[idet]),100,-2,2,200,-500,500);
-
-
+					       Form("duvsdtantheta (%s)",det[idet]),100,-2,2,200,-500,500);
+    hduvsdtantheta_prof[idet] = tfd.make<TProfile>(Form("duvsdtantheta_prof_%s",det[idet]),     
+						   Form("duvsdtantheta_prof (%s)",det[idet]),100,-2,2,-500,500);
+    hresxvsdtantheta[idet]    = tfd.make<TH2F>(Form("resxvsdtantheta_%s",det[idet]),     
+					       Form("resxvsdtantheta (%s)",det[idet]),100,-2,2,200,-500,500);
     hduvstrktheta[idet]       = tfd.make<TH2F>(Form("duvstrktheta_%s",det[idet]),      
-					 Form("duvstrktheta (%s)",det[idet]),100,-2,2,200,-500,500);
+					       Form("duvstrktheta (%s)",det[idet]),100,-2,2,200,-500,500);
     hchargevsdttime[idet]     = tfd.make<TH2F>(Form("chargevsdttime_%s",det[idet]),    
-					 Form("chargevsdttime (%s)",det[idet]), 50, -25, 25, 100, 0, 1000);
+					       Form("chargevsdttime (%s)",det[idet]), 50, -25, 25, 100, 0, 1000);
     hduvsdttime[idet]         = tfd.make<TH2F>(Form("duvsdttime_%s",det[idet]),        
-					 Form("duvsdttime (%s)",det[idet]), 50, -25, 25, 200, -500, 500);
+					       Form("duvsdttime (%s)",det[idet]), 50, -25, 25, 200, -500, 500);
     hdwvsdttime[idet]         = tfd.make<TH2F>(Form("dwvsdttime_%s",det[idet]),        
-					 Form("dwvsdttime (%s)",det[idet]), 50, -25, 25, 200, -1000, 1000);
+					       Form("dwvsdttime (%s)",det[idet]), 50, -25, 25, 200, -1000, 1000);
     hhitx[idet]               = tfd.make<TH1F>(Form("hitx_%s",det[idet]),              
-					 Form("hitx (%s)",det[idet]),100,-5000,5000);
+					       Form("hitx (%s)",det[idet]),100,-5000,5000);
     hhity[idet]               = tfd.make<TH1F>(Form("hity_%s",det[idet]),              
-					 Form("hity (%s)",det[idet]),100,-5000,5000);
+					       Form("hity (%s)",det[idet]),100,-5000,5000);
     hhitz[idet]               = tfd.make<TH1F>(Form("hitz_%s",det[idet]),   
-					 Form("hitz (%s)",det[idet]),100,-5000,5000);
+					       Form("hitz (%s)",det[idet]),100,-5000,5000);
     hcharge[idet]             = tfd.make<TH1F>(Form("charge_%s",det[idet]),   
-					 Form("charge (%s)",det[idet]),100,0,1000);
+					       Form("charge (%s)",det[idet]),100,0,1000);
     hnstrips[idet]            = tfd.make<TH1F>(Form("nstrips_%s",det[idet]),   
-					 Form("nstrips (%s)",det[idet]),25,0,25);
+					       Form("nstrips (%s)",det[idet]),25,0,25);
     huOrientation[idet]       = tfd.make<TH1F>(Form("uOrientation_%s",det[idet]),   
-					 Form("uOrientation (%s)",det[idet]),3,1.5,1.5);
+					       Form("uOrientation (%s)",det[idet]),3,1.5,1.5);
     hvOrientation[idet]       = tfd.make<TH1F>(Form("vOrientation_%s",det[idet]),   
-					 Form("vOrientation (%s)",det[idet]),3,1.5,1.5);
+					       Form("vOrientation (%s)",det[idet]),3,1.5,1.5);
     hwOrientation[idet]       = tfd.make<TH1F>(Form("wOrientation_%s",det[idet]),   
-					 Form("wOrientation (%s)",det[idet]),3,1.5,1.5);
+					       Form("wOrientation (%s)",det[idet]),3,1.5,1.5);
     hlocaltheta[idet]         = tfd.make<TH1F>(Form("localtheta_%s",det[idet]),   
-					 Form("localtheta (%s)",det[idet]),50,-2,2);
+					       Form("localtheta (%s)",det[idet]),50,-2,2);
     hlocalphi[idet]           = tfd.make<TH1F>(Form("localphi_%s",det[idet]),   
-					 Form("localphi (%s)",det[idet]),50,-1,1);
+					       Form("localphi (%s)",det[idet]),50,-1,1);
     hdu[idet]                 = tfd.make<TH1F>(Form("du_%s",det[idet]),   
-					 Form("du (%s)",det[idet]),2000,-1000,1000);
+					       Form("du (%s)",det[idet]),2000,-1000,1000);
     hdw[idet]                 = tfd.make<TH1F>(Form("dw_%s",det[idet]),   
-					 Form("dw (%s)",det[idet]),4000,-2000,2000);
-
+					       Form("dw (%s)",det[idet]),4000,-2000,2000);
+    
     hresxoverdtanth[idet]                 = tfd.make<TH1F>(Form("resxoverdtanth_%s",det[idet]),   
 							   Form("resxoverdtanth (%s)",det[idet]),1000,-1000,1000);
     
     for(int i=0;i<2;i++){
       for(int j=0;j<2;j++){
-	hduvsdtantheta_vw[idet][i][j]   = tfd.make<TH2F>(Form("duvsdtantheta_%s_%s_%s",det[idet],vdir[i],wdir[j]),  
-							 Form("duvsdtantheta V+ (%s) %s %s",det[idet],vdir[i],wdir[j]),100,-2,2,200,-500,500);
+	for(int ilayer=0;ilayer<10;ilayer++){
+	  hduvsdtantheta_vw[idet][i][j][ilayer]   = tfd.make<TH2F>(Form("duvsdtantheta_%s_%s_%s_%s",det[idet],vdir[i],wdir[j],layers[ilayer]),  
+								   Form("duvsdtantheta V+ (%s) %s %s %s",det[idet],vdir[i],wdir[j],layers[ilayer]),100,-2,2,200,-500,500);
+	  
+	}
+	hduvsdtantheta_vw_prof[idet][i][j]   = tfd.make<TProfile>(Form("duvsdtantheta_prof_%s_%s_%s",det[idet],vdir[i],wdir[j]),  
+								  Form("duvsdtantheta_prof V+ (%s) %s %s",det[idet],vdir[i],wdir[j]),100,-2,2,-500,500);
 	hduvstrktheta_vw[idet][i][j]    = tfd.make<TH2F>(Form("duvstrktheta_%s_%s_%s",det[idet],vdir[i],wdir[j]),   
 							 Form("duvstrktheta V+ (%s) %s %s",det[idet],vdir[i],wdir[j]),100,-2,2,200,-500,500);
       }
     }
-
-
+    
+    
     for(int idt=0;idt<8;idt++){
       hduvsdtantheta_vp_dt[idet][idt]   = tfd.make<TH2F>(Form("duvsdtantheta_vp_dt_%s_%i",det[idet],idt),  
-						      Form("duvsdtantheta V+ (%s) (DT slice %i)",det[idet],idt),100,-2,2,200,-500,500);
+							 Form("duvsdtantheta V+ (%s) (DT slice %i)",det[idet],idt),100,-2,2,200,-500,500);
       hduvsdtantheta_vm_dt[idet][idt]   = tfd.make<TH2F>(Form("duvsdtantheta_vm_dt_%s_%i",det[idet],idt),  
-						      Form("duvsdtantheta V- (%s) (DT slice %i)",det[idet],idt),100,-2,2,200,-500,500);  
+							 Form("duvsdtantheta V- (%s) (DT slice %i)",det[idet],idt),100,-2,2,200,-500,500);  
     }
     
     for(int iv=0;iv<3;iv++){
@@ -518,7 +539,7 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       layer_   = tobID.layerNumber();
       rod_     = tobID.rodNumber();
     }
-    
+     
     else if(subdetid  == StripSubdetector::TID){
       TIDDetId tidID(detid.rawId());
       ring_    = tidID.ringNumber(); 
@@ -571,11 +592,15 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    
     //if(it->nstrips == 1 || it->nstrips == 2)    continue;
 
+    htrkmom[subdetint]       -> Fill( it->trkmom );
+    htrkpt[subdetint]        -> Fill( it->trkpt );
+    htrkpt_tantrk[subdetint] -> Fill( it->trkpt , it->tanTrackAngle );
 
     if(it->resXprime != -999. && it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.) {
       float dtantheta = it->tanTrackAngle-it->tanLorentzAngle;
 
       hduvsdtantheta[subdetint]   -> Fill(dtantheta,         10000*it->resXprime);
+      hduvsdtantheta_prof[subdetint]   -> Fill(dtantheta,         10000*it->resXprime);
       hduvstrktheta[subdetint]    -> Fill(it->tanTrackAngle, 10000*it->resXprime);
       hresxvsdtantheta[subdetint] -> Fill(dtantheta,         10000*it->resX);
 
@@ -583,9 +608,20 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       int j = 0;
       if(it->vOrientation < 0) i = 1;
       if(it->wOrientation < 0) j = 1;
+      int layer = -1;
+      if     (subdetid  == StripSubdetector::TIB || subdetid  == StripSubdetector::TOB) layer = layer_;
+      else if(subdetid  == StripSubdetector::TID || subdetid  == StripSubdetector::TEC) layer = wheel_;
+
+      if(debug_) cout << "subdetint " << subdetint << " layer " << layer << endl;
       
-      hduvsdtantheta_vw[subdetint][i][j] -> Fill(dtantheta,         10000*it->resXprime);
-      hduvstrktheta_vw[subdetint][i][j]  -> Fill(it->tanTrackAngle, 10000*it->resXprime);
+      if(layer > -1 && layer < 10){
+	hduvsdtantheta_vw[subdetint][i][j][layer]  -> Fill(dtantheta,         10000*it->resXprime);
+      }
+      if(layer > 9) cout << "ERROR LAYER " << layer << " SUBDET " << subdetint << endl;
+
+      hduvsdtantheta_vw[subdetint][i][j][0]   -> Fill(dtantheta,         10000*it->resXprime);
+      hduvsdtantheta_vw_prof[subdetint][i][j] -> Fill(dtantheta,         10000*it->resXprime);
+      hduvstrktheta_vw[subdetint][i][j]       -> Fill(it->tanTrackAngle, 10000*it->resXprime);
     }
 
     if(runOnCosmics_){
@@ -669,6 +705,9 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       evt_         = evt_event;      
       lumiblock_   = evt_lumiBlock;
       run_         = evt_run;
+      trkmom_      = it->trkmom;
+      trkpt_       = it->trkpt;
+
       outTree->Fill();
     }
   }
