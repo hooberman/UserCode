@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.5 2010/04/22 11:26:53 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.6 2010/05/03 09:33:36 benhoob Exp $
 //
 //
 
@@ -184,6 +184,9 @@ private:
   Float_t trkmom_;
   Float_t trkpt_;
 
+  int nEvent;
+  int nPass;
+  int nTot;
 };
 
 //
@@ -219,6 +222,13 @@ PeakDecoResiduals::PeakDecoResiduals(const edm::ParameterSet& iConfig)
   edm::Service<TFileService> fs;    
   TFileDirectory filedir = fs->mkdir("PeakDecoResiduals");  
   this->BookHists(filedir);
+
+  //initialize counters
+  nPass  = 0;
+  nTot   = 0;
+  nEvent = 0;
+
+  //make tree
   if(createTree_){
     
     outTree = fs->make<TTree>("t","Tree");
@@ -476,11 +486,14 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   
   //cout << "Begin loop over hits" << endl;
 
+  nEvent++;
+
   // hit quantities: residuals, normalized residuals
   for (std::vector<TrackerValidationVariables::AVHitStruct>::const_iterator it = v_hitstruct.begin(),
   	 itEnd = v_hitstruct.end(); it != itEnd; ++it) {
 
     //cout << "Hit" << endl;
+    nTot++;
 
     DetId detid(it->rawDetId);
 
@@ -597,6 +610,8 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     //if(it->nstrips == 1 || it->nstrips == 2)    continue;
 
     //cout << "Pass" << endl;
+
+    nPass++;
 
     htrkmom[subdetint]       -> Fill( it->trkmom );
     htrkpt[subdetint]        -> Fill( it->trkpt );
@@ -734,6 +749,8 @@ PeakDecoResiduals::endJob()
 
   if(debug_) cout<<"PeakDecoResiduals::endJob"<<endl;
 
+  cout << "PeakDecoResiduals: analyzed " << nEvent << " events" << endl;
+  cout << "nHitsPass / nHitsTot " << nPass << " / " << nTot << endl;
   //if(createTree_){
   //outTree->Write();
   //}
