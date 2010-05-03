@@ -12,6 +12,7 @@
 #include "TrackingTools/TransientTrackingRecHit/interface/TransientTrackingRecHitBuilder.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/Records/interface/TransientRecHitRecord.h"
+#include "DataFormats/GeometryCommonDetAlgo/interface/MeasurementVector.h"
 
 class MagneticField;
 class TrackerGeometry;
@@ -133,6 +134,10 @@ class TrackerValidationVariables  {
   void setTime(const edm::Event&, timeStruct &ts);
   //float getHCALTime(const edm::Event&);
   void fillTrackQuantities(const edm::Event&, std::vector<AVTrackStruct> & v_avtrackout );
+  float getRadius(float x, float y){ return sqrt(x*x+y*y); }
+  //void printPoint(MeasurementPoint p);
+  //void printPoint(LocalPoint p);
+ 
 
  private:  
   const edm::ParameterSet conf_;

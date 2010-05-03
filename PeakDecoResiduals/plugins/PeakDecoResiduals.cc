@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.4 2010/04/08 12:48:53 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.5 2010/04/22 11:26:53 benhoob Exp $
 //
 //
 
@@ -286,7 +286,7 @@ void PeakDecoResiduals::BookHists(TFileDirectory &tfd){
   const char* layers[10] = {"all","layer1","layer2","layer3","layer4",
 			    "layer5","layer6","layer7","layer8","layer9"};
 
-  hlumivsrun      = tfd.make<TH2F>("lumivsrun","lumivsrun",1000,123500,124500,1000,0,1000);
+  hlumivsrun      = tfd.make<TH2F>("lumivsrun","lumivsrun",2000,132000,134000,2000,0,2000);
 
   for(int idet=0;idet<7;idet++){
 
@@ -474,9 +474,13 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   avalidator_.fillHitQuantities(iEvent,iSetup,v_hitstruct,runOnCosmics_);
   if(debug_)dout<<endl;
   
+  //cout << "Begin loop over hits" << endl;
+
   // hit quantities: residuals, normalized residuals
   for (std::vector<TrackerValidationVariables::AVHitStruct>::const_iterator it = v_hitstruct.begin(),
   	 itEnd = v_hitstruct.end(); it != itEnd; ++it) {
+
+    //cout << "Hit" << endl;
 
     DetId detid(it->rawDetId);
 
@@ -592,12 +596,16 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    
     //if(it->nstrips == 1 || it->nstrips == 2)    continue;
 
+    //cout << "Pass" << endl;
+
     htrkmom[subdetint]       -> Fill( it->trkmom );
     htrkpt[subdetint]        -> Fill( it->trkpt );
     htrkpt_tantrk[subdetint] -> Fill( it->trkpt , it->tanTrackAngle );
 
     if(it->resXprime != -999. && it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.) {
       float dtantheta = it->tanTrackAngle-it->tanLorentzAngle;
+
+      //cout << "Fill hist" << endl;
 
       hduvsdtantheta[subdetint]   -> Fill(dtantheta,         10000*it->resXprime);
       hduvsdtantheta_prof[subdetint]   -> Fill(dtantheta,         10000*it->resXprime);
@@ -684,6 +692,8 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
    
            
     if(createTree_){
+      //cout << "fill tree" << endl;
+
       subdet_      = subdetint;
       du_          = 10000*it->resXprime;
       tantrk_      = it->tanTrackAngle;

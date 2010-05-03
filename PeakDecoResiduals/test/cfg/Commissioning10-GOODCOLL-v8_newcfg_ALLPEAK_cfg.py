@@ -3,9 +3,50 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("OfflineValidator")
 
-process.load("Alignment.PeakDecoResiduals.DataSetMinBias_38Tdec_cff")
-#process.load("Alignment.PeakDecoResiduals.Commissioning10_GOODCOLL_v8_cff")
 
+
+## Maximum number of Events
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(-1)
+    )
+
+## ## Max lumi block
+## maxLuminosityBlocks = cms.untracked.PSet( 
+##                input = cms.untracked.int32(-1)
+##     )
+
+## ## LFNs to process
+## source = cms.Source("PoolSource",
+##                     fileNames = cms.untracked.vstring( 
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0131/440640F4-5C3E-DF11-8DD8-003048678B30.root',
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0131/94E1553A-5D3E-DF11-947D-00261894382D.root',
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0139/28C253D3-923E-DF11-AC46-001A92810AD2.root',   
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0139/2C157C30-933E-DF11-9941-0018F3D096D8.root',   
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0139/3A0DA6E7-923E-DF11-880D-00304867BED8.root',   
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0139/A6291310-933E-DF11-AC2D-001A92971BDA.root',   
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0139/C074CC28-933E-DF11-A532-001A92971B16.root',   
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0139/CCFBF4E5-923E-DF11-A16D-001A92971B04.root',
+##     ###---- 132476
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0139/D4D9D005-933E-DF11-9A1F-001A92971AEC.root',
+##     ###---- 132477
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0139/02B4DD18-933E-DF11-92F1-0018F3D09652.root',
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0131/B83EA92B-603E-DF11-B5C5-0026189438DB.root',
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0130/D0B34509-593E-DF11-AF10-00304867C0EA.root',
+##     '/store/data/Commissioning10/MinimumBias/ALCARECO/Apr1ReReco_StreamTkAlMinBias-v2/0130/06C1115C-563E-DF11-9D28-003048D15E24.root'
+    
+##     ),
+##                     lumisToProcess = cms.untracked.VLuminosityBlockRange(
+##     '132440:1-132440:max',
+##     '132442:1-132442:max',
+##     '132471:1-132471:max',
+##     '132473:1-132474:max',      
+##     '132476:1-132476:21',
+##     '132477:321-132477:max',
+##     '132478:1-132478:max'
+##     )
+##                     )
+
+process.load("Alignment.PeakDecoResiduals.Commissioning10_GOODCOLL_v8_cff")
 
 #process.source.inputCommands = cms.untracked.vstring('keep *', 'drop *_MEtoEDMConverter_*_*') # hack to get rid of the memory consumption problem in 2_2_X and beond
 process.options = cms.untracked.PSet(
@@ -14,11 +55,6 @@ process.options = cms.untracked.PSet(
    fileMode  =  cms.untracked.string('NOMERGE') # no ordering needed, but calls endRun/beginRun etc. at file boundaries
 )
 
-
-## Maximum number of Events
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
-    )
 
     
 ## Messages & Convenience
@@ -159,6 +195,58 @@ process.APE = poolDBESSource.clone(
     )
 process.es_prefer_APE = cms.ESPrefer("PoolDBESSource", "APE")
 
+###--------------------------------------------------------------------------------
+###filters from https://twiki.cern.ch/twiki/bin/view/CMS/TrackerAlignmentWithBeams2010
+
+process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
+process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
+process.L1T1=process.hltLevel1GTSeed.clone()
+process.L1T1.L1TechTriggerSeeding = cms.bool(True)
+process.L1T1.L1SeedsLogicalExpression=cms.string('0 AND (40 OR 41) AND NOT (36 OR 37 OR 38 OR 39) AND NOT ((42 AND (NOT 43)) OR (43 AND (NOT 42)))')
+
+# Filter for HLT PhysicsDeclared
+
+process.hltHighLevel = cms.EDFilter("HLTHighLevel",
+TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+HLTPaths = cms.vstring('HLT_PhysicsDeclared'),           # provide list of HLT paths (or patterns) you want
+eventSetupPathsKey = cms.string(''), # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
+andOr = cms.bool(True),             # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+throw = cms.bool(True)    # throw exception on unknown path names 
+ )
+
+# Filter for high purity tracks
+
+import Alignment.CommonAlignmentProducer.AlignmentTrackSelector_cfi
+process.HighPuritySelector = Alignment.CommonAlignmentProducer.AlignmentTrackSelector_cfi.AlignmentTrackSelector.clone(
+applyBasicCuts = True,
+filter = True,
+src = '.oO[TrackCollection]Oo.',
+trackQualities = ["highPurity"]
+)
+
+# Back-plane correction for the TOB in deconvolution mode
+
+#process.load("RecoLocalTracker.SiStripRecHitConverter.OutOfTime_cff")
+#process.OutOfTime.TOBlateBP=0.05
+
+# The corrected beamspot is included:
+
+############################################################################
+# load corrected beamspot
+###########################################################################
+process.myBeamspot = poolDBESSource.clone(
+    connect = cms.string('frontier://PromptProd/CMS_COND_31X_BEAMSPOT'),
+    toGet = cms.VPSet(
+      cms.PSet(
+       record = cms.string('BeamSpotObjectsRcd'),
+        tag = cms.string('BeamSpotObjects_2009_v7_offline')
+       )
+      )
+   )
+process.es_prefer_corrBeamspot = cms.ESPrefer("PoolDBESSource","myBeamspot")
+
+###--------------------------------------------------------------------------------
+
 
 ## to apply misalignments
 #TrackerDigiGeometryESModule.applyAlignment = True
@@ -169,7 +257,7 @@ process.PeakDecoResiduals.Tracks = 'TrackRefitter2'
 process.PeakDecoResiduals.trajectoryInput = 'TrackRefitter2'
 process.PeakDecoResiduals.debug = cms.bool(False)
 process.PeakDecoResiduals.runOnCosmics = cms.bool(False)
-process.PeakDecoResiduals.createTree = cms.bool(True)
+process.PeakDecoResiduals.createTree = cms.bool(False)
 
 
 #process.TFileService.fileName = '/tmp/benhoob/temp.root'

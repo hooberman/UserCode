@@ -19,18 +19,22 @@
 TH2* suppressHist(TH2* hist,int iclone,float xmin,float xmax);
 void setStats(TH1F** h, const int nhist, double startingY, double startingX = .1, double height = 0.15);
 void plotHists(TH1F** h, const unsigned int nhist, string title, string xtitle, float xmin, float xmax, int rebin = 1, int fit = 0);
-TGraphErrors *getTGraphFromTH2(TH2F* h,vector<float> xbins, int method = 0 , int invert = 0, int color = 1);
+TGraphErrors *getTGraphFromTH2(TH2F* h,vector<float> xbins, int color = 1);
 TGraphErrors* diffTGraph(TGraphErrors* g1, TGraphErrors *g2, string title = "DECO - PEAK", string xtitle = "Layer", string ytitle = "");
 inline double fround(double n, unsigned d){ return floor(n * pow(10., d) + .5) / pow(10., d); }
 bool draw(string var, vector<string> cantitles);
 int getDTSlice(float t);
 string getStringFromTF1( TF1* f);
+void plotHistsTH2(TH2F* h,string title, string xtitle, string ytitle, 
+                  float xmin, float xmax, float ymin, float ymax,int fit,TCanvas* c, int ipad);
+
 
 void chain(){
 
   gROOT->SetStyle("Plain");
   gStyle->SetPalette(1);
-   
+  gStyle->SetOptStat(111111);
+
   enum subdetenum      { PixelBarrel = 0, PixelEndcap = 1, TIB = 2, TID = 3,
 			 TOB = 4, TECthick = 5, TECthin = 6};
 
@@ -44,7 +48,7 @@ void chain(){
   bool writeTFile   = false;
   bool printgif     = true;
   int  mysubdet     = TOB; 
-  int  ndiv         = 100;
+  int  ndiv         = 1;
   const int nlayers = detlayers[mysubdet];
   
   vector<string> cantitles;
@@ -53,6 +57,7 @@ void chain(){
   //cantitles.push_back("nstripsvstantrktgraph");
   //cantitles.push_back("nstripsvstantrktgraphdt");
   //cantitles.push_back("tanladt");
+  cantitles.push_back("duvsdtantheta");
   cantitles.push_back("duvsdtantheta_tgraph");
   //cantitles.push_back("duvsdtantheta_layers_tgraph");
   
@@ -164,11 +169,11 @@ void chain(){
       duthetam_layer[ifile][ih] = new TH2F(Form("dutheta%sm_%i",filetypes.at(ifile).c_str(),ih),
                                            Form("dutheta%sm_%i",filetypes.at(ifile).c_str(),ih),100,-2,2,200,-500,500);
       
-//       duthetap_layer_tprof[ifile][ih] = new TProfile(Form("dutheta%sp_tprof_%i",filetypes.at(ifile).c_str(),ih),
-//                                                      Form("dutheta%sp_tprof_%i",filetypes.at(ifile).c_str(),ih),100,-2,2,-500,500);
+      //       duthetap_layer_tprof[ifile][ih] = new TProfile(Form("dutheta%sp_tprof_%i",filetypes.at(ifile).c_str(),ih),
+      //                                                      Form("dutheta%sp_tprof_%i",filetypes.at(ifile).c_str(),ih),100,-2,2,-500,500);
       
-//       duthetam_layer_tprof[ifile][ih] = new TProfile(Form("dutheta%sm_tprof_%i",filetypes.at(ifile).c_str(),ih),
-//                                                      Form("dutheta%sm_tprof_%i",filetypes.at(ifile).c_str(),ih),100,-2,2,-500,500);
+      //       duthetam_layer_tprof[ifile][ih] = new TProfile(Form("dutheta%sm_tprof_%i",filetypes.at(ifile).c_str(),ih),
+      //                                                      Form("dutheta%sm_tprof_%i",filetypes.at(ifile).c_str(),ih),100,-2,2,-500,500);
 
       duthetap_layer_tprof[ifile][ih] = new TProfile(Form("dutheta%sp_tprof_%i",filetypes.at(ifile).c_str(),ih),
                                                      Form("dutheta%sp_tprof_%i",filetypes.at(ifile).c_str(),ih),20,-0.5,0.5,-500,500);
@@ -202,7 +207,7 @@ void chain(){
   Int_t   v;
   Int_t   w;
   Int_t   nstrips;
-  Float_t dttime;
+  //Float_t dttime;
   Int_t   layer;
   Float_t tanla;
   
@@ -234,13 +239,13 @@ void chain(){
       tree->SetBranchAddress("w",        &w);
       tree->SetBranchAddress("nstrips",  &nstrips);
       tree->SetBranchAddress("tantrk" ,  &tantrk);
-      tree->SetBranchAddress("dttime" ,  &dttime);
+      //tree->SetBranchAddress("dttime" ,  &dttime);
       tree->SetBranchAddress("layer"  ,  &layer);
       tree->SetBranchAddress("tanla"  ,  &tanla);
       
       for(unsigned int ientry = 0; ientry < tree->GetEntries()/ndiv  ; ++ientry) {
         
-        if(nentries % 100000 == 0) cout<<filetypes[ifile]<<" event "<<nentries<<" / "<<nentriestot<<endl;
+        if(nentries % 1000000 == 0) cout<<filetypes[ifile]<<" event "<<nentries<<" / "<<nentriestot<<endl;
         nentries++;
         
         tree->GetEntry(ientry);
@@ -250,8 +255,8 @@ void chain(){
           hdu[ifile]->Fill(dtanth > 0 ? du : -du);
           hdw[ifile]->Fill(dw);
           
-          if(getDTSlice(dttime)>-1)
-            dttime_dt[ifile][getDTSlice(dttime)]->Fill(dttime);
+          //if(getDTSlice(dttime)>-1)
+          //  dttime_dt[ifile][getDTSlice(dttime)]->Fill(dttime);
             
           if(mysubdet == TIB || mysubdet == TOB)
             tanla_layer[ifile][layer-1]->Fill(v > 0 ? -tanla : tanla);
@@ -267,8 +272,8 @@ void chain(){
             
             nstripstantrk[ifile]->Fill(tantrk,nstrips);
             
-            if(getDTSlice(dttime)>-1)
-              nstripstantrk_dt[ifile][getDTSlice(dttime)]->Fill(tantrk,nstrips);
+            //if(getDTSlice(dttime)>-1)
+            //  nstripstantrk_dt[ifile][getDTSlice(dttime)]->Fill(tantrk,nstrips);
             
           }
           else{
@@ -282,8 +287,8 @@ void chain(){
 
             nstripstantrk[ifile]->Fill(-tantrk,nstrips);
             
-            if(getDTSlice(dttime)>-1)
-              nstripstantrk_dt[ifile][getDTSlice(dttime)]->Fill(-tantrk,nstrips);
+            //if(getDTSlice(dttime)>-1)
+            //  nstripstantrk_dt[ifile][getDTSlice(dttime)]->Fill(-tantrk,nstrips);
           }          
         }
       }
@@ -310,168 +315,188 @@ void chain(){
     idx++;
   }
 
+  //du vs. delta tan theta TH2
+  if(draw("duvsdtantheta",cantitles)){
+    
+    can[idx]=new TCanvas(cantitles.at(idx).c_str(),cantitles.at(idx).c_str(),1200,450*nfiles);
+    can[idx]->Divide(2,nfiles);
+    
+    for(unsigned int ifile = 0 ; ifile < nfiles ; ifile++ ){
+      
+      plotHistsTH2(hduthetap[ifile],
+                   Form("%s %s (v+)",detnames[mysubdet].c_str(),filetypes.at(ifile).c_str()),
+                   "tan(#theta_{trk})-tan(#theta_{LA})","#Deltau (#mum)",-1,1,-500,500,0,can[idx],1+ifile*2);
+      
+      plotHistsTH2(hduthetam[ifile],
+                   Form("%s %s (v-)",detnames[mysubdet].c_str(),filetypes.at(ifile).c_str()),
+                   "tan(#theta_{trk})-tan(#theta_{LA})","#Deltau (#mum)",-1,1,-500,500,0,can[idx],2+ifile*2);
+    }
 
+    idx++;
+  }
+  
+  //du vs. delta tan theta TGraph
   if(draw("duvsdtantheta_tgraph",cantitles)){
-
+    
     can[idx]=new TCanvas("duvsdtantheta_tgraph_can","duvsdtantheta_tgraph_can",1200,900);
     can[idx]->Divide(2,2);
-
-      vector<float> thetabinsp;
-      vector<float> thetabinsm;
-      
-      thetabinsp.clear();
-      thetabinsm.clear();
-      
-      for(int ibin=14;ibin<=30;ibin++)    thetabinsp.push_back(ibin*0.05-1);
-      for(int ibin=10;ibin<=26;ibin++)    thetabinsm.push_back(ibin*0.05-1);
-            
-      TLatex *t=new TLatex();
-      t->SetNDC();
-      
-      TGraphErrors *gduthetap[nfiles];
-      TGraphErrors *gduthetam[nfiles];
-      
-      TF1 *fduthetap[nfiles];
-      TF1 *fduthetam[nfiles];
-      
-      stringstream sduthetap1[nfiles];
-      stringstream sduthetap2[nfiles];
-      
-      stringstream sduthetam1[nfiles];
-      stringstream sduthetam2[nfiles];
-      
-      bool fit = false;
-      
-      for(unsigned int ifile = 0 ; ifile < nfiles ; ifile++ ){
-        
-        cout << "Plotting " << filetypes.at(ifile) << "..." << endl;
-        
-        can[idx]->cd(1);
-        
-        hduthetap[ifile]->SetName(Form("hduthetap_%i",ifile));
-        gduthetap[ifile] = getTGraphFromTH2(hduthetap[ifile],thetabinsp, colors[ifile] );
-        fduthetap[ifile]=new TF1(Form("fduthetap_%i",ifile),"pol1");
-        fduthetap[ifile]->SetLineColor( colors[ifile] );
-        if(fit) gduthetap[ifile]->Fit(fduthetap[ifile]);
-         
-        float dwp     = fduthetap[ifile]->GetParameter(1);
-        float dwperr  = fduthetap[ifile]->GetParError(1);
-        float bp      = fduthetap[ifile]->GetParameter(0);
-        float bperr   = fduthetap[ifile]->GetParError(0);
-      
-        sduthetap1[ifile] << "#DeltaW = " << fround(dwp,3) << " #pm " << fround(dwperr,3) << " #mum" << endl;
-        sduthetap2[ifile] << "#Deltatan(LA) = " << fround(bp/(235.-dwp),3) << " #pm " << fround(bperr/(235.-dwp),4) << endl;
-      
-        gduthetap[ifile]->SetTitle(Form("%s (v+ modules)",detnames[mysubdet].c_str()));
-        gduthetap[ifile]->Draw("AP");
-        gduthetap[ifile]->GetXaxis()->SetTitle("<tan(#theta_{trk})-tan(#theta_{LA})>");
-        gduthetap[ifile]->GetYaxis()->SetTitle("<#Deltau> [#mum]");
-        //gduthetap[ifile]->GetXaxis()->SetLimits(-1,1);
-        //gduthetap[ifile]->SetMinimum(-10);
-        //gduthetap[ifile]->SetMaximum(20);
-      
-      
-        can[idx]->cd(2);
-
-        hduthetam[ifile]->SetName(Form("hduthetam_%i",ifile));
-        gduthetam[ifile] = getTGraphFromTH2(hduthetam[ifile],thetabinsm, colors[ifile] );
-        fduthetam[ifile]=new TF1(Form("fduthetam_%i",ifile),"pol1");
-        fduthetam[ifile]->SetLineColor( colors[ifile] );
-        if(fit) gduthetam[ifile]->Fit(fduthetam[ifile]);
-         
-        float dwm     = fduthetam[ifile]->GetParameter(1);
-        float dwmerr  = fduthetam[ifile]->GetParError(1);
-        float bm      = fduthetam[ifile]->GetParameter(0);
-        float bmerr   = fduthetam[ifile]->GetParError(0);
-      
-        sduthetam1[ifile] << "#DeltaW = " << fround(dwm,3) << " #pm " << fround(dwmerr,3) << " #mum" << endl;
-        sduthetam2[ifile] << "#Deltatan(LA) = " << fround(bm/(235.-dwm),3) << " #pm " << fround(bmerr/(235.-dwm),4) << endl;
-      
-        gduthetam[ifile]->SetTitle(Form("%s (v- modules)",detnames[mysubdet].c_str()));
-        gduthetam[ifile]->Draw("AP");
-        gduthetam[ifile]->GetXaxis()->SetTitle("<tan(#theta_{trk})-tan(#theta_{LA})>");
-        gduthetam[ifile]->GetYaxis()->SetTitle("<#Deltau> [#mum]");
-        //gduthetam[ifile]->GetXaxis()->SetLimits(-1,1);
-        //gduthetam[ifile]->SetMinimum(-20);
-        //gduthetam[ifile]->SetMaximum(20);
-        //leg1->Draw();
-      }
-
-      for(unsigned int ifile = 0 ; ifile < nfiles ; ifile++ ){
-      
-        can[idx]->cd(1);
-        if( ifile == 0 )   gduthetap[ifile]->Draw("AP");
-        else               gduthetap[ifile]->Draw("sameP");
-        //leg1->Draw();
-
-        if(fit){
-          t->SetTextColor( colors[ifile] );
-          t->DrawLatex(0.15,0.85-ifile*0.2,sduthetap1[ifile].str().c_str());
-          t->DrawLatex(0.15,0.75-ifile*0.2,sduthetap2[ifile].str().c_str());
-        }
-
-        can[idx]->cd(2);
-        if( ifile == 0 )   gduthetam[ifile]->Draw("AP");
-        else               gduthetam[ifile]->Draw("sameP");
-        //leg1->Draw();
-
-        if(fit){
-          t->SetTextColor( colors[ifile] );
-          t->DrawLatex(0.15,0.85-ifile*0.2,sduthetam1[ifile].str().c_str());
-          t->DrawLatex(0.15,0.75-ifile*0.2,sduthetam2[ifile].str().c_str());
-        }
     
+    vector<float> thetabinsp;
+    vector<float> thetabinsm;
+      
+    thetabinsp.clear();
+    thetabinsm.clear();
+      
+    for(int ibin=10;ibin<=30;ibin++)    thetabinsp.push_back(ibin*0.05-1);
+    for(int ibin=10;ibin<=30;ibin++)    thetabinsm.push_back(ibin*0.05-1);
+            
+    TLatex *t=new TLatex();
+    t->SetNDC();
+      
+    TGraphErrors *gduthetap[nfiles];
+    TGraphErrors *gduthetam[nfiles];
+      
+    TF1 *fduthetap[nfiles];
+    TF1 *fduthetam[nfiles];
+      
+    stringstream sduthetap1[nfiles];
+    stringstream sduthetap2[nfiles];
+      
+    stringstream sduthetam1[nfiles];
+    stringstream sduthetam2[nfiles];
+      
+    bool fit = false;
+      
+    for(unsigned int ifile = 0 ; ifile < nfiles ; ifile++ ){
+        
+      cout << "Plotting " << filetypes.at(ifile) << "..." << endl;
+        
+      can[idx]->cd(1);
+        
+      hduthetap[ifile]->SetName(Form("hduthetap_%i",ifile));
+      gduthetap[ifile] = getTGraphFromTH2(hduthetap[ifile],thetabinsp, colors[ifile] );
+      fduthetap[ifile]=new TF1(Form("fduthetap_%i",ifile),"pol1");
+      fduthetap[ifile]->SetLineColor( colors[ifile] );
+      if(fit) gduthetap[ifile]->Fit(fduthetap[ifile]);
+         
+      float dwp     = fduthetap[ifile]->GetParameter(1);
+      float dwperr  = fduthetap[ifile]->GetParError(1);
+      float bp      = fduthetap[ifile]->GetParameter(0);
+      float bperr   = fduthetap[ifile]->GetParError(0);
+      
+      sduthetap1[ifile] << "#DeltaW = " << fround(dwp,3) << " #pm " << fround(dwperr,3) << " #mum" << endl;
+      sduthetap2[ifile] << "#Deltatan(LA) = " << fround(bp/(235.-dwp),3) << " #pm " << fround(bperr/(235.-dwp),4) << endl;
+      
+      gduthetap[ifile]->SetTitle(Form("%s (v+ modules)",detnames[mysubdet].c_str()));
+      gduthetap[ifile]->Draw("AP");
+      gduthetap[ifile]->GetXaxis()->SetTitle("<tan(#theta_{trk})-tan(#theta_{LA})>");
+      gduthetap[ifile]->GetYaxis()->SetTitle("<#Deltau> [#mum]");
+      //gduthetap[ifile]->GetXaxis()->SetLimits(-1,1);
+      //gduthetap[ifile]->SetMinimum(-10);
+      //gduthetap[ifile]->SetMaximum(20);
+      
+      
+      can[idx]->cd(2);
+
+      hduthetam[ifile]->SetName(Form("hduthetam_%i",ifile));
+      gduthetam[ifile] = getTGraphFromTH2(hduthetam[ifile],thetabinsm, colors[ifile] );
+      fduthetam[ifile]=new TF1(Form("fduthetam_%i",ifile),"pol1");
+      fduthetam[ifile]->SetLineColor( colors[ifile] );
+      if(fit) gduthetam[ifile]->Fit(fduthetam[ifile]);
+         
+      float dwm     = fduthetam[ifile]->GetParameter(1);
+      float dwmerr  = fduthetam[ifile]->GetParError(1);
+      float bm      = fduthetam[ifile]->GetParameter(0);
+      float bmerr   = fduthetam[ifile]->GetParError(0);
+      
+      sduthetam1[ifile] << "#DeltaW = " << fround(dwm,3) << " #pm " << fround(dwmerr,3) << " #mum" << endl;
+      sduthetam2[ifile] << "#Deltatan(LA) = " << fround(bm/(235.-dwm),3) << " #pm " << fround(bmerr/(235.-dwm),4) << endl;
+      
+      gduthetam[ifile]->SetTitle(Form("%s (v- modules)",detnames[mysubdet].c_str()));
+      gduthetam[ifile]->Draw("AP");
+      gduthetam[ifile]->GetXaxis()->SetTitle("<tan(#theta_{trk})-tan(#theta_{LA})>");
+      gduthetam[ifile]->GetYaxis()->SetTitle("<#Deltau> [#mum]");
+      //gduthetam[ifile]->GetXaxis()->SetLimits(-1,1);
+      //gduthetam[ifile]->SetMinimum(-20);
+      //gduthetam[ifile]->SetMaximum(20);
+      //leg1->Draw();
+    }
+
+    for(unsigned int ifile = 0 ; ifile < nfiles ; ifile++ ){
+      
+      can[idx]->cd(1);
+      if( ifile == 0 )   gduthetap[ifile]->Draw("AP");
+      else               gduthetap[ifile]->Draw("sameP");
+      //leg1->Draw();
+
+      if(fit){
+        t->SetTextColor( colors[ifile] );
+        t->DrawLatex(0.15,0.85-ifile*0.2,sduthetap1[ifile].str().c_str());
+        t->DrawLatex(0.15,0.75-ifile*0.2,sduthetap2[ifile].str().c_str());
       }
 
-      if( nfiles > 1){
-      
-        can[idx]->cd(3);
-      
-        TGraphErrors *gduthetapdiff = diffTGraph(gduthetap[0],gduthetap[1],Form("%s DECO - PEAK (v+ modules)",detnames[mysubdet].c_str()),
-                                              "<tan(#theta_{trk})-tan(#theta_{LA})>","<#Deltau> (#mum)");
-        TF1* fduthetapdiff=new TF1("fduthetapdiff","pol1",-0.5,0.5);
-        gduthetapdiff->Fit(fduthetapdiff,"R");
-        gduthetapdiff->Draw("AP");
-      
-        float dwp     = fduthetapdiff->GetParameter(1);
-        float dwperr  = fduthetapdiff->GetParError(1);
-        float bp      = fduthetapdiff->GetParameter(0);
-        float bperr   = fduthetapdiff->GetParError(0);
-      
-        stringstream sduthetap1diff;
-        stringstream sduthetap2diff;
-      
-        sduthetap1diff << "#DeltaW = " << fround(dwp,3) << " #pm " << fround(dwperr,3) << " #mum" << endl;
-        sduthetap2diff << "#Deltatan(LA) = " << fround(bp/(235.-dwp),3) << " #pm " << fround(bperr/(235.-dwp),4) << endl;
-      
-        t->SetTextColor(1);
-        t->DrawLatex(0.15,0.85,sduthetap1diff.str().c_str());
-        t->DrawLatex(0.15,0.75,sduthetap2diff.str().c_str());
-      
-        can[idx]->cd(4);
-      
-        TGraphErrors *gduthetamdiff = diffTGraph(gduthetam[0],gduthetam[1],Form("%s DECO - PEAK (v- modules)",detnames[mysubdet].c_str()),
-                                                 "<tan(#theta_{trk})-tan(#theta_{LA})>","<#Deltau> (#mum)");
-        TF1* fduthetamdiff=new TF1("fduthetamdiff","pol1",-0.5,0.5);
-        gduthetamdiff->Fit(fduthetamdiff,"R");
-        gduthetamdiff->Draw("AP");
-      
-        float dwm     = fduthetamdiff->GetParameter(1);
-        float dwmerr  = fduthetamdiff->GetParError(1);
-        float bm      = fduthetamdiff->GetParameter(0);
-        float bmerr   = fduthetamdiff->GetParError(0);
-      
-        stringstream sduthetam1diff;
-        stringstream sduthetam2diff;
-      
-        sduthetam1diff << "#DeltaW = " << fround(dwm,3) << " #pm " << fround(dwmerr,3) << " #mum" << endl;
-        sduthetam2diff << "#Deltatan(LA) = " << fround(bm/(235.-dwm),3) << " #pm " << fround(bmerr/(235.-dwm),4) << endl;
-      
-        t->DrawLatex(0.15,0.85,sduthetam1diff.str().c_str());
-        t->DrawLatex(0.15,0.75,sduthetam2diff.str().c_str());
-      
+      can[idx]->cd(2);
+      if( ifile == 0 )   gduthetam[ifile]->Draw("AP");
+      else               gduthetam[ifile]->Draw("sameP");
+      //leg1->Draw();
+
+      if(fit){
+        t->SetTextColor( colors[ifile] );
+        t->DrawLatex(0.15,0.85-ifile*0.2,sduthetam1[ifile].str().c_str());
+        t->DrawLatex(0.15,0.75-ifile*0.2,sduthetam2[ifile].str().c_str());
       }
+    
     }
+
+    if( nfiles > 1){
+      
+      can[idx]->cd(3);
+      
+      TGraphErrors *gduthetapdiff = diffTGraph(gduthetap[0],gduthetap[1],Form("%s DECO - PEAK (v+ modules)",detnames[mysubdet].c_str()),
+                                               "<tan(#theta_{trk})-tan(#theta_{LA})>","<#Deltau> (#mum)");
+      TF1* fduthetapdiff=new TF1("fduthetapdiff","pol1",-0.5,0.5);
+      gduthetapdiff->Fit(fduthetapdiff,"R");
+      gduthetapdiff->Draw("AP");
+      
+      float dwp     = fduthetapdiff->GetParameter(1);
+      float dwperr  = fduthetapdiff->GetParError(1);
+      float bp      = fduthetapdiff->GetParameter(0);
+      float bperr   = fduthetapdiff->GetParError(0);
+      
+      stringstream sduthetap1diff;
+      stringstream sduthetap2diff;
+      
+      sduthetap1diff << "#DeltaW = " << fround(dwp,3) << " #pm " << fround(dwperr,3) << " #mum" << endl;
+      sduthetap2diff << "#Deltatan(LA) = " << fround(bp/(235.-dwp),3) << " #pm " << fround(bperr/(235.-dwp),4) << endl;
+      
+      t->SetTextColor(1);
+      t->DrawLatex(0.15,0.85,sduthetap1diff.str().c_str());
+      t->DrawLatex(0.15,0.75,sduthetap2diff.str().c_str());
+      
+      can[idx]->cd(4);
+      
+      TGraphErrors *gduthetamdiff = diffTGraph(gduthetam[0],gduthetam[1],Form("%s DECO - PEAK (v- modules)",detnames[mysubdet].c_str()),
+                                               "<tan(#theta_{trk})-tan(#theta_{LA})>","<#Deltau> (#mum)");
+      TF1* fduthetamdiff=new TF1("fduthetamdiff","pol1",-0.5,0.5);
+      gduthetamdiff->Fit(fduthetamdiff,"R");
+      gduthetamdiff->Draw("AP");
+      
+      float dwm     = fduthetamdiff->GetParameter(1);
+      float dwmerr  = fduthetamdiff->GetParError(1);
+      float bm      = fduthetamdiff->GetParameter(0);
+      float bmerr   = fduthetamdiff->GetParError(0);
+      
+      stringstream sduthetam1diff;
+      stringstream sduthetam2diff;
+      
+      sduthetam1diff << "#DeltaW = " << fround(dwm,3) << " #pm " << fround(dwmerr,3) << " #mum" << endl;
+      sduthetam2diff << "#Deltatan(LA) = " << fround(bm/(235.-dwm),3) << " #pm " << fround(bmerr/(235.-dwm),4) << endl;
+      
+      t->DrawLatex(0.15,0.85,sduthetam1diff.str().c_str());
+      t->DrawLatex(0.15,0.75,sduthetam2diff.str().c_str());
+      
+    }
+  }
 
 
               
@@ -597,7 +622,7 @@ void chain(){
         //get du vs. dtantheta TGraph from TH2
         tanlacan[ih]->cd(1);
         duthetap_layer[ifile][ih]  -> SetName(Form("duthetap_layer_%i_%i",ifile,ih));
-        gduthetap_layer[ifile][ih] =  getTGraphFromTH2(duthetap_layer[ifile][ih],thetabinsp,0,0,colors[ifile]);
+        gduthetap_layer[ifile][ih] =  getTGraphFromTH2(duthetap_layer[ifile][ih],thetabinsp,colors[ifile]);
         //gduthetap_layer[ifile][ih] -> SetMarkerColor(colors[ifile]);
         //gduthetap_layer[ifile][ih] -> SetLineColor(colors[ifile]);
         fduthetap_layer[ifile][ih] =  new TF1(Form("fduthetap_layer_%i_%i",ifile,ih),"pol1");
@@ -607,7 +632,7 @@ void chain(){
 
         tanlacan[ih]->cd(2);
         duthetam_layer[ifile][ih]  -> SetName(Form("duthetam_layer_%i_%i",ifile,ih));
-        gduthetam_layer[ifile][ih] =  getTGraphFromTH2(duthetam_layer[ifile][ih],thetabinsm,0,0,colors[ifile]);
+        gduthetam_layer[ifile][ih] =  getTGraphFromTH2(duthetam_layer[ifile][ih],thetabinsm,colors[ifile]);
         //gduthetam_layer[ifile][ih] -> SetMarkerColor(colors[ifile]);
         //gduthetam_layer[ifile][ih] -> SetLineColor(colors[ifile]);
         fduthetam_layer[ifile][ih] =  new TF1(Form("fduthetam_layer_%i_%i",ifile,ih),"pol1");
@@ -905,104 +930,92 @@ void chain(){
 
 
   /*
-  if(draw("nstripsvstantrk",cantitles)){
-    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),1200,450);
-    can[idx]->Divide(2,1);
-    
-    plotHistsTH2(nstripstantrkpeak,
-                 "TOB PEAK","tan(#theta_{trk})",
-                 "nstrips",-2,2,0,20,0,can[idx],1);
-    plotHistsTH2(nstripstantrkdeco,
-                 "TOB DECO","tan(#theta_{trk})",
-                 "nstrips",-2,2,0,20,0,can[idx],2);
-    
-    idx++;
-  }
+ 
 
   if(draw("nstripsvstantrktgraph",cantitles)){
-    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),800,600);
-    can[idx]->cd();
+  can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),800,600);
+  can[idx]->cd();
 
-    //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","[1]+[2]*pow(x-[0],2)+[3]*pow(x-[0],4)+[4]*pow(x-[0],6)",-1,1);
-    //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","[1]+[2]*pow(x-[0],2)+[3]*pow(x-[0],4)+[4]*pow(x-[0],6)",-1,1);
-    //fnstripstantrkpeak->SetParameters(0.,1.,1.,1.,1.);
-    //fnstripstantrkdeco->SetParameters(0.,1.,1.,1.,1.);
+  //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","[1]+[2]*pow(x-[0],2)+[3]*pow(x-[0],4)+[4]*pow(x-[0],6)",-1,1);
+  //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","[1]+[2]*pow(x-[0],2)+[3]*pow(x-[0],4)+[4]*pow(x-[0],6)",-1,1);
+  //fnstripstantrkpeak->SetParameters(0.,1.,1.,1.,1.);
+  //fnstripstantrkdeco->SetParameters(0.,1.,1.,1.,1.);
 
-    //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","[1]+(x<[0])*((x-[0])*[2])+(x>0)*((x-[0])*[3])",-1,1);
-    //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","[1]+(x<[0])*((x-[0])*[2])+(x>0)*((x-[0])*[3])",-1,1);
-    //fnstripstantrkpeak->SetParameters(-0.1,2.,2.,2.);
-    //fnstripstantrkdeco->SetParameters(-0.1,2.,2.,2.);
+  //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","[1]+(x<[0])*((x-[0])*[2])+(x>0)*((x-[0])*[3])",-1,1);
+  //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","[1]+(x<[0])*((x-[0])*[2])+(x>0)*((x-[0])*[3])",-1,1);
+  //fnstripstantrkpeak->SetParameters(-0.1,2.,2.,2.);
+  //fnstripstantrkdeco->SetParameters(-0.1,2.,2.,2.);
 
-    //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","[1]+[2]*abs((x-[0]))",-1,1);
-    //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","[1]+[2]*abs((x-[0]))",-1,1);
-    //fnstripstantrkpeak->SetParameters(-0.1,2.,2.,2.);
-    //fnstripstantrkdeco->SetParameters(-0.1,2.,2.,2.);
+  //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","[1]+[2]*abs((x-[0]))",-1,1);
+  //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","[1]+[2]*abs((x-[0]))",-1,1);
+  //fnstripstantrkpeak->SetParameters(-0.1,2.,2.,2.);
+  //fnstripstantrkdeco->SetParameters(-0.1,2.,2.,2.);
 
-    //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","[1]+[2]*abs((x-[0]))",-1,1);
-    //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","[1]+[2]*abs((x-[0]))",-1,1);
-    //fnstripstantrkpeak->SetParameters(-0.1,2.,2.,2.);
-    //fnstripstantrkdeco->SetParameters(-0.1,2.,2.,2.);
-    //char* func="V-fit";
+  //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","[1]+[2]*abs((x-[0]))",-1,1);
+  //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","[1]+[2]*abs((x-[0]))",-1,1);
+  //fnstripstantrkpeak->SetParameters(-0.1,2.,2.,2.);
+  //fnstripstantrkdeco->SetParameters(-0.1,2.,2.,2.);
+  //char* func="V-fit";
 
-    //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","([1]+[2]*pow(x-[0],2))",-0.5,0.3);
-    //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","([1]+[2]*pow(x-[0],2))",-0.5,0.3);
-    //fnstripstantrkpeak->SetParameters(-0.1,2.,2.);
-    //fnstripstantrkdeco->SetParameters(-0.1,2.,2.);
+  //TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak","([1]+[2]*pow(x-[0],2))",-0.5,0.3);
+  //TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco","([1]+[2]*pow(x-[0],2))",-0.5,0.3);
+  //fnstripstantrkpeak->SetParameters(-0.1,2.,2.);
+  //fnstripstantrkdeco->SetParameters(-0.1,2.,2.);
 
-    TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak",
-                                    "[1]+[2]*pow(x-[0],2)+[3]*pow(x-[0],4)+[4]*pow(x-[0],6)+[5]*pow(x-[0],8)+[6]*pow(x-[0],10)+[7]*pow(x-[0],12)+[8]*pow(x-[0],14)",-1,1);
-    TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco",
-                                    "[1]+[2]*pow(x-[0],2)+[3]*pow(x-[0],4)+[4]*pow(x-[0],6)+[5]*pow(x-[0],8)+[6]*pow(x-[0],10)+[7]*pow(x-[0],12)+[8]*pow(x-[0],14)",-1,1);
-    fnstripstantrkpeak->SetParameters(0.,1.,1.,1.,1.,1.,1.,1.,1.);
-    fnstripstantrkdeco->SetParameters(0.,1.,1.,1.,1.,1.,1.,1.,1.);
-    char* func = "f(x) = #Sigma_{i=0}^{7} [ c_{i} (x-tan(#theta_{trk}^{MIN}))^{2i} ]";
+  TF1* fnstripstantrkpeak=new TF1("fnstripstantrkpeak",
+  "[1]+[2]*pow(x-[0],2)+[3]*pow(x-[0],4)+[4]*pow(x-[0],6)+[5]*pow(x-[0],8)+[6]*pow(x-[0],10)+[7]*pow(x-[0],12)+[8]*pow(x-[0],14)",-1,1);
+  TF1* fnstripstantrkdeco=new TF1("fnstripstantrkdeco",
+  "[1]+[2]*pow(x-[0],2)+[3]*pow(x-[0],4)+[4]*pow(x-[0],6)+[5]*pow(x-[0],8)+[6]*pow(x-[0],10)+[7]*pow(x-[0],12)+[8]*pow(x-[0],14)",-1,1);
+  fnstripstantrkpeak->SetParameters(0.,1.,1.,1.,1.,1.,1.,1.,1.);
+  fnstripstantrkdeco->SetParameters(0.,1.,1.,1.,1.,1.,1.,1.,1.);
+  char* func = "f(x) = #Sigma_{i=0}^{7} [ c_{i} (x-tan(#theta_{trk}^{MIN}))^{2i} ]";
 
-    vector<float> bins;
-    for(int ibin=0;ibin<201;ibin++) bins.push_back(ibin*0.01-1.);
+  vector<float> bins;
+  for(int ibin=0;ibin<201;ibin++) bins.push_back(ibin*0.01-1.);
     
-    TGraphErrors *gnstripstantrkpeak = getTGraphFromTH2(nstripstantrkpeak,bins,0);
-    fnstripstantrkpeak->SetLineColor(2);
-    fnstripstantrkpeak->SetLineWidth(1);
-    gnstripstantrkpeak->Fit(fnstripstantrkpeak,"R");
-    gnstripstantrkpeak->SetMarkerColor(2);
-    gnstripstantrkpeak->SetLineColor(2);
-    gnstripstantrkpeak->SetMarkerStyle(8);
-    gnstripstantrkpeak->SetMarkerSize(0.1);
-    gnstripstantrkpeak->Draw("AP");
-    gnstripstantrkpeak->SetTitle("TOB");
-    gnstripstantrkpeak->GetXaxis()->SetTitle("<tan(#theta_{trk})>");
-    gnstripstantrkpeak->GetYaxis()->SetTitle("<nstrips>");
+  TGraphErrors *gnstripstantrkpeak = getTGraphFromTH2(nstripstantrkpeak,bins,0);
+  fnstripstantrkpeak->SetLineColor(2);
+  fnstripstantrkpeak->SetLineWidth(1);
+  gnstripstantrkpeak->Fit(fnstripstantrkpeak,"R");
+  gnstripstantrkpeak->SetMarkerColor(2);
+  gnstripstantrkpeak->SetLineColor(2);
+  gnstripstantrkpeak->SetMarkerStyle(8);
+  gnstripstantrkpeak->SetMarkerSize(0.1);
+  gnstripstantrkpeak->Draw("AP");
+  gnstripstantrkpeak->SetTitle("TOB");
+  gnstripstantrkpeak->GetXaxis()->SetTitle("<tan(#theta_{trk})>");
+  gnstripstantrkpeak->GetYaxis()->SetTitle("<nstrips>");
 
-    stringstream snstripstantrkpeak;
-    snstripstantrkpeak<<"tan(#theta_{trk}^{MIN}) = "<<fround(fnstripstantrkpeak->GetParameter(0),5)
-                      <<" #pm "<<fround(fnstripstantrkpeak->GetParError(0),5)<<endl;
+  stringstream snstripstantrkpeak;
+  snstripstantrkpeak<<"tan(#theta_{trk}^{MIN}) = "<<fround(fnstripstantrkpeak->GetParameter(0),5)
+  <<" #pm "<<fround(fnstripstantrkpeak->GetParError(0),5)<<endl;
 
-    TGraphErrors *gnstripstantrkdeco = getTGraphFromTH2(nstripstantrkdeco,bins,0);
-    fnstripstantrkdeco->SetLineColor(4);
-    fnstripstantrkdeco->SetLineWidth(1);
-    gnstripstantrkdeco->Fit(fnstripstantrkdeco,"R");
-    gnstripstantrkdeco->SetMarkerColor(4);
-    gnstripstantrkdeco->SetLineColor(4);
-    gnstripstantrkdeco->SetMarkerStyle(8);
-    gnstripstantrkdeco->SetMarkerSize(0.1);
-    gnstripstantrkdeco->Draw("sameP");
+  TGraphErrors *gnstripstantrkdeco = getTGraphFromTH2(nstripstantrkdeco,bins,0);
+  fnstripstantrkdeco->SetLineColor(4);
+  fnstripstantrkdeco->SetLineWidth(1);
+  gnstripstantrkdeco->Fit(fnstripstantrkdeco,"R");
+  gnstripstantrkdeco->SetMarkerColor(4);
+  gnstripstantrkdeco->SetLineColor(4);
+  gnstripstantrkdeco->SetMarkerStyle(8);
+  gnstripstantrkdeco->SetMarkerSize(0.1);
+  gnstripstantrkdeco->Draw("sameP");
 
-    stringstream snstripstantrkdeco;
-    snstripstantrkdeco<<"tan(#theta_{trk}^{MIN}) = "<<fround(fnstripstantrkdeco->GetParameter(0),5)
-                      <<" #pm "<<fround(fnstripstantrkdeco->GetParError(0),5)<<endl;
+  stringstream snstripstantrkdeco;
+  snstripstantrkdeco<<"tan(#theta_{trk}^{MIN}) = "<<fround(fnstripstantrkdeco->GetParameter(0),5)
+  <<" #pm "<<fround(fnstripstantrkdeco->GetParError(0),5)<<endl;
 
 
-    TLatex *t=new TLatex();
-    t->SetNDC();
-    t->SetTextSize(0.04);
-    t->SetTextColor(2);
-    t->DrawLatex(0.3,0.82,snstripstantrkpeak.str().c_str());
-    t->SetTextColor(4);
-    t->DrawLatex(0.3,0.75,snstripstantrkdeco.str().c_str());
-    t->SetTextColor(1);
-    t->DrawLatex(0.3,0.68,func);
+  TLatex *t=new TLatex();
+  t->SetNDC();
+  t->SetTextSize(0.04);
+  t->SetTextColor(2);
+  t->DrawLatex(0.3,0.82,snstripstantrkpeak.str().c_str());
+  t->SetTextColor(4);
+  t->DrawLatex(0.3,0.75,snstripstantrkdeco.str().c_str());
+  t->SetTextColor(1);
+  t->DrawLatex(0.3,0.68,func);
 
-    idx++;
+  idx++;
   }
 
   float tanlapeak[8];
@@ -1015,137 +1028,137 @@ void chain(){
   float dterrdeco[8];
 
   if(draw("nstripsvstantrktgraphdt",cantitles)){
-    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),1200,600);
-    can[idx]->Divide(4,2);
-    //can[idx]->cd();
+  can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),1200,600);
+  can[idx]->Divide(4,2);
+  //can[idx]->cd();
 
-    //TCanvas *c1=new TCanvas("c1","",800,600);
-    //TCanvas *c2=new TCanvas("c2","",800,600);
-    //c1->Divide(2,2);
-    //c2->Divide(2,2);
+  //TCanvas *c1=new TCanvas("c1","",800,600);
+  //TCanvas *c2=new TCanvas("c2","",800,600);
+  //c1->Divide(2,2);
+  //c2->Divide(2,2);
 
-    TF1* fnstripstantrkpeak_dt[8];
-    TF1* fnstripstantrkdeco_dt[8];
-    TGraphErrors *gnstripstantrkpeak_dt[8];
-    TGraphErrors *gnstripstantrkdeco_dt[8];
-    stringstream snstripstantrkpeak_dt[8];
-    stringstream snstripstantrkdeco_dt[8];
-    char* func = "V-fit";
-    char* titles[]={
-      "TOB (-20 ns < DT Time < -12 ns)",
-      "TOB (-12 ns < DT Time < -8 ns)",
-      "TOB (-8 ns < DT Time < -4 ns)",
-      "TOB (-4 ns < DT Time < 0 ns)",
-      "TOB (0 ns < DT Time < 4 ns)",
-      "TOB (4 ns < DT Time < 8 ns)",
-      "TOB (8 ns < DT Time < 12 ns)",
-      "TOB (12 ns < DT Time < 20 ns)"
-    };
+  TF1* fnstripstantrkpeak_dt[8];
+  TF1* fnstripstantrkdeco_dt[8];
+  TGraphErrors *gnstripstantrkpeak_dt[8];
+  TGraphErrors *gnstripstantrkdeco_dt[8];
+  stringstream snstripstantrkpeak_dt[8];
+  stringstream snstripstantrkdeco_dt[8];
+  char* func = "V-fit";
+  char* titles[]={
+  "TOB (-20 ns < DT Time < -12 ns)",
+  "TOB (-12 ns < DT Time < -8 ns)",
+  "TOB (-8 ns < DT Time < -4 ns)",
+  "TOB (-4 ns < DT Time < 0 ns)",
+  "TOB (0 ns < DT Time < 4 ns)",
+  "TOB (4 ns < DT Time < 8 ns)",
+  "TOB (8 ns < DT Time < 12 ns)",
+  "TOB (12 ns < DT Time < 20 ns)"
+  };
 
-    vector<float> bins2;
-    bins2.clear();
-    //for(int ibin2=0;ibin2<101;ibin2++) bins2.push_back(ibin2*0.02-1.);
-    for(int ibin2=0;ibin2<201;ibin2++) bins2.push_back(ibin2*0.01-1.);
+  vector<float> bins2;
+  bins2.clear();
+  //for(int ibin2=0;ibin2<101;ibin2++) bins2.push_back(ibin2*0.02-1.);
+  for(int ibin2=0;ibin2<201;ibin2++) bins2.push_back(ibin2*0.01-1.);
 
-    for(int ih = 0 ; ih < 8 ; ih++ ){
+  for(int ih = 0 ; ih < 8 ; ih++ ){
 
-      cout<<"DT Slice "<<ih<<endl;
-      can[idx]->cd(ih+1);
-      //if(ih<4) c1->cd(ih+1);
-      //if(ih>3) c2->cd(ih-3);
+  cout<<"DT Slice "<<ih<<endl;
+  can[idx]->cd(ih+1);
+  //if(ih<4) c1->cd(ih+1);
+  //if(ih>3) c2->cd(ih-3);
 
-      fnstripstantrkpeak_dt[ih] = new TF1(Form("fnstripstantrkpeak_dt_%i",ih),"[1]+[2]*abs((x-[0]))",-1,1);
-      fnstripstantrkdeco_dt[ih] = new TF1(Form("fnstripstantrkdeco_dt_%i",ih),"[1]+[2]*abs((x-[0]))",-1,1);
+  fnstripstantrkpeak_dt[ih] = new TF1(Form("fnstripstantrkpeak_dt_%i",ih),"[1]+[2]*abs((x-[0]))",-1,1);
+  fnstripstantrkdeco_dt[ih] = new TF1(Form("fnstripstantrkdeco_dt_%i",ih),"[1]+[2]*abs((x-[0]))",-1,1);
       
-      fnstripstantrkpeak_dt[ih]->SetParameters(-0.1,2.,2.,2.);
-      fnstripstantrkdeco_dt[ih]->SetParameters(-0.1,2.,2.,2.);
+  fnstripstantrkpeak_dt[ih]->SetParameters(-0.1,2.,2.,2.);
+  fnstripstantrkdeco_dt[ih]->SetParameters(-0.1,2.,2.,2.);
       
-      gnstripstantrkpeak_dt[ih] = getTGraphFromTH2(nstripstantrkpeak_dt[ih],bins2,0);
-      fnstripstantrkpeak_dt[ih]->SetLineColor(2);
-      fnstripstantrkpeak_dt[ih]->SetLineWidth(1);
-      gnstripstantrkpeak_dt[ih]->Fit(fnstripstantrkpeak_dt[ih],"R");
-      gnstripstantrkpeak_dt[ih]->SetMarkerColor(2);
-      gnstripstantrkpeak_dt[ih]->SetLineColor(2);
-      gnstripstantrkpeak_dt[ih]->SetMarkerStyle(8);
-      gnstripstantrkpeak_dt[ih]->SetMarkerSize(0.1);
-      gnstripstantrkpeak_dt[ih]->Draw("AP");
-      gnstripstantrkpeak_dt[ih]->SetTitle(titles[ih]);
-      gnstripstantrkpeak_dt[ih]->GetXaxis()->SetTitle("<tan(#theta_{trk})>");
-      gnstripstantrkpeak_dt[ih]->GetYaxis()->SetTitle("<nstrips>");
-      gnstripstantrkpeak_dt[ih]->SetMinimum(1);
-      gnstripstantrkpeak_dt[ih]->SetMaximum(5);
+  gnstripstantrkpeak_dt[ih] = getTGraphFromTH2(nstripstantrkpeak_dt[ih],bins2,0);
+  fnstripstantrkpeak_dt[ih]->SetLineColor(2);
+  fnstripstantrkpeak_dt[ih]->SetLineWidth(1);
+  gnstripstantrkpeak_dt[ih]->Fit(fnstripstantrkpeak_dt[ih],"R");
+  gnstripstantrkpeak_dt[ih]->SetMarkerColor(2);
+  gnstripstantrkpeak_dt[ih]->SetLineColor(2);
+  gnstripstantrkpeak_dt[ih]->SetMarkerStyle(8);
+  gnstripstantrkpeak_dt[ih]->SetMarkerSize(0.1);
+  gnstripstantrkpeak_dt[ih]->Draw("AP");
+  gnstripstantrkpeak_dt[ih]->SetTitle(titles[ih]);
+  gnstripstantrkpeak_dt[ih]->GetXaxis()->SetTitle("<tan(#theta_{trk})>");
+  gnstripstantrkpeak_dt[ih]->GetYaxis()->SetTitle("<nstrips>");
+  gnstripstantrkpeak_dt[ih]->SetMinimum(1);
+  gnstripstantrkpeak_dt[ih]->SetMaximum(5);
 
-      tanlapeak[ih]    = fnstripstantrkpeak_dt[ih]->GetParameter(0);
-      tanlaerrpeak[ih] = fnstripstantrkpeak_dt[ih]->GetParError(0);
-      dtpeak[ih]       = dttimepeak_dt[ih]->GetMean(1);
-      dterrpeak[ih]    = dttimepeak_dt[ih]->GetRMS(1)/sqrt(dttimepeak_dt[ih]->GetEntries());
+  tanlapeak[ih]    = fnstripstantrkpeak_dt[ih]->GetParameter(0);
+  tanlaerrpeak[ih] = fnstripstantrkpeak_dt[ih]->GetParError(0);
+  dtpeak[ih]       = dttimepeak_dt[ih]->GetMean(1);
+  dterrpeak[ih]    = dttimepeak_dt[ih]->GetRMS(1)/sqrt(dttimepeak_dt[ih]->GetEntries());
 
-      snstripstantrkpeak_dt[ih]<<"tan(#theta_{trk}^{MIN}) = "<<fround(fnstripstantrkpeak_dt[ih]->GetParameter(0),5)
-                               <<" #pm "<<fround(fnstripstantrkpeak_dt[ih]->GetParError(0),5)<<endl;
+  snstripstantrkpeak_dt[ih]<<"tan(#theta_{trk}^{MIN}) = "<<fround(fnstripstantrkpeak_dt[ih]->GetParameter(0),5)
+  <<" #pm "<<fround(fnstripstantrkpeak_dt[ih]->GetParError(0),5)<<endl;
 
-      gnstripstantrkdeco_dt[ih] = getTGraphFromTH2(nstripstantrkdeco_dt[ih],bins2,0);
-      fnstripstantrkdeco_dt[ih]->SetLineColor(4);
-      fnstripstantrkdeco_dt[ih]->SetLineWidth(1);
-      gnstripstantrkdeco_dt[ih]->Fit(fnstripstantrkdeco_dt[ih],"R");
-      gnstripstantrkdeco_dt[ih]->SetMarkerColor(4);
-      gnstripstantrkdeco_dt[ih]->SetLineColor(4);
-      gnstripstantrkdeco_dt[ih]->SetMarkerStyle(8);
-      gnstripstantrkdeco_dt[ih]->SetMarkerSize(0.1);
-      gnstripstantrkdeco_dt[ih]->Draw("sameP");
+  gnstripstantrkdeco_dt[ih] = getTGraphFromTH2(nstripstantrkdeco_dt[ih],bins2,0);
+  fnstripstantrkdeco_dt[ih]->SetLineColor(4);
+  fnstripstantrkdeco_dt[ih]->SetLineWidth(1);
+  gnstripstantrkdeco_dt[ih]->Fit(fnstripstantrkdeco_dt[ih],"R");
+  gnstripstantrkdeco_dt[ih]->SetMarkerColor(4);
+  gnstripstantrkdeco_dt[ih]->SetLineColor(4);
+  gnstripstantrkdeco_dt[ih]->SetMarkerStyle(8);
+  gnstripstantrkdeco_dt[ih]->SetMarkerSize(0.1);
+  gnstripstantrkdeco_dt[ih]->Draw("sameP");
 
-      tanladeco[ih]    = fnstripstantrkdeco_dt[ih]->GetParameter(0);
-      tanlaerrdeco[ih] = fnstripstantrkdeco_dt[ih]->GetParError(0);
-      dtdeco[ih]       = dttimedeco_dt[ih]->GetMean(1);
-      dterrdeco[ih]    = dttimedeco_dt[ih]->GetRMS(1)/sqrt(dttimedeco_dt[ih]->GetEntries());
+  tanladeco[ih]    = fnstripstantrkdeco_dt[ih]->GetParameter(0);
+  tanlaerrdeco[ih] = fnstripstantrkdeco_dt[ih]->GetParError(0);
+  dtdeco[ih]       = dttimedeco_dt[ih]->GetMean(1);
+  dterrdeco[ih]    = dttimedeco_dt[ih]->GetRMS(1)/sqrt(dttimedeco_dt[ih]->GetEntries());
       
-      snstripstantrkdeco_dt[ih]<<"tan(#theta_{trk}^{MIN}) = "<<fround(fnstripstantrkdeco_dt[ih]->GetParameter(0),5)
-                               <<" #pm "<<fround(fnstripstantrkdeco_dt[ih]->GetParError(0),5)<<endl;
+  snstripstantrkdeco_dt[ih]<<"tan(#theta_{trk}^{MIN}) = "<<fround(fnstripstantrkdeco_dt[ih]->GetParameter(0),5)
+  <<" #pm "<<fround(fnstripstantrkdeco_dt[ih]->GetParError(0),5)<<endl;
       
       
-      TLatex *t=new TLatex();
-      t->SetNDC();
-      t->SetTextSize(0.04);
-      t->SetTextColor(2);
-      t->DrawLatex(0.3,0.82,snstripstantrkpeak_dt[ih].str().c_str());
-      t->SetTextColor(4);
-      t->DrawLatex(0.3,0.75,snstripstantrkdeco_dt[ih].str().c_str());
-      t->SetTextColor(1);
-      t->DrawLatex(0.3,0.68,func);
-    }
+  TLatex *t=new TLatex();
+  t->SetNDC();
+  t->SetTextSize(0.04);
+  t->SetTextColor(2);
+  t->DrawLatex(0.3,0.82,snstripstantrkpeak_dt[ih].str().c_str());
+  t->SetTextColor(4);
+  t->DrawLatex(0.3,0.75,snstripstantrkdeco_dt[ih].str().c_str());
+  t->SetTextColor(1);
+  t->DrawLatex(0.3,0.68,func);
+  }
     
-    idx++;
+  idx++;
   }
 
   if(draw("tanladt",cantitles)){
-    can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),800,600);
-    can[idx]->cd();
+  can[idx]=new TCanvas(cantitles.at(idx),cantitles.at(idx),800,600);
+  can[idx]->cd();
 
-    TGraphErrors *glapeak=new TGraphErrors(8,dtpeak,tanlapeak,dterrpeak,tanlaerrpeak);
-    TGraphErrors *gladeco=new TGraphErrors(8,dtdeco,tanladeco,dterrdeco,tanlaerrdeco);
+  TGraphErrors *glapeak=new TGraphErrors(8,dtpeak,tanlapeak,dterrpeak,tanlaerrpeak);
+  TGraphErrors *gladeco=new TGraphErrors(8,dtdeco,tanladeco,dterrdeco,tanlaerrdeco);
     
-    glapeak->SetMarkerColor(2);
-    glapeak->SetLineColor(2);
-    glapeak->SetMarkerStyle(8);
-    glapeak->SetMarkerSize(1);
-    glapeak->Draw("AP");
-    glapeak->SetTitle("tan(#theta_{LA}) from Cluster Width");
-    glapeak->GetYaxis()->SetTitle("tan(#theta_{LA})");
-    glapeak->GetXaxis()->SetTitle("DT time (ns)");
-    glapeak->SetMinimum(-0.11);
-    gladeco->SetMaximum(-0.05);
+  glapeak->SetMarkerColor(2);
+  glapeak->SetLineColor(2);
+  glapeak->SetMarkerStyle(8);
+  glapeak->SetMarkerSize(1);
+  glapeak->Draw("AP");
+  glapeak->SetTitle("tan(#theta_{LA}) from Cluster Width");
+  glapeak->GetYaxis()->SetTitle("tan(#theta_{LA})");
+  glapeak->GetXaxis()->SetTitle("DT time (ns)");
+  glapeak->SetMinimum(-0.11);
+  gladeco->SetMaximum(-0.05);
 
-    gladeco->SetMarkerColor(4);
-    gladeco->SetLineColor(4);
-    gladeco->SetMarkerStyle(8);
-    gladeco->SetMarkerSize(1);
-    gladeco->Draw("sameP");
+  gladeco->SetMarkerColor(4);
+  gladeco->SetLineColor(4);
+  gladeco->SetMarkerStyle(8);
+  gladeco->SetMarkerSize(1);
+  gladeco->Draw("sameP");
    
-    idx++;
+  idx++;
   }
   */
 
   /*
-  if(draw("duvsdtantheta_tgraph",cantitles)){
+    if(draw("duvsdtantheta_tgraph",cantitles)){
     bool addbpcorr = false; //add tgraph for BP-corrected deco
     float size = 0.1;
 
@@ -1188,10 +1201,10 @@ void chain(){
     gduthetapeakp->Fit(fduthetapeakp);
     stringstream sduthetapeakp;
     sduthetapeakp<<"m = "<<fround(fduthetapeakp->GetParameter(1),3)
-                 <<" #pm " <<fround(fduthetapeakp->GetParError(1),3)
-                 <<"   b = "<<fround(fduthetapeakp->GetParameter(0),3)
-                 <<" #pm "<<fround(fduthetapeakp->GetParError(0),3)
-                 <<endl;
+    <<" #pm " <<fround(fduthetapeakp->GetParError(1),3)
+    <<"   b = "<<fround(fduthetapeakp->GetParameter(0),3)
+    <<" #pm "<<fround(fduthetapeakp->GetParError(0),3)
+    <<endl;
     
     duthetadecop->SetName("duthetadecop");
     TGraphErrors *gduthetadecop = getTGraphFromTH2(duthetadecop,thetabins,0);
@@ -1204,36 +1217,36 @@ void chain(){
     gduthetadecop->Fit(fduthetadecop);
     stringstream sduthetadecop;
     sduthetadecop<<"m = "<<fround(fduthetadecop->GetParameter(1),3)
-                 <<" #pm " <<fround(fduthetadecop->GetParError(1),3)
-                 <<"   b = "<<fround(fduthetadecop->GetParameter(0),3)
-                 <<" #pm "<<fround(fduthetadecop->GetParError(0),3)
-                 <<endl;
+    <<" #pm " <<fround(fduthetadecop->GetParError(1),3)
+    <<"   b = "<<fround(fduthetadecop->GetParameter(0),3)
+    <<" #pm "<<fround(fduthetadecop->GetParError(0),3)
+    <<endl;
 
     //add deco with BP correction------------------------------------------
     if(addbpcorr){
-      TFile fdecobp("crabjobs/trial17/root/deco.root");
-      fdecobp.cd();
-      PeakDecoResiduals.cd();
-      PeakDecoResiduals.cd();
-      TH2F* duthetadecobp_vp = (TH2F*)duvsdtantheta_vp_TOB->Clone();
-      TH2F* duthetadecobp_vm = (TH2F*)duvsdtantheta_vm_TOB->Clone();
+    TFile fdecobp("crabjobs/trial17/root/deco.root");
+    fdecobp.cd();
+    PeakDecoResiduals.cd();
+    PeakDecoResiduals.cd();
+    TH2F* duthetadecobp_vp = (TH2F*)duvsdtantheta_vp_TOB->Clone();
+    TH2F* duthetadecobp_vm = (TH2F*)duvsdtantheta_vm_TOB->Clone();
       
-      duthetadecobp_vp->SetName("duthetadecobp_vp");
-      TGraphErrors *gduthetadecobp_vp = getTGraphFromTH2(duthetadecobp_vp,thetabins,0);
-      gduthetadecobp_vp->SetMarkerColor(6);
-      gduthetadecobp_vp->SetLineColor(6);
-      gduthetadecobp_vp->SetMarkerStyle(8);
-      gduthetadecobp_vp->SetMarkerSize(size);
-      TF1 *fduthetadecobp_vp=new TF1("fduthetadecobp_vp","pol1");
-      fduthetadecobp_vp->SetLineColor(6);
-      gduthetadecobp_vp->Fit(fduthetadecobp_vp);
-      stringstream sduthetadecobp_vp;
+    duthetadecobp_vp->SetName("duthetadecobp_vp");
+    TGraphErrors *gduthetadecobp_vp = getTGraphFromTH2(duthetadecobp_vp,thetabins,0);
+    gduthetadecobp_vp->SetMarkerColor(6);
+    gduthetadecobp_vp->SetLineColor(6);
+    gduthetadecobp_vp->SetMarkerStyle(8);
+    gduthetadecobp_vp->SetMarkerSize(size);
+    TF1 *fduthetadecobp_vp=new TF1("fduthetadecobp_vp","pol1");
+    fduthetadecobp_vp->SetLineColor(6);
+    gduthetadecobp_vp->Fit(fduthetadecobp_vp);
+    stringstream sduthetadecobp_vp;
     
-      sduthetadecobp_vp<<"m = "<<fround(fduthetadecobp_vp->GetParameter(1),3)
-                       <<" #pm " <<fround(fduthetadecobp_vp->GetParError(1),3)
-                       <<"   b = "<<fround(fduthetadecobp_vp->GetParameter(0),3)
-                       <<" #pm "<<fround(fduthetadecobp_vp->GetParError(0),3)
-                       <<endl;
+    sduthetadecobp_vp<<"m = "<<fround(fduthetadecobp_vp->GetParameter(1),3)
+    <<" #pm " <<fround(fduthetadecobp_vp->GetParError(1),3)
+    <<"   b = "<<fround(fduthetadecobp_vp->GetParameter(0),3)
+    <<" #pm "<<fround(fduthetadecobp_vp->GetParError(0),3)
+    <<endl;
     }
 
     TMultiGraph *mgdtp=new TMultiGraph();
@@ -1259,8 +1272,8 @@ void chain(){
     t->SetTextColor(4);
     t->DrawLatex(0.25,0.75,sduthetadecop.str().c_str());
     if(addbpcorr){
-      t->SetTextColor(6);
-      t->DrawLatex(0.25,0.65,sduthetadecobp_vp.str().c_str());
+    t->SetTextColor(6);
+    t->DrawLatex(0.25,0.65,sduthetadecobp_vp.str().c_str());
     }
 
     //line->DrawLine(-1,0,1,0);
@@ -1278,10 +1291,10 @@ void chain(){
     gduthetapeakm->Fit(fduthetapeakm);
     stringstream sduthetapeakm;
     sduthetapeakm<<"m = "<<fround(fduthetapeakm->GetParameter(1),3)
-                 <<" #pm " <<fround(fduthetapeakm->GetParError(1),3)
-                 <<"   b = "<<fround(fduthetapeakm->GetParameter(0),3)
-                 <<" #pm "<<fround(fduthetapeakm->GetParError(0),3)
-                 <<endl;
+    <<" #pm " <<fround(fduthetapeakm->GetParError(1),3)
+    <<"   b = "<<fround(fduthetapeakm->GetParameter(0),3)
+    <<" #pm "<<fround(fduthetapeakm->GetParError(0),3)
+    <<endl;
 
     duthetadecom->SetName("duthetadecom");
     TGraphErrors *gduthetadecom = getTGraphFromTH2(duthetadecom,thetabins,0);
@@ -1295,29 +1308,29 @@ void chain(){
     stringstream sduthetadecom;
     
     sduthetadecom<<"m = "<<fround(fduthetadecom->GetParameter(1),3)
-                 <<" #pm " <<fround(fduthetadecom->GetParError(1),3)
-                 <<"   b = "<<fround(fduthetadecom->GetParameter(0),3)
-                 <<" #pm "<<fround(fduthetadecom->GetParError(0),3)
-                 <<endl;
+    <<" #pm " <<fround(fduthetadecom->GetParError(1),3)
+    <<"   b = "<<fround(fduthetadecom->GetParameter(0),3)
+    <<" #pm "<<fround(fduthetadecom->GetParError(0),3)
+    <<endl;
     
     //add deco with BP correction------------------------------------------
     if(addbpcorr){
-      duthetadecobp_vm->SetName("duthetadecobp_vm");
-      TGraphErrors *gduthetadecobp_vm = getTGraphFromTH2(duthetadecobp_vm,thetabins,0);
-      gduthetadecobp_vm->SetMarkerColor(6);
-      gduthetadecobp_vm->SetLineColor(6);
-      gduthetadecobp_vm->SetMarkerStyle(8);
-      gduthetadecobp_vm->SetMarkerSize(size);
-      TF1 *fduthetadecobp_vm=new TF1("fduthetadecobp_vm","pol1");
-      fduthetadecobp_vm->SetLineColor(6);
-      gduthetadecobp_vm->Fit(fduthetadecobp_vm);
-      stringstream sduthetadecobp_vm;
+    duthetadecobp_vm->SetName("duthetadecobp_vm");
+    TGraphErrors *gduthetadecobp_vm = getTGraphFromTH2(duthetadecobp_vm,thetabins,0);
+    gduthetadecobp_vm->SetMarkerColor(6);
+    gduthetadecobp_vm->SetLineColor(6);
+    gduthetadecobp_vm->SetMarkerStyle(8);
+    gduthetadecobp_vm->SetMarkerSize(size);
+    TF1 *fduthetadecobp_vm=new TF1("fduthetadecobp_vm","pol1");
+    fduthetadecobp_vm->SetLineColor(6);
+    gduthetadecobp_vm->Fit(fduthetadecobp_vm);
+    stringstream sduthetadecobp_vm;
       
-      sduthetadecobp_vm<<"m = "<<fround(fduthetadecobp_vm->GetParameter(1),3)
-                       <<" #pm " <<fround(fduthetadecobp_vm->GetParError(1),3)
-                       <<"   b = "<<fround(fduthetadecobp_vm->GetParameter(0),3)
-                       <<" #pm "<<fround(fduthetadecobp_vm->GetParError(0),3)
-                       <<endl;
+    sduthetadecobp_vm<<"m = "<<fround(fduthetadecobp_vm->GetParameter(1),3)
+    <<" #pm " <<fround(fduthetadecobp_vm->GetParError(1),3)
+    <<"   b = "<<fround(fduthetadecobp_vm->GetParameter(0),3)
+    <<" #pm "<<fround(fduthetadecobp_vm->GetParError(0),3)
+    <<endl;
     }
 
     TMultiGraph *mgdtm=new TMultiGraph();
@@ -1343,8 +1356,8 @@ void chain(){
     t->SetTextColor(4);
     t->DrawLatex(0.25,0.75,sduthetadecom.str().c_str());
     if(addbpcorr){
-      t->SetTextColor(6);
-      t->DrawLatex(0.25,0.65,sduthetadecobp_vm.str().c_str());
+    t->SetTextColor(6);
+    t->DrawLatex(0.25,0.65,sduthetadecobp_vm.str().c_str());
     }
 
 
@@ -1366,8 +1379,8 @@ void chain(){
     //line->DrawLine(-1,0,1,0);
     //line->DrawLine(0,-20,0,20);
     idx++;
-  }
-*/
+    }
+  */
 
 
               
@@ -1494,14 +1507,14 @@ void setStats(TH1F** h, const int nhist, double startingY, double startingX, dou
       st[i]->SetTextColor(colors[i]);
     }
 
-  //   r->Draw("sames");
-//     gPad->Update(); 
-//     TPaveStats* st2 = (TPaveStats*) r->GetListOfFunctions()->FindObject("stats");
-//     st2->SetX1NDC(startingX);
-//     st2->SetX2NDC(startingX+0.30);
-//     st2->SetY1NDC(startingY);
-//     st2->SetY2NDC(startingY+height);
-//     st2->SetTextColor(4);
+    //   r->Draw("sames");
+    //     gPad->Update(); 
+    //     TPaveStats* st2 = (TPaveStats*) r->GetListOfFunctions()->FindObject("stats");
+    //     st2->SetX1NDC(startingX);
+    //     st2->SetX2NDC(startingX+0.30);
+    //     st2->SetY1NDC(startingY);
+    //     st2->SetY2NDC(startingY+height);
+    //     st2->SetTextColor(4);
   }
 }
 
@@ -1524,7 +1537,7 @@ TH2* suppressHist(TH2* hist,int iclone,float xmin,float xmax){
   return h;
 }
 
-TGraphErrors *getTGraphFromTH2(TH2F* h,vector<float> xbins, int method, int invert, int color){
+TGraphErrors *getTGraphFromTH2(TH2F* h,vector<float> xbins,int color){
 
   gROOT->LoadMacro("scripts/suppressHist.C");
 
@@ -1542,7 +1555,6 @@ TGraphErrors *getTGraphFromTH2(TH2F* h,vector<float> xbins, int method, int inve
     
     htemp[ibin] = suppressHist(h,ibin,xbins.at(ibin),xbins.at(ibin+1));
     
-    //float width = xbins.at(ibin+1) - xbins.at(ibin);
     hx[ibin]    = htemp[ibin]->ProjectionX();
     hy[ibin]    = htemp[ibin]->ProjectionY();
 
@@ -1551,23 +1563,15 @@ TGraphErrors *getTGraphFromTH2(TH2F* h,vector<float> xbins, int method, int inve
 
     
     x[ibin]     = hx[ibin]->GetMean(1);
-    //xerr[ibin]  = width/2.;
+    
     xerr[ibin]  = (hx[ibin]->GetEntries()>0) ? 
       hx[ibin]->GetRMS(1)/sqrt(hx[ibin]->GetEntries()) : 0.;
-    //xerr[ibin]  = hx[ibin]->GetRMS(1);
     
-    if(method == 0){
-      y[ibin]     = hy[ibin]->GetMean(1);
-      if(invert > 0) y[ibin] = -1 * y[ibin];
-      yerr[ibin]  = (hy[ibin]->GetEntries()>0) ? 
-	hy[ibin]->GetRMS(1)/sqrt(hy[ibin]->GetEntries()) : 0.;
-      //yerr[ibin]  = hy[ibin]->GetRMS(1);
-    }
-    if(method == 1){
-      y[ibin]     = hy[ibin]->GetRMS(1);
-      yerr[ibin]  = 0.;
-    }
-
+    y[ibin]     = hy[ibin]->GetMean(1);
+    
+    yerr[ibin]  = (hy[ibin]->GetEntries()>0) ? 
+      hy[ibin]->GetRMS(1)/sqrt(hy[ibin]->GetEntries()) : 0.;
+    
     //cout<<"bin "<<ibin<<" x "<<x[ibin]<<" y "<<y[ibin]<<" xerr "<<xerr[ibin]<<" yerr "<<yerr[ibin]<<endl;
   }
  
@@ -1640,4 +1644,70 @@ string getStringFromTF1( TF1* f){
     <<" #pm "            << fround(be/(235-dw),4) <<endl; 
   
   return s.str();
+}
+
+
+void plotHistsTH2(TH2F* h,string title, string xtitle, string ytitle, 
+                  float xmin, float xmax, float ymin, float ymax,int fit,TCanvas* c, int ipad){
+
+  c->cd(ipad);
+  TPad *plotpad=new TPad("plotpad","",0.1,0.1,1.,0.9);
+  plotpad->Draw();
+  plotpad->cd();
+
+  if(fit>0){
+    TF1 *f=new TF1("f","[0]+[1]*x",xmin,xmax);
+    f->SetParNames("y-int","slope");
+    f->SetLineWidth(2);
+    f->SetLineColor(2);
+    h->Fit(f);
+  }
+  
+  h->GetXaxis()->SetLabelSize(0.06);
+  h->GetYaxis()->SetLabelSize(0.05);
+  h->GetXaxis()->SetRangeUser(xmin,xmax);
+  h->GetYaxis()->SetRangeUser(ymin,ymax);
+  h->SetTitle("");
+  h->GetXaxis()->SetTitle("");
+  h->GetYaxis()->SetTitle("");
+  h->Draw("colz");
+
+
+
+  c->cd(ipad);
+  TPad *xpad=new TPad("xpad","",0.,0.,1.,0.1);
+  xpad->Draw();
+  xpad->cd();
+  TLatex *x=new TLatex();
+  x->SetNDC();
+  x->SetTextSize(0.8);
+  x->DrawLatex(0.5,0.3,xtitle.c_str());
+
+  c->cd(ipad);
+  TPad *ypad=new TPad("ypad","",0.,0.,0.1,1.);
+  ypad->Draw();
+  ypad->cd();
+  TLatex *y=new TLatex();
+  y->SetNDC();
+  y->SetTextSize(0.8);
+  y->SetTextAngle(90);
+  y->DrawLatex(0.6,0.5,ytitle.c_str());
+
+  c->cd(ipad);
+  TPad *tpad=new TPad("tpad","",0.,0.9,1.,1.);
+  tpad->Draw();
+  tpad->cd();
+  TLatex *t=new TLatex();
+  t->SetNDC();
+  t->SetTextSize(0.6);
+  t->DrawLatex(0.2,0.1,title.c_str());
+
+  TLatex *l=new TLatex();
+  l->SetNDC();
+  l->SetTextSize(0.6);
+  l->SetTextColor(2);
+  float cor=h->GetCorrelationFactor(1,2);
+  stringstream s;
+  s<<"C="<<(int)(1000*cor)<<"#times10^{-3}"<<endl;
+  l->DrawLatex(0.7,0.1,s.str().c_str());
 }

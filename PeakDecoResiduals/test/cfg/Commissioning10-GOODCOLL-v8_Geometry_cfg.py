@@ -17,7 +17,7 @@ process.options = cms.untracked.PSet(
 
 ## Maximum number of Events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
     )
 
     
@@ -169,7 +169,7 @@ process.PeakDecoResiduals.Tracks = 'TrackRefitter2'
 process.PeakDecoResiduals.trajectoryInput = 'TrackRefitter2'
 process.PeakDecoResiduals.debug = cms.bool(False)
 process.PeakDecoResiduals.runOnCosmics = cms.bool(False)
-process.PeakDecoResiduals.createTree = cms.bool(True)
+process.PeakDecoResiduals.createTree = cms.bool(False)
 
 
 #process.TFileService.fileName = '/tmp/benhoob/temp.root'

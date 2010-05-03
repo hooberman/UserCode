@@ -44,12 +44,12 @@ void decovspeak(bool printgif = false){
   vector<string> types;
   
   //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_ALLPEAK/merged.root");
-  //filenames.push_back("Commissioning10-GOODCOLL-v8_ALLPEAK/res/merged.root");
-  filenames.push_back("Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
+  filenames.push_back("Commissioning10-GOODCOLL-v8_ALLPEAK/res/merged.root");
+  //filenames.push_back("Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
   
   //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_copy/merged_2.root");
-  //filenames.push_back("Commissioning10-GOODCOLL-v8/res/merged.root");
-  filenames.push_back("Commissioning10-GOODCOLL-v8_newcfg/res/merged.root");
+  filenames.push_back("Commissioning10-GOODCOLL-v8/res/merged.root");
+  //filenames.push_back("Commissioning10-GOODCOLL-v8_newcfg/res/merged.root");
 
   //filenames.push_back("Commissioning10-GOODCOLL-v8_toblatebp06/res/merged.root");
 

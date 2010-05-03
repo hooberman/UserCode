@@ -23,7 +23,7 @@
 #include "DataFormats/MuonReco/interface/MuonTrackLinks.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 
-
+#include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/GeometryCommonDetAlgo/interface/MeasurementVector.h"
 #include "DataFormats/SiStripDetId/interface/SiStripDetId.h"
@@ -59,10 +59,23 @@
 #include "DataFormats/TrackerRecHit2D/interface/ProjectedSiStripRecHit2D.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiStripMatchedRecHit2DCollection.h"
 #include "TrackingTools/PatternTools/interface/TrajTrackAssociation.h"
-
+#include <fstream>
 
 
 bool debug_=false;
+
+float getRadius(float x, float y){ return sqrt(x*x+y*y); }
+
+void printPoint(MeasurementPoint p){
+  cout << "(x,y)   (  " << p.x()                  << "  ,  " << p.y()   << "  )  " << endl; 
+  cout << "(r,phi) (  " << getRadius(p.x(),p.y()) << "  ,  " << p.phi() << "  )  " << endl;
+}
+
+void printPoint(LocalPoint p){
+  cout << "(x,y)   (  " << p.x()                  << "  ,  " << p.y()   << "  )  " << endl; 
+  cout << "(r,phi) (  " << getRadius(p.x(),p.y()) << "  ,  " << p.phi() << "  )  " << endl;
+}
+
 
 TrackerValidationVariables::TrackerValidationVariables(){}
 
@@ -158,7 +171,18 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	if( itTraj == traj_iterator ) cout << "MATCH" << endl;
       }
       */
+      
 
+      /*TEC printout
+      if( IntSubDetID == StripSubdetector::TEC ) {
+
+        TECDetId tecID( hit_detId.rawId() );
+        cout << endl;
+        cout << "-------------------------------------------------------------------------------" << endl;
+        cout << "  TEC ring " << tecID.ringNumber() << " wheel " << tecID.wheelNumber() 
+             << "  stereo "   << tecID.isStereo()   << " z+ "    << tecID.isZPlusSide() << endl;
+        
+             }*/
 
 
       //Added by Ben-------------------------------------------------------------------------------
@@ -178,6 +202,33 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	hitStruct.hitx            = theStripDet->toGlobal(hit->localPosition()).x();
 	hitStruct.hity            = theStripDet->toGlobal(hit->localPosition()).y();
 	hitStruct.hitz            = theStripDet->toGlobal(hit->localPosition()).z();
+
+        /*TEC printout
+        if( IntSubDetID == StripSubdetector::TEC ) {
+
+          float hitx    = theStripDet->toGlobal(hit->localPosition()).x() ;
+          float hity    = theStripDet->toGlobal(hit->localPosition()).y() ;
+          float hitz    = theStripDet->toGlobal(hit->localPosition()).z() ;
+          float hitr    = getRadius( hitx , hity );
+          float hitphi  = theStripDet->toGlobal(hit->localPosition()).phi() ;
+
+          float trajx   = tsos.globalPosition().x();
+          float trajy   = tsos.globalPosition().y();
+          float trajz   = tsos.globalPosition().z();
+          float trajr   = getRadius( trajx , trajy );
+          float trajphi = tsos.globalPosition().phi();
+
+          cout << endl << "global hit position " << endl;
+          cout << "(x,y,z)    (  " << hitx << "  ,  " << hity   << "  ,  " << hitz << "  )  " << endl;
+          cout << "(r,phi,z)  (  " << hitr << "  ,  " << hitphi << "  ,  " << hitz << "  )  " << endl;
+
+          cout << endl << "global track position " << endl;
+          cout << "(x,y,z)    (  " << trajx << "  ,  " << trajy   << "  ,  " << trajz << "  )  " << endl;
+          cout << "(r,phi,z)  (  " << trajr << "  ,  " << trajphi << "  ,  " << trajz << "  )  " << endl;
+
+          cout << endl << "deltaPhi( hit - track ) " << hitphi - trajphi << endl; 
+        }
+        */
 
 	const SiStripRecHit1D* stripHit1D = dynamic_cast<const SiStripRecHit1D*> ( hit->hit() );   
 	const SiStripRecHit2D* stripHit2D = dynamic_cast<const SiStripRecHit2D*> ( hit->hit() );   
@@ -217,6 +268,19 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
       LocalPoint lPHit = hit->localPosition();
       LocalPoint lPTrk = tsos.localPosition();
       
+      /*
+      if( IntSubDetID == StripSubdetector::TEC ) {
+
+        cout << endl << "Local hit position" << endl;
+        printPoint( lPHit );
+
+        cout << endl << "Local track position" << endl;
+        printPoint( lPTrk );
+
+        cout << endl << "deltaPhi( hit - track ) " << lPHit.phi() - lPTrk.phi() << endl; 
+      }
+      */
+
       //LocalError errHit = hit->localPositionError();
       // adding APE to hitError
       AlgebraicROOTObject<2>::SymMatrix mat = asSMatrix<2>(hit->parametersError());
@@ -243,7 +307,13 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
       hitStruct.resY = res.y();
       hitStruct.resErrX = resXErr;
       hitStruct.resErrY = resYErr;
-      
+
+      /*TEC printout
+      if( IntSubDetID == StripSubdetector::TEC ) {
+        cout << "resX " << res.x() << endl;
+      }
+      */
+
       // now calculate residuals taking global orientation of modules and radial topology in TID/TEC into account
       float resXprime(999.F), resYprime(999.F);
       float resXprimeErr(999.F), resYprimeErr(999.F);
@@ -307,7 +377,7 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	  
 	  
 	  //resXTopol = (phiTrk-phiHit)*r_0;
-	  resXTopol = (phiHit-phiTrk)*r_0; //*uOrientation;
+	  resXTopol = (phiHit-phiTrk)*r_0;
 	  //resYTopol = measTrkPos.y()*localStripLengthTrk - measHitPos.y()*localStripLengthHit;
 	  float cosPhiHit(cos(phiHit)), cosPhiTrk(cos(phiTrk)),
 	    sinPhiHit(sin(phiHit)), sinPhiTrk(sin(phiTrk));
@@ -333,6 +403,14 @@ void TrackerValidationVariables::fillHitQuantities(const edm::Event& iEvent, con
 	hitStruct.uOrientation = uOrientation;
 	hitStruct.vOrientation = vOrientation;
 	hitStruct.wOrientation = wOrientation;
+
+        /*TEC printout
+      if( IntSubDetID == StripSubdetector::TEC ) {
+        cout << "resXTopol    " << resXTopol << endl;
+        cout << "resXprime    " << resXTopol*uOrientation << endl;
+        cout << "uOrientation " << uOrientation << endl;
+      }
+        */
 	
 	//Read in DT time for cosmics
 	if(runOnCosmics_){
@@ -519,6 +597,8 @@ void TrackerValidationVariables::setTime(const edm::Event& iEvent, timeStruct &t
   //ts.p                = p;
 
 }
+
+
 
 void TrackerValidationVariables::fillTrackQuantities(const edm::Event& iEvent,
 						     std::vector<AVTrackStruct>& v_avtrackout)

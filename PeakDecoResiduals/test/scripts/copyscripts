@@ -1,4 +1,4 @@
-op#!/bin/csh -f
+#!/bin/csh -f
 
 #TOB
 cat scripts/decovspeak.C >! scripts/decovspeak_TOB.C
@@ -8,8 +8,8 @@ cat scripts/decovspeak.C | sed 's/TOB/TIB/g' >! scripts/decovspeak_TIB_temp.C
 cat scripts/decovspeak_TIB_temp.C | sed 's/Barrel_3/Barrel_0/g' >! scripts/decovspeak_TIB.C
 
 #TEC
-cat scripts/decovspeak.C | sed 's/TOB/TEC/g' >! scripts/decovspeak_TEC_temp.C
-cat scripts/decovspeak_TEC_temp.C | sed 's/Barrel_3/Endcap_5/g' >! scripts/decovspeak_TEC.C
+cat scripts/decovspeak.C | sed 's/TOB/TECthick/g' >! scripts/decovspeak_TECthick_temp.C
+cat scripts/decovspeak_TECthick_temp.C | sed 's/Barrel_3/Endcap_5/g' >! scripts/decovspeak_TECthick.C
 
 #TID
 cat scripts/decovspeak.C | sed 's/TOB/TID/g' >! scripts/decovspeak_TID_temp.C

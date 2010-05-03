@@ -1,10 +1,14 @@
-
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("OfflineValidator")
 
-process.load("Alignment.PeakDecoResiduals.DataSetMinBias_38Tdec_cff")
-#process.load("Alignment.PeakDecoResiduals.Commissioning10_GOODCOLL_v8_cff")
+process.load("Alignment.PeakDecoResiduals.Commissioning10_Apr20Skim_GOODCOLL_v1_cff")
+
+## Maximum number of Events
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(-1)
+    )
+
 
 
 #process.source.inputCommands = cms.untracked.vstring('keep *', 'drop *_MEtoEDMConverter_*_*') # hack to get rid of the memory consumption problem in 2_2_X and beond
@@ -14,11 +18,6 @@ process.options = cms.untracked.PSet(
    fileMode  =  cms.untracked.string('NOMERGE') # no ordering needed, but calls endRun/beginRun etc. at file boundaries
 )
 
-
-## Maximum number of Events
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
-    )
 
     
 ## Messages & Convenience
@@ -30,8 +29,6 @@ reportEvery = cms.untracked.int32(1000) # every 1000th only
 ))
 process.MessageLogger.statistics.append('cout')
       
-
-
 #-- Track hit filter
 # TrackerTrackHitFilter takes as input the tracks/trajectories coming out from TrackRefitter1
 process.load("RecoTracker.FinalTrackSelectors.TrackerTrackHitFilter_cff")
@@ -123,7 +120,7 @@ process.load("RecoVertex.BeamSpotProducer.BeamSpot_cff")
 
 ## GlobalTag Conditions (if needed)
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag.globaltag = "GR10_P_V4::All"
+process.GlobalTag.globaltag = "GR_R_35X_V7A::All"
 
 #use lorentz angle from global tag
   
@@ -159,6 +156,60 @@ process.APE = poolDBESSource.clone(
     )
 process.es_prefer_APE = cms.ESPrefer("PoolDBESSource", "APE")
 
+###--------------------------------------------------------------------------------
+###filters from https://twiki.cern.ch/twiki/bin/view/CMS/TrackerAlignmentWithBeams2010
+
+## process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
+## process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
+## process.L1T1=process.hltLevel1GTSeed.clone()
+## process.L1T1.L1TechTriggerSeeding = cms.bool(True)
+## process.L1T1.L1SeedsLogicalExpression=cms.string('0 AND (40 OR 41) AND NOT (36 OR 37 OR 38 OR 39) AND NOT ((42 AND (NOT 43)) OR (43 AND (NOT 42)))')
+
+# Filter for HLT PhysicsDeclared
+
+## process.hltHighLevel = cms.EDFilter("HLTHighLevel",
+## TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+## HLTPaths = cms.vstring('HLT_PhysicsDeclared'),           # provide list of HLT paths (or patterns) you want
+## eventSetupPathsKey = cms.string(''), # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
+## andOr = cms.bool(True),             # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+## throw = cms.bool(True)    # throw exception on unknown path names 
+##  )
+
+# Filter for high purity tracks
+
+import Alignment.CommonAlignmentProducer.AlignmentTrackSelector_cfi
+process.HighPuritySelector = Alignment.CommonAlignmentProducer.AlignmentTrackSelector_cfi.AlignmentTrackSelector.clone(
+applyBasicCuts = True,
+filter = True,
+src = '.oO[TrackCollection]Oo.',
+trackQualities = ["highPurity"]
+)
+
+# Back-plane correction for the TOB in deconvolution mode
+
+#process.load("RecoLocalTracker.SiStripRecHitConverter.OutOfTime_cff")
+#process.OutOfTime.TOBlateBP=0.05
+
+# The corrected beamspot is included:
+
+############################################################################
+# load corrected beamspot
+###########################################################################
+## process.myBeamspot = poolDBESSource.clone(
+##     connect = cms.string('frontier://PromptProd/CMS_COND_31X_BEAMSPOT'),
+##     toGet = cms.VPSet(
+##       cms.PSet(
+##        record = cms.string('BeamSpotObjectsRcd'),
+##         tag = cms.string('BeamSpotObjects_2009_v7_offline')
+##        )
+##       )
+##    )
+## process.es_prefer_corrBeamspot = cms.ESPrefer("PoolDBESSource","myBeamspot")
+
+###--------------------------------------------------------------------------------
+
+process.load("Alignment.PeakDecoResiduals.bitSelectionSequence_cff")
+
 
 ## to apply misalignments
 #TrackerDigiGeometryESModule.applyAlignment = True
@@ -169,7 +220,7 @@ process.PeakDecoResiduals.Tracks = 'TrackRefitter2'
 process.PeakDecoResiduals.trajectoryInput = 'TrackRefitter2'
 process.PeakDecoResiduals.debug = cms.bool(False)
 process.PeakDecoResiduals.runOnCosmics = cms.bool(False)
-process.PeakDecoResiduals.createTree = cms.bool(True)
+process.PeakDecoResiduals.createTree = cms.bool(False)
 
 
 #process.TFileService.fileName = '/tmp/benhoob/temp.root'
@@ -179,11 +230,14 @@ process.TFileService = cms.Service("TFileService",
                                    closeFileFast = cms.untracked.bool(True)
                                    )
 
-process.p = cms.Path(process.offlineBeamSpot*
-                     process.TrackRefitter1*
-                     process.TrackerTrackHitFilter*
-                     process.HitFilteredTracks*
-                     process.AlignmentTrackSelector*
-                     process.TrackRefitter2*
-                     process.PeakDecoResiduals)
+process.p = cms.Path(
+    process.seqBitSelection*
+    process.offlineBeamSpot*
+    process.TrackRefitter1*
+    process.TrackerTrackHitFilter*
+    process.HitFilteredTracks*
+    process.AlignmentTrackSelector*
+    process.TrackRefitter2*
+    process.PeakDecoResiduals
+    )
 

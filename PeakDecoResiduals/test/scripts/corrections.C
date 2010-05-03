@@ -37,28 +37,42 @@ void corrections(bool printgif = false){
   //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_ALLPEAK/merged.root");
   //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_ALLPEAK/res/merged.root");
   //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_copy/merged_2.root");
-  filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
-  filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_newcfg/res/merged.root");
+  //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
+  //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
+  filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_ALLPEAK/res/merged.root");
+  filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1/res/merged.root");
+  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_lateBP/res/merged.root");  
+  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_tanla/res/merged.root");
+  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_tanla_lateBP/res/merged.root");
+  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_copy/res/merged.root");
   //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_Geometry/res/merged.root");
   //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_toblatebp06/merged.root");
   //filenames.push_back("crabjobs/lpc/Spring10-START3X_V26A_356ReReco-v1_standard_geom_mintrkmom1/merged.root");
   //filenames.push_back("crabjobs/lpc/Spring10-START3X_V26A_356ReReco-v1_standard_geom/merged.root");
   //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_toblatebp063/merged.root");
-  
+ 
+  //string corrtitle = "DECO (#Deltatan(#theta_{LA})+BP-corrected) - PEAK";
+  //string corrtitle = "DECO (#Deltatan(#theta_{LA})-corrected) - PEAK";
+  //string corrtitle = "DECO (BP-corrected) - PEAK";
+  string corrtitle = "DECO - PEAK";
+  int ncorr = 1;
+
+
   //labels for files
   vector<string> types;
   types.push_back("peak");
   types.push_back("deco");
-  //types.push_back("deco (BP)");  
-  //types.push_back("MC");
+  //types.push_back("deco (BP)");
+  //types.push_back("deco (#Deltatan(#theta_{LA}))");  
+  //types.push_back("deco (#Deltatan(#theta_{LA}) + BP)");
   
   assert ( filenames.size() == types.size() );
 
   //list of subdetectors
   vector<string> subdets;
-  //subdets.push_back("TOB");
-  //subdets.push_back("TIB");
-  subdets.push_back("TECthick");
+  subdets.push_back("TOB");
+  subdets.push_back("TIB");
+  //subdets.push_back("TECthick");
   //subdets.push_back("TEC");
 
   const unsigned int nfiles = filenames.size();
@@ -68,6 +82,11 @@ void corrections(bool printgif = false){
   TH2F*    hduthp[nfiles][ndet];
   TH2F*    hduthm[nfiles][ndet];
   TCanvas* can[ndet];
+  
+  float dwp_[ndet];
+  float dwm_[ndet];
+  float dtanlap_[ndet];
+  float dtanlam_[ndet];
 
   //dummy legend
   TLegend *leg1=new TLegend(0.15,0.65,0.35,0.85);
@@ -111,8 +130,7 @@ void corrections(bool printgif = false){
   
   vector<float> thetabinsp;
   vector<float> thetabinsm;
-
-
+  float thickness = 0;
 
   for(unsigned int idet = 0 ; idet < ndet ; idet++){
 
@@ -127,14 +145,17 @@ void corrections(bool printgif = false){
     if( strcmp( subdets.at(idet).c_str() , "TOB" ) == 0 ){
       for(int ibin=14;ibin<=30;ibin++)    thetabinsp.push_back(ibin*0.05-1);
       for(int ibin=10;ibin<=26;ibin++)    thetabinsm.push_back(ibin*0.05-1);
+      thickness = 470;
     }   
     else if( strcmp( subdets.at(idet).c_str() , "TIB" ) == 0 ){
       for(int ibin=14;ibin<=26;ibin++)    thetabinsp.push_back(ibin*0.05-1);
       for(int ibin=14;ibin<=26;ibin++)    thetabinsm.push_back(ibin*0.05-1);
+      thickness = 290;
     }
     else if( strcmp( subdets.at(idet).c_str() , "TECthick" ) == 0 ){
       for(int ibin=70;ibin<=130;ibin++)    thetabinsp.push_back(ibin*0.01-1);
       for(int ibin=70;ibin<=130;ibin++)    thetabinsm.push_back(ibin*0.01-1);
+      thickness = 470;
     }
     else{
       cout << "ERROR SET TAN(THETA) RANGE" <<endl;
@@ -177,6 +198,7 @@ void corrections(bool printgif = false){
       float bp      = fduthp[ifile]->GetParameter(0);
       float bperr   = fduthp[ifile]->GetParError(0);
       
+      
       sduthp1[ifile] << "#DeltaW = " << fround(dwp,3) << " #pm " << fround(dwperr,3) << " #mum" << endl;
       sduthp2[ifile] << "#Deltatan(LA) = " << fround(bp/(235.-dwp),3) << " #pm " << fround(bperr/(235.-dwp),4) << endl;
       
@@ -185,8 +207,8 @@ void corrections(bool printgif = false){
       gduthp[ifile]->GetXaxis()->SetTitle("<tan(#theta_{trk})-tan(#theta_{LA})>");
       gduthp[ifile]->GetYaxis()->SetTitle("<#Deltau> [#mum]");
       //gduthp[ifile]->GetXaxis()->SetLimits(-1,1);
-      //gduthp[ifile]->SetMinimum(-10);
-      //gduthp[ifile]->SetMaximum(20);
+      gduthp[ifile]->SetMinimum(-10);
+      gduthp[ifile]->SetMaximum(20);
       
       
       can[idet]->cd(2);
@@ -202,6 +224,7 @@ void corrections(bool printgif = false){
       float bm      = fduthm[ifile]->GetParameter(0);
       float bmerr   = fduthm[ifile]->GetParError(0);
       
+     
       sduthm1[ifile] << "#DeltaW = " << fround(dwm,3) << " #pm " << fround(dwmerr,3) << " #mum" << endl;
       sduthm2[ifile] << "#Deltatan(LA) = " << fround(bm/(235.-dwm),3) << " #pm " << fround(bmerr/(235.-dwm),4) << endl;
       
@@ -210,8 +233,8 @@ void corrections(bool printgif = false){
       gduthm[ifile]->GetXaxis()->SetTitle("<tan(#theta_{trk})-tan(#theta_{LA})>");
       gduthm[ifile]->GetYaxis()->SetTitle("<#Deltau> [#mum]");
       //gduthm[ifile]->GetXaxis()->SetLimits(-1,1);
-      //gduthm[ifile]->SetMinimum(-20);
-      //gduthm[ifile]->SetMaximum(20);
+      gduthm[ifile]->SetMinimum(-20);
+      gduthm[ifile]->SetMaximum(10);
       //leg1->Draw();
     }
 
@@ -245,12 +268,14 @@ void corrections(bool printgif = false){
       
       can[idet]->cd(3);
       
-      TGraphErrors *gduthpdiff = diffTGraph(gduthp[0],gduthp[1],Form("%s DECO - PEAK (v+ modules)",subdets.at(idet).c_str()),
+      TGraphErrors *gduthpdiff = diffTGraph(gduthp[0],gduthp[ncorr],Form("%s %s (v+ modules)",subdets.at(idet).c_str(),corrtitle.c_str()),
                                             "<tan(#theta_{trk})-tan(#theta_{LA})>","<#Deltau> (#mum)");
       TF1* fduthpdiff=new TF1("fduthpdiff","pol1",-0.5,0.5);
       gduthpdiff->Fit(fduthpdiff,"R");
       gduthpdiff->Draw("AP");
-      
+      gduthpdiff->SetMinimum(-10);
+      gduthpdiff->SetMaximum(10);
+
       float dwp     = fduthpdiff->GetParameter(1);
       float dwperr  = fduthpdiff->GetParError(1);
       float bp      = fduthpdiff->GetParameter(0);
@@ -258,21 +283,27 @@ void corrections(bool printgif = false){
       
       stringstream sduthp1diff;
       stringstream sduthp2diff;
-      
+
       sduthp1diff << "#DeltaW = " << fround(dwp,3) << " #pm " << fround(dwperr,3) << " #mum" << endl;
-      sduthp2diff << "#Deltatan(LA) = " << fround(bp/(235.-dwp),3) << " #pm " << fround(bperr/(235.-dwp),4) << endl;
-      
+      sduthp2diff << "#Deltatan(LA) = " << fround(bp/(thickness/2-dwp),3) << " #pm " << fround(bperr/(thickness/2-dwp),4) << endl;
+    
       t->SetTextColor(1);
       t->DrawLatex(0.15,0.85,sduthp1diff.str().c_str());
       t->DrawLatex(0.15,0.75,sduthp2diff.str().c_str());
-      
+
+      dwp_[idet]     = dwp;
+      dtanlap_[idet] = bp / ( thickness / 2. - dwp ); 
+
       can[idet]->cd(4);
       
-      TGraphErrors *gduthmdiff = diffTGraph(gduthm[0],gduthm[1],Form("%s DECO - PEAK (v- modules)",subdets.at(idet).c_str()),
+      TGraphErrors *gduthmdiff = diffTGraph(gduthm[0],gduthm[ncorr],Form("%s %s (v- modules)",subdets.at(idet).c_str(),corrtitle.c_str()),
                                             "<tan(#theta_{trk})-tan(#theta_{LA})>","<#Deltau> (#mum)");
       TF1* fduthmdiff=new TF1("fduthmdiff","pol1",-0.5,0.5);
       gduthmdiff->Fit(fduthmdiff,"R");
       gduthmdiff->Draw("AP");
+      gduthmdiff->SetMinimum(-10);
+      gduthmdiff->SetMaximum(10);
+
       
       float dwm     = fduthmdiff->GetParameter(1);
       float dwmerr  = fduthmdiff->GetParError(1);
@@ -287,6 +318,10 @@ void corrections(bool printgif = false){
       
       t->DrawLatex(0.15,0.85,sduthm1diff.str().c_str());
       t->DrawLatex(0.15,0.75,sduthm2diff.str().c_str());
+
+      dwm_[idet]     = dwm;
+      dtanlam_[idet] = bm / ( thickness / 2. - dwm ); 
+
       
     }
   }
@@ -297,11 +332,35 @@ void corrections(bool printgif = false){
     can[ican]->Update();
     if(printgif) can[ican]->Print(Form("plots/duvsdtantheta_%s.gif",subdets.at(ican).c_str()));
   }
-  
+
+  for( unsigned int idet = 0 ; idet < ndet ; idet++ ){
+    
+    if( strcmp( subdets.at(idet).c_str() , "TOB" ) == 0 )               thickness = 470;
+    else if( strcmp( subdets.at(idet).c_str() , "TIB" ) == 0 )          thickness = 290;
+    else if( strcmp( subdets.at(idet).c_str() , "TECthick" ) == 0 )     thickness = 470;
+    else{
+      cout << "ERROR SET TAN(THETA) RANGE" <<endl;
+      exit(0);
+    }
+
+
+    cout << endl << "-------------------------------------------------" << endl << endl;
+    
+    cout << "Corrections for " << subdets.at(idet) << " thickness " << thickness << endl;
+    cout << endl;
+    cout << "dW (v+) " << dwp_[idet] << " um, dW (v-) " << dwm_[idet] << " um" << endl;
+    cout << "dW (avg) " << 0.5 * ( dwp_[idet] + dwm_[idet] ) << endl;
+    cout << "frac " << ( dwp_[idet] + dwm_[idet] ) / thickness << endl;
+    cout << endl;
+    cout << "dtan(LA) (v+) " << dtanlap_[idet] << " , dtan(LA) (v-) " << dtanlam_[idet] << endl;
+    cout << "dtan(LA) (avg) " << 0.5 * ( dtanlap_[idet] - dtanlam_[idet] ) << endl;
+    
+    cout << endl << "-------------------------------------------------" << endl << endl;
+  }
 }
 
 
-
+//15.919 19.246
 
 inline double fround(double n, unsigned d){
   return floor(n * pow(10., d) + .5) / pow(10., d);
