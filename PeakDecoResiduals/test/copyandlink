@@ -1,8 +1,8 @@
 #!/bin/csh -f
 
-echo "Copying" $1 "to" scratch0/$1
+echo "Copying" $1 "to" crabjobs/$1
 
-cp -r $1 scratch0/$1
+cp -r $1 crabjobs/$1
 rm -r $1
-ln -s scratch0/$1
+ln -s crabjobs/$1
 

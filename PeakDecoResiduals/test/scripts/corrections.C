@@ -40,7 +40,8 @@ void corrections(bool printgif = false){
   //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
   //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
   filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_ALLPEAK/res/merged.root");
-  filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1/res/merged.root");
+  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1/res/merged.root");
+  filenames.push_back("crabjobs/Commissioning10-PromptReco-v9/res/merged.root");
   //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_lateBP/res/merged.root");  
   //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_tanla/res/merged.root");
   //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_tanla_lateBP/res/merged.root");
