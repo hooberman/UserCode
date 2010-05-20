@@ -1,0 +1,84 @@
+#!/bin/bash
+
+if [[ $1 == "" ]];  then
+    echo "usage: ./validateRelease RELEASE"
+    exit
+fi
+
+#source stuff
+. /afs/cern.ch/cms/sw/cmsset_default.sh
+. /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh
+
+
+#call cmsenv in official release directory
+echo ""
+echo "-------------------------------------------------------------------------------------"
+echo  "Validating release             :  " $1
+export reldir=`scram list -c | grep " $1 " | awk '{print $3}'`
+echo  "Release directory              :  " $reldir
+cd $reldir/src
+eval `scramv1 runtime -sh`
+cd -
+
+#make release directory, copy files there
+if [ ! -d $1 ]; then
+    mkdir $1
+fi
+cp getDataset.py      $1/.
+cp getGlobalTag.py    $1/.
+cp makeConfigFiles.py $1/.
+cp template.py        $1/.
+cd $1
+
+
+#zee sample
+echo "-------------------------------------------------------------------------------------"
+
+export zeedataset=`python getDataset.py ZEE $1 | tail -n 1`
+echo  "ZEE dataset                    :  " $zeedataset
+
+export zeeglobaltag=`python getGlobalTag.py ${zeedataset} | tail -n 1`
+echo  "ZEE globaltag                  :  " $zeeglobaltag
+
+#python makeConfigFiles.py $zeedataset $zeeglobaltag zee
+
+#cmsRun zee.py > zee.log 2>&1 &
+
+#zmm sample
+echo "-------------------------------------------------------------------------------------"
+
+export zmmdataset=`python getDataset.py ZMM $1 | tail -n 1`
+echo  "ZMM dataset                    :  " $zmmdataset
+
+export zmmglobaltag=`python getGlobalTag.py ${zmmdataset} | tail -n 1`
+echo  "ZMM globaltag                  :  " $zmmglobaltag
+
+#python makeConfigFiles.py $zmmdataset $zmmglobaltag zmm
+
+#cmsRun zmm.py > zmm.log 2>&1 &
+
+#ttbar sample
+echo "-------------------------------------------------------------------------------------"
+
+export ttbardataset=`python getDataset.py TTbar $1 | tail -n 1`
+echo  "TTBAR dataset                  :  " $ttbardataset
+
+export ttbarglobaltag=`python getGlobalTag.py ${ttbardataset} | tail -n 1`
+echo  "TTBAR globaltag                :  " $ttbarglobaltag
+
+#python makeConfigFiles.py $ttbardataset $ttbarglobaltag ttbar
+
+#cmsRun ttbar.py > ttbar.log 2>&1 &
+
+#qcd sample
+echo "-------------------------------------------------------------------------------------"
+
+export qcddataset=`python getDataset.py QCD_Pt_80_120 $1 | tail -n 1`
+echo  "QCD dataset                    :  " $qcddataset
+
+export qcdglobaltag=`python getGlobalTag.py ${qcddataset} | tail -n 1`
+echo  "QCD globaltag                  :  " $qcdglobaltag
+
+python makeConfigFiles.py $qcddataset $qcdglobaltag qcd
+
+cmsRun qcd.py > qcd.log 2>&1 &
