@@ -19,10 +19,10 @@ dataset         = args[0]
 globaltag       = args[1]
 mykey           = args[2]
 
-print '\n-------------------------------------------------------------------------------------'
-print 'Making cfg file for dataset:  ' + dataset
-print 'Using global tag:             ' + globaltag
-print 'Writing cfg file:             ' + mykey + '.py'
+print '-------------------------------------------------------------------------------------'
+print 'Making cfg file for dataset    :  ' + dataset
+print 'Using global tag               :  ' + globaltag
+print 'Writing cfg file               :  ' + mykey + '.py'
 
 slashRE = re.compile(r'^/')
 first = True
