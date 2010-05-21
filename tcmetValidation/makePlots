@@ -1,0 +1,23 @@
+#!/bin/bash
+
+
+if [[ $1 == "" ]] || [[ $2 == "" ]];  then
+    echo "usage: ./tcmetValidation RELEASE1 RELEASE2"
+    exit
+fi
+
+export rel1=$1
+export rel2=$2
+
+./tcmetValidation zee   $rel1 $rel2
+./tcmetValidation zmm   $rel1 $rel2
+./tcmetValidation ttbar $rel1 $rel2
+./tcmetValidation qcd   $rel1 $rel2
+
+if [ ! -d /afs/cern.ch/user/b/benhoob/www/tcmetValidation/$rel2 ] 
+    then
+    mkdir /afs/cern.ch/user/b/benhoob/www/tcmetValidation/$rel2
+fi
+
+scp -r $rel2/webpage/*html  /afs/cern.ch/user/b/benhoob/www/tcmetValidation/$rel2/.
+scp -r $rel2/webpage/plots/ /afs/cern.ch/user/b/benhoob/www/tcmetValidation/$rel2/.
