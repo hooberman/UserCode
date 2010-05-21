@@ -77,27 +77,26 @@ int main(int argc, char* argv[]){
   vars.push_back("SumET");
   vars.push_back("MEx");
   vars.push_back("MEy");
-  /*
-  vars.push_back("dMET");
-  vars.push_back("dMETx");
-  vars.push_back("dMETy");
-  vars.push_back("dMUx");
-  vars.push_back("dMUy");
+  //vars.push_back("dMET");
+  //vars.push_back("dMETx");
+  //vars.push_back("dMETy");
+  //vars.push_back("dMUx");
+  //vars.push_back("dMUy");
   vars.push_back("CorrectionFlag");
   vars.push_back("METPhi");
   vars.push_back("METPhiResolution_GenMETTrue");
   vars.push_back("METResolution_GenMETTrue");
   vars.push_back("Nevents");
   vars.push_back("electronHoverE");
-  vars.push_back("fracTracks");
+  //vars.push_back("fracTracks");
   vars.push_back("muonEta");
   vars.push_back("muonNormalizedChi2");
-  vars.push_back("muonSAhits");
-  vars.push_back("nMus");
-  vars.push_back("trackAlgo");
+  //vars.push_back("muonSAhits");
+  //vars.push_back("nMus");
+  //vars.push_back("trackAlgo");
   vars.push_back("trackEta");
   vars.push_back("trackNormalizedChi2");
-  vars.push_back("trackPtErr");
+  //vars.push_back("trackPtErr");
   vars.push_back("METPhiResolution_GenMETCalo");
   vars.push_back("METResolution_GenMETCalo");
   vars.push_back("METSig");
@@ -108,13 +107,13 @@ int main(int argc, char* argv[]){
   vars.push_back("muonD0");
   vars.push_back("muonNhits");
   vars.push_back("muonPt");
-  vars.push_back("nEls");
-  vars.push_back("nMusAsPis");
+  //vars.push_back("nEls");
+  //vars.push_back("nMusAsPis");
   vars.push_back("trackD0");
   vars.push_back("trackNhits");
   vars.push_back("trackPt");
-  vars.push_back("trackQuality");
-  */
+  //vars.push_back("trackQuality");
+  
 
   //make TLegend
   TH1F* h1dummy = new TH1F("h1dummy","",1,0,1);
@@ -151,6 +150,7 @@ int main(int argc, char* argv[]){
   //loop over variables
   for(int ivar=0;ivar<nvar;ivar++){
     
+    cout << vars.at(ivar) << endl;
     //make canvas and pad
     //canvas->cd();
     canvas[ivar]  = new TCanvas(Form("%s_can",vars.at(ivar)) , Form("%s_can",vars.at(ivar)) , 800 , 800);
@@ -167,7 +167,8 @@ int main(int argc, char* argv[]){
     h2[ivar] -> Rebin(5);
 
     //format and draw histos
-    if(drawlog(vars.at(ivar))) mainpad[ivar]->SetLogy(1); 
+    //if(drawlog(vars.at(ivar))) mainpad[ivar]->SetLogy(1); 
+    mainpad[ivar]->SetLogy(1); 
     h1[ivar] -> SetLineColor(2);
     h2[ivar] -> SetLineColor(4);
     h1[ivar] -> Draw();

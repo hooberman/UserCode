@@ -71,6 +71,17 @@ process.source = cms.Source("PoolSource",
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(%(MYNEVENTS)s) )
 
+    
+## Messages & Convenience
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr = cms.untracked.PSet(placeholder = cms.untracked.bool(True))
+process.MessageLogger.cout = cms.untracked.PSet(INFO = cms.untracked.PSet(
+reportEvery = cms.untracked.int32(100)     # every 1000th only
+#    limit = cms.untracked.int32(10)       # or limit to 10 printouts...
+))
+process.MessageLogger.statistics.append('cout')
+      
+
 
 process.fileSaver = cms.EDAnalyzer("METFileSaver",
     OutputFile = cms.untracked.string('%(MYROOTFILE)s') )

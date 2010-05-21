@@ -23,7 +23,10 @@ cd -
 #make release directory, copy files there
 if [ ! -d $1 ]; then
     mkdir $1
+    mkdir $1/webpage
+    mkdir $1/webpage/plots
 fi
+
 cp getDataset.py      $1/.
 cp getGlobalTag.py    $1/.
 cp makeConfigFiles.py $1/.
@@ -36,45 +39,49 @@ echo "--------------------------------------------------------------------------
 
 export zeedataset=`python getDataset.py ZEE $1 | tail -n 1`
 echo  "ZEE dataset                    :  " $zeedataset
+echo   $zeedataset > .zeedataset
 
 export zeeglobaltag=`python getGlobalTag.py ${zeedataset} | tail -n 1`
 echo  "ZEE globaltag                  :  " $zeeglobaltag
 
-#python makeConfigFiles.py $zeedataset $zeeglobaltag zee
+python makeConfigFiles.py $zeedataset $zeeglobaltag zee
 
-#cmsRun zee.py > zee.log 2>&1 &
+cmsRun zee.py > zee.log 2>&1 &
 
 #zmm sample
 echo "-------------------------------------------------------------------------------------"
 
 export zmmdataset=`python getDataset.py ZMM $1 | tail -n 1`
 echo  "ZMM dataset                    :  " $zmmdataset
+echo  $zmmdataset > .zmmdataset
 
 export zmmglobaltag=`python getGlobalTag.py ${zmmdataset} | tail -n 1`
 echo  "ZMM globaltag                  :  " $zmmglobaltag
 
-#python makeConfigFiles.py $zmmdataset $zmmglobaltag zmm
+python makeConfigFiles.py $zmmdataset $zmmglobaltag zmm
 
-#cmsRun zmm.py > zmm.log 2>&1 &
+cmsRun zmm.py > zmm.log 2>&1 &
 
 #ttbar sample
 echo "-------------------------------------------------------------------------------------"
 
 export ttbardataset=`python getDataset.py TTbar $1 | tail -n 1`
 echo  "TTBAR dataset                  :  " $ttbardataset
+echo  $ttbardataset > .ttbardataset
 
 export ttbarglobaltag=`python getGlobalTag.py ${ttbardataset} | tail -n 1`
 echo  "TTBAR globaltag                :  " $ttbarglobaltag
 
-#python makeConfigFiles.py $ttbardataset $ttbarglobaltag ttbar
+python makeConfigFiles.py $ttbardataset $ttbarglobaltag ttbar
 
-#cmsRun ttbar.py > ttbar.log 2>&1 &
+cmsRun ttbar.py > ttbar.log 2>&1 &
 
 #qcd sample
 echo "-------------------------------------------------------------------------------------"
 
 export qcddataset=`python getDataset.py QCD_Pt_80_120 $1 | tail -n 1`
 echo  "QCD dataset                    :  " $qcddataset
+echo  $qcddataset > .qcddataset
 
 export qcdglobaltag=`python getGlobalTag.py ${qcddataset} | tail -n 1`
 echo  "QCD globaltag                  :  " $qcdglobaltag
@@ -82,3 +89,26 @@ echo  "QCD globaltag                  :  " $qcdglobaltag
 python makeConfigFiles.py $qcddataset $qcdglobaltag qcd
 
 cmsRun qcd.py > qcd.log 2>&1 &
+
+
+
+
+
+echo "-----------------------------------------------------------------------------------------------"  >> validateRelease.log
+echo  "Validating release             :  " $1                                                           >> validateRelease.log
+echo  "Release directory              :  " $reldir                                                      >> validateRelease.log
+echo "-----------------------------------------------------------------------------------------------"  >> validateRelease.log
+echo  "ZEE dataset                    :  " $zeedataset                                                  >> validateRelease.log
+echo  "ZEE globaltag                  :  " $zeeglobaltag                                                >> validateRelease.log
+echo "-----------------------------------------------------------------------------------------------"  >> validateRelease.log
+echo  "ZMM dataset                    :  " $zmmdataset                                                  >> validateRelease.log
+echo  "ZMM globaltag                  :  " $zmmglobaltag                                                >> validateRelease.log
+echo "-----------------------------------------------------------------------------------------------"  >> validateRelease.log
+echo  "TTBAR dataset                  :  " $ttbardataset                                                >> validateRelease.log
+echo  "TTBAR globaltag                :  " $ttbarglobaltag                                              >> validateRelease.log
+echo "-----------------------------------------------------------------------------------------------"  >> validateRelease.log
+echo  "QCD dataset                    :  " $qcddataset                                                  >> validateRelease.log
+echo  "QCD globaltag                  :  " $qcdglobaltag                                                >> validateRelease.log
+echo "-----------------------------------------------------------------------------------------------"  >> validateRelease.log
+
+
