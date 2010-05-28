@@ -25,7 +25,8 @@ class looper
         void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false, int nEvents = -1);
         void bookHistos();
 	bool isGoodTrack(int, bool usePV = false);
-        
+        float deltaPhi( float phi1 , float phi2);
+
     private:
         
         //ntuple, file
@@ -33,6 +34,15 @@ class looper
         TTree *babyTree_;
     
         //histos
+
+        //triggers
+        Int_t HLT_L1Jet6U_;
+        Int_t HLT_L1Jet10U_;
+        Int_t HLT_Jet15U_;
+        Int_t HLT_Jet30U_;
+        Int_t L1_SingleEG5_;
+        Int_t HLT_Photon10_L1R_;
+        Int_t HLT_Photon15_L1R_;
 
         // event stuff
         Int_t   run_;
@@ -77,7 +87,21 @@ class looper
         Int_t   nJets_;
         Float_t sumJetPt_;
 
-
+        //leading jet stuff
+        Float_t jet_pt_;            
+        Float_t jet_eta_;            
+        Float_t jet_energy_;            
+        Float_t jet_chg_emfrac_;    
+        Float_t jet_chg_hadfrac_;   
+        Float_t jet_neu_emfrac_;    
+        Float_t jet_neu_hadfrac_;   
+        Int_t   jet_nchg_;              
+        Int_t   jet_nmuon_;         
+        Int_t   jet_nneu_;          
+        Float_t jet_dphimet_;       
+        Float_t jet_dpt_;           
+        Float_t jet_drgen_;         
+  
 
 };
 

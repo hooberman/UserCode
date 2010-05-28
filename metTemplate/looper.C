@@ -41,7 +41,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
   // make a baby ntuple
   stringstream babyfilename;
   babyfilename << prefix << "_baby.root";
-  MakeBabyNtuple(babyfilename.str().c_str());
+  MakeBabyNtuple( Form("%s_baby.root", prefix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -50,7 +50,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
     nEvents = chain->GetEntries();
   nEventsChain = nEvents;
   unsigned int nEventsTotal = 0;
-
+  
   //pass fail counters
   int nPassGoodRun    = 0;
   int nPassBPTX       = 0;
@@ -70,6 +70,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
     // event loop
     unsigned int nEvents = tree->GetEntries();
+    ///nEvents = 100000;
 
     for (unsigned int event = 0; event < nEvents; ++event){
         
@@ -120,12 +121,54 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       if (cleaning_goodVertex())
         nPassGoodVertex++;
       else continue;
-          
+
+
       //
       // N.B. BABY NTUPLE IS FILLED
       // FOR EACH EVENT
       //
       InitBabyNtuple();
+
+     
+      //access HLT trigger info
+      for( unsigned int i = 0 ; i < hlt_trigNames().size() ; i++ ){
+
+        if( strcmp(hlt_trigNames().at(i) , "HLT_L1Jet6U" ) == 0 ){
+          if( passHLTTrigger("HLT_L1Jet6U") )          HLT_L1Jet6U_ = 1;
+          else                                         HLT_L1Jet6U_ = 0;
+        }
+
+        if( strcmp(hlt_trigNames().at(i) , "HLT_L1Jet10U" ) == 0 ){
+          if( passHLTTrigger("HLT_L1Jet10U") )         HLT_L1Jet10U_ = 1;
+          else                                         HLT_L1Jet10U_ = 0;
+        }
+
+        if( strcmp(hlt_trigNames().at(i) , "HLT_Jet15U" ) == 0 ){
+          if( passHLTTrigger("HLT_Jet15U") )           HLT_Jet15U_ = 1;
+          else                                         HLT_Jet15U_ = 0;
+        }
+
+        if( strcmp(hlt_trigNames().at(i) , "HLT_Jet30U" ) == 0 ){
+          if( passHLTTrigger("HLT_Jet30U") )           HLT_Jet30U_ = 1;
+          else                                         HLT_Jet30U_ = 0;
+        }
+
+        if( strcmp(hlt_trigNames().at(i) , "L1_SingleEG5" ) == 0 ){
+          if( passHLTTrigger("L1_SingleEG5") )         L1_SingleEG5_ = 1;
+          else                                         L1_SingleEG5_ = 0;
+        }
+
+        if( strcmp(hlt_trigNames().at(i) , "HLT_Photon10_L1R" ) == 0 ){
+          if( passHLTTrigger("HLT_Photon10_L1R") )     HLT_Photon10_L1R_ = 1;
+          else                                         HLT_Photon10_L1R_ = 0;
+        }
+
+        if( strcmp(hlt_trigNames().at(i) , "HLT_Photon15_L1R" ) == 0 ){
+          if( passHLTTrigger("HLT_Photon15_L1R") )     HLT_Photon15_L1R_ = 1;
+          else                                         HLT_Photon15_L1R_ = 0;
+        }
+      }
+
 
       // event stuff
       run_    = cms2.evt_run();
@@ -211,10 +254,13 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       
       nJets_      = 0;
       sumJetPt_   = 0.;
+      
+      int iLeadingJet    = -1;
+      float leadingJetPt = -1;
 
-      //count pfjets with pt > 20 and eta < 3
+      //loop over pfjets
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-    
+
         LorentzVector vjet = pfjets_p4().at(ijet);
   
         //check if jet has overlapping photon with pt > 10 GeV
@@ -222,19 +268,75 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
         for (unsigned int iphoton = 0 ; iphoton < photons_p4().size() ; iphoton++ ){
           LorentzVector vphoton  = photons_p4().at(iphoton);
-          if (dRbetweenVectors(vjet, vphoton) < 0.5 && vphoton.pt() > 10) overlapPhoton = true;
+          if (dRbetweenVectors(vjet, vphoton) < 0.4 && vphoton.pt() > 10) overlapPhoton = true;
         }
 
         if(overlapPhoton) continue;
 
-        if ( vjet.pt() > 20. && fabs( vjet.eta() ) < 3.){
-          nJets_++;
-          sumJetPt_ += vjet.pt();
-        }
-
+        if( fabs( vjet.eta() ) < 3.){
         
+          //find leading jet
+          if ( vjet.pt() > leadingJetPt ){
+            leadingJetPt = vjet.pt();
+            iLeadingJet  = ijet;
+
+          }
+
+          //count jets pt > 15 GeV, pt > 30 GeV
+          if ( vjet.pt() > 30. )        nJets_++;
+          if ( vjet.pt() > 15. )        sumJetPt_ += vjet.pt();
+        }
       }
 
+      //if valid leading jet is found, get leading jet quantities
+      if(iLeadingJet > -1){
+
+        LorentzVector vleadingjet = pfjets_p4().at(iLeadingJet);
+        
+        //pt
+        jet_pt_             = vleadingjet.pt();
+        jet_energy_         = vleadingjet.energy();
+        jet_eta_            = vleadingjet.eta(); //INCLUDE
+        
+        //energy component fractions
+        jet_chg_emfrac_     = pfjets_chargedEmE().at(iLeadingJet)     / jet_energy_;
+        jet_chg_hadfrac_    = pfjets_chargedHadronE().at(iLeadingJet) / jet_energy_;
+        jet_neu_emfrac_     = pfjets_neutralEmE().at(iLeadingJet)     / jet_energy_;
+        jet_neu_hadfrac_    = pfjets_neutralHadronE().at(iLeadingJet) / jet_energy_;
+        
+        //multiplicities
+        jet_nchg_           = pfjets_chargedMultiplicity().at(iLeadingJet);
+        jet_nmuon_          = pfjets_muonMultiplicity().at(iLeadingJet);
+        jet_nneu_           = pfjets_neutralMultiplicity().at(iLeadingJet);
+        
+        //deltaPhi( jet - met )
+        jet_dphimet_        = deltaPhi( vleadingjet.phi() , tcmetphi_);
+
+        if(!isData){
+          
+          //deltaR match to genjet
+          int iMin    = -1;
+          float dRmin = -1;
+          
+          for (unsigned int igenjet = 0 ; igenjet < genjets_p4().size() ; igenjet++ ){
+            
+            LorentzVector vgenjet = genjets_p4().at(igenjet);
+            
+            float dR = dRbetweenVectors(vleadingjet, vgenjet);
+            
+            if(dR < dRmin){
+              iMin = igenjet;
+              dRmin = dR;
+            }
+          }
+          
+          if(iMin > -1){
+            jet_dpt_   = jet_pt_ - genjets_p4().at(iMin).pt();
+            jet_drgen_ = dRmin;
+          }
+        }
+      }
+      
       //----------------------------------------------------------------------------------------
       
       FillBabyNtuple();
@@ -274,8 +376,26 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
   
 } // end ScanChain
 
+float looper::deltaPhi( float phi1 , float phi2){
+  float dphi = fabs( phi1 - phi2 );
+  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+  return dphi;
+}
+
 void looper::InitBabyNtuple ()
 {
+
+
+
+  //triggers
+  HLT_L1Jet6U_          = -1;
+  HLT_L1Jet10U_         = -1;
+  HLT_Jet15U_           = -1;
+  HLT_Jet30U_           = -1;
+  L1_SingleEG5_         = -1;
+  HLT_Photon10_L1R_     = -1;
+  HLT_Photon15_L1R_     = -1;
+
   // event stuff
   run_    = -999999;
   lumi_   = -999999;
@@ -310,6 +430,22 @@ void looper::InitBabyNtuple ()
   tcmet_        = -999999.;
   tcmetphi_     = -999999.;
   tcsumet_      = -999999.;
+
+  //leading jet stuff
+  jet_eta_          = -999999.;  
+  jet_energy_       = -999999.;  
+  jet_pt_           = -999999.;  
+  jet_chg_emfrac_   = -999999.;  
+  jet_chg_hadfrac_  = -999999.;  
+  jet_neu_emfrac_   = -999999.;  
+  jet_neu_hadfrac_  = -999999.;  
+  jet_nchg_         = -999999;      
+  jet_nmuon_        = -999999;  
+  jet_nneu_         = -999999;  
+  jet_dphimet_      = -999999.;  
+  jet_dpt_          = -999999.;  
+  jet_drgen_        = -999999.;  
+
 
 }
 
@@ -358,6 +494,25 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("maxphotonpt",  &maxPhotonPt_,  "maxphotonpt/I"    );
   babyTree_->Branch("njets",        &nJets_,        "njets/I"    );
   babyTree_->Branch("sumjetpt",     &sumJetPt_,     "sumjetpt/I"    );
+
+  //leading jet stuff
+  babyTree_->Branch("jetpt",                 &jet_pt_,               "jetpt/F");
+  babyTree_->Branch("jeteta",                &jet_eta_,              "jeteta/F");
+  babyTree_->Branch("jetenergy",             &jet_energy_,           "jetenergy/F");
+  babyTree_->Branch("jetchargedemfrac",      &jet_chg_emfrac_,       "jetchargedemfrac/F");
+  babyTree_->Branch("jetchargedhadfrac",     &jet_chg_hadfrac_,      "jetchargedhadfrac/F");
+  babyTree_->Branch("jetneutralemfrac",      &jet_neu_emfrac_,       "jetneutralemfrac/F");
+  babyTree_->Branch("jetneutralhadfrac",     &jet_neu_hadfrac_,      "jetneutralhadfrac/F");
+  babyTree_->Branch("jetncharged",           &jet_nchg_,             "jetncharged/F");
+  babyTree_->Branch("jetnmuon",              &jet_nmuon_,            "jetnmuon/F");
+  babyTree_->Branch("jetnneutral",           &jet_nneu_,             "jetnneutral/F");
+  babyTree_->Branch("jetdphimet",            &jet_dphimet_,          "jetdphimet/F");
+  babyTree_->Branch("jetdpt",                &jet_dpt_,              "jetdpt/F");
+  babyTree_->Branch("jetdrgen",              &jet_drgen_,            "jetdrgen/F");
+
+  //trigger
+  babyTree_->Branch("hltjet15u",             &HLT_Jet15U_,           "hltjet15u/F");
+  babyTree_->Branch("hltjet30u",             &HLT_Jet30U_,           "hltjet30u/F");
   
 }
 
