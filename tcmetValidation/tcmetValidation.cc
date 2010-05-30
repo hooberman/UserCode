@@ -43,6 +43,7 @@ inline double fround(double n, unsigned d);
 void setTDRStyle();
 string getDataset( string rel, string sample );
 
+
 int main(int argc, char* argv[]){
 
   if( argc != 4){
@@ -73,46 +74,50 @@ int main(int argc, char* argv[]){
   
   //list variables for comparison
   vector<char*> vars;
-  vars.push_back("MET");
-  vars.push_back("SumET");
-  vars.push_back("MEx");
-  vars.push_back("MEy");
-  //vars.push_back("dMET");
-  //vars.push_back("dMETx");
-  //vars.push_back("dMETy");
-  //vars.push_back("dMUx");
-  //vars.push_back("dMUy");
-  vars.push_back("CorrectionFlag");
-  vars.push_back("METPhi");
-  vars.push_back("METPhiResolution_GenMETTrue");
-  vars.push_back("METResolution_GenMETTrue");
-  vars.push_back("Nevents");
-  vars.push_back("electronHoverE");
-  //vars.push_back("fracTracks");
-  vars.push_back("muonEta");
-  vars.push_back("muonNormalizedChi2");
-  //vars.push_back("muonSAhits");
-  //vars.push_back("nMus");
-  //vars.push_back("trackAlgo");
-  vars.push_back("trackEta");
-  vars.push_back("trackNormalizedChi2");
-  //vars.push_back("trackPtErr");
-  vars.push_back("METPhiResolution_GenMETCalo");
-  vars.push_back("METResolution_GenMETCalo");
-  vars.push_back("METSig");
-  vars.push_back("MExCorrection");
-  vars.push_back("MEyCorrection");
-  vars.push_back("electronEta");
-  vars.push_back("electronPt");
-  vars.push_back("muonD0");
-  vars.push_back("muonNhits");
-  vars.push_back("muonPt");
-  //vars.push_back("nEls");
-  //vars.push_back("nMusAsPis");
-  vars.push_back("trackD0");
-  vars.push_back("trackNhits");
-  vars.push_back("trackPt");
-  //vars.push_back("trackQuality");
+  vector<float> xmin;
+  vector<float> xmax;
+  vector<int> rebin;
+
+  vars.push_back("MET");                             xmin.push_back(0);    xmax.push_back(500);  rebin.push_back(5);
+  vars.push_back("SumET");                           xmin.push_back(0);    xmax.push_back(2000); rebin.push_back(20);
+  vars.push_back("MEx");                             xmin.push_back(-250); xmax.push_back(250);  rebin.push_back(10);
+  vars.push_back("MEy");                             xmin.push_back(-250); xmax.push_back(250);  rebin.push_back(10);
+  //vars.push_back("dMET");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("dMETx");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("dMETy");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("dMUx");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("dMUy");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("CorrectionFlag");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("METPhi");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("METPhiResolution_GenMETTrue");     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("METResolution_GenMETTrue");        xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(2);
+  vars.push_back("Nevents");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("electronHoverE");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  //vars.push_back("fracTracks");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("muonEta");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(5);
+  vars.push_back("muonNormalizedChi2");              xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("muonSAhits");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("nMus");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("trackAlgo");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("trackEta");                        xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  vars.push_back("trackNormalizedChi2");             xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("trackPtErr");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("METPhiResolution_GenMETCalo");     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("METResolution_GenMETCalo");        xmin.push_back(-200); xmax.push_back(200);  rebin.push_back(5);
+  vars.push_back("METSig");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("MExCorrection");                   xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(5);
+  vars.push_back("MEyCorrection");                   xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(5);
+  vars.push_back("electronEta");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(5);
+  vars.push_back("electronPt");                      xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  vars.push_back("muonD0");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  vars.push_back("muonNhits");                       xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("muonPt");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  //vars.push_back("nEls");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("nMusAsPis");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("trackD0");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  vars.push_back("trackNhits");                      xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("trackPt");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(4);
+  //vars.push_back("trackQuality");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   
 
   //make TLegend
@@ -163,18 +168,26 @@ int main(int argc, char* argv[]){
     h1[ivar] = (TH1F*) f1->Get(Form("%s_%s",tcmetpath,vars.at(ivar)));
     h2[ivar] = (TH1F*) f2->Get(Form("%s_%s",tcmetpath,vars.at(ivar)));
 
-    h1[ivar] -> Rebin(5);
-    h2[ivar] -> Rebin(5);
-
     //format and draw histos
     //if(drawlog(vars.at(ivar))) mainpad[ivar]->SetLogy(1); 
+    if( rebin.at(ivar) > 1 ) {
+      h1[ivar] -> Rebin( rebin.at(ivar) );
+      h2[ivar] -> Rebin( rebin.at(ivar) );
+    }
+    if( xmin.at(ivar) != -999 ){
+      h1[ivar]->GetXaxis()->SetRangeUser( xmin.at(ivar) , xmax.at(ivar) );
+    }
+
     mainpad[ivar]->SetLogy(1); 
     h1[ivar] -> SetLineColor(2);
     h2[ivar] -> SetLineColor(4);
+    h2[ivar] -> SetMarkerColor(4);
+    h2[ivar] -> SetMarkerSize(0.5);
+    h2[ivar] -> SetMarkerStyle(20);
     h1[ivar] -> Draw();
     h1[ivar] -> SetTitle("");
     h1[ivar] -> GetXaxis() -> SetTitle(vars.at(ivar));
-    h2[ivar] -> Draw("same");
+    h2[ivar] -> Draw("sameE1");
     leg->Draw();
     
     //make canvas and pad
@@ -186,20 +199,34 @@ int main(int argc, char* argv[]){
 
     //format and draw pull hist
     TH1F* hpull = getPullHist(h1[ivar],h2[ivar]);
-    hpull->Draw();
+    hpull->Draw("E1");
     hpull->GetXaxis()->SetLabelSize(0);
     hpull->GetXaxis()->SetTitleSize(0);
     hpull->GetYaxis()->SetTitleSize(0.16);
     hpull->GetYaxis()->SetLabelSize(0.16);
-    hpull->GetYaxis()->SetRangeUser(-4,4);
+    hpull->SetLineColor(4);
+    hpull->SetMarkerColor(4);
+    hpull->SetMarkerSize(0.5);
+    hpull->SetMarkerStyle(20);
+    //hpull->GetYaxis()->SetRangeUser(-4,4);
     hpull->GetYaxis()->SetTitle("Pull");
     hpull->SetTitle("");
-    hpull->GetYaxis()->SetNdivisions(5);
+    //hpull->GetYaxis()->SetNdivisions(5);
 
     //draw guidelines
-    line.DrawLine(hpull->GetXaxis()->GetXmin(), 0, hpull->GetXaxis()->GetXmax(), 0);
-    line.DrawLine(hpull->GetXaxis()->GetXmin(), 1, hpull->GetXaxis()->GetXmax(), 1);
-    line.DrawLine(hpull->GetXaxis()->GetXmin(),-1, hpull->GetXaxis()->GetXmax(),-1);
+    if( xmin.at(ivar) != -999){
+      line.SetLineStyle(1);
+      line.DrawLine(xmin.at(ivar), 0, xmax.at(ivar), 0);
+      line.SetLineStyle(2);
+      line.DrawLine(xmin.at(ivar), 1, xmax.at(ivar), 1);
+      line.DrawLine(xmin.at(ivar),-1, xmax.at(ivar),-1);
+    }else{
+      line.SetLineStyle(1);
+      line.DrawLine( hpull->GetXaxis()->GetXmin() , 0 , hpull->GetXaxis()->GetXmax() , 0);
+      line.SetLineStyle(2);
+      line.DrawLine( hpull->GetXaxis()->GetXmin() ,  1 , hpull->GetXaxis()->GetXmax() ,  1);
+      line.DrawLine( hpull->GetXaxis()->GetXmin() , -1 , hpull->GetXaxis()->GetXmax() , -1);
+    }
 
     //canvas->Update();
     //canvas->Print(psFileName);
@@ -207,11 +234,8 @@ int main(int argc, char* argv[]){
     canvas[ivar] -> Update();
     canvas[ivar] -> Print( Form( "%s/webpage/plots/%s_%s.gif" , rel2.c_str() , sample.c_str() , vars.at(ivar) ));
 
-    //ofile << "<H2> Selector : " << aSel->GetName() << " : </H2>" << endl;
-    //ofile << "<H3> Kaon Fake Rate : </H3>" << endl;
-    //ofile << "<font color="#ff0000">" << dataset1 << "</font>" << endl; 
-    ofile << "<H3> " << rel1 << "  :  " << dataset1 << " </H3>" << endl;
-    ofile << "<H3> " << rel2 << "  :  " << dataset2 << " </H3>" << endl;
+    ofile << " <H3> " << "<FONT color=#ff0000>" << rel1 << "  :  " << dataset1 << " </FONT> " << " </H3>" << endl;
+    ofile << " <H3> " << "<FONT color=#0000FF>" << rel2 << "  :  " << dataset2 << " </FONT> " << " </H3>" << endl;
     ofile << "<table><tr>" << endl;
     ofile << "<td><img SRC=" << "plots/" << sample << "_" << vars.at(ivar) << ".gif> </td>" << endl;
     ofile << "</tr></table>" << endl;
@@ -236,9 +260,10 @@ TH1F* getPullHist(TH1F* h1, TH1F* h2){
     if(fabs(err) < 1.e-10)  err = sqrt(h2->GetBinContent(ibin) + h1->GetBinContent(ibin));
     
     hout -> SetBinContent(ibin,fabs(err) > 0 ? val/err : val);
-    //hout -> SetBinError(ibin,1);
+    hout -> SetBinError(ibin,1);
   }
   
+
   return hout;
 }
 
