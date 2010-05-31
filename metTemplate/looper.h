@@ -101,7 +101,7 @@ class looper
         Float_t jet_dphimet_;       
         Float_t jet_dpt_;           
         Float_t jet_drgen_;         
-  
+        Int_t   jet_overlapPhoton_;
 
 };
 
