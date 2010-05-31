@@ -31,6 +31,7 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
+bool debug = false;
 
 void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool calculateTCMET, int nEvents){
 
@@ -58,6 +59,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
   int nPassBeamHalo   = 0;
   int nPassGoodTracks = 0;
   int nPassGoodVertex = 0;
+
+  if(debug) cout << "Begin file loop" << endl;
 
   // file loop
   TIter fileIter(listOfFiles);
@@ -122,7 +125,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         nPassGoodVertex++;
       else continue;
 
-
+      if(debug) cout << "Pass event selection" << endl;
       //
       // N.B. BABY NTUPLE IS FILLED
       // FOR EACH EVENT
@@ -233,8 +236,10 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
       }
 
-
       //photon quantities-----------------------------------------------------------------------
+
+      if(debug) cout << "Get photon quantities" << endl;
+
       nPhotons_    = 0;
       maxPhotonPt_ = 0.;
 
@@ -251,6 +256,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       }
 
       //jet quantities--------------------------------------------------------------------------
+
+      if(debug) cout << "Get jet quantities" << endl;
       
       nJets_      = 0;
       sumJetPt_   = 0.;
@@ -263,15 +270,6 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
         LorentzVector vjet = pfjets_p4().at(ijet);
   
-        //check if jet has overlapping photon with pt > 10 GeV
-        bool overlapPhoton = false;
-
-        for (unsigned int iphoton = 0 ; iphoton < photons_p4().size() ; iphoton++ ){
-          LorentzVector vphoton  = photons_p4().at(iphoton);
-          if (dRbetweenVectors(vjet, vphoton) < 0.4 && vphoton.pt() > 10) overlapPhoton = true;
-        }
-
-        if(overlapPhoton) continue;
 
         if( fabs( vjet.eta() ) < 3.){
         
@@ -289,31 +287,55 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       }
 
       //if valid leading jet is found, get leading jet quantities
+      //THIS SHOULD BE SWITCHED TO QUANTITIES OF JET MATCHED TO PHOTON!!!!!!!!!!!!!
       if(iLeadingJet > -1){
 
+        if(debug) cout << "Get leading jet quantities" << endl;
+
         LorentzVector vleadingjet = pfjets_p4().at(iLeadingJet);
+        
+        //check if jet has overlapping photon with pt > 10 GeV
+        jet_overlapPhoton_ = 0;
+        
+        if(debug) cout << "Check for overlapping photons" << endl;
+
+        for (unsigned int iphoton = 0 ; iphoton < photons_p4().size() ; iphoton++ ){
+          LorentzVector vphoton  = photons_p4().at(iphoton);
+          if (dRbetweenVectors(vleadingjet, vphoton) < 0.4 && vphoton.pt() > 10) jet_overlapPhoton_ = 1;
+        }
         
         //pt
         jet_pt_             = vleadingjet.pt();
         jet_energy_         = vleadingjet.energy();
-        jet_eta_            = vleadingjet.eta(); //INCLUDE
+        jet_eta_            = vleadingjet.eta();
+
+   
+        if(debug) cout << "Get PFJET component energies for index " << iLeadingJet <<" njets " << pfjets_chargedEmE().size() << endl;
         
-        //energy component fractions
-        jet_chg_emfrac_     = pfjets_chargedEmE().at(iLeadingJet)     / jet_energy_;
-        jet_chg_hadfrac_    = pfjets_chargedHadronE().at(iLeadingJet) / jet_energy_;
-        jet_neu_emfrac_     = pfjets_neutralEmE().at(iLeadingJet)     / jet_energy_;
-        jet_neu_hadfrac_    = pfjets_neutralHadronE().at(iLeadingJet) / jet_energy_;
-        
-        //multiplicities
-        jet_nchg_           = pfjets_chargedMultiplicity().at(iLeadingJet);
-        jet_nmuon_          = pfjets_muonMultiplicity().at(iLeadingJet);
-        jet_nneu_           = pfjets_neutralMultiplicity().at(iLeadingJet);
-        
+        //add protection for index out of range
+        if( iLeadingJet < pfjets_chargedEmE().size() ){
+
+          //energy component fractions (add protection for index out of range)
+          jet_chg_emfrac_     = pfjets_chargedEmE().at(iLeadingJet)     / jet_energy_;
+          jet_chg_hadfrac_    = pfjets_chargedHadronE().at(iLeadingJet) / jet_energy_;
+          jet_neu_emfrac_     = pfjets_neutralEmE().at(iLeadingJet)     / jet_energy_;
+          jet_neu_hadfrac_    = pfjets_neutralHadronE().at(iLeadingJet) / jet_energy_;
+
+
+          //multiplicities
+          jet_nchg_           = pfjets_chargedMultiplicity().at(iLeadingJet);
+          jet_nmuon_          = pfjets_muonMultiplicity().at(iLeadingJet);
+          jet_nneu_           = pfjets_neutralMultiplicity().at(iLeadingJet);
+          
+        }
+     
         //deltaPhi( jet - met )
         jet_dphimet_        = deltaPhi( vleadingjet.phi() , tcmetphi_);
 
+        if(debug) cout << "Find genjet (MC only)" << endl;
+
         if(!isData){
-          
+        
           //deltaR match to genjet
           int iMin    = -1;
           float dRmin = -1;
@@ -338,7 +360,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       }
       
       //----------------------------------------------------------------------------------------
-      
+      if(debug) cout << "Fill baby ntuple" << endl;
+     
       FillBabyNtuple();
       
     } // end loop over events
@@ -382,10 +405,7 @@ float looper::deltaPhi( float phi1 , float phi2){
   return dphi;
 }
 
-void looper::InitBabyNtuple ()
-{
-
-
+void looper::InitBabyNtuple (){
 
   //triggers
   HLT_L1Jet6U_          = -1;
@@ -491,7 +511,7 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("tcmetphi",     &tcmetphi_,     "tcmetphi/F"   );
   babyTree_->Branch("tcsumet",      &tcsumet_,      "tcsumet/F"    );
   babyTree_->Branch("nphotons",     &nPhotons_,     "nphotons/I"    );
-  babyTree_->Branch("maxphotonpt",  &maxPhotonPt_,  "maxphotonpt/I"    );
+  babyTree_->Branch("maxphotonpt",  &maxPhotonPt_,  "maxphotonpt/F"    );
   babyTree_->Branch("njets",        &nJets_,        "njets/I"    );
   babyTree_->Branch("sumjetpt",     &sumJetPt_,     "sumjetpt/I"    );
 
@@ -509,6 +529,7 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("jetdphimet",            &jet_dphimet_,          "jetdphimet/F");
   babyTree_->Branch("jetdpt",                &jet_dpt_,              "jetdpt/F");
   babyTree_->Branch("jetdrgen",              &jet_drgen_,            "jetdrgen/F");
+  babyTree_->Branch("jetoverlapphoton",      &jet_overlapPhoton_,    "jetoverlapphoton/I");
 
   //trigger
   babyTree_->Branch("hltjet15u",             &HLT_Jet15U_,           "hltjet15u/F");
