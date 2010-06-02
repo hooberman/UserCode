@@ -22,12 +22,14 @@ class looper
         void InitBabyNtuple ();
         void FillBabyNtuple ();
         void CloseBabyNtuple ();
-        void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false, int nEvents = -1);
+        void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false, bool makeMetTemplate = false, int nEvents = -1);
         void bookHistos();
 	bool isGoodTrack(int, bool usePV = false);
         float deltaPhi( float phi1 , float phi2);
 
     private:
+        
+        bool makeMetTemplate_;
         
         //ntuple, file
         TFile *babyFile_;
@@ -80,15 +82,26 @@ class looper
 	Float_t tcsumet_;
 
         // photon stuff
-        Int_t   nPhotons_;
-        Float_t maxPhotonPt_;
+        Int_t    nPhotons_;
+        Float_t  etg_;
+        Float_t  etag_;
+        Float_t  phig_;
+        Float_t  hoe_;
+        Float_t  eciso_;
+        Float_t  hciso_;
+        Float_t  tkiso_;
+        Float_t  swiss_;
+        Float_t  seed_;
+        Float_t  r4_;
+        Float_t  s4_;
 
         // jet stuff
         Int_t   nJets_;
         Float_t sumJetPt_;
 
-        //leading jet stuff
+        //photon-matched jet stuff
         Float_t jet_pt_;            
+        Float_t jet_dr_;            
         Float_t jet_eta_;            
         Float_t jet_energy_;            
         Float_t jet_chg_emfrac_;    
@@ -101,8 +114,18 @@ class looper
         Float_t jet_dphimet_;       
         Float_t jet_dpt_;           
         Float_t jet_drgen_;         
-        Int_t   jet_overlapPhoton_;
 
+        //leading jet stuff
+        Float_t jetmax_pt_;
+        Float_t jetmax_dphimet_;
+
+        TH1F* metPredicted;
+        TH1F* metObserved;
+
+        TH1F* metPredicted_njets[11];
+        TH1F* metObserved_njets[11];
+
+        TH1F* metTemplate[11][23];
 };
 
 

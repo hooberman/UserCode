@@ -33,8 +33,50 @@
 
 bool debug = false;
 
-void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool calculateTCMET, int nEvents){
+const int nJetBins      = 11;
+const int nSumJetPtBins = 23;
 
+int getJetBin( int njets ){
+  
+  int bin = njets;
+  if( bin >= nJetBins ) bin = nJetBins - 1;
+
+  return bin;
+}
+
+int getSumJetPtBin( float x ){
+
+  //bins array defines the sumJetPt binning
+  float bins[nSumJetPtBins+1]={0,25,50,75,100,125,150,175,200,250,300,350,400,450,
+                               500,600,700,800,900,1000,2000,3000,4000,5000};
+  
+  if( x < bins[0] )              return 0;
+  if( x >= bins[nSumJetPtBins] ) return nSumJetPtBins - 1;
+
+  int ptbin = -1;
+
+  for( int ibin = 0 ; ibin < nSumJetPtBins+1 ; ibin++){
+    if( x >= bins[ibin] && x< bins[ibin+1] ){
+      ptbin = ibin;
+      break;
+    }
+  }
+
+  if( ptbin == -1 ) 
+    cout << "ERROR CANNOT FIND BIN FOR SUMJETPT " << x << endl;
+
+  return ptbin;
+}
+
+void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool calculateTCMET, bool makeMetTemplate, int nEvents){
+
+  makeMetTemplate_ = makeMetTemplate;
+
+  //TFile *metTemplateFile = TFile::Open("Commissioning10-SD_JetMETTau-v9_goodrunPfJetPt30_metTemplate.root");
+  //TFile *metTemplateFile = TFile::Open("Commissioning10-SD_JetMETTau-v9_goodrunPfJetPt30_metTemplate_maxjetpt40.root");
+  //TFile *metTemplateFile = TFile::Open("Commissioning10-SD_JetMETTau-v9_goodrunPfJetPt30_metTemplate_half.root");
+  TFile *metTemplateFile = TFile::Open("JetMETTau_metTemplate.root");
+ 
   set_goodrun_file("goodruns_official_0526.txt");
 
   bookHistos();
@@ -73,9 +115,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
     // event loop
     unsigned int nEvents = tree->GetEntries();
-    ///nEvents = 100000;
-
-    for (unsigned int event = 0; event < nEvents; ++event){
+ 
+    for (unsigned int event = 0 ; event < nEvents; ++event){
         
       cms2.GetEntry(event);
       ++nEventsTotal;
@@ -92,10 +133,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         }
       }
 
-      //
-      // APPLY BASIC EVENT SELECTIONS
-      // TRIGGER, TRACKING AND VERTEX
-      //
+      //basic event selection----------------------------------------------------------------
+      
       if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))
         nPassGoodRun++;
       else continue;
@@ -124,16 +163,21 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       if (cleaning_goodVertex())
         nPassGoodVertex++;
       else continue;
+      
+      if ( !cleaning_standard( isData ) ) continue;
 
       if(debug) cout << "Pass event selection" << endl;
-      //
-      // N.B. BABY NTUPLE IS FILLED
-      // FOR EACH EVENT
-      //
+   
       InitBabyNtuple();
 
+      // event stuff
+      run_    = cms2.evt_run();
+      lumi_   = cms2.evt_lumiBlock();
+      event_  = cms2.evt_event();
+
      
-      //access HLT trigger info
+      //access HLT triggers------------------------------------------------------------------
+
       for( unsigned int i = 0 ; i < hlt_trigNames().size() ; i++ ){
 
         if( strcmp(hlt_trigNames().at(i) , "HLT_L1Jet6U" ) == 0 ){
@@ -172,15 +216,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         }
       }
 
-
-      // event stuff
-      run_    = cms2.evt_run();
-      lumi_   = cms2.evt_lumiBlock();
-      event_  = cms2.evt_event();
-
       //met quantities--------------------------------------------------------------------------
-      //this is probably more info than necessary, can probably reduce number of met branches
-
+      
       //calomet
       met_       = cms2.evt_met();
       metphi_    = cms2.evt_metPhi();
@@ -227,6 +264,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         tcmet_     = structMET.met;
         tcmetphi_  = structMET.metphi;
         tcsumet_   = structMET.sumet;
+
       }else{
         
         //just take tcmet from event
@@ -235,14 +273,20 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         tcsumet_   = evt_tcsumet();
 
       }
+      
 
       //photon quantities-----------------------------------------------------------------------
 
       if(debug) cout << "Get photon quantities" << endl;
 
-      nPhotons_    = 0;
-      maxPhotonPt_ = 0.;
+      if(debug) cout << "run lumi event " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+      
+      nPhotons_         =  0;
+      float maxPhotonPt = -1;
+      int igmax         = -1;
 
+      if( photons_p4().size() == 0 && !makeMetTemplate ) continue;
+      
       //count photons pt > 10 GeV
       for (unsigned int iphoton = 0 ; iphoton < photons_p4().size() ; iphoton++) {
 
@@ -250,92 +294,85 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
         if(vphoton.pt() > 10){
           nPhotons_++;
-          if(vphoton.pt() > maxPhotonPt_) maxPhotonPt_ = vphoton.pt();
+          if(vphoton.pt() > maxPhotonPt){
+            maxPhotonPt  = vphoton.pt();
+            igmax        = iphoton;
+          }
         }
-
       }
 
-      //jet quantities--------------------------------------------------------------------------
+      if( igmax < 0 && !makeMetTemplate ) continue;
+
+      if( igmax > -1 ){
+        etg_   = photons_p4()[igmax].pt();
+        etag_  = photons_p4()[igmax].eta();
+        phig_  = photons_p4()[igmax].phi();
+        hoe_   = photons_hOverE()[igmax];
+        eciso_ = photons_ecalIso()[igmax];
+        hciso_ = photons_hcalIso()[igmax];
+        tkiso_ = photons_tkIsoSolid()[igmax];
+        swiss_ = photons_swissSeed()[igmax];
+        
+        int scind = photons_scindex()[igmax] ;
+        seed_  = scs_eSeed()[scind] ;
+        s4_ = swiss_ - seed_ ;
+        r4_ = 1 - s4_ / seed_ ;
+      }
+      
+      //photon-matched jet quantities---------------------------------------------------------------
 
       if(debug) cout << "Get jet quantities" << endl;
-      
-      nJets_      = 0;
-      sumJetPt_   = 0.;
-      
-      int iLeadingJet    = -1;
-      float leadingJetPt = -1;
 
-      //loop over pfjets
+      jet_dr_      = 10000;
+      int   ijetg  = -1;
+
+      //find jet corresponding to photon
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
-        LorentzVector vjet = pfjets_p4().at(ijet);
-  
-
-        if( fabs( vjet.eta() ) < 3.){
+        float etajet = pfjets_p4().at(ijet).eta();
         
-          //find leading jet
-          if ( vjet.pt() > leadingJetPt ){
-            leadingJetPt = vjet.pt();
-            iLeadingJet  = ijet;
+        if( etajet > 3 ) continue;
 
-          }
+        float phijet = pfjets_p4().at(ijet).phi();
+        float deta   = etajet - etag_;
+        float dphi   = phijet - phig_;
+        if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+        
+        float deltaR = sqrt( deta*deta + dphi*dphi );
 
-          //count jets pt > 15 GeV, pt > 30 GeV
-          if ( vjet.pt() > 30. )        nJets_++;
-          if ( vjet.pt() > 15. )        sumJetPt_ += vjet.pt();
+        if( deltaR < jet_dr_ ){
+          jet_dr_ = deltaR;
+          ijetg   = ijet;
         }
       }
 
-      //if valid leading jet is found, get leading jet quantities
-      //THIS SHOULD BE SWITCHED TO QUANTITIES OF JET MATCHED TO PHOTON!!!!!!!!!!!!!
-      if(iLeadingJet > -1){
+    
+      if( ijetg < 0 && !makeMetTemplate ) continue;
 
-        if(debug) cout << "Get leading jet quantities" << endl;
+      if( ijetg > -1 ){
+      
+        jet_pt_             = pfjets_p4().at(ijetg).pt();
+        jet_energy_         = pfjets_p4().at(ijetg).energy();
+        jet_eta_            = pfjets_p4().at(ijetg).eta();
 
-        LorentzVector vleadingjet = pfjets_p4().at(iLeadingJet);
-        
-        //check if jet has overlapping photon with pt > 10 GeV
-        jet_overlapPhoton_ = 0;
-        
-        if(debug) cout << "Check for overlapping photons" << endl;
-
-        for (unsigned int iphoton = 0 ; iphoton < photons_p4().size() ; iphoton++ ){
-          LorentzVector vphoton  = photons_p4().at(iphoton);
-          if (dRbetweenVectors(vleadingjet, vphoton) < 0.4 && vphoton.pt() > 10) jet_overlapPhoton_ = 1;
-        }
-        
-        //pt
-        jet_pt_             = vleadingjet.pt();
-        jet_energy_         = vleadingjet.energy();
-        jet_eta_            = vleadingjet.eta();
-
-   
-        if(debug) cout << "Get PFJET component energies for index " << iLeadingJet <<" njets " << pfjets_chargedEmE().size() << endl;
-        
-        //add protection for index out of range
-        if( iLeadingJet < pfjets_chargedEmE().size() ){
-
-          //energy component fractions (add protection for index out of range)
-          jet_chg_emfrac_     = pfjets_chargedEmE().at(iLeadingJet)     / jet_energy_;
-          jet_chg_hadfrac_    = pfjets_chargedHadronE().at(iLeadingJet) / jet_energy_;
-          jet_neu_emfrac_     = pfjets_neutralEmE().at(iLeadingJet)     / jet_energy_;
-          jet_neu_hadfrac_    = pfjets_neutralHadronE().at(iLeadingJet) / jet_energy_;
-
-
-          //multiplicities
-          jet_nchg_           = pfjets_chargedMultiplicity().at(iLeadingJet);
-          jet_nmuon_          = pfjets_muonMultiplicity().at(iLeadingJet);
-          jet_nneu_           = pfjets_neutralMultiplicity().at(iLeadingJet);
           
-        }
-     
-        //deltaPhi( jet - met )
-        jet_dphimet_        = deltaPhi( vleadingjet.phi() , tcmetphi_);
-
-        if(debug) cout << "Find genjet (MC only)" << endl;
-
-        if(!isData){
+        //energy component fractions (add protection for index out of range)
+        jet_chg_emfrac_     = pfjets_chargedEmE().at(ijetg)     / jet_energy_;
+        jet_chg_hadfrac_    = pfjets_chargedHadronE().at(ijetg) / jet_energy_;
+        jet_neu_emfrac_     = pfjets_neutralEmE().at(ijetg)     / jet_energy_;
+        jet_neu_hadfrac_    = pfjets_neutralHadronE().at(ijetg) / jet_energy_;
         
+        
+        //multiplicities
+        jet_nchg_           = pfjets_chargedMultiplicity().at(ijetg);
+        jet_nmuon_          = pfjets_muonMultiplicity().at(ijetg);
+        jet_nneu_           = pfjets_neutralMultiplicity().at(ijetg);
+        
+        //deltaPhi( jet - met )
+        jet_dphimet_          = deltaPhi( pfjets_p4().at(ijetg).phi() , tcmetphi_);
+      
+        if(!isData){
+          
           //deltaR match to genjet
           int iMin    = -1;
           float dRmin = -1;
@@ -344,7 +381,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
             
             LorentzVector vgenjet = genjets_p4().at(igenjet);
             
-            float dR = dRbetweenVectors(vleadingjet, vgenjet);
+            float dR = dRbetweenVectors(pfjets_p4().at(ijetg), vgenjet);
             
             if(dR < dRmin){
               iMin = igenjet;
@@ -358,11 +395,90 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
           }
         }
       }
+
+      //find leading jet------------------------------------------------------------------------
+
+      int imaxjet = -1;
+      float maxpt = -1;
+
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+
+        if( fabs( pfjets_p4().at(ijet).eta() ) > 5.) continue;
+        
+        if( pfjets_p4().at(ijet).pt() > maxpt ){
+          maxpt = pfjets_p4().at(ijet).pt();
+          imaxjet = ijet;
+        }
+
+      }
       
-      //----------------------------------------------------------------------------------------
+      if( imaxjet > -1 ){
+        jetmax_pt_       = pfjets_p4().at(imaxjet).pt();
+        jetmax_dphimet_  = deltaPhi( pfjets_p4().at(imaxjet).phi() , tcmetphi_);
+      }
+      
+      //loop over pfjets, find nJets and sumJetPt-----------------------------------------------
+
+      if(debug) cout << "Get nJets and sumJetPt" << endl;
+
+      nJets_      = 0;
+      sumJetPt_   = 0.;
+
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+
+        if( ijet == ijetg && !makeMetTemplate ) continue; //skip jet matched to photon
+
+        LorentzVector vjet = pfjets_p4().at(ijet);
+  
+        if( fabs( vjet.eta() ) < 5.){
+       
+          if ( vjet.pt() > 30. )        nJets_++;
+          if ( vjet.pt() > 15. )        sumJetPt_ += vjet.pt();
+        }
+      }
+      
       if(debug) cout << "Fill baby ntuple" << endl;
      
       FillBabyNtuple();
+
+
+      //fill met template
+      if( makeMetTemplate_ ) {
+        
+        if( jetmax_pt_ < 40 ) continue;
+
+        int iJetBin      = getJetBin( nJets_ );
+        int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
+        
+        //cout << "nJets " << nJets_ << " sumJetPt " << sumJetPt_ << endl;
+        //cout << "iJetBin " << iJetBin << " iSumJetPtBin " << iSumJetPtBin << " tcmet " << tcmet_ << endl;
+        metTemplate[ iJetBin ][ iSumJetPtBin ]->Fill( tcmet_ );
+        
+      }
+
+      
+      //apply good photon selection-------------------------------------------------------------
+
+      if ( etg_ < 10 )                                 continue;
+      if ( (1.-r4_) < 0.05 )                           continue;
+      if ( hoe_ > 0.1 )                                continue;
+      if ( jet_dr_ > 0.5 )                             continue;
+      if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
+   
+      //fill predicted and observed met histos--------------------------------------------------
+      int iJetBin      = getJetBin( nJets_ );
+      int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
+      TH1F* hmet = (TH1F*) metTemplateFile->Get(Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin));
+
+      metObserved_njets[iJetBin]->Fill( tcmet_ );
+      metPredicted_njets[iJetBin]->Add( hmet );
+
+      if ( nJets_ < 2 )                               continue;
+
+      metObserved->Fill( tcmet_ );
+      metPredicted->Add( hmet );
+
+      delete hmet;
       
     } // end loop over events
   } // end loop over files
@@ -387,6 +503,21 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   
   CloseBabyNtuple();
+
+  //normalize met templates
+  if( makeMetTemplate_ ) {
+    
+    for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+      for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+       
+        float scale = metTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        
+        if( scale > 0 )
+          metTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+     
+      }
+    }
+  }
 
   // make histos rootfile
   stringstream rootfilename;
@@ -451,7 +582,24 @@ void looper::InitBabyNtuple (){
   tcmetphi_     = -999999.;
   tcsumet_      = -999999.;
 
-  //leading jet stuff
+  nJets_        = -999999;
+  sumJetPt_     = -999999;
+
+  //photon stuff
+  nPhotons_ = 0;
+  etg_      = -999999.;
+  etag_     = -999999.;
+  phig_     = -999999.;
+  hoe_      = -999999.;
+  eciso_    = -999999.;
+  hciso_    = -999999.;
+  tkiso_    = -999999.;
+  swiss_    = -999999.;
+  seed_     = -999999.;
+  s4_       = -999999.;
+  r4_       = -999999.;
+                                  
+  //photon-matched jet stuff
   jet_eta_          = -999999.;  
   jet_energy_       = -999999.;  
   jet_pt_           = -999999.;  
@@ -466,6 +614,10 @@ void looper::InitBabyNtuple (){
   jet_dpt_          = -999999.;  
   jet_drgen_        = -999999.;  
 
+  //leading jet stuff
+  jetmax_pt_        = -999999;
+  jetmax_dphimet_   = -999999;
+
 
 }
 
@@ -474,8 +626,35 @@ void looper::bookHistos(){
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
-  //book histos here
+  metObserved  = new TH1F("metObserved", "Observed MET",500,0,500);
+  metPredicted = new TH1F("metPredicted","Predicted MET",500,0,500);
  
+  metObserved->Sumw2();
+  metPredicted->Sumw2();
+
+  for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+
+    metObserved_njets[iJetBin]  = new TH1F(Form("metObserved_njets%i",iJetBin), Form("Observed MET NJets %i", iJetBin),500,0,500);
+    metPredicted_njets[iJetBin] = new TH1F(Form("metPredicted_njets%i",iJetBin),Form("Predicted MET NJets %i",iJetBin),500,0,500);
+    
+    metObserved_njets[iJetBin] ->Sumw2();
+    metPredicted_njets[iJetBin]->Sumw2();
+  }
+  
+
+  if( makeMetTemplate_ ) {
+    
+    for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+      for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+        
+        metTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                          Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin),500,0,500);
+       
+        metTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+      }
+    }
+  }
+  
 }
 
 
@@ -487,7 +666,7 @@ void looper::MakeBabyNtuple (const char* babyFileName)
 
   babyFile_ = new TFile(Form("%s", babyFileName), "RECREATE");
   babyFile_->cd();
-  babyTree_ = new TTree("tree", "A Baby Ntuple");
+  babyTree_ = new TTree("T1", "A Baby Ntuple");
 
   babyTree_->Branch("run",          &run_,          "run/I"  );
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I" );
@@ -510,12 +689,25 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("tcmet",        &tcmet_,        "tcmet/F"      );
   babyTree_->Branch("tcmetphi",     &tcmetphi_,     "tcmetphi/F"   );
   babyTree_->Branch("tcsumet",      &tcsumet_,      "tcsumet/F"    );
-  babyTree_->Branch("nphotons",     &nPhotons_,     "nphotons/I"    );
-  babyTree_->Branch("maxphotonpt",  &maxPhotonPt_,  "maxphotonpt/F"    );
   babyTree_->Branch("njets",        &nJets_,        "njets/I"    );
-  babyTree_->Branch("sumjetpt",     &sumJetPt_,     "sumjetpt/I"    );
+  babyTree_->Branch("sumjetpt",     &sumJetPt_,     "sumjetpt/F"    );
 
-  //leading jet stuff
+  //photon stuff
+  babyTree_->Branch("ng",      &nPhotons_, "ng/I"); 
+  babyTree_->Branch("etg",     &etg_,      "etg/F");	   
+  babyTree_->Branch("etag",    &etag_,     "etag/F");	   
+  babyTree_->Branch("phig",    &phig_,     "phig/F");
+  babyTree_->Branch("hoe",     &hoe_,      "hoe/F");	   
+  babyTree_->Branch("eciso",   &eciso_,    "eciso/F");	   
+  babyTree_->Branch("hciso",   &hciso_,    "hciso/F");	   
+  babyTree_->Branch("tkiso",   &tkiso_,    "tkiso/F");
+  babyTree_->Branch("swiss",   &swiss_,    "swiss/F");
+  babyTree_->Branch("seed",    &seed_,     "seed/F");
+  babyTree_->Branch("s4",      &s4_,       "s4/F");
+  babyTree_->Branch("r4",      &r4_,       "r4/F");
+
+  //photon-matched jet stuff
+  babyTree_->Branch("jetdr",                 &jet_dr_,               "jetdr/F");
   babyTree_->Branch("jetpt",                 &jet_pt_,               "jetpt/F");
   babyTree_->Branch("jeteta",                &jet_eta_,              "jeteta/F");
   babyTree_->Branch("jetenergy",             &jet_energy_,           "jetenergy/F");
@@ -529,7 +721,9 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("jetdphimet",            &jet_dphimet_,          "jetdphimet/F");
   babyTree_->Branch("jetdpt",                &jet_dpt_,              "jetdpt/F");
   babyTree_->Branch("jetdrgen",              &jet_drgen_,            "jetdrgen/F");
-  babyTree_->Branch("jetoverlapphoton",      &jet_overlapPhoton_,    "jetoverlapphoton/I");
+
+  babyTree_->Branch("maxjetpt",              &jetmax_pt_,            "maxjetpt/F");
+  babyTree_->Branch("maxjetdphimet",         &jetmax_dphimet_,       "maxjetdphimet/F");
 
   //trigger
   babyTree_->Branch("hltjet15u",             &HLT_Jet15U_,           "hltjet15u/F");
@@ -554,3 +748,17 @@ void looper::CloseBabyNtuple ()
 
 
 
+
+
+
+        
+//         if( pfjets_p4().size() != pfjets_chargedEmE().size() && debug ){
+//           cout << evt_dataset() << endl;
+//           cout << "run lumi event : " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+//           cout << "pfjets_p4().size() " << pfjets_p4().size() << " pfjets_chargedEmE().size() " << pfjets_chargedEmE().size() << endl;
+//         }
+
+
+        
+//         //add protection for index out of range
+//         if( ijetg < pfjets_chargedEmE().size() ){
