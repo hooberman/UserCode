@@ -92,6 +92,11 @@ class tcmetLooperTemplate
 	Float_t rawtcmetphi_;
 	Float_t rawtcsumet_;
 
+	// raw tcmet stuff
+	Float_t raw35Xtcmet_;
+	Float_t raw35Xtcmetphi_;
+	Float_t raw35Xtcsumet_;
+
 	Float_t ectcmet_;
 	Float_t ectcmetphi_;
 	Float_t ectcsumet_;

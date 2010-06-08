@@ -16,29 +16,32 @@
 #include "TProfile.h"
 #include <sstream>
 
-#include "../CORE/CMS2.h"
-#include "../CORE/CMS2.cc"
-#include "../CORE/metSelections.cc"
-#include "../CORE/trackSelections.cc"
-#include "../CORE/eventSelections.cc"
-#include "../CORE/electronSelections.cc"
-#include "../CORE/muonSelections.cc"
-#include "../Tools/goodrun.cc"
-#include "../CORE/utilities.cc"
+#include "CORE/CMS2.h"
+#include "CORE/CMS2.cc"
+#include "CORE/metSelections.cc"
+#include "CORE/trackSelections.cc"
+#include "CORE/eventSelections.cc"
+#include "CORE/electronSelections.cc"
+#include "CORE/electronSelectionsParameters.cc"
+#include "CORE/muonSelections.cc"
+#include "Tools/goodrun.cc"
+#include "CORE/utilities.cc"
 #include "histtools.h"
 
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
+//inline double fround(double n, double d){
+//  return floor(n * pow(10., d) + .5) / pow(10., d);
+//}
+
 void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isData, int nEvents){
 
   bookHistos();
 
-  //save met printouts to txt file
-  stringstream s1;
-  s1 << prefix << "_events.txt";
-  ofile.open(s1.str().c_str());
+  set_goodrun_file("jsonlist_132440_132697.txt");
+  ofile.open( Form( "%s_events.txt" , prefix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -48,10 +51,7 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
   nEventsChain = nEvents;
   unsigned int nEventsTotal = 0;
 
-  // make a baby ntuple
-  stringstream s2;
-  s2 << prefix << "_baby.root";
-  MakeBabyNtuple(s2.str().c_str());
+  MakeBabyNtuple( Form( "%s_baby.root" , prefix ) );
 
   //pass fail counters
   int nPassGoodRun    = 0;
@@ -129,16 +129,7 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
             if (!isGoodDilepton())    continue;
           } 
 
-          /*
-          //for Z->ee event, require exactly 2 truth-matched electrons
-          if (!isTruthZee())   continue;
-          
-          // for Z->mm event, require exactly 2 truth-matched muons
-          if (!isTruthZmm())   continue;
-          
-          // for Z->ee/Z->mm event, veto if >=1 jet with corrected pt > 20 GeV, eta < 3
-          if (jetVeto())       continue;
-          */
+
 
 
           //
@@ -157,11 +148,19 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           pfmetphi_ = cms2.evt_pfmetPhi();
           pfsumet_  = cms2.evt_pfsumet();
 
-          // pf met stuff
+          // raw  tcmet stuff
           rawtcmet_    = cms2.evt_tcmet();
           rawtcmetphi_ = cms2.evt_tcmetPhi();
           rawtcsumet_  = cms2.evt_tcsumet();
 
+          // raw  tcmet35X stuff
+          raw35Xtcmet_    = -9999;
+          raw35Xtcmetphi_ = -9999;
+          raw35Xtcsumet_  = -9999;
+          //raw35Xtcmet_    = cms2.evt35X_tcmet();
+          //raw35Xtcmetphi_ = cms2.evt35X_tcmetPhi();
+          //raw35Xtcsumet_  = cms2.evt35X_tcsumet();
+          
           //muon-corrected met stuff
           mumet_    = cms2.evt_metMuonCorr();
           mumetphi_ = cms2.evt_metMuonCorrPhi();
@@ -178,9 +177,13 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
             genmetphi_  = cms2.gen_metPhi();
             gensumet_   = cms2.gen_sumEt();
           }
+
+          //calomet
+          met_       = cms2.evt_met();
+          metphi_    = cms2.evt_metPhi();
+          sumet_     = cms2.evt_sumet();
           
           // calculate tcmet on-the-fly
-          
           bool electronVetoCone = true;
           bool usePV            = false;
           bool useHFcleaning    = false;
@@ -192,21 +195,31 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
             useHCALcleaning = true;
             useECALcleaning = true;
           }
-          
-          metStruct structMET = correctedTCMET(electronVetoCone, usePV, useHFcleaning, useHCALcleaning, useECALcleaning);
-          
-          //calomet
-          met_       = cms2.evt_met();
-          metphi_    = cms2.evt_metPhi();
-          sumet_     = cms2.evt_sumet();
 
+          metStruct structMET = correctedTCMET( usePV, electronVetoCone, useHFcleaning, useHCALcleaning, useECALcleaning );
+            
           //tcmet
           tcmet_     = structMET.met;
           tcmetphi_  = structMET.metphi;
           tcsumet_   = structMET.sumet;
-
+          
+          if( tcmet_ > 45 ){
+            
+            //print out events with large tcmet 
+            cout << "-----------------------------------------------------------------" << endl;
+            cout << evt_dataset() << endl;
+            cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+            cout << " tcmet " << tcmet_ << endl;
+           
+            structMET = correctedTCMET( usePV, electronVetoCone, useHFcleaning, useHCALcleaning, useECALcleaning , true, ofile);          
+            
+            tcmet_     = structMET.met;
+            tcmetphi_  = structMET.metphi;
+            tcsumet_   = structMET.sumet;
+          }
+          
           FillBabyNtuple();
-
+          
           hmumet->Fill(mumet_);
           hmujesmet->Fill(mujesmet_);
           htcmet->Fill(tcmet_);
@@ -242,12 +255,13 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
   CloseBabyNtuple();
 
   // make histos rootfile
-  stringstream s3;
-  s3 << prefix << "_histos.root";
+  //stringstream histfile;
+  //histfile << prefix << "_histos.root";
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
-  saveHist(s3.str().c_str());
+  //saveHist( histfile.str().c_str() );
+  saveHist( Form( "%s_histos.root" , prefix ) );
   deleteHistos();
   
 } // end ScanChain
@@ -367,6 +381,10 @@ void tcmetLooperTemplate::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("rawtcmetphi"   , &rawtcmetphi_   , "rawtcmetphi/F"   );
   babyTree_->Branch("rawtcsumet"    , &rawtcsumet_    , "rawtcsumet/F"    );
 
+  babyTree_->Branch("raw35Xtcmet"      , &raw35Xtcmet_      , "raw35Xtcmet/F"      );
+  babyTree_->Branch("raw35Xtcmetphi"   , &raw35Xtcmetphi_   , "raw35Xtcmetphi/F"   );
+  babyTree_->Branch("raw35Xtcsumet"    , &raw35Xtcsumet_    , "raw35Xtcsumet/F"    );
+
 }
 
 
@@ -443,8 +461,11 @@ bool tcmetLooperTemplate::isGoodDilepton ()
     if (abs(hyp_lt_id()[i]) == 13  && (! (fabs(hyp_lt_p4()[i].eta()) < 2.4 && muonId(hyp_lt_index()[i]))))   continue;
     
     //cand01
-    if (abs(hyp_ll_id()[i]) == 11  && (! electronSelection_cand01(hyp_ll_index()[i])))   continue;
-    if (abs(hyp_lt_id()[i]) == 11  && (! electronSelection_cand01(hyp_lt_index()[i])))   continue;
+    //cout << "ELECTRON SELECTION TURNED OFF!!!" << endl;
+    //exit(0);
+
+    if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+    if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
     
     isgood = true;
   }
@@ -467,12 +488,15 @@ bool tcmetLooperTemplate::isGoodZee ()
       if (min(cms2.hyp_lt_p4()[i].pt(), cms2.hyp_ll_p4()[i].pt()) < 20.)
         continue;
 
-      if (!electronSelection_cand01(cms2.hyp_lt_index()[i]))
+      if (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))
         continue;
 
-      if (!electronSelection_cand01(cms2.hyp_ll_index()[i]))
+      if (! pass_electronSelection( hyp_lt_index()[0] , electronSelection_cand01 ))
         continue;
       
+      //cout << "ELECTRON SELECTION TURNED OFF!!!" << endl;
+      //exit(0);
+
       float dphi = fabs( cms2.hyp_lt_p4()[i].phi() - cms2.hyp_ll_p4()[i].phi() );
       if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
 
@@ -612,4 +636,15 @@ ofile << " electron pt " << elspt
 
 
 
+*/
+
+/*
+//for Z->ee event, require exactly 2 truth-matched electrons
+if (!isTruthZee())   continue;
+
+// for Z->mm event, require exactly 2 truth-matched muons
+if (!isTruthZmm())   continue;
+
+// for Z->ee/Z->mm event, veto if >=1 jet with corrected pt > 20 GeV, eta < 3
+if (jetVeto())       continue;
 */
