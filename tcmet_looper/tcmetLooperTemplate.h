@@ -16,15 +16,17 @@ class tcmetLooperTemplate
         tcmetLooperTemplate() {};
         ~tcmetLooperTemplate() {
             delete babyFile_;
-            delete babyTree_;
+            delete eventTree_;
+            delete trackTree_;
         };
         void MakeBabyNtuple (const char *);
         void InitBabyNtuple ();
-        void FillBabyNtuple ();
         void CloseBabyNtuple ();
         void ScanChain (TChain*, const char*, bool isData, int nEvents = -1);
 	bool isGoodZee ();
 	bool isGoodZmm ();
+	bool isMuon ( int index );
+	bool isElectron ( int index );
 	bool isGoodDilepton ();
         bool isTruthZee ();
         bool isTruthZmm ();
@@ -37,8 +39,22 @@ class tcmetLooperTemplate
         
         //ntuple, file
         TFile *babyFile_;
-        TTree *babyTree_;
-    
+        TTree *eventTree_;
+        TTree *trackTree_;
+
+        //track tree variables
+        Float_t trk_pt_;
+        Float_t trk_d0vtx_;
+        Float_t trk_d0corr_;
+        Int_t   trk_nhits_;
+        Float_t trk_chi2_;
+        Int_t   trk_ndf_;
+        Float_t trk_pterr_;
+        Float_t trk_phi_;
+        Float_t trk_eta_;
+        Int_t   trk_qual_;
+        Int_t   trk_pass_;
+
         //histos
         TH1F* hmumet;
         TH1F* hmujesmet;

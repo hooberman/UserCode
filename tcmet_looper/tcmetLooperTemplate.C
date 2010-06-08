@@ -17,13 +17,12 @@
 #include <sstream>
 
 #include "CORE/CMS2.h"
-#include "CORE/CMS2.cc"
-#include "CORE/metSelections.cc"
-#include "CORE/trackSelections.cc"
-#include "CORE/eventSelections.cc"
-#include "CORE/electronSelections.cc"
-#include "CORE/electronSelectionsParameters.cc"
-#include "CORE/muonSelections.cc"
+#include "CORE/trackSelections.h"
+#include "CORE/metSelections.h"
+#include "CORE/eventSelections.h"
+#include "CORE/electronSelectionsParameters.h"
+#include "CORE/electronSelections.h"
+#include "CORE/muonSelections.h"
 #include "Tools/goodrun.cc"
 #include "CORE/utilities.cc"
 #include "histtools.h"
@@ -31,6 +30,8 @@
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
+
+bool usePV = false;
 
 //inline double fround(double n, double d){
 //  return floor(n * pow(10., d) + .5) / pow(10., d);
@@ -206,10 +207,10 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           if( tcmet_ > 45 ){
             
             //print out events with large tcmet 
-            cout << "-----------------------------------------------------------------" << endl;
-            cout << evt_dataset() << endl;
-            cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
-            cout << " tcmet " << tcmet_ << endl;
+            //cout << "-----------------------------------------------------------------" << endl;
+            //cout << evt_dataset() << endl;
+            //cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+            //cout << " tcmet " << tcmet_ << endl;
            
             structMET = correctedTCMET( usePV, electronVetoCone, useHFcleaning, useHCALcleaning, useECALcleaning , true, ofile);          
             
@@ -218,8 +219,9 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
             tcsumet_   = structMET.sumet;
           }
           
-          FillBabyNtuple();
-          
+          eventTree_->Fill();
+
+
           hmumet->Fill(mumet_);
           hmujesmet->Fill(mujesmet_);
           htcmet->Fill(tcmet_);
@@ -229,7 +231,31 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           hdmujesmet->Fill(mujesmet_-genmet_);
           hdtcmet->Fill(tcmet_-genmet_);
           hdrawtcmet->Fill(rawtcmet_-genmet_);
+          
 
+          for( unsigned int i = 0; i < cms2.trks_trk_p4().size(); i++ ) {
+    
+            if( isMuon( i ) )                               continue;
+            if( isElectron( i ) )                           continue;
+          
+
+            //if (useElectronVetoCone && closeToElectron(i))  continue;
+
+            trk_pass_     = isGoodTrack( i, usePV ) ? 1 : 0;            
+            trk_pt_       = cms2.trks_trk_p4().at(i).pt();
+            trk_d0vtx_    = cms2.trks_d0vtx().at(i);
+            trk_d0corr_   = cms2.trks_d0corr().at(i);
+            trk_nhits_    = cms2.trks_validHits().at(i);
+            trk_chi2_     = cms2.trks_chi2().at(i);
+            trk_ndf_      = (int) cms2.trks_ndof().at(i);
+            trk_pterr_    = cms2.trks_ptErr().at(i);
+            trk_phi_      = cms2.trks_trk_p4().at(i).phi();
+            trk_eta_      = cms2.trks_trk_p4().at(i).eta();
+            trk_qual_     = isTrackQuality( i , (1 << highPurity) ) ? 1 : 0;
+           
+            trackTree_->Fill();
+          }
+          
         } // end loop over events
     } // end loop over files
   
@@ -346,60 +372,74 @@ void tcmetLooperTemplate::MakeBabyNtuple (const char* babyFileName)
 
   babyFile_ = new TFile(Form("%s", babyFileName), "RECREATE");
   babyFile_->cd();
-  babyTree_ = new TTree("tree", "A Baby Ntuple");
+  eventTree_ = new TTree("Events", "Events Tree");
 
-  babyTree_->Branch("run"  , &run_  , "run/I"  );
-  babyTree_->Branch("lumi" , &lumi_ , "lumi/I" );
-  babyTree_->Branch("event", &event_, "event/I");
-  babyTree_->Branch("hase" , &hase_ , "hase/O" );
+  eventTree_->Branch("run"              , &run_              , "run/I"  );
+  eventTree_->Branch("lumi"             , &lumi_             , "lumi/I" );
+  eventTree_->Branch("event"            , &event_            , "event/I");
+  eventTree_->Branch("hase"             , &hase_             , "hase/O" );
 
-  babyTree_->Branch("pfmet"   , &pfmet_   , "pfmet/F"   );
-  babyTree_->Branch("pfmetphi", &pfmetphi_, "pfmetphi/F");
-  babyTree_->Branch("pfsumet" , &pfsumet_ , "pfsumet/F" );
+  eventTree_->Branch("pfmet"            , &pfmet_            , "pfmet/F"   );
+  eventTree_->Branch("pfmetphi"         , &pfmetphi_         , "pfmetphi/F");
+  eventTree_->Branch("pfsumet"          , &pfsumet_          , "pfsumet/F" );
 
-  babyTree_->Branch("met"      , &met_      , "met/F"      );
-  babyTree_->Branch("metphi"   , &metphi_   , "metphi/F"   );
-  babyTree_->Branch("sumet"    , &sumet_    , "sumet/F"    );
+  eventTree_->Branch("met"              , &met_              , "met/F"      );
+  eventTree_->Branch("metphi"           , &metphi_           , "metphi/F"   );
+  eventTree_->Branch("sumet"            , &sumet_            , "sumet/F"    );
 
-  babyTree_->Branch("mumet"    , &mumet_    , "mumet/F"      );
-  babyTree_->Branch("mumetphi" , &mumetphi_ , "mumetphi/F"   );
-  babyTree_->Branch("musumet"  , &musumet_  , "musumet/F"    );
+  eventTree_->Branch("mumet"            , &mumet_            , "mumet/F"      );
+  eventTree_->Branch("mumetphi"         , &mumetphi_         , "mumetphi/F"   );
+  eventTree_->Branch("musumet"          , &musumet_          , "musumet/F"    );
 
-  babyTree_->Branch("mujesmet"      , &mujesmet_      , "mujesmet/F"      );
-  babyTree_->Branch("mujesmetphi"   , &mujesmetphi_   , "mujesmetphi/F"   );
-  babyTree_->Branch("mujessumet"    , &mujessumet_    , "mujessumet/F"    );
+  eventTree_->Branch("mujesmet"         , &mujesmet_         , "mujesmet/F"      );
+  eventTree_->Branch("mujesmetphi"      , &mujesmetphi_      , "mujesmetphi/F"   );
+  eventTree_->Branch("mujessumet"       , &mujessumet_       , "mujessumet/F"    );
 
-  babyTree_->Branch("genmet"      , &genmet_      , "genmet/F"   );
-  babyTree_->Branch("genmetphi"   , &genmetphi_   , "genmetphi/F");
-  babyTree_->Branch("gensumet"    , &gensumet_    , "gensumet/F" );
+  eventTree_->Branch("genmet"           , &genmet_           , "genmet/F"   );
+  eventTree_->Branch("genmetphi"        , &genmetphi_        , "genmetphi/F");
+  eventTree_->Branch("gensumet"         , &gensumet_         , "gensumet/F" );
+ 
+  eventTree_->Branch("tcmet"            , &tcmet_            , "tcmet/F"      );
+  eventTree_->Branch("tcmetphi"         , &tcmetphi_         , "tcmetphi/F"   );
+  eventTree_->Branch("tcsumet"          , &tcsumet_          , "tcsumet/F"    );
 
-  babyTree_->Branch("tcmet"      , &tcmet_      , "tcmet/F"      );
-  babyTree_->Branch("tcmetphi"   , &tcmetphi_   , "tcmetphi/F"   );
-  babyTree_->Branch("tcsumet"    , &tcsumet_    , "tcsumet/F"    );
+  eventTree_->Branch("rawtcmet"         , &rawtcmet_         , "rawtcmet/F"      );
+  eventTree_->Branch("rawtcmetphi"      , &rawtcmetphi_      , "rawtcmetphi/F"   );
+  eventTree_->Branch("rawtcsumet"       , &rawtcsumet_       , "rawtcsumet/F"    );
 
-  babyTree_->Branch("rawtcmet"      , &rawtcmet_      , "rawtcmet/F"      );
-  babyTree_->Branch("rawtcmetphi"   , &rawtcmetphi_   , "rawtcmetphi/F"   );
-  babyTree_->Branch("rawtcsumet"    , &rawtcsumet_    , "rawtcsumet/F"    );
+  eventTree_->Branch("raw35Xtcmet"      , &raw35Xtcmet_      , "raw35Xtcmet/F"      );
+  eventTree_->Branch("raw35Xtcmetphi"   , &raw35Xtcmetphi_   , "raw35Xtcmetphi/F"   );
+  eventTree_->Branch("raw35Xtcsumet"    , &raw35Xtcsumet_    , "raw35Xtcsumet/F"    );
 
-  babyTree_->Branch("raw35Xtcmet"      , &raw35Xtcmet_      , "raw35Xtcmet/F"      );
-  babyTree_->Branch("raw35Xtcmetphi"   , &raw35Xtcmetphi_   , "raw35Xtcmetphi/F"   );
-  babyTree_->Branch("raw35Xtcsumet"    , &raw35Xtcsumet_    , "raw35Xtcsumet/F"    );
+  //rootdir->cd();
+  babyFile_->cd();
+  trackTree_ = new TTree("Tracks", "Tracks Tree");
+
+  trackTree_->Branch("pt"       , &trk_pt_       , "pt/F"      );
+  trackTree_->Branch("d0vtx"    , &trk_d0vtx_    , "d0vtx/F"   );
+  trackTree_->Branch("d0corr"   , &trk_d0corr_   , "d0corr/F"   );
+  trackTree_->Branch("nhits"    , &trk_nhits_    , "nhits/I"      );
+  trackTree_->Branch("chi2"     , &trk_chi2_     , "chi2/F"      );
+  trackTree_->Branch("ndf"      , &trk_ndf_      , "ndf/I"      );
+  trackTree_->Branch("pterr"    , &trk_pterr_    , "pterr/F"      );
+  trackTree_->Branch("phi"      , &trk_phi_      , "phi/F"      );
+  trackTree_->Branch("eta"      , &trk_eta_      , "eta/F"      );
+  trackTree_->Branch("qual"     , &trk_qual_     , "qual/I"      );
+  trackTree_->Branch("pass"     , &trk_pass_     , "pass/I"      );
 
 }
 
-
-
-void tcmetLooperTemplate::FillBabyNtuple ()
-{
-  babyTree_->Fill();
-}
+//--------------------------------------------------------------------
 
 void tcmetLooperTemplate::CloseBabyNtuple ()
 {
   babyFile_->cd();
-  babyTree_->Write();
+  eventTree_->Write();
+  trackTree_->Write();
   babyFile_->Close();
 }
+
+//--------------------------------------------------------------------
 
 bool tcmetLooperTemplate::isTruthZee () {
   
@@ -412,6 +452,8 @@ bool tcmetLooperTemplate::isTruthZee () {
 
 }
 
+//--------------------------------------------------------------------
+
 bool tcmetLooperTemplate::isTruthZmm () {
   
   if ( cms2.hyp_p4().size() != 1)              return false;
@@ -423,20 +465,22 @@ bool tcmetLooperTemplate::isTruthZmm () {
 
 }
 
+//--------------------------------------------------------------------
+
 bool tcmetLooperTemplate::jetVeto () {
 
-  for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
+  for (unsigned int ijet = 0; ijet < cms2.jets_p4().size(); ijet++) {
     
-    LorentzVector vjet = jets_p4().at(ijet);
-    LorentzVector vlt  = hyp_lt_p4()[0];
-    LorentzVector vll  = hyp_ll_p4()[0];
+    LorentzVector vjet = cms2.jets_p4().at(ijet);
+    LorentzVector vlt  = cms2.hyp_lt_p4()[0];
+    LorentzVector vll  = cms2.hyp_ll_p4()[0];
 
     if (dRbetweenVectors(vjet, vll) < 0.5) continue;
     if (dRbetweenVectors(vjet, vlt) < 0.5) continue;
     
-    LorentzVector bah = jets_p4().at(ijet);
+    LorentzVector bah = cms2.jets_p4().at(ijet);
     
-    if ( bah.pt() * jets_cor().at(ijet) > 20. && fabs( bah.eta() ) < 3.)
+    if ( bah.pt() * cms2.jets_cor().at(ijet) > 20. && fabs( bah.eta() ) < 3.)
       return true;
   
   }
@@ -445,6 +489,7 @@ bool tcmetLooperTemplate::jetVeto () {
   
 }
 
+//--------------------------------------------------------------------
 
 bool tcmetLooperTemplate::isGoodDilepton ()
 {
@@ -457,21 +502,23 @@ bool tcmetLooperTemplate::isGoodDilepton ()
     if (min(cms2.hyp_lt_p4()[i].pt(), cms2.hyp_ll_p4()[i].pt()) < 20.)   continue;
     
     //muon ID
-    if (abs(hyp_ll_id()[i]) == 13  && (! (fabs(hyp_ll_p4()[i].eta()) < 2.4 && muonId(hyp_ll_index()[i]))))   continue;
-    if (abs(hyp_lt_id()[i]) == 13  && (! (fabs(hyp_lt_p4()[i].eta()) < 2.4 && muonId(hyp_lt_index()[i]))))   continue;
+    if (abs(cms2.hyp_ll_id()[i]) == 13  && (! (fabs(cms2.hyp_ll_p4()[i].eta()) < 2.4 && muonId(cms2.hyp_ll_index()[i]))))   continue;
+    if (abs(cms2.hyp_lt_id()[i]) == 13  && (! (fabs(cms2.hyp_lt_p4()[i].eta()) < 2.4 && muonId(cms2.hyp_lt_index()[i]))))   continue;
     
     //cand01
     //cout << "ELECTRON SELECTION TURNED OFF!!!" << endl;
     //exit(0);
 
-    if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
-    if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+    if (abs(cms2.hyp_ll_id()[0]) == 11  && (! pass_electronSelection( cms2.hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+    if (abs(cms2.hyp_lt_id()[0]) == 11  && (! pass_electronSelection( cms2.hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
     
     isgood = true;
   }
   
   return isgood;
 }
+
+//--------------------------------------------------------------------
 
 bool tcmetLooperTemplate::isGoodZee ()
 {
@@ -488,10 +535,10 @@ bool tcmetLooperTemplate::isGoodZee ()
       if (min(cms2.hyp_lt_p4()[i].pt(), cms2.hyp_ll_p4()[i].pt()) < 20.)
         continue;
 
-      if (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))
+      if (! pass_electronSelection( cms2.hyp_ll_index()[0] , electronSelection_cand01 ))
         continue;
 
-      if (! pass_electronSelection( hyp_lt_index()[0] , electronSelection_cand01 ))
+      if (! pass_electronSelection( cms2.hyp_lt_index()[0] , electronSelection_cand01 ))
         continue;
       
       //cout << "ELECTRON SELECTION TURNED OFF!!!" << endl;
@@ -508,6 +555,7 @@ bool tcmetLooperTemplate::isGoodZee ()
   return isgood;
 }
 
+//--------------------------------------------------------------------
 
 bool tcmetLooperTemplate::isGoodZmm ()
 {
@@ -535,6 +583,8 @@ bool tcmetLooperTemplate::isGoodZmm ()
 
   return isgood;
 }
+
+//--------------------------------------------------------------------
 
 bool tcmetLooperTemplate::isGoodTrack( int index, bool usePV ) {
   
@@ -565,8 +615,31 @@ bool tcmetLooperTemplate::isGoodTrack( int index, bool usePV ) {
   return true;
 }
 
+//--------------------------------------------------------------------
 
+bool tcmetLooperTemplate::isMuon( int index ) {
 
+     for( unsigned int i = 0; i < cms2.mus_p4().size(); i++ ) {
+
+	  if( cms2.mus_trkidx().at(i) == index ) return true;
+     }
+
+     return false;
+}
+
+//--------------------------------------------------------------------
+
+bool tcmetLooperTemplate::isElectron( int index ) {
+
+     for( unsigned int i = 0; i < cms2.els_p4().size(); i++ ) {
+
+	  if( cms2.els_trkidx().at(i) == index && cms2.els_hOverE().at(i) < 0.1 ) return true;
+     }
+
+     return false;
+}
+
+//--------------------------------------------------------------------
 
 
 

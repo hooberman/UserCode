@@ -1,14 +1,32 @@
 {
 
-  gROOT->ProcessLine(".L histtools.C++");
-  gROOT->ProcessLine(".L runTCMETLooperTemplate.C++");
-  gSystem->Load("/tas03/home/benhoob/CMSSW_3_6_0_V03-04-09-01/src/CMS2/NtupleMacros/Tools/MiniFWLite/libMiniFWLite.so");
+  gROOT->ProcessLine(".L CORE/CMS2.cc+");
+  gROOT->ProcessLine(".L CORE/trackSelections.cc+");
+  gROOT->ProcessLine(".L CORE/metSelections.cc+");
+  gROOT->ProcessLine(".L CORE/eventSelections.cc+");
+  gROOT->ProcessLine(".L CORE/electronSelectionsParameters.cc+");
+  gROOT->ProcessLine(".L CORE/electronSelections.cc+");
+  gROOT->ProcessLine(".L CORE/muonSelections.cc+");
+  //gROOT->ProcessLine(".L Tools/goodrun.cc+");
+  //gROOT->ProcessLine(".L CORE/utilities.cc+");
+  
+  gROOT->ProcessLine(".L histtools.C+");
+  gROOT->ProcessLine(".L runTCMETLooperTemplate.C+");
+  gSystem->Load("libMiniFWLite.so");
+
+
+
+
+
+  //choose samples to run over----------------------
 
   //runTCMETLooperTemplate("data");
   //runTCMETLooperTemplate("zmm");
-  runTCMETLooperTemplate("zee");
-  //runTCMETLooperTemplate("datahighmet");
+  //runTCMETLooperTemplate("zee");
+  runTCMETLooperTemplate("datahighmet");
   //runTCMETLooperTemplate("qcd");
   //runTCMETLooperTemplate("ttbar");
+  
+  //------------------------------------------------
   
 }
