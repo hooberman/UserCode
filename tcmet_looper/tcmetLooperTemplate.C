@@ -31,8 +31,9 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
+char* iter = "default";
 bool usePV = false;
-
+bool makebaby = false;
 //inline double fround(double n, double d){
 //  return floor(n * pow(10., d) + .5) / pow(10., d);
 //}
@@ -42,7 +43,7 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
   bookHistos();
 
   set_goodrun_file("jsonlist_132440_132697.txt");
-  ofile.open( Form( "%s_events.txt" , prefix ) );
+  ofile.open( Form( "output/%s_%s_events.txt" , prefix , iter) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -52,7 +53,8 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
   nEventsChain = nEvents;
   unsigned int nEventsTotal = 0;
 
-  MakeBabyNtuple( Form( "%s_baby.root" , prefix ) );
+  if( makebaby )
+    MakeBabyNtuple( Form( "output/%s_%s_baby.root" , prefix , iter) );
 
   //pass fail counters
   int nPassGoodRun    = 0;
@@ -219,7 +221,8 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
             tcsumet_   = structMET.sumet;
           }
           
-          eventTree_->Fill();
+	  if( makebaby )
+	    eventTree_->Fill();
 
 
           hmumet->Fill(mumet_);
@@ -232,30 +235,31 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           hdtcmet->Fill(tcmet_-genmet_);
           hdrawtcmet->Fill(rawtcmet_-genmet_);
           
-
-          for( unsigned int i = 0; i < cms2.trks_trk_p4().size(); i++ ) {
-    
-            if( isMuon( i ) )                               continue;
-            if( isElectron( i ) )                           continue;
-          
-
-            //if (useElectronVetoCone && closeToElectron(i))  continue;
-
-            trk_pass_     = isGoodTrack( i, usePV ) ? 1 : 0;            
-            trk_pt_       = cms2.trks_trk_p4().at(i).pt();
-            trk_d0vtx_    = cms2.trks_d0vtx().at(i);
-            trk_d0corr_   = cms2.trks_d0corr().at(i);
-            trk_nhits_    = cms2.trks_validHits().at(i);
-            trk_chi2_     = cms2.trks_chi2().at(i);
-            trk_ndf_      = (int) cms2.trks_ndof().at(i);
-            trk_pterr_    = cms2.trks_ptErr().at(i);
-            trk_phi_      = cms2.trks_trk_p4().at(i).phi();
-            trk_eta_      = cms2.trks_trk_p4().at(i).eta();
-            trk_qual_     = isTrackQuality( i , (1 << highPurity) ) ? 1 : 0;
-           
-            trackTree_->Fill();
+	  if( makebaby ){
+         
+	    for( unsigned int i = 0; i < cms2.trks_trk_p4().size(); i++ ) {
+	      
+	      if( isMuon( i ) )                               continue;
+	      if( isElectron( i ) )                           continue;
+	      
+	      
+	      //if (useElectronVetoCone && closeToElectron(i))  continue;
+	      
+	      trk_pass_     = isGoodTrack( i, usePV ) ? 1 : 0;            
+	      trk_pt_       = cms2.trks_trk_p4().at(i).pt();
+	      trk_d0vtx_    = cms2.trks_d0vtx().at(i);
+	      trk_d0corr_   = cms2.trks_d0corr().at(i);
+	      trk_nhits_    = cms2.trks_validHits().at(i);
+	      trk_chi2_     = cms2.trks_chi2().at(i);
+	      trk_ndf_      = (int) cms2.trks_ndof().at(i);
+	      trk_pterr_    = cms2.trks_ptErr().at(i);
+	      trk_phi_      = cms2.trks_trk_p4().at(i).phi();
+	      trk_eta_      = cms2.trks_trk_p4().at(i).eta();
+	      trk_qual_     = isTrackQuality( i , (1 << highPurity) ) ? 1 : 0;
+	      
+	      trackTree_->Fill();
+	    }
           }
-          
         } // end loop over events
     } // end loop over files
   
@@ -287,7 +291,7 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
   //saveHist( histfile.str().c_str() );
-  saveHist( Form( "%s_histos.root" , prefix ) );
+  saveHist( Form( "output/%s_%s_histos.root" , prefix , iter ) );
   deleteHistos();
   
 } // end ScanChain
@@ -433,10 +437,12 @@ void tcmetLooperTemplate::MakeBabyNtuple (const char* babyFileName)
 
 void tcmetLooperTemplate::CloseBabyNtuple ()
 {
-  babyFile_->cd();
-  eventTree_->Write();
-  trackTree_->Write();
-  babyFile_->Close();
+  if( makebaby ){
+    babyFile_->cd();
+    eventTree_->Write();
+    trackTree_->Write();
+    babyFile_->Close();
+  }
 }
 
 //--------------------------------------------------------------------
