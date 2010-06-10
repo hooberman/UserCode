@@ -31,12 +31,14 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
-char* iter = "default";
-//char* iter = "dupveto2";
+//char* iter = "default";
+//char* iter = "oldTQ";
+char* iter = "dupveto";
 //char* iter = "trkpt_lt20eta25";
 
 bool usePV    = false;
-bool makebaby = true;
+bool makebaby = false;
+bool debug    = false;
 
 void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isData, int nEvents){
 
@@ -53,8 +55,7 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
   nEventsChain = nEvents;
   unsigned int nEventsTotal = 0;
 
-  if( makebaby )
-    MakeBabyNtuple( Form( "output/%s_%s_baby.root" , prefix , iter) );
+  MakeBabyNtuple( Form( "output/%s_%s_baby.root" , prefix , iter) );
 
   //pass fail counters
   int nPassGoodRun    = 0;
@@ -63,6 +64,8 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
   int nPassBeamHalo   = 0;
   int nPassGoodTracks = 0;
   int nPassGoodVertex = 0;
+
+  if( debug ) cout << "Begin looping over files" << endl;
 
   // file loop
   TIter fileIter(listOfFiles);
@@ -78,6 +81,8 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
 
       for (unsigned int event = 0; event < nEvents; ++event)
         {
+          if( debug ) cout << "Event " << event << endl;
+
           cms2.GetEntry(event);
           ++nEventsTotal;
 
@@ -100,7 +105,7 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))
             nPassGoodRun++;
           else continue;
-          
+
           // determine if current event passes BPTX triggers
           if (cleaning_BPTX( isData ))
             nPassBPTX++;
@@ -125,16 +130,16 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           if (cleaning_goodVertex())
             nPassGoodVertex++;
           else continue;
-          
+
           if( strcmp( prefix , "zee")   == 0 || 
               strcmp( prefix , "zmm")   == 0 || 
               strcmp( prefix , "ttbar") == 0 ){
             if (!isGoodDilepton())    continue;
           } 
 
-
-
-
+          if( debug ) cout << "Pass event selection" << endl;
+          
+          
           //
           // N.B. BABY NTUPLE IS FILLED
           // FOR EACH EVENT
@@ -205,15 +210,14 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           tcmet_     = structMET.met;
           tcmetphi_  = structMET.metphi;
           tcsumet_   = structMET.sumet;
-          
+
           if( makebaby || tcmet_ > 45 ){
-            
-            //print out events with large tcmet 
-            //cout << "-----------------------------------------------------------------" << endl;
-            //cout << evt_dataset() << endl;
-            //cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
-            //cout << " tcmet " << tcmet_ << endl;
-           
+
+            //             cout << "|" << setw(12)  << cms2.evt_run()         << setw(4)
+            //                  << "|" << setw(12)  << cms2.evt_lumiBlock()   << setw(4)
+            //                  << "|" << setw(12)  << cms2.evt_event()       << setw(4)
+            //                  << "|" << setw(12)  << tcmet_                 << setw(4) << "|" << endl;
+
             structMET = correctedTCMET( usePV, electronVetoCone, useHFcleaning, useHCALcleaning, useECALcleaning , true, ofile);          
             
             tcmet_     = structMET.met;
@@ -228,16 +232,17 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           fillUnderOverFlow( hmujesmet , mujesmet_ );
           fillUnderOverFlow( htcmet , tcmet_ );
           fillUnderOverFlow( hrawtcmet , rawtcmet_ );
-
+  
           fillUnderOverFlow( hdmumet , mumet_ - genmet_ );
           fillUnderOverFlow( hdmujesmet , mujesmet_ - genmet_ );
           fillUnderOverFlow( hdtcmet , tcmet_ - genmet_ );
           fillUnderOverFlow( hdrawtcmet , rawtcmet_ - genmet_ );
-          
+
+
 	  if( makebaby || tcmet_ > 45 ){
-         
+      
 	    for( unsigned int i = 0; i < cms2.trks_trk_p4().size(); i++ ) {
-	      
+
 	      if( isMuon( i ) )                               continue;
 	      if( isElectron( i ) )                           continue;
 	  	      
@@ -254,13 +259,13 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
 	      trk_phi_      = cms2.trks_trk_p4().at(i).phi();
 	      trk_eta_      = cms2.trks_trk_p4().at(i).eta();
 	      trk_qual_     = isTrackQuality( i , (1 << highPurity) ) ? 1 : 0;
-	      
+
 	      trackTree_->Fill();
-	    }
+            }
           }
         } // end loop over events
     } // end loop over files
-  
+
   cout << "\n\n********************SUMMARY********************" << endl;
   cout << "Total number of events: " << nEventsTotal << endl;
   cout << "Total number of events that pass good run/lumi: " << nPassGoodRun 
@@ -447,14 +452,13 @@ void tcmetLooperTemplate::fillUnderOverFlow(TH1F *h1, float value, float weight)
 
 //--------------------------------------------------------------------
 
-void tcmetLooperTemplate::CloseBabyNtuple ()
-{
-  if( makebaby ){
-    babyFile_->cd();
-    eventTree_->Write();
-    trackTree_->Write();
-    babyFile_->Close();
-  }
+void tcmetLooperTemplate::CloseBabyNtuple (){
+
+  babyFile_->cd();
+  eventTree_->Write();
+  trackTree_->Write();
+  babyFile_->Close();
+  
 }
 
 //--------------------------------------------------------------------
@@ -527,8 +531,8 @@ bool tcmetLooperTemplate::isGoodDilepton ()
     //cout << "ELECTRON SELECTION TURNED OFF!!!" << endl;
     //exit(0);
 
-    if (abs(cms2.hyp_ll_id()[0]) == 11  && (! pass_electronSelection( cms2.hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
-    if (abs(cms2.hyp_lt_id()[0]) == 11  && (! pass_electronSelection( cms2.hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+    if (abs(cms2.hyp_ll_id()[i]) == 11  && (! pass_electronSelection( cms2.hyp_ll_index()[i] , electronSelection_cand01 ))) continue;
+    if (abs(cms2.hyp_lt_id()[i]) == 11  && (! pass_electronSelection( cms2.hyp_lt_index()[i] , electronSelection_cand01 ))) continue;
     
     isgood = true;
   }
@@ -553,10 +557,10 @@ bool tcmetLooperTemplate::isGoodZee ()
       if (min(cms2.hyp_lt_p4()[i].pt(), cms2.hyp_ll_p4()[i].pt()) < 20.)
         continue;
 
-      if (! pass_electronSelection( cms2.hyp_ll_index()[0] , electronSelection_cand01 ))
+      if (! pass_electronSelection( cms2.hyp_ll_index()[i] , electronSelection_cand01 ))
         continue;
 
-      if (! pass_electronSelection( cms2.hyp_lt_index()[0] , electronSelection_cand01 ))
+      if (! pass_electronSelection( cms2.hyp_lt_index()[i] , electronSelection_cand01 ))
         continue;
       
       //cout << "ELECTRON SELECTION TURNED OFF!!!" << endl;
@@ -637,24 +641,24 @@ bool tcmetLooperTemplate::isGoodTrack( int index, bool usePV ) {
 
 bool tcmetLooperTemplate::isMuon( int index ) {
 
-     for( unsigned int i = 0; i < cms2.mus_p4().size(); i++ ) {
+  for( unsigned int i = 0; i < cms2.mus_p4().size(); i++ ) {
 
-	  if( cms2.mus_trkidx().at(i) == index ) return true;
-     }
+    if( cms2.mus_trkidx().at(i) == index ) return true;
+  }
 
-     return false;
+  return false;
 }
 
 //--------------------------------------------------------------------
 
 bool tcmetLooperTemplate::isElectron( int index ) {
 
-     for( unsigned int i = 0; i < cms2.els_p4().size(); i++ ) {
+  for( unsigned int i = 0; i < cms2.els_p4().size(); i++ ) {
 
-	  if( cms2.els_trkidx().at(i) == index && cms2.els_hOverE().at(i) < 0.1 ) return true;
-     }
+    if( cms2.els_trkidx().at(i) == index && cms2.els_hOverE().at(i) < 0.1 ) return true;
+  }
 
-     return false;
+  return false;
 }
 
 //--------------------------------------------------------------------
