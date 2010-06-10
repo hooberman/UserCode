@@ -66,6 +66,8 @@ class tcmetLooperTemplate
         TH1F* hdtcmet;
         TH1F* hdrawtcmet;
 
+        TH1F* hdtcmet_mumet;
+        TH1F* hdtcmet_mujesmet;
 
         // event stuff
         Int_t   run_;

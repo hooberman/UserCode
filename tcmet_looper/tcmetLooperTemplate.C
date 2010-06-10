@@ -238,6 +238,10 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           fillUnderOverFlow( hdtcmet , tcmet_ - genmet_ );
           fillUnderOverFlow( hdrawtcmet , rawtcmet_ - genmet_ );
 
+	  fillUnderOverFlow( hdtcmet_mumet    , tcmet_ - mumet_ );
+ 	  fillUnderOverFlow( hdtcmet_mujesmet , tcmet_ - mujesmet_ );
+
+
 
 	  if( makebaby || tcmet_ > 45 ){
       
@@ -367,6 +371,10 @@ void tcmetLooperTemplate::bookHistos(){
   hdmujesmet = new TH1F("hdmujesmet","",400,-200,200);
   hdtcmet    = new TH1F("hdtcmet",   "",400,-200,200);
   hdrawtcmet = new TH1F("hdrawtcmet","",400,-200,200);
+
+  hdtcmet_mumet    = new TH1F("hdtcmet_mumet","",   400,-200,200);
+  hdtcmet_mujesmet = new TH1F("hdtcmet_mujesmet","",400,-200,200);
+
   
 }
 
@@ -662,84 +670,3 @@ bool tcmetLooperTemplate::isElectron( int index ) {
 }
 
 //--------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-bool badeveto = false;
-
-if( ectcmet_ - tcmet_ > 10 ){
-
-ofile << endl << "---------------------------------------------------------------------------------" << endl;
-            
-int width = 10;
-
-ofile << "|" << setw(width) << "type" << setw(width) 
-<< "|" << setw(width) << "met"  << setw(width) 
-<< "|" << setw(width) << "metx" << setw(width) 
-<< "|" << setw(width) << "mety" << setw(width) << "|" << endl;
-                 
-         
-ofile << "|" << setw(width) << "standard"        << setw(width) 
-<< "|" << setw(width) << tcmet_            << setw(width) 
-<< "|" << setw(width) << structMET.metx    << setw(width) 
-<< "|" << setw(width) << structMET.mety    << setw(width) << "|" << endl; 
-         
-ofile << "|" << setw(width) << "eVeto"           << setw(width) 
-<< "|" << setw(width) << ectcmet_          << setw(width) 
-<< "|" << setw(width) << tcmetStruct.metx  << setw(width) 
-<< "|" << setw(width) << tcmetStruct.mety  << setw(width) << "|" << endl; 
-              
-          
-badeveto = true;
-            
-metStruct tempMet;
-if (isData)
-tempMet = correctedTCMET(false, false, true,  true,  true,  false, ofile);
-else
-tempMet = correctedTCMET(false, false, false, false, false, false, ofile);
-
-}
-
-
-
-if(badeveto){
-
-ofile << " electron pt " << elspt  
-<< " duplicate pt " << elpt_ 
-<< " dR " << dR << endl;
-
-}
-
-
-
-
-
-
-*/
-
-/*
-//for Z->ee event, require exactly 2 truth-matched electrons
-if (!isTruthZee())   continue;
-
-// for Z->mm event, require exactly 2 truth-matched muons
-if (!isTruthZmm())   continue;
-
-// for Z->ee/Z->mm event, veto if >=1 jet with corrected pt > 20 GeV, eta < 3
-if (jetVeto())       continue;
-*/
