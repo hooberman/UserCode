@@ -33,7 +33,7 @@ class tcmetLooperTemplate
         bool jetVeto ();
         void bookHistos();
 	bool isGoodTrack(int, bool usePV = false);
-
+	void fillUnderOverFlow(TH1F *h1, float value, float weight = 1);
 
     private:
         

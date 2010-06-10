@@ -32,11 +32,11 @@
 #include "TLorentzVector.h"
 
 char* iter = "default";
-bool usePV = false;
-bool makebaby = false;
-//inline double fround(double n, double d){
-//  return floor(n * pow(10., d) + .5) / pow(10., d);
-//}
+//char* iter = "dupveto2";
+//char* iter = "trkpt_lt20eta25";
+
+bool usePV    = false;
+bool makebaby = true;
 
 void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isData, int nEvents){
 
@@ -206,7 +206,7 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           tcmetphi_  = structMET.metphi;
           tcsumet_   = structMET.sumet;
           
-          if( tcmet_ > 45 ){
+          if( makebaby || tcmet_ > 45 ){
             
             //print out events with large tcmet 
             //cout << "-----------------------------------------------------------------" << endl;
@@ -219,30 +219,28 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
             tcmet_     = structMET.met;
             tcmetphi_  = structMET.metphi;
             tcsumet_   = structMET.sumet;
-          }
-          
-	  if( makebaby )
+
 	    eventTree_->Fill();
 
+          }
 
-          hmumet->Fill(mumet_);
-          hmujesmet->Fill(mujesmet_);
-          htcmet->Fill(tcmet_);
-          hrawtcmet->Fill(rawtcmet_);
+          fillUnderOverFlow( hmumet , mumet_ );
+          fillUnderOverFlow( hmujesmet , mujesmet_ );
+          fillUnderOverFlow( htcmet , tcmet_ );
+          fillUnderOverFlow( hrawtcmet , rawtcmet_ );
 
-          hdmumet->Fill(mumet_-genmet_);
-          hdmujesmet->Fill(mujesmet_-genmet_);
-          hdtcmet->Fill(tcmet_-genmet_);
-          hdrawtcmet->Fill(rawtcmet_-genmet_);
+          fillUnderOverFlow( hdmumet , mumet_ - genmet_ );
+          fillUnderOverFlow( hdmujesmet , mujesmet_ - genmet_ );
+          fillUnderOverFlow( hdtcmet , tcmet_ - genmet_ );
+          fillUnderOverFlow( hdrawtcmet , rawtcmet_ - genmet_ );
           
-	  if( makebaby ){
+	  if( makebaby || tcmet_ > 45 ){
          
 	    for( unsigned int i = 0; i < cms2.trks_trk_p4().size(); i++ ) {
 	      
 	      if( isMuon( i ) )                               continue;
 	      if( isElectron( i ) )                           continue;
-	      
-	      
+	  	      
 	      //if (useElectronVetoCone && closeToElectron(i))  continue;
 	      
 	      trk_pass_     = isGoodTrack( i, usePV ) ? 1 : 0;            
@@ -430,6 +428,20 @@ void tcmetLooperTemplate::MakeBabyNtuple (const char* babyFileName)
   trackTree_->Branch("eta"      , &trk_eta_      , "eta/F"      );
   trackTree_->Branch("qual"     , &trk_qual_     , "qual/I"      );
   trackTree_->Branch("pass"     , &trk_pass_     , "pass/I"      );
+
+}
+
+//--------------------------------------------------------------------
+
+void tcmetLooperTemplate::fillUnderOverFlow(TH1F *h1, float value, float weight){
+
+  float min = h1->GetXaxis()->GetXmin();
+  float max = h1->GetXaxis()->GetXmax();
+
+  if (value > max) value = h1->GetBinCenter(h1->GetNbinsX());
+  if (value < min) value = h1->GetBinCenter(1);
+
+  h1->Fill(value, weight);
 
 }
 
