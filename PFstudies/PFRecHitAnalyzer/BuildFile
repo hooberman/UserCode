@@ -1,0 +1,12 @@
+<use name=FWCore/Framework>
+<use name=FWCore/PluginManager>
+<use name=FWCore/ParameterSet>
+<use name=DataFormats/METReco>
+<use name=DataFormats/ParticleFlowReco>
+<flags EDM_PLUGIN=1>
+<export>
+   <lib name=PFstudiesPFRecHitAnalyzer>
+   <use name=FWCore/Framework>
+   <use name=FWCore/PluginManager>
+   <use name=FWCore/ParameterSet>
+</export>

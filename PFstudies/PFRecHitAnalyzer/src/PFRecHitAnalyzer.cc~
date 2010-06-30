@@ -1,0 +1,484 @@
+// -*- C++ -*-
+//
+// Package:    PFRecHitAnalyzer
+// Class:      PFRecHitAnalyzer
+// 
+/**\class PFRecHitAnalyzer PFRecHitAnalyzer.cc PFstudies/PFRecHitAnalyzer/src/PFRecHitAnalyzer.cc
+
+ Description: [one line class summary]
+
+ Implementation:
+     [Notes on implementation]
+*/
+//
+// Original Author:  
+//         Created:  Thu Jun 24 02:52:45 PDT 2010
+// $Id$
+//
+//
+
+// include files
+#include "PFstudies/PFRecHitAnalyzer/interface/PFRecHitAnalyzer.h"
+#include "DataFormats/METReco/interface/CaloMET.h"
+#include "DataFormats/METReco/interface/CaloMETFwd.h"
+#include "DataFormats/METReco/interface/GenMET.h"
+#include "DataFormats/METReco/interface/GenMETFwd.h"
+#include "DataFormats/ParticleFlowReco/interface/PFRecHit.h"
+#include "DataFormats/ParticleFlowReco/interface/PFRecHitFwd.h"
+#include "DataFormats/ParticleFlowReco/interface/PFLayer.h"
+
+//
+// constants, enums and typedefs
+//
+typedef ROOT::Math::PositionVector3D<ROOT::Math::CylindricalEta3D<Double32_t> > REPPoint;
+
+//
+// static data member definitions
+//
+
+//
+// constructors and destructor
+//
+PFRecHitAnalyzer::PFRecHitAnalyzer(const edm::ParameterSet& iConfig)
+{
+     // input tags
+     pf_ecal_tag_	= iConfig.getParameter<edm::InputTag>("pf_ecal_tag"	);
+     pf_hcal_tag_	= iConfig.getParameter<edm::InputTag>("pf_hcal_tag"	);
+     pf_hfem_tag_	= iConfig.getParameter<edm::InputTag>("pf_hfem_tag"	);
+     pf_hfhad_tag_	= iConfig.getParameter<edm::InputTag>("pf_hfhad_tag"	);
+     calomet_tag_	= iConfig.getParameter<edm::InputTag>("calomet_tag"	);
+     genmet_tag_	= iConfig.getParameter<edm::InputTag>("genmet_tag"	);
+     eb_threshold_	= iConfig.getParameter<double>("eb_threshold"		);
+     ee_threshold_	= iConfig.getParameter<double>("ee_threshold"		);
+     hb_threshold_	= iConfig.getParameter<double>("hb_threshold"		);
+     he_threshold_	= iConfig.getParameter<double>("he_threshold"		);
+     hfe_threshold_	= iConfig.getParameter<double>("hfe_threshold"		);
+     hfh_threshold_	= iConfig.getParameter<double>("hfh_threshold"		);
+
+     // register products
+     produces<float>	("caloebsumet" ).setBranchAlias("calo_eb_sumet"		);
+     produces<float>	("caloeesumet" ).setBranchAlias("calo_ee_sumet"		);
+     produces<float>	("calohbsumet" ).setBranchAlias("calo_hb_sumet"		);
+     produces<float>	("calohesumet" ).setBranchAlias("calo_he_sumet"		);
+     produces<float>	("calohfesumet").setBranchAlias("calo_hfe_sumet"	);
+     produces<float>	("calohfhsumet").setBranchAlias("calo_hfh_sumet"	);
+
+     produces<float>	("pfebsumet"	).setBranchAlias("pf_eb_sumet"	);
+     produces<float>	("pfeesumet"	).setBranchAlias("pf_ee_sumet"	);
+     produces<float>	("pfhbsumet"	).setBranchAlias("pf_hb_sumet"	);
+     produces<float>	("pfhesumet"	).setBranchAlias("pf_he_sumet"	);
+     produces<float>	("pfhfesumet"	).setBranchAlias("pf_hfe_sumet"	);
+     produces<float>	("pfhfhsumet"	).setBranchAlias("pf_hfh_sumet"	);
+
+     produces<float>	("pfebmet"	).setBranchAlias("pf_eb_met"	);
+     produces<float>	("pfeemet"	).setBranchAlias("pf_ee_met"	);
+     produces<float>	("pfhbmet"	).setBranchAlias("pf_hb_met"	);
+     produces<float>	("pfhemet"	).setBranchAlias("pf_he_met"	);
+     produces<float>	("pfhfemet"	).setBranchAlias("pf_hfe_met"	);
+     produces<float>	("pfhfhmet"	).setBranchAlias("pf_hfh_met"	);
+
+     produces<float>	("calomet"	).setBranchAlias("calomet"		);
+     produces<float>	("calosumet"	).setBranchAlias("calosumet"		);
+
+     produces<float>	("pfmet"	).setBranchAlias("pfmet"		);
+     produces<float>	("pfsumet"	).setBranchAlias("pfsumet"		);
+
+     produces<float>    ("genmet"       ).setBranchAlias("genmet"		);
+     produces<float>    ("gensumet"     ).setBranchAlias("gensumet"		);
+
+     produces<std::vector<float> > ("pfrechitet"	).setBranchAlias("pf_rechit_et"		);
+     produces<std::vector<float> > ("pfrechiteta"	).setBranchAlias("pf_rechit_eta"	);
+     produces<std::vector<float> > ("pfrechitphi"	).setBranchAlias("pf_rechit_phi"	);
+     produces<std::vector<float> > ("pfrechitdetid"     ).setBranchAlias("pf_rechit_detid"      );
+
+     produces<std::vector<float> > ("pfebrechitet"	).setBranchAlias("pf_ebrechit_et"	);
+     produces<std::vector<float> > ("pfebrechiteta"	).setBranchAlias("pf_ebrechit_eta"	);
+     produces<std::vector<float> > ("pfebrechitphi"	).setBranchAlias("pf_ebrechit_phi"	);
+
+     produces<std::vector<float> > ("pfeerechitet"	).setBranchAlias("pf_eerechit_et"	);
+     produces<std::vector<float> > ("pfeerechiteta"	).setBranchAlias("pf_eerechit_eta"	);
+     produces<std::vector<float> > ("pfeerechitphi"	).setBranchAlias("pf_eerechit_phi"	);
+
+     produces<std::vector<float> > ("pfhbrechitet"	).setBranchAlias("pf_hbrechit_et"	);
+     produces<std::vector<float> > ("pfhbrechiteta"	).setBranchAlias("pf_hbrechit_eta"	);
+     produces<std::vector<float> > ("pfhbrechitphi"	).setBranchAlias("pf_hbrechit_phi"	);
+
+     produces<std::vector<float> > ("pfherechitet"	).setBranchAlias("pf_herechit_et"	);
+     produces<std::vector<float> > ("pfherechiteta"	).setBranchAlias("pf_herechit_eta"	);
+     produces<std::vector<float> > ("pfherechitphi"	).setBranchAlias("pf_herechit_phi"	);
+
+     produces<std::vector<float> > ("pfhferechitet"	).setBranchAlias("pf_hferechit_et"	);
+     produces<std::vector<float> > ("pfhferechiteta"	).setBranchAlias("pf_hferechit_eta"	);
+     produces<std::vector<float> > ("pfhferechitphi"	).setBranchAlias("pf_hferechit_phi"	);
+
+     produces<std::vector<float> > ("pfhfhrechitet"	).setBranchAlias("pf_hfhrechit_et"	);
+     produces<std::vector<float> > ("pfhfhrechiteta"	).setBranchAlias("pf_hfhrechit_eta"	);
+     produces<std::vector<float> > ("pfhfhrechitphi"	).setBranchAlias("pf_hfhrechit_phi"	);
+}
+
+
+PFRecHitAnalyzer::~PFRecHitAnalyzer()
+{
+ 
+   // do anything here that needs to be done at desctruction time
+   // (e.g. close files, deallocate resources etc.)
+
+}
+
+
+//
+// member functions
+//
+
+// ------------ method called to produce the data  ------------
+void
+PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+{
+     std::auto_ptr<float> calo_eb_sumet		(new float);
+     std::auto_ptr<float> calo_ee_sumet		(new float);
+     std::auto_ptr<float> calo_hb_sumet		(new float);
+     std::auto_ptr<float> calo_he_sumet		(new float);
+     std::auto_ptr<float> calo_hfe_sumet	(new float);
+     std::auto_ptr<float> calo_hfh_sumet	(new float);
+     std::auto_ptr<float> pf_eb_sumet		(new float);
+     std::auto_ptr<float> pf_ee_sumet		(new float);
+     std::auto_ptr<float> pf_hb_sumet		(new float);
+     std::auto_ptr<float> pf_he_sumet		(new float);
+     std::auto_ptr<float> pf_hfe_sumet		(new float);
+     std::auto_ptr<float> pf_hfh_sumet		(new float);
+     std::auto_ptr<float> calomet		(new float);
+     std::auto_ptr<float> calosumet		(new float);
+     std::auto_ptr<float> pfmet			(new float);
+     std::auto_ptr<float> pfsumet		(new float);
+     std::auto_ptr<float> genmet		(new float);
+     std::auto_ptr<float> gensumet		(new float);
+     std::auto_ptr<float> pf_eb_met		(new float);
+     std::auto_ptr<float> pf_ee_met		(new float);
+     std::auto_ptr<float> pf_hb_met		(new float);
+     std::auto_ptr<float> pf_he_met		(new float);
+     std::auto_ptr<float> pf_hfe_met		(new float);
+     std::auto_ptr<float> pf_hfh_met		(new float);
+     std::auto_ptr<std::vector<float> > pf_rechit_et		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_rechit_eta		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_rechit_phi		(new std::vector<float>);
+     std::auto_ptr<std::vector<int>   > pf_rechit_detid		(new std::vector<int>  );
+     std::auto_ptr<std::vector<float> > pf_ebrechit_et		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_ebrechit_eta		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_ebrechit_phi		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_eerechit_et		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_eerechit_eta		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_eerechit_phi		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_hbrechit_et		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_hbrechit_eta		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_hbrechit_phi		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_herechit_et		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_herechit_eta		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_herechit_phi		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_hferechit_et		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_hferechit_eta	(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_hferechit_phi	(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_hfhrechit_et		(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_hfhrechit_eta	(new std::vector<float>);
+     std::auto_ptr<std::vector<float> > pf_hfhrechit_phi	(new std::vector<float>);
+
+     // get collections
+     edm::Handle<reco::PFRecHitCollection> pf_ecal_h;
+     iEvent.getByLabel(pf_ecal_tag_, pf_ecal_h);
+
+     edm::Handle<reco::PFRecHitCollection> pf_hcal_h;
+     iEvent.getByLabel(pf_hcal_tag_, pf_hcal_h);
+
+     edm::Handle<reco::PFRecHitCollection> pf_hfem_h;
+     iEvent.getByLabel(pf_hfem_tag_, pf_hfem_h);
+
+     edm::Handle<reco::PFRecHitCollection> pf_hfhad_h;
+     iEvent.getByLabel(pf_hfhad_tag_, pf_hfhad_h);
+
+     edm::Handle<reco::CaloMETCollection> calomet_h;
+     iEvent.getByLabel(calomet_tag_, calomet_h);
+     reco::CaloMET metobj = calomet_h->front();
+
+     edm::Handle<reco::GenMETCollection> genmet_h;
+     iEvent.getByLabel(genmet_tag_, genmet_h);
+     reco::GenMET genmetobj = genmet_h->front();
+
+     // store genmet quantities
+     *genmet   = genmetobj.pt();
+     *gensumet = genmetobj.sumEt();
+
+     // store calomet based quantities
+     *calomet		= metobj.pt();
+     *calosumet		= metobj.sumEt();
+     *calo_eb_sumet	= metobj.emEtInEB();
+     *calo_ee_sumet	= metobj.emEtInEE();
+     *calo_hb_sumet	= metobj.hadEtInHB();
+     *calo_he_sumet	= metobj.hadEtInHE();
+     *calo_hfe_sumet	= metobj.emEtInHF();
+     *calo_hfh_sumet	= metobj.hadEtInHF();
+
+     // calculate MET and sumET using pf rechits
+     float met_x = 0.;
+     float met_y = 0.;
+
+     // get EM energy in HF using pf rechits
+     float hfem_et   = 0.;
+     float hfemet_x  = 0.;
+     float hfemet_y  = 0.;
+
+     for (reco::PFRecHitCollection::const_iterator it = pf_hfem_h->begin(); it != pf_hfem_h->end(); it++)
+     {
+	  if (it->energy() < hfe_threshold_)
+	       continue;
+
+	  pf_rechit_detid->push_back(it->detId());
+	  
+	  float et = sqrt(it->pt2());
+	  hfem_et += et;
+
+	  const REPPoint rechit_pos = it->positionREP();	  
+
+	  pf_hferechit_et	->push_back(et			);
+	  pf_hferechit_eta	->push_back(rechit_pos.eta()	);
+	  pf_hferechit_phi	->push_back(rechit_pos.phi()	);
+	  pf_rechit_et		->push_back(et			);
+	  pf_rechit_eta		->push_back(rechit_pos.eta()	);
+	  pf_rechit_phi		->push_back(rechit_pos.phi()	);
+
+	  met_x    -= et * cos(rechit_pos.phi());
+	  met_y    -= et * sin(rechit_pos.phi());
+	  hfemet_x -= et * cos(rechit_pos.phi());
+	  hfemet_y -= et * sin(rechit_pos.phi());
+     }
+
+     *pf_hfe_sumet = hfem_et;
+     *pf_hfe_met   = sqrt(hfemet_x * hfemet_x + hfemet_y * hfemet_y);
+
+     // get HAD energy in HF using pf rechits
+     float hfhad_et  = 0.;
+     float hfhmet_x  = 0.;
+     float hfhmet_y  = 0.;
+
+     for (reco::PFRecHitCollection::const_iterator it = pf_hfhad_h->begin(); it != pf_hfhad_h->end(); it++)
+     {
+	  if (it->energy() < hfh_threshold_)
+	       continue;
+
+	  pf_rechit_detid->push_back(it->detId());
+
+	  float et = sqrt(it->pt2());
+	  hfhad_et += et;
+
+	  const REPPoint& rechit_pos = it->positionREP();
+
+	  pf_hfhrechit_et	->push_back(et			);
+	  pf_hfhrechit_eta	->push_back(rechit_pos.eta()	);
+	  pf_hfhrechit_phi	->push_back(rechit_pos.phi()	);
+	  pf_rechit_et		->push_back(et			);
+	  pf_rechit_eta		->push_back(rechit_pos.eta()	);
+	  pf_rechit_phi		->push_back(rechit_pos.phi()	);
+
+	  met_x    -= et * cos(rechit_pos.phi());
+	  met_y    -= et * sin(rechit_pos.phi());
+	  hfhmet_x -= et * cos(rechit_pos.phi());
+	  hfhmet_y -= et * sin(rechit_pos.phi());
+     }
+
+     *pf_hfh_sumet = hfhad_et;
+     *pf_hfh_met   = sqrt(hfhmet_x * hfhmet_x + hfhmet_y * hfhmet_y);
+     
+     // get energy HCAL using pf rechits
+     float hb_et	= 0.;
+     float hbmet_x	= 0.;
+     float hbmet_y	= 0.;
+     float he_et	= 0.;
+     float hemet_x	= 0.;
+     float hemet_y	= 0.;
+     float ho_et	= 0.;
+     float homet_x	= 0.;
+     float homet_y	= 0.;
+       
+     for (reco::PFRecHitCollection::const_iterator it = pf_hcal_h->begin(); it != pf_hcal_h->end(); it++)
+     {
+	  if (it->layer() == PFLayer::HCAL_ENDCAP)
+	  {
+	       if (it->energy() < he_threshold_)
+		    continue;
+	  }
+	  else if (it->layer() == PFLayer::HCAL_BARREL1)
+	  {
+	       
+	       if (it->energy() < he_threshold_)
+		    continue;
+
+	  pf_rechit_detid->push_back(it->detId());
+
+	  float et = sqrt(it->pt2());
+
+	  reco::PFRecHit rhit = reco::PFRecHit(*it);
+	  rhit.calculatePositionREP();
+	  const REPPoint rechit_pos = it->positionREP();	  
+
+	  if (it->layer() == PFLayer::HCAL_ENDCAP)
+	  {
+	       he_et += et;
+	       pf_herechit_et	->push_back(et			);
+	       pf_herechit_eta	->push_back(rechit_pos.eta()	);
+	       pf_herechit_phi	->push_back(rechit_pos.phi()	);
+	       pf_rechit_et	->push_back(et			);
+	       pf_rechit_eta	->push_back(rechit_pos.eta()	);
+	       pf_rechit_phi	->push_back(rechit_pos.phi()	);		  
+
+	       met_x   -= et * cos(rechit_pos.phi());
+	       met_y   -= et * sin(rechit_pos.phi());
+	       hemet_x -= et * cos(rechit_pos.phi());
+	       hemet_y -= et * sin(rechit_pos.phi());
+	  }
+
+	  else
+	  {
+	       hb_et += et;
+	       pf_hbrechit_et	->push_back(et			);
+	       pf_hbrechit_eta	->push_back(rechit_pos.eta()	);
+	       pf_hbrechit_phi	->push_back(rechit_pos.phi()	);
+	       pf_rechit_et	->push_back(et			);
+	       pf_rechit_eta	->push_back(rechit_pos.eta()	);
+	       pf_rechit_phi	->push_back(rechit_pos.phi()	);		  
+
+	       met_x   -= et * cos(rechit_pos.phi());
+	       met_y   -= et * sin(rechit_pos.phi());
+	       hbmet_x -= et * cos(rechit_pos.phi());
+	       hbmet_y -= et * sin(rechit_pos.phi());
+	  }
+     }
+     
+     *pf_hb_sumet = hb_et;
+     *pf_hb_met   = sqrt(hbmet_x * hbmet_x + hbmet_y * hbmet_y);
+     *pf_he_sumet = he_et;
+     *pf_he_met   = sqrt(hemet_x * hemet_x + hemet_y * hemet_y);
+
+     // get energy ECAL using pf rechits
+     float eb_et	= 0.;
+     float ebmet_x	= 0.;
+     float ebmet_y	= 0.;
+     float ee_et	= 0.;
+     float eemet_x	= 0.;
+     float eemet_y	= 0.;
+
+     for (reco::PFRecHitCollection::const_iterator it = pf_ecal_h->begin(); it != pf_ecal_h->end(); it++)
+     {
+/*
+	  if (sqrt(it->pt2()) < 0.3)
+	      continue;
+*/
+	  pf_rechit_detid->push_back(it->detId());
+
+	  float et = sqrt(it->pt2());
+
+	  reco::PFRecHit rhit = reco::PFRecHit(*it);
+	  rhit.calculatePositionREP();
+	  const REPPoint rechit_pos = it->positionREP();	  
+
+	  if (it->layer() == PFLayer::ECAL_BARREL)
+	  {
+	       eb_et += et;
+
+	       pf_ebrechit_et	->push_back(et			);
+	       pf_ebrechit_eta	->push_back(rechit_pos.eta()	);
+	       pf_ebrechit_phi	->push_back(rechit_pos.phi()	);
+	       pf_rechit_et	->push_back(et			);
+	       pf_rechit_eta	->push_back(rechit_pos.eta()	);
+	       pf_rechit_phi	->push_back(rechit_pos.phi()	);
+
+	       met_x   -= et * cos(rechit_pos.phi());
+	       met_y   -= et * sin(rechit_pos.phi());
+	       ebmet_x -= et * cos(rechit_pos.phi());
+	       ebmet_y -= et * sin(rechit_pos.phi());
+	  }
+	  else
+	  {
+	       ee_et += et;
+
+	       pf_eerechit_et	->push_back(et			);
+	       pf_eerechit_eta	->push_back(rechit_pos.eta()	);
+	       pf_eerechit_phi	->push_back(rechit_pos.phi()	);
+	       pf_rechit_et	->push_back(et			);
+	       pf_rechit_eta	->push_back(rechit_pos.eta()	);
+	       pf_rechit_phi	->push_back(rechit_pos.phi()	);
+
+	       met_x   -= et * cos(rechit_pos.phi());
+	       met_y   -= et * sin(rechit_pos.phi());
+	       eemet_x -= et * cos(rechit_pos.phi());
+	       eemet_y -= et * sin(rechit_pos.phi());
+	  }
+     }
+
+     *pf_eb_sumet = eb_et;
+     *pf_eb_met   = sqrt(ebmet_x * ebmet_x + ebmet_y * ebmet_y);
+     *pf_ee_sumet = ee_et;
+     *pf_ee_met   = sqrt(eemet_x * eemet_x + eemet_y * eemet_y);
+
+     // combine to get met, sumet using pf rechits
+     *pfsumet = eb_et + ee_et + hb_et + he_et + hfem_et + hfhad_et;
+     *pfmet   = sqrt(met_x * met_x + met_y * met_y);
+
+     // put branches in tree
+     iEvent.put(calo_eb_sumet		, "caloebsumet"		);
+     iEvent.put(calo_ee_sumet		, "caloeesumet"		);
+     iEvent.put(calo_hb_sumet		, "calohbsumet"		);
+     iEvent.put(calo_he_sumet		, "calohesumet"		);
+     iEvent.put(calo_hfe_sumet		, "calohfesumet"	);
+     iEvent.put(calo_hfh_sumet		, "calohfhsumet"	);
+     iEvent.put(pf_eb_sumet		, "pfebsumet"		);
+     iEvent.put(pf_ee_sumet		, "pfeesumet"		);
+     iEvent.put(pf_hb_sumet		, "pfhbsumet"		);
+     iEvent.put(pf_he_sumet		, "pfhesumet"		);
+     iEvent.put(pf_hfe_sumet		, "pfhfesumet"		);
+     iEvent.put(pf_hfh_sumet		, "pfhfhsumet"		);
+     iEvent.put(calomet			, "calomet"		);
+     iEvent.put(calosumet		, "calosumet"		);
+     iEvent.put(pfmet			, "pfmet"		);
+     iEvent.put(pfsumet			, "pfsumet"		);
+     iEvent.put(genmet                  , "genmet"              );
+     iEvent.put(gensumet                , "gensumet"            );          
+     iEvent.put(pf_eb_met		, "pfebmet"		);
+     iEvent.put(pf_ee_met		, "pfeemet"		);
+     iEvent.put(pf_hb_met		, "pfhbmet"		);
+     iEvent.put(pf_he_met		, "pfhemet"		);
+     iEvent.put(pf_hfe_met		, "pfhfemet"		);
+     iEvent.put(pf_hfh_met		, "pfhfhmet"		);
+     iEvent.put(pf_rechit_et		, "pfrechitet"		);
+     iEvent.put(pf_rechit_eta		, "pfrechiteta"		);
+     iEvent.put(pf_rechit_phi		, "pfrechitphi"		);
+     iEvent.put(pf_ebrechit_et		, "pfebrechitet"	);
+     iEvent.put(pf_ebrechit_eta		, "pfebrechiteta"	);
+     iEvent.put(pf_ebrechit_phi		, "pfebrechitphi"	);
+     iEvent.put(pf_eerechit_et		, "pfeerechitet"	);
+     iEvent.put(pf_eerechit_eta		, "pfeerechiteta"	);
+     iEvent.put(pf_eerechit_phi		, "pfeerechitphi"	);
+     iEvent.put(pf_hbrechit_et		, "pfhbrechitet"	);
+     iEvent.put(pf_hbrechit_eta		, "pfhbrechiteta"	);
+     iEvent.put(pf_hbrechit_phi		, "pfhbrechitphi"	);
+     iEvent.put(pf_herechit_et		, "pfherechitet"	);
+     iEvent.put(pf_herechit_eta		, "pfherechiteta"	);
+     iEvent.put(pf_herechit_phi		, "pfherechitphi"	);
+     iEvent.put(pf_hferechit_et		, "pfhferechitet"	);
+     iEvent.put(pf_hferechit_eta	, "pfhferechiteta"	);
+     iEvent.put(pf_hferechit_phi	, "pfhferechitphi"	);
+     iEvent.put(pf_hfhrechit_et		, "pfhfhrechitet"	);
+     iEvent.put(pf_hfhrechit_eta	, "pfhfhrechiteta"	);
+     iEvent.put(pf_hfhrechit_phi	, "pfhfhrechitphi"	);
+}
+
+// ------------ method called once each job just before starting event loop  ------------
+void 
+PFRecHitAnalyzer::beginJob()
+{
+}
+
+// ------------ method called once each job just after ending the event loop  ------------
+void 
+PFRecHitAnalyzer::endJob() {
+}
+
+//define this as a plug-in
+DEFINE_FWK_MODULE(PFRecHitAnalyzer);

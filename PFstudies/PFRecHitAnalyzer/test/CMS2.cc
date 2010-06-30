@@ -1,0 +1,50 @@
+#include "CMS2.h"
+CMS2 cms2;
+namespace tas {
+	float &calo_eb_sumet() { return cms2.calo_eb_sumet(); }
+	float &calo_ee_sumet() { return cms2.calo_ee_sumet(); }
+	float &calo_hb_sumet() { return cms2.calo_hb_sumet(); }
+	float &calo_he_sumet() { return cms2.calo_he_sumet(); }
+	float &calo_hfe_sumet() { return cms2.calo_hfe_sumet(); }
+	float &calo_hfh_sumet() { return cms2.calo_hfh_sumet(); }
+	float &calomet() { return cms2.calomet(); }
+	float &calosumet() { return cms2.calosumet(); }
+	float &genmet() { return cms2.genmet(); }
+	float &gensumet() { return cms2.gensumet(); }
+	float &pf_eb_met() { return cms2.pf_eb_met(); }
+	float &pf_eb_sumet() { return cms2.pf_eb_sumet(); }
+	float &pf_ee_met() { return cms2.pf_ee_met(); }
+	float &pf_ee_sumet() { return cms2.pf_ee_sumet(); }
+	float &pf_hb_met() { return cms2.pf_hb_met(); }
+	float &pf_hb_sumet() { return cms2.pf_hb_sumet(); }
+	float &pf_he_met() { return cms2.pf_he_met(); }
+	float &pf_he_sumet() { return cms2.pf_he_sumet(); }
+	float &pf_hfe_met() { return cms2.pf_hfe_met(); }
+	float &pf_hfe_sumet() { return cms2.pf_hfe_sumet(); }
+	float &pf_hfh_met() { return cms2.pf_hfh_met(); }
+	float &pf_hfh_sumet() { return cms2.pf_hfh_sumet(); }
+	float &pfmet() { return cms2.pfmet(); }
+	float &pfsumet() { return cms2.pfsumet(); }
+	vector<float> &pf_ebrechit_et() { return cms2.pf_ebrechit_et(); }
+	vector<float> &pf_ebrechit_eta() { return cms2.pf_ebrechit_eta(); }
+	vector<float> &pf_ebrechit_phi() { return cms2.pf_ebrechit_phi(); }
+	vector<float> &pf_eerechit_et() { return cms2.pf_eerechit_et(); }
+	vector<float> &pf_eerechit_eta() { return cms2.pf_eerechit_eta(); }
+	vector<float> &pf_eerechit_phi() { return cms2.pf_eerechit_phi(); }
+	vector<float> &pf_hbrechit_et() { return cms2.pf_hbrechit_et(); }
+	vector<float> &pf_hbrechit_eta() { return cms2.pf_hbrechit_eta(); }
+	vector<float> &pf_hbrechit_phi() { return cms2.pf_hbrechit_phi(); }
+	vector<float> &pf_herechit_et() { return cms2.pf_herechit_et(); }
+	vector<float> &pf_herechit_eta() { return cms2.pf_herechit_eta(); }
+	vector<float> &pf_herechit_phi() { return cms2.pf_herechit_phi(); }
+	vector<float> &pf_hferechit_et() { return cms2.pf_hferechit_et(); }
+	vector<float> &pf_hferechit_eta() { return cms2.pf_hferechit_eta(); }
+	vector<float> &pf_hferechit_phi() { return cms2.pf_hferechit_phi(); }
+	vector<float> &pf_hfhrechit_et() { return cms2.pf_hfhrechit_et(); }
+	vector<float> &pf_hfhrechit_eta() { return cms2.pf_hfhrechit_eta(); }
+	vector<float> &pf_hfhrechit_phi() { return cms2.pf_hfhrechit_phi(); }
+	vector<float> &pf_rechit_detid() { return cms2.pf_rechit_detid(); }
+	vector<float> &pf_rechit_et() { return cms2.pf_rechit_et(); }
+	vector<float> &pf_rechit_eta() { return cms2.pf_rechit_eta(); }
+	vector<float> &pf_rechit_phi() { return cms2.pf_rechit_phi(); }
+}
