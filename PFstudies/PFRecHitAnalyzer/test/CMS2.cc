@@ -25,25 +25,32 @@ namespace tas {
 	float &pf_hfh_sumet() { return cms2.pf_hfh_sumet(); }
 	float &pfmet() { return cms2.pfmet(); }
 	float &pfsumet() { return cms2.pfsumet(); }
+	vector<float> &pf_ebrechit_e() { return cms2.pf_ebrechit_e(); }
 	vector<float> &pf_ebrechit_et() { return cms2.pf_ebrechit_et(); }
 	vector<float> &pf_ebrechit_eta() { return cms2.pf_ebrechit_eta(); }
 	vector<float> &pf_ebrechit_phi() { return cms2.pf_ebrechit_phi(); }
+	vector<float> &pf_eerechit_e() { return cms2.pf_eerechit_e(); }
 	vector<float> &pf_eerechit_et() { return cms2.pf_eerechit_et(); }
 	vector<float> &pf_eerechit_eta() { return cms2.pf_eerechit_eta(); }
 	vector<float> &pf_eerechit_phi() { return cms2.pf_eerechit_phi(); }
+	vector<float> &pf_hbrechit_e() { return cms2.pf_hbrechit_e(); }
 	vector<float> &pf_hbrechit_et() { return cms2.pf_hbrechit_et(); }
 	vector<float> &pf_hbrechit_eta() { return cms2.pf_hbrechit_eta(); }
 	vector<float> &pf_hbrechit_phi() { return cms2.pf_hbrechit_phi(); }
+	vector<float> &pf_herechit_e() { return cms2.pf_herechit_e(); }
 	vector<float> &pf_herechit_et() { return cms2.pf_herechit_et(); }
 	vector<float> &pf_herechit_eta() { return cms2.pf_herechit_eta(); }
 	vector<float> &pf_herechit_phi() { return cms2.pf_herechit_phi(); }
+	vector<float> &pf_hferechit_e() { return cms2.pf_hferechit_e(); }
 	vector<float> &pf_hferechit_et() { return cms2.pf_hferechit_et(); }
 	vector<float> &pf_hferechit_eta() { return cms2.pf_hferechit_eta(); }
 	vector<float> &pf_hferechit_phi() { return cms2.pf_hferechit_phi(); }
+	vector<float> &pf_hfhrechit_e() { return cms2.pf_hfhrechit_e(); }
 	vector<float> &pf_hfhrechit_et() { return cms2.pf_hfhrechit_et(); }
 	vector<float> &pf_hfhrechit_eta() { return cms2.pf_hfhrechit_eta(); }
 	vector<float> &pf_hfhrechit_phi() { return cms2.pf_hfhrechit_phi(); }
 	vector<float> &pf_rechit_detid() { return cms2.pf_rechit_detid(); }
+	vector<float> &pf_rechit_e() { return cms2.pf_rechit_e(); }
 	vector<float> &pf_rechit_et() { return cms2.pf_rechit_et(); }
 	vector<float> &pf_rechit_eta() { return cms2.pf_rechit_eta(); }
 	vector<float> &pf_rechit_phi() { return cms2.pf_rechit_phi(); }

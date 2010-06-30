@@ -90,6 +90,9 @@ protected:
 	float pfsumet_;
 	TBranch *pfsumet_branch;
 	bool pfsumet_isLoaded;
+	vector<float> pf_ebrechit_e_;
+	TBranch *pf_ebrechit_e_branch;
+	bool pf_ebrechit_e_isLoaded;
 	vector<float> pf_ebrechit_et_;
 	TBranch *pf_ebrechit_et_branch;
 	bool pf_ebrechit_et_isLoaded;
@@ -99,6 +102,9 @@ protected:
 	vector<float> pf_ebrechit_phi_;
 	TBranch *pf_ebrechit_phi_branch;
 	bool pf_ebrechit_phi_isLoaded;
+	vector<float> pf_eerechit_e_;
+	TBranch *pf_eerechit_e_branch;
+	bool pf_eerechit_e_isLoaded;
 	vector<float> pf_eerechit_et_;
 	TBranch *pf_eerechit_et_branch;
 	bool pf_eerechit_et_isLoaded;
@@ -108,6 +114,9 @@ protected:
 	vector<float> pf_eerechit_phi_;
 	TBranch *pf_eerechit_phi_branch;
 	bool pf_eerechit_phi_isLoaded;
+	vector<float> pf_hbrechit_e_;
+	TBranch *pf_hbrechit_e_branch;
+	bool pf_hbrechit_e_isLoaded;
 	vector<float> pf_hbrechit_et_;
 	TBranch *pf_hbrechit_et_branch;
 	bool pf_hbrechit_et_isLoaded;
@@ -117,6 +126,9 @@ protected:
 	vector<float> pf_hbrechit_phi_;
 	TBranch *pf_hbrechit_phi_branch;
 	bool pf_hbrechit_phi_isLoaded;
+	vector<float> pf_herechit_e_;
+	TBranch *pf_herechit_e_branch;
+	bool pf_herechit_e_isLoaded;
 	vector<float> pf_herechit_et_;
 	TBranch *pf_herechit_et_branch;
 	bool pf_herechit_et_isLoaded;
@@ -126,6 +138,9 @@ protected:
 	vector<float> pf_herechit_phi_;
 	TBranch *pf_herechit_phi_branch;
 	bool pf_herechit_phi_isLoaded;
+	vector<float> pf_hferechit_e_;
+	TBranch *pf_hferechit_e_branch;
+	bool pf_hferechit_e_isLoaded;
 	vector<float> pf_hferechit_et_;
 	TBranch *pf_hferechit_et_branch;
 	bool pf_hferechit_et_isLoaded;
@@ -135,6 +150,9 @@ protected:
 	vector<float> pf_hferechit_phi_;
 	TBranch *pf_hferechit_phi_branch;
 	bool pf_hferechit_phi_isLoaded;
+	vector<float> pf_hfhrechit_e_;
+	TBranch *pf_hfhrechit_e_branch;
+	bool pf_hfhrechit_e_isLoaded;
 	vector<float> pf_hfhrechit_et_;
 	TBranch *pf_hfhrechit_et_branch;
 	bool pf_hfhrechit_et_isLoaded;
@@ -147,6 +165,9 @@ protected:
 	vector<float> pf_rechit_detid_;
 	TBranch *pf_rechit_detid_branch;
 	bool pf_rechit_detid_isLoaded;
+	vector<float> pf_rechit_e_;
+	TBranch *pf_rechit_e_branch;
+	bool pf_rechit_e_isLoaded;
 	vector<float> pf_rechit_et_;
 	TBranch *pf_rechit_et_branch;
 	bool pf_rechit_et_isLoaded;
@@ -351,6 +372,14 @@ void Init(TTree *tree) {
 	if(pfsumet_branch == 0 ) {
 	cout << "Branch pfsumet does not exist." << endl;
 	}
+	pf_ebrechit_e_branch = 0;
+	if (tree->GetAlias("pf_ebrechit_e") != 0) {
+		pf_ebrechit_e_branch = tree->GetBranch(tree->GetAlias("pf_ebrechit_e"));
+		pf_ebrechit_e_branch->SetAddress(&pf_ebrechit_e_);
+	}
+	if(pf_ebrechit_e_branch == 0 ) {
+	cout << "Branch pf_ebrechit_e does not exist." << endl;
+	}
 	pf_ebrechit_et_branch = 0;
 	if (tree->GetAlias("pf_ebrechit_et") != 0) {
 		pf_ebrechit_et_branch = tree->GetBranch(tree->GetAlias("pf_ebrechit_et"));
@@ -374,6 +403,14 @@ void Init(TTree *tree) {
 	}
 	if(pf_ebrechit_phi_branch == 0 ) {
 	cout << "Branch pf_ebrechit_phi does not exist." << endl;
+	}
+	pf_eerechit_e_branch = 0;
+	if (tree->GetAlias("pf_eerechit_e") != 0) {
+		pf_eerechit_e_branch = tree->GetBranch(tree->GetAlias("pf_eerechit_e"));
+		pf_eerechit_e_branch->SetAddress(&pf_eerechit_e_);
+	}
+	if(pf_eerechit_e_branch == 0 ) {
+	cout << "Branch pf_eerechit_e does not exist." << endl;
 	}
 	pf_eerechit_et_branch = 0;
 	if (tree->GetAlias("pf_eerechit_et") != 0) {
@@ -399,6 +436,14 @@ void Init(TTree *tree) {
 	if(pf_eerechit_phi_branch == 0 ) {
 	cout << "Branch pf_eerechit_phi does not exist." << endl;
 	}
+	pf_hbrechit_e_branch = 0;
+	if (tree->GetAlias("pf_hbrechit_e") != 0) {
+		pf_hbrechit_e_branch = tree->GetBranch(tree->GetAlias("pf_hbrechit_e"));
+		pf_hbrechit_e_branch->SetAddress(&pf_hbrechit_e_);
+	}
+	if(pf_hbrechit_e_branch == 0 ) {
+	cout << "Branch pf_hbrechit_e does not exist." << endl;
+	}
 	pf_hbrechit_et_branch = 0;
 	if (tree->GetAlias("pf_hbrechit_et") != 0) {
 		pf_hbrechit_et_branch = tree->GetBranch(tree->GetAlias("pf_hbrechit_et"));
@@ -422,6 +467,14 @@ void Init(TTree *tree) {
 	}
 	if(pf_hbrechit_phi_branch == 0 ) {
 	cout << "Branch pf_hbrechit_phi does not exist." << endl;
+	}
+	pf_herechit_e_branch = 0;
+	if (tree->GetAlias("pf_herechit_e") != 0) {
+		pf_herechit_e_branch = tree->GetBranch(tree->GetAlias("pf_herechit_e"));
+		pf_herechit_e_branch->SetAddress(&pf_herechit_e_);
+	}
+	if(pf_herechit_e_branch == 0 ) {
+	cout << "Branch pf_herechit_e does not exist." << endl;
 	}
 	pf_herechit_et_branch = 0;
 	if (tree->GetAlias("pf_herechit_et") != 0) {
@@ -447,6 +500,14 @@ void Init(TTree *tree) {
 	if(pf_herechit_phi_branch == 0 ) {
 	cout << "Branch pf_herechit_phi does not exist." << endl;
 	}
+	pf_hferechit_e_branch = 0;
+	if (tree->GetAlias("pf_hferechit_e") != 0) {
+		pf_hferechit_e_branch = tree->GetBranch(tree->GetAlias("pf_hferechit_e"));
+		pf_hferechit_e_branch->SetAddress(&pf_hferechit_e_);
+	}
+	if(pf_hferechit_e_branch == 0 ) {
+	cout << "Branch pf_hferechit_e does not exist." << endl;
+	}
 	pf_hferechit_et_branch = 0;
 	if (tree->GetAlias("pf_hferechit_et") != 0) {
 		pf_hferechit_et_branch = tree->GetBranch(tree->GetAlias("pf_hferechit_et"));
@@ -470,6 +531,14 @@ void Init(TTree *tree) {
 	}
 	if(pf_hferechit_phi_branch == 0 ) {
 	cout << "Branch pf_hferechit_phi does not exist." << endl;
+	}
+	pf_hfhrechit_e_branch = 0;
+	if (tree->GetAlias("pf_hfhrechit_e") != 0) {
+		pf_hfhrechit_e_branch = tree->GetBranch(tree->GetAlias("pf_hfhrechit_e"));
+		pf_hfhrechit_e_branch->SetAddress(&pf_hfhrechit_e_);
+	}
+	if(pf_hfhrechit_e_branch == 0 ) {
+	cout << "Branch pf_hfhrechit_e does not exist." << endl;
 	}
 	pf_hfhrechit_et_branch = 0;
 	if (tree->GetAlias("pf_hfhrechit_et") != 0) {
@@ -502,6 +571,14 @@ void Init(TTree *tree) {
 	}
 	if(pf_rechit_detid_branch == 0 ) {
 	cout << "Branch pf_rechit_detid does not exist." << endl;
+	}
+	pf_rechit_e_branch = 0;
+	if (tree->GetAlias("pf_rechit_e") != 0) {
+		pf_rechit_e_branch = tree->GetBranch(tree->GetAlias("pf_rechit_e"));
+		pf_rechit_e_branch->SetAddress(&pf_rechit_e_);
+	}
+	if(pf_rechit_e_branch == 0 ) {
+	cout << "Branch pf_rechit_e does not exist." << endl;
 	}
 	pf_rechit_et_branch = 0;
 	if (tree->GetAlias("pf_rechit_et") != 0) {
@@ -557,25 +634,32 @@ void GetEntry(unsigned int idx)
 		pf_hfh_sumet_isLoaded = false;
 		pfmet_isLoaded = false;
 		pfsumet_isLoaded = false;
+		pf_ebrechit_e_isLoaded = false;
 		pf_ebrechit_et_isLoaded = false;
 		pf_ebrechit_eta_isLoaded = false;
 		pf_ebrechit_phi_isLoaded = false;
+		pf_eerechit_e_isLoaded = false;
 		pf_eerechit_et_isLoaded = false;
 		pf_eerechit_eta_isLoaded = false;
 		pf_eerechit_phi_isLoaded = false;
+		pf_hbrechit_e_isLoaded = false;
 		pf_hbrechit_et_isLoaded = false;
 		pf_hbrechit_eta_isLoaded = false;
 		pf_hbrechit_phi_isLoaded = false;
+		pf_herechit_e_isLoaded = false;
 		pf_herechit_et_isLoaded = false;
 		pf_herechit_eta_isLoaded = false;
 		pf_herechit_phi_isLoaded = false;
+		pf_hferechit_e_isLoaded = false;
 		pf_hferechit_et_isLoaded = false;
 		pf_hferechit_eta_isLoaded = false;
 		pf_hferechit_phi_isLoaded = false;
+		pf_hfhrechit_e_isLoaded = false;
 		pf_hfhrechit_et_isLoaded = false;
 		pf_hfhrechit_eta_isLoaded = false;
 		pf_hfhrechit_phi_isLoaded = false;
 		pf_rechit_detid_isLoaded = false;
+		pf_rechit_e_isLoaded = false;
 		pf_rechit_et_isLoaded = false;
 		pf_rechit_eta_isLoaded = false;
 		pf_rechit_phi_isLoaded = false;
@@ -608,25 +692,32 @@ void LoadAllBranches()
 	if (pf_hfh_sumet_branch != 0) pf_hfh_sumet();
 	if (pfmet_branch != 0) pfmet();
 	if (pfsumet_branch != 0) pfsumet();
+	if (pf_ebrechit_e_branch != 0) pf_ebrechit_e();
 	if (pf_ebrechit_et_branch != 0) pf_ebrechit_et();
 	if (pf_ebrechit_eta_branch != 0) pf_ebrechit_eta();
 	if (pf_ebrechit_phi_branch != 0) pf_ebrechit_phi();
+	if (pf_eerechit_e_branch != 0) pf_eerechit_e();
 	if (pf_eerechit_et_branch != 0) pf_eerechit_et();
 	if (pf_eerechit_eta_branch != 0) pf_eerechit_eta();
 	if (pf_eerechit_phi_branch != 0) pf_eerechit_phi();
+	if (pf_hbrechit_e_branch != 0) pf_hbrechit_e();
 	if (pf_hbrechit_et_branch != 0) pf_hbrechit_et();
 	if (pf_hbrechit_eta_branch != 0) pf_hbrechit_eta();
 	if (pf_hbrechit_phi_branch != 0) pf_hbrechit_phi();
+	if (pf_herechit_e_branch != 0) pf_herechit_e();
 	if (pf_herechit_et_branch != 0) pf_herechit_et();
 	if (pf_herechit_eta_branch != 0) pf_herechit_eta();
 	if (pf_herechit_phi_branch != 0) pf_herechit_phi();
+	if (pf_hferechit_e_branch != 0) pf_hferechit_e();
 	if (pf_hferechit_et_branch != 0) pf_hferechit_et();
 	if (pf_hferechit_eta_branch != 0) pf_hferechit_eta();
 	if (pf_hferechit_phi_branch != 0) pf_hferechit_phi();
+	if (pf_hfhrechit_e_branch != 0) pf_hfhrechit_e();
 	if (pf_hfhrechit_et_branch != 0) pf_hfhrechit_et();
 	if (pf_hfhrechit_eta_branch != 0) pf_hfhrechit_eta();
 	if (pf_hfhrechit_phi_branch != 0) pf_hfhrechit_phi();
 	if (pf_rechit_detid_branch != 0) pf_rechit_detid();
+	if (pf_rechit_e_branch != 0) pf_rechit_e();
 	if (pf_rechit_et_branch != 0) pf_rechit_et();
 	if (pf_rechit_eta_branch != 0) pf_rechit_eta();
 	if (pf_rechit_phi_branch != 0) pf_rechit_phi();
@@ -1088,6 +1179,27 @@ void LoadAllBranches()
 		}
 		return pfsumet_;
 	}
+	vector<float> &pf_ebrechit_e()
+	{
+		if (not pf_ebrechit_e_isLoaded) {
+			if (pf_ebrechit_e_branch != 0) {
+				pf_ebrechit_e_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pf_ebrechit_e_.begin(); i != pf_ebrechit_e_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pf_ebrechit_e_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pf_ebrechit_e_branch does not exist!\n");
+				exit(1);
+			}
+			pf_ebrechit_e_isLoaded = true;
+		}
+		return pf_ebrechit_e_;
+	}
 	vector<float> &pf_ebrechit_et()
 	{
 		if (not pf_ebrechit_et_isLoaded) {
@@ -1150,6 +1262,27 @@ void LoadAllBranches()
 			pf_ebrechit_phi_isLoaded = true;
 		}
 		return pf_ebrechit_phi_;
+	}
+	vector<float> &pf_eerechit_e()
+	{
+		if (not pf_eerechit_e_isLoaded) {
+			if (pf_eerechit_e_branch != 0) {
+				pf_eerechit_e_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pf_eerechit_e_.begin(); i != pf_eerechit_e_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pf_eerechit_e_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pf_eerechit_e_branch does not exist!\n");
+				exit(1);
+			}
+			pf_eerechit_e_isLoaded = true;
+		}
+		return pf_eerechit_e_;
 	}
 	vector<float> &pf_eerechit_et()
 	{
@@ -1214,6 +1347,27 @@ void LoadAllBranches()
 		}
 		return pf_eerechit_phi_;
 	}
+	vector<float> &pf_hbrechit_e()
+	{
+		if (not pf_hbrechit_e_isLoaded) {
+			if (pf_hbrechit_e_branch != 0) {
+				pf_hbrechit_e_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pf_hbrechit_e_.begin(); i != pf_hbrechit_e_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pf_hbrechit_e_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pf_hbrechit_e_branch does not exist!\n");
+				exit(1);
+			}
+			pf_hbrechit_e_isLoaded = true;
+		}
+		return pf_hbrechit_e_;
+	}
 	vector<float> &pf_hbrechit_et()
 	{
 		if (not pf_hbrechit_et_isLoaded) {
@@ -1276,6 +1430,27 @@ void LoadAllBranches()
 			pf_hbrechit_phi_isLoaded = true;
 		}
 		return pf_hbrechit_phi_;
+	}
+	vector<float> &pf_herechit_e()
+	{
+		if (not pf_herechit_e_isLoaded) {
+			if (pf_herechit_e_branch != 0) {
+				pf_herechit_e_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pf_herechit_e_.begin(); i != pf_herechit_e_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pf_herechit_e_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pf_herechit_e_branch does not exist!\n");
+				exit(1);
+			}
+			pf_herechit_e_isLoaded = true;
+		}
+		return pf_herechit_e_;
 	}
 	vector<float> &pf_herechit_et()
 	{
@@ -1340,6 +1515,27 @@ void LoadAllBranches()
 		}
 		return pf_herechit_phi_;
 	}
+	vector<float> &pf_hferechit_e()
+	{
+		if (not pf_hferechit_e_isLoaded) {
+			if (pf_hferechit_e_branch != 0) {
+				pf_hferechit_e_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pf_hferechit_e_.begin(); i != pf_hferechit_e_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pf_hferechit_e_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pf_hferechit_e_branch does not exist!\n");
+				exit(1);
+			}
+			pf_hferechit_e_isLoaded = true;
+		}
+		return pf_hferechit_e_;
+	}
 	vector<float> &pf_hferechit_et()
 	{
 		if (not pf_hferechit_et_isLoaded) {
@@ -1402,6 +1598,27 @@ void LoadAllBranches()
 			pf_hferechit_phi_isLoaded = true;
 		}
 		return pf_hferechit_phi_;
+	}
+	vector<float> &pf_hfhrechit_e()
+	{
+		if (not pf_hfhrechit_e_isLoaded) {
+			if (pf_hfhrechit_e_branch != 0) {
+				pf_hfhrechit_e_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pf_hfhrechit_e_.begin(); i != pf_hfhrechit_e_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pf_hfhrechit_e_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pf_hfhrechit_e_branch does not exist!\n");
+				exit(1);
+			}
+			pf_hfhrechit_e_isLoaded = true;
+		}
+		return pf_hfhrechit_e_;
 	}
 	vector<float> &pf_hfhrechit_et()
 	{
@@ -1486,6 +1703,27 @@ void LoadAllBranches()
 			pf_rechit_detid_isLoaded = true;
 		}
 		return pf_rechit_detid_;
+	}
+	vector<float> &pf_rechit_e()
+	{
+		if (not pf_rechit_e_isLoaded) {
+			if (pf_rechit_e_branch != 0) {
+				pf_rechit_e_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pf_rechit_e_.begin(); i != pf_rechit_e_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pf_rechit_e_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pf_rechit_e_branch does not exist!\n");
+				exit(1);
+			}
+			pf_rechit_e_isLoaded = true;
+		}
+		return pf_rechit_e_;
 	}
 	vector<float> &pf_rechit_et()
 	{
@@ -1581,25 +1819,32 @@ namespace tas {
 	float &pf_hfh_sumet();
 	float &pfmet();
 	float &pfsumet();
+	vector<float> &pf_ebrechit_e();
 	vector<float> &pf_ebrechit_et();
 	vector<float> &pf_ebrechit_eta();
 	vector<float> &pf_ebrechit_phi();
+	vector<float> &pf_eerechit_e();
 	vector<float> &pf_eerechit_et();
 	vector<float> &pf_eerechit_eta();
 	vector<float> &pf_eerechit_phi();
+	vector<float> &pf_hbrechit_e();
 	vector<float> &pf_hbrechit_et();
 	vector<float> &pf_hbrechit_eta();
 	vector<float> &pf_hbrechit_phi();
+	vector<float> &pf_herechit_e();
 	vector<float> &pf_herechit_et();
 	vector<float> &pf_herechit_eta();
 	vector<float> &pf_herechit_phi();
+	vector<float> &pf_hferechit_e();
 	vector<float> &pf_hferechit_et();
 	vector<float> &pf_hferechit_eta();
 	vector<float> &pf_hferechit_phi();
+	vector<float> &pf_hfhrechit_e();
 	vector<float> &pf_hfhrechit_et();
 	vector<float> &pf_hfhrechit_eta();
 	vector<float> &pf_hfhrechit_phi();
 	vector<float> &pf_rechit_detid();
+	vector<float> &pf_rechit_e();
 	vector<float> &pf_rechit_et();
 	vector<float> &pf_rechit_eta();
 	vector<float> &pf_rechit_phi();
