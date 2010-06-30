@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  
 //         Created:  Thu Jun 24 02:52:45 PDT 2010
-// $Id$
+// $Id: PFRecHitAnalyzer.cc,v 1.1 2010/06/30 14:58:08 benhoob Exp $
 //
 //
 
@@ -87,31 +87,38 @@ PFRecHitAnalyzer::PFRecHitAnalyzer(const edm::ParameterSet& iConfig)
   produces<float>    ("gensumet").setBranchAlias("gensumet"		);
 
   produces<std::vector<float> > ("pfrechitet"	).setBranchAlias("pf_rechit_et"		);
+  produces<std::vector<float> > ("pfrechite"	).setBranchAlias("pf_rechit_e"		);
   produces<std::vector<float> > ("pfrechiteta"	).setBranchAlias("pf_rechit_eta"	);
   produces<std::vector<float> > ("pfrechitphi"	).setBranchAlias("pf_rechit_phi"	);
   produces<std::vector<float> > ("pfrechitdetid").setBranchAlias("pf_rechit_detid"      );
 
   produces<std::vector<float> > ("pfebrechitet"	).setBranchAlias("pf_ebrechit_et"	);
+  produces<std::vector<float> > ("pfebrechite"	).setBranchAlias("pf_ebrechit_e"	);
   produces<std::vector<float> > ("pfebrechiteta").setBranchAlias("pf_ebrechit_eta"	);
   produces<std::vector<float> > ("pfebrechitphi").setBranchAlias("pf_ebrechit_phi"	);
 
   produces<std::vector<float> > ("pfeerechitet"	).setBranchAlias("pf_eerechit_et"	);
+  produces<std::vector<float> > ("pfeerechite"	).setBranchAlias("pf_eerechit_e"	);
   produces<std::vector<float> > ("pfeerechiteta").setBranchAlias("pf_eerechit_eta"	);
   produces<std::vector<float> > ("pfeerechitphi").setBranchAlias("pf_eerechit_phi"	);
 
   produces<std::vector<float> > ("pfhbrechitet"	).setBranchAlias("pf_hbrechit_et"	);
+  produces<std::vector<float> > ("pfhbrechite"	).setBranchAlias("pf_hbrechit_e"	);
   produces<std::vector<float> > ("pfhbrechiteta").setBranchAlias("pf_hbrechit_eta"	);
   produces<std::vector<float> > ("pfhbrechitphi").setBranchAlias("pf_hbrechit_phi"	);
 
   produces<std::vector<float> > ("pfherechitet"	).setBranchAlias("pf_herechit_et"	);
+  produces<std::vector<float> > ("pfherechite"	).setBranchAlias("pf_herechit_e"	);
   produces<std::vector<float> > ("pfherechiteta").setBranchAlias("pf_herechit_eta"	);
   produces<std::vector<float> > ("pfherechitphi").setBranchAlias("pf_herechit_phi"	);
 
   produces<std::vector<float> > ("pfhferechitet" ).setBranchAlias("pf_hferechit_et"	);
+  produces<std::vector<float> > ("pfhferechite"  ).setBranchAlias("pf_hferechit_e"	);
   produces<std::vector<float> > ("pfhferechiteta").setBranchAlias("pf_hferechit_eta"	);
   produces<std::vector<float> > ("pfhferechitphi").setBranchAlias("pf_hferechit_phi"	);
 
   produces<std::vector<float> > ("pfhfhrechitet" ).setBranchAlias("pf_hfhrechit_et"	);
+  produces<std::vector<float> > ("pfhfhrechite" ).setBranchAlias("pf_hfhrechit_e"	);
   produces<std::vector<float> > ("pfhfhrechiteta").setBranchAlias("pf_hfhrechit_eta"	);
   produces<std::vector<float> > ("pfhfhrechitphi").setBranchAlias("pf_hfhrechit_phi"	);
 }
@@ -159,25 +166,32 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<float> pf_hfe_met		(new float);
   std::auto_ptr<float> pf_hfh_met		(new float);
   std::auto_ptr<std::vector<float> > pf_rechit_et		(new std::vector<float>);
+  std::auto_ptr<std::vector<float> > pf_rechit_e		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_rechit_eta		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_rechit_phi		(new std::vector<float>);
   std::auto_ptr<std::vector<int>   > pf_rechit_detid		(new std::vector<int>  );
   std::auto_ptr<std::vector<float> > pf_ebrechit_et		(new std::vector<float>);
+  std::auto_ptr<std::vector<float> > pf_ebrechit_e		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_ebrechit_eta		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_ebrechit_phi		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_eerechit_et		(new std::vector<float>);
+  std::auto_ptr<std::vector<float> > pf_eerechit_e		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_eerechit_eta		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_eerechit_phi		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_hbrechit_et		(new std::vector<float>);
+  std::auto_ptr<std::vector<float> > pf_hbrechit_e		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_hbrechit_eta		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_hbrechit_phi		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_herechit_et		(new std::vector<float>);
+  std::auto_ptr<std::vector<float> > pf_herechit_e		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_herechit_eta		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_herechit_phi		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_hferechit_et		(new std::vector<float>);
+  std::auto_ptr<std::vector<float> > pf_hferechit_e		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_hferechit_eta	(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_hferechit_phi	(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_hfhrechit_et		(new std::vector<float>);
+  std::auto_ptr<std::vector<float> > pf_hfhrechit_e		(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_hfhrechit_eta	(new std::vector<float>);
   std::auto_ptr<std::vector<float> > pf_hfhrechit_phi	(new std::vector<float>);
 
@@ -238,9 +252,11 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       const REPPoint rechit_pos = it->positionREP();	  
 
       pf_hferechit_et	->push_back(et			);
+      pf_hferechit_e	->push_back(it->energy()	);
       pf_hferechit_eta	->push_back(rechit_pos.eta()	);
       pf_hferechit_phi	->push_back(rechit_pos.phi()	);
       pf_rechit_et	->push_back(et			);
+      pf_rechit_e	->push_back(it->energy()	);
       pf_rechit_eta	->push_back(rechit_pos.eta()	);
       pf_rechit_phi	->push_back(rechit_pos.phi()	);
 
@@ -271,9 +287,11 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       const REPPoint& rechit_pos = it->positionREP();
 
       pf_hfhrechit_et	->push_back(et			);
+      pf_hfhrechit_e	->push_back(it->energy()        );
       pf_hfhrechit_eta	->push_back(rechit_pos.eta()	);
       pf_hfhrechit_phi	->push_back(rechit_pos.phi()	);
       pf_rechit_et	->push_back(et			);
+      pf_rechit_e	->push_back(it->energy()	);
       pf_rechit_eta	->push_back(rechit_pos.eta()	);
       pf_rechit_phi	->push_back(rechit_pos.phi()	);
 
@@ -324,9 +342,11 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         {
           he_et += et;
           pf_herechit_et	->push_back(et			);
+          pf_herechit_e 	->push_back(it->energy()	);
           pf_herechit_eta	->push_back(rechit_pos.eta()	);
           pf_herechit_phi	->push_back(rechit_pos.phi()	);
           pf_rechit_et	        ->push_back(et			);
+          pf_rechit_e	        ->push_back(it->energy()	);
           pf_rechit_eta	        ->push_back(rechit_pos.eta()	);
           pf_rechit_phi	        ->push_back(rechit_pos.phi()	);		  
           
@@ -340,9 +360,11 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         {
           hb_et += et;
           pf_hbrechit_et	->push_back(et			);
+          pf_hbrechit_e 	->push_back(it->energy()	);
           pf_hbrechit_eta	->push_back(rechit_pos.eta()	);
           pf_hbrechit_phi	->push_back(rechit_pos.phi()	);
           pf_rechit_et	->push_back(et			);
+          pf_rechit_e 	->push_back(it->energy()	);
           pf_rechit_eta	->push_back(rechit_pos.eta()	);
           pf_rechit_phi	->push_back(rechit_pos.phi()	);		  
           
@@ -395,9 +417,11 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
           eb_et += et;
 
           pf_ebrechit_et	->push_back(et			);
+          pf_ebrechit_e	        ->push_back(it->energy()			);
           pf_ebrechit_eta	->push_back(rechit_pos.eta()	);
           pf_ebrechit_phi	->push_back(rechit_pos.phi()	);
           pf_rechit_et	->push_back(et			);
+          pf_rechit_e	->push_back(it->energy()			);
           pf_rechit_eta	->push_back(rechit_pos.eta()	);
           pf_rechit_phi	->push_back(rechit_pos.phi()	);
 
@@ -411,9 +435,11 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
           ee_et += et;
 
           pf_eerechit_et	->push_back(et			);
+          pf_eerechit_e	        ->push_back(it->energy()	);
           pf_eerechit_eta	->push_back(rechit_pos.eta()	);
           pf_eerechit_phi	->push_back(rechit_pos.phi()	);
           pf_rechit_et	->push_back(et			);
+          pf_rechit_e	->push_back(it->energy()	);
           pf_rechit_eta	->push_back(rechit_pos.eta()	);
           pf_rechit_phi	->push_back(rechit_pos.phi()	);
 
@@ -459,24 +485,31 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(pf_hfe_met		        , "pfhfemet"		);
   iEvent.put(pf_hfh_met		        , "pfhfhmet"		);
   iEvent.put(pf_rechit_et		, "pfrechitet"		);
+  iEvent.put(pf_rechit_e		, "pfrechite"		);
   iEvent.put(pf_rechit_eta		, "pfrechiteta"		);
   iEvent.put(pf_rechit_phi		, "pfrechitphi"		);
   iEvent.put(pf_ebrechit_et		, "pfebrechitet"	);
+  iEvent.put(pf_ebrechit_e		, "pfebrechite"  	);
   iEvent.put(pf_ebrechit_eta		, "pfebrechiteta"	);
   iEvent.put(pf_ebrechit_phi		, "pfebrechitphi"	);
   iEvent.put(pf_eerechit_et		, "pfeerechitet"	);
+  iEvent.put(pf_eerechit_e		, "pfeerechite"	        );
   iEvent.put(pf_eerechit_eta		, "pfeerechiteta"	);
   iEvent.put(pf_eerechit_phi		, "pfeerechitphi"	);
   iEvent.put(pf_hbrechit_et		, "pfhbrechitet"	);
+  iEvent.put(pf_hbrechit_e		, "pfhbrechite"      	);
   iEvent.put(pf_hbrechit_eta		, "pfhbrechiteta"	);
   iEvent.put(pf_hbrechit_phi		, "pfhbrechitphi"	);
   iEvent.put(pf_herechit_et		, "pfherechitet"	);
+  iEvent.put(pf_herechit_e		, "pfherechite"     	);
   iEvent.put(pf_herechit_eta		, "pfherechiteta"	);
   iEvent.put(pf_herechit_phi		, "pfherechitphi"	);
   iEvent.put(pf_hferechit_et		, "pfhferechitet"	);
+  iEvent.put(pf_hferechit_e		, "pfhferechite"	);
   iEvent.put(pf_hferechit_eta	        , "pfhferechiteta"	);
   iEvent.put(pf_hferechit_phi	        , "pfhferechitphi"	);
   iEvent.put(pf_hfhrechit_et		, "pfhfhrechitet"	);
+  iEvent.put(pf_hfhrechit_e		, "pfhfhrechite"	);
   iEvent.put(pf_hfhrechit_eta	        , "pfhfhrechiteta"	);
   iEvent.put(pf_hfhrechit_phi	        , "pfhfhrechitphi"	);
 

@@ -37,6 +37,7 @@ class looper
         TH1F* hgenmet;
         TH1F* hcalomet;
         TH1F* hpfrmet;
+        TH1F* hpfrmet_nothresh;
         
         //triggers
         Int_t HLT_L1Jet6U_;

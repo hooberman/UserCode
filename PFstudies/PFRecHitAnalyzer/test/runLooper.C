@@ -6,7 +6,7 @@ void runLooper(char* prefix , bool isData = false){
 
   TChain* ch = new TChain("Events");
 
-  if( strcmp( prefix , "zee" ) == 0 ){
+  if( strcmp( prefix , "zmm" ) == 0 ){
     ch->Add("/tas05/disk00/benhoob/tcmetTestFiles/output/PFstudies_zmm.root");
   }
 
