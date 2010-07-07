@@ -1,8 +1,9 @@
+
 import FWCore.ParameterSet.Config as cms
  
 calotowermaker = cms.EDProducer("CaloTowersCreator",
      # Energy threshold for EB 5x5 crystal inclusion [GeV]
-     EBSumThreshold = cms.double(0.2),
+     EBSumThreshold = cms.double(0.2),                         #<<<---EB threshold
      # Weighting factor for HF short-fiber readouts
      HF2Weight = cms.double(1.0),
      # Weighting factor for EB   
@@ -10,7 +11,7 @@ calotowermaker = cms.EDProducer("CaloTowersCreator",
      # Label of HFRecHitCollection to use
      hfInput = cms.InputTag("hfreco"),
      # Energy threshold for EE crystals-in-tower inclusion [GeV]
-     EESumThreshold = cms.double(0.45),
+     EESumThreshold = cms.double(0.45),                        #<<<---EE threshold
      # Energy threshold for HO cell inclusion [GeV]
      HOThreshold0 = cms.double(1.1),
      HOThresholdPlus1 = cms.double(3.5),
@@ -45,9 +46,9 @@ calotowermaker = cms.EDProducer("CaloTowersCreator",
      HOWeight = cms.double(1.0),
                                
      # Energy threshold for EB crystal inclusion [GeV]
-     EBThreshold = cms.double(0.07),                         #<<<---EB threshold
+     EBThreshold = cms.double(0.07),                         
      # Energy threshold for EE crystal inclusion [GeV]
-     EEThreshold = cms.double(0.3),                          #<<<---EE threshold
+     EEThreshold = cms.double(0.3),                          
      # Flags specifying if the above thresholds
      # should be applied to Et (UseEtEXTreshold='True') or E ('False')
      # Flags for use of symmetric thresholds: |e|>threshold                          
