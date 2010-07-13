@@ -16,16 +16,27 @@
 #include "TProfile.h"
 #include <sstream>
 
-#include "CORE/CMS2.h"
-#include "CORE/trackSelections.h"
-#include "CORE/metSelections.h"
-#include "CORE/eventSelections.h"
-#include "CORE/electronSelectionsParameters.h"
-#include "CORE/electronSelections.h"
-#include "CORE/muonSelections.h"
+// #include "CORE/CMS2.h"
+// #include "CORE/trackSelections.h"
+// #include "CORE/metSelections.h"
+// #include "CORE/eventSelections.h"
+// #include "CORE/electronSelectionsParameters.h"
+// #include "CORE/electronSelections.h"
+// #include "CORE/muonSelections.h"
+// #include "Tools/goodrun.cc"
+// #include "CORE/utilities.cc"
+// #include "histtools.h"
+
+#include "CORE/CMS2.cc"
+#include "CORE/trackSelections.cc"
+#include "CORE/metSelections.cc"
+#include "CORE/eventSelections.cc"
+#include "CORE/electronSelectionsParameters.cc"
+#include "CORE/electronSelections.cc"
+#include "CORE/muonSelections.cc"
 #include "Tools/goodrun.cc"
 #include "CORE/utilities.cc"
-#include "histtools.h"
+#include "histtools.C"
 
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
@@ -34,11 +45,17 @@
 //char* iter = "default";
 //char* iter = "oldTQ";
 char* iter = "dupveto";
-//char* iter = "trkpt_lt20eta25";
+//char* iter = "nlayerscut_5_7";
+//char* iter = "trkpt_lt10eta25";
+//char* iter = "eta25";
 
 bool usePV    = false;
 bool makebaby = false;
 bool debug    = false;
+
+// inline double fround(double n, double d){
+//   return floor(n * pow(10., d) + .5) / pow(10., d);
+// }
 
 void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isData, int nEvents){
 
@@ -102,38 +119,39 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           // APPLY BASIC EVENT SELECTIONS
           // TRIGGER, TRACKING AND VERTEX
           //
-          if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))
-            nPassGoodRun++;
-          else continue;
-
-          // determine if current event passes BPTX triggers
-          if (cleaning_BPTX( isData ))
-            nPassBPTX++;
-          else continue;
-
-          // determine if current event passes BSC triggers
-          if (cleaning_BSC())
-            nPassBSC++;
-          else continue;
-
-          // determine if current event passes beam halo triggers
-          if (cleaning_beamHalo())
-            nPassBeamHalo++;
-          else continue;
-
-          // determine if current event is a beam scraping event
-          if (cleaning_goodTracks())
-            nPassGoodTracks++;
-          else continue;
-
-          // determine if current event has a good vertex
-          if (cleaning_goodVertex())
-            nPassGoodVertex++;
-          else continue;
-
-          if( strcmp( prefix , "zee")   == 0 || 
-              strcmp( prefix , "zmm")   == 0 || 
-              strcmp( prefix , "ttbar") == 0 ){
+          if( strcmp( prefix , "dipion" ) !=0 ){
+            
+            if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))
+              nPassGoodRun++;
+            else continue;
+            
+            // determine if current event passes BPTX triggers
+            if (cleaning_BPTX( isData ))
+              nPassBPTX++;
+            else continue;
+            
+            // determine if current event passes BSC triggers
+            if (cleaning_BSC())
+              nPassBSC++;
+            else continue;
+            
+            // determine if current event passes beam halo triggers
+            if (cleaning_beamHalo())
+              nPassBeamHalo++;
+            else continue;
+            
+            // determine if current event is a beam scraping event
+            if (cleaning_goodTracks())
+              nPassGoodTracks++;
+            else continue;
+            
+            // determine if current event has a good vertex
+            if (cleaning_goodVertex())
+              nPassGoodVertex++;
+            else continue;
+          }
+          
+          if( strcmp( prefix , "zee")   == 0 || strcmp( prefix , "zmm")   == 0 || strcmp( prefix , "ttbar") == 0 ){
             if (!isGoodDilepton())    continue;
           } 
 
@@ -212,20 +230,19 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
           tcsumet_   = structMET.sumet;
 
           if( makebaby || tcmet_ > 45 ){
-
-            //             cout << "|" << setw(12)  << cms2.evt_run()         << setw(4)
-            //                  << "|" << setw(12)  << cms2.evt_lumiBlock()   << setw(4)
-            //                  << "|" << setw(12)  << cms2.evt_event()       << setw(4)
-            //                  << "|" << setw(12)  << tcmet_                 << setw(4) << "|" << endl;
-
+            
+//             cout << "|" << setw(12)  << cms2.evt_run()         << setw(4)
+//                  << "|" << setw(12)  << cms2.evt_lumiBlock()   << setw(4)
+//                  << "|" << setw(12)  << cms2.evt_event()       << setw(4)
+//                  << "|" << setw(12)  << fround( tcmet_ , 1 )   << setw(4) << "|" << endl;
+            
             structMET = correctedTCMET( usePV, electronVetoCone, useHFcleaning, useHCALcleaning, useECALcleaning , true, ofile);          
             
             tcmet_     = structMET.met;
             tcmetphi_  = structMET.metphi;
             tcsumet_   = structMET.sumet;
-
+            
 	    eventTree_->Fill();
-
           }
 
           fillUnderOverFlow( hmumet , mumet_ );
@@ -241,14 +258,27 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
 	  fillUnderOverFlow( hdtcmet_mumet    , tcmet_ - mumet_ );
  	  fillUnderOverFlow( hdtcmet_mujesmet , tcmet_ - mujesmet_ );
 
-
+          
+          bool badvtx = false;
+          
+          if (cms2.vtxs_isFake()[0])                     badvtx = true;
+          if (cms2.vtxs_ndof()[0] < 4.)                  badvtx = true;
+          if (cms2.vtxs_position()[0].Rho() > 2.0)       badvtx = true;
+          if (fabs(cms2.vtxs_position()[0].Z()) > 15.0)  badvtx = true;
+      
+          if( badvtx )  trk_vtxz_ = -9999;
+          else          trk_vtxz_ = cms2.vtxs_position()[0].Z();
+        
 
 	  if( makebaby || tcmet_ > 45 ){
+
+            duplicateTracks.clear();
+            findDuplicateTracks();
       
 	    for( unsigned int i = 0; i < cms2.trks_trk_p4().size(); i++ ) {
 
-	      if( isMuon( i ) )                               continue;
-	      if( isElectron( i ) )                           continue;
+	      if( isMuon( i ) )      continue;
+	      if( isElectron( i ) )  continue;
 	  	      
 	      //if (useElectronVetoCone && closeToElectron(i))  continue;
 	      
@@ -263,6 +293,60 @@ void tcmetLooperTemplate::ScanChain (TChain* chain, const char* prefix, bool isD
 	      trk_phi_      = cms2.trks_trk_p4().at(i).phi();
 	      trk_eta_      = cms2.trks_trk_p4().at(i).eta();
 	      trk_qual_     = isTrackQuality( i , (1 << highPurity) ) ? 1 : 0;
+              trk_algo_     = cms2.trks_algo().at(i);
+              trk_chg_      = cms2.trks_charge().at(i);
+              trk_nlayers_  = cms2.trks_nlayers().at(i);
+              trk_z0_       = cms2.trks_z0().at(i);
+              trk_z0corr_   = cms2.trks_z0corr().at(i);
+              trk_isdup_    = 0;
+
+              for( unsigned int idup = 0 ; idup < duplicateTracks.size() ; ++idup ){
+                if( i == duplicateTracks.at(idup) ) trk_isdup_ = 1;
+              }
+
+              trk_passnlayers_ = 1;
+              if( trk_algo_ < 8 && trks_nlayers().at(i) < 5 ) trk_passnlayers_ = 0;
+              if( trk_algo_ > 7 && trks_nlayers().at(i) < 7 ) trk_passnlayers_ = 0;
+
+              //find closest track
+              float drmin = 100;
+              int   jmin  = -1;
+              for( unsigned int j = 0; j < cms2.trks_trk_p4().size(); j++ ) {
+
+                if( isMuon( i ) )      continue;
+                if( isElectron( i ) )  continue;
+                if( i == j )           continue;
+
+                float dr = dRbetweenVectors(cms2.trks_trk_p4().at(i),cms2.trks_trk_p4().at(j));
+                if( dr < drmin ){
+                  drmin = dr;
+                  jmin  = j;
+                }
+              }
+              
+              if( jmin > -1 ){
+                trkp_nlayers_  =  cms2.trks_nlayers().at(jmin);
+                trkp_nhits_    =  cms2.trks_validHits().at(jmin);
+                trkp_eta_      =  cms2.trks_trk_p4().at(jmin).eta();
+                trkp_chg_      =  cms2.trks_charge().at(jmin);
+                trkp_dr_       =  drmin;
+                trkp_pt_       =  cms2.trks_trk_p4().at(jmin).pt();
+                trkp_algo_     =  cms2.trks_algo().at(jmin);
+                trkp_dcotth_   =  1./tan(cms2.trks_trk_p4().at(i).theta()) - 1./tan(cms2.trks_trk_p4().at(jmin).theta());
+                trkp_dphi_     =  fabs( cms2.trks_trk_p4().at(i).phi() - cms2.trks_trk_p4().at(jmin).phi() );
+                if( trkp_dphi_ > TMath::Pi() ) trkp_dphi_ = TMath::TwoPi() - trkp_dphi_;
+              }
+              else{
+                trkp_nlayers_  = -9999;
+                trkp_nhits_    = -9999;
+                trkp_eta_      = -9999.;
+                trkp_chg_      = -9999;
+                trkp_dr_       = -9999.;
+                trkp_pt_       = -9999.;
+                trkp_algo_     = -9999;
+                trkp_dcotth_   = -9999.;
+                trkp_dphi_     = -9999.;
+              }
 
 	      trackTree_->Fill();
             }
@@ -430,17 +514,36 @@ void tcmetLooperTemplate::MakeBabyNtuple (const char* babyFileName)
   babyFile_->cd();
   trackTree_ = new TTree("Tracks", "Tracks Tree");
 
-  trackTree_->Branch("pt"       , &trk_pt_       , "pt/F"      );
-  trackTree_->Branch("d0vtx"    , &trk_d0vtx_    , "d0vtx/F"   );
-  trackTree_->Branch("d0corr"   , &trk_d0corr_   , "d0corr/F"   );
-  trackTree_->Branch("nhits"    , &trk_nhits_    , "nhits/I"      );
-  trackTree_->Branch("chi2"     , &trk_chi2_     , "chi2/F"      );
-  trackTree_->Branch("ndf"      , &trk_ndf_      , "ndf/I"      );
-  trackTree_->Branch("pterr"    , &trk_pterr_    , "pterr/F"      );
-  trackTree_->Branch("phi"      , &trk_phi_      , "phi/F"      );
-  trackTree_->Branch("eta"      , &trk_eta_      , "eta/F"      );
-  trackTree_->Branch("qual"     , &trk_qual_     , "qual/I"      );
-  trackTree_->Branch("pass"     , &trk_pass_     , "pass/I"      );
+  trackTree_->Branch("pt"           , &trk_pt_           , "pt/F"           );
+  trackTree_->Branch("d0vtx"        , &trk_d0vtx_        , "d0vtx/F"        );
+  trackTree_->Branch("d0corr"       , &trk_d0corr_       , "d0corr/F"       );
+  trackTree_->Branch("nhits"        , &trk_nhits_        , "nhits/I"        );
+  trackTree_->Branch("chi2"         , &trk_chi2_         , "chi2/F"         );
+  trackTree_->Branch("ndf"          , &trk_ndf_          , "ndf/I"          );
+  trackTree_->Branch("pterr"        , &trk_pterr_        , "pterr/F"        );
+  trackTree_->Branch("phi"          , &trk_phi_          , "phi/F"          );
+  trackTree_->Branch("eta"          , &trk_eta_          , "eta/F"          );
+  trackTree_->Branch("qual"         , &trk_qual_         , "qual/I"         );
+  trackTree_->Branch("pass"         , &trk_pass_         , "pass/I"         );
+  trackTree_->Branch("algo"         , &trk_algo_         , "algo/I"         );
+  trackTree_->Branch("chg"          , &trk_chg_          , "chg/I"          );
+  trackTree_->Branch("nlayers"      , &trk_nlayers_      , "nlayers/I"      );
+  trackTree_->Branch("isdup"        , &trk_isdup_        , "isdup/I"        );
+  trackTree_->Branch("passnlayers"  , &trk_passnlayers_  , "passnlayers/I"  );
+
+  trackTree_->Branch("vtxz"      , &trk_vtxz_      , "vtxz/F"       );
+  trackTree_->Branch("z0"        , &trk_z0_        , "z0/F"       );
+  trackTree_->Branch("z0corr"    , &trk_z0corr_    , "z0corr/F"       );
+
+  trackTree_->Branch("nlayersp"  , &trkp_nlayers_  , "nlayersp/I"      );
+  trackTree_->Branch("nhitsp"    , &trkp_nhits_    , "nhitsp/I"      );
+  trackTree_->Branch("etap"      , &trkp_eta_      , "etap/F"      );
+  trackTree_->Branch("chgp"      , &trkp_chg_      , "chgp/I"      );
+  trackTree_->Branch("ptp"       , &trkp_pt_       , "ptp/F"      );
+  trackTree_->Branch("algop"     , &trkp_algo_     , "algop/I"      );
+  trackTree_->Branch("dr"        , &trkp_dr_       , "dr/F"      );
+  trackTree_->Branch("dcotth"    , &trkp_dcotth_   , "dcotth/F"      );
+  trackTree_->Branch("dphi"      , &trkp_dphi_     , "dphi/F"      );
 
 }
 
@@ -618,31 +721,31 @@ bool tcmetLooperTemplate::isGoodZmm ()
 
 bool tcmetLooperTemplate::isGoodTrack( int index, bool usePV ) {
   
-  float corrected_d0 = cms2.trks_d0corr().at(index);
+     float corrected_d0 = cms2.trks_d0corr().at(index);
 
-  if(usePV)
-    corrected_d0 = cms2.trks_d0vtx().at(index);
+     if(usePV)
+	  corrected_d0 = cms2.trks_d0vtx().at(index);
 
-  if( cms2.trks_algo().at(index) < 8 ) {
+     if( cms2.trks_algo().at(index) < 8 ) {
 
-    float d0cut = min( sqrt( pow(0.015,2) + pow(0.5/cms2.trks_trk_p4().at(index).pt(),2) ), 0.3);
+	  float d0cut = min( sqrt( pow(0.015,2) + pow(0.5/cms2.trks_trk_p4().at(index).pt(),2) ), 0.3);
+          if( d0cut > 0.3 ) d0cut = 0.3;
+	  if( fabs( corrected_d0 ) > d0cut ) return false;
+     }
+     else {
+	  if( cms2.trks_validHits().at(index) < 11 )                              return false;
+	  if( cms2.trks_chi2().at(index) / cms2.trks_ndof().at(index) > 3 )            return false;
+	  if( cms2.trks_ptErr().at(index) / cms2.trks_trk_p4().at(index).pt() > 0.10 ) return false;
+     }
 
-    if( corrected_d0 > d0cut ) return false;
-  }
-  else {
-    if( cms2.trks_validHits().at(index) < 11 )                              return false;
-    if( cms2.trks_chi2().at(index) / cms2.trks_ndof().at(index) > 3 )            return false;
-    if( cms2.trks_ptErr().at(index) / cms2.trks_trk_p4().at(index).pt() > 0.10 ) return false;
-  }
+     if( cms2.trks_trk_p4().at(index).pt() > 100 )                           return false;
+     if( fabs( cms2.trks_trk_p4().at(index).eta() ) > 2.65 )                 return false;
+     if( cms2.trks_validHits().at(index) < 6 )                               return false;
+     if( cms2.trks_chi2().at(index) / cms2.trks_ndof().at(index) > 5 )            return false;
+     if( cms2.trks_ptErr().at(index) / cms2.trks_trk_p4().at(index).pt() > 0.20 ) return false;
+     if( !isTrackQuality( index, (1 << highPurity) ) )                  return false;
 
-  if( cms2.trks_trk_p4().at(index).pt() > 100 )                           return false;
-  if( fabs( cms2.trks_trk_p4().at(index).eta() ) > 2.65 )                 return false;
-  if( cms2.trks_validHits().at(index) < 6 )                               return false;
-  if( cms2.trks_chi2().at(index) / cms2.trks_ndof().at(index) > 5 )            return false;
-  if( cms2.trks_ptErr().at(index) / cms2.trks_trk_p4().at(index).pt() > 0.20 ) return false;
-  if( !isTrackQuality( index, (1 << highPurity) ) )                  return false;
-  
-  return true;
+     return true;
 }
 
 //--------------------------------------------------------------------
@@ -667,6 +770,51 @@ bool tcmetLooperTemplate::isElectron( int index ) {
   }
 
   return false;
+}
+
+//--------------------------------------------------------------------
+
+void tcmetLooperTemplate::findDuplicateTracks(){
+
+  for( unsigned int i = 0; i < cms2.trks_trk_p4().size(); i++ ) {
+
+    //if( trks_trk_p4().at(i).pt() < 5. ) continue;
+
+    for( unsigned int j = i + 1 ; j < cms2.trks_trk_p4().size(); j++ ) {
+
+      if( cms2.trks_charge().at(i) * cms2.trks_charge().at(j) < 0 ) continue;
+      //if( trks_trk_p4().at(j).pt() < 5. )                 continue;
+      
+      float dphi = fabs( cms2.trks_trk_p4().at(i).phi() - cms2.trks_trk_p4().at(j).phi() );
+      if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+
+      float dcotth = fabs( 1./tan( cms2.trks_trk_p4().at(i).theta() ) - 1./tan( cms2.trks_trk_p4().at(j).theta() ) );
+
+      if( dphi   > 0.03 )      continue;
+      if( dcotth > 0.0006 )    continue;
+
+      int iVeto = vetoTrack( i , j );
+
+      duplicateTracks.push_back(iVeto);
+      
+    }
+  }
+}
+
+//--------------------------------------------------------------------
+
+int tcmetLooperTemplate::vetoTrack( int i , int j ){
+
+  //given 2 tracks, decide which one to veto
+
+  if     ( trks_validHits().at(i) < trks_validHits().at(j) )                               return i;
+  else if( trks_validHits().at(i) > trks_validHits().at(j) )                               return j;
+  else if( trks_chi2().at(i) / trks_ndof().at(i) > trks_chi2().at(j) / trks_ndof().at(j) ) return i;  
+  else if( trks_chi2().at(i) / trks_ndof().at(i) < trks_chi2().at(j) / trks_ndof().at(j) ) return j;  
+  else if( trks_ptErr().at(i) > trks_ptErr().at(j) )                                       return i; 
+  else if( trks_ptErr().at(i) < trks_ptErr().at(j) )                                       return j; 
+  return i;
+
 }
 
 //--------------------------------------------------------------------

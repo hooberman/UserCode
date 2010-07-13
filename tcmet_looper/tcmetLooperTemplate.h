@@ -34,6 +34,8 @@ class tcmetLooperTemplate
         void bookHistos();
 	bool isGoodTrack(int, bool usePV = false);
 	void fillUnderOverFlow(TH1F *h1, float value, float weight = 1);
+        void findDuplicateTracks();
+        int vetoTrack( int i , int j );
 
     private:
         
@@ -54,6 +56,24 @@ class tcmetLooperTemplate
         Float_t trk_eta_;
         Int_t   trk_qual_;
         Int_t   trk_pass_;
+        Int_t   trk_algo_;  
+        Int_t   trk_chg_;  
+        Int_t   trk_nlayers_;  
+        Int_t   trk_isdup_;  
+        Int_t   trk_passnlayers_;  
+        Float_t trk_vtxz_;
+        Float_t trk_z0_;
+        Float_t trk_z0corr_;
+
+        Int_t   trkp_nlayers_;      
+        Int_t   trkp_nhits_;   
+        Float_t trkp_eta_;   
+        Int_t   trkp_chg_;     
+        Float_t trkp_dr_;    
+        Float_t trkp_pt_;    
+        Int_t   trkp_algo_;   
+        Float_t trkp_dcotth_; 
+        Float_t trkp_dphi_;  
 
         //histos
         TH1F* hmumet;
