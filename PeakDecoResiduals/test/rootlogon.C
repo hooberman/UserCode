@@ -4,7 +4,7 @@ gSystem->Load("libGraf");
 gSystem->Load("libGpad");
 gSystem->Load("libTree");
 
-gROOT->ProcessLine(".L /tas03/home/benhoob/benstyle.C");
+gROOT->ProcessLine(".L /tas03/home/benhoob/.root/benstyle.C");
 setBenStyle();
 //gROOT->SetStyle("Plain");
 }

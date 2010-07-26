@@ -43,31 +43,19 @@ void decovspeak(bool printgif = false){
   vector<string> filenames;
   vector<string> types;
   
-  //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_ALLPEAK/merged.root");
-  filenames.push_back("Commissioning10-GOODCOLL-v8_ALLPEAK/res/merged.root");
-  //filenames.push_back("Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
-  
-  //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_copy/merged_2.root");
-  filenames.push_back("Commissioning10-GOODCOLL-v8/res/merged.root");
-  //filenames.push_back("Commissioning10-GOODCOLL-v8_newcfg/res/merged.root");
+  //-----------files---------------------
+  filenames.push_back("MinimumBias_Commissioning10-GOODCOLL-Jun9thSkim_v1_PEAK/res/merged.root");
+  filenames.push_back("MinimumBias_Commissioning10-GOODCOLL-Jun9thSkim_v1/res/merged.root");
 
-  //filenames.push_back("Commissioning10-GOODCOLL-v8_toblatebp06/res/merged.root");
-
-  //filenames.push_back("crabjobs/lpc/Spring10-START3X_V26A_356ReReco-v1_standard_geom_mintrkmom1/merged.root");
-  //filenames.push_back("crabjobs/lpc/Spring10-START3X_V26A_356ReReco-v1_standard_geom/merged.root");
-  
-  
-  //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_toblatebp063/merged.root");
-  
   types.push_back("peak");
   types.push_back("deco");
-  //types.push_back("deco (BP)");  
-  //types.push_back("MC");
 
+  //----------variables to plot----------
   vector<string> cantitles;
-  //cantitles.push_back("du_dw");         //delta u, delta w TH1s
+  //cantitles.push_back("du_dw");           //delta u, delta w TH1s
   //cantitles.push_back("duvsdth");         //v+/- split du vs. delta tan(theta) TH2s
-  cantitles.push_back("duvsdth_tgraph");  //v+/- split du vs. delta tan(theta) TGraphs
+  //cantitles.push_back("duvsdth_tgraph");  //v+/- split du vs. delta tan(theta) TGraphs
+  cantitles.push_back("dwTEC");             //dw histos for TEC ring/zside/petalside
   
   const unsigned int nfiles = filenames.size();
   const unsigned int ncan   = cantitles.size();
@@ -103,7 +91,7 @@ void decovspeak(bool printgif = false){
     hdu[ifile] = (TH1F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/du_TOB");
     hdw[ifile] = (TH1F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/dw_TOB");
 
-    //    if( strcmp(types.at(ifile),"deco (BP)") == 0){
+
       hduthp[ifile] = (TH2F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/duvsdtantheta_TOB_vp_wp_all");
       TH2F* htp     = (TH2F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/duvsdtantheta_TOB_vp_wm_all");
       hduthp[ifile] -> Add(htp);
@@ -111,22 +99,149 @@ void decovspeak(bool printgif = false){
       hduthm[ifile] = (TH2F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/duvsdtantheta_TOB_vm_wp_all");
       TH2F* htm     = (TH2F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/duvsdtantheta_TOB_vm_wm_all");
       hduthm[ifile] -> Add(htm);
-    // }else{
-//       hduthp[ifile] = (TH2F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/duvsdtantheta_TOB_vp_wp");
-//       TH2F* htp     = (TH2F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/duvsdtantheta_TOB_vp_wm");
-//       hduthp[ifile] -> Add(htp);
-      
-//       hduthm[ifile] = (TH2F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/duvsdtantheta_TOB_vm_wp");
-//       TH2F* htm     = (TH2F*) file[ifile]->Get("PeakDecoResiduals/PeakDecoResiduals/duvsdtantheta_TOB_vm_wm");
-//       hduthm[ifile] -> Add(htm);
-//     }
-     
   }
   
   
-  cout << "Plotting du, dw histos... " << endl;
+  if(draw("dwTEC",cantitles)){
 
+    gStyle->SetOptFit(11);
+
+    TCanvas *dwTEC_can[2][2];
+    TH1F* hdw_TEC[2][2][7];
+    TF1* hgaus[2][2][7];
+    float mean[2][2][7];
+    float meanerr[2][2][7];
+    TGraphErrors *g00[nfiles];
+    TGraphErrors *g01[nfiles];
+    TGraphErrors *g10[nfiles];
+    TGraphErrors *g11[nfiles];
+
+    can[idx]=new TCanvas(Form("can_%i",idx),"du_dw",1200,600);
+    can[idx]->Divide(2,1);
+
+    for( unsigned int ifile = 0 ; ifile < nfiles ; ++ifile ){
+
+      for(int i=0;i<2;i++){
+        for(int j=0;j<2;j++){
+
+          dwTEC_can[i][j] = new TCanvas(Form("dwTEC_can_%i_%i",i,j),"",1200,600);
+          dwTEC_can[i][j]->Divide(4,2);
+        
+          for(int k=0;k<7;k++){
+
+            dwTEC_can[i][j]->cd(k+1);
+  
+            hdw_TEC[i][j][k] = (TH1F*) file[ifile]->Get(Form("PeakDecoResiduals/PeakDecoResiduals/hdw_TEC_z%i_petal%i_ring%i_stereo1",i,j,k+1));
+        
+            hgaus[i][j][k] = new TF1(Form("gaus_%i_%i_%i",i,j,k+1),"gaus",-500,500);
+            hgaus[i][j][k] -> SetLineColor(2);
+            hdw_TEC[i][j][k]->Rebin(10);
+            hdw_TEC[i][j][k]->Draw();
+            hdw_TEC[i][j][k]->Fit( hgaus[i][j][k] ,"R");
+            mean[i][j][k]    = hgaus[i][j][k]->GetParameter(1);
+            meanerr[i][j][k] = hgaus[i][j][k]->GetParError(1);
+          }
+        }
+      }
+
+      can[idx]->cd(ifile+1);
+
+      float ring[7];
+      float ringerr[7];
+      float mean00[7];
+      float mean01[7];
+      float mean10[7];
+      float mean11[7];
+      float meanerr00[7];
+      float meanerr01[7];
+      float meanerr10[7];
+      float meanerr11[7];
+
+      for(int k=0;k<7;k++){
+        ring[k] = k + 1;
+        mean00[k] = mean[0][0][k];
+        mean01[k] = mean[0][1][k];
+        mean10[k] = mean[1][0][k];
+        mean11[k] = mean[1][1][k];
+        ringerr[k] = 0;
+        meanerr00[k] = meanerr[0][0][k];
+        meanerr01[k] = meanerr[0][1][k];
+        meanerr10[k] = meanerr[1][0][k];
+        meanerr11[k] = meanerr[1][1][k];
+      }
+
+      g00[ifile] = new TGraphErrors(7,ring,mean00,ringerr,meanerr00);
+      g00[ifile]->SetMarkerStyle(20);
+      g00[ifile]->GetXaxis()->SetTitle("Ring");
+      g00[ifile]->GetYaxis()->SetTitle("<#Deltaw> (#mum)");
+      g00[ifile]->SetTitle(Form("MinBias data (%s)",types.at(ifile).c_str()));
+      g00[ifile]->SetMinimum(-50);
+      g00[ifile]->SetMaximum(50);
+      g00[ifile]->Draw("AP");
+
+      g01[ifile] = new TGraphErrors(7,ring,mean01,ringerr,meanerr01);
+      g01[ifile]->SetMarkerStyle(20);
+      g01[ifile]->SetMarkerColor(2);
+      g01[ifile]->SetLineColor(2);
+      g01[ifile]->Draw("sameP");
+
+      g10[ifile] = new TGraphErrors(7,ring,mean10,ringerr,meanerr10);
+      g10[ifile]->SetMarkerStyle(20);
+      g10[ifile]->SetMarkerColor(4);
+      g10[ifile]->SetLineColor(4);
+      g10[ifile]->Draw("sameP");
+
+      g11[ifile] = new TGraphErrors(7,ring,mean11,ringerr,meanerr11);
+      g11[ifile]->SetMarkerStyle(20);
+      g11[ifile]->SetMarkerColor(6);
+      g11[ifile]->SetLineColor(6);
+      g11[ifile]->Draw("sameP");
+
+      TLegend *leg=new TLegend(0.15,0.7,0.35,0.9);
+      leg->AddEntry(g00[ifile],"Z- back-petal","p");
+      leg->AddEntry(g01[ifile],"Z- front-petal","p");
+      leg->AddEntry(g10[ifile],"Z+ back-petal","p");
+      leg->AddEntry(g11[ifile],"Z+ front-petal","p");
+      leg->SetBorderSize(1);
+      leg->SetFillColor(0);
+      leg->Draw();
+    }
+
+    if( nfiles > 1 ){
+      TCanvas *dwdiff = new TCanvas("dwdiff","dwdiff",600,600);
+      dwdiff->cd();
+
+      TGraphErrors *gdiff00 = diffTGraph(g00[0],g00[1],"MinBias data deco-peak", "Ring", "<#Deltaw> (#mum)");
+      gdiff00->SetMarkerStyle(20);
+      gdiff00->SetMinimum(-25);
+      gdiff00->SetMaximum(25);
+      gdiff00->Draw("AP");
+
+      TGraphErrors *gdiff01 = diffTGraph(g01[0],g01[1],"MinBias data deco-peak", "Ring", "<#Deltaw> (#mum)");
+      gdiff01->SetMarkerStyle(20);
+      gdiff01->SetMarkerColor(2);
+      gdiff01->SetLineColor(2);
+      gdiff01->Draw("sameP");
+
+      TGraphErrors *gdiff10 = diffTGraph(g10[0],g10[1],"MinBias data deco-peak", "Ring", "<#Deltaw> (#mum)");
+      gdiff10->SetMarkerStyle(20);
+      gdiff10->SetMarkerColor(4);
+      gdiff10->SetLineColor(4);
+      gdiff10->Draw("sameP");
+
+      TGraphErrors *gdiff11 = diffTGraph(g11[0],g11[1],"MinBias data deco-peak", "Ring", "<#Deltaw> (#mum)");
+      gdiff11->SetMarkerStyle(20);
+      gdiff11->SetMarkerColor(6);
+      gdiff11->SetLineColor(6);
+      gdiff11->Draw("sameP");
+
+    }
+
+  }
+  
   if(draw("du_dw",cantitles)){
+    cout << "Plotting du, dw histos... " << endl;
+
     can[idx]=new TCanvas(Form("can_%i",idx),"du_dw",1200,450);
     can[idx]->Divide(2,1);
     
@@ -143,10 +258,11 @@ void decovspeak(bool printgif = false){
     idx++;
   }
 
-  cout << "Plotting du vs. delta tan theta split v+/v- histos... " << endl;
+
   //du vs. delta tan(theta) split v+/v- histos-----------------------------------
   
   if(draw("duvsdth",cantitles)){
+    cout << "Plotting du vs. delta tan theta split v+/v- histos... " << endl;
 
     can[idx]=new TCanvas(cantitles.at(idx).c_str(),cantitles.at(idx).c_str(),1200,450*nfiles);
     can[idx]->Divide(nfiles,2);
@@ -167,11 +283,13 @@ void decovspeak(bool printgif = false){
 
   }
   
-  cout << "Plotting du vs. delta tan theta split v+/v- TGraphs... " << endl;
+
 
   //TGraph du vs. delta tan theta----------------------------------------
 
   if(draw("duvsdth_tgraph",cantitles)){
+
+    cout << "Plotting du vs. delta tan theta split v+/v- TGraphs... " << endl;
 
     can[idx]=new TCanvas(cantitles.at(idx).c_str(),cantitles.at(idx).c_str(),1200,450);
     can[idx]->Divide(2,1);
@@ -279,6 +397,7 @@ void decovspeak(bool printgif = false){
     
     }
 
+    if( filenames.size() > 1 ){
     TCanvas *cdiff = new TCanvas("cdiff","duvsdtanthetadiff",1200,450);
     cdiff->Divide(2,1);
 
@@ -327,6 +446,7 @@ void decovspeak(bool printgif = false){
     t->DrawLatex(0.15,0.75,sduthm2diff.str().c_str());
 
     idx++;
+    }
   }
 
   
@@ -687,7 +807,7 @@ TGraphErrors* diffTGraph(TGraphErrors* g1, TGraphErrors *g2, string title, strin
   g->GetYaxis()->SetTitle(ytitle.c_str());
   g->GetXaxis()->SetTitle(xtitle.c_str());
   g -> SetMarkerStyle(8);
-  g -> SetMarkerSize(0.5);
+  //g -> SetMarkerSize(0.5);
   return g;
 }
 

@@ -34,39 +34,17 @@ void corrections(bool printgif = false){
   
   //files to process
   vector<string> filenames;
-  //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_ALLPEAK/merged.root");
-  //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_ALLPEAK/res/merged.root");
-  //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_copy/merged_2.root");
-  //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
-  //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_newcfg_ALLPEAK/res/merged.root");
   filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_ALLPEAK/res/merged.root");
-  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1/res/merged.root");
-  filenames.push_back("crabjobs/Commissioning10-PromptReco-v9/res/merged.root");
-  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_lateBP/res/merged.root");  
-  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_tanla/res/merged.root");
-  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_tanla_lateBP/res/merged.root");
-  //filenames.push_back("crabjobs/Commissioning10-Apr20Skim_GOODCOLL-v1_copy/res/merged.root");
-  //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_Geometry/res/merged.root");
-  //filenames.push_back("crabjobs/Commissioning10-GOODCOLL-v8_toblatebp06/merged.root");
-  //filenames.push_back("crabjobs/lpc/Spring10-START3X_V26A_356ReReco-v1_standard_geom_mintrkmom1/merged.root");
-  //filenames.push_back("crabjobs/lpc/Spring10-START3X_V26A_356ReReco-v1_standard_geom/merged.root");
-  //filenames.push_back("crabjobs/lpc/Commissioning10-GOODCOLL-v8_mintrkmom1_toblatebp063/merged.root");
- 
-  //string corrtitle = "DECO (#Deltatan(#theta_{LA})+BP-corrected) - PEAK";
-  //string corrtitle = "DECO (#Deltatan(#theta_{LA})-corrected) - PEAK";
-  //string corrtitle = "DECO (BP-corrected) - PEAK";
+  filenames.push_back("MinimumBias_Commissioning10-GOODCOLL-Jun9thSkim_v1/res/merged.root");
+
   string corrtitle = "DECO - PEAK";
   int ncorr = 1;
-
 
   //labels for files
   vector<string> types;
   types.push_back("peak");
   types.push_back("deco");
-  //types.push_back("deco (BP)");
-  //types.push_back("deco (#Deltatan(#theta_{LA}))");  
-  //types.push_back("deco (#Deltatan(#theta_{LA}) + BP)");
-  
+    
   assert ( filenames.size() == types.size() );
 
   //list of subdetectors
@@ -274,8 +252,15 @@ void corrections(bool printgif = false){
       TF1* fduthpdiff=new TF1("fduthpdiff","pol1",-0.5,0.5);
       gduthpdiff->Fit(fduthpdiff,"R");
       gduthpdiff->Draw("AP");
-      gduthpdiff->SetMinimum(-10);
-      gduthpdiff->SetMaximum(10);
+//       if( strcmp( subdets.at(i) , "TOB" ) == 0 ){
+//         gduthmdiff->SetMinimum(-15);
+//         gduthmdiff->SetMaximum(5);
+//       }
+//       else if( strcmp( subdets.at(i) , "TIB" ) == 0 ){
+//         gduthmdiff->SetMinimum(-5);
+//         gduthmdiff->SetMaximum(10);
+//       }
+
 
       float dwp     = fduthpdiff->GetParameter(1);
       float dwperr  = fduthpdiff->GetParError(1);
@@ -302,9 +287,14 @@ void corrections(bool printgif = false){
       TF1* fduthmdiff=new TF1("fduthmdiff","pol1",-0.5,0.5);
       gduthmdiff->Fit(fduthmdiff,"R");
       gduthmdiff->Draw("AP");
-      gduthmdiff->SetMinimum(-10);
-      gduthmdiff->SetMaximum(10);
-
+//       if( strcmp( subdets.at(i) , "TOB" ) == 0 ){
+//         gduthmdiff->SetMinimum(-15);
+//         gduthmdiff->SetMaximum(5);
+//       }
+//       else if( strcmp( subdets.at(i) , "TIB" ) == 0 ){
+//         gduthmdiff->SetMinimum(-5);
+//         gduthmdiff->SetMaximum(10);
+//       }
       
       float dwm     = fduthmdiff->GetParameter(1);
       float dwmerr  = fduthmdiff->GetParError(1);

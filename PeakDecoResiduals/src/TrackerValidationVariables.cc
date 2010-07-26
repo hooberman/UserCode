@@ -61,7 +61,7 @@
 #include "TrackingTools/PatternTools/interface/TrajTrackAssociation.h"
 #include <fstream>
 
-
+using namespace std;
 bool debug_=false;
 
 float getRadius(float x, float y){ return sqrt(x*x+y*y); }

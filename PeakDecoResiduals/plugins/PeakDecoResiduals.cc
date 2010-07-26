@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.6 2010/05/03 09:33:36 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.7 2010/05/03 15:27:38 benhoob Exp $
 //
 //
 
@@ -118,6 +118,7 @@ private:
   TH1F* htantrktheta[7][3];       
   TH1F* htanlorangle[7][3];       
   TH1F* hdtantheta[7][3];         
+  TH1F* hdw_TEC[2][2][7][2];
 
   // ------------- private member function -------------
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
@@ -295,6 +296,23 @@ void PeakDecoResiduals::BookHists(TFileDirectory &tfd){
   const char* wdir[2] = {"wp","wm"};
   const char* layers[10] = {"all","layer1","layer2","layer3","layer4",
 			    "layer5","layer6","layer7","layer8","layer9"};
+
+  const char* z[2]={"Z-","Z+"};
+  const char* petal[2]={"back-petal","front-petal"};
+  const char* stereo[2]={"r#phi","stereo"};
+
+
+  for(int i=0;i<2;i++){
+    for(int j=0;j<2;j++){
+      for(int k=0;k<7;k++){
+        for(int l=0;l<2;l++){
+          
+          hdw_TEC[i][j][k][l] = tfd.make<TH1F>(Form("hdw_TEC_z%i_petal%i_ring%i_stereo%i",i,j,k+1,l),
+                                               Form("#Deltaw TEC %s %s ring%i %s",z[i],petal[j],k+1,stereo[l]),2000,-10000,10000);
+        }
+      }
+    }
+  }
 
   hlumivsrun      = tfd.make<TH2F>("lumivsrun","lumivsrun",2000,132000,134000,2000,0,2000);
 
@@ -689,6 +707,9 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       if(dtantheta != 0){
 	hdw[subdetint]              ->Fill( 10000*it->resXprime/dtantheta);
 	hresxoverdtanth[subdetint]  ->Fill( 10000*it->resX/dtantheta);
+        if(subdetid  == StripSubdetector::TEC){
+          hdw_TEC[zplus_][front_][ring_-1][stereo_]->Fill(10000*it->resXprime/dtantheta);
+        }
       }
       if(dtantheta > 0)  hdu[subdetint]->Fill( 10000*it->resXprime);
       if(dtantheta < 0)  hdu[subdetint]->Fill(-10000*it->resXprime);
@@ -705,7 +726,9 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     if(it->tanLorentzAngle != -999.)	                               htanlorangle[subdetint][0]->Fill(it->tanLorentzAngle);
     if(it->tanTrackAngle != -999. && it->tanLorentzAngle != -999.)     hdtantheta[subdetint][0]  ->Fill(it->tanTrackAngle-it->tanLorentzAngle);
    
-           
+ 
+
+
     if(createTree_){
       //cout << "fill tree" << endl;
 

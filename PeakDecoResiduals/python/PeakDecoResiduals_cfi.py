@@ -5,11 +5,11 @@ import FWCore.ParameterSet.Config as cms
 # i.e. in Validator.cfg replace 'module demo = Validator {} '
 # with 'include "anlyzerDir/Validator/data/Validator.cfi" '.
 # (Remember that filenames are case sensitive.)
-PeakDecoResiduals = cms.EDFilter("PeakDecoResiduals",
-                                 Tracks = cms.InputTag("TrackRefitter"),
-                                 trajectoryInput           = cms.string('TrackRefitter'),
-                                 debug = cms.bool(False),
-                                 runOnCosmics = cms.bool(False)
+PeakDecoResiduals = cms.EDAnalyzer("PeakDecoResiduals",
+                                   Tracks = cms.InputTag("TrackRefitter"),
+                                   trajectoryInput           = cms.string('TrackRefitter'),
+                                   debug = cms.bool(False),
+                                   runOnCosmics = cms.bool(False)
                                  )
 
 
