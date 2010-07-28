@@ -131,7 +131,7 @@ void decovspeak(bool printgif = false){
 
             dwTEC_can[i][j]->cd(k+1);
   
-            hdw_TEC[i][j][k] = (TH1F*) file[ifile]->Get(Form("PeakDecoResiduals/PeakDecoResiduals/hdw_TEC_z%i_petal%i_ring%i_stereo1",i,j,k+1));
+            hdw_TEC[i][j][k] = (TH1F*) file[ifile]->Get(Form("PeakDecoResiduals/PeakDecoResiduals/hdw_TEC_z%i_petal%i_ring%i_stereo0",i,j,k+1));
         
             hgaus[i][j][k] = new TF1(Form("gaus_%i_%i_%i",i,j,k+1),"gaus",-500,500);
             hgaus[i][j][k] -> SetLineColor(2);
