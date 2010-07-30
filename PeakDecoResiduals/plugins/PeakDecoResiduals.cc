@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.8 2010/07/26 11:38:00 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.9 2010/07/27 10:51:41 benhoob Exp $
 //
 //
 
@@ -70,6 +70,9 @@ Implementation:
 #include "Alignment/TrackerAlignment/interface/TrackerAlignableId.h"
 
 #include "DataFormats/Math/interface/deltaPhi.h"
+#include "DQM/SiStripCommon/interface/TkHistoMap.h" 
+#include "CommonTools/TrackerMap/interface/TrackerMap.h"
+
 //
 // class declaration
 //
@@ -81,6 +84,10 @@ public:
   ~PeakDecoResiduals();
   
 private:
+
+  std::map<DetId, TH1F*> dwmap;
+  std::map<DetId, TH1F*>::iterator iter;
+
 
   TH2F* hlumivsrun;      
   TH1F* hdttime[7];            
@@ -131,6 +138,7 @@ private:
   bool isEndCap(uint32_t subDetId);
   bool isPixel(uint32_t subDetId);
   bool isDetOrDetUnit(align::StructureType type);
+  void makeHist( DetId detid , TFileDirectory &tfd );
 
   // From MillePedeAlignmentMonitor: Get Index for Arbitary vector<class> by name
   template <class OBJECT_TYPE>  
@@ -221,7 +229,7 @@ PeakDecoResiduals::PeakDecoResiduals(const edm::ParameterSet& iConfig)
 
   //now do what ever initialization is needed
   edm::Service<TFileService> fs;    
-  TFileDirectory filedir = fs->mkdir("PeakDecoResiduals");  
+  TFileDirectory filedir = fs->mkdir("histos");  
   this->BookHists(filedir);
 
   //initialize counters
@@ -490,6 +498,7 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   //using namespace edm;
   TrackerValidationVariables avalidator_(iSetup,parset_);
   edm::Service<TFileService> fs;
+  TFileDirectory filedir = fs->mkdir("maps");  
   
   std::vector<TrackerValidationVariables::AVHitStruct> v_hitstruct;
   //avalidator_.fillHitQuantities(iEvent,v_hitstruct);
@@ -701,6 +710,19 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       if(dtantheta != 0){
 	hdw[subdetint]              ->Fill( 10000*it->resXprime/dtantheta);
 	hresxoverdtanth[subdetint]  ->Fill( 10000*it->resX/dtantheta);
+
+        //fill map
+        //cout << endl << "Found hit with detid " << (int)detid << endl;
+        iter=dwmap.find( detid );
+        if( iter == dwmap.end() ){
+          makeHist( detid , filedir );
+        }else{
+          //cout << "Hist already exists" << endl;
+        }
+
+        //cout << "Filling hist with dw " << 10000*it->resXprime/dtantheta << endl;
+        dwmap[detid]->Fill( 10000*it->resXprime/dtantheta);
+
         if(subdetid  == StripSubdetector::TEC){
           hdw_TEC[wheel_][ring_][stereo_] -> Fill(10000*it->resXprime/dtantheta);
           hdw_TEC[0][ring_][stereo_]      -> Fill(10000*it->resXprime/dtantheta);
@@ -759,6 +781,19 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
 }
 
+void PeakDecoResiduals::makeHist( DetId detid , TFileDirectory &tfd ){
+
+  int i = (int) detid;
+
+  //cout << "Creating hist detid " << i << endl;
+  //TH1F *myhist = new TH1F(Form("dw_%i",i),Form("#DeltaW (%i)",i),100,-500,500);
+  //dwmap.insert(make_pair(detid, myhist));
+
+
+  dwmap.insert(make_pair(detid, tfd.make<TH1F>(Form("dw_%i",i),Form("#DeltaW (%i)",i),100,-500,500) ));
+
+}
+
 
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -768,13 +803,57 @@ PeakDecoResiduals::endJob()
 
   if(debug_) cout<<"PeakDecoResiduals::endJob"<<endl;
 
+  /*
+  TrackerMap tkmap;
+  TkHistoMap tkhistomap("tkhistomap","dw");
+
+
+  TF1* fgaus = new TF1("fgaus","gaus");
+
+  for ( iter=dwmap.begin() ; iter != dwmap.end(); iter++ ){
+
+    uint32_t mydet = iter->first.rawId();
+    cout << "Fitting detid " << mydet << endl;
+    cout << "integral " << iter->second->Integral() << endl;
+
+    if( iter->second->Integral() > 1 ){
+      
+      iter->second->Fit(fgaus);
+      cout << "fit mean " << fgaus->GetParameter(1) << endl;
+      
+      tkhistomap.fill(mydet,(float)fgaus->GetParameter(1));
+      
+    }  
+    else if( iter->second->Integral() > 0 ){
+      cout << "mean " << iter->second->GetMean(1) << endl;
+      tkhistomap.fill(mydet,iter->second->GetMean(1));
+    }
+    else{
+      //tkhistomap.fill(mydet,0);
+    }
+  }
+  
+  tkmap.setPalette(1);
+  tkhistomap.dumpInTkMap(&tkmap);
+
+  std::string hvname = "tkmap.png";
+  tkmap.save(true,0,0,hvname);
+
+  std::string rootmapname = "tkmap.root";
+  tkhistomap.save(rootmapname);
+  //tkmap.save(rootmapname);
+  */
+
   cout << "PeakDecoResiduals: analyzed " << nEvent << " events" << endl;
   cout << "nHitsPass / nHitsTot " << nPass << " / " << nTot << endl;
-  //if(createTree_){
-  //outTree->Write();
-  //}
    
 }
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(PeakDecoResiduals);
+
+
+
+
+
+
