@@ -18,12 +18,12 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        'file:/tas05/disk00/benhoob/tcmetTestFiles/ttbar.root'
+        'file:/tas05/disk00/benhoob/tcmetTestFiles/zee.root'
     )
 )
 
 process.out = cms.OutputModule("PoolOutputModule",
-    fileName = cms.untracked.string('/tas05/disk00/benhoob/tcmetTestFiles/output/PFstudies_ttbar.root')
+    fileName = cms.untracked.string('/tas05/disk00/benhoob/tcmetTestFiles/output/PFstudies_singlePi.root')
 )
 
 process.out.outputCommands = cms.untracked.vstring( 'drop *' )

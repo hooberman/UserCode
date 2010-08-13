@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  
 //         Created:  Thu Jun 24 02:52:45 PDT 2010
-// $Id: PFRecHitAnalyzer.cc,v 1.2 2010/06/30 16:11:51 benhoob Exp $
+// $Id: PFRecHitAnalyzer.cc,v 1.3 2010/07/07 12:45:41 benhoob Exp $
 //
 //
 
@@ -72,7 +72,7 @@ PFRecHitAnalyzer::PFRecHitAnalyzer(const edm::ParameterSet& iConfig)
   hfe_cluster_threshold_	= iConfig.getParameter<double>("hfe_cluster_threshold"		);
   hfh_cluster_threshold_	= iConfig.getParameter<double>("hfh_cluster_threshold"		);
 
-  useClusters_         	= iConfig.getParameter<bool>("useClustersForMET");
+  isData_         	= iConfig.getParameter<bool>("isData");
 
   // register products
   produces<float>	("caloebsumet" ).setBranchAlias("calo_eb_sumet"		);
@@ -333,8 +333,15 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   reco::CaloMET metobj = calomet_h->front();
 
   edm::Handle<reco::GenMETCollection> genmet_h;
-  iEvent.getByLabel(genmet_tag_, genmet_h);
-  reco::GenMET genmetobj = genmet_h->front();
+
+  if( ! isData_ ){
+    iEvent.getByLabel(genmet_tag_, genmet_h);
+    reco::GenMET genmetobj = genmet_h->front();
+    
+    // store genmet quantities
+    *genmet   = genmetobj.pt();
+    *gensumet = genmetobj.sumEt();
+  }
 
   bool found;
 
@@ -372,10 +379,6 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //http://cmslxr.fnal.gov/lxr/source/RecoParticleFlow/PFProducer/plugins/PFBlockProducer.cc
   //http://cmslxr.fnal.gov/lxr/source/RecoParticleFlow/PFProducer/src/PFBlockAlgo.cc
-
-  // store genmet quantities
-  *genmet   = genmetobj.pt();
-  *gensumet = genmetobj.sumEt();
 
   // store calomet based quantities
   *calomet		= metobj.pt();
@@ -431,13 +434,9 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if ( it->layer() != PFLayer::ECAL_BARREL ) continue;
     if ( it->energy() < eb_cluster_threshold_) continue;
 
-    const REPPoint& cluster_pos = it->positionREP();	  
+    //const REPPoint& cluster_pos = it->positionREP();
+    const math::XYZPoint&  cluster_pos = it->position();
     double et = it->energy() / cosh( cluster_pos.eta() ); 
-    
-    //reco::PFCluster cl = clustersECAL->at(i);
-    //cout << it << endl;
-    //reco::PFCluster cl = it;
-    printCluster( it );
     
     pf_ebcluster_et	->push_back(et			);
     pf_ebcluster_e	->push_back(it->energy()	);
@@ -465,10 +464,9 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if ( it->layer() != PFLayer::ECAL_ENDCAP ) continue;
     if ( it->energy() < ee_cluster_threshold_) continue;
 
-    const REPPoint cluster_pos = it->positionREP();	  
+    //const REPPoint cluster_pos = it->positionREP();
+    const math::XYZPoint&  cluster_pos = it->position();
     double et = it->energy() / cosh( cluster_pos.eta() ); 
-    
-    //printCluster( it );
 
     pf_eecluster_et	->push_back(et			);
     pf_eecluster_e	->push_back(it->energy()	);
@@ -494,7 +492,8 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if ( it->layer() != PFLayer::HCAL_BARREL1 ) continue;
     if ( it->energy() < hb_cluster_threshold_)  continue;
 
-    const REPPoint cluster_pos = it->positionREP();	  
+    //const REPPoint cluster_pos = it->positionREP();	
+    const math::XYZPoint&  cluster_pos = it->position();  
     double et = it->energy() / cosh( cluster_pos.eta() ); 
     
     //printCluster( it );
@@ -523,7 +522,8 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if ( it->layer() != PFLayer::HCAL_ENDCAP ) continue;
     if ( it->energy() < he_cluster_threshold_) continue;
 
-    const REPPoint cluster_pos = it->positionREP();	  
+    //const REPPoint cluster_pos = it->positionREP();	  
+    const math::XYZPoint&  cluster_pos = it->position();   
     double et = it->energy() / cosh( cluster_pos.eta() ); 
 
     //printCluster( it );
@@ -551,7 +551,8 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     if ( it->energy() < hfh_cluster_threshold_) continue;
  
-    const REPPoint cluster_pos = it->positionREP();	  
+    //const REPPoint cluster_pos = it->positionREP();	  
+    const math::XYZPoint&  cluster_pos = it->position();  
     double et = it->energy() / cosh( cluster_pos.eta() ); 
   
     //printCluster( it );
@@ -579,7 +580,8 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     if ( it->energy() < hfe_cluster_threshold_) continue;
 
-    const REPPoint cluster_pos = it->positionREP();	  
+    //const REPPoint cluster_pos = it->positionREP();	  
+    const math::XYZPoint&  cluster_pos = it->position();   
     double et = it->energy() / cosh( cluster_pos.eta() ); 
     
     //printCluster( it );
@@ -622,8 +624,8 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   *pfclussumet      = cl_eb_et + cl_ee_et + cl_hb_et + cl_he_et + cl_hfem_et + cl_hfhad_et;
   *pfclusmet        = sqrt(cl_met_x * cl_met_x + cl_met_y * cl_met_y);
 
-  cout << " EB met "   << sqrt(cl_ebmet_x * cl_ebmet_x + cl_ebmet_y * cl_ebmet_y) 
-       << " EB sumet " << cl_eb_et << endl;
+//   cout << " EB met "   << sqrt(cl_ebmet_x * cl_ebmet_x + cl_ebmet_y * cl_ebmet_y) 
+//        << " EB sumet " << cl_eb_et << endl;
 
 
   // calculate MET and sumET using pf rechits
@@ -962,15 +964,14 @@ PFRecHitAnalyzer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 }
 
-
-void PFRecHitAnalyzer::printCluster( const reco::PFClusterCollection::const_iterator& cluster ) {
+void PFRecHitAnalyzer::printCluster( const reco::PFCluster& cluster ){
   
-   const math::XYZPoint&  pos = cluster.position();
-   const PFCluster::REPPoint&  posrep = cluster.positionREP();
-   const std::vector< reco::PFRecHitFraction >& fracs = 
-     cluster.recHitFractions();
+  const math::XYZPoint&  pos = cluster.position();
+  const REPPoint&  posrep = cluster.positionREP();
+  const std::vector< reco::PFRecHitFraction >& fracs = 
+    cluster.recHitFractions();
    
-   cout<<"PFcluster "
+  cout<<"PFcluster "
       <<", layer: "<<cluster.layer()
       <<"\tE = "<<cluster.energy()
       <<"\tXYZ: "
@@ -978,14 +979,16 @@ void PFRecHitAnalyzer::printCluster( const reco::PFClusterCollection::const_iter
       <<"\tREP: "
       <<posrep.Rho()<<","<<posrep.Eta()<<","<<posrep.Phi()<<" | "
       <<fracs.size()<<" rechits";
-   
-   for(unsigned i=0; i<fracs.size(); i++) {
-     // PFRecHit is not available, print the detID
-     if( !fracs[i].recHitRef().isAvailable() )
-       cout<<cluster.printHitAndFraction(i)<<", ";
-     else 
-       cout<<fracs[i]<<", ";
-   }
+  
+  for(unsigned i=0; i<fracs.size(); i++) {
+    // PFRecHit is not available, print the detID
+    if( !fracs[i].recHitRef().isAvailable() )
+      cout<<cluster.printHitAndFraction(i)<<", ";
+    else 
+      cout<<fracs[i]<<", ";
+  }
+
+  cout << endl;
 }
 
 // ------------ method called once each job just before starting event loop  ------------

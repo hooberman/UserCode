@@ -13,7 +13,7 @@
 //
 // Original Author:  
 //         Created:  Thu Jun 24 02:52:45 PDT 2010
-// $Id: PFRecHitAnalyzer.h,v 1.1 2010/06/30 14:58:37 benhoob Exp $
+// $Id: PFRecHitAnalyzer.h,v 1.2 2010/07/07 12:45:41 benhoob Exp $
 //
 //
 
@@ -46,9 +46,8 @@ private:
   virtual void beginJob() ;
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
-  //void printCluster( const reco::PFCluster& cluster );
-  void printCluster( const reco::PFClusterCollection::const_iterator& cluster );
-  
+  void printCluster( const reco::PFCluster& cluster );
+    
   // ----------member data ---------------------------
   edm::InputTag pf_ecal_tag_;
   edm::InputTag pf_hcal_tag_;
@@ -75,5 +74,5 @@ private:
   double hfe_cluster_threshold_;
   double hfh_cluster_threshold_;
 
-  bool useClusters_;
+  bool isData_;
 };

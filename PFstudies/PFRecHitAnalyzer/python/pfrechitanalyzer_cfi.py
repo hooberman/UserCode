@@ -25,5 +25,5 @@ pfRecHitAnalyzer = cms.EDProducer('PFRecHitAnalyzer',
                                   hb_cluster_threshold = cms.double(0),
                                   hfe_cluster_threshold = cms.double(0),
                                   hfh_cluster_threshold = cms.double(0),
-                                  useClustersForMET = cms.bool(False)
+                                  isData= cms.bool(True)
                                   )

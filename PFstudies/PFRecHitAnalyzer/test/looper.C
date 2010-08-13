@@ -36,12 +36,12 @@ inline double fround(double n, double d)
 }
 
 
-looper::metStruct looper::ScanChain (TChain* chain, const char* prefix, const char* suffix, bool isData, int nEvents,
+looper::metStruct looper::ScanChain (TChain* chain, char* prefix, const char* suffix, bool isData, int nEvents,
                                      float eb_threshold, float ee_threshold,  float hb_threshold,
                                      float he_threshold, float hfh_threshold, float hfe_threshold,
                                      float hfshort_threshold, float hflong_threshold){
   
-  bookHistos();
+  bookHistos( prefix );
 
   // make a baby ntuple
   stringstream babyfilename;
@@ -61,8 +61,9 @@ looper::metStruct looper::ScanChain (TChain* chain, const char* prefix, const ch
   // file loop
   TIter fileIter(listOfFiles);
   TFile* currentFile = 0;
+
   while ((currentFile = (TFile*)fileIter.Next())){
-    
+
     TFile f(currentFile->GetTitle());
     TTree *tree = (TTree*)f.Get("Events");
     cms2.Init(tree);
@@ -91,11 +92,16 @@ looper::metStruct looper::ScanChain (TChain* chain, const char* prefix, const ch
     
       InitBabyNtuple();
 
+
       //met
       fillUnderOverFlow( hgenmet             ,    genmet()     );
       fillUnderOverFlow( hcalo_met            ,    calomet()    );
       fillUnderOverFlow( hpfr_met_nothresh    ,    pfmet()      );
       fillUnderOverFlow( hpfc_met             ,    pfclusmet()  );
+
+      //met-genmet
+      fillUnderOverFlow( hcalo_dmet            ,   calomet() - genmet() );
+      fillUnderOverFlow( hpfc_dmet             ,   pfclusmet() - genmet() );
 
       //sumet
       fillUnderOverFlow( hgensumet             ,    gensumet()     );
@@ -350,12 +356,17 @@ looper::metStruct looper::ScanChain (TChain* chain, const char* prefix, const ch
 } // end ScanChain
 
 
-void looper::bookHistos(){
+void looper::bookHistos( char* prefix ){
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
   
-  float max1 = 500;
+  float max1 = 100;
+  float max2 = 500;
+  if( strcmp( prefix , "ttbar" ) == 0 ){
+    max1 = 500;
+    max2 = 1000;
+  }
 
   //declare histos
   hgenmet  = new TH1F("hgenmet","Gen-Level MET",100,0,max1);
@@ -364,11 +375,11 @@ void looper::bookHistos(){
   hpfc_met  = new TH1F("hpfc_met","PF Cluster MET",100,0,max1);
   hpfr_met_nothresh  = new TH1F("hpfr_met_nothresh","PF RecHit MET (no thresholds)",100,0,max1);
 
-  hgensumet  = new TH1F("hgensumet","Gen-Level sumET",100,0,1000);
-  hcalo_sumet = new TH1F("hcalo_sumet","calo sumET",100,0,1000);
-  hpfr_sumet  = new TH1F("hpfr_sumet","PF RecHit sumET",100,0,1000);
-  hpfc_sumet  = new TH1F("hpfc_sumet","PF Cluster sumET",100,0,1000);
-  hpfr_sumet_nothresh  = new TH1F("hpfr_sumet_nothresh","PF RecHit sumET (no thresholds)",100,0,1000);
+  hgensumet  = new TH1F("hgensumet","Gen-Level sumET",100,0,max2);
+  hcalo_sumet = new TH1F("hcalo_sumet","calo sumET",100,0,max2);
+  hpfr_sumet  = new TH1F("hpfr_sumet","PF RecHit sumET",100,0,max2);
+  hpfc_sumet  = new TH1F("hpfc_sumet","PF Cluster sumET",100,0,max2);
+  hpfr_sumet_nothresh  = new TH1F("hpfr_sumet_nothresh","PF RecHit sumET (no thresholds)",100,0,max2);
 
   hcalo_ebsumet      = new TH1F("hcalo_ebsumet","EB caloMET", 100,0,max1);
   hcalo_eesumet      = new TH1F("hcalo_eesumet","EE caloMET", 100,0,max1);
@@ -376,6 +387,9 @@ void looper::bookHistos(){
   hcalo_hesumet      = new TH1F("hcalo_hesumet","HE caloMET", 100,0,max1);
   hcalo_hfhsumet     = new TH1F("hcalo_hfhsumet","HFH caloMET",100,0,max1);
   hcalo_hfesumet     = new TH1F("hcalo_hfesumet","HFE caloMET",100,0,max1);
+
+  hcalo_dmet = new TH1F("hcalo_dmet","caloMET-genMET",100,-100,100);
+  hpfc_dmet  = new TH1F("hpfc_dmet","pfcMET-genMET",100,-100,100);
 
   hcalo_ebmet      = new TH1F("hcalo_ebmet","EB caloMET", 100,0,max1);
   hcalo_eemet      = new TH1F("hcalo_eemet","EE caloMET", 100,0,max1);

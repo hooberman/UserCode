@@ -10,18 +10,31 @@ void runLooper(char* prefix , bool isData = false){
 
   TChain* ch = new TChain("Events");
 
-  if( strcmp( prefix , "zmm" ) == 0 ){
+  if( strcmp( prefix , "zee" ) == 0 ){
+    ch->Add("/tas05/disk00/benhoob/tcmetTestFiles/output/PFstudies_zee.root");
+  }
+
+  else if( strcmp( prefix , "zmm" ) == 0 ){
     ch->Add("/tas05/disk00/benhoob/tcmetTestFiles/output/PFstudies_zmm.root");
   }
 
-  if( strcmp( prefix , "qcd" ) == 0 ){
+  else if( strcmp( prefix , "qcd" ) == 0 ){
     ch->Add("/tas05/disk00/benhoob/tcmetTestFiles/output/PFstudies_qcd.root");
   }
 
-  if( strcmp( prefix , "ttbar" ) == 0 ){
-    ch->Add("/tas05/disk00/benhoob/tcmetTestFiles/output/PFstudies_ttbar_clusters.root");
+  else if( strcmp( prefix , "ttbar" ) == 0 ){
+    ch->Add("/tas05/disk00/benhoob/tcmetTestFiles/output/PFstudies_ttbar.root");
+  }
+
+  else if( strcmp( prefix , "data" ) == 0 ){
+    ch->Add("/tas05/disk00/benhoob/tcmetTestFiles/output/PFstudies_data.root");
   }
   
+  else {
+    cout << "ERROR UNRECOGNIZED SAMPLE!!!" << endl;
+    exit(0);
+  }
+    
   looper* myLooper = new looper();
   
   cout << "Running on sample " << prefix << endl;
@@ -55,7 +68,7 @@ void runLooper(char* prefix , bool isData = false){
 //   float hfe_threshold = 1.4;
 
   
-  looper::metStruct mystruct = myLooper->ScanChain(ch, prefix, "_matchsumet" ,isData, -1,  
+  looper::metStruct mystruct = myLooper->ScanChain(ch, prefix, "" ,isData, -1,  
                                                    eb_threshold, ee_threshold, hb_threshold, 
                                                    he_threshold, hfh_threshold, hfe_threshold,
                                                    hfshort_threshold, hflong_threshold);
@@ -130,7 +143,7 @@ void runLooper(char* prefix , bool isData = false){
     else if( strcmp( subdet , "hfe" ) == 0 )  subdet_metxy_rms[i] = mystruct.hfemet_rms;
   }
 
-  /*
+
   TCanvas *c1=new TCanvas("c1","",800,600);
   c1->cd();
   

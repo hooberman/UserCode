@@ -49,12 +49,12 @@ class looper
         void InitBabyNtuple ();
         void FillBabyNtuple ();
         void CloseBabyNtuple ();
-        metStruct ScanChain (TChain*, const char*, const char* suffix = "", bool isData = false, int nEvents = -1,
+        metStruct ScanChain (TChain*, char*, const char* suffix = "", bool isData = false, int nEvents = -1,
                              float eb_threshold = 0., float ee_threshold = 0., float hb_threshold = 0.,
                              float he_threshold = 0., float hfh_threshold = 0., float hfe_threshold = 0.,
                              float hfshort_threshold = 0., float hflong_threshold = 0.);
         
-        void bookHistos();
+        void bookHistos( char* prefix );
         void fillUnderOverFlow(TH1F *h1, float value, float weight = 1);
 
 
@@ -71,6 +71,9 @@ class looper
         TH1F* hpfr_met;
         TH1F* hpfc_met;
         TH1F* hpfr_met_nothresh;
+
+        TH1F* hcalo_dmet;
+        TH1F* hpfc_dmet;
 
         TH1F* hgensumet;
         TH1F* hcalo_sumet;
