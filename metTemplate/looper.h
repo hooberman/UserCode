@@ -18,18 +18,21 @@ class looper
             delete babyFile_;
             delete babyTree_;
         };
+
+        enum metAlgo   { e_makeTemplate = 0, e_photonSelection = 1, e_ZSelection = 2};
+
         void MakeBabyNtuple (const char *);
         void InitBabyNtuple ();
         void FillBabyNtuple ();
         void CloseBabyNtuple ();
-        void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false, bool makeMetTemplate = false, int nEvents = -1);
+        void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false, metAlgo algo = e_makeTemplate, int nEvents = -1);
         void bookHistos();
 	bool isGoodTrack(int, bool usePV = false);
         float deltaPhi( float phi1 , float phi2);
 
     private:
         
-        bool makeMetTemplate_;
+        metAlgo algo_;
         
         //ntuple, file
         TFile *babyFile_;
@@ -78,6 +81,9 @@ class looper
 
 	// tcmet stuff
 	Float_t tcmet_;
+        Float_t dphixmet_;
+        Float_t metPar_;
+        Float_t metPerp_;
 	Float_t tcmetphi_;
 	Float_t tcsumet_;
 
@@ -98,6 +104,7 @@ class looper
         // jet stuff
         Int_t   nJets_;
         Float_t sumJetPt_;
+        Float_t vecJetPt_;
 
         //photon-matched jet stuff
         Float_t jet_pt_;            
@@ -121,11 +128,17 @@ class looper
 
         TH1F* metPredicted;
         TH1F* metObserved;
+        TH1F* metParPredicted;
+        TH1F* metParObserved;
+        TH1F* metPerpPredicted;
+        TH1F* metPerpObserved;
 
         TH1F* metPredicted_njets[11];
         TH1F* metObserved_njets[11];
 
         TH1F* metTemplate[11][23];
+        TH1F* metParTemplate[11][23];
+        TH1F* metPerpTemplate[11][23];
 };
 
 

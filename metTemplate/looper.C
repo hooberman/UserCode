@@ -17,11 +17,12 @@
 #include <sstream>
 
 #include "CORE/CMS2.h"
-#include "CORE/CMS2.cc"
 #include "CORE/metSelections.cc"
 #include "CORE/trackSelections.cc"
 #include "CORE/eventSelections.cc"
-//#include "CORE/electronSelections.cc"
+
+#include "CORE/electronSelections.cc"
+#include "CORE/electronSelectionsParameters.cc"
 #include "CORE/muonSelections.cc"
 #include "Tools/goodrun.cc"
 #include "CORE/utilities.cc"
@@ -68,15 +69,28 @@ int getSumJetPtBin( float x ){
   return ptbin;
 }
 
-void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool calculateTCMET, bool makeMetTemplate, int nEvents){
+void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool calculateTCMET, metAlgo algo, int nEvents){
 
-  makeMetTemplate_ = makeMetTemplate;
+  algo_ = algo;
 
-  //TFile *metTemplateFile = TFile::Open("Commissioning10-SD_JetMETTau-v9_goodrunPfJetPt30_metTemplate.root");
-  //TFile *metTemplateFile = TFile::Open("Commissioning10-SD_JetMETTau-v9_goodrunPfJetPt30_metTemplate_maxjetpt40.root");
-  //TFile *metTemplateFile = TFile::Open("Commissioning10-SD_JetMETTau-v9_goodrunPfJetPt30_metTemplate_half.root");
-  TFile *metTemplateFile = TFile::Open("JetMETTau_metTemplate.root");
- 
+  if( algo_ == e_makeTemplate )    cout << "metAlgo makeTemplate" << endl;
+  if( algo_ == e_photonSelection ) cout << "metAlgo photonSelection" << endl;
+  if( algo_ == e_ZSelection )      cout << "metAlgo ZSelection" << endl;
+
+  TFile *metTemplateFile;
+  string metTemplateString = "";
+  
+  if( algo_ != e_makeTemplate){
+    
+    metTemplateString = "_dataTemplate";
+    metTemplateFile = TFile::Open("root/JetMETTau_metTemplate.root");
+    //metTemplateFile = TFile::Open("root/JetMETTau_metTemplate_maxjetpt30.root");
+  
+    //metTemplateString = "_mcTemplate";
+    //metTemplateFile = TFile::Open("root/QCD_Pt15_metTemplate.root");
+  }
+
+
   set_goodrun_file("goodruns_official_0526.txt");
 
   bookHistos();
@@ -84,7 +98,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
   // make a baby ntuple
   stringstream babyfilename;
   babyfilename << prefix << "_baby.root";
-  MakeBabyNtuple( Form("%s_baby.root", prefix ) );
+  MakeBabyNtuple( Form("root/%s_baby.root", prefix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -285,7 +299,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       float maxPhotonPt = -1;
       int igmax         = -1;
 
-      if( photons_p4().size() == 0 && !makeMetTemplate ) continue;
+      if( photons_p4().size() == 0 && algo_ == e_photonSelection ) continue;
       
       //count photons pt > 10 GeV
       for (unsigned int iphoton = 0 ; iphoton < photons_p4().size() ; iphoton++) {
@@ -301,7 +315,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         }
       }
 
-      if( igmax < 0 && !makeMetTemplate ) continue;
+      if( igmax < 0 && algo_ == e_photonSelection ) continue;
 
       if( igmax > -1 ){
         etg_   = photons_p4()[igmax].pt();
@@ -347,7 +361,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       }
 
     
-      if( ijetg < 0 && !makeMetTemplate ) continue;
+      if( ijetg < 0 && algo_ == e_photonSelection ) continue;
 
       if( ijetg > -1 ){
       
@@ -423,63 +437,151 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
       nJets_      = 0;
       sumJetPt_   = 0.;
+      LorentzVector jetSystem(0.,0.,0.,0.);
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
-        if( ijet == ijetg && !makeMetTemplate ) continue; //skip jet matched to photon
-
         LorentzVector vjet = pfjets_p4().at(ijet);
+        
+        bool skipJet = false;
+
+        //skip jet matched to photon
+        if( ijet == ijetg && algo_ == e_photonSelection ){
+          skipJet = true;
+        }
+       
+        //skip all hyp leptons
+        if( algo_ == e_ZSelection ) { 
+
+          for( int hypIdx = 0 ; hypIdx < hyp_p4().size() ; hypIdx++ ) {
+         
+            LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+            LorentzVector vll  = hyp_ll_p4()[hypIdx];
+            
+            if (dRbetweenVectors(vjet, vll) < 0.4) skipJet = true;
+            if (dRbetweenVectors(vjet, vlt) < 0.4) skipJet = true;
+         
+          }
+        }
   
+        if( skipJet ) continue;
+
         if( fabs( vjet.eta() ) < 5.){
        
           if ( vjet.pt() > 30. )        nJets_++;
-          if ( vjet.pt() > 15. )        sumJetPt_ += vjet.pt();
+          if ( vjet.pt() > 15. ){
+            sumJetPt_ += vjet.pt();
+            jetSystem += vjet;
+          }
         }
       }
+
+      vecJetPt_ = jetSystem.pt();
+
+      //require at least 2 jets
+      if ( nJets_ < 2 )                               continue;
+
+      //require leading jet pt > 40
+      if( jetmax_pt_ < 40 ) continue;
+
+      dphixmet_  = deltaPhi( tcmetphi_ , jetSystem.phi() );
+      metPar_    = tcmet_ * cos( dphixmet_ );
+      metPerp_   = tcmet_ * sin( dphixmet_ );
       
-      if(debug) cout << "Fill baby ntuple" << endl;
-     
-      FillBabyNtuple();
+      //fill met template-----------------------------------------------------------------------
+      
+      if( algo_ == e_makeTemplate ) {
 
-
-      //fill met template
-      if( makeMetTemplate_ ) {
+        //dphixmet_  = deltaPhi( tcmetphi_ , jetSystem.phi() );
+        //metPar_    = -1 * tcmet_ * cos( dphixmet_ );
+        //metPerp_   = tcmet_ * sin( dphixmet_ );
         
-        if( jetmax_pt_ < 40 ) continue;
-
         int iJetBin      = getJetBin( nJets_ );
         int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
         
-        //cout << "nJets " << nJets_ << " sumJetPt " << sumJetPt_ << endl;
-        //cout << "iJetBin " << iJetBin << " iSumJetPtBin " << iSumJetPtBin << " tcmet " << tcmet_ << endl;
+        if( debug ) {
+          cout << "nJets " << nJets_ << " sumJetPt " << sumJetPt_ << endl;
+          cout << "iJetBin " << iJetBin << " iSumJetPtBin " << iSumJetPtBin << " tcmet " << tcmet_ << endl;
+        }
+
         metTemplate[ iJetBin ][ iSumJetPtBin ]->Fill( tcmet_ );
+        metParTemplate[ iJetBin ][ iSumJetPtBin ]->Fill( metPar_ );
+        metPerpTemplate[ iJetBin ][ iSumJetPtBin ]->Fill( metPerp_ );
         
       }
 
       
       //apply good photon selection-------------------------------------------------------------
+  
+      if( algo_ == e_photonSelection ) {
 
-      if ( etg_ < 10 )                                 continue;
-      if ( (1.-r4_) < 0.05 )                           continue;
-      if ( hoe_ > 0.1 )                                continue;
-      if ( jet_dr_ > 0.5 )                             continue;
-      if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
-   
+        //if ( jetmax_pt_ < 40 )                           continue;
+        if ( etg_ < 10 )                                 continue;
+        if ( (1.-r4_) < 0.05 )                           continue;
+        if ( hoe_ > 0.1 )                                continue;
+        if ( jet_dr_ > 0.5 )                             continue;
+        if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
+        //if ( sumJetPt_ < 200. )                          continue;
+        
+        //dphixmet_  = deltaPhi( tcmetphi_ , phig_ );
+        //metPar_    = tcmet_ * cos( dphixmet_ );
+        //metPerp_   = tcmet_ * sin( dphixmet_ );
+        
+      }
+
+      //apply Z selection-----------------------------------------------------------------------
+
+      if( algo_ == e_ZSelection ) {
+
+        //if( vecJetPt_  < 100)                                       continue;
+        //if( jetmax_pt_ < 40 )                                       continue;
+        if( hyp_p4().size() != 1 )                                  continue;
+        if( hyp_lt_id()[0] * hyp_ll_id()[0] > 0 )                   continue;
+        if( hyp_type()[0]==1 || hyp_type()[0]==2)                   continue;
+        if( hyp_p4()[0].mass() < 76. || hyp_p4()[0].mass() > 106.)  continue;
+        //if ( sumJetPt_ < 200. )                                     continue;
+
+        //muon ID
+        if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0]))))   continue;
+        if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0]))))   continue;
+        
+        //cand01
+        if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+        if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+
+        //dphixmet_  = deltaPhi( tcmetphi_ , hyp_p4()[0].phi() );
+        //metPar_    = tcmet_ * cos( dphixmet_ );
+        //metPerp_   = tcmet_ * sin( dphixmet_ );
+        
+      }
+
+      FillBabyNtuple();
+
       //fill predicted and observed met histos--------------------------------------------------
-      int iJetBin      = getJetBin( nJets_ );
-      int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
-      TH1F* hmet = (TH1F*) metTemplateFile->Get(Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin));
 
-      metObserved_njets[iJetBin]->Fill( tcmet_ );
-      metPredicted_njets[iJetBin]->Add( hmet );
+      if( algo_ != e_makeTemplate){
+        
+        int iJetBin      = getJetBin( nJets_ );
+        int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
+        TH1F* hmet     = (TH1F*) metTemplateFile->Get(Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin));
+        TH1F* hmetPar  = (TH1F*) metTemplateFile->Get(Form("metParTemplate_%i_%i",iJetBin,iSumJetPtBin));
+        TH1F* hmetPerp = (TH1F*) metTemplateFile->Get(Form("metPerpTemplate_%i_%i",iJetBin,iSumJetPtBin));
+        
+        metObserved_njets[iJetBin]->Fill( tcmet_ );
+        metPredicted_njets[iJetBin]->Add( hmet );
+        
+        metObserved->Fill( tcmet_ );
+        metPredicted->Add( hmet );
 
-      if ( nJets_ < 2 )                               continue;
+        metParObserved->Fill( metPar_ );
+        metParPredicted->Add( hmetPar );
 
-      metObserved->Fill( tcmet_ );
-      metPredicted->Add( hmet );
+        metPerpObserved->Fill( metPerp_ );
+        metPerpPredicted->Add( hmetPerp );
+        
+        delete hmet;
 
-      delete hmet;
-      
+      }
     } // end loop over events
   } // end loop over files
   
@@ -505,7 +607,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
   CloseBabyNtuple();
 
   //normalize met templates
-  if( makeMetTemplate_ ) {
+  if( algo_ == e_makeTemplate ) {
     
     for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
       for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
@@ -514,14 +616,24 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         
         if( scale > 0 )
           metTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
-     
+
+        scale = metParTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        
+        if( scale > 0 )
+          metParTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+
+        scale = metPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        
+        if( scale > 0 )
+          metPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+    
       }
     }
   }
 
   // make histos rootfile
   stringstream rootfilename;
-  rootfilename << prefix << "_histos.root";
+  rootfilename << "root/" << prefix << metTemplateString << ".root";
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
@@ -579,11 +691,15 @@ void looper::InitBabyNtuple (){
 
   // tcmet stuff
   tcmet_        = -999999.;
+  dphixmet_     = -999999.;
+  metPar_       = -999999.;
+  metPerp_      = -999999.;
   tcmetphi_     = -999999.;
   tcsumet_      = -999999.;
 
   nJets_        = -999999;
   sumJetPt_     = -999999;
+  vecJetPt_     = -999999;
 
   //photon stuff
   nPhotons_ = 0;
@@ -628,9 +744,21 @@ void looper::bookHistos(){
 
   metObserved  = new TH1F("metObserved", "Observed MET",500,0,500);
   metPredicted = new TH1F("metPredicted","Predicted MET",500,0,500);
+
+  metParObserved  = new TH1F("metParObserved", "Observed MET (Parallel)",1000,-500,500);
+  metParPredicted = new TH1F("metParPredicted","Predicted MET (Parallel)",1000,-500,500);
+
+  metPerpObserved  = new TH1F("metPerpObserved", "Observed MET (Perpendicular)",500,0,500);
+  metPerpPredicted = new TH1F("metPerpPredicted","Predicted MET (Perpendicular)",500,0,500);
  
   metObserved->Sumw2();
   metPredicted->Sumw2();
+
+  metParObserved->Sumw2();
+  metParPredicted->Sumw2();
+
+  metPerpObserved->Sumw2();
+  metPerpPredicted->Sumw2();
 
   for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
 
@@ -642,15 +770,23 @@ void looper::bookHistos(){
   }
   
 
-  if( makeMetTemplate_ ) {
+  if( algo_ == e_makeTemplate ) {
     
     for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
       for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
         
         metTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin),
                                                           Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin),500,0,500);
+
+        metParTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metParTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                             Form("metParTemplate_%i_%i",iJetBin,iSumJetPtBin),1000,-500,500);
+
+        metPerpTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                              Form("metPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),500,0,500);
        
         metTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        metParTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        metPerpTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
       }
     }
   }
@@ -687,10 +823,17 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("genmetphi",    &genmetphi_,    "genmetphi/F");
   babyTree_->Branch("gensumet",     &gensumet_,     "gensumet/F" );
   babyTree_->Branch("tcmet",        &tcmet_,        "tcmet/F"      );
+
+  babyTree_->Branch("dphixmet",     &dphixmet_,      "dphixmet/F"    );
+  babyTree_->Branch("metpar",       &metPar_,        "metpar/F"      );
+  babyTree_->Branch("metperp",      &metPerp_,       "metperp/F"     );
+
+
   babyTree_->Branch("tcmetphi",     &tcmetphi_,     "tcmetphi/F"   );
   babyTree_->Branch("tcsumet",      &tcsumet_,      "tcsumet/F"    );
   babyTree_->Branch("njets",        &nJets_,        "njets/I"    );
   babyTree_->Branch("sumjetpt",     &sumJetPt_,     "sumjetpt/F"    );
+  babyTree_->Branch("vecjetpt",     &vecJetPt_,     "vecjetpt/F"    );
 
   //photon stuff
   babyTree_->Branch("ng",      &nPhotons_, "ng/I"); 
