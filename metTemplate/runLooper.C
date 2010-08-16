@@ -22,11 +22,26 @@ void runLooper(char* prefix , bool isData = true, looper::metAlgo algo = looper:
   }
   else if( strcmp( prefix , "QCD_Pt15" ) == 0 ){
     ch->Add("/tas/cms2/QCD_Pt15_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*root");
-  }else{
+  }
+  else if ( strcmp( prefix , "dilep" ) == 0 ){
+    ch->Add("/home/users/jmuelmen/CMSSW_3_6_1_patch4/src/CMS2/NtupleMacros/NtupleTools/dilep_skim_2.root");
+    ch->Add("/nfs-3/userdata/fgolf/SSskims/data/skimmed_ntuple*.root");
+  
+    //Muon Prompt reco files
+    ch->Add("/nfs-3/userdata/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple_1426*.root");
+    
+    //EG prompt reco files      
+    ch->Add("/nfs-3/userdata/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple_1426*.root");
+    
+    //from hcal bad runs
+    ch->Add("/nfs-3/userdata/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root");
+    ch->Add("/nfs-3/userdata/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root");
+  }
+  else{
     cout << "ERROR: cannot find sample " << prefix << endl;
     exit(0);
   }
-
+    
   bool calculateTCMET = false;  //recalculate tcmet on-the-fly?
   
   looper* myLooper = new looper();
