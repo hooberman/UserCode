@@ -142,6 +142,8 @@ class looper
         Int_t   passm_nomttbar_;
         Int_t   passm_nom_;
         Int_t   pdgid_;
+        Float_t ptll_;
+        Float_t ptlt_;
 
         TH1F* metPredicted;
         TH1F* metObserved;

@@ -555,6 +555,9 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         passm_nomttbar_   = passMuon_NominalTTbar() ? 1 : 0;
         passe_ttbar_      = passElectron_ttbar()    ? 1 : 0;
         passe_cand01_     = passElectron_cand01()   ? 1 : 0;
+
+        ptll_             = hyp_ll_p4()[0].pt();
+        ptlt_             = hyp_lt_p4()[0].pt();
         
       }
       
@@ -632,6 +635,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         if( hyp_lt_id()[0] * hyp_ll_id()[0] > 0 )                   continue;
         if( hyp_type()[0]==1 || hyp_type()[0]==2)                   continue;
         if( hyp_p4()[0].mass() < 76. || hyp_p4()[0].mass() > 106.)  continue;
+        if( hyp_ll_p4()[0].pt() < 10 )                              continue;
+        if( hyp_lt_p4()[0].pt() < 10 )                              continue;
         //if ( sumJetPt_ < 200. )                                     continue;
 
         //muon ID
@@ -886,7 +891,15 @@ void looper::InitBabyNtuple (){
   jetmax_pt_        = -999999;
   jetmax_dphimet_   = -999999;
 
-
+  //Z stuff
+  passz_           = -999999;
+  passe_ttbar_     = -999999;
+  passe_cand01_    = -999999;
+  passm_nomttbar_  = -999999;
+  passm_nom_       = -999999;
+  pdgid_           = -999999;
+  ptll_            = -999999;
+  ptlt_            = -999999;
 }
 
 void looper::bookHistos(){
@@ -1040,12 +1053,15 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("HLT_Photon20_Cleaned_L1R",      &HLT_Photon20_Cleaned_L1R_,     "HLT_Photon20_Cleaned_L1R/I");  
 
   //Z stuff
-  babyTree_->Branch("passz",      &passz_,     "passz/I");  
-  babyTree_->Branch("pdgid",      &pdgid_,     "pdgid/I");  
+  babyTree_->Branch("passz",           &passz_,           "passz/I");  
+  babyTree_->Branch("pdgid",           &pdgid_,           "pdgid/I");  
   babyTree_->Branch("passm_nom",       &passm_nom_,       "passm_nom/I");  
   babyTree_->Branch("passm_nomttbar",  &passm_nomttbar_,  "passm_nomttbar/I");  
   babyTree_->Branch("passe_ttbar",     &passe_ttbar_,     "passe_ttbar/I");  
   babyTree_->Branch("passe_cand01",    &passe_cand01_,    "passe_cand01/I");  
+  babyTree_->Branch("ptll",            &ptll_,            "ptll/F");  
+  babyTree_->Branch("ptlt",            &ptlt_,            "ptlt/F");  
+
 }
 
 
