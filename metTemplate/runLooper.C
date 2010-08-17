@@ -9,16 +9,22 @@ void runLooper(char* prefix , bool isData = true, looper::metAlgo algo = looper:
   if( strcmp( prefix , "PhotonJet_Pt15" ) == 0 ){
     ch->Add("/tas/cms2/PhotonJet_Pt15_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*root");
   }
-  else if( strcmp( prefix , "JetMETTau" ) == 0 ){
-    ch->Add("/tas/cms2/tas/cms2/JetMETTau_Run2010A-Jun14thReReco_v2_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");
+  else if( strcmp( prefix , "JetMETTau_250nb" ) == 0 ){
+    //ch->Add("/tas/cms2/tas/cms2/JetMETTau_Run2010A-Jun14thReReco_v2_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");
+    ch->Add("/tas/cms2/MinimumBias_Commissioning10-SD_JetMETTau-Jun14thSkim_v1_RECO/V03-04-26-02/pfJetPt30Skim/skimmed*root");
+    ch->Add("/tas/cms2/JetMETTau_Run2010A-Jun14thReReco_v2_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");
+    ch->Add("/tas/cms2/JetMETTau_Run2010A-Jul16thReReco-v1_RECO/V03-04-26-07/pfJetPt30Skim/skimmed*root");
+    ch->Add("/tas/cms2/JetMETTau_Run2010A-PromptReco-v4_RECO/V03-04-26-07/pfJetPt30Skim/skimmed*root");
   }
   else if( strcmp( prefix , "EG" ) == 0 ){
+    //ch->Add("/tas/cms2/EG_Run2010A-Jun14thReReco_v1_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");
+    ch->Add("/tas/cms2/MinimumBias_Commissioning10-SD_EG-Jun14thSkim_v1_RECO/V03-04-26-02/pfJetPt30Skim/skimmed*root");
     ch->Add("/tas/cms2/EG_Run2010A-Jun14thReReco_v1_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");
-    //ch->Add("/tas/cms2/SpecializedSkims/Commissioning10-SD_EG-v9_goodrunPhotonGT10GeV.root");
-    //ch->Add("/tas/cms2/SpecializedSkims/EG_Run2010A-v1-goodrunPhoton10.root");
+    ch->Add("/tas/cms2/EG_Run2010A-Jul16thReReco-v2_RECO/V03-04-26-07/pfJetPt30Skim/skimmed*root");
+    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/pfJetPt30Skim/skimmed*root");
   }
   else if( strcmp( prefix , "ZJets" ) == 0 ){
-    ch->Add("/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*root");
+    ch->Add("/tas/cms2/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged_ntuple*root");
   }
   else if( strcmp( prefix , "QCD_Pt15" ) == 0 ){
     ch->Add("/tas/cms2/QCD_Pt15_Spring10-START3X_V26_S09-v1/V03-04-08/merged_ntuple*root");

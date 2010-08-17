@@ -48,6 +48,9 @@ class looper
         Int_t L1_SingleEG5_;
         Int_t HLT_Photon10_L1R_;
         Int_t HLT_Photon15_L1R_;
+        Int_t HLT_Photon10_Cleaned_L1R_;
+        Int_t HLT_Photon15_Cleaned_L1R_;
+        Int_t HLT_Photon20_Cleaned_L1R_;
 
         // event stuff
         Int_t   run_;
