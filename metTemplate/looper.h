@@ -103,6 +103,7 @@ class looper
         Float_t  seed_;
         Float_t  r4_;
         Float_t  s4_;
+        Float_t  drel_;
 
         // jet stuff
         Int_t   nJets_;

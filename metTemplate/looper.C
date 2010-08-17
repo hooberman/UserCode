@@ -379,12 +379,17 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         s4_ = swiss_ - seed_ ;
         r4_ = 1 - s4_ / seed_ ;
 
+        drel_ = 1000;
+
         for( unsigned int iel = 0 ; iel < els_p4().size() ; iel++ ){
         
-          float deta = etag_ - trks_trk_p4().at(itrk).eta();
-          float dphi = fabs( phig_ - trks_trk_p4().at(itrk).phi() );
+          if( els_p4().at(iel).pt() < 5 ) continue;
+
+          float deta = etag_ - trks_trk_p4().at(iel).eta();
+          float dphi = fabs( phig_ - trks_trk_p4().at(iel).phi() );
           if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
-      
+          float dr = sqrt( deta * deta + dphi * dphi );
+          if( dr < drel_ ) drel_ = dr;
 
         }
       }
@@ -587,8 +592,9 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         if ( (1.-r4_) < 0.05 )                           continue;
         if ( hoe_ > 0.1 )                                continue;
         if ( jet_dr_ > 0.5 )                             continue;
-        //if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
-        if ( jet_neu_emfrac_ < 0.95 )                    continue; 
+        if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
+        if ( drel_ < 0.3 )                               continue;
+        //if ( jet_neu_emfrac_ < 0.95 )                    continue; 
         //if ( sumJetPt_ < 200. )                          continue;
         
         //dphixmet_  = deltaPhi( tcmetphi_ , phig_ );
@@ -784,6 +790,7 @@ void looper::InitBabyNtuple (){
   seed_     = -999999.;
   s4_       = -999999.;
   r4_       = -999999.;
+  drel_     = -999999.;
                                   
   //photon-matched jet stuff
   jet_eta_          = -999999.;  
@@ -933,12 +940,13 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("jetchargedhadfrac",     &jet_chg_hadfrac_,      "jetchargedhadfrac/F");
   babyTree_->Branch("jetneutralemfrac",      &jet_neu_emfrac_,       "jetneutralemfrac/F");
   babyTree_->Branch("jetneutralhadfrac",     &jet_neu_hadfrac_,      "jetneutralhadfrac/F");
-  babyTree_->Branch("jetncharged",           &jet_nchg_,             "jetncharged/F");
-  babyTree_->Branch("jetnmuon",              &jet_nmuon_,            "jetnmuon/F");
-  babyTree_->Branch("jetnneutral",           &jet_nneu_,             "jetnneutral/F");
+  babyTree_->Branch("jetncharged",           &jet_nchg_,             "jetncharged/I");
+  babyTree_->Branch("jetnmuon",              &jet_nmuon_,            "jetnmuon/I");
+  babyTree_->Branch("jetnneutral",           &jet_nneu_,             "jetnneutral/I");
   babyTree_->Branch("jetdphimet",            &jet_dphimet_,          "jetdphimet/F");
   babyTree_->Branch("jetdpt",                &jet_dpt_,              "jetdpt/F");
   babyTree_->Branch("jetdrgen",              &jet_drgen_,            "jetdrgen/F");
+  babyTree_->Branch("drel",                  &drel_,                 "drel/F");
 
   babyTree_->Branch("maxjetpt",              &jetmax_pt_,            "maxjetpt/F");
   babyTree_->Branch("maxjetdphimet",         &jetmax_dphimet_,       "maxjetdphimet/F");
