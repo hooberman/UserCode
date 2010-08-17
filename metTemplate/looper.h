@@ -30,7 +30,10 @@ class looper
 	bool isGoodTrack(int, bool usePV = false);
         float deltaPhi( float phi1 , float phi2);
         bool passZSelection();
-
+        bool passMuon_Nominal();
+        bool passMuon_NominalTTbar();
+        bool passElectron_ttbar();
+        bool passElectron_cand01();
 
     private:
         
@@ -134,10 +137,11 @@ class looper
 
         //Z stuff
         Int_t   passz_;
-        Int_t   muonId_;
-        Int_t   cand01_;
+        Int_t   passe_ttbar_;
+        Int_t   passe_cand01_;
+        Int_t   passm_nomttbar_;
+        Int_t   passm_nom_;
         Int_t   pdgid_;
-        Int_t
 
         TH1F* metPredicted;
         TH1F* metObserved;

@@ -539,7 +539,25 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
       vecJetPt_ = jetSystem.pt();
 
-      passz_ = passZSelection() ? 1 : 0;
+      if( algo_ == e_ZSelection ){
+      
+        if( hyp_p4().size() != 1 ) continue;       
+      
+        passz_ = passZSelection() ? 1 : 0;
+      
+        pdgid_ = 0;
+      
+        if( hyp_type()[0] == 0 ) pdgid_ = 13; 
+      
+        if( hyp_type()[0] == 3 ) pdgid_ = 11;
+      
+        passm_nom_        = passMuon_Nominal()      ? 1 : 0;
+        passm_nomttbar_   = passMuon_NominalTTbar() ? 1 : 0;
+        passe_ttbar_      = passElectron_ttbar()    ? 1 : 0;
+        passe_cand01_     = passElectron_cand01()   ? 1 : 0;
+        
+      }
+      
 
       //fill baby ntuple
       if ( nJets_ < 1 )     continue;
@@ -617,20 +635,20 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         //if ( sumJetPt_ < 200. )                                     continue;
 
         //muon ID
-        //if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0]))))   continue;
-        //if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0]))))   continue;
+        if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0]))))   continue;
+        if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0]))))   continue;
         
         //cand01
-        //if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
-        //if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+        if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+        if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_lt_index()[0] , electronSelection_cand01 ))) continue;
 
         //ttbar muon ID
-        if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0],NominalTTbar))))   continue;
-        if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0],NominalTTbar))))   continue;
+        //if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0],NominalTTbar))))   continue;
+        //if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0],NominalTTbar))))   continue;
         
         //ttbar electron ID
-        if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_ttbar ))) continue;
-        if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_lt_index()[0] , electronSelection_ttbar ))) continue;
+        //if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_ttbar ))) continue;
+        //if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_lt_index()[0] , electronSelection_ttbar ))) continue;
 
         //dphixmet_  = deltaPhi( tcmetphi_ , hyp_p4()[0].phi() );
         //metPar_    = tcmet_ * cos( dphixmet_ );
@@ -731,8 +749,44 @@ float looper::deltaPhi( float phi1 , float phi2){
   return dphi;
 }
 
-bool looper::passZSelection(){
+bool looper::passMuon_NominalTTbar(){
 
+  //ttbar muon ID
+  if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0],NominalTTbar))))   return false;
+  if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0],NominalTTbar))))   return false;
+  return true;
+
+}
+
+bool looper::passMuon_Nominal(){
+
+  //nominal muon ID
+  if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0]))))   return false;
+  if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0]))))   return false;
+  return true;
+
+}
+
+bool looper::passElectron_ttbar(){
+
+  //ttbar electron ID
+  if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_ttbar ))) return false;
+  if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_lt_index()[0] , electronSelection_ttbar ))) return false;
+  return true;
+
+}
+
+bool looper::passElectron_cand01(){
+
+  //cand01 electron ID
+  if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) return false;
+  if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_lt_index()[0] , electronSelection_cand01 ))) return false;
+  return true;
+
+}
+
+bool looper::passZSelection(){
+  
   if( hyp_p4().size() != 1 )                                  return false;
   if( hyp_lt_id()[0] * hyp_ll_id()[0] > 0 )                   return false;
   if( hyp_type()[0]==1 || hyp_type()[0]==2)                   return false;
@@ -984,6 +1038,14 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("HLT_Photon10_Cleaned_L1R",      &HLT_Photon10_Cleaned_L1R_,     "HLT_Photon10_Cleaned_L1R/I");  
   babyTree_->Branch("HLT_Photon15_Cleaned_L1R",      &HLT_Photon15_Cleaned_L1R_,     "HLT_Photon15_Cleaned_L1R/I");  
   babyTree_->Branch("HLT_Photon20_Cleaned_L1R",      &HLT_Photon20_Cleaned_L1R_,     "HLT_Photon20_Cleaned_L1R/I");  
+
+  //Z stuff
+  babyTree_->Branch("passz",      &passz_,     "passz/I");  
+  babyTree_->Branch("pdgid",      &pdgid_,     "pdgid/I");  
+  babyTree_->Branch("passm_nom",       &passm_nom_,       "passm_nom/I");  
+  babyTree_->Branch("passm_nomttbar",  &passm_nomttbar_,  "passm_nomttbar/I");  
+  babyTree_->Branch("passe_ttbar",     &passe_ttbar_,     "passe_ttbar/I");  
+  babyTree_->Branch("passe_cand01",    &passe_cand01_,    "passe_cand01/I");  
 }
 
 
