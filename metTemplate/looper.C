@@ -539,6 +539,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
       vecJetPt_ = jetSystem.pt();
 
+      passz_ = passZSelection() ? 1 : 0;
+
       //fill baby ntuple
       if ( nJets_ < 1 )     continue;
       if( jetmax_pt_ < 30 ) continue;
@@ -615,12 +617,20 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         //if ( sumJetPt_ < 200. )                                     continue;
 
         //muon ID
-        if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0]))))   continue;
-        if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0]))))   continue;
+        //if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0]))))   continue;
+        //if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0]))))   continue;
         
         //cand01
-        if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
-        if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+        //if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+        //if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+
+        //ttbar muon ID
+        if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0],NominalTTbar))))   continue;
+        if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0],NominalTTbar))))   continue;
+        
+        //ttbar electron ID
+        if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_ttbar ))) continue;
+        if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_lt_index()[0] , electronSelection_ttbar ))) continue;
 
         //dphixmet_  = deltaPhi( tcmetphi_ , hyp_p4()[0].phi() );
         //metPar_    = tcmet_ * cos( dphixmet_ );
@@ -719,6 +729,17 @@ float looper::deltaPhi( float phi1 , float phi2){
   float dphi = fabs( phi1 - phi2 );
   if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
   return dphi;
+}
+
+bool looper::passZSelection(){
+
+  if( hyp_p4().size() != 1 )                                  return false;
+  if( hyp_lt_id()[0] * hyp_ll_id()[0] > 0 )                   return false;
+  if( hyp_type()[0]==1 || hyp_type()[0]==2)                   return false;
+  if( hyp_p4()[0].mass() < 76. || hyp_p4()[0].mass() > 106.)  return false;
+
+  return true;
+
 }
 
 void looper::InitBabyNtuple (){

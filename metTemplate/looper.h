@@ -29,6 +29,8 @@ class looper
         void bookHistos();
 	bool isGoodTrack(int, bool usePV = false);
         float deltaPhi( float phi1 , float phi2);
+        bool passZSelection();
+
 
     private:
         
@@ -129,6 +131,13 @@ class looper
         //leading jet stuff
         Float_t jetmax_pt_;
         Float_t jetmax_dphimet_;
+
+        //Z stuff
+        Int_t   passz_;
+        Int_t   muonId_;
+        Int_t   cand01_;
+        Int_t   pdgid_;
+        Int_t
 
         TH1F* metPredicted;
         TH1F* metObserved;
