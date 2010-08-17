@@ -547,14 +547,16 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       
         pdgid_ = 0;
       
-        if( hyp_type()[0] == 0 ) pdgid_ = 13; 
-      
-        if( hyp_type()[0] == 3 ) pdgid_ = 11;
-      
-        passm_nom_        = passMuon_Nominal()      ? 1 : 0;
-        passm_nomttbar_   = passMuon_NominalTTbar() ? 1 : 0;
-        passe_ttbar_      = passElectron_ttbar()    ? 1 : 0;
-        passe_cand01_     = passElectron_cand01()   ? 1 : 0;
+        if( hyp_type()[0] == 0 ){
+          pdgid_ = 13; 
+          passm_nom_        = passMuon_Nominal()      ? 1 : 0;
+          passm_nomttbar_   = passMuon_NominalTTbar() ? 1 : 0;
+        }
+        if( hyp_type()[0] == 3 ){
+          pdgid_ = 11;
+          passe_ttbar_      = passElectron_ttbar()    ? 1 : 0;
+          passe_cand01_     = passElectron_cand01()   ? 1 : 0;
+        }
 
         ptll_             = hyp_ll_p4()[0].pt();
         ptlt_             = hyp_lt_p4()[0].pt();
