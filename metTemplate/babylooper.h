@@ -24,7 +24,7 @@ class babylooper
         void bookHistos();
 	bool isGoodTrack(int, bool usePV = false);
         float deltaPhi( float phi1 , float phi2);
-
+        void fillUnderOverFlow(TH1F *h1, float value, float weight);
     private:
         
         metAlgo algo_;
@@ -47,7 +47,8 @@ class babylooper
         Int_t   run_;
         Int_t   lumi_;
         Int_t   event_;
-	
+        Float_t weight_;
+
 	// genmet stuff
 	Float_t genmet_;
 	Float_t genmetphi_;
@@ -115,7 +116,22 @@ class babylooper
         Int_t   jet_nneu_;          
         Float_t jet_dphimet_;       
         Float_t jet_dpt_;           
-        Float_t jet_drgen_;         
+        Float_t jet_drgen_;    
+
+        //Z stuff
+        Int_t   passz_;
+        Int_t   passe_ttbar_;
+        Int_t   passe_ttbarV1_;
+        Int_t   passe_cand01_;
+        Int_t   passm_nomttbar_;
+        Int_t   passm_nomttbarV2_;
+        Int_t   passm_nom_;
+        Int_t   pdgid_;
+        Float_t ptll_;
+        Float_t ptlt_;
+        Int_t   flagll_;
+        Int_t   flaglt_;
+        Float_t dilmass_;
 
         //leading jet stuff
         Float_t jetmax_pt_;
@@ -123,6 +139,20 @@ class babylooper
 
         TH1F* metPredicted;
         TH1F* metObserved;
+        TH1F* metPredicted_ptlt40;
+        TH1F* metObserved_ptlt40;
+        TH1F* metPredicted_ptlt50;
+        TH1F* metObserved_ptlt50;
+        TH1F* metPredicted_ptgt50;
+        TH1F* metObserved_ptgt50;
+        TH1F* metPredicted_pt40_60;
+        TH1F* metObserved_pt40_60;
+        TH1F* metPredicted_ptgt60;
+        TH1F* metObserved_ptgt60;
+        TH1F* metPredicted_ee;
+        TH1F* metObserved_ee;
+        TH1F* metPredicted_mm;
+        TH1F* metObserved_mm;
         TH1F* metParPredicted;
         TH1F* metParObserved;
         TH1F* metPerpPredicted;

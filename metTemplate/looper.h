@@ -25,15 +25,18 @@ class looper
         void InitBabyNtuple ();
         void FillBabyNtuple ();
         void CloseBabyNtuple ();
-        void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false, metAlgo algo = e_makeTemplate, int nEvents = -1);
+        void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false, metAlgo algo = e_makeTemplate, int nEvents = -1, float kFactor = 1.);
         void bookHistos();
 	bool isGoodTrack(int, bool usePV = false);
         float deltaPhi( float phi1 , float phi2);
         bool passZSelection();
         bool passMuon_Nominal();
         bool passMuon_NominalTTbar();
-        bool passElectron_ttbar();
+        bool passMuon_NominalTTbarV2();
+        bool passElectron_ttbarV1( bool isData );
+        bool passElectron_ttbar( bool isData );
         bool passElectron_cand01();
+        void fillUnderOverFlow(TH1F *h1, float value, float weight);
 
     private:
         
@@ -61,7 +64,8 @@ class looper
         Int_t   run_;
         Int_t   lumi_;
         Int_t   event_;
-	
+	Float_t weight_;
+
 	// genmet stuff
 	Float_t genmet_;
 	Float_t genmetphi_;
@@ -88,12 +92,17 @@ class looper
 	Float_t mujessumet_;
 
 	// tcmet stuff
-	Float_t tcmet_;
         Float_t dphixmet_;
         Float_t metPar_;
         Float_t metPerp_;
+
+	Float_t tcmet_;
 	Float_t tcmetphi_;
 	Float_t tcsumet_;
+
+	Float_t tcmetNew_;
+	Float_t tcmetphiNew_;
+	Float_t tcsumetNew_;
 
         // photon stuff
         Int_t    nPhotons_;
@@ -110,6 +119,26 @@ class looper
         Float_t  s4_;
         Float_t  drel_;
 
+        Int_t    photon_pixelseed_;        
+	Float_t  photon_e15_;              
+	Float_t  photon_e25max_;           
+	Float_t  photon_e33_;              
+	Float_t  photon_e55_;              
+	Float_t  photon_ecalIso03_;        
+	Float_t  photon_ecalIso04_;        
+	Float_t  photon_hcalIso03_;        
+	Float_t  photon_hcalIso04_;        
+	Float_t  photon_ntkIsoHollow03_;   
+        Float_t  photon_ntkIsoHollow04_;   
+	Float_t  photon_ntkIsoSolid03_;    
+	Float_t  photon_ntkIsoSolid04_;    
+	Float_t  photon_sigmaEtaEta_;      
+	Float_t  photon_sigmaIEtaIEta_;    
+	Float_t  photon_tkisoHollow03_;    
+	Float_t  photon_tkisoHollow04_;    
+	Float_t  photon_tkisoSolid03_;     
+	Float_t  photon_tkisoSolid04_;     
+       
         // jet stuff
         Int_t   nJets_;
         Float_t sumJetPt_;
@@ -138,12 +167,22 @@ class looper
         //Z stuff
         Int_t   passz_;
         Int_t   passe_ttbar_;
+        Int_t   passe_ttbarV1_;
         Int_t   passe_cand01_;
         Int_t   passm_nomttbar_;
+        Int_t   passm_nomttbarV2_;
         Int_t   passm_nom_;
         Int_t   pdgid_;
         Float_t ptll_;
         Float_t ptlt_;
+        Float_t etall_;
+        Float_t etalt_;
+        Float_t dilmass_;
+        Int_t   flagll_;
+        Int_t   flaglt_;
+
+        TH1F*   hgenps_pthat;
+        TH1F*   hphotonpt;
 
         TH1F* metPredicted;
         TH1F* metObserved;

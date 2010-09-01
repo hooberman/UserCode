@@ -32,10 +32,14 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
-bool debug = false;
+enum metType   { e_tcmet = 0, e_pfmet = 1 };
 
+//------------USER PARAMS----------
+bool debug              = false;
+metType myMetType       = e_tcmet;
 const int nJetBins      = 11;
 const int nSumJetPtBins = 23;
+//---------------------------------
 
 using namespace std;
 
@@ -93,6 +97,7 @@ string sumJetPtString( int bin ){
 
 void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool calculateTCMET, metAlgo algo, int nEvents){
 
+  int npass = 0;
   algo_ = algo;
 
   if( algo_ == e_makeTemplate )    cout << "metAlgo makeTemplate" << endl;
@@ -104,7 +109,14 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
   
   if( algo_ != e_makeTemplate){
     metTemplateString = "_dataTemplate";
-    metTemplateFile = TFile::Open("root/JetMETTau_250nb_babyhistos.root");
+    if( myMetType == e_tcmet )
+      metTemplateFile = TFile::Open("root/JetMETTau_250nb_babyhistos_tcmet.root");
+    else if( myMetType == e_pfmet )
+      metTemplateFile = TFile::Open("root/JetMETTau_250nb_babyhistos_pfmet.root");
+    else{
+      cout << "UNDEFINED METTYPE!!!" << endl;
+      exit(0);
+    }
   }
 
   bookHistos();
@@ -148,14 +160,18 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
           fflush(stdout);
         }
       }
-      
+
+      weight_ = 1;
       //require at least 2 jets
       if ( nJets_ < 2 )     continue;
 
       //require leading jet pt > 50
       if( jetmax_pt_ < 50 ) continue;
 
-         
+      float theMet = -1;
+      if     ( myMetType == e_tcmet ) theMet = tcmet_;
+      else if( myMetType == e_pfmet ) theMet = pfmet_;
+
       //fill met template-----------------------------------------------------------------------
       
       if( algo_ == e_makeTemplate ) {
@@ -167,10 +183,10 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
         
         if( debug ) {
           cout << "nJets " << nJets_ << " sumJetPt " << sumJetPt_ << endl;
-          cout << "iJetBin " << iJetBin << " iSumJetPtBin " << iSumJetPtBin << " tcmet " << tcmet_ << endl;
+          cout << "iJetBin " << iJetBin << " iSumJetPtBin " << iSumJetPtBin << " met " << theMet << endl;
         }
 
-        metTemplate[ iJetBin ][ iSumJetPtBin ]->Fill( tcmet_ );
+        fillUnderOverFlow( metTemplate[ iJetBin ][ iSumJetPtBin ] ,  theMet , weight_ );
         
       }
 
@@ -183,48 +199,48 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
             HLT_Photon15_L1R_ == 0         && 
             HLT_Photon10_Cleaned_L1R_ == 0 && 
             HLT_Photon15_Cleaned_L1R_ == 0  ) continue;
-          
+
+        if ( etag_ > 1 )                                 continue;
+        //if ( jet_eta_ > 1 )                              continue;
         if ( etg_ < 20 )                                 continue;
         if ( (1.-r4_) < 0.05 )                           continue;
         if ( hoe_ > 0.1 )                                continue;
         if ( jet_dr_ > 0.5 )                             continue;
-        if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
-        if ( drel_ < 0.3 )                               continue;
-        //if ( jet_neu_emfrac_ < 0.95 )                    continue; 
+        //if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
+        //if ( drel_ < 0.5 )                               continue;
+        if ( jet_neu_emfrac_ < 0.95 )                    continue; 
+        if ( ( 1 - jet_neu_emfrac_ ) * etg_ > 1 )        continue;
         //if ( sumJetPt_ < 200. )                          continue;
         
         //dphixmet_  = deltaPhi( tcmetphi_ , phig_ );
-        //metPar_    = tcmet_ * cos( dphixmet_ );
-        //metPerp_   = tcmet_ * sin( dphixmet_ );
-        
+        //metPar_    = theMet * cos( dphixmet_ );
+        //metPerp_   = theMet * sin( dphixmet_ );
+    
       }
+      
+      //cout << "passz " << passz_ << endl;
+      //cout << "pdgid " << pdgid_ << endl;
+      //cout << "ptll "  << ptll_  << " ptlt " << ptlt_ << endl;
+      //cout << "passe " << passe_ttbarV1_ << " passm " << passm_nomttbar_ << endl;
 
       //apply Z selection-----------------------------------------------------------------------
 
       if( algo_ == e_ZSelection ) {
 
-//         //if( vecJetPt_  < 100)                                       continue;
-//         if( hyp_p4().size() != 1 )                                  continue;
-//         if( hyp_lt_id()[0] * hyp_ll_id()[0] > 0 )                   continue;
-//         if( hyp_type()[0]==1 || hyp_type()[0]==2)                   continue;
-//         if( hyp_p4()[0].mass() < 76. || hyp_p4()[0].mass() > 106.)  continue;
-//         //if ( sumJetPt_ < 200. )                                     continue;
+        //if( pdgid_ == 13 && ( flagll_ != 5 || flaglt_ != 5 ) )    continue;
+        if( passz_ != 1 )                     continue;
+        if( pdgid_ != 11 && pdgid_ != 13 )    continue;
+        if( ptll_ < 10 || ptlt_ < 10 )        continue;
 
-//         //muon ID
-//         if (abs(hyp_ll_id()[0]) == 13  && (! (fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0]))))   continue;
-//         if (abs(hyp_lt_id()[0]) == 13  && (! (fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0]))))   continue;
-        
-//         //cand01
-//         if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
-//         if (abs(hyp_lt_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_cand01 ))) continue;
+        //if( pdgid_ == 11 && !( passe_cand01_ ==1 ) )         continue;
+        //if( pdgid_ == 13 && !( passm_nom_    ==1 ) )  continue;
+        //if( pdgid_ == 13 && !( passm_nomttbarV2_    ==1 ) )  continue;
+        if( pdgid_ == 11 && !( passe_ttbarV1_  == 1 ) )      continue;
+        if( pdgid_ == 13 && !( passm_nomttbar_ == 1 ) )  continue;
 
-//         //dphixmet_  = deltaPhi( tcmetphi_ , hyp_p4()[0].phi() );
-//         //metPar_    = tcmet_ * cos( dphixmet_ );
-//         //metPerp_   = tcmet_ * sin( dphixmet_ );
-        
       }
-
-     
+   
+      npass++;
 
       //fill predicted and observed met histos--------------------------------------------------
 
@@ -236,17 +252,50 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
         TH1F* hmetPar  = (TH1F*) metTemplateFile->Get(Form("metParTemplate_%i_%i",iJetBin,iSumJetPtBin));
         TH1F* hmetPerp = (TH1F*) metTemplateFile->Get(Form("metPerpTemplate_%i_%i",iJetBin,iSumJetPtBin));
         
-        metObserved_njets[iJetBin]->Fill( tcmet_ );
+        fillUnderOverFlow( metObserved_njets[iJetBin] , theMet , weight_ );
         metPredicted_njets[iJetBin]->Add( hmet );
         
-        metObserved->Fill( tcmet_ );
+        fillUnderOverFlow( metObserved , theMet , weight_ );
         metPredicted->Add( hmet );
 
-        metParObserved->Fill( metPar_ );
+        fillUnderOverFlow( metParObserved , metPar_ , weight_ );
         metParPredicted->Add( hmetPar );
 
-        metPerpObserved->Fill( metPerp_ );
+        fillUnderOverFlow( metPerpObserved , metPerp_ , weight_ );
         metPerpPredicted->Add( hmetPerp );
+
+        if( algo_ == e_ZSelection ) {
+          if( pdgid_ == 11 ){
+            fillUnderOverFlow( metObserved_ee , theMet , weight_ );
+            metPredicted_ee->Add( hmet );
+          }
+          if( pdgid_ == 13 ){
+            fillUnderOverFlow( metObserved_mm , theMet , weight_ );
+            metPredicted_mm->Add( hmet );
+          }
+        }
+
+        if( algo_ == e_photonSelection ){
+          if( etg_ < 40 ){
+            fillUnderOverFlow( metObserved_ptlt40 , theMet , weight_ );
+            metPredicted_ptlt40->Add( hmet );
+          }
+          if( etg_ > 40 && etg_ < 60 ){
+            fillUnderOverFlow( metObserved_pt40_60 , theMet , weight_ );
+            metPredicted_pt40_60->Add( hmet );
+          }
+          if( etg_ > 60 ){
+            fillUnderOverFlow( metObserved_ptgt60 , theMet , weight_ );
+            metPredicted_ptgt60->Add( hmet );
+          }
+          if( etg_ < 50 ){
+            fillUnderOverFlow( metObserved_ptlt50 , theMet , weight_ );
+            metPredicted_ptlt50->Add( hmet );
+          }else{
+            fillUnderOverFlow( metObserved_ptgt50 , theMet , weight_ );
+            metPredicted_ptgt50->Add( hmet );
+          }
+        }
         
         delete hmet;
 
@@ -254,6 +303,7 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
     } // end loop over events
   } // end loop over files
   
+  cout << npass << " events passing selection" << endl;
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   
@@ -300,6 +350,19 @@ float babylooper::deltaPhi( float phi1 , float phi2){
   return dphi;
 }
 
+
+void babylooper::fillUnderOverFlow(TH1F *h1, float value, float weight){
+
+  float min = h1->GetXaxis()->GetXmin();
+  float max = h1->GetXaxis()->GetXmax();
+
+  if (value > max) value = h1->GetBinCenter(h1->GetNbinsX());
+  if (value < min) value = h1->GetBinCenter(1);
+
+  h1->Fill(value, weight);
+
+}
+
 void babylooper::bookHistos(){
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
@@ -307,6 +370,27 @@ void babylooper::bookHistos(){
 
   metObserved  = new TH1F("metObserved", "Observed MET",500,0,500);
   metPredicted = new TH1F("metPredicted","Predicted MET",500,0,500);
+
+  metObserved_ptlt40     = new TH1F("metObserved_ptlt40", "Observed MET (p_{T}<40 GeV)",500,0,500);
+  metPredicted_ptlt40    = new TH1F("metPredicted_ptlt40","Predicted MET  (p_{T}<40 GeV)",500,0,500);
+
+  metObserved_ptlt50     = new TH1F("metObserved_ptlt50", "Observed MET (p_{T}<50 GeV)",500,0,500);
+  metPredicted_ptlt50    = new TH1F("metPredicted_ptlt50","Predicted MET  (p_{T}<50 GeV)",500,0,500);
+
+  metObserved_ptgt50     = new TH1F("metObserved_ptgt50", "Observed MET (p_{T}>50 GeV)",500,0,500);
+  metPredicted_ptgt50    = new TH1F("metPredicted_ptgt50","Predicted MET  (p_{T}>50 GeV)",500,0,500);
+
+  metObserved_pt40_60    = new TH1F("metObserved_pt40_60", "Observed MET (40<p_{T}<60 GeV)",500,0,500);
+  metPredicted_pt40_60   = new TH1F("metPredicted_pt40_60","Predicted MET  (40<p_{T}<60 GeV)",500,0,500);
+
+  metObserved_ptgt60     = new TH1F("metObserved_ptgt60", "Observed MET (p_{T}>60 GeV)",500,0,500);
+  metPredicted_ptgt60    = new TH1F("metPredicted_ptgt60","Predicted MET  (p_{T}>60 GeV)",500,0,500);
+
+  metObserved_ee  = new TH1F("metObserved_ee", "Observed MET (ee)",500,0,500);
+  metPredicted_ee = new TH1F("metPredicted_ee","Predicted MET (ee)",500,0,500);
+
+  metObserved_mm  = new TH1F("metObserved_mm", "Observed MET (#mu#mu)",500,0,500);
+  metPredicted_mm = new TH1F("metPredicted_mm","Predicted MET (#mu#mu)",500,0,500);
 
   metParObserved  = new TH1F("metParObserved", "Observed MET (Parallel)",1000,-500,500);
   metParPredicted = new TH1F("metParPredicted","Predicted MET (Parallel)",1000,-500,500);
@@ -316,6 +400,21 @@ void babylooper::bookHistos(){
  
   metObserved->Sumw2();
   metPredicted->Sumw2();
+
+  metObserved_ptlt40->Sumw2();
+  metPredicted_ptlt40->Sumw2();
+
+  metObserved_pt40_60->Sumw2();
+  metPredicted_pt40_60->Sumw2();
+
+  metObserved_ptgt60->Sumw2();
+  metPredicted_ptgt60->Sumw2();
+
+  metObserved_ee->Sumw2();
+  metPredicted_ee->Sumw2();
+
+  metObserved_mm->Sumw2();
+  metPredicted_mm->Sumw2();
 
   metParObserved->Sumw2();
   metParPredicted->Sumw2();
@@ -364,6 +463,7 @@ void babylooper::bookHistos(){
 
 void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("run",          &run_          );
+  tree->SetBranchAddress("weight",       &weight_       );
   tree->SetBranchAddress("lumi",         &lumi_         );
   tree->SetBranchAddress("event",        &event_        );
   tree->SetBranchAddress("pfmet",        &pfmet_        );
@@ -438,6 +538,22 @@ void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("HLT_Photon10_Cleaned_L1R",      &HLT_Photon10_Cleaned_L1R_  ); 
   tree->SetBranchAddress("HLT_Photon15_Cleaned_L1R",      &HLT_Photon15_Cleaned_L1R_  ); 
   tree->SetBranchAddress("HLT_Photon20_Cleaned_L1R",      &HLT_Photon20_Cleaned_L1R_  ); 
+
+  //Z stuff
+  tree->SetBranchAddress("passz",             &passz_             );
+  tree->SetBranchAddress("pdgid",             &pdgid_             );
+  tree->SetBranchAddress("passm_nom",         &passm_nom_         );
+  tree->SetBranchAddress("passm_nomttbar",    &passm_nomttbar_    );  
+  tree->SetBranchAddress("passm_nomttbarV2",  &passm_nomttbarV2_  );  
+  tree->SetBranchAddress("passe_ttbar",       &passe_ttbar_       );
+  tree->SetBranchAddress("passe_ttbarV1",     &passe_ttbarV1_     );
+  tree->SetBranchAddress("passe_cand01",      &passe_cand01_      );  
+  tree->SetBranchAddress("ptll",              &ptll_              );  
+  tree->SetBranchAddress("ptlt",              &ptlt_              ); 
+  tree->SetBranchAddress("dilmass",           &dilmass_           ); 
+  tree->SetBranchAddress("flagll",            &flagll_            );  
+  tree->SetBranchAddress("flaglt",            &flaglt_            ); 
+
 }
 
 
