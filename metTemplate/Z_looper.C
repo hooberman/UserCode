@@ -31,19 +31,30 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
+using namespace tas;
+
+//--------------------------------------------------------------------
 
 bool debug = false;
-float lumi = 0.0027945;
-char* iter = "2p8pb_zlooper_v2";
-
-//float lumi = 0.001932;
-//char* iter = "1p9pb_zlooper_v2";
-
 const int nJetBins      = 11;
 const int nSumJetPtBins = 23;
 
-using namespace tas;
+float lumi         = 0.0027945;
+char* iter         = "2p8pb_ttdilsync";
+char* jsonfilename = "Cert_TopAug30_Merged_135059-144114_recover_noESDCS_goodruns.txt";
 
+//float lumi         = 0.001932;
+//char* iter         = "1p9pb_zlooper_v2";
+//char* jsonfilename ="Cert_TopAug26_Merged_135059-143835_recover_noESDCS_goodruns.txt"
+
+//--------------------------------------------------------------------
+
+inline double fround(double n, double d){
+  return floor(n * pow(10., d) + .5) / pow(10., d);
+}
+
+//--------------------------------------------------------------------
+  
 int getJetBin( int njets ){
   
   int bin = njets;
@@ -51,6 +62,8 @@ int getJetBin( int njets ){
   
   return bin;
 }
+
+//--------------------------------------------------------------------
 
 string jetString( int bin ){
 
@@ -60,6 +73,8 @@ string jetString( int bin ){
   return s.str();
 
 }
+
+//--------------------------------------------------------------------
 
 int getSumJetPtBin( float x ){
 
@@ -85,6 +100,8 @@ int getSumJetPtBin( float x ){
   return ptbin;
 }
 
+//--------------------------------------------------------------------
+
 string sumJetPtString( int bin ){
   
   float bins[nSumJetPtBins+1]={0,25,50,75,100,125,150,175,200,250,300,350,400,450,
@@ -95,6 +112,8 @@ string sumJetPtString( int bin ){
 
   return s.str();
 }
+
+//--------------------------------------------------------------------
 
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool calculateTCMET, metAlgo algo, int nEvents, float kFactor){
 
@@ -120,10 +139,21 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
     }
   }
 
-  //set_goodrun_file("Cert_TopAug13_Merged_135059-142664_goodruns.txt");
-  //set_goodrun_file("Cert_TopAug25_Merged_135059-143336_goodruns.txt");
-  //set_goodrun_file("Cert_TopAug26_Merged_135059-143835_recover_noESDCS_goodruns.txt");
-  set_goodrun_file("Cert_TopAug30_Merged_135059-144114_recover_noESDCS_goodruns.txt");
+  set_goodrun_file( jsonfilename );
+  ofile_tcmet.open(  Form( "root/%s_%s_tcmetprintout.txt" , prefix , iter ) );
+  ofile_events.open( Form( "root/%s_%s_highmetevents.txt" , prefix , iter ) );
+  if( isData ){
+    ofile_events << "|" << setw(8)  << "run"          << setw(4) 
+                 << "|" << setw(6)  << "lumi"         << setw(4) 
+                 << "|" << setw(12) << "event"        << setw(4) 
+                 << "|" << setw(6)  << "type"         << setw(4) 
+                 << "|" << setw(6)  << "njets"        << setw(4) 
+                 << "|" << setw(6)  << "nbtags"       << setw(4) 
+                 << "|" << setw(8)  << "tcmet"        << setw(4) 
+                 << "|" << setw(8)  << "pfmet"        << setw(4) 
+                 << "|" << setw(8)  << "dphi"         << setw(4) << "|" << endl; 
+  }
+
 
   bookHistos();
 
@@ -147,6 +177,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
   int nPassBeamHalo   = 0;
   int nPassGoodTracks = 0;
   int nPassGoodVertex = 0;
+  float nGoodMu = 0;
+  float nGoodEl = 0;
   int nSkip_els_conv_dist = 0;
   if(debug) cout << "Begin file loop" << endl;
 
@@ -197,41 +229,31 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         continue;
       }
 
-      //basic event selection
+      //good run+event selection-----------------------------------------------------------
+
       if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))
         nPassGoodRun++;
       else continue;
-          
-      bptx_        =  cleaning_BPTX(isData)             ? 1 : 0;
-      bsc_         =  cleaning_BSC()                    ? 1 : 0;
-      beamhalo_    =  cleaning_beamHalo()               ? 1 : 0;
-      goodvtx_     =  cleaning_goodVertexAugust2010()   ? 1 : 0;
-      goodtrks_    =  cleaning_goodTracks()             ? 1 : 0;
 
-//       // determine if current event passes BPTX triggers
-//       if (cleaning_BPTX( isData ))
-//         nPassBPTX++;
-//       else continue;
+      if (cleaning_BPTX( isData ))
+        nPassBPTX++;
+      else continue;
 
-//       // determine if current event passes BSC triggers
-//       if (cleaning_BSC())
-//         nPassBSC++;
-//       else continue;
+      if (cleaning_BSC())
+        nPassBSC++;
+      else continue;
 
-//       // determine if current event passes beam halo triggers
-//       if (cleaning_beamHalo())
-//         nPassBeamHalo++;
-//       else continue;
+      if (cleaning_beamHalo())
+        nPassBeamHalo++;
+      else continue;
 
-//       // determine if current event is a beam scraping event
-//       if (cleaning_goodTracks())
-//         nPassGoodTracks++;
-//       else continue;
+      if (cleaning_goodTracks())
+        nPassGoodTracks++;
+      else continue;
 
-//       // determine if current event has a good vertex
-//       if (cleaning_goodVertexAugust2010())
-//         nPassGoodVertex++;
-//       else continue;
+      if (cleaning_goodVertexAugust2010())
+        nPassGoodVertex++;
+      else continue;
       
       if(debug) cout << "Pass event selection" << endl;
 
@@ -303,113 +325,58 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
           else                                                 HLT_Photon20_Cleaned_L1R_ = 0;
         }
       }      
-      //met quantities--------------------------------------------------------------------------
+
+      //trigger selection
+      bool passTrigger = false;
       
-      //calomet
+      if( passHLTTrigger("HLT_Mu9") ) passTrigger = true;
+      
+      if( isData ){
+       
+        if( run_ < 138000 ){
+          if( passHLTTrigger("HLT_Ele10_LW_L1R") ) passTrigger = true;
+        }
+
+        else if( run_ >= 138000 && run_ < 141900 ){
+          if( passHLTTrigger("HLT_Ele15_LW_L1R") ) passTrigger = true;
+        }
+
+        else if( run_ >= 141900 && run_ < 144000 ){
+          if( passHLTTrigger("HLT_Ele15_LW_L1R") ) passTrigger = true;
+        } 
+
+        else if( run_ >= 144000 ){
+          if( passHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R") ) passTrigger = true;
+          if( passHLTTrigger("HLT_DoubleEle10_SW_L1R") )     passTrigger = true;
+        }
+        
+      }else{
+
+        if( passHLTTrigger("HLT_Ele10_LW_L1R") ) passTrigger = true;
+     
+      }
+
+      if( !passTrigger ) continue;
+
+      // calomet, pfmet, genmet
       met_       = cms2.evt_met();
       metphi_    = cms2.evt_metPhi();
       sumet_     = cms2.evt_sumet();
 
-      // pf met stuff
       pfmet_    = cms2.evt_pfmet();
       pfmetphi_ = cms2.evt_pfmetPhi();
       pfsumet_  = cms2.evt_pfsumet();
 
-      //muon-corrected met stuff
-      mumet_    = cms2.evt_metMuonCorr();
-      mumetphi_ = cms2.evt_metMuonCorrPhi();
-      musumet_  = cms2.evt_sumetMuonCorr();
-
-      //muon-corrected JES met stuff
-      mujesmet_    = cms2.evt_metMuonJESCorr();
-      mujesmetphi_ = cms2.evt_metMuonJESCorrPhi();
-      mujessumet_  = -9999.; //cms2.evt_sumetMuonJESCorr(); //branch doesn't exist!!!
-
-      // genmet stuff
       if (!isData){
         genmet_     = cms2.gen_met();
         genmetphi_  = cms2.gen_metPhi();
         gensumet_   = cms2.gen_sumEt();
       }
 
-      //Z_looper-level tcmet
-      if( calculateTCMET ){
-        metStruct tcmetNewStruct = correctedTCMET();
-        tcmetNew_     = tcmetNewStruct.met;
-        tcmetphiNew_  = tcmetNewStruct.metphi;
-        tcsumetNew_   = tcmetNewStruct.sumet;
-      }
-
-      //just take tcmet from event
-      tcmet_     = evt_tcmet();
-      tcmetphi_  = evt_tcmetPhi();
-      tcsumet_   = evt_tcsumet();
-
-      if( hyp_p4().size() != hyp_type().size() ){
-        cout << "ERROR hyp_p4().size() " << hyp_p4().size() << " hyp_type().size() " << hyp_type().size() << endl;
-      }
+      int nHypPass = 0;
 
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
-   
-        //loop over pfjets, find nJets and sumJetPt
-        nJets_        = 0;
-        sumJetPt_     = 0.;
-        nJets40_      = 0;
-        sumJetPt10_   = 0.;
-        
-        LorentzVector jetSystem(0.,0.,0.,0.);
-        int imaxjet = -1;
-        float maxpt = -1;
-        
-        for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
-          LorentzVector vjet = pfjets_p4().at(ijet);
-          LorentzVector vlt  = hyp_lt_p4()[hypIdx];
-          LorentzVector vll  = hyp_ll_p4()[hypIdx];
-          
-          if (dRbetweenVectors(vjet, vll) < 0.4)  continue;
-          if (dRbetweenVectors(vjet, vlt) < 0.4)  continue;
-          if( fabs( vjet.eta() ) > 5.)            continue;
 
-          if( pfjets_p4().at(ijet).pt() > maxpt ){
-            maxpt = pfjets_p4().at(ijet).pt();
-            imaxjet = ijet;
-          }
-            
-          if ( vjet.pt() > 30. ){
-            nJets_++;
-          }        
-          if ( vjet.pt() > 15. ){
-            sumJetPt_ += vjet.pt();
-            jetSystem += vjet;
-          }
-          
-          if ( vjet.pt() > 40. ){
-            nJets40_++;
-          }
-          if ( vjet.pt() > 10. ){
-            sumJetPt10_ += vjet.pt();
-          }
-        }
-      
-        jetmax_pt_ = -1;
-
-        if( imaxjet > -1 ){
-          jetmax_pt_       = pfjets_p4().at(imaxjet).pt();
-          jetmax_dphimet_  = deltaPhi( pfjets_p4().at(imaxjet).phi() , tcmetphi_);
-        }
-
-        vecJetPt_ = jetSystem.pt();
-
-        //passz_ = passZSelection( hypIdx ) ? 1 : 0;
-        //if( passz_ == 0 ) continue;
-
-        
-        if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                   continue;
-        if( hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.)  continue;
-        if( hyp_ll_p4()[hypIdx].pt() < 10. )                                  continue;
-        if( hyp_lt_p4()[hypIdx].pt() < 10. )                                  continue;
-                   
         leptype_ = 99;
         if (hyp_type()[hypIdx] == 3) leptype_ = 0;                           // ee
         if (hyp_type()[hypIdx] == 0) leptype_ = 1;                           // mm
@@ -418,42 +385,44 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
           cout << "Skipping unknown dilepton type = " << hyp_type()[hypIdx] << endl;
           continue;
         }
-        
-        if( abs( hyp_ll_id()[hypIdx] ) == 11 ){
-          passe_ll_ttbarV1_      = pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV1 , isData ) ? 1 : 0;
-          passe_ll_ttbar_        = pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbar   , isData ) ? 1 : 0;
-          passe_ll_cand01_       = pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_cand01 )           ? 1 : 0;
-        }else if( abs( hyp_ll_id()[hypIdx] ) == 13 ){
-          flagll_                = mus_tcmet_flag().at(hyp_ll_index()[hypIdx]);
-          passm_ll_nom_          = muonId(hyp_ll_index()[hypIdx])                ? 1 : 0;
-          passm_ll_nomttbar_     = muonId(hyp_ll_index()[hypIdx],NominalTTbar)   ? 1 : 0;
-          passm_ll_nomttbarV2_   = muonId(hyp_ll_index()[hypIdx],NominalTTbarV2) ? 1 : 0;
-        }else{
-          cout << "ERROR UNRECOGNIZED LL ID " << hyp_ll_id()[hypIdx] << endl;
-          continue;
-        }
-        
-        if( abs( hyp_lt_id()[hypIdx] ) == 11 ){
-          passe_lt_ttbarV1_      = pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbarV1 , isData ) ? 1 : 0;
-          passe_lt_ttbar_        = pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbar   , isData ) ? 1 : 0;
-          passe_lt_cand01_       = pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_cand01 )           ? 1 : 0;
-        }else if( abs( hyp_lt_id()[hypIdx] ) == 13 ){
-          flaglt_                = mus_tcmet_flag().at(hyp_lt_index()[hypIdx]);
-          passm_lt_nom_          = muonId(hyp_lt_index()[hypIdx])                ? 1 : 0;
-          passm_lt_nomttbar_     = muonId(hyp_lt_index()[hypIdx],NominalTTbar)   ? 1 : 0;
-          passm_lt_nomttbarV2_   = muonId(hyp_lt_index()[hypIdx],NominalTTbarV2) ? 1 : 0;
-        }else{
-          cout << "ERROR UNRECOGNIZED LT ID " << hyp_lt_id()[hypIdx] << endl;
-          continue;
-        }
 
+        //selection--------------------------------------------------------------------- 
+
+        //ttbar muon ID
+        if (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx],NominalTTbarV2)))   continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx],NominalTTbarV2)))   continue;
         
+        //ttbarV1 electron ID
+        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV1 , isData ))) continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbarV1 , isData ))) continue;
+        
+        //OS, pt > (20,20) GeV
+        if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                   continue;
+        if( hyp_ll_p4()[hypIdx].pt() < 20. )                                  continue;
+        if( hyp_lt_p4()[hypIdx].pt() < 20. )                                  continue;
+        
+        //Z-mass constraint
+        dilmass_ = hyp_p4()[hypIdx].mass();
+        fillHistos( hdilMass          , dilmass_  , weight_ , leptype_ );
+        if( hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.)  continue;
+
+        nHypPass++;
+        if( leptype_ == 0 ) nGoodEl+=weight_;
+        if( leptype_ == 1 ) nGoodMu+=weight_;
+        
+  
+        //dilepton stuff---------------------------------------------------------------- 
+        
+        idll_             = hyp_ll_id()[hypIdx];   
+        idlt_             = hyp_lt_id()[hypIdx];        
         ptll_             = hyp_ll_p4()[hypIdx].pt();
         ptlt_             = hyp_lt_p4()[hypIdx].pt();
         etall_            = hyp_ll_p4()[hypIdx].eta();
         etalt_            = hyp_lt_p4()[hypIdx].eta();
         dilmass_          = hyp_p4()[hypIdx].mass(); 
         dilpt_            = hyp_p4()[hypIdx].pt(); 
+
+        //tcmet stuff------------------------------------------------------------------- 
 
         metStruct tcmetStruct = correctTCMETforHypMuons( hypIdx ,  
                                                          evt_tcmet() * cos( evt_tcmetPhi() ), 
@@ -465,43 +434,149 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         tcmetphi_ = tcmetStruct.metphi;
         tcsumet_  = tcmetStruct.sumet;   
 
-        metStruct tcmetNewStruct = correctTCMETforHypMuons( hypIdx ,  
-                                                            tcmetNew_ * cos( tcmetphiNew_ ), 
-                                                            tcmetNew_ * sin( tcmetphiNew_ ), 
-                                                            tcsumetNew_ );
-            
-        // Z_looper-level  tcmet stuff (corrected for hyp muons)
-        tcmetNew_    = tcmetNewStruct.met;
-        tcmetphiNew_ = tcmetNewStruct.metphi;
-        tcsumetNew_  = tcmetNewStruct.sumet;   
+        if( calculateTCMET ){
+        
+          metStruct tcmetNewStruct = correctedTCMET();
+          tcmetNew_     = tcmetNewStruct.met;
+          tcmetphiNew_  = tcmetNewStruct.metphi;
+          tcsumetNew_   = tcmetNewStruct.sumet;
+          
+          metStruct tcmetNewStruct_corr = correctTCMETforHypMuons( hypIdx ,  
+                                                                   tcmetNew_ * cos( tcmetphiNew_ ), 
+                                                                   tcmetNew_ * sin( tcmetphiNew_ ), 
+                                                                   tcsumetNew_ );
+          
+          // Z_looper-level  tcmet stuff (corrected for hyp muons)
+          tcmetNew_    = tcmetNewStruct_corr.met;
+          tcmetphiNew_ = tcmetNewStruct_corr.metphi;
+          tcsumetNew_  = tcmetNewStruct_corr.sumet;   
+
+        }else{
+        
+          tcmetNew_    = -9999;
+          tcmetphiNew_ = -9999;
+          tcsumetNew_  = -9999;
+       
+        }
 
         nGoodVertex_ = 0;
         for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
           if(isGoodVertex(v)) nGoodVertex_++;
         }
         
-        //fill baby ntuple
-        if ( nJets_ < 1 )     continue;
-        if( jetmax_pt_ < 30 ) continue;
-        FillBabyNtuple();
+        //jet stuff--------------------------------------------------------------------- 
+        
+        nJets_        = 0;
+        sumJetPt_     = 0.;
+        nJets40_      = 0;
+        sumJetPt10_   = 0.;
+        nbtags_       = 0;
 
-        //selection
+        LorentzVector jetSystem(0.,0.,0.,0.);        
+        float maxcosdphi  = -99;
+        //int   imaxcosdphi = -1;
+        int   imaxjet     = -1;
+        float maxpt       = -1;
+        
+        //loop over pfjets pt > 30 GeV |eta| < 2.5
+        for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+          LorentzVector vjet = pfjets_p4().at(ijet);
+          LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+          LorentzVector vll  = hyp_ll_p4()[hypIdx];
+          
+          if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
+          if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+          if( fabs( vjet.eta() ) > 2.5 )           continue;
+
+          if ( vjet.pt() > 10. ){
+            sumJetPt10_ += vjet.pt();
+          }
+          if ( vjet.pt() > 15. ){
+            sumJetPt_ += vjet.pt();
+            jetSystem += vjet;
+          }
+
+          if( vjet.pt() < 30. )                    continue;
+
+          //find max jet pt
+          if( pfjets_p4().at(ijet).pt() > maxpt ){
+            maxpt   = pfjets_p4().at(ijet).pt();
+            imaxjet = ijet;
+          }
+
+          //find jet (anti-)aligned with tcmet
+          if( fabs( cos( tcmetphi_ - vjet.phi() ) ) > maxcosdphi ){
+            maxcosdphi  = fabs( cos( tcmetphi_ - vjet.phi() ) );
+            //imaxcosphi  = ijet;
+            dphijetmet_ = fabs( tcmetphi_ - vjet.phi() );
+            if( dphijetmet_ > TMath::Pi() ) dphijetmet_ = TMath::TwoPi() - dphijetmet_;
+          }
+
+          //find closest calojet to use btagging info
+          float dRmin    = 100;
+          int   iCaloJet = -1;
+          
+          for( unsigned int iC = 0 ; iC < jets_p4().size() ; iC++ ){
+            
+            LorentzVector vcalojet = jets_p4().at(iC);
+            if( vcalojet.pt() * jets_cor().at(iC) < 10 ) continue;
+            
+            float dR = dRbetweenVectors(vjet, vcalojet);
+            if( dR < dRmin ){
+              dRmin = dR;
+              iCaloJet = iC;
+            }
+          }
+          
+          if( iCaloJet > -1 ){
+            if( jets_simpleSecondaryVertexHighEffBJetTag().at(iCaloJet) > 1.74 ) ++nbtags_;
+            //if( jets_trackCountingHighEffBJetTag().at(iCaloJet) > 1.7 ) ++nbtags_;
+          }
+
+          if ( vjet.pt() > 30. ) nJets_++;
+          if ( vjet.pt() > 40. ) nJets40_++;
+          
+        }
+      
+        jetmax_pt_ = -1;
+
+        if( imaxjet > -1 ){
+          jetmax_pt_       = pfjets_p4().at(imaxjet).pt();
+          jetmax_dphimet_  = deltaPhi( pfjets_p4().at(imaxjet).phi() , tcmetphi_);
+        }
+
+        vecJetPt_ = jetSystem.pt();
+      
+        //fill histos and ntuple----------------------------------------------------------- 
+
+        FillBabyNtuple();
+        fillHistos( htcmet            , tcmet_           , weight_ , leptype_ , nJets_ );
+        fillHistos( htcmetNew         , tcmetNew_        , weight_ , leptype_ , nJets_ );
+        fillHistos( hpfmet            , pfmet_           , weight_ , leptype_ , nJets_  );
+
+        if( isData && ( tcmet_ > 30 || pfmet_ > 30 ) ){
+          metStruct dummyStruct = correctedTCMET( true, ofile_tcmet );
+          
+          string lepstring[3]={"ee","mm","em"};
+
+          ofile_events << "|" << setw(8)  << evt_run()                   << setw(4) 
+                       << "|" << setw(6)  << evt_lumiBlock()             << setw(4) 
+                       << "|" << setw(12) << evt_event()                 << setw(4) 
+                       << "|" << setw(6)  << lepstring[leptype_]         << setw(4) 
+                       << "|" << setw(6)  << nJets_                      << setw(4) 
+                       << "|" << setw(6)  << nbtags_                     << setw(4) 
+                       << "|" << setw(8)  << fround(tcmet_,1)            << setw(4) 
+                       << "|" << setw(8)  << fround(pfmet_,1)            << setw(4) 
+                       << "|" << setw(8)  << fround(dphijetmet_,2)       << setw(4) << "|" << endl; 
+          
+        }
+
+        //met templates-------------------------------------------------------------------- 
+
         if ( nJets_ < 2 )                                                     continue;
         if( jetmax_pt_ < 50 )                                                 continue;
-        //if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                   continue;
-        //if( hyp_type()[hypIdx]==1 || hyp_type()[hypIdx]==2)                   continue;
-        //if( hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.)  continue;
-        //if( hyp_ll_p4()[hypIdx].pt() < 10 )                                   continue;
-        //if( hyp_lt_p4()[hypIdx].pt() < 10 )                                   continue;
-     
-        //ttbar muon ID
-        if (abs(hyp_ll_id()[hypIdx]) == 13  && (!(fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_ll_index()[hypIdx],NominalTTbarV2))))   continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 13  && (!(fabs(hyp_lt_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_lt_index()[hypIdx],NominalTTbarV2))))   continue;
-        
-        //ttbarV1 electron ID
-        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV1 , isData ))) continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbarV1 , isData ))) continue;
- 
+
         dphixmet_  = deltaPhi( tcmetphi_ , hyp_p4()[hypIdx].phi() );
         metPar_    = tcmet_ * cos( dphixmet_ );
         metPerp_   = tcmet_ * sin( dphixmet_ );
@@ -519,16 +594,26 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         fillUnderOverFlow( metObserved , tcmet_ , weight_  );
         metPredicted->Add( hmet );
 
+        // SF vs. DF
         if( leptype_ == 0 || leptype_ == 1 ){
           fillUnderOverFlow( metObserved_sf , tcmet_ , weight_  );
           metPredicted_sf->Add( hmet );
-        }else if( leptype_ == 2 ){
+        }
+        else if( leptype_ == 2 ){
           fillUnderOverFlow( metObserved_df , tcmet_ , weight_  );
           metPredicted_df->Add( hmet );
-        }else{
-          cout << "UNRECOGNIZED LEPTYPE " << leptype_ << endl;
         }
-        
+
+        // ee vs. mumu
+        if( leptype_ == 0 ){
+          fillUnderOverFlow( metObserved_ee , tcmet_ , weight_  );
+          metPredicted_ee->Add( hmet );
+        }
+        else if( leptype_ == 1 ){
+          fillUnderOverFlow( metObserved_mm , tcmet_ , weight_  );
+          metPredicted_mm->Add( hmet );
+        }
+
         fillUnderOverFlow( metParObserved , metPar_ , weight_  );
         metParPredicted->Add( hmetPar );
         
@@ -540,6 +625,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         delete hmetPerp;
 
       }// end loop over hypIdx
+
+      if( nHypPass > 1 && isData ) 
+        cout << "Found " << nHypPass << " hypotheses passing selection" << endl;
     } // end loop over events
   } // end loop over files
   
@@ -566,6 +654,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   
+  cout << nGoodEl << " ee events in Z mass window" << endl;
+  cout << nGoodMu << " mm events in Z mass window" << endl;
+
   CloseBabyNtuple();
 
   // make histos rootfile
@@ -576,75 +667,15 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
   
 } // end ScanChain
 
+//--------------------------------------------------------------------
+
 float Z_looper::deltaPhi( float phi1 , float phi2){
   float dphi = fabs( phi1 - phi2 );
   if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
   return dphi;
 }
 
-bool Z_looper::passMuon_NominalTTbar( int hypIdx ){
-
-  //ttbar muon ID
-  if (abs(hyp_ll_id()[hypIdx]) == 13  && (!(fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_ll_index()[hypIdx],NominalTTbar))))   return false;
-  if (abs(hyp_lt_id()[hypIdx]) == 13  && (!(fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_lt_index()[hypIdx],NominalTTbar))))   return false;
-  return true;
-
-}
-
-bool Z_looper::passMuon_NominalTTbarV2( int hypIdx ){
-
-  //ttbar muon ID
-  if (abs(hyp_ll_id()[hypIdx]) == 13  && (!(fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_ll_index()[hypIdx],NominalTTbarV2))))   return false;
-  if (abs(hyp_lt_id()[hypIdx]) == 13  && (!(fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_lt_index()[hypIdx],NominalTTbarV2))))   return false;
-  return true;
-
-}
-
-bool Z_looper::passMuon_Nominal( int hypIdx ){
-
-  //nominal muon ID
-  if (abs(hyp_ll_id()[hypIdx]) == 13  && (!(fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_ll_index()[hypIdx]))))   return false;
-  if (abs(hyp_lt_id()[hypIdx]) == 13  && (!(fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_lt_index()[hypIdx]))))   return false;
-  return true;
-
-}
-
-bool Z_looper::passElectron_ttbarV1( bool isData ,  int hypIdx ){
-
-  //ttbar electron ID
-  if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV1 , isData ))) return false;
-  if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbarV1 , isData ))) return false;
-  return true;
-
-}
-
-bool Z_looper::passElectron_ttbar( bool isData , int hypIdx ){
-
-  //ttbar electron ID
-  if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbar , isData ))) return false;
-  if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbar , isData ))) return false;
-  return true;
-
-}
-
-bool Z_looper::passElectron_cand01( int hypIdx ){
-
-  //cand01 electron ID
-  if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_cand01 ))) return false;
-  if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_cand01 ))) return false;
-  return true;
-
-}
-
-bool Z_looper::passZSelection( int hypIdx ){
-  
-  if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                   return false;
-  if( hyp_type()[hypIdx]==1 || hyp_type()[hypIdx]==2)                   return false;
-  if( hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.)  return false;
-
-  return true;
-
-}
+//--------------------------------------------------------------------
 
 void Z_looper::fillUnderOverFlow(TH1F *h1, float value, float weight){
 
@@ -657,6 +688,8 @@ void Z_looper::fillUnderOverFlow(TH1F *h1, float value, float weight){
   h1->Fill(value, weight);
 
 }
+
+//--------------------------------------------------------------------
 
 void Z_looper::InitBabyNtuple (){
 
@@ -725,55 +758,8 @@ void Z_looper::InitBabyNtuple (){
   nJets40_      = -999999;
   sumJetPt10_   = -999999;
 
-  //photon stuff
-  nPhotons_ = -999999;
-  etg_      = -999999.;
-  etag_     = -999999.;
-  phig_     = -999999.;
-  hoe_      = -999999.;
-  eciso_    = -999999.;
-  hciso_    = -999999.;
-  tkiso_    = -999999.;
-  swiss_    = -999999.;
-  seed_     = -999999.;
-  s4_       = -999999.;
-  r4_       = -999999.;
-  drel_     = -999999.;
-
-  photon_pixelseed_        = -999999;
-  photon_e15_              = -999999.;
-  photon_e25max_           = -999999.;
-  photon_e33_              = -999999.;
-  photon_e55_              = -999999.;
-  photon_ecalIso03_        = -999999.;
-  photon_ecalIso04_        = -999999.;
-  photon_hcalIso03_        = -999999.;
-  photon_hcalIso04_        = -999999.;
-  photon_ntkIsoHollow03_   = -999999.;
-  photon_ntkIsoHollow04_   = -999999.;
-  photon_ntkIsoSolid03_    = -999999.;
-  photon_ntkIsoSolid04_    = -999999.;
-  photon_sigmaEtaEta_      = -999999.;
-  photon_sigmaIEtaIEta_    = -999999.;
-  photon_tkisoHollow03_    = -999999.;
-  photon_tkisoHollow04_    = -999999.;
-  photon_tkisoSolid03_     = -999999.;
-  photon_tkisoSolid04_     = -999999.;
-                                  
-  //photon-matched jet stuff
-  jet_eta_          = -999999.;  
-  jet_energy_       = -999999.;  
-  jet_pt_           = -999999.;  
-  jet_chg_emfrac_   = -999999.;  
-  jet_chg_hadfrac_  = -999999.;  
-  jet_neu_emfrac_   = -999999.;  
-  jet_neu_hadfrac_  = -999999.;  
-  jet_nchg_         = -999999;      
-  jet_nmuon_        = -999999;  
-  jet_nneu_         = -999999;  
-  jet_dphimet_      = -999999.;  
-  jet_dpt_          = -999999.;  
-  jet_drgen_        = -999999.;  
+  nbtags_       = -999999;
+  dphijetmet_   = -999999;
 
   //leading jet stuff
   jetmax_pt_        = -999999;
@@ -796,6 +782,8 @@ void Z_looper::InitBabyNtuple (){
   pdgid_           = -999999;
   ptll_            = -999999;
   ptlt_            = -999999;
+  idll_            = -999999;
+  idlt_            = -999999;
   etall_           = -999999;
   etalt_           = -999999;
   dilmass_         = -999999.;
@@ -811,38 +799,45 @@ void Z_looper::InitBabyNtuple (){
 
 }
 
+//--------------------------------------------------------------------
+
 void Z_looper::bookHistos(){
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
-  hgenps_pthat = new TH1F("hgenps_pthat","",100,0,100);
-  hphotonpt    = new TH1F("hphotonpt","",100,0,100);
-
-  hgenps_pthat->GetXaxis()->SetTitle("gen p_{T}(hat) (GeV)");
-  hphotonpt->GetXaxis()->SetTitle("max photon p_{T} (GeV)");
-
-  metObserved  = new TH1F("metObserved", "Observed MET",500,0,500);
-  metPredicted = new TH1F("metPredicted","Predicted MET",500,0,500);
-
-  metObserved_sf  = new TH1F("metObserved_sf", "Observed MET (SF)",500,0,500);
-  metPredicted_sf = new TH1F("metPredicted_sf","Predicted MET (SF)",500,0,500);
-
-  metObserved_df  = new TH1F("metObserved_df", "Observed MET (DF)",500,0,500);
-  metPredicted_df = new TH1F("metPredicted_df","Predicted MET (DF)",500,0,500);
-
-  metParObserved  = new TH1F("metParObserved", "Observed MET (Parallel)",1000,-500,500);
-  metParPredicted = new TH1F("metParPredicted","Predicted MET (Parallel)",1000,-500,500);
-
-  metPerpObserved  = new TH1F("metPerpObserved", "Observed MET (Perpendicular)",500,0,500);
-  metPerpPredicted = new TH1F("metPerpPredicted","Predicted MET (Perpendicular)",500,0,500);
- 
+  metObserved     = new TH1F("metObserved", "Observed MET",500,0,500);
+  metPredicted    = new TH1F("metPredicted","Predicted MET",500,0,500);
   metObserved->Sumw2();
   metPredicted->Sumw2();
 
+  metObserved_sf  = new TH1F("metObserved_sf", "Observed MET (SF)",500,0,500);
+  metPredicted_sf = new TH1F("metPredicted_sf","Predicted MET (SF)",500,0,500);
+  metObserved_sf->Sumw2();
+  metPredicted_sf->Sumw2();
+
+  metObserved_df  = new TH1F("metObserved_df", "Observed MET (DF)",500,0,500);
+  metPredicted_df = new TH1F("metPredicted_df","Predicted MET (DF)",500,0,500);
+  metObserved_df->Sumw2();
+  metPredicted_df->Sumw2();
+
+  metObserved_ee  = new TH1F("metObserved_ee", "Observed MET (ee)",500,0,500);
+  metPredicted_ee = new TH1F("metPredicted_ee","Predicted MET (ee)",500,0,500);
+  metObserved_ee->Sumw2();
+  metPredicted_ee->Sumw2();
+
+  metObserved_mm  = new TH1F("metObserved_mm", "Observed MET (#mu#mu)",500,0,500);
+  metPredicted_mm = new TH1F("metPredicted_mm","Predicted MET (#mu#mu)",500,0,500);
+  metObserved_mm->Sumw2();
+  metPredicted_mm->Sumw2();
+
+  metParObserved  = new TH1F("metParObserved", "Observed MET (Parallel)",1000,-500,500);
+  metParPredicted = new TH1F("metParPredicted","Predicted MET (Parallel)",1000,-500,500);
   metParObserved->Sumw2();
   metParPredicted->Sumw2();
 
+  metPerpObserved  = new TH1F("metPerpObserved", "Observed MET (Perpendicular)",500,0,500);
+  metPerpPredicted = new TH1F("metPerpPredicted","Predicted MET (Perpendicular)",500,0,500);
   metPerpObserved->Sumw2();
   metPerpPredicted->Sumw2();
 
@@ -855,35 +850,34 @@ void Z_looper::bookHistos(){
     metPredicted_njets[iJetBin]->Sumw2();
   }
   
+  char* leptype[4]   = {"ee", "mm", "em", "all"};
+  char* jetbin[4]    = {"0j", "1j", "geq2j", "allj"};
 
-  if( algo_ == e_makeTemplate ) {
+  char* leptype_title[4]   = {"ee", "#mu#mu", "e#mu", "all leptons"};
+  char* jetbin_title[4]    = {"0 jets", "1 jet", "#geq 2 jets", "all jets"};
+
+  for (int i = 0; i < 4; i++) {
+   
+    hdilMass[i] = new TH1F(Form("hdilMass_%s",leptype[i]),  leptype_title[i],   150,0,300);
+    hdilMass[i]->GetXaxis()->SetTitle("M(ll) (GeV)");
+ 
+    for (int j = 0; j < 4; j++) {
+
+      char* suffix       = Form("%s_%s",leptype[i],jetbin[j]);
+      char* suffix_title = Form("%s %s",leptype_title[i],jetbin_title[j]);
     
-    for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
-      for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
-        
-        metTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                          Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
-
-
-        metParTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metParTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                             Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-500,500);
-
-        metPerpTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                              Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
-       
-        metTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
-        metParTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
-        metPerpTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
-
-        metTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("met");
-        metParTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("met_{#parallel}");
-        metPerpTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("met_{#perp}");
-      }
+      htcmet[i][j]    = new TH1F(Form("htcmet_%s",suffix),    suffix_title, 100,0,100);
+      htcmetNew[i][j] = new TH1F(Form("htcmetNew_%s",suffix), suffix_title, 100,0,100);
+      hpfmet[i][j]    = new TH1F(Form("hpfmet_%s",suffix),    suffix_title, 100,0,100);
+      htcmet[i][j]->GetXaxis()->SetTitle("tcmet (GeV)");
+      htcmetNew[i][j]->GetXaxis()->SetTitle("tcmetNew (GeV)");
+      hpfmet[i][j]->GetXaxis()->SetTitle("pfmet (GeV)");
     }
   }
   
 }
-
+ 
+//--------------------------------------------------------------------
 
 void Z_looper::MakeBabyNtuple (const char* babyFileName)
 {
@@ -895,13 +889,15 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyFile_->cd();
   babyTree_ = new TTree("T1", "A Baby Ntuple");
 
+  //event stuff
   babyTree_->Branch("run",          &run_,          "run/I"  );
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I" );
   babyTree_->Branch("event",        &event_,        "event/I");
-  babyTree_->Branch("leptype",      &leptype_,      "leptype/I");
   babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I");
   babyTree_->Branch("weight",       &weight_,       "weight/F");
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F");
+
+  //met stuff
   babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"   );
   babyTree_->Branch("pfmetphi",     &pfmetphi_,     "pfmetphi/F");
   babyTree_->Branch("pfsumet",      &pfsumet_,      "pfsumet/F" );
@@ -920,91 +916,35 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("dphixmet",     &dphixmet_,      "dphixmet/F"    );
   babyTree_->Branch("metpar",       &metPar_,        "metpar/F"      );
   babyTree_->Branch("metperp",      &metPerp_,       "metperp/F"     );
-
   babyTree_->Branch("tcmet",        &tcmet_,        "tcmet/F"      );
   babyTree_->Branch("tcmetphi",     &tcmetphi_,     "tcmetphi/F"   );
   babyTree_->Branch("tcsumet",      &tcsumet_,      "tcsumet/F"    );
-
   babyTree_->Branch("tcmetNew",     &tcmetNew_,     "tcmetNew/F"      );
   babyTree_->Branch("tcmetphiNew",  &tcmetphiNew_,  "tcmetphiNew/F"   );
   babyTree_->Branch("tcsumetNew",   &tcsumetNew_,   "tcsumetNew/F"    );
 
+  //jet stuff
   babyTree_->Branch("njets",        &nJets_,        "njets/I"       );
   babyTree_->Branch("njets40",      &nJets40_,      "njets40/I"     );
   babyTree_->Branch("sumjetpt",     &sumJetPt_,     "sumjetpt/F"    );
   babyTree_->Branch("sumjetpt10",   &sumJetPt10_,   "sumjetpt10/F"    );
   babyTree_->Branch("vecjetpt",     &vecJetPt_,     "vecjetpt/F"    );
-
-  //photon stuff
-  babyTree_->Branch("ng",      &nPhotons_, "ng/I"); 
-  babyTree_->Branch("etg",     &etg_,      "etg/F");	   
-  babyTree_->Branch("etag",    &etag_,     "etag/F");	   
-  babyTree_->Branch("phig",    &phig_,     "phig/F");
-  babyTree_->Branch("hoe",     &hoe_,      "hoe/F");	   
-  babyTree_->Branch("eciso",   &eciso_,    "eciso/F");	   
-  babyTree_->Branch("hciso",   &hciso_,    "hciso/F");	   
-  babyTree_->Branch("tkiso",   &tkiso_,    "tkiso/F");
-  babyTree_->Branch("swiss",   &swiss_,    "swiss/F");
-  babyTree_->Branch("seed",    &seed_,     "seed/F");
-  babyTree_->Branch("s4",      &s4_,       "s4/F");
-  babyTree_->Branch("r4",      &r4_,       "r4/F");
-
-  babyTree_->Branch("photon_pixelseed",         &photon_pixelseed_,         "photon_pixelseed/I");         
-  babyTree_->Branch("photon_e15",               &photon_e15_,               "photon_e15/F");                
-  babyTree_->Branch("photon_e25max",            &photon_e25max_,            "photon_e25max/F");             
-  babyTree_->Branch("photon_e33",               &photon_e33_,               "photon_e33/F");                
-  babyTree_->Branch("photon_e55",               &photon_e55_,               "photon_e55/F");                
-  babyTree_->Branch("photon_ecalIso03",         &photon_ecalIso03_,         "photon_ecalIso03/F");          
-  babyTree_->Branch("photon_ecalIso04",         &photon_ecalIso04_,         "photon_ecalIso04/F");          
-  babyTree_->Branch("photon_hcalIso03",         &photon_hcalIso03_,         "photon_hcalIso03/F");          
-  babyTree_->Branch("photon_hcalIso04",         &photon_hcalIso04_,         "photon_hcalIso04/F");          
-  babyTree_->Branch("photon_ntkIsoHollow03",    &photon_ntkIsoHollow03_,    "photon_ntkIsoHollow03/F");     
-  babyTree_->Branch("photon_ntkIsoHollow04",    &photon_ntkIsoHollow04_,    "photon_ntkIsoHollow04/F");     
-  babyTree_->Branch("photon_ntkIsoSolid03",     &photon_ntkIsoSolid03_,     "photon_ntkIsoSolid03/F");      
-  babyTree_->Branch("photon_ntkIsoSolid04",     &photon_ntkIsoSolid04_,     "photon_ntkIsoSolid04/F");      
-  babyTree_->Branch("photon_sigmaEtaEta",       &photon_sigmaEtaEta_,       "photon_sigmaEtaEta/F");        
-  babyTree_->Branch("photon_sigmaIEtaIEta",     &photon_sigmaIEtaIEta_,     "photon_sigmaIEtaIEta/F");      
-  babyTree_->Branch("photon_tkisoHollow03",     &photon_tkisoHollow03_,     "photon_tkisoHollow03/F");      
-  babyTree_->Branch("photon_tkisoHollow04",     &photon_tkisoHollow04_,     "photon_tkisoHollow04/F");      
-  babyTree_->Branch("photon_tkisoSolid03",      &photon_tkisoSolid03_,      "photon_tkisoSolid03/F");      
-  babyTree_->Branch("photon_tkisoSolid04",      &photon_tkisoSolid04_,      "photon_tkisoSolid04/F");           
-                                                                            
-  //photon-matched jet stuff
-  babyTree_->Branch("jetdr",                 &jet_dr_,               "jetdr/F");
-  babyTree_->Branch("jetpt",                 &jet_pt_,               "jetpt/F");
-  babyTree_->Branch("jeteta",                &jet_eta_,              "jeteta/F");
-  babyTree_->Branch("jetenergy",             &jet_energy_,           "jetenergy/F");
-  babyTree_->Branch("jetchargedemfrac",      &jet_chg_emfrac_,       "jetchargedemfrac/F");
-  babyTree_->Branch("jetchargedhadfrac",     &jet_chg_hadfrac_,      "jetchargedhadfrac/F");
-  babyTree_->Branch("jetneutralemfrac",      &jet_neu_emfrac_,       "jetneutralemfrac/F");
-  babyTree_->Branch("jetneutralhadfrac",     &jet_neu_hadfrac_,      "jetneutralhadfrac/F");
-  babyTree_->Branch("jetncharged",           &jet_nchg_,             "jetncharged/I");
-  babyTree_->Branch("jetnmuon",              &jet_nmuon_,            "jetnmuon/I");
-  babyTree_->Branch("jetnneutral",           &jet_nneu_,             "jetnneutral/I");
-  babyTree_->Branch("jetdphimet",            &jet_dphimet_,          "jetdphimet/F");
-  babyTree_->Branch("jetdpt",                &jet_dpt_,              "jetdpt/F");
-  babyTree_->Branch("jetdrgen",              &jet_drgen_,            "jetdrgen/F");
-  babyTree_->Branch("drel",                  &drel_,                 "drel/F");
-
-  babyTree_->Branch("maxjetpt",              &jetmax_pt_,            "maxjetpt/F");
-  babyTree_->Branch("maxjetdphimet",         &jetmax_dphimet_,       "maxjetdphimet/F");
-
-  //trigger
-  //babyTree_->Branch("HLT_Jet6U",             &HLT_Jet6U_,            "HLT_Jet6U/I");
-  //babyTree_->Branch("HLT_Jet10U",            &HLT_Jet10U_,           "HLT_Jet10U/I");
-  babyTree_->Branch("HLT_Jet15U",            &HLT_Jet15U_,           "HLT_Jet15U/I");
-  babyTree_->Branch("HLT_Jet30U",            &HLT_Jet30U_,           "HLT_Jet30U/I");
-
-  babyTree_->Branch("HLT_Photon10_L1R",      &HLT_Photon10_L1R_,     "HLT_Photon10_L1R/I");
-  babyTree_->Branch("HLT_Photon15_L1R",      &HLT_Photon15_L1R_,     "HLT_Photon15_L1R/I");
-
+  babyTree_->Branch("nbtags",       &nbtags_,       "nbtags/I");
+  babyTree_->Branch("ndphijetmet",  &dphijetmet_,   "dphijetmet/F");
+                                                    
+  //trigger stuff
+  babyTree_->Branch("HLT_Jet15U",                    &HLT_Jet15U_,                   "HLT_Jet15U/I");
+  babyTree_->Branch("HLT_Jet30U",                    &HLT_Jet30U_,                   "HLT_Jet30U/I");
+  babyTree_->Branch("HLT_Photon10_L1R",              &HLT_Photon10_L1R_,             "HLT_Photon10_L1R/I");
+  babyTree_->Branch("HLT_Photon15_L1R",              &HLT_Photon15_L1R_,             "HLT_Photon15_L1R/I");
   babyTree_->Branch("HLT_Photon10_Cleaned_L1R",      &HLT_Photon10_Cleaned_L1R_,     "HLT_Photon10_Cleaned_L1R/I");  
   babyTree_->Branch("HLT_Photon15_Cleaned_L1R",      &HLT_Photon15_Cleaned_L1R_,     "HLT_Photon15_Cleaned_L1R/I");  
   babyTree_->Branch("HLT_Photon20_Cleaned_L1R",      &HLT_Photon20_Cleaned_L1R_,     "HLT_Photon20_Cleaned_L1R/I");  
 
   //Z stuff
-  babyTree_->Branch("passz",              &passz_,              "passz/I");  
-  babyTree_->Branch("pdgid",              &pdgid_,              "pdgid/I");  
+  babyTree_->Branch("leptype",               &leptype_,               "leptype/I");
+  babyTree_->Branch("passz",                 &passz_,                 "passz/I");  
+  babyTree_->Branch("pdgid",                 &pdgid_,                 "pdgid/I");  
   babyTree_->Branch("passm_ll_nom",          &passm_ll_nom_,          "passm_ll_nom/I");  
   babyTree_->Branch("passm_ll_nomttbar",     &passm_ll_nomttbar_,     "passm_ll_nomttbar/I");  
   babyTree_->Branch("passm_ll_nomttbarV2",   &passm_ll_nomttbarV2_,   "passm_ll_nomttbarV2/I");  
@@ -1017,27 +957,27 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("passe_lt_ttbar",        &passe_lt_ttbar_,        "passe_lt_ttbar/I");  
   babyTree_->Branch("passe_lt_ttbarV1",      &passe_lt_ttbarV1_,      "passe_lt_ttbarV1/I");  
   babyTree_->Branch("passe_lt_cand01",       &passe_lt_cand01_,       "passe_lt_cand01/I");  
-  babyTree_->Branch("ptll",               &ptll_,               "ptll/F");  
-  babyTree_->Branch("ptlt",               &ptlt_,               "ptlt/F");  
-  babyTree_->Branch("etall",              &etall_,              "etall/F");  
-  babyTree_->Branch("etalt",              &etalt_,              "etalt/F");  
-  babyTree_->Branch("dilmass",            &dilmass_,            "dilmass/F");  
-  babyTree_->Branch("dilpt",              &dilpt_,              "dilpt/F");  
-  babyTree_->Branch("flagll",             &flagll_,             "flagll/I");  
-  babyTree_->Branch("flaglt",             &flaglt_,             "flaglt/I");  
-  babyTree_->Branch("bptx"             ,  &bptx_            ,   "bptx/I"         );
-  babyTree_->Branch("bsc"              ,  &bsc_             ,   "bsc/I"          );
-  babyTree_->Branch("beamhalo"         ,  &beamhalo_        ,   "beamhalo/I"     );
-  babyTree_->Branch("goodvtx"          ,  &goodvtx_         ,   "goodvtx/I"      );
-  babyTree_->Branch("goodtrks"         ,  &goodtrks_        ,   "goodtrks/I"     );
+  babyTree_->Branch("ptll",                  &ptll_,                  "ptll/F");  
+  babyTree_->Branch("ptlt",                  &ptlt_,                  "ptlt/F");  
+  babyTree_->Branch("idll",                  &idll_,                  "idll/F");  
+  babyTree_->Branch("idlt",                  &idlt_,                  "idlt/F");  
+  babyTree_->Branch("etall",                 &etall_,                 "etall/F");  
+  babyTree_->Branch("etalt",                 &etalt_,                 "etalt/F");  
+  babyTree_->Branch("dilmass",               &dilmass_,               "dilmass/F");  
+  babyTree_->Branch("dilpt",                 &dilpt_,                 "dilpt/F");  
+  babyTree_->Branch("flagll",                &flagll_,                "flagll/I");  
+  babyTree_->Branch("flaglt",                &flaglt_,                "flaglt/I");  
 
 }
 
+//--------------------------------------------------------------------
 
 void Z_looper::FillBabyNtuple ()
 {
   babyTree_->Fill();
 }
+
+//--------------------------------------------------------------------
 
 void Z_looper::CloseBabyNtuple ()
 {
@@ -1046,16 +986,26 @@ void Z_looper::CloseBabyNtuple ()
   babyFile_->Close();
 }
 
+//--------------------------------------------------------------------
 
-       
-//ttbar electron ID
-//if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbar , isData ))) continue;
-//if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbar , isData ))) continue;
+void Z_looper::fillHistos(TH1F *h1[4],float value, float weight, int myType)
+{
 
-//nominal muon ID
-//if (abs(hyp_ll_id()[hypIdx]) == 13  && (! (fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_ll_index()[hypIdx]))))   continue;
-//if (abs(hyp_lt_id()[hypIdx]) == 13  && (! (fabs(hyp_lt_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_lt_index()[hypIdx]))))   continue;
+  fillUnderOverFlow(h1[myType], value, weight);      
+  fillUnderOverFlow(h1[3],      value, weight);      
+}
 
-//ttbar electron ID
-//if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_cand01 ))) continue;
-//if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_cand01 ))) continue;
+//--------------------------------------------------------------------
+
+void Z_looper::fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsIdx)
+{
+
+  if( nJetsIdx > 2 ) nJetsIdx = 2;
+
+  fillUnderOverFlow(h1[myType][nJetsIdx], value, weight);      
+  fillUnderOverFlow(h1[myType][3],        value, weight);      
+  fillUnderOverFlow(h1[3][nJetsIdx],      value, weight);      
+  fillUnderOverFlow(h1[3][3],             value, weight);      
+}
+
+//--------------------------------------------------------------------

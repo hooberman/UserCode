@@ -61,7 +61,7 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
 
   //------------------------------------------------------------------------------------------------------------
     
-  bool calculateTCMET = false;  //recalculate tcmet on-the-fly?
+  bool calculateTCMET = true;  //recalculate tcmet on-the-fly?
   
   Z_looper* myLooper = new Z_looper();
   
