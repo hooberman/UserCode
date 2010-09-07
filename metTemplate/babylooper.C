@@ -32,16 +32,23 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
-enum metType   { e_tcmet = 0, e_pfmet = 1 };
+enum metType   { e_tcmet = 0, e_tcmetNew = 1, e_pfmet = 2};
+enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
-//------------USER PARAMS----------
-bool debug              = false;
-metType myMetType       = e_tcmet;
-const int nJetBins      = 11;
-const int nSumJetPtBins = 23;
-//---------------------------------
+//------------USER PARAMS-------------------------
+bool debug                       = false;
+metType myMetType                = e_tcmet;
+templateSource myTemplateSource  = e_PhotonJet;
+const int nJetBins               = 11;
+const int nSumJetPtBins          = 23;
+const int nBosonPtBins           = 4;
+//------------------------------------------------
 
 using namespace std;
+
+inline double fround(double n, double d){
+  return floor(n * pow(10., d) + .5) / pow(10., d);
+}
 
 int getJetBin( int njets ){
   
@@ -95,29 +102,99 @@ string sumJetPtString( int bin ){
   return s.str();
 }
 
-void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool calculateTCMET, metAlgo algo, int nEvents){
+int getBosonPtBin( float x ){
+
+  if     ( x < 40.           ) return 0;
+  else if( x > 40 && x < 60  ) return 1;
+  else if( x > 60 && x < 100 ) return 2;
+  else if( x > 100           ) return 3;
+  else { 
+    cout << "Error could not find boson pt bin" << endl;
+    exit(0);
+  }
+}
+
+string bosonPtString( int bin ){
+
+  if     ( bin == 0 ) return "boson p_{T} < 40 GeV";
+  else if( bin == 1 ) return "40 < boson p_{T} < 60 GeV";
+  else if( bin == 2 ) return "60 < boson p_{T} < 100 GeV";
+  else if( bin == 3 ) return "boson p_{T} > 100 GeV";
+  else{
+    cout << "Error unrecognized boson pt bin " << bin << endl;
+    exit(0);
+  }
+
+}
+
+
+void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, 
+                            selectionType mySelectionType, bool makeTemplate, int nEvents){
 
   int npass = 0;
-  algo_ = algo;
+  selection_    = mySelectionType;
+  makeTemplate_ = makeTemplate;
 
-  if( algo_ == e_makeTemplate )    cout << "metAlgo makeTemplate" << endl;
-  if( algo_ == e_photonSelection ) cout << "metAlgo photonSelection" << endl;
-  if( algo_ == e_ZSelection )      cout << "metAlgo ZSelection" << endl;
+  if     ( selection_ == e_QCDSelection )     cout << "QCD selection" << endl;
+  else if( selection_ == e_photonSelection )  cout << "photon selection" << endl;
+  else if( selection_ == e_ZSelection )       cout << "Z selection" << endl;
+  else { cout << "Unrecognized selection type, quitting" << endl ; exit(0) ; }
+
+  if( makeTemplate_ ) cout << "Making templates" << endl;
 
   TFile *metTemplateFile;
   string metTemplateString = "";
-  
-  if( algo_ != e_makeTemplate){
-    metTemplateString = "_dataTemplate";
-    if( myMetType == e_tcmet )
-      metTemplateFile = TFile::Open("root/JetMETTau_250nb_babyhistos_tcmet.root");
-    else if( myMetType == e_pfmet )
-      metTemplateFile = TFile::Open("root/JetMETTau_250nb_babyhistos_pfmet.root");
-    else{
-      cout << "UNDEFINED METTYPE!!!" << endl;
-      exit(0);
+
+  if( !makeTemplate ){
+    
+    //select templates
+    if( isData ){
+      
+      if( myTemplateSource == e_QCD ){
+        metTemplateString = "_JetMETTauTemplate";
+        metTemplateFile = TFile::Open("root/makeTemplates_JetMETTau_ttdilsync.root");
+      }
+      
+      else if( myTemplateSource == e_PhotonJet ){
+        //metTemplateString = "_EGTemplate";
+        //metTemplateFile = TFile::Open("root/makeTemplates_EG_ttdilsync.root");
+        cout << "Choosing EG template" << endl;
+        metTemplateString = "_EGbabyTemplate";
+        metTemplateFile = TFile::Open("root/babylooper_makeTemplates_EG_ttdilsync_template.root");
+      }
+      
+    }else{
+      
+      if( myTemplateSource == e_QCD ){
+        metTemplateString = "_QCD_Pt15Template";
+        metTemplateFile = TFile::Open("root/");
+      }
+      
+      else if( myTemplateSource == e_PhotonJet ){
+        //metTemplateString = "_PhotonJetTemplate";
+        //metTemplateFile = TFile::Open("root/makeTemplates_PhotonJet_ttdilsync.root");
+        cout << "Choosing PhotonJet template" << endl;
+        metTemplateString = "_PhotonJetbabyTemplate";
+        metTemplateFile = TFile::Open("root/babylooper_makeTemplates_PhotonJet_ttdilsync_template.root");
+      }
     }
   }
+  
+  ofile_tcmet.open(  Form( "root/babylooper_%s_tcmetprintout.txt" , prefix ) );
+  ofile_events.open( Form( "root/babylooper_%s_highmetevents.txt" , prefix ) );
+
+  if( isData ){
+    ofile_events << "|" << setw(8)  << "run"          << setw(4) 
+                 << "|" << setw(6)  << "lumi"         << setw(4) 
+                 << "|" << setw(12) << "event"        << setw(4) 
+                 << "|" << setw(6)  << "type"         << setw(4) 
+                 << "|" << setw(6)  << "njets"        << setw(4) 
+                 << "|" << setw(6)  << "nbtags"       << setw(4) 
+                 << "|" << setw(8)  << "tcmet"        << setw(4) 
+                 << "|" << setw(8)  << "pfmet"        << setw(4) 
+                 << "|" << setw(8)  << "dphi"         << setw(4) << "|" << endl; 
+  }
+
 
   bookHistos();
 
@@ -161,23 +238,133 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
         }
       }
 
-      weight_ = 1;
-      //require at least 2 jets
-      if ( nJets_ < 2 )     continue;
+      //if( run_ > 140387 ) continue;
+      //weight_ = 1;
 
-      //require leading jet pt > 50
-      if( jetmax_pt_ < 50 ) continue;
+      fillUnderOverFlow( hgenps_pthat  , pthat_ , weight_ );
+      fillUnderOverFlow( hphotonpt     , etg_   , weight_ );
 
       float theMet = -1;
-      if     ( myMetType == e_tcmet ) theMet = tcmet_;
-      else if( myMetType == e_pfmet ) theMet = pfmet_;
+      if     ( myMetType == e_tcmet    ) theMet = tcmet_;
+      else if( myMetType == e_tcmetNew ) theMet = tcmetNew_;
+      else if( myMetType == e_pfmet    ) theMet = pfmet_;
+ 
+     
+      //apply good photon selection-------------------------------------------------------------
+  
+      if( selection_ == e_photonSelection ) {
+        
+        if( !(HLT_Photon10_L1R_ == 1         || HLT_Photon15_L1R_ == 1 || 
+              HLT_Photon10_Cleaned_L1R_ == 1 || HLT_Photon15_Cleaned_L1R_ == 1)  ) continue;
+   
+        if( nJets_ < 1      ) continue;
+        if( jetmax_pt_ < 30 ) continue;
+
+        //Ben selection
+        if ( etag_ > 1 )                                 continue;
+        if ( etg_ < 20 )                                 continue;
+        if ( (1.-r4_) < 0.05 )                           continue;
+        if ( hoe_ > 0.1 )                                continue;
+        if ( jet_neu_emfrac_ < 0.95 )                    continue; 
+        //if ( nvtx_ != 1 )                                continue;
+
+        /*
+        //Warren selection
+        if ( etag_ > 1 )                                 continue;
+        if ( etg_ < 20 )                                 continue;
+        if ( (1.-r4_) < 0.05 )                           continue;
+        if ( hoe_ > 0.05 )                               continue;
+        if ( photon_hcalIso03_ > 2.4 && photon_hcalIso03_ / etg_ > 0.05)        continue;              
+        if ( photon_ecalIso03_ > 1.7 && photon_ecalIso03_ / etg_ > 0.05)        continue;       
+        if ( photon_ntkIsoSolid03_ > 2 || photon_tkisoSolid03_ / etg_ > 0.1 )   continue;
+        */
+    
+        /*
+        //EWK PAS selection
+        if( photon_ecalIso04_ > 4.2 * 0.004 * etg_ )       continue;
+        if( photon_ecalIso04_ > 4.2 * 0.004 * etg_ )       continue;
+        */
+
+        //if ( jet_eta_ > 1 )                              continue;
+        //if ( jet_dr_ > 0.5 )                             continue;
+        //if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
+        //if ( drel_ < 0.5 )                               continue;
+        //if ( ( 1 - jet_neu_emfrac_ ) * etg_ > 1 )        continue;
+        //if ( sumJetPt_ < 200. )                          continue;
+
+        //dphixmet_  = deltaPhi( tcmetphi_ , phig_ );
+        //metPar_    = theMet * cos( dphixmet_ );
+        //metPerp_   = theMet * sin( dphixmet_ );
+    
+      }
+      
+      //apply Z selection-----------------------------------------------------------------------
+
+      if( selection_ == e_ZSelection ) {
+
+        if( leptype_ == 2 ) continue;
+        
+        //if( nvtx_    != 1 ) continue;
+        //if( ptll_ < 20 || ptlt_ < 20 )        continue;
+        
+        //if( leptype_ == 0 ){
+        //  if( !passe_ll_ttbarV2_ == 1 )    continue;
+        //  if( !passe_lt_ttbarV2_ == 1 )    continue;
+        //}
+        //else if( leptype_ == 1 ){
+        //  if( !passm_ll_nomttbarV2_ == 1 ) continue;
+        //  if( !passm_lt_nomttbarV2_ == 1 ) continue;
+        //}
+        //else if( leptype_ == 2 ){
+        //  if( !( (passe_ll_ttbarV2_ == 1 && passm_lt_nomttbarV2_ == 1) || 
+        //         (passe_lt_ttbarV2_ == 1 && passm_ll_nomttbarV2_ == 1) ) ) continue;
+        //}
+        
+      }
+      
+      //fill histos and ntuple----------------------------------------------------------- 
+      
+      fillHistos( htcmet            , tcmet_           , weight_ , leptype_ , nJets_ );
+      fillHistos( htcmetNew         , tcmetNew_        , weight_ , leptype_ , nJets_ );
+      fillHistos( hpfmet            , pfmet_           , weight_ , leptype_ , nJets_  );
+      
+      if( isData && ( tcmet_ > 30 || pfmet_ > 30 ) ){
+        string lepstring[3]={"ee","mm","em"};
+        
+      
+        ofile_events << "|" << setw(8)  << run_                        << setw(4) 
+                     << "|" << setw(6)  << lumi_                       << setw(4) 
+                     << "|" << setw(12) << event_                      << setw(4) 
+                     << "|" << setw(6)  << lepstring[leptype_]         << setw(4) 
+                     << "|" << setw(6)  << nJets_                      << setw(4) 
+                     << "|" << setw(6)  << nbtags_                     << setw(4) 
+                     << "|" << setw(8)  << fround(tcmet_,1)            << setw(4) 
+                     << "|" << setw(8)  << fround(pfmet_,1)            << setw(4) 
+                     << "|" << setw(8)  << fround(dphijetmet_,2)       << setw(4) << "|" << endl; 
+        
+      }
+
+      if( myTemplateSource == e_QCD ){
+        if( nJets_ < 2      ) continue;
+        if( jetmax_pt_ < 50 ) continue;
+      }
+      else if ( myTemplateSource == e_PhotonJet ){
+        if( nJets_ < 1      ) continue;
+        if( jetmax_pt_ < 30 ) continue;
+      }
+
+      npass++;
+
+      float pthad = -1;
+      if( selection_ == e_photonSelection ) pthad = etg_;
+      if( selection_ == e_ZSelection )      pthad = dilpt_;
 
       //fill met template-----------------------------------------------------------------------
       
-      if( algo_ == e_makeTemplate ) {
+      if( makeTemplate_ ) {
 
-        if( HLT_Jet15U_ == 0 ) continue;
-        
+
+        //bin templates by njets and sumjetpt (njets>1), boson pt and sumjetpt (njets=1)
         int iJetBin      = getJetBin( nJets_ );
         int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
         
@@ -186,109 +373,142 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
           cout << "iJetBin " << iJetBin << " iSumJetPtBin " << iSumJetPtBin << " met " << theMet << endl;
         }
 
-        fillUnderOverFlow( metTemplate[ iJetBin ][ iSumJetPtBin ] ,  theMet , weight_ );
+        fillUnderOverFlow( tcmetTemplate[ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , weight_ );
+        fillUnderOverFlow( pfmetTemplate[ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , weight_ );
+        fillUnderOverFlow( tcmetNewTemplate[ iJetBin ][ iSumJetPtBin ] ,  tcmetNew_ , weight_ );
+
+        if( nJets_ == 1 && selection_ == e_photonSelection ){
+          
+          int iBosonPtBin      = getBosonPtBin( etg_ );
+
+          fillUnderOverFlow( tcmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ]    ,  tcmet_    , weight_ );
+          fillUnderOverFlow( pfmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ]    ,  pfmet_    , weight_ );
+          fillUnderOverFlow( tcmetNewTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] ,  tcmetNew_ , weight_ );
+
+        }
+
+
+//         //bin templates by njets, sumjetpt, boson pt
+//         int iJetBin          = getJetBin( nJets_ );
+//         int iSumJetPtBin     = getSumJetPtBin( sumJetPt_ );
+//         int iBosonPtBin      = getBosonPtBin( etg_ );
+        
+//         fillUnderOverFlow( tcmetTemplate[ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , weight_ );
+//         fillUnderOverFlow( pfmetTemplate[ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , weight_ );
+//         fillUnderOverFlow( tcmetNewTemplate[ iJetBin ][ iSumJetPtBin ] ,  tcmetNew_ , weight_ );
         
       }
 
-      
-      //apply good photon selection-------------------------------------------------------------
-  
-      if( algo_ == e_photonSelection ) {
-
-        if( HLT_Photon10_L1R_ == 0         &&         
-            HLT_Photon15_L1R_ == 0         && 
-            HLT_Photon10_Cleaned_L1R_ == 0 && 
-            HLT_Photon15_Cleaned_L1R_ == 0  ) continue;
-
-        if ( etag_ > 1 )                                 continue;
-        //if ( jet_eta_ > 1 )                              continue;
-        if ( etg_ < 20 )                                 continue;
-        if ( (1.-r4_) < 0.05 )                           continue;
-        if ( hoe_ > 0.1 )                                continue;
-        if ( jet_dr_ > 0.5 )                             continue;
-        //if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
-        //if ( drel_ < 0.5 )                               continue;
-        if ( jet_neu_emfrac_ < 0.95 )                    continue; 
-        if ( ( 1 - jet_neu_emfrac_ ) * etg_ > 1 )        continue;
-        //if ( sumJetPt_ < 200. )                          continue;
-        
-        //dphixmet_  = deltaPhi( tcmetphi_ , phig_ );
-        //metPar_    = theMet * cos( dphixmet_ );
-        //metPerp_   = theMet * sin( dphixmet_ );
     
-      }
-      
-      //cout << "passz " << passz_ << endl;
-      //cout << "pdgid " << pdgid_ << endl;
-      //cout << "ptll "  << ptll_  << " ptlt " << ptlt_ << endl;
-      //cout << "passe " << passe_ttbarV1_ << " passm " << passm_nomttbar_ << endl;
-
-      //apply Z selection-----------------------------------------------------------------------
-
-      if( algo_ == e_ZSelection ) {
-
-        //if( pdgid_ == 13 && ( flagll_ != 5 || flaglt_ != 5 ) )    continue;
-        if( passz_ != 1 )                     continue;
-        if( pdgid_ != 11 && pdgid_ != 13 )    continue;
-        if( ptll_ < 10 || ptlt_ < 10 )        continue;
-
-        //if( pdgid_ == 11 && !( passe_cand01_ ==1 ) )         continue;
-        //if( pdgid_ == 13 && !( passm_nom_    ==1 ) )  continue;
-        //if( pdgid_ == 13 && !( passm_nomttbarV2_    ==1 ) )  continue;
-        if( pdgid_ == 11 && !( passe_ttbarV1_  == 1 ) )      continue;
-        if( pdgid_ == 13 && !( passm_nomttbar_ == 1 ) )  continue;
-
-      }
-   
-      npass++;
+      int iJ = nJets_;
+      if( iJ > 4 ) iJ = 4;
+       
+      fillUnderOverFlow( hpthad[iJ] ,  pthad , weight_ );
+      fillUnderOverFlow( hpthad[0]  ,  pthad , weight_ );
 
       //fill predicted and observed met histos--------------------------------------------------
 
-      if( algo_ != e_makeTemplate){
+      if( !makeTemplate_ ){
         
         int iJetBin      = getJetBin( nJets_ );
+        int iBosonPtBin  = getBosonPtBin( pthad );
         int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
-        TH1F* hmet     = (TH1F*) metTemplateFile->Get(Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin));
-        TH1F* hmetPar  = (TH1F*) metTemplateFile->Get(Form("metParTemplate_%i_%i",iJetBin,iSumJetPtBin));
-        TH1F* hmetPerp = (TH1F*) metTemplateFile->Get(Form("metPerpTemplate_%i_%i",iJetBin,iSumJetPtBin));
-        
-        fillUnderOverFlow( metObserved_njets[iJetBin] , theMet , weight_ );
-        metPredicted_njets[iJetBin]->Add( hmet );
+
+        TH1F* hmet;
+        //TH1F* hmetPar;
+        //TH1F* hmetPerp;
+
+        if( nJets_ != 1 ){
+          if( myMetType == e_tcmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_%i_%i",iJetBin,iSumJetPtBin));
+            //hmetPar  = (TH1F*) metTemplateFile->Get(Form("tcmetParTemplate_%i_%i",iJetBin,iSumJetPtBin));
+            //hmetPerp = (TH1F*) metTemplateFile->Get(Form("tcmetPerpTemplate_%i_%i",iJetBin,iSumJetPtBin));
+          }
+          
+          else if( myMetType == e_tcmetNew ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetNewTemplate_%i_%i",iJetBin,iSumJetPtBin));
+            //hmetPar  = (TH1F*) metTemplateFile->Get(Form("tcmetNewParTemplate_%i_%i",iJetBin,iSumJetPtBin));
+            //hmetPerp = (TH1F*) metTemplateFile->Get(Form("tcmetNewPerpTemplate_%i_%i",iJetBin,iSumJetPtBin));
+          }
+          
+          else if( myMetType == e_pfmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_%i_%i",iJetBin,iSumJetPtBin));
+            //hmetPar  = (TH1F*) metTemplateFile->Get(Form("pfmetParTemplate_%i_%i",iJetBin,iSumJetPtBin));
+            //hmetPerp = (TH1F*) metTemplateFile->Get(Form("pfmetPerpTemplate_%i_%i",iJetBin,iSumJetPtBin));
+          }
+        }
+        else{
+
+          if( myMetType == e_tcmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_1jet_%i_%i",iBosonPtBin,iSumJetPtBin));
+          }
+          
+          else if( myMetType == e_tcmetNew ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetNewTemplate_1jet_%i_%i",iBosonPtBin,iSumJetPtBin));
+          }
+
+          else if( myMetType == e_pfmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_1jet_%i_%i",iBosonPtBin,iSumJetPtBin));
+          }
+        }
+
+  
+      
+        hmet->Scale( weight_ );
+        //hmetPar->Scale( weight_ );
+        //hmetPerp->Scale( weight_ );
+
+        int iJ = iJetBin;
+        if( iJ > 3 ) iJ = 3; 
+
+        fillUnderOverFlow( metObserved_njets[iJ] , theMet , weight_ );
+        metPredicted_njets[iJ]->Add( hmet );
         
         fillUnderOverFlow( metObserved , theMet , weight_ );
         metPredicted->Add( hmet );
 
-        fillUnderOverFlow( metParObserved , metPar_ , weight_ );
-        metParPredicted->Add( hmetPar );
+        //fillUnderOverFlow( metParObserved , metPar_ , weight_ );
+        //metParPredicted->Add( hmetPar );
 
-        fillUnderOverFlow( metPerpObserved , metPerp_ , weight_ );
-        metPerpPredicted->Add( hmetPerp );
+        //fillUnderOverFlow( metPerpObserved , metPerp_ , weight_ );
+        //metPerpPredicted->Add( hmetPerp );
 
-        if( algo_ == e_ZSelection ) {
-          if( pdgid_ == 11 ){
+        if( selection_ == e_ZSelection ) {
+        
+          if( leptype_ == 0 ){
             fillUnderOverFlow( metObserved_ee , theMet , weight_ );
             metPredicted_ee->Add( hmet );
           }
-          if( pdgid_ == 13 ){
+          if( leptype_ == 11 ){
             fillUnderOverFlow( metObserved_mm , theMet , weight_ );
             metPredicted_mm->Add( hmet );
           }
+          if( leptype_ == 0 || leptype_ == 1 ){
+            fillUnderOverFlow( metObserved_sf , tcmet_ , weight_  );
+            metPredicted_sf->Add( hmet );
+          }else if( leptype_ == 2 ){
+            fillUnderOverFlow( metObserved_df , tcmet_ , weight_  );
+            metPredicted_df->Add( hmet );
+          }else{
+            cout << "UNRECOGNIZED LEPTYPE " << leptype_ << endl;
+          }
         }
+                
+        if( selection_ == e_photonSelection ||  selection_ == e_ZSelection){
 
-        if( algo_ == e_photonSelection ){
-          if( etg_ < 40 ){
+          if( pthad < 40 ){
             fillUnderOverFlow( metObserved_ptlt40 , theMet , weight_ );
             metPredicted_ptlt40->Add( hmet );
           }
-          if( etg_ > 40 && etg_ < 60 ){
+          if( pthad > 40 && pthad < 60 ){
             fillUnderOverFlow( metObserved_pt40_60 , theMet , weight_ );
             metPredicted_pt40_60->Add( hmet );
           }
-          if( etg_ > 60 ){
+          if( pthad > 60 ){
             fillUnderOverFlow( metObserved_ptgt60 , theMet , weight_ );
             metPredicted_ptgt60->Add( hmet );
           }
-          if( etg_ < 50 ){
+          if( pthad < 50 ){
             fillUnderOverFlow( metObserved_ptlt50 , theMet , weight_ );
             metPredicted_ptlt50->Add( hmet );
           }else{
@@ -296,7 +516,7 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
             metPredicted_ptgt50->Add( hmet );
           }
         }
-        
+      
         delete hmet;
 
       }
@@ -309,37 +529,64 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, bool
   
   
   //normalize met templates
-  if( algo_ == e_makeTemplate ) {
+  if( makeTemplate_ ) {
     
     for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
       for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
        
-        float scale = metTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
-        
-        if( scale > 0 )
-          metTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+        float scale = tcmetTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  tcmetTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
 
-        scale = metParTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        scale = tcmetNewTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  tcmetNewTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
         
-        if( scale > 0 )
-          metParTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+        scale = pfmetTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  pfmetTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
 
-        scale = metPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        /*
+        scale = tcmetParTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  tcmetParTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
         
-        if( scale > 0 )
-          metPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
-    
+        scale = tcmetPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  tcmetPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+             
+        scale = tcmetNewParTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  tcmetNewParTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+        
+        scale = tcmetNewPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  tcmetNewPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+                  
+        scale = pfmetParTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  pfmetParTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+        
+        scale = pfmetPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  pfmetPerpTemplate[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+        */
       }
     }
+
+    for( int iBosonPtBin = 0 ; iBosonPtBin < nBosonPtBins ; iBosonPtBin++ ){
+      for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+       
+        float scale = tcmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  tcmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+
+        scale = tcmetNewTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  tcmetNewTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+        
+        scale = pfmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  pfmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+
+      }
+    }
+
   }
 
   // make histos rootfile
-  stringstream rootfilename;
-  rootfilename << "root/" << prefix << metTemplateString << "_babyhistos.root";
-
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
-  saveHist(rootfilename.str().c_str());
+  if( makeTemplate ) saveHist( Form("root/babylooper_%s_template.root" , prefix ) );
+  else               saveHist( Form("root/babylooper_%s%s.root"        , prefix , metTemplateString.c_str() ) );
   deleteHistos();
   
 } // end ScanChain
@@ -368,104 +615,212 @@ void babylooper::bookHistos(){
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
-  metObserved  = new TH1F("metObserved", "Observed MET",500,0,500);
-  metPredicted = new TH1F("metPredicted","Predicted MET",500,0,500);
+  char* leptype[4]   = {"ee", "mm", "em", "all"};
+  char* jetbin[4]    = {"0j", "1j", "geq2j", "allj"};
 
-  metObserved_ptlt40     = new TH1F("metObserved_ptlt40", "Observed MET (p_{T}<40 GeV)",500,0,500);
-  metPredicted_ptlt40    = new TH1F("metPredicted_ptlt40","Predicted MET  (p_{T}<40 GeV)",500,0,500);
+  char* leptype_title[4]   = {"ee", "#mu#mu", "e#mu", "all leptons"};
+  char* jetbin_title[4]    = {"0 jets", "1 jet", "#geq 2 jets", "all jets"};
 
-  metObserved_ptlt50     = new TH1F("metObserved_ptlt50", "Observed MET (p_{T}<50 GeV)",500,0,500);
-  metPredicted_ptlt50    = new TH1F("metPredicted_ptlt50","Predicted MET  (p_{T}<50 GeV)",500,0,500);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
 
-  metObserved_ptgt50     = new TH1F("metObserved_ptgt50", "Observed MET (p_{T}>50 GeV)",500,0,500);
-  metPredicted_ptgt50    = new TH1F("metPredicted_ptgt50","Predicted MET  (p_{T}>50 GeV)",500,0,500);
-
-  metObserved_pt40_60    = new TH1F("metObserved_pt40_60", "Observed MET (40<p_{T}<60 GeV)",500,0,500);
-  metPredicted_pt40_60   = new TH1F("metPredicted_pt40_60","Predicted MET  (40<p_{T}<60 GeV)",500,0,500);
-
-  metObserved_ptgt60     = new TH1F("metObserved_ptgt60", "Observed MET (p_{T}>60 GeV)",500,0,500);
-  metPredicted_ptgt60    = new TH1F("metPredicted_ptgt60","Predicted MET  (p_{T}>60 GeV)",500,0,500);
-
-  metObserved_ee  = new TH1F("metObserved_ee", "Observed MET (ee)",500,0,500);
-  metPredicted_ee = new TH1F("metPredicted_ee","Predicted MET (ee)",500,0,500);
-
-  metObserved_mm  = new TH1F("metObserved_mm", "Observed MET (#mu#mu)",500,0,500);
-  metPredicted_mm = new TH1F("metPredicted_mm","Predicted MET (#mu#mu)",500,0,500);
-
-  metParObserved  = new TH1F("metParObserved", "Observed MET (Parallel)",1000,-500,500);
-  metParPredicted = new TH1F("metParPredicted","Predicted MET (Parallel)",1000,-500,500);
-
-  metPerpObserved  = new TH1F("metPerpObserved", "Observed MET (Perpendicular)",500,0,500);
-  metPerpPredicted = new TH1F("metPerpPredicted","Predicted MET (Perpendicular)",500,0,500);
- 
-  metObserved->Sumw2();
-  metPredicted->Sumw2();
-
-  metObserved_ptlt40->Sumw2();
-  metPredicted_ptlt40->Sumw2();
-
-  metObserved_pt40_60->Sumw2();
-  metPredicted_pt40_60->Sumw2();
-
-  metObserved_ptgt60->Sumw2();
-  metPredicted_ptgt60->Sumw2();
-
-  metObserved_ee->Sumw2();
-  metPredicted_ee->Sumw2();
-
-  metObserved_mm->Sumw2();
-  metPredicted_mm->Sumw2();
-
-  metParObserved->Sumw2();
-  metParPredicted->Sumw2();
-
-  metPerpObserved->Sumw2();
-  metPerpPredicted->Sumw2();
-
-  for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
-
-    metObserved_njets[iJetBin]  = new TH1F(Form("metObserved_njets%i",iJetBin), Form("Observed MET NJets %i", iJetBin),500,0,500);
-    metPredicted_njets[iJetBin] = new TH1F(Form("metPredicted_njets%i",iJetBin),Form("Predicted MET NJets %i",iJetBin),500,0,500);
+      char* suffix       = Form("%s_%s",leptype[i],jetbin[j]);
+      char* suffix_title = Form("%s %s",leptype_title[i],jetbin_title[j]);
     
-    metObserved_njets[iJetBin] ->Sumw2();
-    metPredicted_njets[iJetBin]->Sumw2();
+      htcmet[i][j]    = new TH1F(Form("htcmet_%s",suffix),    suffix_title, 100,0,100);
+      htcmetNew[i][j] = new TH1F(Form("htcmetNew_%s",suffix), suffix_title, 100,0,100);
+      hpfmet[i][j]    = new TH1F(Form("hpfmet_%s",suffix),    suffix_title, 100,0,100);
+      htcmet[i][j]->GetXaxis()->SetTitle("tcmet (GeV)");
+      htcmetNew[i][j]->GetXaxis()->SetTitle("tcmetNew (GeV)");
+      hpfmet[i][j]->GetXaxis()->SetTitle("pfmet (GeV)");
+    }
   }
-  
 
-  if( algo_ == e_makeTemplate ) {
+  hr4 = new TH1F("hr4","hr4",200,0,2);
+
+  char* pttitle[5]={"all jets","1 jet","2 jet","3 jet","#geq 4 jet"};
+  
+  for( int i = 0 ; i < 5 ; ++i ){
+    hpthad[i] = new TH1F(Form("pthad_%i",i),pttitle[i],200,0,200);
+    hpthad[i]->GetXaxis()->SetTitle("p_{T} (GeV)");
+  }
+
+  hgenps_pthat = new TH1F("hgenps_pthat","",100,0,100);
+  hphotonpt    = new TH1F("hphotonpt","",100,0,100);
+
+  if( !makeTemplate_ ){
     
+    metObserved  = new TH1F("metObserved", "Observed MET",500,0,500);
+    metPredicted = new TH1F("metPredicted","Predicted MET",500,0,500);
+    
+    metObserved_sf  = new TH1F("metObserved_sf", "Observed MET (SF)",500,0,500);
+    metPredicted_sf = new TH1F("metPredicted_sf","Predicted MET (SF)",500,0,500);
+    
+    metObserved_df  = new TH1F("metObserved_df", "Observed MET (DF)",500,0,500);
+    metPredicted_df = new TH1F("metPredicted_df","Predicted MET (DF)",500,0,500);
+    
+    metObserved_ptlt40     = new TH1F("metObserved_ptlt40", "Observed MET (p_{T}<40 GeV)",500,0,500);
+    metPredicted_ptlt40    = new TH1F("metPredicted_ptlt40","Predicted MET  (p_{T}<40 GeV)",500,0,500);
+    
+    metObserved_ptlt50     = new TH1F("metObserved_ptlt50", "Observed MET (p_{T}<50 GeV)",500,0,500);
+    metPredicted_ptlt50    = new TH1F("metPredicted_ptlt50","Predicted MET  (p_{T}<50 GeV)",500,0,500);
+    
+    metObserved_ptgt50     = new TH1F("metObserved_ptgt50", "Observed MET (p_{T}>50 GeV)",500,0,500);
+    metPredicted_ptgt50    = new TH1F("metPredicted_ptgt50","Predicted MET  (p_{T}>50 GeV)",500,0,500);
+    
+    metObserved_pt40_60    = new TH1F("metObserved_pt40_60", "Observed MET (40<p_{T}<60 GeV)",500,0,500);
+    metPredicted_pt40_60   = new TH1F("metPredicted_pt40_60","Predicted MET  (40<p_{T}<60 GeV)",500,0,500);
+    
+    metObserved_ptgt60     = new TH1F("metObserved_ptgt60", "Observed MET (p_{T}>60 GeV)",500,0,500);
+    metPredicted_ptgt60    = new TH1F("metPredicted_ptgt60","Predicted MET  (p_{T}>60 GeV)",500,0,500);
+    
+    metObserved_ee  = new TH1F("metObserved_ee", "Observed MET (ee)",500,0,500);
+    metPredicted_ee = new TH1F("metPredicted_ee","Predicted MET (ee)",500,0,500);
+    
+    metObserved_mm  = new TH1F("metObserved_mm", "Observed MET (#mu#mu)",500,0,500);
+    metPredicted_mm = new TH1F("metPredicted_mm","Predicted MET (#mu#mu)",500,0,500);
+    
+    metParObserved  = new TH1F("metParObserved", "Observed MET (Parallel)",1000,-500,500);
+    metParPredicted = new TH1F("metParPredicted","Predicted MET (Parallel)",1000,-500,500);
+    
+    metPerpObserved  = new TH1F("metPerpObserved", "Observed MET (Perpendicular)",500,0,500);
+    metPerpPredicted = new TH1F("metPerpPredicted","Predicted MET (Perpendicular)",500,0,500);
+    
+    metObserved->Sumw2();
+    metPredicted->Sumw2();
+    
+    metObserved_ptlt40->Sumw2();
+    metPredicted_ptlt40->Sumw2();
+    
+    metObserved_pt40_60->Sumw2();
+    metPredicted_pt40_60->Sumw2();
+    
+    metObserved_ptgt60->Sumw2();
+    metPredicted_ptgt60->Sumw2();
+    
+    metObserved_ptgt50->Sumw2();
+    metPredicted_ptgt50->Sumw2();
+    
+    metObserved_ptlt50->Sumw2();
+    metPredicted_ptlt50->Sumw2();
+    
+    metObserved_ee->Sumw2();
+    metPredicted_ee->Sumw2();
+    
+    metObserved_mm->Sumw2();
+    metPredicted_mm->Sumw2();
+    
+    metParObserved->Sumw2();
+    metParPredicted->Sumw2();
+    
+    metPerpObserved->Sumw2();
+    metPerpPredicted->Sumw2();
+    
+    for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+      
+      metObserved_njets[iJetBin]  = new TH1F(Form("metObserved_njets%i",iJetBin), Form("Observed MET NJets %i", iJetBin),500,0,500);
+      metPredicted_njets[iJetBin] = new TH1F(Form("metPredicted_njets%i",iJetBin),Form("Predicted MET NJets %i",iJetBin),500,0,500);
+      
+      metObserved_njets[iJetBin] ->Sumw2();
+      metPredicted_njets[iJetBin]->Sumw2();
+
+    }
+  }
+ 
+  if( makeTemplate_ ){
+
+    for( int iBosonPtBin = 0 ; iBosonPtBin < nBosonPtBins ; iBosonPtBin++ ){
+      for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+        
+        tcmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetTemplate_1jet_%i_%i",iBosonPtBin,iSumJetPtBin),
+                                                                     Form("%s, %s",bosonPtString(iBosonPtBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+        
+        tcmetNewTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetNewTemplate_1jet_%i_%i",iBosonPtBin,iSumJetPtBin),
+                                                                        Form("%s, %s",bosonPtString(iBosonPtBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);                     
+        
+        pfmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ] = new TH1F(Form("pfmetTemplate_1jet_%i_%i",iBosonPtBin,iSumJetPtBin),
+                                                                     Form("%s, %s",bosonPtString(iBosonPtBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);   
+        
+        tcmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ]->Sumw2(); 
+        tcmetNewTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ]->Sumw2(); 
+        pfmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ]->Sumw2(); 
+
+        tcmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("tcmet (GeV)");
+        pfmetTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("pfmet (GeV)");
+        tcmetNewTemplate_1jet[ iBosonPtBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("tcmetNew (GeV)");
+      }
+    }
+
     for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
       for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
         
-        metTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                          Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
-
-
-        metParTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metParTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                             Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-500,500);
-
-        metPerpTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("metPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                              Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
-       
-        metTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
-        metParTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
-        metPerpTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
-
-        metTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("met");
-        metParTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("met_{#parallel}");
-        metPerpTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("met_{#perp}");
+        //tcmet
+        tcmetTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                            Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+        
+        tcmetParTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetParTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                               Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-500,500);
+        
+        tcmetPerpTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                                Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+        
+        tcmetTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        tcmetParTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        tcmetPerpTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        
+        tcmetTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("tcmet");
+        tcmetParTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("tcmet_{#parallel}");
+        tcmetPerpTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("tcmet_{#perp}");
+        
+        //tcmetNew
+        tcmetNewTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetNewTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                               Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+        
+        tcmetNewParTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetNewParTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                                  Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-500,500);
+        
+        tcmetNewPerpTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetNewPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                                   Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+        
+        tcmetNewTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        tcmetNewParTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        tcmetNewPerpTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        
+        tcmetNewTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("tcmetNew");
+        tcmetNewParTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("tcmetNew_{#parallel}");
+        tcmetNewPerpTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("tcmetNew_{#perp}");
+        
+        //pfmet
+        pfmetTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("pfmetTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                            Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+        
+        pfmetParTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("pfmetParTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                               Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-500,500);
+        
+        pfmetPerpTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("pfmetPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),
+                                                                Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+        
+        pfmetTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        pfmetParTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        pfmetPerpTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
+        
+        pfmetTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("pfmet");
+        pfmetParTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("pfmet_{#parallel}");
+        pfmetPerpTemplate[ iJetBin ][ iSumJetPtBin ]->GetXaxis()->SetTitle("pfmet_{#perp}");
       }
     }
   }
-  
 }
 
 
 void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("run",          &run_          );
   tree->SetBranchAddress("weight",       &weight_       );
+  tree->SetBranchAddress("pthat",        &pthat_        );
   tree->SetBranchAddress("lumi",         &lumi_         );
   tree->SetBranchAddress("event",        &event_        );
+
+  tree->SetBranchAddress("nvtx",         &nvtx_         );
   tree->SetBranchAddress("pfmet",        &pfmet_        );
   tree->SetBranchAddress("pfmetphi",     &pfmetphi_     );
   tree->SetBranchAddress("pfsumet",      &pfsumet_      );
@@ -482,52 +837,77 @@ void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("genmetphi",    &genmetphi_    );
   tree->SetBranchAddress("gensumet",     &gensumet_     );
   tree->SetBranchAddress("tcmet",        &tcmet_        );
-
+  tree->SetBranchAddress("tcmetphi",     &tcmetphi_     );     
+  tree->SetBranchAddress("tcsumet",      &tcsumet_      );  
+  tree->SetBranchAddress("tcmetNew",     &tcmetNew_        );
+  tree->SetBranchAddress("tcmetphiNew",  &tcmetphiNew_     );     
+  tree->SetBranchAddress("tcsumetNew",   &tcsumetNew_      );  
   tree->SetBranchAddress("dphixmet",     &dphixmet_     );
   tree->SetBranchAddress("metpar",       &metPar_       );
   tree->SetBranchAddress("metperp",      &metPerp_      );
-
-
-  tree->SetBranchAddress("tcmetphi",     &tcmetphi_     );     
-  tree->SetBranchAddress("tcsumet",      &tcsumet_      );     
   tree->SetBranchAddress("njets",        &nJets_        );     
   tree->SetBranchAddress("sumjetpt",     &sumJetPt_     );     
   tree->SetBranchAddress("vecjetpt",     &vecJetPt_     );     
+  tree->SetBranchAddress("nbtags",       &nbtags_       );
+  tree->SetBranchAddress("ndphijetmet",  &dphijetmet_   );
 
-  //photon stuff
-  tree->SetBranchAddress("ng",      &nPhotons_          ); 
-  tree->SetBranchAddress("etg",     &etg_               ); 
-  tree->SetBranchAddress("etag",    &etag_              ); 
-  tree->SetBranchAddress("phig",    &phig_              ); 
-  tree->SetBranchAddress("hoe",     &hoe_               ); 
-  tree->SetBranchAddress("eciso",   &eciso_             ); 
-  tree->SetBranchAddress("hciso",   &hciso_             ); 
-  tree->SetBranchAddress("tkiso",   &tkiso_             );   
-  tree->SetBranchAddress("swiss",   &swiss_             ); 
-  tree->SetBranchAddress("seed",    &seed_              ); 
-  tree->SetBranchAddress("s4",      &s4_                ); 
-  tree->SetBranchAddress("r4",      &r4_                ); 
+  if( selection_ == e_photonSelection ){
 
-  //photon-matched jet stuff
-  tree->SetBranchAddress("jetdr",                 &jet_dr_                );           
-  tree->SetBranchAddress("jetpt",                 &jet_pt_                );   
-  tree->SetBranchAddress("jeteta",                &jet_eta_               ); 
-  tree->SetBranchAddress("jetenergy",             &jet_energy_            ); 
-  tree->SetBranchAddress("jetchargedemfrac",      &jet_chg_emfrac_        ); 
-  tree->SetBranchAddress("jetchargedhadfrac",     &jet_chg_hadfrac_       ); 
-  tree->SetBranchAddress("jetneutralemfrac",      &jet_neu_emfrac_        ); 
-  tree->SetBranchAddress("jetneutralhadfrac",     &jet_neu_hadfrac_       ); 
-  //tree->SetBranchAddress("jetncharged",           &jet_nchg_              ); 
-  //tree->SetBranchAddress("jetnmuon",              &jet_nmuon_             ); 
-  //tree->SetBranchAddress("jetnneutral",           &jet_nneu_              ); 
-  tree->SetBranchAddress("jetdphimet",            &jet_dphimet_           ); 
-  tree->SetBranchAddress("jetdpt",                &jet_dpt_               ); 
-  tree->SetBranchAddress("jetdrgen",              &jet_drgen_             ); 
-  tree->SetBranchAddress("drel",                  &drel_                  ); 
-
+    //photon stuff
+    tree->SetBranchAddress("ng",      &nPhotons_          ); 
+    tree->SetBranchAddress("etg",     &etg_               ); 
+    tree->SetBranchAddress("etag",    &etag_              ); 
+    tree->SetBranchAddress("phig",    &phig_              ); 
+    tree->SetBranchAddress("hoe",     &hoe_               ); 
+    tree->SetBranchAddress("eciso",   &eciso_             ); 
+    tree->SetBranchAddress("hciso",   &hciso_             ); 
+    tree->SetBranchAddress("tkiso",   &tkiso_             );   
+    tree->SetBranchAddress("swiss",   &swiss_             ); 
+    tree->SetBranchAddress("seed",    &seed_              ); 
+    tree->SetBranchAddress("s4",      &s4_                ); 
+    tree->SetBranchAddress("r4",      &r4_                ); 
+    
+    //photon-matched jet stuff
+    tree->SetBranchAddress("jetdr",                 &jet_dr_                );           
+    tree->SetBranchAddress("jetpt",                 &jet_pt_                );   
+    tree->SetBranchAddress("jeteta",                &jet_eta_               ); 
+    tree->SetBranchAddress("jetenergy",             &jet_energy_            ); 
+    tree->SetBranchAddress("jetchargedemfrac",      &jet_chg_emfrac_        ); 
+    tree->SetBranchAddress("jetchargedhadfrac",     &jet_chg_hadfrac_       ); 
+    tree->SetBranchAddress("jetneutralemfrac",      &jet_neu_emfrac_        ); 
+    tree->SetBranchAddress("jetneutralhadfrac",     &jet_neu_hadfrac_       ); 
+    //tree->SetBranchAddress("jetncharged",           &jet_nchg_              ); 
+    //tree->SetBranchAddress("jetnmuon",              &jet_nmuon_             ); 
+    //tree->SetBranchAddress("jetnneutral",           &jet_nneu_              ); 
+    tree->SetBranchAddress("jetdphimet",            &jet_dphimet_           ); 
+    tree->SetBranchAddress("jetdpt",                &jet_dpt_               ); 
+    //tree->SetBranchAddress("jetdrgen",              &jet_drgen_             ); 
+    //tree->SetBranchAddress("drel",                  &drel_                  ); 
+    
+    tree->SetBranchAddress("photon_pixelseed",         &photon_pixelseed_);       
+    tree->SetBranchAddress("photon_e15",               &photon_e15_);             
+    tree->SetBranchAddress("photon_e25max",            &photon_e25max_);          
+    tree->SetBranchAddress("photon_e33",               &photon_e33_);             
+    tree->SetBranchAddress("photon_e55",               &photon_e55_);             
+    tree->SetBranchAddress("photon_ecalIso03",         &photon_ecalIso03_);       
+    tree->SetBranchAddress("photon_ecalIso04",         &photon_ecalIso04_);       
+    tree->SetBranchAddress("photon_hcalIso03",         &photon_hcalIso03_);       
+    tree->SetBranchAddress("photon_hcalIso04",         &photon_hcalIso04_);       
+    tree->SetBranchAddress("photon_ntkIsoHollow03",    &photon_ntkIsoHollow03_);  
+    tree->SetBranchAddress("photon_ntkIsoHollow04",    &photon_ntkIsoHollow04_);  
+    tree->SetBranchAddress("photon_ntkIsoSolid03",     &photon_ntkIsoSolid03_);   
+    tree->SetBranchAddress("photon_ntkIsoSolid04",     &photon_ntkIsoSolid04_);   
+    tree->SetBranchAddress("photon_sigmaEtaEta",       &photon_sigmaEtaEta_);     
+    tree->SetBranchAddress("photon_sigmaIEtaIEta",     &photon_sigmaIEtaIEta_);   
+    tree->SetBranchAddress("photon_tkisoHollow03",     &photon_tkisoHollow03_);   
+    tree->SetBranchAddress("photon_tkisoHollow04",     &photon_tkisoHollow04_);   
+    tree->SetBranchAddress("photon_tkisoSolid03",      &photon_tkisoSolid03_);    
+    tree->SetBranchAddress("photon_tkisoSolid04",      &photon_tkisoSolid04_);     
+  }
+  
   tree->SetBranchAddress("maxjetpt",              &jetmax_pt_             ); 
   tree->SetBranchAddress("maxjetdphimet",         &jetmax_dphimet_        ); 
-
+  
   //trigger
   tree->SetBranchAddress("HLT_Jet15U",            &HLT_Jet15U_            ); 
   tree->SetBranchAddress("HLT_Jet30U",            &HLT_Jet30U_            ); 
@@ -539,23 +919,62 @@ void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("HLT_Photon15_Cleaned_L1R",      &HLT_Photon15_Cleaned_L1R_  ); 
   tree->SetBranchAddress("HLT_Photon20_Cleaned_L1R",      &HLT_Photon20_Cleaned_L1R_  ); 
 
-  //Z stuff
-  tree->SetBranchAddress("passz",             &passz_             );
-  tree->SetBranchAddress("pdgid",             &pdgid_             );
-  tree->SetBranchAddress("passm_nom",         &passm_nom_         );
-  tree->SetBranchAddress("passm_nomttbar",    &passm_nomttbar_    );  
-  tree->SetBranchAddress("passm_nomttbarV2",  &passm_nomttbarV2_  );  
-  tree->SetBranchAddress("passe_ttbar",       &passe_ttbar_       );
-  tree->SetBranchAddress("passe_ttbarV1",     &passe_ttbarV1_     );
-  tree->SetBranchAddress("passe_cand01",      &passe_cand01_      );  
-  tree->SetBranchAddress("ptll",              &ptll_              );  
-  tree->SetBranchAddress("ptlt",              &ptlt_              ); 
-  tree->SetBranchAddress("dilmass",           &dilmass_           ); 
-  tree->SetBranchAddress("flagll",            &flagll_            );  
-  tree->SetBranchAddress("flaglt",            &flaglt_            ); 
+  if( selection_ == e_ZSelection ){
+    //Z stuff
+    //tree->SetBranchAddress("passz",                  &passz_                  );
+    //tree->SetBranchAddress("pdgid",                  &pdgid_                  );
+    tree->SetBranchAddress("passm_ll_nom",           &passm_ll_nom_           );
+    tree->SetBranchAddress("passm_ll_nomttbar",      &passm_ll_nomttbar_      );  
+    tree->SetBranchAddress("passm_ll_nomttbarV2",    &passm_ll_nomttbarV2_    );  
+    tree->SetBranchAddress("passe_ll_ttbar",         &passe_ll_ttbar_         );
+    tree->SetBranchAddress("passe_ll_ttbarV1",       &passe_ll_ttbarV1_       );
+    tree->SetBranchAddress("passe_ll_ttbarV2",       &passe_ll_ttbarV2_       );
+    tree->SetBranchAddress("passe_ll_cand01",        &passe_ll_cand01_        );  
+    tree->SetBranchAddress("passm_lt_nom",           &passm_lt_nom_           );
+    tree->SetBranchAddress("passm_lt_nomttbar",      &passm_lt_nomttbar_      );  
+    tree->SetBranchAddress("passm_lt_nomttbarV2",    &passm_lt_nomttbarV2_    );  
+    tree->SetBranchAddress("passe_lt_ttbar",         &passe_lt_ttbar_         );
+    tree->SetBranchAddress("passe_lt_ttbarV1",       &passe_lt_ttbarV1_       );
+    tree->SetBranchAddress("passe_lt_ttbarV2",       &passe_lt_ttbarV2_       );
+    tree->SetBranchAddress("passe_lt_cand01",        &passe_lt_cand01_        );
+    //tree->SetBranchAddress("TMLastStationTight_ll",  &TMLastStationTight_ll_  );
+    //tree->SetBranchAddress("TMLastStationTight_lt",  &TMLastStationTight_lt_  );
+  
+    tree->SetBranchAddress("ptll",                 &ptll_                 );  
+    tree->SetBranchAddress("ptlt",                 &ptlt_                 ); 
+    tree->SetBranchAddress("dilmass",              &dilmass_              ); 
+    tree->SetBranchAddress("dilpt",                &dilpt_                ); 
+    tree->SetBranchAddress("flagll",               &flagll_               );  
+    tree->SetBranchAddress("flaglt",               &flaglt_               ); 
+    tree->SetBranchAddress("leptype",              &leptype_              );
+
+
+  }
 
 }
 
+//--------------------------------------------------------------------
 
+void babylooper::fillHistos(TH1F *h1[4],float value, float weight, int myType)
+{
+
+  fillUnderOverFlow(h1[myType], value, weight);      
+  fillUnderOverFlow(h1[3],      value, weight);      
+}
+
+//--------------------------------------------------------------------
+
+void babylooper::fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsIdx)
+{
+
+  if( nJetsIdx > 2 ) nJetsIdx = 2;
+
+  fillUnderOverFlow(h1[myType][nJetsIdx], value, weight);      
+  fillUnderOverFlow(h1[myType][3],        value, weight);      
+  fillUnderOverFlow(h1[3][nJetsIdx],      value, weight);      
+  fillUnderOverFlow(h1[3][3],             value, weight);      
+}
+
+//--------------------------------------------------------------------
 
 
