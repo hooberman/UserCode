@@ -20,7 +20,8 @@ class babylooper
         enum selectionType   { e_QCDSelection = 0, e_photonSelection = 1, e_ZSelection = 2};
 
         void setBranches (TTree *tree);
-        void ScanChain (TChain*, const char*, bool isData, selectionType mySelectionType = e_photonSelection, 
+        void ScanChain (TChain*, const char*, bool isData, 
+                        selectionType mySelectionType = e_photonSelection, 
                         bool makeTemplate = false, int nEvents = -1);
         void bookHistos();
 	bool isGoodTrack(int, bool usePV = false);
@@ -44,6 +45,7 @@ class babylooper
         Int_t L1_SingleEG5_;
         Int_t HLT_Photon10_L1R_;
         Int_t HLT_Photon15_L1R_;
+        Int_t HLT_Photon20_L1R_;
         Int_t HLT_Photon10_Cleaned_L1R_;
         Int_t HLT_Photon15_Cleaned_L1R_;
         Int_t HLT_Photon20_Cleaned_L1R_;
@@ -218,21 +220,14 @@ class babylooper
 
         TH1F* metPredicted_njets[11];
         TH1F* metObserved_njets[11];
-
-        TH1F* tcmetTemplate[11][23];
-        TH1F* tcmetParTemplate[11][23];
-        TH1F* tcmetPerpTemplate[11][23];
-        TH1F* tcmetNewTemplate[11][23];
-        TH1F* tcmetNewParTemplate[11][23];
-        TH1F* tcmetNewPerpTemplate[11][23];
-        TH1F* pfmetTemplate[11][23];
-        TH1F* pfmetParTemplate[11][23];
-        TH1F* pfmetPerpTemplate[11][23];
-
-        TH1F* tcmetTemplate_1jet[4][23];
-        TH1F* tcmetNewTemplate_1jet[4][23];
-        TH1F* pfmetTemplate_1jet[4][23];
         
+        TH1F* tcmetTemplate[11][23][4];
+        TH1F* tcmetNewTemplate[11][23][4];
+        TH1F* pfmetTemplate[11][23][4];
+
+        TH1F* tcmetTemplate_combined[11][23];
+        TH1F* tcmetNewTemplate_combined[11][23];
+        TH1F* pfmetTemplate_combined[11][23];
         
         ofstream ofile_tcmet;
         ofstream ofile_events;

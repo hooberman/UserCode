@@ -19,10 +19,15 @@ gROOT->ProcessLine(".L runBabyLooper.C+");
 //runBabyLooper("ZJets_1p9pb"                     , false , babylooper::e_ZSelection  );
 //runBabyLooper("lepdata_1p9pb"                   , true , babylooper::e_ZSelection  );
 
-runBabyLooper("lepdata_2p8pb_ttdilsync_ttdilskims"        , true ,  babylooper::e_ZSelection  );
-runBabyLooper("ZJets_2p8pb_ttdilsync_ttdilskims"          , false , babylooper::e_ZSelection  );
-runBabyLooper("TTbar_2p8pb_ttdilsync_ttdilskims"          , false , babylooper::e_ZSelection  );
-
 //runBabyLooper("makeTemplates_EG_ttdilsync"                 , true   , babylooper::e_photonSelection  , true);
-//runBabyLooper("makeTemplates_PhotonJet_ttdilsync"           , false  , babylooper::e_photonSelection  , true);
+//runBabyLooper("makeTemplates_PhotonJet_ttdilsync"          , false  , babylooper::e_photonSelection  , true);
+
+//runBabyLooper("lepdata_2p8pb_ttdilsync_ttdilskims"        , true ,  babylooper::e_ZSelection  );
+//runBabyLooper("ZJets_2p8pb_ttdilsync_ttdilskims"          , false , babylooper::e_ZSelection  );
+//runBabyLooper("TTbar_2p8pb_ttdilsync_ttdilskims"          , false , babylooper::e_ZSelection  );
+
+ runBabyLooper("V01-01","lepdata"        , true  , babylooper::e_ZSelection  );
+ runBabyLooper("V01-01","TTbar"          , false , babylooper::e_ZSelection  );
+ runBabyLooper("V01-01","ZJets"          , false , babylooper::e_ZSelection  );
+
 }
