@@ -29,6 +29,7 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
 
   else if ( strcmp( prefix , "lepdata" ) == 0 ){
 
+    /*
     //electron
     ch->Add("/tas/cms2/EG_Run2010A-Jun14thReReco_v1_RECO/V03-04-26-01/diLepPt1010skim/dilepton_skimmed_ntuple.root");
     ch->Add("/tas/cms2/EG_Run2010A-Jul16thReReco-v2_RECO/V03-04-26-07/singleLepPt5Skim/skimmed*root");
@@ -46,12 +47,28 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
     ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed*root");
     ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-07/singleLepPt10Skim/skimmed*root");
     ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed*root");
+    */
     
-    
+    //file with bad els_conv_dist
     //ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple_143657_12.root");
+
+    //from ttdil analysis
+    ch->Add("/tas/fgolf/SSskims/data/dilep_skim_2.root");
+    ch->Add("/tas/fgolf/SSskims/data/skimmed_ntuple*.root");
+    
+    //Muon Prompt reco files
+    ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple*.root");
+    
+    //EG prompt reco files      
+    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple*.root");
+    
+    //from hcal bad runs
+    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root");
+    ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root");
+    
+
   }
-
-
+  
   //------------------------------------------------------------------------------------------------------------
 
   else{

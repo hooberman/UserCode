@@ -21,6 +21,7 @@ class Z_looper
 
   enum metAlgo   { e_makeTemplate = 0, e_photonSelection = 1, e_ZSelection = 2};
 
+
   void MakeBabyNtuple (const char *);
   void InitBabyNtuple ();
   void FillBabyNtuple ();
@@ -119,12 +120,14 @@ class Z_looper
   Int_t   passz_;
   Int_t   passe_ll_ttbar_;
   Int_t   passe_ll_ttbarV1_;
+  Int_t   passe_ll_ttbarV2_;
   Int_t   passe_ll_cand01_;
   Int_t   passm_ll_nomttbar_;
   Int_t   passm_ll_nomttbarV2_;
   Int_t   passm_ll_nom_;
   Int_t   passe_lt_ttbar_;
   Int_t   passe_lt_ttbarV1_;
+  Int_t   passe_lt_ttbarV2_;
   Int_t   passe_lt_cand01_;
   Int_t   passm_lt_nomttbar_;
   Int_t   passm_lt_nomttbarV2_;
@@ -150,6 +153,8 @@ class Z_looper
   TH1F*   hgenps_pthat;
   TH1F*   hphotonpt;
 
+
+  TH1F* hptz[5];
   TH1F* htcmet[4][4];
   TH1F* htcmetNew[4][4];
   TH1F* hpfmet[4][4];

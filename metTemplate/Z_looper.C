@@ -26,6 +26,9 @@
 #include "Tools/goodrun.cc"
 #include "CORE/utilities.cc"
 #include "histtools.h"
+#include "CORE/ttbarSelections.cc"
+#include "CORE/jetSelections.cc"
+#include "CORE/triggerUtils.cc"
 
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
@@ -33,24 +36,92 @@
 
 using namespace tas;
 
+enum metType   { e_tcmet = 0, e_tcmetNew = 1, e_pfmet = 2};
+enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
+
 //--------------------------------------------------------------------
 
 bool debug = false;
-const int nJetBins      = 11;
-const int nSumJetPtBins = 23;
+const int nJetBins        = 11;
+const int nSumJetPtBins   = 23;
+const int nBosonPtBins    = 4;
 
 float lumi         = 0.0027945;
-char* iter         = "2p8pb_ttdilsync";
+char* iter         = "V01-01";
 char* jsonfilename = "Cert_TopAug30_Merged_135059-144114_recover_noESDCS_goodruns.txt";
 
-//float lumi         = 0.001932;
-//char* iter         = "1p9pb_zlooper_v2";
-//char* jsonfilename ="Cert_TopAug26_Merged_135059-143835_recover_noESDCS_goodruns.txt"
+metType myMetType               = e_tcmet;
+templateSource myTemplateSource = e_PhotonJet;
 
 //--------------------------------------------------------------------
 
-inline double fround(double n, double d){
-  return floor(n * pow(10., d) + .5) / pow(10., d);
+struct DorkyEventIdentifier {
+  // this is a workaround for not having unique event id's in MC
+  unsigned long int run, event,lumi;
+  bool operator < (const DorkyEventIdentifier &) const;
+  bool operator == (const DorkyEventIdentifier &) const;
+};
+
+//--------------------------------------------------------------------
+
+bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return run < other.run;
+  if (event != other.event)
+    return event < other.event;
+  if(lumi != other.lumi)
+    return lumi < other.lumi;
+  return false;
+}
+
+//--------------------------------------------------------------------
+
+bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return false;
+  if (event != other.event)
+    return false;
+  return true;
+}
+
+//--------------------------------------------------------------------
+
+std::set<DorkyEventIdentifier> already_seen;
+bool is_duplicate (const DorkyEventIdentifier &id) {
+  std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
+    already_seen.insert(id);
+  return !ret.second;
+}
+
+//--------------------------------------------------------------------
+
+int getBosonPtBin( float x ){
+
+  if     ( x < 40.           ) return 0;
+  else if( x > 40 && x < 60  ) return 1;
+  else if( x > 60 && x < 100 ) return 2;
+  else if( x > 100           ) return 3;
+  else { 
+    cout << "Error could not find boson pt bin" << endl;
+    exit(0);
+  }
+}
+
+//--------------------------------------------------------------------
+
+string bosonPtString( int bin ){
+
+  if     ( bin == 0 ) return "boson p_{T} < 40 GeV";
+  else if( bin == 1 ) return "40 < boson p_{T} < 60 GeV";
+  else if( bin == 2 ) return "60 < boson p_{T} < 100 GeV";
+  else if( bin == 3 ) return "boson p_{T} > 100 GeV";
+  else{
+    cout << "Error unrecognized boson pt bin " << bin << endl;
+    exit(0);
+  }
+
 }
 
 //--------------------------------------------------------------------
@@ -115,34 +186,81 @@ string sumJetPtString( int bin ){
 
 //--------------------------------------------------------------------
 
-void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool calculateTCMET, metAlgo algo, int nEvents, float kFactor){
+void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
+                          bool calculateTCMET, metAlgo algo, int nEvents, float kFactor){
 
   algo_ = algo;
 
-  if( algo_ == e_makeTemplate )    cout << "metAlgo makeTemplate" << endl;
-  if( algo_ == e_photonSelection ) cout << "metAlgo photonSelection" << endl;
-  if( algo_ == e_ZSelection )      cout << "metAlgo ZSelection" << endl;
+  if     ( algo_ == e_makeTemplate )    cout << "metAlgo makeTemplate" << endl;
+  else if( algo_ == e_photonSelection ) cout << "metAlgo photonSelection" << endl;
+  else if( algo_ == e_ZSelection )      cout << "metAlgo ZSelection" << endl;
+  else { cout << "Unrecognized algo" << endl; exit(0); }
 
-  TFile *metTemplateFile;
+  if     ( myMetType == e_tcmet    ) cout << "metType tcmet" << endl;
+  else if( myMetType == e_pfmet    ) cout << "metType pfmet" << endl;
+  else if( myMetType == e_tcmetNew ) cout << "metType tcmetNew" << endl;
+  else { cout << "Unrecognized metType" << endl; exit(0); }
+
+  if     ( myTemplateSource == e_QCD       ) cout << "QCD templates" << endl;
+  else if( myTemplateSource == e_PhotonJet ) cout << "photon+jets templates" << endl;
+  else { cout << "Unrecognized templateSource" << endl; exit(0); }
+
+  TFile *metTemplateFile   = new TFile();
   string metTemplateString = "";
-  
-  DorkyEventIdentifier dei;
+  char* templateFileName   = "";
 
   //select templates
-  if( algo_ != e_makeTemplate){
-    if( isData ){
-      metTemplateString = "_dataTemplate";
-      metTemplateFile = TFile::Open("root/JetMETTau_250nb.root");
-    }else{
-      metTemplateString = "_mcTemplate";
-      metTemplateFile = TFile::Open("root/QCD_Pt15_1p9pb.root");
+  if( isData ){
+    
+    if( myTemplateSource == e_QCD ){
+      cout << "QCD templates are deprecated. If you want to use this you"
+           << "need to make QCD templates using makeTemplates.C." << endl;
+      exit(0);
+//       templateFileName = Form("output/%s/JetMETTau_templates.root",iter);
+//       cout << "Using template file " << templateFileName << endl;
+//       metTemplateString = "_JetMETTauTemplate";
+//       metTemplateFile = TFile::Open( templateFileName );
     }
+    
+    else if( myTemplateSource == e_PhotonJet ){
+      templateFileName = Form("output/%s/EG_templates.root",iter);
+      cout << "Using template file " << templateFileName << endl;
+      metTemplateString = "_EGTemplate";
+      metTemplateFile = TFile::Open( templateFileName );
+    }
+    
+  }else{
+    
+    if( myTemplateSource == e_QCD ){
+      cout << "QCD templates are deprecated. If you want to use this you"
+           << "need to make QCD templates using makeTemplates.C." << endl;
+      exit(0);
+//       templateFileName = Form("output/%s/QCD_Pt15_templates.root",iter);
+//       cout << "Using template file " << templateFileName << endl;
+//       metTemplateString = "_QCD_Pt15Template";
+//       metTemplateFile = TFile::Open( templateFileName ); 
+    }
+        
+    else if( myTemplateSource == e_PhotonJet ){
+      templateFileName = Form("output/%s/PhotonJet_templates.root",iter);
+      cout << "Using template file " << templateFileName << endl;
+      metTemplateString = "_PhotonJetTemplate";
+      metTemplateFile = TFile::Open( templateFileName );
+    }
+  }
+  
+  if( metTemplateFile == 0 ){
+    cout << "Error couldn't find " << templateFileName << endl;
+    exit(0);
   }
 
   set_goodrun_file( jsonfilename );
-  ofile_tcmet.open(  Form( "root/%s_%s_tcmetprintout.txt" , prefix , iter ) );
-  ofile_events.open( Form( "root/%s_%s_highmetevents.txt" , prefix , iter ) );
+ 
   if( isData ){
+    
+    ofile_tcmet.open(  Form( "output/%s/%s_tcmetprintout.txt" , iter , prefix  ) );
+    ofile_events.open( Form( "output/%s/%s_highmetevents.txt" , iter , prefix  ) );
+    
     ofile_events << "|" << setw(8)  << "run"          << setw(4) 
                  << "|" << setw(6)  << "lumi"         << setw(4) 
                  << "|" << setw(12) << "event"        << setw(4) 
@@ -160,7 +278,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
   // make a baby ntuple
   stringstream babyfilename;
   babyfilename << prefix << "_baby.root";
-  MakeBabyNtuple( Form("root/%s_%s_baby.root", prefix , iter ) );
+  MakeBabyNtuple( Form("output/%s/%s_baby.root", iter , prefix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -171,12 +289,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
   unsigned int nEventsTotal = 0;
   
   //pass fail counters
-  int nPassGoodRun    = 0;
-  int nPassBPTX       = 0;
-  int nPassBSC        = 0;
-  int nPassBeamHalo   = 0;
-  int nPassGoodTracks = 0;
-  int nPassGoodVertex = 0;
   float nGoodMu = 0;
   float nGoodEl = 0;
   int nSkip_els_conv_dist = 0;
@@ -211,10 +323,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         }
       }
 
-      //duplicate event veto CHECK THIS
-      bool myduplicate = dei.is_duplicate(DorkyEvent());
-      if(myduplicate) continue;
-      
+      if( isData ) {
+	DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
+	if (is_duplicate(id) )
+	  continue;
+      }
+     
       //skip events with bad els_conv_dist 
       bool skipEvent = false;
       for( unsigned int iEl = 0 ; iEl < els_conv_dist().size() ; ++iEl ){
@@ -224,36 +338,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
       }
       
       if( skipEvent ){
-        cout << "SKIPPING EVENT WITH BAD ELS_CONV_DIST" << endl;       
         nSkip_els_conv_dist++;
         continue;
       }
 
       //good run+event selection-----------------------------------------------------------
-
-      if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))
-        nPassGoodRun++;
-      else continue;
-
-      if (cleaning_BPTX( isData ))
-        nPassBPTX++;
-      else continue;
-
-      if (cleaning_BSC())
-        nPassBSC++;
-      else continue;
-
-      if (cleaning_beamHalo())
-        nPassBeamHalo++;
-      else continue;
-
-      if (cleaning_goodTracks())
-        nPassGoodTracks++;
-      else continue;
-
-      if (cleaning_goodVertexAugust2010())
-        nPassGoodVertex++;
-      else continue;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      if( !cleaning_standardAugust2010( isData) )                    continue;
       
       if(debug) cout << "Pass event selection" << endl;
 
@@ -270,93 +361,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         weight_ = cms2.evt_scale1fb() * kFactor * lumi;
         pthat_  = cms2.genps_pthat();
       }
-
-      //access HLT triggers------------------------------------------------------------------
-
-      for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
-
-        if( strcmp( hlt_trigNames().at(itrig) , "HLT_L1Jet6U" ) == 0 ){
-          if( passHLTTrigger("HLT_L1Jet6U") )                  HLT_L1Jet6U_ = 1;
-          else                                                 HLT_L1Jet6U_ = 0;
-        }
-
-        if( strcmp( hlt_trigNames().at(itrig) , "HLT_L1Jet10U" ) == 0 ){
-          if( passHLTTrigger("HLT_L1Jet10U") )                 HLT_L1Jet10U_ = 1;
-          else                                                 HLT_L1Jet10U_ = 0;
-        }
-        
-        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Jet15U" ) == 0 ){
-          if( passHLTTrigger("HLT_Jet15U") )                   HLT_Jet15U_ = 1;
-          else                                                 HLT_Jet15U_ = 0;
-        }
-
-        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Jet30U" ) == 0 ){
-          if( passHLTTrigger("HLT_Jet30U") )                   HLT_Jet30U_ = 1;
-          else                                                 HLT_Jet30U_ = 0;
-        }
-
-        if( strcmp( hlt_trigNames().at(itrig) , "L1_SingleEG5" ) == 0 ){
-          if( passHLTTrigger("L1_SingleEG5") )                 L1_SingleEG5_ = 1;
-          else                                                 L1_SingleEG5_ = 0;
-        }
-
-        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon10_L1R" ) == 0 ){
-          if( passHLTTrigger("HLT_Photon10_L1R") )             HLT_Photon10_L1R_ = 1;
-          else                                                 HLT_Photon10_L1R_ = 0;
-        }
-
-        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon15_L1R" ) == 0 ){
-          if( passHLTTrigger("HLT_Photon15_L1R") )             HLT_Photon15_L1R_ = 1;
-          else                                                 HLT_Photon15_L1R_ = 0;
-        }
-
-        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon10_Cleaned_L1R" ) == 0 ){
-          if( passHLTTrigger("HLT_Photon10_Cleaned_L1R") )     HLT_Photon10_Cleaned_L1R_ = 1;
-          else                                                 HLT_Photon10_Cleaned_L1R_ = 0;
-        }
-
-        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon15_Cleaned_L1R" ) == 0 ){
-          if( passHLTTrigger("HLT_Photon15_Cleaned_L1R") )     HLT_Photon15_Cleaned_L1R_ = 1;
-          else                                                 HLT_Photon15_Cleaned_L1R_ = 0;
-        }
-
-        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon20_Cleaned_L1R" ) == 0 ){
-          if( passHLTTrigger("HLT_Photon20_Cleaned_L1R") )     HLT_Photon20_Cleaned_L1R_ = 1;
-          else                                                 HLT_Photon20_Cleaned_L1R_ = 0;
-        }
-      }      
-
-      //trigger selection
-      bool passTrigger = false;
-      
-      if( passHLTTrigger("HLT_Mu9") ) passTrigger = true;
-      
-      if( isData ){
-       
-        if( run_ < 138000 ){
-          if( passHLTTrigger("HLT_Ele10_LW_L1R") ) passTrigger = true;
-        }
-
-        else if( run_ >= 138000 && run_ < 141900 ){
-          if( passHLTTrigger("HLT_Ele15_LW_L1R") ) passTrigger = true;
-        }
-
-        else if( run_ >= 141900 && run_ < 144000 ){
-          if( passHLTTrigger("HLT_Ele15_LW_L1R") ) passTrigger = true;
-        } 
-
-        else if( run_ >= 144000 ){
-          if( passHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R") ) passTrigger = true;
-          if( passHLTTrigger("HLT_DoubleEle10_SW_L1R") )     passTrigger = true;
-        }
-        
-      }else{
-
-        if( passHLTTrigger("HLT_Ele10_LW_L1R") ) passTrigger = true;
-     
-      }
-
-      if( !passTrigger ) continue;
 
       // calomet, pfmet, genmet
       met_       = cms2.evt_met();
@@ -377,6 +381,19 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
 
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
 
+        //trigger selection
+        bool passMu = passHLTTrigger("HLT_Mu9");
+        bool runningOnMC = isData ? false : true;
+        bool passEl = passEGTrigger(runningOnMC);
+        
+        int type = hyp_type()[hypIdx];
+        if(type == 0 && !passMu)                                    continue;
+        if(type == 3 && !passEl)                                    continue;
+        if((type == 1 || type == 2) && !passMu && !passEl)          continue;
+        
+        //check that hyp leptons come from same vertex
+        if(!hypsFromSameVtx(hypIdx))   continue;
+
         leptype_ = 99;
         if (hyp_type()[hypIdx] == 3) leptype_ = 0;                           // ee
         if (hyp_type()[hypIdx] == 0) leptype_ = 1;                           // mm
@@ -388,18 +405,18 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
 
         //selection--------------------------------------------------------------------- 
 
-        //ttbar muon ID
-        if (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx],NominalTTbarV2)))   continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx],NominalTTbarV2)))   continue;
-        
-        //ttbarV1 electron ID
-        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV1 , isData ))) continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbarV1 , isData ))) continue;
-        
         //OS, pt > (20,20) GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                   continue;
         if( hyp_ll_p4()[hypIdx].pt() < 20. )                                  continue;
         if( hyp_lt_p4()[hypIdx].pt() < 20. )                                  continue;
+
+        //ttbarV2 muon ID
+        if (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx],NominalTTbarV2)))   continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx],NominalTTbarV2)))   continue;
+        
+        //ttbarV2 electron ID
+        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV2 , isData , true ))) continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbarV2 , isData , true ))) continue;
         
         //Z-mass constraint
         dilmass_ = hyp_p4()[hypIdx].mass();
@@ -422,6 +439,36 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         dilmass_          = hyp_p4()[hypIdx].mass(); 
         dilpt_            = hyp_p4()[hypIdx].pt(); 
 
+        if( abs( hyp_ll_id()[hypIdx] ) == 11 ){
+          passe_ll_ttbarV1_      = pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV1 , isData , true ) ? 1 : 0;
+          passe_ll_ttbarV2_      = pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV2 , isData , true ) ? 1 : 0;
+          passe_ll_ttbar_        = pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbar   , isData , true ) ? 1 : 0;
+          passe_ll_cand01_       = pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_cand01 )           ? 1 : 0;
+        }else if( abs( hyp_ll_id()[hypIdx] ) == 13 ){
+          flagll_                = mus_tcmet_flag().at(hyp_ll_index()[hypIdx]);
+          passm_ll_nom_          = muonId(hyp_ll_index()[hypIdx])                ? 1 : 0;
+          passm_ll_nomttbar_     = muonId(hyp_ll_index()[hypIdx],NominalTTbar)   ? 1 : 0;
+          passm_ll_nomttbarV2_   = muonId(hyp_ll_index()[hypIdx],NominalTTbarV2) ? 1 : 0;
+        }else{
+          cout << "ERROR UNRECOGNIZED LL ID " << hyp_ll_id()[hypIdx] << endl;
+          continue;
+        }
+        
+        if( abs( hyp_lt_id()[hypIdx] ) == 11 ){
+          passe_lt_ttbarV1_      = pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbarV1 , isData , true ) ? 1 : 0;
+          passe_lt_ttbarV2_      = pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbarV2 , isData , true ) ? 1 : 0;
+          passe_lt_ttbar_        = pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_ttbar   , isData , true ) ? 1 : 0;
+          passe_lt_cand01_       = pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_cand01 )           ? 1 : 0;
+        }else if( abs( hyp_lt_id()[hypIdx] ) == 13 ){
+          flaglt_                = mus_tcmet_flag().at(hyp_lt_index()[hypIdx]);
+          passm_lt_nom_          = muonId(hyp_lt_index()[hypIdx])                ? 1 : 0;
+          passm_lt_nomttbar_     = muonId(hyp_lt_index()[hypIdx],NominalTTbar)   ? 1 : 0;
+          passm_lt_nomttbarV2_   = muonId(hyp_lt_index()[hypIdx],NominalTTbarV2) ? 1 : 0;
+        }else{
+          cout << "ERROR UNRECOGNIZED LT ID " << hyp_lt_id()[hypIdx] << endl;
+          continue;
+        }
+
         //tcmet stuff------------------------------------------------------------------- 
 
         metStruct tcmetStruct = correctTCMETforHypMuons( hypIdx ,  
@@ -436,11 +483,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
 
         if( calculateTCMET ){
         
+          
           metStruct tcmetNewStruct = correctedTCMET();
           tcmetNew_     = tcmetNewStruct.met;
           tcmetphiNew_  = tcmetNewStruct.metphi;
           tcsumetNew_   = tcmetNewStruct.sumet;
           
+
           metStruct tcmetNewStruct_corr = correctTCMETforHypMuons( hypIdx ,  
                                                                    tcmetNew_ * cos( tcmetphiNew_ ), 
                                                                    tcmetNew_ * sin( tcmetphiNew_ ), 
@@ -463,7 +512,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
           if(isGoodVertex(v)) nGoodVertex_++;
         }
-        
+         
         //jet stuff--------------------------------------------------------------------- 
         
         nJets_        = 0;
@@ -481,13 +530,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         //loop over pfjets pt > 30 GeV |eta| < 2.5
         for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-          LorentzVector vjet = pfjets_p4().at(ijet);
+          LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
           LorentzVector vlt  = hyp_lt_p4()[hypIdx];
           LorentzVector vll  = hyp_ll_p4()[hypIdx];
           
           if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
           if( fabs( vjet.eta() ) > 2.5 )           continue;
+          if( !passesPFJetID(ijet) )               continue;
 
           if ( vjet.pt() > 10. ){
             sumJetPt10_ += vjet.pt();
@@ -498,13 +548,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
           }
 
           if( vjet.pt() < 30. )                    continue;
-
+          
           //find max jet pt
-          if( pfjets_p4().at(ijet).pt() > maxpt ){
-            maxpt   = pfjets_p4().at(ijet).pt();
+          if( vjet.pt() > maxpt ){
+            maxpt   = vjet.pt();
             imaxjet = ijet;
           }
-
+          
           //find jet (anti-)aligned with tcmet
           if( fabs( cos( tcmetphi_ - vjet.phi() ) ) > maxcosdphi ){
             maxcosdphi  = fabs( cos( tcmetphi_ - vjet.phi() ) );
@@ -538,11 +588,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
           if ( vjet.pt() > 40. ) nJets40_++;
           
         }
-      
+       
         jetmax_pt_ = -1;
 
         if( imaxjet > -1 ){
-          jetmax_pt_       = pfjets_p4().at(imaxjet).pt();
+          jetmax_pt_       = pfjets_cor().at(imaxjet) * pfjets_p4().at(imaxjet).pt();
           jetmax_dphimet_  = deltaPhi( pfjets_p4().at(imaxjet).phi() , tcmetphi_);
         }
 
@@ -573,79 +623,107 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
         }
 
         //met templates-------------------------------------------------------------------- 
+ 
+        //if ( nJets_ < 2 )                                                     continue;
+        //if( jetmax_pt_ < 50 )                                                 continue;
+        if ( nJets_ < 1 )                                                     continue;
+        if( jetmax_pt_ < 30 )                                                 continue;
 
-        if ( nJets_ < 2 )                                                     continue;
-        if( jetmax_pt_ < 50 )                                                 continue;
+        int iJ = nJets_;
+        if( iJ > 4 ) iJ = 4;
 
-        dphixmet_  = deltaPhi( tcmetphi_ , hyp_p4()[hypIdx].phi() );
-        metPar_    = tcmet_ * cos( dphixmet_ );
-        metPerp_   = tcmet_ * sin( dphixmet_ );
+        fillUnderOverFlow( hptz[iJ] , dilpt_ , weight_ );
+        fillUnderOverFlow( hptz[0]  , dilpt_ , weight_ );
+ 
+        float theMet    = -1;
+        float theMetPhi = -1;
+
+        if( myMetType == e_tcmet ){
+          theMet    = tcmet_;
+          theMetPhi = tcmetphi_;
+        }
+        else if( myMetType == e_tcmetNew ){
+          theMet    = tcmetNew_;
+          theMetPhi = tcmetphiNew_;
+        }
+        else if( myMetType == e_pfmet ){
+          theMet    = pfmet_;
+          theMetPhi = pfmetphi_;
+        }
+
+        dphixmet_  = deltaPhi( theMetPhi , hyp_p4()[hypIdx].phi() );
+        metPar_    = theMet * cos( dphixmet_ );
+        metPerp_   = theMet * sin( dphixmet_ );
         
         //fill predicted and observed met histos
         int iJetBin      = getJetBin( nJets_ );
         int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
-        TH1F* hmet     = (TH1F*) metTemplateFile->Get(Form("metTemplate_%i_%i",iJetBin,iSumJetPtBin));
-        TH1F* hmetPar  = (TH1F*) metTemplateFile->Get(Form("metParTemplate_%i_%i",iJetBin,iSumJetPtBin));
-        TH1F* hmetPerp = (TH1F*) metTemplateFile->Get(Form("metPerpTemplate_%i_%i",iJetBin,iSumJetPtBin));
+        int iBosonPtBin  = getBosonPtBin( dilpt_ );
+
+        TH1F* hmet = new TH1F();
         
-        fillUnderOverFlow( metObserved_njets[iJetBin]  ,  tcmet_ , weight_ );
-        metPredicted_njets[iJetBin]->Add( hmet );
+        if( !isData && nJets_ > 1 ){
+          if( myMetType == e_tcmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
+          }
+          else if( myMetType == e_tcmetNew ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetNewTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
+          }
+          else if( myMetType == e_pfmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
+          }
+        }
         
-        fillUnderOverFlow( metObserved , tcmet_ , weight_  );
+        else{
+          if     ( myMetType == e_tcmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
+          }
+          else if( myMetType == e_tcmetNew ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetNewTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
+          }
+          else if( myMetType == e_pfmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
+          }
+        }
+
+        hmet->Scale( weight_ );
+
+        iJ = iJetBin;
+        if( iJ > 3 ) iJ = 3;
+        fillUnderOverFlow( metObserved_njets[iJ]  ,  theMet , weight_ );
+        metPredicted_njets[iJ]->Add( hmet );
+        
+        fillUnderOverFlow( metObserved , theMet , weight_  );
         metPredicted->Add( hmet );
 
         // SF vs. DF
         if( leptype_ == 0 || leptype_ == 1 ){
-          fillUnderOverFlow( metObserved_sf , tcmet_ , weight_  );
+          fillUnderOverFlow( metObserved_sf , theMet , weight_  );
           metPredicted_sf->Add( hmet );
         }
         else if( leptype_ == 2 ){
-          fillUnderOverFlow( metObserved_df , tcmet_ , weight_  );
+          fillUnderOverFlow( metObserved_df , theMet , weight_  );
           metPredicted_df->Add( hmet );
         }
 
         // ee vs. mumu
         if( leptype_ == 0 ){
-          fillUnderOverFlow( metObserved_ee , tcmet_ , weight_  );
+          fillUnderOverFlow( metObserved_ee , theMet , weight_  );
           metPredicted_ee->Add( hmet );
         }
         else if( leptype_ == 1 ){
-          fillUnderOverFlow( metObserved_mm , tcmet_ , weight_  );
+          fillUnderOverFlow( metObserved_mm , theMet , weight_  );
           metPredicted_mm->Add( hmet );
         }
-
-        fillUnderOverFlow( metParObserved , metPar_ , weight_  );
-        metParPredicted->Add( hmetPar );
-        
-        fillUnderOverFlow( metPerpObserved ,  metPerp_ , weight_ );
-        metPerpPredicted->Add( hmetPerp );
         
         delete hmet;
-        delete hmetPar;
-        delete hmetPerp;
 
       }// end loop over hypIdx
-
+ 
       if( nHypPass > 1 && isData ) 
         cout << "Found " << nHypPass << " hypotheses passing selection" << endl;
     } // end loop over events
   } // end loop over files
-  
-  cout << "\n\n********************SUMMARY********************" << endl;
-  cout << "Total number of events: " << nEventsTotal << endl;
-  cout << "Total number of events that pass good run/lumi: " << nPassGoodRun 
-       << " (" << 100*(double)nPassGoodRun/nEventsTotal << "% of total)" << endl;
-  cout << "Total number of events that pass BPTX trigger: " << nPassBPTX
-       << " (" << 100*(double)nPassBPTX/nPassGoodRun << "%)" << endl;
-  cout << "Total number of events that pass BSC trigger: " << nPassBSC
-       << " (" << 100*(double)nPassBSC/nPassBPTX << "%)" << endl;
-  cout << "Total number of events that pass BeamHalo trigger: " << nPassBeamHalo
-       << " (" << 100*(double)nPassBeamHalo/nPassBSC << "%)" << endl;
-  cout << "Total number of events that pass tracking cuts: " << nPassGoodTracks
-       << " (" << 100*(double)nPassGoodTracks/nPassBeamHalo << "%)" << endl;
-  cout << "Total number of events that pass vertex cuts: " << nPassGoodVertex
-       << " (" << 100*(double)nPassGoodVertex/nPassGoodTracks << "%)" << endl;
-  cout << endl << endl;
 
   if( nSkip_els_conv_dist > 0 ){
     cout << "Skipped " << nSkip_els_conv_dist << " events due to nan in els_conv_dist branch" << endl;
@@ -662,7 +740,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool c
   // make histos rootfile
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
-  saveHist( Form("root/%s_%s%s.root", prefix , iter , metTemplateString.c_str() ) );
+  saveHist( Form("output/%s/%s%s.root", iter , prefix , metTemplateString.c_str() ) );
   deleteHistos();
   
 } // end ScanChain
@@ -769,12 +847,14 @@ void Z_looper::InitBabyNtuple (){
   passz_           = -999999;
   passe_ll_ttbar_     = -999999;
   passe_ll_ttbarV1_   = -999999;
+  passe_ll_ttbarV2_   = -999999;
   passe_ll_cand01_    = -999999;
   passm_ll_nomttbar_  = -999999;
   passm_ll_nomttbarV2_= -999999;
   passm_ll_nom_       = -999999;
   passe_lt_ttbar_     = -999999;
   passe_lt_ttbarV1_   = -999999;
+  passe_lt_ttbarV2_   = -999999;
   passe_lt_cand01_    = -999999;
   passm_lt_nomttbar_  = -999999;
   passm_lt_nomttbarV2_= -999999;
@@ -805,6 +885,13 @@ void Z_looper::bookHistos(){
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
+
+  char* pttitle[5]={"all jets","1 jet","2 jet","3 jet","#geq 4 jet"};
+
+  for( int iJ = 0 ; iJ < 5 ; iJ++ ){
+    hptz[iJ] = new TH1F(Form("hptz_%i",iJ),pttitle[iJ],200,0,200);
+    hptz[iJ]->GetXaxis()->SetTitle("Z p_{T} (GeV)");
+  }
 
   metObserved     = new TH1F("metObserved", "Observed MET",500,0,500);
   metPredicted    = new TH1F("metPredicted","Predicted MET",500,0,500);
@@ -924,13 +1011,15 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("tcsumetNew",   &tcsumetNew_,   "tcsumetNew/F"    );
 
   //jet stuff
-  babyTree_->Branch("njets",        &nJets_,        "njets/I"       );
-  babyTree_->Branch("njets40",      &nJets40_,      "njets40/I"     );
-  babyTree_->Branch("sumjetpt",     &sumJetPt_,     "sumjetpt/F"    );
-  babyTree_->Branch("sumjetpt10",   &sumJetPt10_,   "sumjetpt10/F"    );
-  babyTree_->Branch("vecjetpt",     &vecJetPt_,     "vecjetpt/F"    );
-  babyTree_->Branch("nbtags",       &nbtags_,       "nbtags/I");
-  babyTree_->Branch("ndphijetmet",  &dphijetmet_,   "dphijetmet/F");
+  babyTree_->Branch("njets",          &nJets_,            "njets/I"       );
+  babyTree_->Branch("njets40",        &nJets40_,          "njets40/I"     );
+  babyTree_->Branch("sumjetpt",       &sumJetPt_,         "sumjetpt/F"    );
+  babyTree_->Branch("sumjetpt10",     &sumJetPt10_,       "sumjetpt10/F"    );
+  babyTree_->Branch("vecjetpt",       &vecJetPt_,         "vecjetpt/F"    );
+  babyTree_->Branch("nbtags",         &nbtags_,           "nbtags/I");
+  babyTree_->Branch("ndphijetmet",    &dphijetmet_,       "dphijetmet/F");
+  babyTree_->Branch("maxjetpt",       &jetmax_pt_,        "maxjetpt/F");
+  babyTree_->Branch("maxjetdphimet",  &jetmax_dphimet_,   "maxjetdphimet/F");
                                                     
   //trigger stuff
   babyTree_->Branch("HLT_Jet15U",                    &HLT_Jet15U_,                   "HLT_Jet15U/I");
@@ -950,12 +1039,14 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("passm_ll_nomttbarV2",   &passm_ll_nomttbarV2_,   "passm_ll_nomttbarV2/I");  
   babyTree_->Branch("passe_ll_ttbar",        &passe_ll_ttbar_,        "passe_ll_ttbar/I");  
   babyTree_->Branch("passe_ll_ttbarV1",      &passe_ll_ttbarV1_,      "passe_ll_ttbarV1/I");  
+  babyTree_->Branch("passe_ll_ttbarV2",      &passe_ll_ttbarV2_,      "passe_ll_ttbarV2/I");  
   babyTree_->Branch("passe_ll_cand01",       &passe_ll_cand01_,       "passe_ll_cand01/I");  
   babyTree_->Branch("passm_lt_nom",          &passm_lt_nom_,          "passm_lt_nom/I");  
   babyTree_->Branch("passm_lt_nomttbar",     &passm_lt_nomttbar_,     "passm_lt_nomttbar/I");  
   babyTree_->Branch("passm_lt_nomttbarV2",   &passm_lt_nomttbarV2_,   "passm_lt_nomttbarV2/I");  
   babyTree_->Branch("passe_lt_ttbar",        &passe_lt_ttbar_,        "passe_lt_ttbar/I");  
   babyTree_->Branch("passe_lt_ttbarV1",      &passe_lt_ttbarV1_,      "passe_lt_ttbarV1/I");  
+  babyTree_->Branch("passe_lt_ttbarV2",      &passe_lt_ttbarV2_,      "passe_lt_ttbarV2/I");  
   babyTree_->Branch("passe_lt_cand01",       &passe_lt_cand01_,       "passe_lt_cand01/I");  
   babyTree_->Branch("ptll",                  &ptll_,                  "ptll/F");  
   babyTree_->Branch("ptlt",                  &ptlt_,                  "ptlt/F");  
