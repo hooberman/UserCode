@@ -53,6 +53,7 @@ class makeTemplates
   Int_t L1_SingleEG5_;
   Int_t HLT_Photon10_L1R_;
   Int_t HLT_Photon15_L1R_;
+  Int_t HLT_Photon20_L1R_;
   Int_t HLT_Photon10_Cleaned_L1R_;
   Int_t HLT_Photon15_Cleaned_L1R_;
   Int_t HLT_Photon20_Cleaned_L1R_;
@@ -75,6 +76,8 @@ class makeTemplates
   Float_t pfmet_;
   Float_t pfmetphi_;
   Float_t pfsumet_;
+  Float_t pfmet_type1_pt30_;
+  Float_t pfmet_type1_pt15_;
 
   // calomet stuff
   Float_t met_;
@@ -103,10 +106,15 @@ class makeTemplates
   Float_t tcmetNew_;
   Float_t tcmetphiNew_;
   Float_t tcsumetNew_;
-       
+  Float_t tcmetNew_type1_pt30_;
+  Float_t tcmetNew_type1_pt15_;
+
   // jet stuff
   Int_t   nJets_;
   Int_t   nJets40_;
+  Int_t   nJets10_;
+  Int_t   nJets15_;
+  Int_t   nJets20_;
   Float_t sumJetPt_;
   Float_t sumJetPt10_;
   Float_t vecJetPt_;
@@ -130,7 +138,8 @@ class makeTemplates
   Float_t  r4_;
   Float_t  s4_;
   Float_t  drel_;
-  
+  Float_t  jetidg_;
+
   //more photon stuff
   Int_t    photon_pixelseed_;        
   Float_t  photon_e15_;              
@@ -168,13 +177,17 @@ class makeTemplates
   Float_t jet_dpt_;           
   Float_t jet_drgen_;  
   
-  TH1F* tcmetTemplate[11][23][4];
-  TH1F* pfmetTemplate[11][23][4];
-  TH1F* tcmetNewTemplate[11][23][4];
+  TH1F* tcmetTemplate[3][7][4];
+  TH1F* pfmetTemplate[3][7][4];
+  TH1F* tcmetNewTemplate[3][7][4];
 
-  TH1F* tcmetTemplate_combined[11][23];
-  TH1F* pfmetTemplate_combined[11][23];
-  TH1F* tcmetNewTemplate_combined[11][23];
+  TH1F* tcmetTemplate_combined[3][7];
+  TH1F* pfmetTemplate_combined[3][7];
+  TH1F* tcmetNewTemplate_combined[3][7];
+  TH1F* tcmetNewType1Pt30Template_combined[3][7];
+  TH1F* tcmetNewType1Pt15Template_combined[3][7];
+  TH1F* pfmetType1Pt30Template_combined[3][7];
+  TH1F* pfmetType1Pt15Template_combined[3][7];
   
   TH1F* hetg[5];
   TH1F* hdilMass[4];
