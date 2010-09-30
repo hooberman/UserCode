@@ -24,6 +24,11 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
     ch->Add("/tas/cms2/TTbarJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged_ntuple*root");
   }
 
+  //------------------------------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "LM4" ) == 0 ){
+    ch->Add("/tas/cms2/LM4_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*root");
+  }
 
   //------------------------------------------------------------------------------------------------------------
 

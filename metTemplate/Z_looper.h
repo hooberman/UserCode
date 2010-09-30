@@ -56,6 +56,7 @@ class Z_looper
   Int_t HLT_Photon10_Cleaned_L1R_;
   Int_t HLT_Photon15_Cleaned_L1R_;
   Int_t HLT_Photon20_Cleaned_L1R_;
+  Int_t HLT_Photon20_L1R_;
 
   // event stuff
   Int_t   run_;

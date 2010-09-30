@@ -4,7 +4,7 @@
 #include <math.h>
 #include <fstream>
 
-
+#include <iomanip>
 #include "TChain.h"
 #include "TCanvas.h"
 #include "TPad.h"
@@ -22,9 +22,8 @@
 #include "TProfile.h"
 #include <sstream>
 
-bool  printtext  = true; 
-char* iter = "2p8pb_zlooper_v2";
-//char* iter = "2p8pb";
+bool  drawpull   = true;
+bool  printtext  = false; 
 float metval1    = 30;
 float metval2    = 60;
 float xt         = 0.5;
@@ -32,7 +31,7 @@ float yt         = 0.65;
 
 using namespace std;
 
-
+float calculateHistError( TH1F* h , int minbin , int maxbin );
 TH1F* getCloneHist(TH1F* hin, int color);
 TH1F* getPullHist(TH1F* h1, TH1F* h2);
 inline double fround(double n, unsigned d){
@@ -41,7 +40,7 @@ inline double fround(double n, unsigned d){
 
 void compareMET( bool printgif = false ){
 
-  char* iter = "V01-01";
+  char* iter = "V01-02";
 
   int colors[5]={2,5,7,3,7};
  
@@ -51,29 +50,40 @@ void compareMET( bool printgif = false ){
   vector<char*> mcleg;
   vector<int>   rebin;
  
-  /*
+  
   //ZJets MC with PhotonJet templates
   //TFile *f = TFile::Open(Form("output/%s/ZJets_PhotonJetTemplate.root",iter));
+  //TFile *f = TFile::Open(Form("output/%s/babylooper_ZJets_PhotonJetTemplate.root",iter));
+  //TFile *f = TFile::Open(Form("output/%s/babylooper_ZJets_PhotonJetTemplate_njets1.root",iter));
+  //TFile *f = TFile::Open(Form("output/%s/babylooper_ZJets_PhotonJetTemplate_reweight_njets1.root",iter));
   TFile *f = TFile::Open(Form("output/%s/babylooper_ZJets_PhotonJetTemplate.root",iter));
+  //TFile *f = TFile::Open(Form("output/%s/babylooper_ZJets_PhotonJetTemplate_reweight.root",iter));
   string sample = "Z+jets MC";
   string filename="ZJets";
-  */
+  
 
+  /*
+  //LM4 MC with PhotonJet templates
+  TFile *f = TFile::Open(Form("output/%s/babylooper_LM4_PhotonJetTemplate.root",iter));
+  string sample = "LM4 MC";
+  string filename="LM4";
+  */
   
   //dilepton data with EG templates
   //TFile *f = TFile::Open(Form("output/%s/lepdata_EGTemplate.root",iter));
   //mcfilenames.push_back(Form("output/%s/TTbar_PhotonJetTemplate.root",iter));
   //mcfilenames.push_back(Form("output/%s/ZJets_PhotonJetTemplate.root",iter));
   
+  /*
   TFile *f = TFile::Open(Form("output/%s/babylooper_lepdata_EGTemplate.root",iter));
-  //mcfilenames.push_back(Form("output/%s/babylooper_TTbar_PhotonJetTemplate.root",iter));
-  //mcfilenames.push_back(Form("output/%s/babylooper_ZJets_PhotonJetTemplate.root",iter));
+  mcfilenames.push_back(Form("output/%s/babylooper_TTbar_PhotonJetTemplate.root",iter));
+  mcfilenames.push_back(Form("output/%s/babylooper_ZJets_PhotonJetTemplate.root",iter));
 
-  //mcleg.push_back("t#bar{t}");
-  //mcleg.push_back("Z+jets");
+  mcleg.push_back("t#bar{t}");
+  mcleg.push_back("Z+jets");
   string sample = "Z+jets DATA";
   string filename = "lep";
-  
+  */
 
   vector<string> predhist;
   vector<string> obshist;
@@ -81,7 +91,7 @@ void compareMET( bool printgif = false ){
   vector<string> title;
   
   //histos to make
-  predhist.push_back("metPredicted");            obshist.push_back("metObserved");           title.push_back("");   rebin.push_back(5);
+  //predhist.push_back("metPredicted");            obshist.push_back("metObserved");           title.push_back("");   rebin.push_back(5);
   //predhist.push_back("metPredicted_sf");         obshist.push_back("metObserved_sf");        title.push_back("(SF)"); rebin.push_back(5);
   //predhist.push_back("metPredicted_df");         obshist.push_back("metObserved_df");        title.push_back("(DF)"); rebin.push_back(5);
   //predhist.push_back("metPredicted_ptlt40");     obshist.push_back("metObserved_ptlt40");    title.push_back("(p_{T} < 40 GeV)"); rebin.push_back(5);
@@ -91,9 +101,9 @@ void compareMET( bool printgif = false ){
   //predhist.push_back("metPredicted_ptgt50");     obshist.push_back("metObserved_ptgt50");    title.push_back("(p_{T} > 50 GeV)"); rebin.push_back(5);
   //predhist.push_back("metPredicted_ee");         obshist.push_back("metObserved_ee");        title.push_back("(ee)"); rebin.push_back(5);
   //predhist.push_back("metPredicted_mm");         obshist.push_back("metObserved_mm");        title.push_back("(#mu#mu)"); rebin.push_back(5);
-  predhist.push_back("metPredicted_njets1");     obshist.push_back("metObserved_njets1");    title.push_back("(nJets = 1)"); rebin.push_back(5);
-  predhist.push_back("metPredicted_njets2");     obshist.push_back("metObserved_njets2");    title.push_back("(nJets = 2)"); rebin.push_back(5);
-  predhist.push_back("metPredicted_njets3");     obshist.push_back("metObserved_njets3");    title.push_back("(nJets #geq 3)"); rebin.push_back(10);
+  predhist.push_back("metPredicted_njets0");     obshist.push_back("metObserved_njets0");    title.push_back("(nJets = 1)"); rebin.push_back(5);
+  //predhist.push_back("metPredicted_njets1");     obshist.push_back("metObserved_njets1");    title.push_back("(nJets = 2)"); rebin.push_back(5);
+  //predhist.push_back("metPredicted_njets2");     obshist.push_back("metObserved_njets2");    title.push_back("(nJets #geq 3)"); rebin.push_back(5);
   //predhist.push_back("metPredicted_njets4");     obshist.push_back("metObserved_njets4");    title.push_back("(nJets=4)"); rebin.push_back(20);
   //predhist.push_back("metParPredicted");         obshist.push_back("metParObserved");        title.push_back(""); rebin.push_back(5);
   //predhist.push_back("metPerpPredicted");        obshist.push_back("metPerpObserved");       title.push_back(""); rebin.push_back(5);
@@ -139,7 +149,9 @@ void compareMET( bool printgif = false ){
     can[i]=new TCanvas(Form("can_%i",i),"",800,600);
     can[i]->cd();
 
-    mainpad[i] = new TPad(Form("mainpad_%i",i),Form("mainpad_%i",i),0,0,1,0.6);
+    if(drawpull)    mainpad[i] = new TPad(Form("mainpad_%i",i),Form("mainpad_%i",i),0,0,1,0.6);
+    else            mainpad[i] = new TPad(Form("mainpad_%i",i),Form("mainpad_%i",i),0,0,1,1);
+
     mainpad[i] -> Draw();
     mainpad[i] -> cd();
     mainpad[i]->SetLogy(1);
@@ -175,10 +187,21 @@ void compareMET( bool printgif = false ){
     metObserved[i]->Draw("E1");
     MCStack[i] = new THStack(Form("stack_%i",i),Form("stack_%i",i));
 
+    float mcyield1[nMC];
+    float mcyield2[nMC];
+
+    int bin1  = metPredicted[i]->FindBin(metval1);
+    int bin2  = metPredicted[i]->FindBin(metval2);
+    int maxbin = metPredicted[i]->GetXaxis()->GetNbins() + 1;
+
+
     for(unsigned int iMC = 0 ; iMC < nMC ; ++ iMC ){
-      //metObserved_MC[i][iMC]->SetLineColor( colors[iMC] );
-      metObserved_MC[i][iMC]->SetFillColor( colors[iMC] );
       metObserved_MC[i][iMC]->Rebin( rebin.at(i) );
+      //metObserved_MC[i][iMC]->SetLineColor( colors[iMC] );
+      mcyield1[iMC]= metObserved_MC[i][iMC]->Integral(bin1,maxbin);
+      mcyield2[iMC]= metObserved_MC[i][iMC]->Integral(bin2,maxbin);
+      metObserved_MC[i][iMC]->SetFillColor( colors[iMC] );
+    
       MCStack[i]->Add( metObserved_MC[i][iMC] );
     }
 
@@ -187,30 +210,61 @@ void compareMET( bool printgif = false ){
     metObserved[i]->Draw("sameE1");
     metObserved[i]->Draw("axissame");
   
-    int bin1  = metPredicted[i]->FindBin(metval1);
-    int bin2  = metPredicted[i]->FindBin(metval2);
-    int maxbin = metPredicted[i]->GetXaxis()->GetNbins() + 1;
+    float npred1    = metPredicted[i]->Integral( bin1 , maxbin );
+    float nprederr1 = calculateHistError( metPredicted[i] , bin1 , maxbin );
 
-    float npred1 = metPredicted[i]->Integral( bin1 , maxbin );
-    float npred2 = metPredicted[i]->Integral( bin2 , maxbin );
+    float npred2    = metPredicted[i]->Integral( bin2 , maxbin );
+    float nprederr2 = calculateHistError( metPredicted[i] , bin2 , maxbin );
 
-    float nobs1  = metObserved[i]->Integral( bin1 , maxbin );
+    float nobs1    = metObserved[i]->Integral( bin1 , maxbin );
+    float nobserr1 = calculateHistError( metObserved[i] , bin1 , maxbin );
+
     float nobs2  = metObserved[i]->Integral( bin2 , maxbin );
-    
-    cout << "Predicted N(met > " << metval1 << ") " << npred1 << endl;
-    cout << "Observed  N(met > " << metval1 << ") " << nobs1  << endl;
-    cout << "Predicted N(met > " << metval2 << ") " << npred2 << endl;
-    cout << "Observed  N(met > " << metval2 << ") " << nobs2  << endl;
+    float nobserr2 = calculateHistError( metObserved[i] , bin2 , maxbin );    
 
+    TH1F* met_df = (TH1F*) f->Get("metObserved_df");
+    met_df->Rebin( rebin.at(i) );
+    float nem1   = met_df->Integral(bin1,maxbin);
+    float nem2   = met_df->Integral(bin2,maxbin);
+
+    cout << endl;
+    cout << "|" << setw(15) << ""                << setw(2)
+         << "|" << setw(15) << "N(met>30) GeV"   << setw(2)
+         << "|" << setw(15) << "N(met>60) GeV"   << setw(2) << "|" << endl;
+    cout << "|" << setw(15) << "data"            << setw(2)
+         << "|" << setw(15) << nobs1             << setw(2)
+         << "|" << setw(15) << nobs2             << setw(2) << "|" << endl;
+    cout << "|" << setw(15) << "pred"            << setw(2)
+         << "|" << setw(15) << fround(npred1,4)  << setw(2)
+         << "|" << setw(15) << fround(npred2,4)  << setw(2) << "|" << endl;
+    for(unsigned int iMC = 0 ; iMC < nMC ; ++ iMC ){
+      cout << "|" << setw(15) << mcleg.at(iMC)       << setw(2)
+           << "|" << setw(15) << fround(mcyield1[iMC],2)  << setw(2)
+           << "|" << setw(15) << fround(mcyield2[iMC],2)  << setw(2) << "|" << endl;
+    }
+    cout << "|" << setw(15) << "emu"             << setw(2)
+         << "|" << setw(15) << nem1              << setw(2)
+         << "|" << setw(15) << nem2              << setw(2) << "|" << endl;
+    cout << endl;
+
+    cout << "Predicted N(met > " << metval1 << ") " << npred1 << " +/- " << nprederr1 << endl;
+    cout << "Observed  N(met > " << metval1 << ") " << nobs1  << " +/- " << nobserr1  << endl;
+    cout << "Predicted N(met > " << metval2 << ") " << npred2 << " +/- " << nprederr2 << endl;
+    cout << "Observed  N(met > " << metval2 << ") " << nobs2  << " +/- " << nobserr2  << endl;
+    
 
     stringstream s1;
     stringstream s2;
     stringstream s3;
     stringstream s4;
-    s1 << "N(met > " << metval1 << ") " << fround(npred1,3) << endl;
-    s2 << "N(met > " << metval1 << ") " << fround(nobs1,3)  << endl;
-    s3 << "N(met > " << metval2 << ") " << fround(npred2,3) << endl;
-    s4 << "N(met > " << metval2 << ") " << fround(nobs2,3)  << endl;
+    //s1 << "N(met > " << metval1 << ") " << fround(npred1,2) << endl; //" #pm " << fround(nprederr1,2) << endl;
+    //s2 << "N(met > " << metval1 << ") " << fround(nobs1,2)  << endl; //" #pm " << fround(nobserr1,2)  << endl;
+    //s3 << "N(met > " << metval2 << ") " << fround(npred2,2) << endl; //" #pm " << fround(nprederr2,2) << endl;
+    //s4 << "N(met > " << metval2 << ") " << fround(nobs2,2)  << endl; //" #pm " << fround(nobserr2,2)  << endl;
+    s1 << "N(met > " << metval1 << ") " << fround(npred1,2) << " #pm " << fround(nprederr1,2) << endl;
+    s2 << "N(met > " << metval1 << ") " << fround(nobs1,2)  << " #pm " << fround(nobserr1,2)  << endl;
+    s3 << "N(met > " << metval2 << ") " << fround(npred2,2) << " #pm " << fround(nprederr2,2) << endl;
+    s4 << "N(met > " << metval2 << ") " << fround(nobs2,2)  << " #pm " << fround(nobserr2,2)  << endl;
 
 
 
@@ -238,41 +292,54 @@ void compareMET( bool printgif = false ){
     leg->SetBorderSize(1);
     leg->Draw();
 
-    can[i]  -> cd();
-    pullpad[i] = new TPad(Form("pullpad_%i",i),Form("pullpad_%i",i),0,0.6,1,1.);
-    pullpad[i] -> Draw();
-    pullpad[i] -> cd();
+    if( drawpull ){
 
-    //format and draw pull hist
-    TH1F* hpull = getPullHist( metPredicted[i] , metObserved[i] );
-    hpull->Draw("E1");
-    hpull->GetXaxis()->SetLabelSize(0);
-    hpull->GetXaxis()->SetTitleSize(0);
-    hpull->GetYaxis()->SetTitleSize(0.075);
-    hpull->GetYaxis()->SetLabelSize(0.075);
-    hpull->SetLineColor(1);
-    hpull->SetMarkerColor(1);
-    hpull->SetMarkerSize(1);
-    hpull->SetMarkerStyle(20);
-    hpull->GetYaxis()->SetRangeUser(-1,1);
-    hpull->GetYaxis()->SetTitle("(data-pred)/pred");
-    hpull->GetYaxis()->SetTitleOffset(0.35);
-    hpull->GetYaxis()->SetTitleSize(0.12);
-    hpull->SetTitle("");
-    hpull->GetYaxis()->SetNdivisions(5);
-    //TF1* fpol = new TF1("fpol","pol1",0,50);
-    //hpull->Fit(fpol,"R");
-
+      can[i]  -> cd();
+      pullpad[i] = new TPad(Form("pullpad_%i",i),Form("pullpad_%i",i),0,0.6,1,1.);
+      pullpad[i] -> Draw();
+      pullpad[i] -> cd();
+      
+      //format and draw pull hist
+      TH1F* hpull = getPullHist( metPredicted[i] , metObserved[i] );
+      hpull->Draw("E1");
+      hpull->GetXaxis()->SetLabelSize(0);
+      hpull->GetXaxis()->SetTitleSize(0);
+      hpull->GetYaxis()->SetTitleSize(0.075);
+      hpull->GetYaxis()->SetLabelSize(0.075);
+      hpull->SetLineColor(1);
+      hpull->SetMarkerColor(1);
+      hpull->SetMarkerSize(1);
+      hpull->SetMarkerStyle(20);
+      hpull->GetYaxis()->SetRangeUser(-1,1);
+      hpull->GetYaxis()->SetTitle("(data-pred)/pred");
+      hpull->GetYaxis()->SetTitleOffset(0.35);
+      hpull->GetYaxis()->SetTitleSize(0.12);
+      hpull->SetTitle("");
+      hpull->GetYaxis()->SetNdivisions(5);
+      //TF1* fpol = new TF1("fpol","pol1",0,50);
+      //hpull->Fit(fpol,"R");
+      
+      
+      line.SetLineStyle(1);
+      line.DrawLine(0, 0, maxmet, 0);
+      line.SetLineStyle(2);
+      //line.DrawLine(0, 1, maxmet, 1);
+      //line.DrawLine(0,-1, maxmet,-1);
+    }
     
-    line.SetLineStyle(1);
-    line.DrawLine(0, 0, maxmet, 0);
-    line.SetLineStyle(2);
-    //line.DrawLine(0, 1, maxmet, 1);
-    //line.DrawLine(0,-1, maxmet,-1);
-
     if( printgif ) can[i]->Print(Form("plots/%s_%s.gif",filename.c_str(),predhist[i].c_str()));
   }
 
+}
+
+float calculateHistError( TH1F* h , int minbin , int maxbin ){
+
+  float err2 = 0;
+  for( int i = minbin ; i <= maxbin ; ++i ){
+    err2 += pow( h->GetBinError(i) , 2 );
+  }
+
+  return sqrt(err2);
 }
 
 

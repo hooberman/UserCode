@@ -33,8 +33,8 @@
 
 
 bool debug = false;
-float lumi = 0.00193; //1.34 pb-1
-char* iter = "1p9pb";
+float lumi = 0.0027945;
+char* iter = "2p8pb_zlooper";
 
 const int nJetBins      = 11;
 const int nSumJetPtBins = 23;
@@ -108,18 +108,19 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
   //select templates
   if( algo_ != e_makeTemplate){
-    //    if( isData ){
+    if( isData ){
       metTemplateString = "_dataTemplate";
       metTemplateFile = TFile::Open("root/JetMETTau_250nb.root");
-//      }else{
-//        metTemplateString = "_mcTemplate";
-//        metTemplateFile = TFile::Open("root/QCD_Pt15_1p9pb.root");
-//     }
+    }else{
+      metTemplateString = "_mcTemplate";
+      metTemplateFile = TFile::Open("root/QCD_Pt15_1p9pb.root");
+    }
   }
 
   //set_goodrun_file("Cert_TopAug13_Merged_135059-142664_goodruns.txt");
   //set_goodrun_file("Cert_TopAug25_Merged_135059-143336_goodruns.txt");
-  set_goodrun_file("Cert_TopAug26_Merged_135059-143835_recover_noESDCS_goodruns.txt");
+  //set_goodrun_file("Cert_TopAug26_Merged_135059-143835_recover_noESDCS_goodruns.txt");
+  set_goodrun_file("Cert_TopAug30_Merged_135059-144114_recover_noESDCS_goodruns.txt");
 
   bookHistos();
 
@@ -159,9 +160,13 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
     unsigned int nEvents = tree->GetEntries();
  
     for (unsigned int event = 0 ; event < nEvents; ++event){
+      
+      cout << endl << "-------------------------------------------------------------" << endl;
         
       cms2.GetEntry(event);
       ++nEventsTotal;
+
+      cout << "Event " << event << " nhyp " << hyp_type().size() << endl;
 
       // progress feedback to user
       if (nEventsTotal % 1000 == 0){
@@ -175,15 +180,10 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         }
       }
 
-      
-
       //duplicate event veto CHECK THIS
       bool myduplicate = dei.is_duplicate(DorkyEvent());
       if(myduplicate) continue;
       
-      //cout << currentFile->GetTitle() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
-      //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/Kalavase/TTbarThesis/ScanChain.C?revision=1.33&view=markup
-     
       //skip events with bad els_conv_dist 
       bool skipEvent = false;
       for( unsigned int iEl = 0 ; iEl < els_conv_dist().size() ; ++iEl ){
@@ -225,14 +225,15 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       else continue;
 
       // determine if current event has a good vertex
-      if (cleaning_goodVertex())
+      if (cleaning_goodVertexAugust2010())
         nPassGoodVertex++;
       else continue;
       
       if ( !cleaning_standard( isData ) ) continue;
       
       if(debug) cout << "Pass event selection" << endl;
-   
+
+      cout << "Pass event cleaning" << endl;
       InitBabyNtuple();
 
       // event stuff
@@ -241,69 +242,93 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
       event_  = cms2.evt_event();
 
       weight_ = 1.;
+      pthat_  = -1;
       if( !isData ){
         weight_ = cms2.evt_scale1fb() * kFactor * lumi;
+        pthat_  = cms2.genps_pthat();
       }
 
+      /*
+      //cout << "pthat " << endl;
+      //cout << cms2.genps_pthat() << endl;
 
-
+      float maxphotonpt = -1;
+     
+      //stitching together PhotonJet_Pt15 and PhotonJet_Pt30
+      if( strcmp( prefix , "PhotonJet") == 0 ){
+       
+        //cout << "Stitching, file " << currentFile->GetTitle() << endl;
+        
+        if( TString(currentFile->GetTitle()).Contains("PhotonJet_Pt15") ){
+          //cout << "Pt15" << endl;
+          //weight_ *= 1.245;
+          if( cms2.genps_pthat() > 30. ) continue;
+        }   
+        for( unsigned int ig = 0 ; ig < photons_p4().size() ; ++ig ){
+          if( photons_p4().at(ig).pt() > maxphotonpt ) 
+            maxphotonpt = photons_p4().at(ig).pt();
+        }
+      }
+ 
+      fillUnderOverFlow( hgenps_pthat  , genps_pthat() , weight_ );
+      fillUnderOverFlow( hphotonpt     , maxphotonpt   , weight_ );
+      */
 
 
       //access HLT triggers------------------------------------------------------------------
 
-      for( unsigned int i = 0 ; i < hlt_trigNames().size() ; i++ ){
+      for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
 
-        if( strcmp(hlt_trigNames().at(i) , "HLT_L1Jet6U" ) == 0 ){
-          if( passHLTTrigger("HLT_L1Jet6U") )          HLT_L1Jet6U_ = 1;
-          else                                         HLT_L1Jet6U_ = 0;
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_L1Jet6U" ) == 0 ){
+          if( passHLTTrigger("HLT_L1Jet6U") )                  HLT_L1Jet6U_ = 1;
+          else                                                 HLT_L1Jet6U_ = 0;
         }
 
-        if( strcmp(hlt_trigNames().at(i) , "HLT_L1Jet10U" ) == 0 ){
-          if( passHLTTrigger("HLT_L1Jet10U") )         HLT_L1Jet10U_ = 1;
-          else                                         HLT_L1Jet10U_ = 0;
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_L1Jet10U" ) == 0 ){
+          if( passHLTTrigger("HLT_L1Jet10U") )                 HLT_L1Jet10U_ = 1;
+          else                                                 HLT_L1Jet10U_ = 0;
+        }
+        
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Jet15U" ) == 0 ){
+          if( passHLTTrigger("HLT_Jet15U") )                   HLT_Jet15U_ = 1;
+          else                                                 HLT_Jet15U_ = 0;
         }
 
-        if( strcmp(hlt_trigNames().at(i) , "HLT_Jet15U" ) == 0 ){
-          if( passHLTTrigger("HLT_Jet15U") )           HLT_Jet15U_ = 1;
-          else                                         HLT_Jet15U_ = 0;
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Jet30U" ) == 0 ){
+          if( passHLTTrigger("HLT_Jet30U") )                   HLT_Jet30U_ = 1;
+          else                                                 HLT_Jet30U_ = 0;
         }
 
-        if( strcmp(hlt_trigNames().at(i) , "HLT_Jet30U" ) == 0 ){
-          if( passHLTTrigger("HLT_Jet30U") )           HLT_Jet30U_ = 1;
-          else                                         HLT_Jet30U_ = 0;
+        if( strcmp( hlt_trigNames().at(itrig) , "L1_SingleEG5" ) == 0 ){
+          if( passHLTTrigger("L1_SingleEG5") )                 L1_SingleEG5_ = 1;
+          else                                                 L1_SingleEG5_ = 0;
         }
 
-        if( strcmp(hlt_trigNames().at(i) , "L1_SingleEG5" ) == 0 ){
-          if( passHLTTrigger("L1_SingleEG5") )         L1_SingleEG5_ = 1;
-          else                                         L1_SingleEG5_ = 0;
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon10_L1R" ) == 0 ){
+          if( passHLTTrigger("HLT_Photon10_L1R") )             HLT_Photon10_L1R_ = 1;
+          else                                                 HLT_Photon10_L1R_ = 0;
         }
 
-        if( strcmp(hlt_trigNames().at(i) , "HLT_Photon10_L1R" ) == 0 ){
-          if( passHLTTrigger("HLT_Photon10_L1R") )     HLT_Photon10_L1R_ = 1;
-          else                                         HLT_Photon10_L1R_ = 0;
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon15_L1R" ) == 0 ){
+          if( passHLTTrigger("HLT_Photon15_L1R") )             HLT_Photon15_L1R_ = 1;
+          else                                                 HLT_Photon15_L1R_ = 0;
         }
 
-        if( strcmp(hlt_trigNames().at(i) , "HLT_Photon15_L1R" ) == 0 ){
-          if( passHLTTrigger("HLT_Photon15_L1R") )     HLT_Photon15_L1R_ = 1;
-          else                                         HLT_Photon15_L1R_ = 0;
-        }
-
-        if( strcmp(hlt_trigNames().at(i) , "HLT_Photon10_Cleaned_L1R" ) == 0 ){
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon10_Cleaned_L1R" ) == 0 ){
           if( passHLTTrigger("HLT_Photon10_Cleaned_L1R") )     HLT_Photon10_Cleaned_L1R_ = 1;
           else                                                 HLT_Photon10_Cleaned_L1R_ = 0;
         }
 
-        if( strcmp(hlt_trigNames().at(i) , "HLT_Photon15_Cleaned_L1R" ) == 0 ){
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon15_Cleaned_L1R" ) == 0 ){
           if( passHLTTrigger("HLT_Photon15_Cleaned_L1R") )     HLT_Photon15_Cleaned_L1R_ = 1;
           else                                                 HLT_Photon15_Cleaned_L1R_ = 0;
         }
 
-        if( strcmp(hlt_trigNames().at(i) , "HLT_Photon20_Cleaned_L1R" ) == 0 ){
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon20_Cleaned_L1R" ) == 0 ){
           if( passHLTTrigger("HLT_Photon20_Cleaned_L1R") )     HLT_Photon20_Cleaned_L1R_ = 1;
           else                                                 HLT_Photon20_Cleaned_L1R_ = 0;
         }
-      }
-
+      }      
       //met quantities--------------------------------------------------------------------------
       
       //calomet
@@ -383,34 +408,34 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         //hciso_ = photons_hcalIso()[igmax];
         //tkiso_ = photons_tkIsoSolid()[igmax];
 
-//      photon_pixelseed_        = photons_haspixelSeed()[igmax] ? 1 : 0;
-// 	photon_e15_              = photons_e1x5()[igmax];      
-// 	photon_e25max_           = photons_e2x5Max()[igmax];      
-// 	photon_e33_              = photons_e3x3()[igmax];           
-// 	photon_e55_              = photons_e5x5()[igmax];           
-// 	photon_ecalIso03_        = photons_ecalIso03()[igmax];      
-// 	photon_ecalIso04_        = photons_ecalIso04()[igmax];      
-// 	photon_hcalIso03_        = photons_hcalIso03()[igmax];      
-// 	photon_hcalIso04_        = photons_hcalIso04()[igmax];      
-// 	photon_ntkIsoHollow03_   = photons_ntkIsoHollow03()[igmax];
-//      photon_ntkIsoHollow04_   = photons_ntkIsoHollow04()[igmax];
-// 	photon_ntkIsoSolid03_    = photons_ntkIsoSolid03()[igmax]; 
-// 	photon_ntkIsoSolid04_    = photons_ntkIsoSolid04()[igmax]; 
-// 	photon_sigmaEtaEta_      = photons_sigmaEtaEta()[igmax];    
-// 	photon_sigmaIEtaIEta_    = photons_sigmaIEtaIEta()[igmax];
-// 	photon_tkisoHollow03_    = photons_tkIsoHollow03()[igmax];
-// 	photon_tkisoHollow04_    = photons_tkIsoHollow04()[igmax]; 
-// 	photon_tkisoSolid03_     = photons_tkIsoSolid03()[igmax];   
-// 	photon_tkisoSolid04_     = photons_tkIsoSolid04()[igmax];  
-        
+        /*
+        photon_pixelseed_        = photons_haspixelSeed()[igmax] ? 1 : 0;
+	photon_e15_              = photons_e1x5()[igmax];      
+	photon_e25max_           = photons_e2x5Max()[igmax];      
+	photon_e33_              = photons_e3x3()[igmax];           
+	photon_e55_              = photons_e5x5()[igmax];           
+	photon_ecalIso03_        = photons_ecalIso03()[igmax];      
+	photon_ecalIso04_        = photons_ecalIso04()[igmax];      
+	photon_hcalIso03_        = photons_hcalIso03()[igmax];      
+	photon_hcalIso04_        = photons_hcalIso04()[igmax];      
+	photon_ntkIsoHollow03_   = photons_ntkIsoHollow03()[igmax];
+        photon_ntkIsoHollow04_   = photons_ntkIsoHollow04()[igmax];
+	photon_ntkIsoSolid03_    = photons_ntkIsoSolid03()[igmax]; 
+	photon_ntkIsoSolid04_    = photons_ntkIsoSolid04()[igmax]; 
+	photon_sigmaEtaEta_      = photons_sigmaEtaEta()[igmax];    
+	photon_sigmaIEtaIEta_    = photons_sigmaIEtaIEta()[igmax];
+	photon_tkisoHollow03_    = photons_tkIsoHollow03()[igmax];
+	photon_tkisoHollow04_    = photons_tkIsoHollow04()[igmax]; 
+	photon_tkisoSolid03_     = photons_tkIsoSolid03()[igmax];   
+	photon_tkisoSolid04_     = photons_tkIsoSolid04()[igmax];  
+        */
 
-        swiss_ = photons_swissSeed()[igmax];
+        swiss_      = photons_swissSeed()[igmax];
+        int scind   = photons_scindex()[igmax] ;
+        seed_       = scs_eSeed()[scind] ;
+        s4_         = swiss_ - seed_ ;
+        r4_         = 1 - s4_ / seed_ ;
         
-        int scind = photons_scindex()[igmax] ;
-        seed_  = scs_eSeed()[scind] ;
-        s4_ = swiss_ - seed_ ;
-        r4_ = 1 - s4_ / seed_ ;
-
         drel_ = 1000;
 
         for( unsigned int iel = 0 ; iel < els_p4().size() ; iel++ ){
@@ -526,8 +551,11 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
 
       if(debug) cout << "Get nJets and sumJetPt" << endl;
 
-      nJets_      = 0;
-      sumJetPt_   = 0.;
+      nJets_        = 0;
+      sumJetPt_     = 0.;
+      nJets40_      = 0;
+      sumJetPt10_   = 0.;
+
       LorentzVector jetSystem(0.,0.,0.,0.);
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
@@ -558,7 +586,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         if( skipJet ) continue;
 
         if( fabs( vjet.eta() ) < 5.){
-       
+          
           if ( vjet.pt() > 30. ){
             nJets_++;
           }        
@@ -566,13 +594,23 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
             sumJetPt_ += vjet.pt();
             jetSystem += vjet;
           }
+          
+          if ( vjet.pt() > 40. ){
+            nJets40_++;
+          }
+          if ( vjet.pt() > 10. ){
+            sumJetPt10_ += vjet.pt();
+          }
         }
       }
 
       vecJetPt_ = jetSystem.pt();
 
+      cout << "Check Z selection" << endl;
+
       if( algo_ == e_ZSelection ){
-      
+        
+        cout << "hyp_p4 size " << hyp_p4().size() << endl;
         if( hyp_p4().size() != 1 ) continue;       
       
         passz_ = passZSelection() ? 1 : 0;
@@ -603,6 +641,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         etall_            = hyp_ll_p4()[0].eta();
         etalt_            = hyp_lt_p4()[0].eta();
         dilmass_          = hyp_p4()[0].mass(); 
+        dilpt_            = hyp_p4()[0].pt(); 
 
         metStruct tcmetStruct = correctTCMETforHypMuons( 0 ,  
                                                          evt_tcmet() * cos( evt_tcmetPhi() ), 
@@ -625,10 +664,18 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         tcsumetNew_  = tcmetNewStruct.sumet;   
 
       }
+
+      nGoodVertex_ = 0;
+      for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
+        if(isGoodVertex(v)) nGoodVertex_++;
+      }
       
+      cout << "Check jets" << endl;
       //fill baby ntuple
       if ( nJets_ < 1 )     continue;
       if( jetmax_pt_ < 30 ) continue;
+
+      cout << "Pass jet selection" << endl;
       FillBabyNtuple();
 
       //require at least 2 jets
@@ -676,7 +723,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
             HLT_Photon15_Cleaned_L1R_ == 0  ) continue;
           
         if ( etg_ < 20 )                                 continue;
-        if ( (1.-r4_) < 0.05 )                           continue;
+        if ( r4_ < 0.05 )                                continue;
         if ( hoe_ > 0.1 )                                continue;
         if ( jet_dr_ > 0.5 )                             continue;
         //if ( jet_neu_emfrac_ + jet_chg_emfrac_< 0.95 )   continue; 
@@ -704,8 +751,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, bool cal
         //if ( sumJetPt_ < 200. )                                     continue;
         
         //ttbar muon ID
-        if (abs(hyp_ll_id()[0]) == 13  && (!(fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0],NominalTTbar))))   continue;
-        if (abs(hyp_lt_id()[0]) == 13  && (!(fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0],NominalTTbar))))   continue;
+        if (abs(hyp_ll_id()[0]) == 13  && (!(fabs(hyp_ll_p4()[0].eta()) < 2.4 && muonId(hyp_ll_index()[0],NominalTTbarV2))))   continue;
+        if (abs(hyp_lt_id()[0]) == 13  && (!(fabs(hyp_lt_p4()[0].eta()) < 2.4 && muonId(hyp_lt_index()[0],NominalTTbarV2))))   continue;
         
         //ttbarV1 electron ID
         if (abs(hyp_ll_id()[0]) == 11  && (! pass_electronSelection( hyp_ll_index()[0] , electronSelection_ttbarV1 , isData ))) continue;
@@ -925,10 +972,12 @@ void looper::InitBabyNtuple (){
   HLT_Photon20_Cleaned_L1R_     = -1;
 
   // event stuff
-  run_    = -999999;
-  lumi_   = -999999;
-  event_  = -999999;
-  weight_ = -999999.;
+  run_          = -999999;
+  lumi_         = -999999;
+  event_        = -999999;
+  weight_       = -999999.;
+  pthat_        = -999999.;
+  nGoodVertex_  = -999999;
 
   // genmet stuff
   genmet_     = -999999.;
@@ -971,9 +1020,11 @@ void looper::InitBabyNtuple (){
   nJets_        = -999999;
   sumJetPt_     = -999999;
   vecJetPt_     = -999999;
+  nJets40_      = -999999;
+  sumJetPt10_   = -999999;
 
   //photon stuff
-  nPhotons_ = 0;
+  nPhotons_ = -999999;
   etg_      = -999999.;
   etag_     = -999999.;
   phig_     = -999999.;
@@ -1040,8 +1091,10 @@ void looper::InitBabyNtuple (){
   etall_           = -999999;
   etalt_           = -999999;
   dilmass_         = -999999.;
+  dilpt_           = -999999.;
   flagll_          = -999999;
   flaglt_          = -999999;
+
 }
 
 void looper::bookHistos(){
@@ -1125,7 +1178,9 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("run",          &run_,          "run/I"  );
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I" );
   babyTree_->Branch("event",        &event_,        "event/I");
+  babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I");
   babyTree_->Branch("weight",       &weight_,       "weight/F");
+  babyTree_->Branch("pthat",        &pthat_,        "pthat/F");
   babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"   );
   babyTree_->Branch("pfmetphi",     &pfmetphi_,     "pfmetphi/F");
   babyTree_->Branch("pfsumet",      &pfsumet_,      "pfsumet/F" );
@@ -1153,8 +1208,10 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("tcmetphiNew",  &tcmetphiNew_,  "tcmetphiNew/F"   );
   babyTree_->Branch("tcsumetNew",   &tcsumetNew_,   "tcsumetNew/F"    );
 
-  babyTree_->Branch("njets",        &nJets_,        "njets/I"    );
+  babyTree_->Branch("njets",        &nJets_,        "njets/I"       );
+  babyTree_->Branch("njets40",      &nJets40_,      "njets40/I"     );
   babyTree_->Branch("sumjetpt",     &sumJetPt_,     "sumjetpt/F"    );
+  babyTree_->Branch("sumjetpt10",   &sumJetPt10_,   "sumjetpt10/F"    );
   babyTree_->Branch("vecjetpt",     &vecJetPt_,     "vecjetpt/F"    );
 
   //photon stuff
@@ -1238,6 +1295,7 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("etall",              &etall_,              "etall/F");  
   babyTree_->Branch("etalt",              &etalt_,              "etalt/F");  
   babyTree_->Branch("dilmass",            &dilmass_,            "dilmass/F");  
+  babyTree_->Branch("dilpt",              &dilpt_,              "dilpt/F");  
   babyTree_->Branch("flagll",             &flagll_,             "flagll/I");  
   babyTree_->Branch("flaglt",             &flaglt_,             "flaglt/I");  
 
@@ -1255,38 +1313,3 @@ void looper::CloseBabyNtuple ()
   babyTree_->Write();
   babyFile_->Close();
 }
-
-
-
-
-      /*
-      cout << "pthat " << endl;
-      cout << cms2.genps_pthat() << endl;
-
-      float maxphotonpt = -1;
-      cout << __LINE__ << endl;
-      //stitching together PhotonJet_Pt15 and PhotonJet_Pt30
-      if( strcmp( prefix , "PhotonJet") == 0 ){
-       
-        cout << "Stitching, file " << currentFile->GetTitle() << endl;
-        
-        if( TString(currentFile->GetTitle()).Contains("PhotonJet_Pt15") ){
-          cout << "Pt15" << endl;
-          weight_ *= 1.245;
-          cout << __LINE__ << endl;
-          cout << "pthat " << cms2.genps_pthat() << endl;
-          if( cms2.genps_pthat() > 30. ) continue;
-          cout << __LINE__ << endl;
-        }   
-        cout << __LINE__ << endl;
-        for( unsigned int ig = 0 ; ig < photons_p4().size() ; ++ig ){
-          if( photons_p4().at(ig).pt() > maxphotonpt ) 
-            maxphotonpt = photons_p4().at(ig).pt();
-        }
-        cout << __LINE__ << endl;
-      }
-  cout << __LINE__ << endl;
-      fillUnderOverFlow( hgenps_pthat  , genps_pthat() , weight_ );
-      fillUnderOverFlow( hphotonpt     , maxphotonpt   , weight_ );
-       cout << __LINE__ << endl;
-      */

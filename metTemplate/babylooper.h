@@ -29,6 +29,8 @@ class babylooper
         void fillUnderOverFlow(TH1F *h1, float value, float weight);
         void fillHistos(TH1F *h1[4],    float value, float weight, int myType);
         void fillHistos(TH1F *h1[4][4], float value, float weight, int myType, int nJetsIdx);
+        TH1F* getMetTemplate( TFile* file, int iJetBin , int iSumJetPtBin , int iBosonPtBin , float weight );
+
     private:
         
         //metAlgo algo_;
@@ -221,13 +223,13 @@ class babylooper
         TH1F* metPredicted_njets[11];
         TH1F* metObserved_njets[11];
         
-        TH1F* tcmetTemplate[11][23][4];
-        TH1F* tcmetNewTemplate[11][23][4];
-        TH1F* pfmetTemplate[11][23][4];
+        TH1F* tcmetTemplate[3][7][4];
+        TH1F* tcmetNewTemplate[3][7][4];
+        TH1F* pfmetTemplate[3][7][4];
 
-        TH1F* tcmetTemplate_combined[11][23];
-        TH1F* tcmetNewTemplate_combined[11][23];
-        TH1F* pfmetTemplate_combined[11][23];
+        TH1F* tcmetTemplate_combined[3][7];
+        TH1F* tcmetNewTemplate_combined[3][7];
+        TH1F* pfmetTemplate_combined[3][7];
         
         ofstream ofile_tcmet;
         ofstream ofile_events;

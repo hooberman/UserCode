@@ -1,33 +1,17 @@
 {
 
 #include "babylooper.h"
-
-gROOT->ProcessLine(".L histtools.C+");
-//gROOT->ProcessLine(".L CORE/CMS2.cc+");
-gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
-gROOT->ProcessLine(".L runBabyLooper.C+");
-
-//void runBabyLooper(char* prefix , bool isData = true, metAlgo algo){
-
-//runBabyLooper("JetMETTau_250nb"                 , true  , babylooper::e_makeTemplate     );
-//runBabyLooper("QCD_Pt15"                        , false , babylooper::e_makeTemplate  );
-//runBabyLooper("EG"                              , true  , babylooper::e_photonSelection  );
-//runBabyLooper("EG_1p9pb"                        , true  , babylooper::e_photonSelection  );
-//runBabyLooper("PhotonJet_Pt15"                  , false , babylooper::e_photonSelection  );
-//runBabyLooper("PhotonJet_1p9pb"                 , false , babylooper::e_photonSelection  );
-//runBabyLooper("ZJets"                           , false , babylooper::e_ZSelection  );
-//runBabyLooper("ZJets_1p9pb"                     , false , babylooper::e_ZSelection  );
-//runBabyLooper("lepdata_1p9pb"                   , true , babylooper::e_ZSelection  );
-
-//runBabyLooper("makeTemplates_EG_ttdilsync"                 , true   , babylooper::e_photonSelection  , true);
-//runBabyLooper("makeTemplates_PhotonJet_ttdilsync"          , false  , babylooper::e_photonSelection  , true);
-
-//runBabyLooper("lepdata_2p8pb_ttdilsync_ttdilskims"        , true ,  babylooper::e_ZSelection  );
-//runBabyLooper("ZJets_2p8pb_ttdilsync_ttdilskims"          , false , babylooper::e_ZSelection  );
-//runBabyLooper("TTbar_2p8pb_ttdilsync_ttdilskims"          , false , babylooper::e_ZSelection  );
-
- runBabyLooper("V01-01","lepdata"        , true  , babylooper::e_ZSelection  );
- runBabyLooper("V01-01","TTbar"          , false , babylooper::e_ZSelection  );
- runBabyLooper("V01-01","ZJets"          , false , babylooper::e_ZSelection  );
+  
+  gROOT->ProcessLine(".L histtools.C+");
+  gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
+  gROOT->ProcessLine(".L runBabyLooper.C+");
+  
+  //runBabyLooper("V01-02","EG"             , true  , babylooper::e_photonSelection , true );
+  //runBabyLooper("V01-02","PhotonJet"      , false , babylooper::e_photonSelection , true  );
+  
+  //runBabyLooper("V01-02","lepdata"        , true  , babylooper::e_ZSelection  );
+  //runBabyLooper("V01-02","TTbar"          , false , babylooper::e_ZSelection  );
+  runBabyLooper("V01-02","ZJets"          , false , babylooper::e_ZSelection  );
+  //runBabyLooper("V01-02","LM4"            , false , babylooper::e_ZSelection  );
 
 }

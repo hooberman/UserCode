@@ -64,7 +64,9 @@ class looper
         Int_t   run_;
         Int_t   lumi_;
         Int_t   event_;
+        Int_t   nGoodVertex_;
 	Float_t weight_;
+        Float_t pthat_;
 
 	// genmet stuff
 	Float_t genmet_;
@@ -141,7 +143,9 @@ class looper
        
         // jet stuff
         Int_t   nJets_;
+        Int_t   nJets40_;
         Float_t sumJetPt_;
+        Float_t sumJetPt10_;
         Float_t vecJetPt_;
 
         //photon-matched jet stuff
@@ -178,6 +182,7 @@ class looper
         Float_t etall_;
         Float_t etalt_;
         Float_t dilmass_;
+        Float_t dilpt_;
         Int_t   flagll_;
         Int_t   flaglt_;
 

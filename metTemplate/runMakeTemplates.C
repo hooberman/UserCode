@@ -17,8 +17,10 @@ void runMakeTemplates(char* prefix , bool isData = true,
   //------------------------------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "PhotonJet" ) == 0 ){
-    ch->Add("/tas/cms2/PhotonJet_Pt15_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*root");
-    ch->Add("/tas/cms2/PhotonJet_Pt30_Spring10-START3X_V26_S09-v1/V03-04-08-01/merged_ntuple*root");
+    ch->Add("/tas/cms2/PhotonJet_Pt15_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*root");
+    ch->Add("/tas/cms2/PhotonJet_Pt30_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*root");
+    ch->Add("/tas/cms2/PhotonJet_Pt80_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*root");
+    ch->Add("/tas/cms2/PhotonJet_Pt170_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*root");
   }
 
   //------------------------------------------------------------------------------------------------------------

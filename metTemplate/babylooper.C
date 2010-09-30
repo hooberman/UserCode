@@ -7,6 +7,7 @@
 
 
 #include "TChain.h"
+#include "TRandom3.h"
 #include "TDirectory.h"
 #include "TFile.h"
 #include "TROOT.h"
@@ -25,13 +26,18 @@ enum metType   { e_tcmet = 0, e_tcmetNew = 1, e_pfmet = 2};
 enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 //------------USER PARAMS-------------------------
-bool debug                       = false;
-metType myMetType                = e_tcmet;
+bool debug                       = true;
+bool reweight                    = false;
+metType myMetType                = e_pfmet;
 templateSource myTemplateSource  = e_PhotonJet;
-const int nJetBins               = 11;
-const int nSumJetPtBins          = 23;
+
+const int nJetBins               = 3;
+const int nSumJetPtBins          = 7;
 const int nBosonPtBins           = 4;
-char* iter                       = "V01-01";
+
+char* iter                       = "V01-02";
+bool useCombinedTemplates        = true;
+const int nMetEntries            = 50;
 //------------------------------------------------
 
 using namespace std;
@@ -41,27 +47,40 @@ inline double fround(double n, double d){
 }
 
 int getJetBin( int njets ){
-  
-  int bin = njets;
-  if( bin >= nJetBins ) bin = nJetBins - 1;
+
+  int bin = -1;
+
+  if     ( njets == 1 ) bin = 0;
+  else if( njets == 2 ) bin = 1;
+  else if( njets >= 3 ) bin = 2;
+  else{
+    cout << "Error " << njets << " jets passed as argument to met templates" << endl;
+    exit(0);
+  }
 
   return bin;
 }
 
 string jetString( int bin ){
 
-  stringstream s;
-  s << "nJets = " << bin ;
+  string js;
 
-  return s.str();
+  if     ( bin == 0 ) js = "njets = 1";
+  else if( bin == 1 ) js = "njets = 2";
+  else if( bin == 2 ) js = "njets #geq 3";
+  else{
+    cout << "Error invalid bin passed as argument to met templates" << endl;
+    exit(0);
+  }
+
+  return js;
 
 }
 
 int getSumJetPtBin( float x ){
 
   //bins array defines the sumJetPt binning
-  float bins[nSumJetPtBins+1]={0,25,50,75,100,125,150,175,200,250,300,350,400,450,
-                               500,600,700,800,900,1000,2000,3000,4000,5000};
+  float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
   
   if( x < bins[0] )              return 0;
   if( x >= bins[nSumJetPtBins] ) return nSumJetPtBins - 1;
@@ -82,9 +101,8 @@ int getSumJetPtBin( float x ){
 }
 
 string sumJetPtString( int bin ){
-  
-  float bins[nSumJetPtBins+1]={0,25,50,75,100,125,150,175,200,250,300,350,400,450,
-                               500,600,700,800,900,1000,2000,3000,4000,5000};
+
+  float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
 
   stringstream s;
   s << bins[bin] << " < sumJetPt < " << bins[bin+1] << " GeV";
@@ -117,6 +135,98 @@ string bosonPtString( int bin ){
 
 }
 
+//--------------------------------------------------------------------
+
+/*
+int getBosonPtBin( float x ){
+
+  if     ( x < 40.           ) return 0;
+  else if( x > 40 && x < 60  ) return 1;
+  else if( x > 60 && x < 100 ) return 2;
+  else if( x > 100           ) return 3;
+  else { 
+    cout << "Error could not find boson pt bin" << endl;
+    exit(0);
+  }
+}
+
+//--------------------------------------------------------------------
+
+string bosonPtString( int bin ){
+
+  if     ( bin == 0 ) return "boson p_{T} < 40 GeV";
+  else if( bin == 1 ) return "40 < boson p_{T} < 60 GeV";
+  else if( bin == 2 ) return "60 < boson p_{T} < 100 GeV";
+  else if( bin == 3 ) return "boson p_{T} > 100 GeV";
+  else{
+    cout << "Error unrecognized boson pt bin " << bin << endl;
+    exit(0);
+  }
+
+}
+
+//--------------------------------------------------------------------
+  
+int getJetBin( int njets ){
+  
+  int bin = njets;
+  if( bin >= nJetBins ) bin = nJetBins - 1;
+  
+  return bin;
+}
+
+//--------------------------------------------------------------------
+
+string jetString( int bin ){
+
+  stringstream s;
+  s << "nJets = " << bin ;
+
+  return s.str();
+
+}
+
+//--------------------------------------------------------------------
+
+int getSumJetPtBin( float x ){
+
+  //bins array defines the sumJetPt binning
+  float bins[nSumJetPtBins+1]={0,25,50,75,100,125,150,175,200,250,300,350,400,450,
+                               500,600,700,800,900,1000,2000,3000,4000,5000};
+  
+  if( x < bins[0] )              return 0;
+  if( x >= bins[nSumJetPtBins] ) return nSumJetPtBins - 1;
+
+  int ptbin = -1;
+
+  for( int ibin = 0 ; ibin < nSumJetPtBins+1 ; ibin++){
+    if( x >= bins[ibin] && x< bins[ibin+1] ){
+      ptbin = ibin;
+      break;
+    }
+  }
+
+  if( ptbin == -1 ) 
+    cout << "ERROR CANNOT FIND BIN FOR SUMJETPT " << x << endl;
+
+  return ptbin;
+}
+
+//--------------------------------------------------------------------
+
+string sumJetPtString( int bin ){
+  
+  float bins[nSumJetPtBins+1]={0,25,50,75,100,125,150,175,200,250,300,350,400,450,
+                               500,600,700,800,900,1000,2000,3000,4000,5000};
+
+  stringstream s;
+  s << bins[bin] << " < sumJetPt < " << bins[bin+1] << " GeV";
+
+  return s.str();
+}
+
+//--------------------------------------------------------------------
+*/
 
 void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData, 
                             selectionType mySelectionType, bool makeTemplate, int nEvents){
@@ -136,6 +246,27 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
   string  metTemplateString = "";
   char*   templateFileName  = "";
 
+  TH1F* reweightHist[3];
+  TRandom3 rand;
+
+  if( reweight ){
+  
+    TFile *reweightFile;
+    reweightFile = TFile::Open("reweight.root");
+    reweightHist[0] = (TH1F*) reweightFile->Get("ratio_1jet");
+    reweightHist[1] = (TH1F*) reweightFile->Get("ratio_2jet");
+    reweightHist[2] = (TH1F*) reweightFile->Get("ratio_3jet");
+ 
+//     TCanvas *c1=new TCanvas("c1","",1200,400);
+//     c1->Divide(3,1);
+//     c1->cd(1);
+//     reweightHist[0]->Draw();
+//     c1->cd(2);
+//     reweightHist[1]->Draw();
+//     c1->cd(3);
+//     reweightHist[2]->Draw();
+  }
+
   if( !makeTemplate ){
 
     //select templates
@@ -152,7 +283,8 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
       
       else if( myTemplateSource == e_PhotonJet ){
-        templateFileName = Form("output/%s/EG_templates.root",iter);
+        //templateFileName = Form("output/%s/EG_templates.root",iter);
+        templateFileName = Form("output/%s/babylooper_EG_templates.root",iter);
         cout << "Using template file " << templateFileName << endl;
         metTemplateString = "_EGTemplate";
         metTemplateFile = TFile::Open( templateFileName );
@@ -171,7 +303,8 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
       
       else if( myTemplateSource == e_PhotonJet ){
-        templateFileName = Form("output/%s/PhotonJet_templates.root",iter);
+        //templateFileName = Form("output/%s/PhotonJet_templates.root",iter);
+        templateFileName = Form("output/%s/babylooper_PhotonJet_templates.root",iter);
         cout << "Using template file " << templateFileName << endl;
         metTemplateString = "_PhotonJetTemplate";
         metTemplateFile = TFile::Open( templateFileName );
@@ -195,8 +328,9 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
                  << "|" << setw(8)  << "dphi"         << setw(4) << "|" << endl; 
   }
 
-
+  
   bookHistos();
+  
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -239,7 +373,7 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
 
       //if( run_ > 140387 ) continue;
-      //weight_ = 1;
+      weight_ = 1;
 
       fillUnderOverFlow( hgenps_pthat  , pthat_ , weight_ );
       fillUnderOverFlow( hphotonpt     , etg_   , weight_ );
@@ -301,17 +435,29 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
     
       }
       
+      
       //apply Z selection-----------------------------------------------------------------------
 
       if( selection_ == e_ZSelection ) {
 
-        //if( leptype_ == 2 ) continue; //exclude emu final state
+        //if( leptype_ == 2 ) continue;
+        if( nJets_ < 1 ) continue;
         
-        //if( nJets_ < 2 ) continue;
-//         if( leptype_ == 1 ){
-//           if( !passm_ll_nom_ == 1) continue;
-//           if( !passm_lt_nom_ == 1) continue;
-//         }
+        if( leptype_ == 1 ){
+          if( !passm_ll_nom_ == 1) continue;
+          if( !passm_lt_nom_ == 1) continue;
+        }
+
+        if( reweight ){
+          int iJetBin   = getJetBin( nJets_ );
+          int bin       = reweightHist[iJetBin]->FindBin( dilpt_ );
+          float ratio   = reweightHist[iJetBin]->GetBinContent( bin );
+          float randnum = rand.Uniform(0,1);
+
+          //cout << iJetBin << " " << dilpt_ << " " << bin << " " << ratio << " " << randnum << endl;
+          if( randnum > ratio ) continue;
+          //cout << "pass" << endl;
+        }
 
         //if( nvtx_    != 1 ) continue;
         //if( ptll_ < 20 || ptlt_ < 20 )        continue;
@@ -328,30 +474,33 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
         //  if( !( (passe_ll_ttbarV2_ == 1 && passm_lt_nomttbarV2_ == 1) || 
         //         (passe_lt_ttbarV2_ == 1 && passm_ll_nomttbarV2_ == 1) ) ) continue;
         //}
+
+        fillHistos( htcmet            , tcmet_           , weight_ , leptype_ , nJets_ );
+        fillHistos( htcmetNew         , tcmetNew_        , weight_ , leptype_ , nJets_ );
+        fillHistos( hpfmet            , pfmet_           , weight_ , leptype_ , nJets_  );
         
+        if( isData && ( tcmet_ > 30 || pfmet_ > 30 ) ){
+          string lepstring[3]={"ee","mm","em"};
+          
+          
+          ofile_events << "|" << setw(8)  << run_                        << setw(4) 
+                       << "|" << setw(6)  << lumi_                       << setw(4) 
+                       << "|" << setw(12) << event_                      << setw(4) 
+                       << "|" << setw(6)  << lepstring[leptype_]         << setw(4) 
+                       << "|" << setw(6)  << nJets_                      << setw(4) 
+                       << "|" << setw(6)  << nbtags_                     << setw(4) 
+                       << "|" << setw(8)  << fround(tcmet_,1)            << setw(4) 
+                       << "|" << setw(8)  << fround(pfmet_,1)            << setw(4) 
+                       << "|" << setw(8)  << fround(dphijetmet_,2)       << setw(4) << "|" << endl; 
+          
+        }
       }
+      
       
       //fill histos and ntuple----------------------------------------------------------- 
       
-      fillHistos( htcmet            , tcmet_           , weight_ , leptype_ , nJets_ );
-      fillHistos( htcmetNew         , tcmetNew_        , weight_ , leptype_ , nJets_ );
-      fillHistos( hpfmet            , pfmet_           , weight_ , leptype_ , nJets_  );
-      
-      if( isData && ( tcmet_ > 30 || pfmet_ > 30 ) ){
-        string lepstring[3]={"ee","mm","em"};
-        
-      
-        ofile_events << "|" << setw(8)  << run_                        << setw(4) 
-                     << "|" << setw(6)  << lumi_                       << setw(4) 
-                     << "|" << setw(12) << event_                      << setw(4) 
-                     << "|" << setw(6)  << lepstring[leptype_]         << setw(4) 
-                     << "|" << setw(6)  << nJets_                      << setw(4) 
-                     << "|" << setw(6)  << nbtags_                     << setw(4) 
-                     << "|" << setw(8)  << fround(tcmet_,1)            << setw(4) 
-                     << "|" << setw(8)  << fround(pfmet_,1)            << setw(4) 
-                     << "|" << setw(8)  << fround(dphijetmet_,2)       << setw(4) << "|" << endl; 
-        
-      }
+          
+
 
       if( myTemplateSource == e_QCD ){
         if( nJets_ < 2      ) continue;
@@ -361,6 +510,7 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( nJets_ < 1      ) continue;
         if( jetmax_pt_ < 30 ) continue;
       }
+      
 
       npass++;
 
@@ -369,13 +519,14 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( selection_ == e_ZSelection )      pthad = dilpt_;
 
       //fill met template-----------------------------------------------------------------------
-      
+            
+
       if( makeTemplate_ ) {
 
         int iJetBin          = getJetBin( nJets_ );
         int iSumJetPtBin     = getSumJetPtBin( sumJetPt_ );
         int iBosonPtBin      = getBosonPtBin( etg_ );
-
+        
         //fill templates binned by njets, sumjetpt, boson pt        
         fillUnderOverFlow( tcmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ]    ,  tcmet_    , weight_ );
         fillUnderOverFlow( pfmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ]    ,  pfmet_    , weight_ );
@@ -388,7 +539,8 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
         
       }
 
-    
+          
+
       int iJ = nJets_;
       if( iJ > 4 ) iJ = 4;
        
@@ -402,10 +554,11 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
         int iJetBin      = getJetBin( nJets_ );
         int iBosonPtBin  = getBosonPtBin( pthad );
         int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
+                
+        //TH1F* hmet = getMetTemplate( metTemplateFile , iJetBin , iSumJetPtBin , iBosonPtBin , weight_ );
 
         TH1F* hmet = new TH1F();
-     
-
+        
         if( !isData && nJets_ > 1 ){
           if( myMetType == e_tcmet ){
             hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
@@ -417,7 +570,7 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
             hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
           }
         }
-
+        
         else{
           if     ( myMetType == e_tcmet ){
             hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
@@ -430,30 +583,31 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
           }
         }
         
-//         if( myMetType == e_tcmet ){
-//           hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_%i_%i",iJetBin,iSumJetPtBin));
-//         }
-//         else if( myMetType == e_tcmetNew ){
-//           hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetNewTemplate_%i_%i",iJetBin,iSumJetPtBin));
-//         }
-//         else if( myMetType == e_pfmet ){
-//           hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_%i_%i",iJetBin,iSumJetPtBin));
-//         }
+        
         
         hmet->Scale( weight_ );
-      
-        int iJ = iJetBin;
-        if( iJ > 3 ) iJ = 3; 
-
-        fillUnderOverFlow( metObserved_njets[iJ] , theMet , weight_ );
-        metPredicted_njets[iJ]->Add( hmet );
+        
+        //int bin = hmet->FindBin(60);
+        //float int60 = hmet->Integral(bin,100000);
+        //if( int60 > 0 ) cout << "Found event " << int60 * hmet->GetEntries() << endl;
+        
+        if( selection_ == e_ZSelection ){
+          if( leptype_ == 2 ){
+            fillUnderOverFlow( metObserved_df , tcmet_ , weight_  );
+            metPredicted_df->Add( hmet );
+            continue; //exclude emu final state
+          }
+        }
+        
+        fillUnderOverFlow( metObserved_njets[iJetBin] , theMet , weight_ );
+        metPredicted_njets[iJetBin]->Add( hmet );
         
         fillUnderOverFlow( metObserved , theMet , weight_ );
         metPredicted->Add( hmet );
-
+        
 
         if( selection_ == e_ZSelection ) {
-        
+                
           if( leptype_ == 0 ){
             fillUnderOverFlow( metObserved_ee , theMet , weight_ );
             metPredicted_ee->Add( hmet );
@@ -462,6 +616,7 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
             fillUnderOverFlow( metObserved_mm , theMet , weight_ );
             metPredicted_mm->Add( hmet );
           }
+        
           if( leptype_ == 0 || leptype_ == 1 ){
             fillUnderOverFlow( metObserved_sf , tcmet_ , weight_  );
             metPredicted_sf->Add( hmet );
@@ -472,7 +627,7 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
             cout << "UNRECOGNIZED LEPTYPE " << leptype_ << endl;
           }
         }
-                
+                        
         if( selection_ == e_photonSelection ||  selection_ == e_ZSelection){
 
           if( pthad < 40 ){
@@ -497,7 +652,7 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
         }
       
         delete hmet;
-
+        
       }
     } // end loop over events
   } // end loop over files
@@ -547,11 +702,91 @@ void babylooper::ScanChain (TChain* chain, const char* prefix, bool isData,
   // make histos rootfile
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
-  if( makeTemplate ) saveHist( Form("output/%s/babylooper_%s_template.root" , iter , prefix ) );
-  else               saveHist( Form("output/%s/babylooper_%s%s.root"        , iter , prefix , metTemplateString.c_str() ) );
+  if( makeTemplate ) saveHist( Form("output/%s/babylooper_%s_templates.root" , iter , prefix ) );
+  else               saveHist( Form("output/%s/babylooper_%s%s.root"         , iter , prefix , metTemplateString.c_str() ) );
   deleteHistos();
   
 } // end ScanChain
+
+TH1F* babylooper::getMetTemplate( TFile* file, int iJetBin , int iSumJetPtBin , int iBosonPtBin , float weight ){
+
+  char* metstring = "";
+
+  if     ( myMetType == e_tcmet    ) metstring = "tcmet";
+  else if( myMetType == e_tcmetNew ) metstring = "tcmetNew";
+  else if( myMetType == e_pfmet    ) metstring = "pfmet";
+    
+  TH1F* hmet = new TH1F();
+
+  if( useCombinedTemplates ){
+    hmet     = (TH1F*) file->Get(Form("%sTemplate_combined_%i_%i",metstring,iJetBin,iSumJetPtBin));
+  }else{
+    hmet     = (TH1F*) file->Get(Form("%sTemplate_%i_%i_%i",metstring,iJetBin,iSumJetPtBin,iBosonPtBin));
+  }
+    
+  //if there are at least nMetEntries in the template, return template
+  if( hmet->GetEntries() >= nMetEntries ){
+    hmet->Scale( weight );
+    return hmet;
+  }
+  
+  if( hmet->GetEntries() > 0 )
+    hmet->Scale( hmet->GetEntries() / hmet->Integral() );
+  int counter = 1;
+ 
+  //cout << endl << "Found template with " << hmet->GetEntries() << " entries" << endl;
+  //cout << iJetBin << " " << iSumJetPtBin << endl;
+
+  //add histograms in sumjetpt bins adjacent to current bin to get enough entries
+  while( hmet->GetEntries() < nMetEntries && counter < nSumJetPtBins ){
+
+    //add template 1 bin lower in sumJetPt, if it exists
+    if( iSumJetPtBin - counter >= 0 ){
+     
+      TH1F *hmetLo = new TH1F();
+
+      if( useCombinedTemplates ){
+        hmetLo     = (TH1F*) file->Get(Form("%sTemplate_combined_%i_%i",metstring,iJetBin,iSumJetPtBin-counter));
+      }else{
+        hmetLo     = (TH1F*) file->Get(Form("%sTemplate_%i_%i_%i",metstring,iJetBin,iSumJetPtBin-counter,iBosonPtBin));
+      }
+ 
+      //cout << "Adding lo entries " << hmetLo->GetEntries() << endl;
+      if( hmetLo->GetEntries() > 0 ){
+        hmetLo->Scale( hmetLo->GetEntries() / hmetLo->Integral() );
+        hmet->Add(hmetLo);
+      }
+
+      delete hmetLo;
+    }
+     
+    //add template 1 bin higher in sumJetPt, if it exists
+    if( iSumJetPtBin + counter < nSumJetPtBins ){
+      
+      TH1F *hmetHi = new TH1F();
+ 
+      if( useCombinedTemplates ){
+        hmetHi     = (TH1F*) file->Get(Form("%sTemplate_combined_%i_%i",metstring,iJetBin,iSumJetPtBin+counter));
+      }else{
+        hmetHi     = (TH1F*) file->Get(Form("%sTemplate_%i_%i_%i",metstring,iJetBin,iSumJetPtBin+counter,iBosonPtBin));
+      }
+      
+      //cout << "Adding hi entries " << hmetHi->GetEntries() << endl;
+      if( hmetHi->GetEntries() > 0 ){
+        hmetHi->Scale( hmetHi->GetEntries() / hmetHi->Integral() );
+        hmet->Add(hmetHi);
+      }
+ 
+      delete hmetHi;
+    }
+
+    counter++;
+  }
+  
+  if( hmet->GetEntries() > 0 )
+  hmet->Scale( weight / hmet->Integral() );
+  return hmet;
+}
 
 float babylooper::deltaPhi( float phi1 , float phi2){
   float dphi = fabs( phi1 - phi2 );
@@ -688,7 +923,7 @@ void babylooper::bookHistos(){
 
     }
   }
- 
+   
   if( makeTemplate_ ){
 
     for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
@@ -719,30 +954,31 @@ void babylooper::bookHistos(){
       }
     }
 
-
+  
    for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
       for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
       
-
+  
         tcmetTemplate_combined[iJetBin][iSumJetPtBin] = new TH1F(Form("tcmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                 Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                 Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
         
         tcmetNewTemplate_combined[iJetBin][iSumJetPtBin] = new TH1F(Form("tcmetNewTemplate_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                    Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                    Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
         
         pfmetTemplate_combined[iJetBin][iSumJetPtBin] = new TH1F(Form("pfmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                 Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                 Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
         
         tcmetTemplate_combined[iJetBin][iSumJetPtBin]->Sumw2();
         tcmetNewTemplate_combined[iJetBin][iSumJetPtBin]->Sumw2();
         pfmetTemplate_combined[iJetBin][iSumJetPtBin]->Sumw2();
-        
+         
         tcmetTemplate_combined[iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("tcmet (GeV)");
         tcmetNewTemplate_combined[iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("tcmetNew (GeV)");
         pfmetTemplate_combined[iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("pfmet (GeV)");          
-        
+         
       }
     }
+  
   }
 }
 

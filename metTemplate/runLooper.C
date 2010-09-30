@@ -15,6 +15,12 @@ void runLooper(char* prefix , bool isData = true, looper::metAlgo algo = looper:
 
   //------------------------------------------------------------------------------------------------------------
 
+  if( strcmp( prefix , "testdata" ) == 0 ){
+    ch->Add("/tas/benhoob/skims/cms2/ExpressPhysics_Run2010A-Express-v4_FEVT_dilepmet.root");
+  }
+
+  //------------------------------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "JetMETTau_250nb" ) == 0 ){
     ch->Add("/tas/cms2/MinimumBias_Commissioning10-SD_JetMETTau-Jun14thSkim_v1_RECO/V03-04-26-02/pfJetPt30Skim/skimmed*root");
     ch->Add("/tas/cms2/JetMETTau_Run2010A-Jun14thReReco_v2_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");

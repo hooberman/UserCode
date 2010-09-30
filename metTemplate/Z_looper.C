@@ -35,6 +35,10 @@
 #include "TLorentzVector.h"
 
 using namespace tas;
+inline double fround(double n, double d){
+  return floor(n * pow(10., d) + .5) / pow(10., d);
+}
+
 
 enum metType   { e_tcmet = 0, e_tcmetNew = 1, e_pfmet = 2};
 enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
@@ -42,12 +46,12 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 //--------------------------------------------------------------------
 
 bool debug = false;
-const int nJetBins        = 11;
-const int nSumJetPtBins   = 23;
+const int nJetBins        = 3;
+const int nSumJetPtBins   = 7;
 const int nBosonPtBins    = 4;
 
 float lumi         = 0.0027945;
-char* iter         = "V01-01";
+char* iter         = "V01-02";
 char* jsonfilename = "Cert_TopAug30_Merged_135059-144114_recover_noESDCS_goodruns.txt";
 
 metType myMetType               = e_tcmet;
@@ -125,12 +129,19 @@ string bosonPtString( int bin ){
 }
 
 //--------------------------------------------------------------------
-  
+
 int getJetBin( int njets ){
-  
-  int bin = njets;
-  if( bin >= nJetBins ) bin = nJetBins - 1;
-  
+
+  int bin = -1;
+
+  if     ( njets == 1 ) bin = 0;
+  else if( njets == 2 ) bin = 1;
+  else if( njets >= 3 ) bin = 2;
+  else{
+    cout << "Error " << njets << " jets passed as argument to met templates" << endl;
+    exit(0);
+  }
+
   return bin;
 }
 
@@ -138,10 +149,17 @@ int getJetBin( int njets ){
 
 string jetString( int bin ){
 
-  stringstream s;
-  s << "nJets = " << bin ;
+  string js;
 
-  return s.str();
+  if     ( bin == 0 ) js = "njets = 1";
+  else if( bin == 1 ) js = "njets = 2";
+  else if( bin == 2 ) js = "njets >= 3";
+  else{
+    cout << "Error invalid bin passed as argument to met templates" << endl;
+    exit(0);
+  }
+
+  return js;
 
 }
 
@@ -150,8 +168,7 @@ string jetString( int bin ){
 int getSumJetPtBin( float x ){
 
   //bins array defines the sumJetPt binning
-  float bins[nSumJetPtBins+1]={0,25,50,75,100,125,150,175,200,250,300,350,400,450,
-                               500,600,700,800,900,1000,2000,3000,4000,5000};
+  float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
   
   if( x < bins[0] )              return 0;
   if( x >= bins[nSumJetPtBins] ) return nSumJetPtBins - 1;
@@ -174,9 +191,8 @@ int getSumJetPtBin( float x ){
 //--------------------------------------------------------------------
 
 string sumJetPtString( int bin ){
-  
-  float bins[nSumJetPtBins+1]={0,25,50,75,100,125,150,175,200,250,300,350,400,450,
-                               500,600,700,800,900,1000,2000,3000,4000,5000};
+
+  float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
 
   stringstream s;
   s << bins[bin] << " < sumJetPt < " << bins[bin+1] << " GeV";
@@ -291,6 +307,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   //pass fail counters
   float nGoodMu = 0;
   float nGoodEl = 0;
+  float nGoodEM = 0;
   int nSkip_els_conv_dist = 0;
   if(debug) cout << "Begin file loop" << endl;
 
@@ -426,6 +443,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         nHypPass++;
         if( leptype_ == 0 ) nGoodEl+=weight_;
         if( leptype_ == 1 ) nGoodMu+=weight_;
+        if( leptype_ == 2 ) nGoodEM+=weight_;
         
   
         //dilepton stuff---------------------------------------------------------------- 
@@ -734,6 +752,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   
   cout << nGoodEl << " ee events in Z mass window" << endl;
   cout << nGoodMu << " mm events in Z mass window" << endl;
+  cout << nGoodEM << " em events in Z mass window" << endl;
 
   CloseBabyNtuple();
 
@@ -782,6 +801,7 @@ void Z_looper::InitBabyNtuple (){
   HLT_Photon10_Cleaned_L1R_     = -1;
   HLT_Photon15_Cleaned_L1R_     = -1;
   HLT_Photon20_Cleaned_L1R_     = -1;
+  HLT_Photon20_L1R_     = -1;
 
   // event stuff
   run_          = -999999;
@@ -1029,6 +1049,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("HLT_Photon10_Cleaned_L1R",      &HLT_Photon10_Cleaned_L1R_,     "HLT_Photon10_Cleaned_L1R/I");  
   babyTree_->Branch("HLT_Photon15_Cleaned_L1R",      &HLT_Photon15_Cleaned_L1R_,     "HLT_Photon15_Cleaned_L1R/I");  
   babyTree_->Branch("HLT_Photon20_Cleaned_L1R",      &HLT_Photon20_Cleaned_L1R_,     "HLT_Photon20_Cleaned_L1R/I");  
+  babyTree_->Branch("HLT_Photon20_L1R",              &HLT_Photon20_L1R_,             "HLT_Photon20__L1R/I");  
 
   //Z stuff
   babyTree_->Branch("leptype",               &leptype_,               "leptype/I");

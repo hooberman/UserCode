@@ -19,7 +19,6 @@
   //runMakeTemplates("QCD_Pt30"                        , false , makeTemplates::e_QCDSelection );
   
   //--photon+jets---
-  //runMakeTemplates("EG"                              , true  , makeTemplates::e_photonSelection );
   runMakeTemplates("PhotonJet"                       , false , makeTemplates::e_photonSelection );
-  
+  runMakeTemplates("EG"                              , true  , makeTemplates::e_photonSelection );  
 }
