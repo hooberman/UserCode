@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.9 2010/07/27 10:51:41 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.10 2010/07/30 15:02:58 benhoob Exp $
 //
 //
 
@@ -126,6 +126,8 @@ private:
   TH1F* htanlorangle[7][3];       
   TH1F* hdtantheta[7][3];         
   TH1F* hdw_TEC[10][8][2];
+  TH2F* hdwvsdtantheta_TEC[10][8][2];
+  TH1F* hdw_TEC_cut[10][8][2];
 
   // ------------- private member function -------------
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
@@ -304,7 +306,7 @@ void PeakDecoResiduals::BookHists(TFileDirectory &tfd){
   const char* wdir[2] = {"wp","wm"};
   const char* layers[10] = {"all","layer1","layer2","layer3","layer4",
 			    "layer5","layer6","layer7","layer8","layer9"};
-
+  
   const char* stereo[2]={"r#phi","stereo"};
   
   for(int i=0;i<10;i++){
@@ -312,10 +314,16 @@ void PeakDecoResiduals::BookHists(TFileDirectory &tfd){
       for(int k=0;k<2;k++){
         hdw_TEC[i][j][k] = tfd.make<TH1F>(Form("hdw_TEC_wheel%i_ring%i_stereo%i",i,j,k),
                                           Form("#Deltaw TEC wheel%i ring%i %s",  i,j,stereo[k]),2000,-10000,10000);
+        
+        hdwvsdtantheta_TEC[i][j][k] = tfd.make<TH2F>(Form("hdwvsdtantheta_TEC_wheel%i_ring%i_stereo%i",i,j,k),
+                                                     Form("#Deltaw vs. #Deltatan(#theta) TEC wheel%i ring%i %s",  i,j,stereo[k]),200,-1,1,2000,-10000,10000);
+        
+        hdw_TEC_cut[i][j][k] = tfd.make<TH1F>(Form("hdw_TEC_cut_wheel%i_ring%i_stereo%i",i,j,k),
+                                              Form("#Deltaw TEC wheel%i ring%i %s |tan(#theta_{trk})|>0.2",  i,j,stereo[k]),2000,-10000,10000);
       }
     }
   }
-
+  
   hlumivsrun      = tfd.make<TH2F>("lumivsrun","lumivsrun",2000,132000,134000,2000,0,2000);
 
   for(int idet=0;idet<7;idet++){
@@ -727,6 +735,16 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
           hdw_TEC[wheel_][ring_][stereo_] -> Fill(10000*it->resXprime/dtantheta);
           hdw_TEC[0][ring_][stereo_]      -> Fill(10000*it->resXprime/dtantheta);
           hdw_TEC[wheel_][0][stereo_]     -> Fill(10000*it->resXprime/dtantheta);
+
+          hdwvsdtantheta_TEC[wheel_][ring_][stereo_] -> Fill(it->tanTrackAngle,10000*it->resXprime/dtantheta);
+          hdwvsdtantheta_TEC[0][ring_][stereo_]      -> Fill(it->tanTrackAngle,10000*it->resXprime/dtantheta);
+          hdwvsdtantheta_TEC[wheel_][0][stereo_]     -> Fill(it->tanTrackAngle,10000*it->resXprime/dtantheta);
+          
+          if( fabs( it->tanTrackAngle ) > 0.2 ){
+            hdw_TEC_cut[wheel_][ring_][stereo_] -> Fill(10000*it->resXprime/dtantheta);
+            hdw_TEC_cut[0][ring_][stereo_]      -> Fill(10000*it->resXprime/dtantheta);
+            hdw_TEC_cut[wheel_][0][stereo_]     -> Fill(10000*it->resXprime/dtantheta);
+          }
         }
       }
       if(dtantheta > 0)  hdu[subdetint]->Fill( 10000*it->resXprime);
@@ -747,7 +765,7 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
  
 
 
-    if(createTree_){
+    if(createTree_ && (subdetint == 5 || subdetint == 6 )){
       //cout << "fill tree" << endl;
 
       subdet_      = subdetint;
