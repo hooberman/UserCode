@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Erik Butz
 //         Created:  Tue Dec 11 14:03:05 CET 2007
-// $Id: PeakDecoResiduals.cc,v 1.10 2010/07/30 15:02:58 benhoob Exp $
+// $Id: PeakDecoResiduals.cc,v 1.11 2010/10/10 15:42:39 benhoob Exp $
 //
 //
 
@@ -125,9 +125,18 @@ private:
   TH1F* htantrktheta[7][3];       
   TH1F* htanlorangle[7][3];       
   TH1F* hdtantheta[7][3];         
+
   TH1F* hdw_TEC[10][8][2];
   TH2F* hdwvsdtantheta_TEC[10][8][2];
   TH1F* hdw_TEC_cut[10][8][2];
+
+  TH1F* hdw_TECp[10][8][2];
+  TH2F* hdwvsdtantheta_TECp[10][8][2];
+  TH1F* hdw_TECp_cut[10][8][2];
+
+  TH1F* hdw_TECm[10][8][2];
+  TH2F* hdwvsdtantheta_TECm[10][8][2];
+  TH1F* hdw_TECm_cut[10][8][2];
 
   // ------------- private member function -------------
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
@@ -312,6 +321,8 @@ void PeakDecoResiduals::BookHists(TFileDirectory &tfd){
   for(int i=0;i<10;i++){
     for(int j=0;j<8;j++){
       for(int k=0;k<2;k++){
+
+        //all TEC
         hdw_TEC[i][j][k] = tfd.make<TH1F>(Form("hdw_TEC_wheel%i_ring%i_stereo%i",i,j,k),
                                           Form("#Deltaw TEC wheel%i ring%i %s",  i,j,stereo[k]),2000,-10000,10000);
         
@@ -320,6 +331,29 @@ void PeakDecoResiduals::BookHists(TFileDirectory &tfd){
         
         hdw_TEC_cut[i][j][k] = tfd.make<TH1F>(Form("hdw_TEC_cut_wheel%i_ring%i_stereo%i",i,j,k),
                                               Form("#Deltaw TEC wheel%i ring%i %s |tan(#theta_{trk})|>0.2",  i,j,stereo[k]),2000,-10000,10000);
+
+        //TEC+
+        hdw_TECp[i][j][k] = tfd.make<TH1F>(Form("hdw_TECp_wheel%i_ring%i_stereo%i",i,j,k),
+                                           Form("#Deltaw TEC+ wheel%i ring%i %s",  i,j,stereo[k]),2000,-10000,10000);
+        
+        hdwvsdtantheta_TECp[i][j][k] = tfd.make<TH2F>(Form("hdwvsdtantheta_TECp_wheel%i_ring%i_stereo%i",i,j,k),
+                                                      Form("#Deltaw vs. #Deltatan(#theta) TEC+ wheel%i ring%i %s",  i,j,stereo[k]),200,-1,1,2000,-10000,10000);
+        
+        hdw_TECp_cut[i][j][k] = tfd.make<TH1F>(Form("hdw_TECp_cut_wheel%i_ring%i_stereo%i",i,j,k),
+                                               Form("#Deltaw TEC+ wheel%i ring%i %s |tan(#theta_{trk})|>0.2",  i,j,stereo[k]),2000,-10000,10000);
+
+
+        //TEC-
+        hdw_TECm[i][j][k] = tfd.make<TH1F>(Form("hdw_TECm_wheel%i_ring%i_stereo%i",i,j,k),
+                                           Form("#Deltaw TEC- wheel%i ring%i %s",  i,j,stereo[k]),2000,-10000,10000);
+        
+        hdwvsdtantheta_TECm[i][j][k] = tfd.make<TH2F>(Form("hdwvsdtantheta_TECm_wheel%i_ring%i_stereo%i",i,j,k),
+                                                      Form("#Deltaw vs. #Deltatan(#theta) TEC- wheel%i ring%i %s",  i,j,stereo[k]),200,-1,1,2000,-10000,10000);
+        
+        hdw_TECm_cut[i][j][k] = tfd.make<TH1F>(Form("hdw_TECm_cut_wheel%i_ring%i_stereo%i",i,j,k),
+                                               Form("#Deltaw TEC- wheel%i ring%i %s |tan(#theta_{trk})|>0.2",  i,j,stereo[k]),2000,-10000,10000);
+
+
       }
     }
   }
@@ -732,6 +766,8 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         dwmap[detid]->Fill( 10000*it->resXprime/dtantheta);
 
         if(subdetid  == StripSubdetector::TEC){
+        
+          //all TEC
           hdw_TEC[wheel_][ring_][stereo_] -> Fill(10000*it->resXprime/dtantheta);
           hdw_TEC[0][ring_][stereo_]      -> Fill(10000*it->resXprime/dtantheta);
           hdw_TEC[wheel_][0][stereo_]     -> Fill(10000*it->resXprime/dtantheta);
@@ -745,6 +781,45 @@ PeakDecoResiduals::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             hdw_TEC_cut[0][ring_][stereo_]      -> Fill(10000*it->resXprime/dtantheta);
             hdw_TEC_cut[wheel_][0][stereo_]     -> Fill(10000*it->resXprime/dtantheta);
           }
+
+          //TEC+
+          if( zplus_ == 1 ){
+            hdw_TECp[wheel_][ring_][stereo_] -> Fill(10000*it->resXprime/dtantheta);
+            hdw_TECp[0][ring_][stereo_]      -> Fill(10000*it->resXprime/dtantheta);
+            hdw_TECp[wheel_][0][stereo_]     -> Fill(10000*it->resXprime/dtantheta);
+            
+            hdwvsdtantheta_TECp[wheel_][ring_][stereo_] -> Fill(it->tanTrackAngle,10000*it->resXprime/dtantheta);
+            hdwvsdtantheta_TECp[0][ring_][stereo_]      -> Fill(it->tanTrackAngle,10000*it->resXprime/dtantheta);
+            hdwvsdtantheta_TECp[wheel_][0][stereo_]     -> Fill(it->tanTrackAngle,10000*it->resXprime/dtantheta);
+            
+            if( fabs( it->tanTrackAngle ) > 0.2 ){
+              hdw_TECp_cut[wheel_][ring_][stereo_] -> Fill(10000*it->resXprime/dtantheta);
+              hdw_TECp_cut[0][ring_][stereo_]      -> Fill(10000*it->resXprime/dtantheta);
+              hdw_TECp_cut[wheel_][0][stereo_]     -> Fill(10000*it->resXprime/dtantheta);
+            }
+          }
+
+          //TEC-
+          else if( zplus_ == 0 ){
+            hdw_TECm[wheel_][ring_][stereo_] -> Fill(10000*it->resXprime/dtantheta);
+            hdw_TECm[0][ring_][stereo_]      -> Fill(10000*it->resXprime/dtantheta);
+            hdw_TECm[wheel_][0][stereo_]     -> Fill(10000*it->resXprime/dtantheta);
+            
+            hdwvsdtantheta_TECm[wheel_][ring_][stereo_] -> Fill(it->tanTrackAngle,10000*it->resXprime/dtantheta);
+            hdwvsdtantheta_TECm[0][ring_][stereo_]      -> Fill(it->tanTrackAngle,10000*it->resXprime/dtantheta);
+            hdwvsdtantheta_TECm[wheel_][0][stereo_]     -> Fill(it->tanTrackAngle,10000*it->resXprime/dtantheta);
+            
+            if( fabs( it->tanTrackAngle ) > 0.2 ){
+              hdw_TECm_cut[wheel_][ring_][stereo_] -> Fill(10000*it->resXprime/dtantheta);
+              hdw_TECm_cut[0][ring_][stereo_]      -> Fill(10000*it->resXprime/dtantheta);
+              hdw_TECm_cut[wheel_][0][stereo_]     -> Fill(10000*it->resXprime/dtantheta);
+            }
+          }
+          
+          else{
+            cout << "Unrecognized zplus " << zplus_ << endl;
+          }
+
         }
       }
       if(dtantheta > 0)  hdu[subdetint]->Fill( 10000*it->resXprime);
