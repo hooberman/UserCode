@@ -29,6 +29,7 @@
 #include "CORE/ttbarSelections.cc"
 #include "CORE/jetSelections.cc"
 #include "CORE/triggerUtils.cc"
+#include "CORE/photonSelections.cc"
 
 
 #include "Math/LorentzVector.h"
@@ -36,9 +37,9 @@
 #include "TLorentzVector.h"
 
 using namespace tas;
-inline double fround(double n, double d){
-  return floor(n * pow(10., d) + .5) / pow(10., d);
-}
+// inline double fround(double n, double d){
+//   return floor(n * pow(10., d) + .5) / pow(10., d);
+// }
 
 //--------------------------------------------------------------------
 
@@ -48,7 +49,7 @@ const int nSumJetPtBins   = 7;
 const int nBosonPtBins    = 4;
 
 float lumi                = 0.0027945;
-char* iter                = "V01-02";
+char* iter                = "V01-04";
 char* jsonfilename        = "Cert_TopAug30_Merged_135059-144114_recover_noESDCS_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -186,7 +187,7 @@ int getSumJetPtBin( float x ){
 
 string sumJetPtString( int bin ){
 
-  float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
+  float bins[nSumJetPtBins+1]={0,30,60,90,120,150,250,5000};
 
   stringstream s;
   s << bins[bin] << " < sumJetPt < " << bins[bin+1] << " GeV";
@@ -475,6 +476,10 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
                 
         if( igmax < 0 ) continue;
 
+        
+        ijetg = isGoodEMObject(igmax);
+        if( ijetg < 0 ) continue;
+
         etg_        = photons_p4()[igmax].pt();
         etag_       = photons_p4()[igmax].eta();
         phig_       = photons_p4()[igmax].phi();
@@ -510,7 +515,9 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
           photon_tkisoSolid03_     = photons_tkIsoSolid03()[igmax];   
           photon_tkisoSolid04_     = photons_tkIsoSolid04()[igmax];  
         }
-      
+        
+        /*
+          //REPLACED, SINCE NOW USE isGoodEMObject to find pfjet
         jet_dr_      = 10000;
         ijetg    = -1;
 
@@ -522,7 +529,7 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
           
           if( vjet.pt()  < 10  )       continue;
           if( vjet.eta() > 2.5 )       continue;
-          if( !passesPFJetID(ijet) )   continue;
+          //if( !passesPFJetID(ijet) )   continue;
 
           float dr = dRbetweenVectors(vjet, vg);
          
@@ -532,8 +539,14 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
           }
         }
           
-        if( ijetg < 0 ) continue;
+        if( ijetg < 0 )     continue;
+        if( jet_dr_ > 0.3 ) continue;
+        */
+
+        LorentzVector vjet = pfjets_cor().at(ijetg) * pfjets_p4().at(ijetg);
+        LorentzVector vg   = photons_p4().at(igmax);
         
+        jet_dr_             = dRbetweenVectors(vjet, vg);
         jet_pt_             = pfjets_p4().at(ijetg).pt();
         jet_energy_         = pfjets_p4().at(ijetg).energy();
         jet_eta_            = pfjets_p4().at(ijetg).eta();
@@ -754,17 +767,18 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
         }else{
           if( !( HLT_Photon20_L1R_ == 1)  )         continue;
         }
+
         if( jetmax_pt_ < 30  )  continue;
         if( nJets_ < 1 )        continue;
-
+    
         //Ben's photon-object selection
-        if ( etag_ > 1 )                                 continue;
+        if ( fabs( etag_ ) >  1 )                        continue;
         if ( etg_ < 22 )                                 continue;
         if ( (1.-r4_) < 0.05 )                           continue;
         if ( hoe_ > 0.1 )                                continue;
         if ( jet_neu_emfrac_ < 0.95 )                    continue; 
-          
-        /*
+        
+          /*
         //Warren's photon selection
         if ( etag_ > 1 )                                 continue;
         if ( etg_ < 20 )                                 continue;
@@ -1070,6 +1084,7 @@ void makeTemplates::bookHistos(){
     hetg[iJ]->GetXaxis()->SetTitle("photon p_{T} (GeV)");
   }
 
+  float maxmet = 200;
 
   for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
     for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
@@ -1077,15 +1092,15 @@ void makeTemplates::bookHistos(){
 
         tcmetTemplate[iJetBin][iSumJetPtBin][iBosonPtBin] = new TH1F(Form("tcmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin),
                                                                      Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str(),
-                                                                          bosonPtString(iBosonPtBin).c_str()),500,0,500);
+                                                                          bosonPtString(iBosonPtBin).c_str()),maxmet,0,maxmet);
 
         tcmetNewTemplate[iJetBin][iSumJetPtBin][iBosonPtBin] = new TH1F(Form("tcmetNewTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin),
                                                                         Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str(),
-                                                                             bosonPtString(iBosonPtBin).c_str()),500,0,500);
+                                                                             bosonPtString(iBosonPtBin).c_str()),maxmet,0,maxmet);
 
         pfmetTemplate[iJetBin][iSumJetPtBin][iBosonPtBin] = new TH1F(Form("pfmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin),
                                                                      Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str(),
-                                                                          bosonPtString(iBosonPtBin).c_str()),500,0,500);
+                                                                          bosonPtString(iBosonPtBin).c_str()),maxmet,0,maxmet);
         
         tcmetTemplate[iJetBin][iSumJetPtBin][iBosonPtBin]->Sumw2();
         tcmetNewTemplate[iJetBin][iSumJetPtBin][iBosonPtBin]->Sumw2();
@@ -1109,25 +1124,25 @@ void makeTemplates::bookHistos(){
       //cout << sumJetPtString(iSumJetPtBin).c_str() << endl;
         
       tcmetTemplate_combined[iJetBin][iSumJetPtBin]             = new TH1F(Form("tcmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
 
       tcmetNewTemplate_combined[iJetBin][iSumJetPtBin]          = new TH1F(Form("tcmetNewTemplate_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
  
       tcmetNewType1Pt30Template_combined[iJetBin][iSumJetPtBin] = new TH1F(Form("tcmetNewType1Pt30Template_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
  
       tcmetNewType1Pt15Template_combined[iJetBin][iSumJetPtBin] = new TH1F(Form("tcmetNewType1Pt15Template_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
  
       pfmetTemplate_combined[iJetBin][iSumJetPtBin]             = new TH1F(Form("pfmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
  
       pfmetType1Pt30Template_combined[iJetBin][iSumJetPtBin]    = new TH1F(Form("pfmetType1Pt30Template_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
  
       pfmetType1Pt15Template_combined[iJetBin][iSumJetPtBin]    = new TH1F(Form("pfmetType1Pt15Template_combined_%i_%i",iJetBin,iSumJetPtBin),
-                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                           Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
          
       tcmetTemplate_combined[iJetBin][iSumJetPtBin]->Sumw2();
       tcmetNewTemplate_combined[iJetBin][iSumJetPtBin]->Sumw2();
@@ -1155,13 +1170,13 @@ void makeTemplates::bookHistos(){
         
       //tcmet
       tcmetTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                          Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                          Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
   
       tcmetParTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetParTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                             Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-500,500);
+                                                             Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-maxmet,maxmet);
   
       tcmetPerpTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                              Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                              Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
   
       tcmetTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
       tcmetParTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
@@ -1173,13 +1188,13 @@ void makeTemplates::bookHistos(){
 
       //tcmetNew
       tcmetNewTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetNewTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                             Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                             Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
   
       tcmetNewParTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetNewParTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                                Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-500,500);
+                                                                Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-maxmet,maxmet);
   
       tcmetNewPerpTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("tcmetNewPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                                 Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                                 Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
   
       tcmetNewTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
       tcmetNewParTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
@@ -1191,13 +1206,13 @@ void makeTemplates::bookHistos(){
   
       //pfmet
       pfmetTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("pfmetTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                          Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                          Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
   
       pfmetParTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("pfmetParTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                             Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-500,500);
+                                                             Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),1000,-maxmet,maxmet);
   
       pfmetPerpTemplate[ iJetBin ][ iSumJetPtBin ] = new TH1F(Form("pfmetPerpTemplate_%i_%i",iJetBin,iSumJetPtBin),
-                                                              Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),500,0,500);
+                                                              Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
   
       pfmetTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
       pfmetParTemplate[ iJetBin ][ iSumJetPtBin ]->Sumw2(); 
