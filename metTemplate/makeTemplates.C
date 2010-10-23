@@ -48,9 +48,9 @@ const int nJetBins        = 3;
 const int nSumJetPtBins   = 7;
 const int nBosonPtBins    = 4;
 
-float lumi                = 0.0027945;
-char* iter                = "V01-04";
-char* jsonfilename        = "Cert_TopAug30_Merged_135059-144114_recover_noESDCS_goodruns.txt";
+float lumi                = 0.01106;
+char* iter                = "oct15th";
+char* jsonfilename        = "Cert_TopOct15_Merged_135821-147454_allPVT_V2_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -163,7 +163,8 @@ string jetString( int bin ){
 int getSumJetPtBin( float x ){
 
   //bins array defines the sumJetPt binning
-  float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
+  float bins[nSumJetPtBins+1]={0,30,60,90,120,150,250,5000};
+  //float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
   
   if( x < bins[0] )              return 0;
   if( x >= bins[nSumJetPtBins] ) return nSumJetPtBins - 1;
@@ -188,6 +189,7 @@ int getSumJetPtBin( float x ){
 string sumJetPtString( int bin ){
 
   float bins[nSumJetPtBins+1]={0,30,60,90,120,150,250,5000};
+  //float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
 
   stringstream s;
   s << bins[bin] << " < sumJetPt < " << bins[bin+1] << " GeV";
@@ -229,6 +231,8 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   
   bookHistos();
+
+  int npass = 0;
   
   // make a baby ntuple
   //stringstream babyfilename;
@@ -475,17 +479,24 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
         }
                 
         if( igmax < 0 ) continue;
-
         
         ijetg = isGoodEMObject(igmax);
+        
         if( ijetg < 0 ) continue;
-
+        
         etg_        = photons_p4()[igmax].pt();
         etag_       = photons_p4()[igmax].eta();
+        
+        //if(  fabs( etag_ ) > 1 ) continue;
+        
         phig_       = photons_p4()[igmax].phi();
         hoe_        = photons_hOverE()[igmax];
         swiss_      = photons_swissSeed()[igmax];
         int scind   = photons_scindex()[igmax] ;
+      
+        //invalid SC index
+        if( scind < 0 ) continue;
+
         seed_       = scs_eSeed()[scind] ;
         s4_         = swiss_ - seed_ ;
         r4_         = 1 - s4_ / seed_ ;
@@ -516,33 +527,6 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
           photon_tkisoSolid04_     = photons_tkIsoSolid04()[igmax];  
         }
         
-        /*
-          //REPLACED, SINCE NOW USE isGoodEMObject to find pfjet
-        jet_dr_      = 10000;
-        ijetg    = -1;
-
-        //find jet matched to to photon
-        for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
-          LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
-          LorentzVector vg   = photons_p4().at(igmax);
-          
-          if( vjet.pt()  < 10  )       continue;
-          if( vjet.eta() > 2.5 )       continue;
-          //if( !passesPFJetID(ijet) )   continue;
-
-          float dr = dRbetweenVectors(vjet, vg);
-         
-          if( dr < jet_dr_ ){
-            jet_dr_ = dr;
-            ijetg   = ijet;
-          }
-        }
-          
-        if( ijetg < 0 )     continue;
-        if( jet_dr_ > 0.3 ) continue;
-        */
-
         LorentzVector vjet = pfjets_cor().at(ijetg) * pfjets_p4().at(ijetg);
         LorentzVector vg   = photons_p4().at(igmax);
         
@@ -583,12 +567,13 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
       vector<float> good_pfjets15_cor;
       VofP4         good_pfjets30_p4;
       vector<float> good_pfjets30_cor;
-
+      
       //loop over pfjets pt > 30 GeV |eta| < 2.5
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
         
-        //if( !passesPFJetID(ijet) )               continue;
-        jetidg_ = passesPFJetID(ijet) ? 1 : 0;
+        //REQUIRE PASS PFJETID!!!!
+        if( !passesPFJetID(ijet) )               continue;
+        //jetidg_ = passesPFJetID(ijet) ? 1 : 0;
 
         //skip jet matched to photon
         if( selection_ == e_photonSelection && (int)ijet == ijetg ) continue;
@@ -654,6 +639,8 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
           
       }
                             
+      
+
       jetmax_pt_ = -1;
 
       if( imaxjet > -1 ){
@@ -770,14 +757,15 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
 
         if( jetmax_pt_ < 30  )  continue;
         if( nJets_ < 1 )        continue;
-    
+
+        /*
         //Ben's photon-object selection
         if ( fabs( etag_ ) >  1 )                        continue;
         if ( etg_ < 22 )                                 continue;
         if ( (1.-r4_) < 0.05 )                           continue;
         if ( hoe_ > 0.1 )                                continue;
         if ( jet_neu_emfrac_ < 0.95 )                    continue; 
-        
+        */
           /*
         //Warren's photon selection
         if ( etag_ > 1 )                                 continue;
@@ -800,6 +788,8 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
         exit(0);
       }
   
+      npass++;
+
       int iJetBin      = getJetBin( nJets_ );
       int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
       int iBosonPtBin  = getBosonPtBin( etg_ );
@@ -852,6 +842,8 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   
   CloseBabyNtuple();
+
+  cout << "numEvents passing selection " << npass << endl;
 
   //normalize met templates
   for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){

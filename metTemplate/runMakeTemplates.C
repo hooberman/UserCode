@@ -43,13 +43,16 @@ void runMakeTemplates(char* prefix , bool isData = true,
 
   else if( strcmp( prefix , "EG" ) == 0 ){
  
-    ch->Add("/tas/cms2/EG_Run2010A-Jun14thReReco_v1_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-Jul16thReReco-v2_RECO/V03-04-26-07/pfJetPt30Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-25/pfJetPt30Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-02/pfJetPt30Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-07/pfJetPt30Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/pfJetPt30Skim/skimmed*root");
+    //ch->Add("/tas/cms2/EG_Run2010A-Jun14thReReco_v1_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");
+    //ch->Add("/tas/cms2/EG_Run2010A-Jul16thReReco-v2_RECO/V03-04-26-07/pfJetPt30Skim/skimmed*root");
+    //ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-25/pfJetPt30Skim/skimmed*root");
+    //ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-01/pfJetPt30Skim/skimmed*root");
+    //ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-02/pfJetPt30Skim/skimmed*root");
+    //ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-07/pfJetPt30Skim/skimmed*root");
+    //ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/pfJetPt30Skim/skimmed*root");
+    ch->Add("/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/*.root");
+    ch->Add("/tas/cms2/EGMonitor_Run2010B-PromptReco-v2_RECO/V03-06-14/*.root");
+    ch->Add("/tas/cms2/EGMonitor_Run2010B-PromptReco-v2_RECO/V03-06-09/*.root");
   }
 
   //------------------------------------------------------------------------------------------------------------

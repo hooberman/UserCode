@@ -20,5 +20,5 @@
   
   //--photon+jets---
   runMakeTemplates("PhotonJet"                       , false , makeTemplates::e_photonSelection );
-  runMakeTemplates("EG"                              , true  , makeTemplates::e_photonSelection );  
+  //runMakeTemplates("EG"                              , true  , makeTemplates::e_photonSelection );  
 }
