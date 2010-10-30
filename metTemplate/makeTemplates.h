@@ -144,6 +144,7 @@ class makeTemplates
   Float_t  jetidg_;
 
   //more photon stuff
+  Int_t    photon_scidx_;        
   Int_t    photon_pixelseed_;        
   Float_t  photon_e15_;              
   Float_t  photon_e25max_;           
