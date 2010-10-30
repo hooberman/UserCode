@@ -526,25 +526,26 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
 
                 
         if( isData ){
-          photon_pixelseed_        = photons_haspixelSeed()[igmax] ? 1 : 0;
-          photon_e15_              = photons_e1x5()[igmax];      
-          photon_e25max_           = photons_e2x5Max()[igmax];      
-          photon_e33_              = photons_e3x3()[igmax];           
-          photon_e55_              = photons_e5x5()[igmax];           
-          photon_ecalIso03_        = photons_ecalIso03()[igmax];      
-          photon_ecalIso04_        = photons_ecalIso04()[igmax];      
-          photon_hcalIso03_        = photons_hcalIso03()[igmax];      
-          photon_hcalIso04_        = photons_hcalIso04()[igmax];      
-          photon_ntkIsoHollow03_   = photons_ntkIsoHollow03()[igmax];
-          photon_ntkIsoHollow04_   = photons_ntkIsoHollow04()[igmax];
-          photon_ntkIsoSolid03_    = photons_ntkIsoSolid03()[igmax]; 
-          photon_ntkIsoSolid04_    = photons_ntkIsoSolid04()[igmax]; 
-          photon_sigmaEtaEta_      = photons_sigmaEtaEta()[igmax];    
-          photon_sigmaIEtaIEta_    = photons_sigmaIEtaIEta()[igmax];
-          photon_tkisoHollow03_    = photons_tkIsoHollow03()[igmax];
-          photon_tkisoHollow04_    = photons_tkIsoHollow04()[igmax]; 
-          photon_tkisoSolid03_     = photons_tkIsoSolid03()[igmax];   
-          photon_tkisoSolid04_     = photons_tkIsoSolid04()[igmax];  
+          photon_scidx_            = photons_scindex().at(igmax);
+          photon_pixelseed_        = photons_haspixelSeed().at(igmax) ? 1 : 0;
+          photon_e15_              = photons_e1x5().at(igmax);      
+          photon_e25max_           = photons_e2x5Max().at(igmax);      
+          photon_e33_              = photons_e3x3().at(igmax);           
+          photon_e55_              = photons_e5x5().at(igmax);           
+          photon_ecalIso03_        = photons_ecalIso03().at(igmax);      
+          photon_ecalIso04_        = photons_ecalIso04().at(igmax);      
+          photon_hcalIso03_        = photons_hcalIso03().at(igmax);      
+          photon_hcalIso04_        = photons_hcalIso04().at(igmax);      
+          photon_ntkIsoHollow03_   = photons_ntkIsoHollow03().at(igmax);
+          photon_ntkIsoHollow04_   = photons_ntkIsoHollow04().at(igmax);
+          photon_ntkIsoSolid03_    = photons_ntkIsoSolid03().at(igmax); 
+          photon_ntkIsoSolid04_    = photons_ntkIsoSolid04().at(igmax); 
+          photon_sigmaEtaEta_      = photons_sigmaEtaEta().at(igmax);    
+          photon_sigmaIEtaIEta_    = photons_sigmaIEtaIEta().at(igmax);
+          photon_tkisoHollow03_    = photons_tkIsoHollow03().at(igmax);
+          photon_tkisoHollow04_    = photons_tkIsoHollow04().at(igmax); 
+          photon_tkisoSolid03_     = photons_tkIsoSolid03().at(igmax);   
+          photon_tkisoSolid04_     = photons_tkIsoSolid04().at(igmax);  
         }
         
         LorentzVector vjet = pfjets_cor().at(ijetg) * pfjets_p4().at(ijetg);
@@ -1043,6 +1044,7 @@ void makeTemplates::InitBabyNtuple (){
   r4_       = -999999.;
 
   //more photon stuff
+  photon_scidx_            = -999999;
   photon_pixelseed_        = -999999;
   photon_e15_              = -999999.;
   photon_e25max_           = -999999.;
@@ -1359,6 +1361,7 @@ void makeTemplates::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("r4",      &r4_,       "r4/F");
 
   //more photon stuff
+  babyTree_->Branch("photon_scidx",             &photon_scidx_,             "photon_scidx/I");         
   babyTree_->Branch("photon_pixelseed",         &photon_pixelseed_,         "photon_pixelseed/I");         
   babyTree_->Branch("photon_e15",               &photon_e15_,               "photon_e15/F");                
   babyTree_->Branch("photon_e25max",            &photon_e25max_,            "photon_e25max/F");             
