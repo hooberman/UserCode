@@ -54,9 +54,12 @@ class makeTemplates
   Int_t HLT_Photon10_L1R_;
   Int_t HLT_Photon15_L1R_;
   Int_t HLT_Photon20_L1R_;
+  Int_t HLT_Photon30_L1R_;
   Int_t HLT_Photon10_Cleaned_L1R_;
   Int_t HLT_Photon15_Cleaned_L1R_;
   Int_t HLT_Photon20_Cleaned_L1R_;
+  Int_t HLT_Photon30_Cleaned_L1R_;
+  Int_t HLT_Photon30_L1R_8E29_;
 
   // event stuff
   Int_t   run_;
