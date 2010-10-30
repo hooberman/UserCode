@@ -24,7 +24,7 @@
 #include "CORE/electronSelectionsParameters.h"
 #include "CORE/muonSelections.h"
 #include "Tools/goodrun.cc"
-#include "CORE/utilities.cc"
+//#include "CORE/utilities.cc"
 #include "histtools.h"
 #include "CORE/ttbarSelections.cc"
 #include "CORE/jetSelections.cc"
@@ -392,6 +392,11 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
           else                                                 HLT_Photon20_L1R_ = 0;
         }
 
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon30_L1R" ) == 0 ){
+          if( passHLTTrigger("HLT_Photon30_L1R") )             HLT_Photon30_L1R_ = 1;
+          else                                                 HLT_Photon30_L1R_ = 0;
+        }
+
         if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon10_Cleaned_L1R" ) == 0 ){
           if( passHLTTrigger("HLT_Photon10_Cleaned_L1R") )     HLT_Photon10_Cleaned_L1R_ = 1;
           else                                                 HLT_Photon10_Cleaned_L1R_ = 0;
@@ -405,6 +410,16 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon20_Cleaned_L1R" ) == 0 ){
           if( passHLTTrigger("HLT_Photon20_Cleaned_L1R") )     HLT_Photon20_Cleaned_L1R_ = 1;
           else                                                 HLT_Photon20_Cleaned_L1R_ = 0;
+        }
+
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon30_Cleaned_L1R" ) == 0 ){
+          if( passHLTTrigger("HLT_Photon30_Cleaned_L1R") )     HLT_Photon30_Cleaned_L1R_ = 1;
+          else                                                 HLT_Photon30_Cleaned_L1R_ = 0;
+        }
+
+        if( strcmp( hlt_trigNames().at(itrig) , "HLT_Photon30_L1R_8E29" ) == 0 ){
+          if( passHLTTrigger("HLT_Photon30_L1R_8E29") )        HLT_Photon30_L1R_8E29_ = 1;
+          else                                                 HLT_Photon30_L1R_8E29_ = 0;
         }
       }      
 
@@ -479,6 +494,8 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
         }
                 
         if( igmax < 0 ) continue;
+
+        
         
         ijetg = isGoodEMObject(igmax);
         
@@ -504,6 +521,9 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
         //eciso_ = photons_ecalIso()[igmax];
         //hciso_ = photons_hcalIso()[igmax];
         //tkiso_ = photons_tkIsoSolid()[igmax];
+        
+
+
                 
         if( isData ){
           photon_pixelseed_        = photons_haspixelSeed()[igmax] ? 1 : 0;
@@ -933,9 +953,12 @@ void makeTemplates::InitBabyNtuple (){
   HLT_Photon10_L1R_     = -1;
   HLT_Photon15_L1R_     = -1;
   HLT_Photon20_L1R_     = -1;
+  HLT_Photon30_L1R_     = -1;
   HLT_Photon10_Cleaned_L1R_     = -1;
   HLT_Photon15_Cleaned_L1R_     = -1;
   HLT_Photon20_Cleaned_L1R_     = -1;
+  HLT_Photon30_Cleaned_L1R_     = -1;
+  HLT_Photon30_L1R_8E29_        = -1;
 
   // event stuff
   run_          = -999999;
@@ -1076,7 +1099,7 @@ void makeTemplates::bookHistos(){
     hetg[iJ]->GetXaxis()->SetTitle("photon p_{T} (GeV)");
   }
 
-  float maxmet = 200;
+  int maxmet = 200;
 
   for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
     for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
@@ -1313,9 +1336,12 @@ void makeTemplates::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("HLT_Photon10_L1R",              &HLT_Photon10_L1R_,             "HLT_Photon10_L1R/I");
   babyTree_->Branch("HLT_Photon15_L1R",              &HLT_Photon15_L1R_,             "HLT_Photon15_L1R/I");
   babyTree_->Branch("HLT_Photon20_L1R",              &HLT_Photon20_L1R_,             "HLT_Photon20_L1R/I");
+  babyTree_->Branch("HLT_Photon30_L1R",              &HLT_Photon30_L1R_,             "HLT_Photon30_L1R/I");
   babyTree_->Branch("HLT_Photon10_Cleaned_L1R",      &HLT_Photon10_Cleaned_L1R_,     "HLT_Photon10_Cleaned_L1R/I");  
   babyTree_->Branch("HLT_Photon15_Cleaned_L1R",      &HLT_Photon15_Cleaned_L1R_,     "HLT_Photon15_Cleaned_L1R/I");  
   babyTree_->Branch("HLT_Photon20_Cleaned_L1R",      &HLT_Photon20_Cleaned_L1R_,     "HLT_Photon20_Cleaned_L1R/I");  
+  babyTree_->Branch("HLT_Photon30_Cleaned_L1R",      &HLT_Photon30_Cleaned_L1R_,     "HLT_Photon30_Cleaned_L1R/I");  
+  babyTree_->Branch("HLT_Photon30_L1R_8E29",         &HLT_Photon30_L1R_8E29_,        "HLT_Photon30_L1R_8E29/I");  
 
 
   //photon stuff
