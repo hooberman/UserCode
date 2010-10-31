@@ -49,7 +49,7 @@ const int nSumJetPtBins   = 7;
 const int nBosonPtBins    = 4;
 
 float lumi                = 0.01106;
-char* iter                = "oct15th";
+char* iter                = "oct15th_v2";
 char* jsonfilename        = "Cert_TopOct15_Merged_135821-147454_allPVT_V2_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -563,7 +563,7 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
         jet_nmuon_          = pfjets_muonMultiplicity().at(ijetg);
         jet_nneu_           = pfjets_neutralMultiplicity().at(ijetg);
         jet_dphimet_        = deltaPhi( pfjets_p4().at(ijetg).phi() , tcmetphi_);
-
+        jet_pfjetid_        = passesPFJetID( ijetg ) ? 1 : 0;
       }
               
       //jet stuff--------------------------------------------------------------------- 
@@ -1077,6 +1077,7 @@ void makeTemplates::InitBabyNtuple (){
   jet_nmuon_        = -999999;  
   jet_nneu_         = -999999;  
   jet_dphimet_      = -999999.;  
+  jet_pfjetid_      = -999999;  
   jet_dpt_          = -999999.;  
 
 }
@@ -1385,6 +1386,7 @@ void makeTemplates::MakeBabyNtuple (const char* babyFileName)
   //photon-matched jet stuff
   babyTree_->Branch("jetdr",                 &jet_dr_,               "jetdr/F");
   babyTree_->Branch("jetpt",                 &jet_pt_,               "jetpt/F");
+  babyTree_->Branch("pfjetid",               &jet_pfjetid_,          "pfjetid/I");
   babyTree_->Branch("jeteta",                &jet_eta_,              "jeteta/F");
   babyTree_->Branch("jetenergy",             &jet_energy_,           "jetenergy/F");
   babyTree_->Branch("jetchargedemfrac",      &jet_chg_emfrac_,       "jetchargedemfrac/F");

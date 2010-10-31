@@ -177,6 +177,7 @@ class makeTemplates
   Int_t   jet_nchg_;              
   Int_t   jet_nmuon_;         
   Int_t   jet_nneu_;          
+  Int_t   jet_pfjetid_;          
   Float_t jet_dphimet_;       
   Float_t jet_dpt_;           
   Float_t jet_drgen_;  
