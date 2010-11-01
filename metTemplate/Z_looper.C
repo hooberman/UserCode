@@ -52,7 +52,7 @@ const int nSumJetPtBins   = 7;
 const int nBosonPtBins    = 4;
 
 float lumi         = 0.01106;
-char* iter         = "oct15th_v2";
+char* iter         = "temp";
 char* jsonfilename = "Cert_TopOct15_Merged_135821-147454_allPVT_V2_goodruns.txt";
 
 metType myMetType               = e_tcmet;
@@ -504,6 +504,69 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         continue;
       }
 
+      //pfjet matched to electron (ll)
+
+      if( abs( hyp_ll_id()[hypIdx] ) == 11 ){
+
+        float drjet_ll = 100;
+        int   ijet_ll  = -1;
+
+        for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+          LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+          LorentzVector vll  = hyp_ll_p4()[hypIdx];
+          
+          if( vjet.pt()  < 10  )             continue;
+          if( fabs(vjet.eta()) > 2.5 )       continue;
+          
+          float dr = dRbetweenVectors(vjet, vll);
+          
+          if( dr < drjet_ll ){
+            drjet_ll    = dr;
+            ijet_ll     = ijet;
+          }
+        }
+      
+        if( ijet_ll >= 0 ){
+          drjet_ll_   = drjet_ll;
+          jetpt_ll_   = pfjets_cor().at(ijet_ll) * pfjets_p4().at(ijet_ll).pt();
+          pfjetid_ll_ = passesPFJetID( ijet_ll ) ? 1 : 0;
+        }
+      }
+
+      //pfjet matched to electron (lt)
+
+      if( abs( hyp_lt_id()[hypIdx] ) == 11 ){
+
+        float drjet_lt = 100;
+        int   ijet_lt  = -1;
+
+        for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+          LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+          LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+          
+          if( vjet.pt()  < 10  )             continue;
+          if( fabs(vjet.eta()) > 2.5 )       continue;
+          
+          float dr = dRbetweenVectors(vjet, vlt);
+          
+          if( dr < drjet_lt ){
+            drjet_lt    = dr;
+            ijet_lt     = ijet;
+          }
+        }
+
+        if( ijet_lt >= 0 ){
+          drjet_lt_   = drjet_lt;
+          jetpt_lt_   = pfjets_cor().at(ijet_lt) * pfjets_p4().at(ijet_lt).pt();
+          pfjetid_lt_ = passesPFJetID( ijet_lt ) ? 1 : 0;
+        }
+      }
+
+
+
+
       //tcmet stuff------------------------------------------------------------------- 
 
       metStruct tcmetStruct = correctTCMETforHypMuons( hypIdx ,  
@@ -562,7 +625,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       int   imaxjet     = -1;
       float maxpt       = -1;
 
-      failjetid_ = 0;
+      failjetid_ =  0;
+      maxemf_    = -1;
         
       //loop over pfjets pt > 30 GeV |eta| < 2.5
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
@@ -585,6 +649,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if ( vjet.pt() > 15. ){
           sumJetPt_ += vjet.pt();
           jetSystem += vjet;
+
+          float emfrac = pfjets_neutralEmE().at(ijet) / pfjets_p4().at(ijet).energy();
+          if( emfrac > maxemf_ ) maxemf_ = emfrac;
         }
 
         if( vjet.pt() < 30. )                    continue;
@@ -825,6 +892,14 @@ void Z_looper::InitBabyNtuple (){
   HLT_Photon20_Cleaned_L1R_     = -1;
   HLT_Photon20_L1R_     = -1;
 
+  //electron-matched jet stuff
+  drjet_ll_       = -999999.;
+  jetpt_ll_       = -999999.;
+  pfjetid_ll_     = -999999;
+  drjet_lt_       = -999999.;
+  jetpt_lt_       = -999999.;
+  pfjetid_lt_     = -999999;
+
   // event stuff
   run_          = -999999;
   lumi_         = -999999;
@@ -915,6 +990,7 @@ void Z_looper::InitBabyNtuple (){
   flagll_          = -999999;
   flaglt_          = -999999;
   failjetid_       = -999999;
+  maxemf_          = -999999.;
 
   bptx_        =  -999999;
   bsc_         =  -999999;
@@ -938,7 +1014,7 @@ void Z_looper::bookHistos(){
     hptz[iJ]->GetXaxis()->SetTitle("Z p_{T} (GeV)");
   }
 
-  Double_t maxmet = 200;
+  Int_t maxmet = 200;
 
   metObserved     = new TH1F("metObserved", "Observed MET",maxmet,0,maxmet);
   metPredicted    = new TH1F("metPredicted","Predicted MET",maxmet,0,maxmet);
@@ -1028,9 +1104,19 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I" );
   babyTree_->Branch("event",        &event_,        "event/I");
   babyTree_->Branch("failjetid",    &failjetid_,    "failjetid/I");
+  babyTree_->Branch("maxemf",       &maxemf_,       "maxemf/F");
   babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I");
   babyTree_->Branch("weight",       &weight_,       "weight/F");
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F");
+
+  //electron-matched jet stuff
+  babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
+  babyTree_->Branch("jetptll",      &jetpt_ll_,     "jetptll/F"     );
+  babyTree_->Branch("pfjetidll",    &pfjetid_ll_,   "pfjetidll/I"   );
+  babyTree_->Branch("drjetlt",      &drjet_lt_,     "drjetlt/F"     );
+  babyTree_->Branch("jetptlt",      &jetpt_lt_,     "jetptlt/F"     );
+  babyTree_->Branch("pfjetidlt",    &pfjetid_lt_,   "pfjetidlt/I"   );
+
 
   //met stuff
   babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"   );
@@ -1099,8 +1185,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("passe_lt_cand01",       &passe_lt_cand01_,       "passe_lt_cand01/I");  
   babyTree_->Branch("ptll",                  &ptll_,                  "ptll/F");  
   babyTree_->Branch("ptlt",                  &ptlt_,                  "ptlt/F");  
-  babyTree_->Branch("idll",                  &idll_,                  "idll/F");  
-  babyTree_->Branch("idlt",                  &idlt_,                  "idlt/F");  
+  babyTree_->Branch("idll",                  &idll_,                  "idll/I");  
+  babyTree_->Branch("idlt",                  &idlt_,                  "idlt/I");  
   babyTree_->Branch("etall",                 &etall_,                 "etall/F");  
   babyTree_->Branch("etalt",                 &etalt_,                 "etalt/F");  
   babyTree_->Branch("phill",                 &phill_,                 "phill/F");  

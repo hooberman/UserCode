@@ -66,6 +66,7 @@ class Z_looper
   Int_t   nGoodVertex_;
   Float_t weight_;
   Float_t pthat_;
+  Float_t maxemf_;
 
   // genmet stuff
   Float_t genmet_;
@@ -113,6 +114,14 @@ class Z_looper
   Float_t sumJetPt10_;
   Float_t vecJetPt_;
   Int_t   nbtags_;
+
+  //electron-matched jet stuff
+  Float_t drjet_ll_;
+  Float_t jetpt_ll_;
+  Int_t   pfjetid_ll_;
+  Float_t drjet_lt_;
+  Float_t jetpt_lt_;
+  Int_t   pfjetid_lt_;
 
   //leading jet stuff
   Float_t jetmax_pt_;
