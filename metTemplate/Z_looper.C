@@ -561,6 +561,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //int   imaxcosdphi = -1;
       int   imaxjet     = -1;
       float maxpt       = -1;
+
+      failjetid_ = 0;
         
       //loop over pfjets pt > 30 GeV |eta| < 2.5
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
@@ -572,7 +574,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
         if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
         if( fabs( vjet.eta() ) > 2.5 )           continue;
-        if( !passesPFJetID(ijet) )               continue;
+        if( !passesPFJetID(ijet) ){
+          failjetid_ = 1;
+          continue;
+        }
 
         if ( vjet.pt() > 10. ){
           sumJetPt10_ += vjet.pt();
@@ -909,6 +914,7 @@ void Z_looper::InitBabyNtuple (){
   dilpt_           = -999999.;
   flagll_          = -999999;
   flaglt_          = -999999;
+  failjetid_       = -999999;
 
   bptx_        =  -999999;
   bsc_         =  -999999;
@@ -1021,6 +1027,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("run",          &run_,          "run/I"  );
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I" );
   babyTree_->Branch("event",        &event_,        "event/I");
+  babyTree_->Branch("failjetid",    &failjetid_,    "failjetid/I");
   babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I");
   babyTree_->Branch("weight",       &weight_,       "weight/F");
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F");

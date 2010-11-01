@@ -106,6 +106,7 @@ class Z_looper
   Float_t tcsumetNew_;
        
   // jet stuff
+  Int_t   failjetid_;
   Int_t   nJets_;
   Int_t   nJets40_;
   Float_t sumJetPt_;
