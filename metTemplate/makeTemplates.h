@@ -62,6 +62,7 @@ class makeTemplates
   Int_t HLT_Photon30_L1R_8E29_;
 
   // event stuff
+  char    dataset_[200];
   Int_t   run_;
   Int_t   lumi_;
   Int_t   event_;
@@ -69,7 +70,9 @@ class makeTemplates
   Int_t   nGoodVertex_;
   Float_t weight_;
   Float_t pthat_;
-
+  Int_t   failjetid_;
+  Float_t maxemf_;
+  
   // genmet stuff
   Float_t genmet_;
   Float_t genmetphi_;

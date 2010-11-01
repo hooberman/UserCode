@@ -49,7 +49,7 @@ const int nSumJetPtBins   = 7;
 const int nBosonPtBins    = 4;
 
 float lumi                = 0.01106;
-char* iter                = "oct15th_v2";
+char* iter                = "temp";
 char* jsonfilename        = "Cert_TopOct15_Merged_135821-147454_allPVT_V2_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -311,9 +311,10 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
       InitBabyNtuple();
 
       // event stuff
-      run_    = cms2.evt_run();
-      lumi_   = cms2.evt_lumiBlock();
-      event_  = cms2.evt_event();
+      strcpy(dataset_, cms2.evt_dataset().Data());
+      run_     = cms2.evt_run();
+      lumi_    = cms2.evt_lumiBlock();
+      event_   = cms2.evt_event();
 
       weight_ = 1.;
       pthat_  = -1;
@@ -494,59 +495,60 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
         }
                 
         if( igmax < 0 ) continue;
-
-        
         
         ijetg = isGoodEMObject(igmax);
         
         if( ijetg < 0 ) continue;
         
-        etg_        = photons_p4()[igmax].pt();
-        etag_       = photons_p4()[igmax].eta();
+        etg_        = photons_p4().at(igmax).pt();
+        etag_       = photons_p4().at(igmax).eta();
         
         //if(  fabs( etag_ ) > 1 ) continue;
         
-        phig_       = photons_p4()[igmax].phi();
-        hoe_        = photons_hOverE()[igmax];
-        swiss_      = photons_swissSeed()[igmax];
-        int scind   = photons_scindex()[igmax] ;
+        phig_       = photons_p4().at(igmax).phi();
+        hoe_        = photons_hOverE().at(igmax);
+        swiss_      = photons_swissSeed().at(igmax);
+        int scind   = photons_scindex().at(igmax) ;
       
         //invalid SC index
-        if( scind < 0 ) continue;
+        //if( scind < 0 ) continue;
 
-        seed_       = scs_eSeed()[scind] ;
-        s4_         = swiss_ - seed_ ;
-        r4_         = 1 - s4_ / seed_ ;
-
-        //eciso_ = photons_ecalIso()[igmax];
-        //hciso_ = photons_hcalIso()[igmax];
-        //tkiso_ = photons_tkIsoSolid()[igmax];
-        
-
-
-                
-        if( isData ){
-          photon_scidx_            = photons_scindex().at(igmax);
-          photon_pixelseed_        = photons_haspixelSeed().at(igmax) ? 1 : 0;
-          photon_e15_              = photons_e1x5().at(igmax);      
-          photon_e25max_           = photons_e2x5Max().at(igmax);      
-          photon_e33_              = photons_e3x3().at(igmax);           
-          photon_e55_              = photons_e5x5().at(igmax);           
-          photon_ecalIso03_        = photons_ecalIso03().at(igmax);      
-          photon_ecalIso04_        = photons_ecalIso04().at(igmax);      
-          photon_hcalIso03_        = photons_hcalIso03().at(igmax);      
-          photon_hcalIso04_        = photons_hcalIso04().at(igmax);      
-          photon_ntkIsoHollow03_   = photons_ntkIsoHollow03().at(igmax);
-          photon_ntkIsoHollow04_   = photons_ntkIsoHollow04().at(igmax);
-          photon_ntkIsoSolid03_    = photons_ntkIsoSolid03().at(igmax); 
-          photon_ntkIsoSolid04_    = photons_ntkIsoSolid04().at(igmax); 
-          photon_sigmaEtaEta_      = photons_sigmaEtaEta().at(igmax);    
-          photon_sigmaIEtaIEta_    = photons_sigmaIEtaIEta().at(igmax);
-          photon_tkisoHollow03_    = photons_tkIsoHollow03().at(igmax);
-          photon_tkisoHollow04_    = photons_tkIsoHollow04().at(igmax); 
-          photon_tkisoSolid03_     = photons_tkIsoSolid03().at(igmax);   
-          photon_tkisoSolid04_     = photons_tkIsoSolid04().at(igmax);  
+        if( scind > - 1 ){
+          seed_       = scs_eSeed().at(scind) ;
+          s4_         = swiss_ - seed_ ;
+          r4_         = 1 - s4_ / seed_ ;
+        }else{
+          seed_ = -9999.;
+          s4_   = -9999.;
+          r4_   = -9999.;
         }
+
+        //eciso_ = photons_ecalIso().at(igmax);
+        //hciso_ = photons_hcalIso().at(igmax);
+        //tkiso_ = photons_tkIsoSolid().at(igmax);
+        
+        //if( isData ){
+        photon_scidx_            = photons_scindex().at(igmax);
+        photon_pixelseed_        = photons_haspixelSeed().at(igmax) ? 1 : 0;
+        photon_e15_              = photons_e1x5().at(igmax);      
+        photon_e25max_           = photons_e2x5Max().at(igmax);      
+        photon_e33_              = photons_e3x3().at(igmax);           
+        photon_e55_              = photons_e5x5().at(igmax);           
+        photon_ecalIso03_        = photons_ecalIso03().at(igmax);      
+        photon_ecalIso04_        = photons_ecalIso04().at(igmax);      
+        photon_hcalIso03_        = photons_hcalIso03().at(igmax);      
+        photon_hcalIso04_        = photons_hcalIso04().at(igmax);      
+        photon_ntkIsoHollow03_   = photons_ntkIsoHollow03().at(igmax);
+        photon_ntkIsoHollow04_   = photons_ntkIsoHollow04().at(igmax);
+        photon_ntkIsoSolid03_    = photons_ntkIsoSolid03().at(igmax); 
+        photon_ntkIsoSolid04_    = photons_ntkIsoSolid04().at(igmax); 
+        photon_sigmaEtaEta_      = photons_sigmaEtaEta().at(igmax);    
+        photon_sigmaIEtaIEta_    = photons_sigmaIEtaIEta().at(igmax);
+        photon_tkisoHollow03_    = photons_tkIsoHollow03().at(igmax);
+        photon_tkisoHollow04_    = photons_tkIsoHollow04().at(igmax); 
+        photon_tkisoSolid03_     = photons_tkIsoSolid03().at(igmax);   
+        photon_tkisoSolid04_     = photons_tkIsoSolid04().at(igmax);  
+        //}
         
         LorentzVector vjet = pfjets_cor().at(ijetg) * pfjets_p4().at(ijetg);
         LorentzVector vg   = photons_p4().at(igmax);
@@ -588,19 +590,23 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
       vector<float> good_pfjets15_cor;
       VofP4         good_pfjets30_p4;
       vector<float> good_pfjets30_cor;
+
+      failjetid_ =  0;
+      maxemf_    = -1;
       
       //loop over pfjets pt > 30 GeV |eta| < 2.5
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
         
-        //REQUIRE PASS PFJETID!!!!
-        if( !passesPFJetID(ijet) )               continue;
-        //jetidg_ = passesPFJetID(ijet) ? 1 : 0;
-
         //skip jet matched to photon
         if( selection_ == e_photonSelection && (int)ijet == ijetg ) continue;
  
         LorentzVector vjet      = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
         if( fabs( vjet.eta() ) > 2.5 )           continue;
+
+        if( !passesPFJetID(ijet) ){
+          failjetid_ = 1;
+          continue;
+        }
 
         if ( vjet.pt() > 10. ){
           sumJetPt10_ += vjet.pt();
@@ -610,6 +616,9 @@ void makeTemplates::ScanChain (TChain* chain, const char* prefix, bool isData,
           jetSystem += vjet;
           good_pfjets15_p4.push_back ( pfjets_p4().at(ijet)  );
           good_pfjets15_cor.push_back( pfjets_cor().at(ijet) );
+
+          float emfrac = pfjets_neutralEmE().at(ijet) / pfjets_p4().at(ijet).energy();
+          if( emfrac > maxemf_ ) maxemf_ = emfrac;
         }
 
         if ( vjet.pt() > 10. ) nJets10_++;
@@ -963,6 +972,7 @@ void makeTemplates::InitBabyNtuple (){
 
   // event stuff
   run_          = -999999;
+  memset(dataset_, '\0', 200);
   lumi_         = -999999;
   event_        = -999999;
   weight_       = -999999.;
@@ -1028,6 +1038,8 @@ void makeTemplates::InitBabyNtuple (){
   jetmax_pt_        = -999999;
   jetmax_dphimet_   = -999999;
 
+  failjetid_       = -999999;
+  maxemf_          = -999999.;
 
   //photon stuff
   nPhotons_ = -999999;
@@ -1282,12 +1294,15 @@ void makeTemplates::MakeBabyNtuple (const char* babyFileName)
   babyTree_ = new TTree("T1", "A Baby Ntuple");
 
   //event stuff
+  babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C");
   babyTree_->Branch("run",          &run_,          "run/I"  );
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I" );
   babyTree_->Branch("event",        &event_,        "event/I");
   babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I");
   babyTree_->Branch("weight",       &weight_,       "weight/F");
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F");
+  babyTree_->Branch("failjetid",    &failjetid_,    "failjetid/I");
+  babyTree_->Branch("maxemf",       &maxemf_,       "maxemf/F");
 
   //met stuff
   babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"   );
