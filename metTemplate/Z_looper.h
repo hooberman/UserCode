@@ -140,6 +140,8 @@ class Z_looper
   Float_t ptlt_;
   Float_t etall_;
   Float_t etalt_;
+  Float_t phill_;
+  Float_t philt_;
   Float_t dilmass_;
   Float_t dilpt_;
   Int_t   flagll_;
