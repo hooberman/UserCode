@@ -52,7 +52,7 @@ const int nSumJetPtBins   = 7;
 const int nBosonPtBins    = 4;
 
 float lumi         = 0.01106;
-char* iter         = "temp";
+char* iter         = "oct15th_v3";
 char* jsonfilename = "Cert_TopOct15_Merged_135821-147454_allPVT_V2_goodruns.txt";
 
 metType myMetType               = e_tcmet;
@@ -371,6 +371,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       InitBabyNtuple();
 
       // event stuff
+      strcpy(dataset_, cms2.evt_dataset().Data());
       run_    = cms2.evt_run();
       lumi_   = cms2.evt_lumiBlock();
       event_  = cms2.evt_event();
@@ -638,6 +639,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
         if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
         if( fabs( vjet.eta() ) > 2.5 )           continue;
+     
         if( !passesPFJetID(ijet) ){
           failjetid_ = 1;
           continue;
@@ -902,6 +904,7 @@ void Z_looper::InitBabyNtuple (){
 
   // event stuff
   run_          = -999999;
+  memset(dataset_, '\0', 200);
   lumi_         = -999999;
   event_        = -999999;
   weight_       = -999999.;
@@ -1100,6 +1103,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_ = new TTree("T1", "A Baby Ntuple");
 
   //event stuff
+  babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C");
   babyTree_->Branch("run",          &run_,          "run/I"  );
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I" );
   babyTree_->Branch("event",        &event_,        "event/I");

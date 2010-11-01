@@ -59,6 +59,7 @@ class Z_looper
   Int_t HLT_Photon20_L1R_;
 
   // event stuff
+  char    dataset_[200];
   Int_t   run_;
   Int_t   lumi_;
   Int_t   event_;
