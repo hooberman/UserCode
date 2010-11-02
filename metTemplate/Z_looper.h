@@ -64,6 +64,7 @@ class Z_looper
   Int_t   lumi_;
   Int_t   event_;
   Int_t   leptype_;
+  Int_t   ecaltype_;
   Int_t   nGoodVertex_;
   Float_t weight_;
   Float_t pthat_;
@@ -106,7 +107,10 @@ class Z_looper
   Float_t tcmetNew_;
   Float_t tcmetphiNew_;
   Float_t tcsumetNew_;
-       
+  Float_t tcmetcor_;
+  Float_t pfmetcor_;
+  Float_t dilmasscor_;
+
   // jet stuff
   Int_t   failjetid_;
   Int_t   nJets_;

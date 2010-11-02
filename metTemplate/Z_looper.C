@@ -611,6 +611,76 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
         if(isGoodVertex(v)) nGoodVertex_++;
       }
+
+      // electron energy scale stuff
+
+      dilmasscor_  = dilmass_;
+      tcmetcor_    = tcmet_;
+      pfmetcor_    = pfmet_;
+
+      if( leptype_ == 0 ){
+
+        if     ( fabs( etall_ ) < 1.474 && fabs( etalt_ ) < 1.479 ) ecaltype_ = 1; //EB-EB
+        else if( fabs( etall_ ) > 1.474 && fabs( etalt_ ) > 1.479 ) ecaltype_ = 2; //EE-EE
+        else                                                        ecaltype_ = 3; //EB-EE
+        
+        if( isData ){
+
+          LorentzVector vllcor;
+          LorentzVector vltcor;
+
+          float tcmetcor_x = tcmet_ * cos( tcmetphi_ );
+          float tcmetcor_y = tcmet_ * sin( tcmetphi_ );
+
+          float pfmetcor_x = pfmet_ * cos( pfmetphi_ );
+          float pfmetcor_y = pfmet_ * sin( pfmetphi_ );
+       
+          //ll correction
+          if( fabs( etall_ ) < 1.474 ){ //correct for EB electron
+            vllcor      = 1.01 * hyp_ll_p4()[hypIdx];  
+            
+            tcmetcor_x -= 0.01 * hyp_ll_p4()[hypIdx].x();
+            tcmetcor_y -= 0.01 * hyp_ll_p4()[hypIdx].y();
+
+            pfmetcor_x -= 0.01 * hyp_ll_p4()[hypIdx].x();
+            pfmetcor_y -= 0.01 * hyp_ll_p4()[hypIdx].y();
+          }
+          else{                         //correct for EE electron
+            vllcor      = 1.03 * hyp_ll_p4()[hypIdx]; 
+
+            tcmetcor_x -= 0.03 * hyp_ll_p4()[hypIdx].x();
+            tcmetcor_y -= 0.03 * hyp_ll_p4()[hypIdx].y();
+
+            pfmetcor_x -= 0.03 * hyp_ll_p4()[hypIdx].x();
+            pfmetcor_y -= 0.03 * hyp_ll_p4()[hypIdx].y();
+          }
+
+          //lt correction
+          if( fabs( etalt_ ) < 1.474 ){ //correct for EB electron
+            vltcor      = 1.01 * hyp_lt_p4()[hypIdx];  
+            
+            tcmetcor_x -= 0.01 * hyp_lt_p4()[hypIdx].x();
+            tcmetcor_y -= 0.01 * hyp_lt_p4()[hypIdx].y();
+
+            pfmetcor_x -= 0.01 * hyp_lt_p4()[hypIdx].x();
+            pfmetcor_y -= 0.01 * hyp_lt_p4()[hypIdx].y();
+          }
+          else{                         //correct for EE electron
+            vltcor      = 1.03 * hyp_lt_p4()[hypIdx]; 
+
+            tcmetcor_x -= 0.03 * hyp_lt_p4()[hypIdx].x();
+            tcmetcor_y -= 0.03 * hyp_lt_p4()[hypIdx].y();
+
+            pfmetcor_x -= 0.03 * hyp_lt_p4()[hypIdx].x();
+            pfmetcor_y -= 0.03 * hyp_lt_p4()[hypIdx].y();
+          }
+          
+          dilmasscor_  = ( vllcor + vltcor ).mass();
+          tcmetcor_    = sqrt( tcmetcor_x * tcmetcor_x + tcmetcor_y * tcmetcor_y );
+          pfmetcor_    = sqrt( pfmetcor_x * pfmetcor_x + pfmetcor_y * pfmetcor_y );
+        }
+      }
+
          
       //jet stuff--------------------------------------------------------------------- 
         
@@ -911,6 +981,7 @@ void Z_looper::InitBabyNtuple (){
   pthat_        = -999999.;
   nGoodVertex_  = -999999;
   leptype_      = -999999;
+  ecaltype_     = -999999;
 
   // genmet stuff
   genmet_     = -999999.;
@@ -943,6 +1014,8 @@ void Z_looper::InitBabyNtuple (){
   metPerp_      = -999999.;
 
   tcmet_        = -999999.;
+  tcmetcor_     = -999999.;
+  pfmetcor_     = -999999.;
   tcmetphi_     = -999999.;
   tcsumet_      = -999999.;
 
@@ -989,6 +1062,7 @@ void Z_looper::InitBabyNtuple (){
   phill_           = -999999;
   philt_           = -999999;
   dilmass_         = -999999.;
+  dilmasscor_      = -999999.;
   dilpt_           = -999999.;
   flagll_          = -999999;
   flaglt_          = -999999;
@@ -1138,15 +1212,17 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("genmet",       &genmet_,       "genmet/F"   );
   babyTree_->Branch("genmetphi",    &genmetphi_,    "genmetphi/F");
   babyTree_->Branch("gensumet",     &gensumet_,     "gensumet/F" );
-  babyTree_->Branch("dphixmet",     &dphixmet_,      "dphixmet/F"    );
-  babyTree_->Branch("metpar",       &metPar_,        "metpar/F"      );
-  babyTree_->Branch("metperp",      &metPerp_,       "metperp/F"     );
+  babyTree_->Branch("dphixmet",     &dphixmet_,     "dphixmet/F"    );
+  babyTree_->Branch("metpar",       &metPar_,       "metpar/F"      );
+  babyTree_->Branch("metperp",      &metPerp_,      "metperp/F"     );
   babyTree_->Branch("tcmet",        &tcmet_,        "tcmet/F"      );
   babyTree_->Branch("tcmetphi",     &tcmetphi_,     "tcmetphi/F"   );
   babyTree_->Branch("tcsumet",      &tcsumet_,      "tcsumet/F"    );
   babyTree_->Branch("tcmetNew",     &tcmetNew_,     "tcmetNew/F"      );
   babyTree_->Branch("tcmetphiNew",  &tcmetphiNew_,  "tcmetphiNew/F"   );
   babyTree_->Branch("tcsumetNew",   &tcsumetNew_,   "tcsumetNew/F"    );
+  babyTree_->Branch("tcmetcor",     &tcmetcor_,     "tcmetcor/F");  
+  babyTree_->Branch("pfmetcor",     &pfmetcor_,     "pfmetcor/F");  
 
   //jet stuff
   babyTree_->Branch("njets",          &nJets_,            "njets/I"       );
@@ -1171,6 +1247,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //Z stuff
   babyTree_->Branch("leptype",               &leptype_,               "leptype/I");
+  babyTree_->Branch("ecaltype",              &ecaltype_,              "ecaltype/I");
   babyTree_->Branch("passz",                 &passz_,                 "passz/I");  
   babyTree_->Branch("pdgid",                 &pdgid_,                 "pdgid/I");  
   babyTree_->Branch("passm_ll_nom",          &passm_ll_nom_,          "passm_ll_nom/I");  
@@ -1196,6 +1273,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("phill",                 &phill_,                 "phill/F");  
   babyTree_->Branch("philt",                 &philt_,                 "philt/F");  
   babyTree_->Branch("dilmass",               &dilmass_,               "dilmass/F");  
+  babyTree_->Branch("dilmasscor",            &dilmasscor_,            "dilmasscor/F");  
   babyTree_->Branch("dilpt",                 &dilpt_,                 "dilpt/F");  
   babyTree_->Branch("flagll",                &flagll_,                "flagll/I");  
   babyTree_->Branch("flaglt",                &flaglt_,                "flaglt/I");  
