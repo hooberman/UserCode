@@ -47,12 +47,13 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 //--------------------------------------------------------------------
 
 bool debug = false;
-const int nJetBins        = 3;
-const int nSumJetPtBins   = 7;
-const int nBosonPtBins    = 4;
+const int nJetBins           = 3;
+const int nSumJetPtBins      = 7;
+const int nBosonPtBins       = 4;
+const bool generalLeptonVeto = true;
 
 float lumi         = 0.01106;
-char* iter         = "oct15th_v3";
+char* iter         = "oct15th_v4_generalLepVeto";
 char* jsonfilename = "Cert_TopOct15_Merged_135821-147454_allPVT_V2_goodruns.txt";
 
 metType myMetType               = e_tcmet;
@@ -403,6 +404,26 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       int nHypPass = 0;
 
+      VofP4 goodLeptons;
+
+      if( generalLeptonVeto ){
+        
+        for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+          if( els_p4().at(iel).pt() < 10 )                                                 continue;
+          if( !pass_electronSelection( iel , electronSelection_el_OSV1 , false , false ) ) continue;
+          goodLeptons.push_back( els_p4().at(iel) );
+        }
+        
+        for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+          if( mus_p4().at(imu).pt() < 10 )           continue;
+          if( fabs( mus_p4().at(imu).eta() ) > 2.4 ) continue;
+          if( !muonId( imu , Nominal ))              continue;
+          goodLeptons.push_back( mus_p4().at(imu) );
+        }
+
+      }
+
+
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
 
         if( !passSUSYTrigger_v1( isData , hyp_type()[hypIdx] ) ) continue;
@@ -412,18 +433,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         
         //selection--------------------------------------------------------------------- 
 
-        //OS, pt > (20,20) GeV
+        //OS, pt > (20,20) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
-        //if( hyp_ll_p4()[hypIdx].pt() < 20. )                                          continue;
-        //if( hyp_lt_p4()[hypIdx].pt() < 20. )                                          continue;
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
 
-        //ttbarV2 muon ID
-        //if (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx],NominalTTbarV2)))   continue;
-        //if (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx],NominalTTbarV2)))   continue;
- 
         //nominal muon ID
         if (abs(hyp_ll_id()[hypIdx]) == 13  && !( fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_ll_index()[hypIdx],Nominal)))   continue;
         if (abs(hyp_lt_id()[hypIdx]) == 13  && !( fabs(hyp_lt_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_lt_index()[hypIdx],Nominal)))   continue;
@@ -433,8 +448,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_el_OSV1 , false , false ))) continue;
         
         //Z-mass constraint
-     
-        if( hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.)  continue;
+        //if( hyp_p4()[hypIdx].mass() < 76. || hyp_p4()[hypIdx].mass() > 106.)  continue;
 
         nHypPass++;
       
@@ -584,6 +598,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         
           
         metStruct tcmetNewStruct = correctedTCMET();
+
         tcmetNew_     = tcmetNewStruct.met;
         tcmetphiNew_  = tcmetNewStruct.metphi;
         tcsumetNew_   = tcmetNewStruct.sumet;
@@ -710,6 +725,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
         if( fabs( vjet.eta() ) > 2.5 )           continue;
      
+        if( generalLeptonVeto ){
+          bool rejectJet = false;
+          for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+            if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+          }
+          if( rejectJet ) continue;
+        }
+
         if( !passesPFJetID(ijet) ){
           failjetid_ = 1;
           continue;
@@ -803,8 +826,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       //met templates-------------------------------------------------------------------- 
  
-      //if ( nJets_ < 2 )                                                     continue;
-      //if( jetmax_pt_ < 50 )                                                 continue;
       if ( nJets_ < 1 )                                                     continue;
       if( jetmax_pt_ < 30 )                                                 continue;
 

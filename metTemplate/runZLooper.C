@@ -7,9 +7,8 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
   TChain* ch = new TChain("Events");
 
   //------------------------------------------------------------------------------------------------------------
-
   if( strcmp( prefix , "testdata" ) == 0 ){
-    ch->Add("/tas/benhoob/skims/cms2/ExpressPhysics_Run2010A-Express-v4_FEVT_dilepmet.root");
+    ch->Add("/tas/benhoob/skims/cms2/zjetsmet/zjetsmet_allevents_oct15th.root");
   }
 
   //------------------------------------------------------------------------------------------------------------
@@ -33,45 +32,38 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
   //------------------------------------------------------------------------------------------------------------
 
   else if ( strcmp( prefix , "lepdata" ) == 0 ){
+    
+    //ch->Add("/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed_ntuple_143827_10.root");
 
-    /*
-    //electron
-    ch->Add("/tas/cms2/EG_Run2010A-Jun14thReReco_v1_RECO/V03-04-26-01/diLepPt1010skim/dilepton_skimmed_ntuple.root");
-    ch->Add("/tas/cms2/EG_Run2010A-Jul16thReReco-v2_RECO/V03-04-26-07/singleLepPt5Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-25/singleLepPt5Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-01/singleLepPt5Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-07/singleLepPt10Skim/skimmed*root");
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed*root");
+    ch->Add("/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root");
+    ch->Add("/tas/cms2/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root");
+    ch->Add("/tas/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root");
+    ch->Add("/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root");
     
-    //muon
-    ch->Add("/tas/cms2/Mu_Run2010A-Jun14thReReco_v1_RECO/V03-04-26-01/diLepPt1010skim/dilepton*root");
-    ch->Add("/tas/cms2/Mu_Run2010A-Jul16thReReco-v1_RECO/V03-04-26-07/singleLepPt5Skim/skimmed*root");
-    ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-25/singleLepPt5Skim/skimmed*root");
-    ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-01/singleLepPt5Skim/skimmed*root");
-    ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed*root");
-    ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-07/singleLepPt10Skim/skimmed*root");
-    ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed*root");
-    */
-    
-    //file with bad els_conv_dist
-    //ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple_143657_12.root");
+  }
 
-    //from ttdil analysis
-    ch->Add("/tas/fgolf/SSskims/data/dilep_skim_2.root");
-    ch->Add("/tas/fgolf/SSskims/data/skimmed_ntuple*.root");
-    
-    //Muon Prompt reco files
-    ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple*.root");
-    
-    //EG prompt reco files      
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/diLepPt1020Skim/skimmed_ntuple*.root");
-    
-    //from hcal bad runs
-    ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root");
-    ch->Add("/tas/cms2/Mu_Run2010A-PromptReco-v4_RECO/V03-04-26-02/singleLepPt10Skim/skimmed_ntuple_139783_0.root");
-    
+  //------------------------------------------------------------------------------------------------------------
 
+  else if ( strcmp( prefix , "WJets" ) == 0 ){
+    ch->Add("/tas/cms2/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-13-07/diLepPt2010Skim/skimmed*root");
+  }
+  
+  else if ( strcmp( prefix , "WW" ) == 0 ){
+    ch->Add("/tas/cms2/WW_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root");
+  }        
+  
+  else if ( strcmp( prefix , "WZ" ) == 0 ){
+    ch->Add("/tas/cms2/WZ_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root");
+  } 
+  
+  else if ( strcmp( prefix , "ZZ" ) == 0 ){
+    ch->Add("/tas/cms2/ZZ_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root");
+  }
+  
+  else if ( strcmp( prefix , "tW" ) == 0 ){
+    ch->Add("/tas/cms2/SingleTop_sChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root");
+    ch->Add("/tas/cms2/SingleTop_tChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root");
+    ch->Add("/tas/cms2/SingleTop_tWChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root");
   }
   
   //------------------------------------------------------------------------------------------------------------
@@ -91,4 +83,7 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
   myLooper->ScanChain(ch, prefix, isData, calculateTCMET, algo, -1 ,kFactor);
   
 }
+
+
+
 

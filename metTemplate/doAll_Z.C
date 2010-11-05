@@ -13,11 +13,17 @@
   gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
   gROOT->ProcessLine(".L runZLooper.C+");
   
-  //---Z+jets---
-  runZLooper("lepdata"                         , true ,  Z_looper::e_ZSelection         );
-  //runZLooper("ZJets"                           , false , Z_looper::e_ZSelection , 1.27  );
-  //runZLooper("TTbar"                           , false , Z_looper::e_ZSelection , 0.9545);
-  //runZLooper("LM4"                             , false , Z_looper::e_ZSelection , 1);
+  //run on samples
+  runZLooper("lepdata"        , true ,  Z_looper::e_ZSelection          );
+  runZLooper("ZJets"          , false , Z_looper::e_ZSelection , 1.27   );
+  runZLooper("TTbar"          , false , Z_looper::e_ZSelection , 0.9545 );
+  runZLooper("WJets"          , false , Z_looper::e_ZSelection , 1.116  );
+  runZLooper("WW"             , false , Z_looper::e_ZSelection          );
+  runZLooper("WZ"             , false , Z_looper::e_ZSelection          );
+  runZLooper("ZZ"             , false , Z_looper::e_ZSelection          );
+  runZLooper("tW"             , false , Z_looper::e_ZSelection          );
 
+  //runZLooper("testdata"                          , true ,  Z_looper::e_ZSelection         );
+  //runZLooper("LM4"                             , false , Z_looper::e_ZSelection , 1);
 
 }
