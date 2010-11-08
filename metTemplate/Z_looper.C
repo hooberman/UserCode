@@ -36,9 +36,9 @@
 #include "TLorentzVector.h"
 
 using namespace tas;
-//inline double fround(double n, double d){
-//  return floor(n * pow(10., d) + .5) / pow(10., d);
-//}
+inline double fround(double n, double d){
+  return floor(n * pow(10., d) + .5) / pow(10., d);
+}
 
 
 enum metType   { e_tcmet = 0, e_tcmetNew = 1, e_pfmet = 2};
@@ -412,14 +412,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( generalLeptonVeto ){
         
         for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-          if( els_p4().at(iel).pt() < 10 )                                                 continue;
+          if( els_p4().at(iel).pt() < 20 )                                                 continue;
           if( !pass_electronSelection( iel , electronSelection_el_OSV1 , false , false ) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
           killedJet.push_back( false );
         }
         
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-          if( mus_p4().at(imu).pt() < 10 )           continue;
+          if( mus_p4().at(imu).pt() < 20 )           continue;
           if( !muonId( imu , OSZ_v1 ))               continue;
           goodLeptons.push_back( mus_p4().at(imu) );
           killedJet.push_back( false );
