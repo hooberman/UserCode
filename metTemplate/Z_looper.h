@@ -114,6 +114,7 @@ class Z_looper
   // jet stuff
   Int_t   failjetid_;
   Int_t   nJets_;
+  Int_t   nJPT_;
   Int_t   nJets40_;
   Float_t sumJetPt_;
   Float_t sumJetPt10_;

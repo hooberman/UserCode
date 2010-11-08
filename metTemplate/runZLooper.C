@@ -33,13 +33,24 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
 
   else if ( strcmp( prefix , "lepdata" ) == 0 ){
     
-    //ch->Add("/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed_ntuple_143827_10.root");
-
-    ch->Add("/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root");
-    ch->Add("/tas/cms2/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root");
-    ch->Add("/tas/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root");
-    ch->Add("/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-09/diLepPt1020Skim/skimmed*root");
     
+    //ch->Add("/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/skimmed_ntuple_143827_7.root");
+
+    ch->Add("/tas/cms2/EG_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/skimmed*root");
+    ch->Add("/tas/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14-00/diLepPt1020Skim/skimmed*root");
+    ch->Add("/tas/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/skimmed*root");
+    
+    ch->Add("/tas/cms2/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/diLepPt1020Skim/skimmed*root");
+    ch->Add("/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14-00/diLepPt1020Skim/skimmed*root");
+    ch->Add("/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14/diLepPt1020Skim/skimmed*root");
+      
+  }
+
+  //------------------------------------------------------------------------------------------------------------
+
+  else if ( strcmp( prefix , "lepdata_skim" ) == 0 ){
+    ch->Add("/tas/cms2/dilepSkim35pb/els.root");
+    ch->Add("/tas/cms2/dilepSkim35pb/mus.root");
   }
 
   //------------------------------------------------------------------------------------------------------------

@@ -52,9 +52,9 @@ const int nSumJetPtBins      = 7;
 const int nBosonPtBins       = 4;
 const bool generalLeptonVeto = true;
 
-float lumi         = 0.01106;
-char* iter         = "oct15th_v4_generalLepVeto";
-char* jsonfilename = "Cert_TopOct15_Merged_135821-147454_allPVT_V2_goodruns.txt";
+float lumi         = 34.85e-3; 
+char* iter         = "nov5th_v3";
+char* jsonfilename = "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt";
 
 metType myMetType               = e_tcmet;
 templateSource myTemplateSource = e_PhotonJet;
@@ -405,6 +405,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       int nHypPass = 0;
 
       VofP4 goodLeptons;
+      vector<bool>  killedJet;
+      goodLeptons.clear();
+      killedJet.clear();
 
       if( generalLeptonVeto ){
         
@@ -412,13 +415,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           if( els_p4().at(iel).pt() < 10 )                                                 continue;
           if( !pass_electronSelection( iel , electronSelection_el_OSV1 , false , false ) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
+          killedJet.push_back( false );
         }
         
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
           if( mus_p4().at(imu).pt() < 10 )           continue;
-          if( fabs( mus_p4().at(imu).eta() ) > 2.4 ) continue;
-          if( !muonId( imu , Nominal ))              continue;
+          if( !muonId( imu , OSZ_v1 ))               continue;
           goodLeptons.push_back( mus_p4().at(imu) );
+          killedJet.push_back( false );
         }
 
       }
@@ -440,8 +444,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
 
         //nominal muon ID
-        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( fabs(hyp_ll_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_ll_index()[hypIdx],Nominal)))   continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( fabs(hyp_lt_p4()[hypIdx].eta()) < 2.4 && muonId(hyp_lt_index()[hypIdx],Nominal)))   continue;
+        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , OSZ_v1 )))   continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , OSZ_v1 )))   continue;
         
         //OSV1 electron ID
         if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_el_OSV1 , false , false ))) continue;
@@ -713,18 +717,96 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       failjetid_ =  0;
       maxemf_    = -1;
-        
-      //loop over pfjets pt > 30 GeV |eta| < 2.5
+
+      /*
+      //store in goodpfjetsXX all pfjets with pt > XX GeV, eta < 2.5, passesPFJetID 
+      VofP4 goodpfjets30;
+      goodpfjets30.clear();
+      VofP4 goodpfjets15;
+      goodpfjets15.clear();
+
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
+
         LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+      
+        if( fabs( vjet.eta() ) > 2.5 )   continue;
+        if( !passesPFJetID(ijet) )       continue;
+        
+        if( vjet.pt() < 15 )             continue;
+        goodpfjets15.push_back( vjet );
+        if( vjet.pt() < 30 )             continue;
+        goodpfjets30.push_back( vjet );
+      }
+
+
+      //veto the closest good pfjet to all good leptons if dr < 0.4
+      vector<unsigned int> vetoJet;
+      vetoJet.clear();
+
+      if( generalLeptonVeto ){
+       
+        for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+
+          float drmin = 100;
+          int   imin  = -1;
+
+          for (unsigned int ijet = 0 ; ijet < goodpfjets30.size() ; ijet++){
+            
+            float dr = dRbetweenVectors( goodpfjets30.at(ijet) , goodLeptons.at(ilep) );
+            
+            if( dr < drmin ){
+              drmin = dr;
+              imin  = ijet;
+            }
+          }
+          
+          if( drmin < 0.4 ) vetoJet.push_back( imin );
+          
+        }
+      }
+
+      drll_ = 100;
+
+      int   iminll    = -1;
+      float mindrll   = 100.;
+
+      for ( unsigned int ijet = 0 ; ijet < goodpfjets30.size() ; ijet++ ){
+        float dr = dRbetweenVectors( goodpfjets30.at(ijet) , hyp_ll_p4()[hypIdx] );
+        if( dr < mindrll ){
+          iminll  = ijet;
+          mindrll = dr;
+        }
+      }
+
+      int iminll2    = -1;
+      float mindrll2 = 100.;
+
+      for ( unsigned int ijet = 0 ; ijet < goodpfjets30.size() ; ijet++ ){
+        if( ijet == iminll ) continue;
+        float dr = dRbetweenVectors( goodpfjets30.at(ijet) , hyp_ll_p4()[hypIdx] );
+        if( dr < mindrll2 ){
+          iminll2  = ijet;
+          mindrll2 = dr;
+        }
+      }
+
+      drll_ = mindrll2;
+      */
+
+
+      //count JPT's
+      nJPT_ = 0;
+
+      for ( unsigned int ijet = 0 ; ijet < jpts_p4().size() ; ijet++ ) {
+          
+        LorentzVector vjet = jpts_cor().at(ijet) * jpts_p4().at(ijet);
         LorentzVector vlt  = hyp_lt_p4()[hypIdx];
         LorentzVector vll  = hyp_ll_p4()[hypIdx];
-          
-        if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
-        if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+
         if( fabs( vjet.eta() ) > 2.5 )           continue;
-     
+        if( vjet.pt()  < 30.         )           continue;
+        if( !passesCaloJetID( vjet ) )           continue;
+
         if( generalLeptonVeto ){
           bool rejectJet = false;
           for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
@@ -732,6 +814,92 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           }
           if( rejectJet ) continue;
         }
+
+        if( dRbetweenVectors(vjet, vll) < 0.4 ) continue;
+        if( dRbetweenVectors(vjet, vlt) < 0.4 ) continue;
+
+        /*
+        if( generalLeptonVeto ){
+          
+          bool rejectJet = false;
+          for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+            if( killedJet.at( ilep ) ) continue;
+            if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ){
+              rejectJet            = true;  
+              killedJet.at( ilep ) = true;
+            }
+          }
+          
+          if( rejectJet ) continue;
+       
+        }
+
+        else{
+          
+          LorentzVector vll  = hyp_ll_p4()[hypIdx];
+          LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+          
+          if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
+          if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+       
+        }
+        */
+
+        nJPT_++;
+      } 
+        
+      //reset killedJet vector
+      for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+        killedJet.at( ilep ) = false;
+      }
+        
+      //loop over pfjets pt > 30 GeV |eta| < 2.5
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+        LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+        LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+        LorentzVector vll  = hyp_ll_p4()[hypIdx];
+
+        if( fabs( vjet.eta() ) > 2.5 )           continue;
+     
+        /*
+        if( generalLeptonVeto ){
+        
+          bool rejectJet = false;
+          for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+            if( killedJet.at( ilep ) ) continue;
+            if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ){
+              rejectJet            = true;  
+              killedJet.at( ilep ) = true;
+            }
+          }
+        
+          if( rejectJet ) continue;
+       
+        }
+
+        else{
+          
+          LorentzVector vll  = hyp_ll_p4()[hypIdx];
+          LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+          
+          if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
+          if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+       
+        }
+        */
+
+        if( generalLeptonVeto ){
+          bool rejectJet = false;
+          for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+            if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+          }
+          if( rejectJet ) continue;
+        }
+
+        if( dRbetweenVectors(vjet, vll) < 0.4 ) continue;
+        if( dRbetweenVectors(vjet, vlt) < 0.4 ) continue;
+
 
         if( !passesPFJetID(ijet) ){
           failjetid_ = 1;
@@ -1247,6 +1415,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //jet stuff
   babyTree_->Branch("njets",          &nJets_,            "njets/I"       );
+  babyTree_->Branch("njpt",           &nJPT_,             "njpt/I"        );
   babyTree_->Branch("njets40",        &nJets40_,          "njets40/I"     );
   babyTree_->Branch("sumjetpt",       &sumJetPt_,         "sumjetpt/F"    );
   babyTree_->Branch("sumjetpt10",     &sumJetPt10_,       "sumjetpt10/F"    );
