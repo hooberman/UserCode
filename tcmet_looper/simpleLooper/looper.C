@@ -40,6 +40,51 @@ bool calculateTCMET = true;
 //   return floor(n * pow(10., d) + .5) / pow(10., d);
 // }
 
+
+//--------------------------------------------------------------------
+
+struct DorkyEventIdentifier {
+  // this is a workaround for not having unique event id's in MC
+  unsigned long int run, event,lumi;
+  bool operator < (const DorkyEventIdentifier &) const;
+  bool operator == (const DorkyEventIdentifier &) const;
+};
+
+//--------------------------------------------------------------------
+
+bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return run < other.run;
+  if (event != other.event)
+    return event < other.event;
+  if(lumi != other.lumi)
+    return lumi < other.lumi;
+  return false;
+}
+
+//--------------------------------------------------------------------
+
+bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return false;
+  if (event != other.event)
+    return false;
+  return true;
+}
+
+//--------------------------------------------------------------------
+
+std::set<DorkyEventIdentifier> already_seen;
+bool is_duplicate (const DorkyEventIdentifier &id) {
+  std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
+    already_seen.insert(id);
+  return !ret.second;
+}
+
+//--------------------------------------------------------------------
+
 using namespace tas;
 void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEvents){
 
@@ -57,14 +102,6 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
   unsigned int nEventsTotal = 0;
 
   MakeBabyNtuple( Form( "output/%s_%s_baby.root" , prefix , iter) );
-
-  //pass fail counters
-  int nPassGoodRun    = 0;
-  int nPassBPTX       = 0;
-  int nPassBSC        = 0;
-  int nPassBeamHalo   = 0;
-  int nPassGoodTracks = 0;
-  int nPassGoodVertex = 0;
 
   if( debug ) cout << "Begin looping over files" << endl;
 
@@ -98,40 +135,21 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
                   fflush(stdout);
                 }
             }
-	  
+
+          // skip duplicates
+          if( isData ) {
+            DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
+            if (is_duplicate(id) ){
+              continue;
+            }
+          }
          
           //APPLY BASIC EVENT SELECTIONS
           //TRIGGER, TRACKING AND VERTEX
       
-	  if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))
-            nPassGoodRun++;
-	  else continue;
-      
-	  //determine if current event passes BPTX triggers
-	  if (cleaning_BPTX( isData ))
-	    nPassBPTX++;
-	  else continue;
-      
-	  //determine if current event passes BSC triggers
-	  if (cleaning_BSC())
-	   nPassBSC++;
-	  else continue;
-      
-	  //determine if current event passes beam halo triggers
-	  if (cleaning_beamHalo())
-	    nPassBeamHalo++;
-	  else continue;
-      
-	  //determine if current event is a beam scraping event
-	  if (cleaning_goodTracks())
-	    nPassGoodTracks++;
-	  else continue;
-      
-          //determine if current event has a good vertex
-          if (cleaning_goodVertex())
- 	    nPassGoodVertex++;
-          else continue;
-      
+	  if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))  continue;
+          if( !cleaning_standardAugust2010( isData) )                    continue;
+          
           // N.B. BABY NTUPLE IS FILLED
           // FOR EACH EVENT
 
@@ -180,22 +198,6 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
     
         } // end loop over events
     } // end loop over files
-  
-  cout << "\n\n********************SUMMARY********************" << endl;
-  cout << "Total number of events: " << nEventsTotal << endl;
-  cout << "Total number of events that pass good run/lumi: " << nPassGoodRun 
-       << " (" << 100*(double)nPassGoodRun/nEventsTotal << "% of total)" << endl;
-  cout << "Total number of events that pass BPTX trigger: " << nPassBPTX
-       << " (" << 100*(double)nPassBPTX/nPassGoodRun << "%)" << endl;
-  cout << "Total number of events that pass BSC trigger: " << nPassBSC
-       << " (" << 100*(double)nPassBSC/nPassBPTX << "%)" << endl;
-  cout << "Total number of events that pass BeamHalo trigger: " << nPassBeamHalo
-       << " (" << 100*(double)nPassBeamHalo/nPassBSC << "%)" << endl;
-  cout << "Total number of events that pass tracking cuts: " << nPassGoodTracks
-       << " (" << 100*(double)nPassGoodTracks/nPassBeamHalo << "%)" << endl;
-  cout << "Total number of events that pass vertex cuts: " << nPassGoodVertex
-       << " (" << 100*(double)nPassGoodVertex/nPassGoodTracks << "%)" << endl;
-  cout << endl << endl;
   
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
