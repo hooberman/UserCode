@@ -194,7 +194,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
  	  fillUnderOverFlow( htcmet ,       tcmet_    );
 	  fillUnderOverFlow( htcmetNew ,    tcmetNew_ );
  	  fillUnderOverFlow( hpfmet ,       pfmet_    );
- 
+          
+          eventTree_->Fill();
     
         } // end loop over events
     } // end loop over files
