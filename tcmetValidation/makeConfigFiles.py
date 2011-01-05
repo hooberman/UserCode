@@ -43,7 +43,7 @@ for line in commands.getoutput('dbsql find file where dataset like %s' % dataset
 print 'List of LFNs:'
 print listOfFiles
 
-vars = { 'MYFILENAMES' : listOfFiles, 'MYNEVENTS' : -1, 'MYGLOBALTAG' : globaltag, 'MYROOTFILE' : mykey + '.root' }
+vars = { 'MYFILENAMES' : listOfFiles, 'MYNEVENTS' : -1, 'MYGLOBALTAG' : globaltag, 'MYROOTFILE' : mykey + '.root', 'MYSAMPLE' : mykey }
 
 template = open('template.py','r')
 templatestring = ''

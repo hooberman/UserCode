@@ -42,12 +42,13 @@ bool drawlog(char* prefix);
 inline double fround(double n, unsigned d);
 void setTDRStyle();
 string getDataset( string rel, string sample );
-
+float chi2prob( TH1F* h , float xmin , float xmax);
+void formatHist(TH1F* h1, TH1F* h2, const char* sample, char* var);
 
 int main(int argc, char* argv[]){
 
-  if( argc != 4){
-    cout << "USAGE: tcmetValidation SAMPLE RELEASE1 RELEASE2" << endl;
+  if( argc != 5){
+    cout << "USAGE: tcmetValidation SAMPLE RELEASE1 RELEASE2 DATA/MC" << endl;
     exit(0);
   }
 
@@ -57,6 +58,9 @@ int main(int argc, char* argv[]){
   string sample = argv[1];
   string rel1   = argv[2];
   string rel2   = argv[3];
+  string datamc = argv[4];
+
+  bool isData = ( datamc == "DATA" ) ? true : false;
 
   string dataset1 = getDataset( rel1 , sample );
   string dataset2 = getDataset( rel2 , sample );
@@ -76,9 +80,13 @@ int main(int argc, char* argv[]){
   vector<char*> vars;
   vector<float> xmin;
   vector<float> xmax;
-  vector<int> rebin;
+  vector<int>   rebin;
+  vector<float> prob;
 
-  vars.push_back("MET");                             xmin.push_back(0);    xmax.push_back(500);  rebin.push_back(5);
+  //vars.push_back("trackD0PVTX");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  //vars.push_back("trackDZPVTX");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  //vars.push_back("trackD0BS");                       xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  vars.push_back("MET");                             xmin.push_back(0);    xmax.push_back(100);  rebin.push_back(1);
   vars.push_back("SumET");                           xmin.push_back(0);    xmax.push_back(2000); rebin.push_back(20);
   vars.push_back("MEx");                             xmin.push_back(-250); xmax.push_back(250);  rebin.push_back(10);
   vars.push_back("MEy");                             xmin.push_back(-250); xmax.push_back(250);  rebin.push_back(10);
@@ -89,8 +97,10 @@ int main(int argc, char* argv[]){
   //vars.push_back("dMUy");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   vars.push_back("CorrectionFlag");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   vars.push_back("METPhi");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("METPhiResolution_GenMETTrue");     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("METResolution_GenMETTrue");        xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(2);
+  if( !isData ){
+    vars.push_back("METPhiResolution_GenMETTrue");   xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+    vars.push_back("METResolution_GenMETTrue");      xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(2);
+  }
   vars.push_back("Nevents");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   vars.push_back("electronHoverE");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
   //vars.push_back("fracTracks");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
@@ -102,8 +112,10 @@ int main(int argc, char* argv[]){
   vars.push_back("trackEta");                        xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
   vars.push_back("trackNormalizedChi2");             xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   //vars.push_back("trackPtErr");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("METPhiResolution_GenMETCalo");     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("METResolution_GenMETCalo");        xmin.push_back(-200); xmax.push_back(200);  rebin.push_back(5);
+  if( !isData ){
+    vars.push_back("METPhiResolution_GenMETCalo");   xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+    vars.push_back("METResolution_GenMETCalo");      xmin.push_back(-200); xmax.push_back(200);  rebin.push_back(5);
+  }
   vars.push_back("METSig");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   vars.push_back("MExCorrection");                   xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(5);
   vars.push_back("MEyCorrection");                   xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(5);
@@ -114,12 +126,11 @@ int main(int argc, char* argv[]){
   vars.push_back("muonPt");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
   //vars.push_back("nEls");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   //vars.push_back("nMusAsPis");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("trackD0");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  
   vars.push_back("trackNhits");                      xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   vars.push_back("trackPt");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(4);
   //vars.push_back("trackQuality");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  
-
+    
   //make TLegend
   TH1F* h1dummy = new TH1F("h1dummy","",1,0,1);
   h1dummy->SetLineColor(2);
@@ -168,6 +179,16 @@ int main(int argc, char* argv[]){
     h1[ivar] = (TH1F*) f1->Get(Form("%s_%s",tcmetpath,vars.at(ivar)));
     h2[ivar] = (TH1F*) f2->Get(Form("%s_%s",tcmetpath,vars.at(ivar)));
 
+//     if( h1[ivar]->Integral() != h2[ivar]->Integral() ){
+//       cout << vars.at(ivar) << " h1 " << h1[ivar]->Integral() << " h2 " << h2[ivar]->Integral() << endl;
+//       h2[ivar]->Scale( h1[ivar]->Integral() / h2[ivar]->Integral() );
+//     }
+    if( h1[ivar]->GetEntries() != h2[ivar]->GetEntries() ){
+      cout << vars.at(ivar) << " h1 " << h1[ivar]->GetEntries() << " h2 " << h2[ivar]->GetEntries() << endl;
+      h2[ivar]->Scale( h1[ivar]->GetEntries() / h2[ivar]->GetEntries() );
+    }
+
+
     //format and draw histos
     //if(drawlog(vars.at(ivar))) mainpad[ivar]->SetLogy(1); 
     if( rebin.at(ivar) > 1 ) {
@@ -176,7 +197,13 @@ int main(int argc, char* argv[]){
     }
     if( xmin.at(ivar) != -999 ){
       h1[ivar]->GetXaxis()->SetRangeUser( xmin.at(ivar) , xmax.at(ivar) );
+      if( strcmp( sample.c_str() , "ttbar" ) == 0 && strcmp( vars.at(ivar) , "MET" ) == 0 ){
+        h1[ivar]->Rebin(2);
+        h2[ivar]->Rebin(2);
+        h1[ivar]->GetXaxis()->SetRangeUser( 0 , 300 );
+      }
     }
+
 
     mainpad[ivar]->SetLogy(1); 
     h1[ivar] -> SetLineColor(2);
@@ -188,7 +215,9 @@ int main(int argc, char* argv[]){
     h1[ivar] -> SetTitle("");
     h1[ivar] -> GetXaxis() -> SetTitle(vars.at(ivar));
     h2[ivar] -> Draw("sameE1");
-    leg->Draw();
+
+    formatHist( h1[ivar] , h2[ivar] , sample.c_str() , vars.at(ivar) );
+    //leg->Draw();
     
     //make canvas and pad
     //canvas->cd();
@@ -212,20 +241,21 @@ int main(int argc, char* argv[]){
     hpull->GetYaxis()->SetTitle("Pull");
     hpull->SetTitle("");
     //hpull->GetYaxis()->SetNdivisions(5);
+    prob.push_back( chi2prob( hpull , xmin.at(ivar) , xmax.at(ivar) ) );
 
     //draw guidelines
     if( xmin.at(ivar) != -999){
       line.SetLineStyle(1);
       line.DrawLine(xmin.at(ivar), 0, xmax.at(ivar), 0);
       line.SetLineStyle(2);
-      line.DrawLine(xmin.at(ivar), 1, xmax.at(ivar), 1);
-      line.DrawLine(xmin.at(ivar),-1, xmax.at(ivar),-1);
+      //line.DrawLine(xmin.at(ivar), 1, xmax.at(ivar), 1);
+      //line.DrawLine(xmin.at(ivar),-1, xmax.at(ivar),-1);
     }else{
       line.SetLineStyle(1);
       line.DrawLine( hpull->GetXaxis()->GetXmin() , 0 , hpull->GetXaxis()->GetXmax() , 0);
       line.SetLineStyle(2);
-      line.DrawLine( hpull->GetXaxis()->GetXmin() ,  1 , hpull->GetXaxis()->GetXmax() ,  1);
-      line.DrawLine( hpull->GetXaxis()->GetXmin() , -1 , hpull->GetXaxis()->GetXmax() , -1);
+      //line.DrawLine( hpull->GetXaxis()->GetXmin() ,  1 , hpull->GetXaxis()->GetXmax() ,  1);
+      //line.DrawLine( hpull->GetXaxis()->GetXmin() , -1 , hpull->GetXaxis()->GetXmax() , -1);
     }
 
     //canvas->Update();
@@ -233,22 +263,86 @@ int main(int argc, char* argv[]){
     canvas[ivar] -> Modified();
     canvas[ivar] -> Update();
     canvas[ivar] -> Print( Form( "%s/webpage/plots/%s_%s.gif" , rel2.c_str() , sample.c_str() , vars.at(ivar) ));
+    
+  }
+  
+  TCanvas *cprob = new TCanvas("cprob","",800,600);
+  cprob->cd();
+  gPad->SetLogx(1);
+  gStyle->SetPadLeftMargin(0.2);
+ 
+  //make summary histo
+  TH1F* hprob = new TH1F("hprob","",vars.size(),0,vars.size());
 
+  for( int ivar = 1 ; ivar <= vars.size() ; ivar++ ){
+    hprob->SetBinContent(           vars.size() - ivar + 1 , prob.at(ivar - 1) );
+    hprob->GetXaxis()->SetBinLabel( vars.size() - ivar + 1 , vars.at(ivar - 1) );
+    //cout << vars.at(ivar-1) << setw(20) << prob.at(ivar-1) << endl;
+  }
+
+  hprob->GetXaxis()->SetLabelSize(0.029);
+  hprob->GetYaxis()->SetLabelSize(0.035);
+  hprob->SetBarWidth(0.8);
+  hprob->SetBarOffset(0.1);
+  hprob->SetFillColor(4);
+  hprob->GetYaxis()->SetTitle("#chi^{2}/ndf Probability");
+  hprob->GetYaxis()->SetTitleSize(0.04);
+  hprob->GetYaxis()->SetNdivisions(7);
+  hprob->GetXaxis()->SetLabelOffset(0.001);
+  hprob->SetMaximum(1.5);
+  hprob->SetMinimum(1e-10);
+  TH1 *hprobcopy = hprob->DrawCopy("hbar0");
+
+  cprob -> Print( Form( "%s/webpage/plots/%s_%s.gif" , rel2.c_str() , sample.c_str() , "summary" ));
+  
+  ofile << "<table><tr>" << endl;
+  ofile << "<td><img SRC=" << "plots/" << sample << "_summary.gif> </td>" << endl;
+  ofile << "</tr></table>" << endl;
+
+  for( int ivar = 0 ; ivar < vars.size() ; ivar++ ){
     ofile << " <H3> " << "<FONT color=#ff0000>" << rel1 << "  :  " << dataset1 << " </FONT> " << " </H3>" << endl;
     ofile << " <H3> " << "<FONT color=#0000FF>" << rel2 << "  :  " << dataset2 << " </FONT> " << " </H3>" << endl;
     ofile << "<table><tr>" << endl;
     ofile << "<td><img SRC=" << "plots/" << sample << "_" << vars.at(ivar) << ".gif> </td>" << endl;
     ofile << "</tr></table>" << endl;
-    
   }
-  
+
   //canvas->Update();
   //canvas->Print(Form("%s]",psFileName));
  
-
   return 0;
 }
 
+float chi2prob( TH1F* h , float xmin , float xmax){
+
+  int ndf    = 0;
+  float chi2 = 0.;
+
+  int ibinmin = 1;
+  int ibinmax = h->GetXaxis()->GetNbins() + 1;
+
+  if( xmin != -999){
+    ibinmin = h->FindBin(xmin);
+    ibinmax = h->FindBin(xmax);
+  }
+
+  for(int ibin = ibinmin ; ibin < ibinmax ; ibin++){
+    //if( fabs( h->GetBinContent( ibin ) ) 1.e-10 ){
+      ndf++;
+      if( h->GetBinError(ibin) > 0 ){
+        chi2 += pow( h->GetBinContent(ibin) / h->GetBinError(ibin) , 2);
+      }else{
+        chi2 += pow( h->GetBinContent(ibin) , 2);
+      }
+
+      //}
+    //cout << ibin << " " << h->GetBinCenter(ibin) << " " << h->GetBinContent(ibin) << endl;
+  }
+
+  return TMath::Prob( chi2 , ndf );
+}
+
+// pull = ( h1-h2 ) / h1
 TH1F* getPullHist(TH1F* h1, TH1F* h2){
   
   TH1F* hout = (TH1F*) h1->Clone(Form("%s_clone",h1->GetName()));
@@ -259,13 +353,30 @@ TH1F* getPullHist(TH1F* h1, TH1F* h2){
     float err = sqrt(pow(h1->GetBinError(ibin),2)+pow(h2->GetBinError(ibin),2));
     if(fabs(err) < 1.e-10)  err = sqrt(h2->GetBinContent(ibin) + h1->GetBinContent(ibin));
     
-    hout -> SetBinContent(ibin,fabs(err) > 0 ? val/err : val);
-    hout -> SetBinError(ibin,1);
-  }
-  
+    float denom = fabs( h1->GetBinContent(ibin) ) > 0. ? h1->GetBinContent(ibin) : 1;
 
+    hout -> SetBinContent( ibin, val / denom );
+    hout -> SetBinError(   ibin, err / denom );
+  }
   return hout;
 }
+
+// pull = (h1-h2)/sigma
+// TH1F* getPullHist(TH1F* h1, TH1F* h2){
+  
+//   TH1F* hout = (TH1F*) h1->Clone(Form("%s_clone",h1->GetName()));
+  
+//   for(int ibin = 1 ; ibin <= h1->GetNbinsX() ; ibin++){
+  
+//     float val = h2->GetBinContent(ibin) - h1->GetBinContent(ibin);
+//     float err = sqrt(pow(h1->GetBinError(ibin),2)+pow(h2->GetBinError(ibin),2));
+//     if(fabs(err) < 1.e-10)  err = sqrt(h2->GetBinContent(ibin) + h1->GetBinContent(ibin));
+    
+//     hout -> SetBinContent(ibin,fabs(err) > 0 ? val/err : val);
+//     hout -> SetBinError(ibin,1);
+//   }
+//   return hout;
+// }
 
 
 bool drawlog(char* prefix){
@@ -355,7 +466,7 @@ void setTDRStyle() {
   // Margins:
   //tdrStyle->SetPadTopMargin(0.1);
   //tdrStyle->SetPadBottomMargin(0.15);
-  //tdrStyle->SetPadLeftMargin(0.13);
+  tdrStyle->SetPadLeftMargin(0.2);
   //tdrStyle->SetPadRightMargin(0.16);
 
   // For the Global title:
@@ -445,4 +556,50 @@ string getDataset( string rel , string sample ){
 
 
 
+
+void formatHist(TH1F* h1, TH1F* h2, const char* sample, char* var){
+
+  TLine line;
+  TLatex t;
+  t.SetNDC();
+
+  //line.SetLineColor(4);
+  line.SetLineWidth(2);
+  
+  if( strcmp(var,"MET")==0 && strcmp(sample,"ttbar")!=0 ){
+    float metcut = 30;
+    if( strcmp(sample,"data") == 0 ) metcut=15;
+    if( strcmp(sample,"qcd")  == 0 ) metcut=40;
+    if( strcmp(sample,"zmm")  == 0 ) metcut=20;
+    if( strcmp(sample,"zee")  == 0 ) metcut=20;
+    
+    line.DrawLine( metcut  , h1->GetMinimum() , metcut  , 2 * h1->GetMaximum() );
+
+    stringstream s1;
+    s1 << "N(met>" << metcut << " GeV) " << h1->Integral( h1->FindBin(metcut) , 1000000);
+    stringstream s2;
+    s2 << "N(met>" << metcut << " GeV) " << h2->Integral( h2->FindBin(metcut) , 1000000);
+
+    t.SetTextColor(2);
+    t.DrawLatex( 0.5 , 0.7 , s1.str().c_str() );
+    t.SetTextColor(4);
+    t.DrawLatex( 0.5 , 0.6 , s2.str().c_str() );
+  }
+
+  if( strcmp(var,"METResolution_GenMETTrue")==0 && strcmp(sample,"ttbar")==0 ){
+    
+    stringstream s1;
+    s1 << "mean " << fround(h1->GetMean(1),1) << " RMS " << fround(h1->GetRMS(1),1);
+    stringstream s2;
+    s2 << "mean " << fround(h2->GetMean(1),1) << " RMS " << fround(h2->GetRMS(1),1);
+
+    t.SetTextSize(0.04);
+    t.SetTextColor(2);
+    t.DrawLatex( 0.25 , 0.85 , s1.str().c_str() );
+    t.SetTextColor(4);
+    t.DrawLatex( 0.25 , 0.8  , s2.str().c_str() );
+
+  }
+
+}
 

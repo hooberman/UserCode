@@ -19,7 +19,13 @@ echo  "Release directory              :  " $reldir
 cd $reldir/src
 eval `scramv1 runtime -sh`
 cd -
-export dir=$1_custom
+
+if [[ $2 == "" ]];  then
+    export dir=$1_custom
+else
+    export dir=$1_custom_$2
+fi
+
 echo  "Validation directory           :  " $dir
 
 #make release directory, copy files there
@@ -33,16 +39,20 @@ cp getDataset.py      $dir/.
 cp getGlobalTag.py    $dir/.
 cp makeConfigFiles.py $dir/.
 cp template.py        $dir/.
+cp data.py            $dir/.
+
 cd $dir
+
+export release=$1
+#export release=CMSSW_3_8_1
 
 #zee sample
 echo "-------------------------------------------------------------------------------------"
 
-export zeedataset=`python getDataset.py ZEE $1 | tail -n 1`
+export zeedataset=`python getDataset.py ZEE ${release} | tail -n 1`
 echo  "ZEE dataset                    :  " $zeedataset
 echo   $zeedataset > .zeedataset
 
-#export zeeglobaltag=`python getGlobalTag.py ${zeedataset} | tail -n 1`
 export zeeglobaltag=`dbsql find dataset.tag where dataset like ${zeedataset} | tail -n 1`
 echo  "ZEE globaltag                  :  " $zeeglobaltag
 
@@ -53,11 +63,10 @@ cmsRun zee.py > zee.log 2>&1 &
 #zmm sample
 echo "-------------------------------------------------------------------------------------"
 
-export zmmdataset=`python getDataset.py ZMM $1 | tail -n 1`
+export zmmdataset=`python getDataset.py ZMM ${release} | tail -n 1`
 echo  "ZMM dataset                    :  " $zmmdataset
 echo  $zmmdataset > .zmmdataset
 
-#export zmmglobaltag=`python getGlobalTag.py ${zmmdataset} | tail -n 1`
 export zmmglobaltag=`dbsql find dataset.tag where dataset like ${zmmdataset} | tail -n 1`
 echo  "ZMM globaltag                  :  " $zmmglobaltag
 
@@ -68,11 +77,10 @@ cmsRun zmm.py > zmm.log 2>&1 &
 #ttbar sample
 echo "-------------------------------------------------------------------------------------"
 
-export ttbardataset=`python getDataset.py TTbar $1 | tail -n 1`
+export ttbardataset=`python getDataset.py TTbar ${release} | tail -n 1`
 echo  "TTBAR dataset                  :  " $ttbardataset
 echo  $ttbardataset > .ttbardataset
 
-#export ttbarglobaltag=`python getGlobalTag.py ${ttbardataset} | tail -n 1`
 export ttbarglobaltag=`dbsql find dataset.tag where dataset like ${ttbardataset} | tail -n 1`
 echo  "TTBAR globaltag                :  " $ttbarglobaltag
 
@@ -83,11 +91,10 @@ cmsRun ttbar.py > ttbar.log 2>&1 &
 #qcd sample
 echo "-------------------------------------------------------------------------------------"
 
-export qcddataset=`python getDataset.py QCD_Pt_80_120 $1 | tail -n 1`
+export qcddataset=`python getDataset.py QCD_Pt_80_120 ${release} | tail -n 1`
 echo  "QCD dataset                    :  " $qcddataset
 echo  $qcddataset > .qcddataset
 
-#export qcdglobaltag=`python getGlobalTag.py ${qcddataset} | tail -n 1`
 export qcdglobaltag=`dbsql find dataset.tag where dataset like ${qcddataset} | tail -n 1`
 echo  "QCD globaltag                  :  " $qcdglobaltag
 
@@ -95,10 +102,16 @@ python makeConfigFiles.py $qcddataset $qcdglobaltag qcd
 
 cmsRun qcd.py > qcd.log 2>&1 &
 
+#data sample
+echo "-------------------------------------------------------------------------------------"
+
+#cmsRun data.py > data.log 2>&1 &
+#echo  '/MinimumBias/Commissioning10-GOODCOLL-Jun9thSkim_v1/RECO'  > .datadataset
 
 
 
 
+rm -f validateRelease.log
 echo "-----------------------------------------------------------------------------------------------"  >> validateRelease.log
 echo  "Validating release             :  " $1                                                           >> validateRelease.log
 echo  "Release directory              :  " $reldir                                                      >> validateRelease.log

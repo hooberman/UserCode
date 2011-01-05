@@ -42,7 +42,8 @@ process.HCALAnalyzer.FolderName =  cms.untracked.string("RecoMETV/MET_HCAL/data"
 
 process.load("Validation.RecoMET.PFMET_cff")
 
-process.load("Validation.RecoMET.TCMET_cff")
+process.load("Validation.RecoMET.TCMET_cfi")
+process.tcMetAnalyzer.sample = cms.untracked.string("%(MYSAMPLE)s")
 
 process.load("Validation.RecoMET.MuonCorrectedCaloMET_cff")
 
@@ -99,7 +100,7 @@ process.p = cms.Path(process.fileSaver*
                      process.analyzeHTMET*
                      process.analyzeCaloMET*
                      process.analyzePFMET*
-                     process.analyzeTCMET*
+                     process.tcMetAnalyzer*
                      process.analyzeMuonCorrectedCaloMET*
                      process.AnalyzeBeamHalo
 )
