@@ -8,7 +8,7 @@ fi
 export rel=$1
 
 
-for sample in zee zmm ttbar qcd
+for sample in zee zmm ttbar qcd data
 do
 
   echo ""
