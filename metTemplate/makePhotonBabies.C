@@ -50,7 +50,7 @@ const int nBosonPtBins    = 4;
 
 float lumi                = 0.034;
 char* iter                = "nov5th_v4";
-char* jsonfilename        = "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt"
+char* jsonfilename        = "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt";
 
 //--------------------------------------------------------------------
 
@@ -275,7 +275,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 	if (is_duplicate(id) )
 	  continue;
       }
-      
+      /*
       //skip events with bad els_conv_dist 
       bool skipEvent = false;
       for( unsigned int iEl = 0 ; iEl < els_conv_dist().size() ; ++iEl ){
@@ -289,6 +289,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
         nSkip_els_conv_dist++;
         continue;
       }
+      */
       
       //good run+event selection-----------------------------------------------------------
 
