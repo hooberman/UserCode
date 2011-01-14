@@ -48,9 +48,9 @@ const int nJetBins        = 3;
 const int nSumJetPtBins   = 7;
 const int nBosonPtBins    = 4;
 
-float lumi                = 0.03485;
-char* iter                = "nov5th_v3";
-char* jsonfilename        = "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt";
+float lumi                = 0.034;
+char* iter                = "nov5th_v4";
+char* jsonfilename        = "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt"
 
 //--------------------------------------------------------------------
 
