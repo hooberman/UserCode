@@ -15,7 +15,7 @@ void runBabyLooper(char* iter, char* prefix , bool isData = true,
   babylooper* myLooper = new babylooper();
   
   cout << "Running on sample " << prefix << endl;
-  myLooper->ScanChain(ch, prefix, isData, sel, makeTemplate);
+  myLooper->ScanChain(ch, iter, prefix, isData, sel, makeTemplate);
   
 }
 
