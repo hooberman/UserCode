@@ -205,8 +205,8 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
   set_goodrun_file( jsonfilename );
   
   if( isData ){
-    ofile_tcmet.open(  Form( "output/%s/%s_tcmetprintout.txt" , iter , prefix  ) );
-    ofile_events.open( Form( "output/%s/%s_highmetevents.txt" , iter , prefix  ) );
+    ofile_tcmet.open(  Form( "photonTemplates/%s/%s_tcmetprintout.txt" , iter , prefix  ) );
+    ofile_events.open( Form( "photonTemplates/%s/%s_highmetevents.txt" , iter , prefix  ) );
 
 
     ofile_events << "|" << setw(8)  << "run"          << setw(4) 
@@ -227,7 +227,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
   // make a baby ntuple
   //stringstream babyfilename;
   //babyfilename << prefix << "_baby.root";
-  MakeBabyNtuple( Form("output/%s/%s_baby.root", iter , prefix ) );
+  MakeBabyNtuple( Form("photonTemplates/%s/%s_baby.root", iter , prefix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
