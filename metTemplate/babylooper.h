@@ -20,7 +20,7 @@ class babylooper
         enum selectionType   { e_QCDSelection = 0, e_photonSelection = 1, e_ZSelection = 2};
 
         void setBranches (TTree *tree);
-        void ScanChain (TChain*, const char*, bool isData, 
+        void ScanChain (TChain*, const char*, const char*, bool isData, 
                         selectionType mySelectionType = e_photonSelection, 
                         bool makeTemplate = false, int nEvents = -1);
         void bookHistos();
@@ -29,7 +29,10 @@ class babylooper
         void fillUnderOverFlow(TH1F *h1, float value, float weight);
         void fillHistos(TH1F *h1[4],    float value, float weight, int myType);
         void fillHistos(TH1F *h1[4][4], float value, float weight, int myType, int nJetsIdx);
-        TH1F* getMetTemplate( TFile* file, int iJetBin , int iSumJetPtBin , int iBosonPtBin , float weight );
+        TH1F* getMetTemplate( TFile* file, int iTrigBin , int iJetBin , int iSumJetPtBin , 
+                              int iBosonPtBin , int iVtxBin, float weight );
+        void setErrors( TFile* file,  TH1F* hist , int n[3][7] );
+        void setErrors( TFile* file,  TH1F* hist , int n[4][3][7] );
 
     private:
         
@@ -67,6 +70,7 @@ class babylooper
 
 	// pfmet stuff
 	Float_t pfmet_;
+	Float_t pfmetcor_;
 	Float_t pfmetphi_;
 	Float_t pfsumet_;
 
@@ -134,6 +138,7 @@ class babylooper
 
         // jet stuff
         Int_t   nJets_;
+        Int_t   nJets40_;
         Float_t sumJetPt_;
         Float_t vecJetPt_;
         Int_t   nbtags_;
@@ -150,10 +155,21 @@ class babylooper
         Float_t jet_neu_hadfrac_;   
         Int_t   jet_nchg_;              
         Int_t   jet_nmuon_;         
+        Int_t   pfjetid_;         
         Int_t   jet_nneu_;          
         Float_t jet_dphimet_;       
         Float_t jet_dpt_;           
         Float_t jet_drgen_;    
+
+        Float_t drjet_ll_;
+        Float_t jetpt_ll_;
+        Int_t   pfjetid_ll_;
+        Float_t drjet_lt_;
+        Float_t jetpt_lt_;
+        Int_t   pfjetid_lt_;
+        Int_t   failjetid_;
+        Float_t maxemf_;
+
 
         //Z stuff
         Int_t   passe_ll_ttbar_;
@@ -177,21 +193,42 @@ class babylooper
         Int_t   leptype_;
         Float_t ptll_;
         Float_t ptlt_;
+        Float_t etall_;
+        Float_t etalt_;
+        Float_t phill_;
+        Float_t philt_;
         Int_t   flagll_;
         Int_t   flaglt_;
         Float_t dilmass_;
+        Float_t dilmasscor_;
         Float_t dilpt_;
 
         //leading jet stuff
         Float_t jetmax_pt_;
         Float_t jetmax_dphimet_;
       
+        TH1F* hyield_0j;
+        TH1F* hyield_1j;
+        TH1F* hyield_2j;
+        TH1F* hyield_g2j;
+        TH1F* hyield;
+        TH1F* hyield_pfmet30;
+        TH1F* hyield_pfmet60;
         TH1F* hpthad[5];
         TH1F* hgenps_pthat;
         TH1F* hphotonpt;
         TH1F* hr4;
 
         TH1F* metPredicted;
+        int   n_metPredicted[3][7];
+        int   n_metPredicted_ee[3][7];
+        int   n_metPredicted_mm[3][7];
+        int   nphoton_metPredicted[4][3][7];
+        int   nphoton_metPredicted_ee[4][3][7];
+        int   nphoton_metPredicted_mm[4][3][7];
+        int   nqcd_metPredicted[4][3][7];
+        int   nqcd_metPredicted_ee[4][3][7];
+        int   nqcd_metPredicted_mm[4][3][7];
         TH1F* metObserved;
         TH1F* metPredicted_sf;
         TH1F* metObserved_sf;
@@ -216,6 +253,7 @@ class babylooper
         TH1F* metPerpPredicted;
         TH1F* metPerpObserved;
 
+        TH1F* hdilmass[4][4];
         TH1F* htcmet[4][4];
         TH1F* htcmetNew[4][4];
         TH1F* hpfmet[4][4];
@@ -227,10 +265,16 @@ class babylooper
         TH1F* tcmetNewTemplate[3][7][4];
         TH1F* pfmetTemplate[3][7][4];
 
+        TH1F* tcmetTemplate_njets_ht_nvtx[3][7][3];
+        TH1F* tcmetNewTemplate_njets_ht_nvtx[3][7][3];
+        TH1F* pfmetTemplate_njets_ht_nvtx[3][7][3];
+
         TH1F* tcmetTemplate_combined[3][7];
         TH1F* tcmetNewTemplate_combined[3][7];
         TH1F* pfmetTemplate_combined[3][7];
-        
+
+        int nTemplate[3][7];
+
         ofstream ofile_tcmet;
         ofstream ofile_events;
 };
