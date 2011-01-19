@@ -40,24 +40,23 @@ inline double fround(double n, double d){
   return floor(n * pow(10., d) + .5) / pow(10., d);
 }
 
-
 enum metType   { e_tcmet = 0, e_tcmetNew = 1, e_pfmet = 2};
 enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 //--------------------------------------------------------------------
 
 bool debug = false;
-const int nJetBins           = 3;
-const int nSumJetPtBins      = 7;
-const int nBosonPtBins       = 4;
-const bool generalLeptonVeto = true;
-
-float lumi         = 34.85e-3; 
-char* iter         = "nov5th_v3";
-char* jsonfilename = "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt";
-
+const int nJetBins              = 3;
+const int nSumJetPtBins         = 7;
+const int nBosonPtBins          = 4;
+const bool generalLeptonVeto    = true;
+const bool doTemplatePrediction = false;
 metType myMetType               = e_tcmet;
 templateSource myTemplateSource = e_PhotonJet;
+
+float lumi         = 33.96e-3; 
+char* iter         = "v5";
+char* jsonfilename = "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt";
 
 //--------------------------------------------------------------------
 
@@ -110,7 +109,7 @@ int getBosonPtBin( float x ){
   else if( x > 60 && x < 100 ) return 2;
   else if( x > 100           ) return 3;
   else { 
-    cout << "Error could not find boson pt bin" << endl;
+    cout << "Error could not find boson pt bin x = " << x << endl;
     exit(0);
   }
 }
@@ -229,49 +228,53 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   string metTemplateString = "";
   char* templateFileName   = "";
 
-  //select templates
-  if( isData ){
+  if( doTemplatePrediction ){
+
+    //select templates
+    if( isData ){
+      
+      if( myTemplateSource == e_QCD ){
+        cout << "QCD templates are deprecated. If you want to use this you"
+             << "need to make QCD templates using makeTemplates.C." << endl;
+        exit(0);
+        //       templateFileName = Form("output/%s/JetMETTau_templates.root",iter);
+        //       cout << "Using template file " << templateFileName << endl;
+        //       metTemplateString = "_JetMETTauTemplate";
+        //       metTemplateFile = TFile::Open( templateFileName );
+      }
+      
+      else if( myTemplateSource == e_PhotonJet ){
+        templateFileName = Form("output/%s/EG_templates.root",iter);
+        cout << "Using template file " << templateFileName << endl;
+        metTemplateString = "_EGTemplate";
+        metTemplateFile = TFile::Open( templateFileName );
+      }
+      
+    }else{
+      
+      if( myTemplateSource == e_QCD ){
+        cout << "QCD templates are deprecated. If you want to use this you"
+             << "need to make QCD templates using makeTemplates.C." << endl;
+        exit(0);
+        //       templateFileName = Form("output/%s/QCD_Pt15_templates.root",iter);
+        //       cout << "Using template file " << templateFileName << endl;
+        //       metTemplateString = "_QCD_Pt15Template";
+        //       metTemplateFile = TFile::Open( templateFileName ); 
+      }
+      
+      else if( myTemplateSource == e_PhotonJet ){
+        templateFileName = Form("output/%s/PhotonJet_templates.root",iter);
+        cout << "Using template file " << templateFileName << endl;
+        metTemplateString = "_PhotonJetTemplate";
+        metTemplateFile = TFile::Open( templateFileName );
+      }
+    }
     
-    if( myTemplateSource == e_QCD ){
-      cout << "QCD templates are deprecated. If you want to use this you"
-           << "need to make QCD templates using makeTemplates.C." << endl;
+    if( metTemplateFile == 0 ){
+      cout << "Error couldn't find " << templateFileName << endl;
       exit(0);
-      //       templateFileName = Form("output/%s/JetMETTau_templates.root",iter);
-      //       cout << "Using template file " << templateFileName << endl;
-      //       metTemplateString = "_JetMETTauTemplate";
-      //       metTemplateFile = TFile::Open( templateFileName );
     }
-    
-    else if( myTemplateSource == e_PhotonJet ){
-      templateFileName = Form("output/%s/EG_templates.root",iter);
-      cout << "Using template file " << templateFileName << endl;
-      metTemplateString = "_EGTemplate";
-      metTemplateFile = TFile::Open( templateFileName );
-    }
-    
-  }else{
-    
-    if( myTemplateSource == e_QCD ){
-      cout << "QCD templates are deprecated. If you want to use this you"
-           << "need to make QCD templates using makeTemplates.C." << endl;
-      exit(0);
-      //       templateFileName = Form("output/%s/QCD_Pt15_templates.root",iter);
-      //       cout << "Using template file " << templateFileName << endl;
-      //       metTemplateString = "_QCD_Pt15Template";
-      //       metTemplateFile = TFile::Open( templateFileName ); 
-    }
-        
-    else if( myTemplateSource == e_PhotonJet ){
-      templateFileName = Form("output/%s/PhotonJet_templates.root",iter);
-      cout << "Using template file " << templateFileName << endl;
-      metTemplateString = "_PhotonJetTemplate";
-      metTemplateFile = TFile::Open( templateFileName );
-    }
-  }
-  
-  if( metTemplateFile == 0 ){
-    cout << "Error couldn't find " << templateFileName << endl;
-    exit(0);
+
   }
 
   set_goodrun_file( jsonfilename );
@@ -1023,38 +1026,47 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       metPar_    = theMet * cos( dphixmet_ );
       metPerp_   = theMet * sin( dphixmet_ );
         
-      //fill predicted and observed met histos
-      int iJetBin      = getJetBin( nJets_ );
-      int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
-      int iBosonPtBin  = getBosonPtBin( dilpt_ );
-
       TH1F* hmet = new TH1F();
-        
-      if( !isData && nJets_ > 1 ){
-        if( myMetType == e_tcmet ){
-          hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
-        }
-        else if( myMetType == e_tcmetNew ){
-          hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetNewTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
-        }
-        else if( myMetType == e_pfmet ){
-          hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
-        }
-      }
-        
-      else{
-        if     ( myMetType == e_tcmet ){
-          hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
-        }
-        else if( myMetType == e_tcmetNew ){
-          hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetNewTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
-        }
-        else if( myMetType == e_pfmet ){
-          hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
-        }
-      }
+      int iJetBin      = getJetBin( nJets_ );
 
-      hmet->Scale( weight_ );
+      if( doTemplatePrediction ){
+
+        //fill predicted and observed met histos
+  
+        int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
+        int iBosonPtBin  = getBosonPtBin( dilpt_ );
+        
+        if( !isData && nJets_ > 1 ){
+          if( myMetType == e_tcmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
+          }
+          else if( myMetType == e_tcmetNew ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetNewTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
+          }
+          else if( myMetType == e_pfmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin));
+          }
+        }
+        
+        else{
+          if     ( myMetType == e_tcmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
+          }
+          else if( myMetType == e_tcmetNew ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("tcmetNewTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
+          }
+          else if( myMetType == e_pfmet ){
+            hmet     = (TH1F*) metTemplateFile->Get(Form("pfmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin));
+          }
+        }
+        
+        hmet->Scale( weight_ );
+        
+      }
+      else{
+        hmet = (TH1F*) metObserved->Clone("hdummy");
+        hmet->Reset();
+      }
 
       iJ = iJetBin;
       if( iJ > 3 ) iJ = 3;
@@ -1105,6 +1117,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   cout << nGoodEM << " em events in Z mass window" << endl;
 
   CloseBabyNtuple();
+
+  already_seen.clear();
 
   // make histos rootfile
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
