@@ -1,0 +1,370 @@
+#include "makeVictorTemplates.h"
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <math.h>
+#include <fstream>
+
+#include "CORE/metTemplatesSelections.cc"
+#include "TChain.h"
+#include "TRandom3.h"
+#include "TDirectory.h"
+#include "TFile.h"
+#include "TROOT.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TMath.h"
+#include "TProfile.h"
+#include <sstream>
+#include "histtools.h"
+
+#include "Math/LorentzVector.h"
+#include "Math/VectorUtil.h"
+#include "TLorentzVector.h"
+
+bool debug = true;
+
+using namespace std;
+
+inline double fround(double n, double d){
+  return floor(n * pow(10., d) + .5) / pow(10., d);
+}
+
+void makeVictorTemplates::ScanChain (TChain* chain){
+
+  
+  int npass = 0;
+  bookHistos();
+  
+  TObjArray *listOfFiles = chain->GetListOfFiles();
+
+  unsigned int nEventsChain = 0;
+
+  unsigned int nEvents = chain->GetEntries();
+  nEventsChain = nEvents;
+  unsigned int nEventsTotal = 0;
+
+  if(debug) cout << "Begin file loop" << endl;
+
+  // file loop
+  TIter fileIter(listOfFiles);
+
+  TFile* currentFile = 0;
+
+  while ((currentFile = (TFile*)fileIter.Next())){
+
+    TFile f(currentFile->GetTitle());
+    TTree *tree = (TTree*)f.Get("jetTree");
+    //cms2.Init(tree);
+    setBranches(tree);
+
+    // event loop
+    //unsigned int nEvents = tree->GetEntries();
+    nEvents = tree->GetEntries();
+
+    for (unsigned int event = 0 ; event < nEvents; ++event){
+   
+      tree->GetEntry(event);
+      ++nEventsTotal;
+
+      // progress feedback to user
+      if (nEventsTotal % 1000 == 0){
+            
+        // xterm magic from L. Vacavant and A. Cerri
+        if (isatty(1)){
+                
+          printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+                 "\033[0m\033[32m <---\033[0m\015", (float)nEventsTotal/(nEventsChain*0.01));
+          fflush(stdout);
+        }
+      }
+
+      if( nJets_ < 2 )        continue;
+      if( maxjetpt_ < 30. )   continue;
+
+      int iJetBin          = getJetBin( nJets_ );
+      int iSumJetPtBin     = getSumJetPtBin( sumJetPt_ );
+      //int iBosonPtBin      = getBosonPtBin( etg_ );
+      int iVtxBin          = getVtxBin( nvtx_ );
+      float templateWeight = 1;//jet15U_L1Prescale_ * jet15U_HLTPrescale_;
+
+      //fill templates binned by njets, sumjetpt, boson pt        
+      //fillUnderOverFlow( tcmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ]    ,  tcmet_    , templateWeight );
+      //fillUnderOverFlow( pfmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ]    ,  pfmet_    , templateWeight );
+      
+      //fill templates binned by njets, sumjetpt, nVtx
+      fillUnderOverFlow( tcmetTemplate_njets_ht_nvtx[ iJetBin ][ iSumJetPtBin ][ iVtxBin ]    ,  tcmet_    , templateWeight );
+      fillUnderOverFlow( pfmetTemplate_njets_ht_nvtx[ iJetBin ][ iSumJetPtBin ][ iVtxBin ]    ,  pfmet_    , templateWeight );
+    
+      //fill templates binned by njets, sumjetpt
+      fillUnderOverFlow( tcmetTemplate_combined[ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
+      fillUnderOverFlow( pfmetTemplate_combined[ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+      
+      ++npass;
+
+      int iTrigBin = -1;
+
+      if( firedJet15U_ == 1 ){
+        
+        templateWeight = jet15U_L1Prescale_ * jet15U_HLTPrescale_;
+        iTrigBin = 0;
+
+        fillUnderOverFlow( tcmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
+        fillUnderOverFlow( pfmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+
+        fillUnderOverFlow( hleadJetPt15 , maxjetpt_ , templateWeight );
+      }
+
+      if( firedJet30U_ == 1 ){
+        
+        templateWeight = jet30U_L1Prescale_ * jet30U_HLTPrescale_;
+        iTrigBin = 1;
+
+        fillUnderOverFlow( tcmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
+        fillUnderOverFlow( pfmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+
+        fillUnderOverFlow( hleadJetPt30 , maxjetpt_ , templateWeight );
+      }
+      
+      if( firedJet50U_ == 1 ){
+        
+        templateWeight = jet50U_L1Prescale_ * jet50U_HLTPrescale_;
+        iTrigBin = 2;
+
+        fillUnderOverFlow( tcmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
+        fillUnderOverFlow( pfmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+
+        fillUnderOverFlow( hleadJetPt50 , maxjetpt_ , templateWeight );
+      }
+
+      if( firedJet100U_ == 1 ){
+        
+        templateWeight = jet100U_L1Prescale_ * jet100U_HLTPrescale_;
+        iTrigBin = 3;
+
+        fillUnderOverFlow( tcmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
+        fillUnderOverFlow( pfmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+
+        fillUnderOverFlow( hleadJetPt100 , maxjetpt_ , templateWeight );
+      }
+
+
+    } // end loop over events
+  } // end loop over files
+      
+  cout << npass << " events passing selection" << endl;
+  if (nEventsChain != nEventsTotal)
+    std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
+ 
+
+    
+    for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+      for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+        for( int iBosonPtBin = 0 ; iBosonPtBin < nBosonPtBins ; iBosonPtBin++ ){
+          
+          float scale = tcmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ] -> Integral();
+          if( scale > 0 )  tcmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ] -> Scale ( 1. / scale );
+          
+          scale = pfmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ] -> Integral();
+          if( scale > 0 )  pfmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ] -> Scale ( 1. / scale );
+          
+        }
+      }
+    }
+
+    for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+      for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+        for( int iVtxBin = 0 ; iVtxBin < nVtxBins ; iVtxBin++ ){
+          
+          float scale = tcmetTemplate_njets_ht_nvtx[ iJetBin ][ iSumJetPtBin ][ iVtxBin ] -> Integral();
+          if( scale > 0 )  tcmetTemplate_njets_ht_nvtx[ iJetBin ][ iSumJetPtBin ][ iVtxBin ] -> Scale ( 1. / scale );
+          
+          scale = pfmetTemplate_njets_ht_nvtx[ iJetBin ][ iSumJetPtBin ][ iVtxBin ] -> Integral();
+          if( scale > 0 )  pfmetTemplate_njets_ht_nvtx[ iJetBin ][ iSumJetPtBin ][ iVtxBin ] -> Scale ( 1. / scale );
+          
+        }
+      }
+    }
+
+    for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+      for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+        
+        float scale = tcmetTemplate_combined[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  tcmetTemplate_combined[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+      
+        scale = pfmetTemplate_combined[ iJetBin ][ iSumJetPtBin ] -> Integral();
+        if( scale > 0 )  pfmetTemplate_combined[ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+        
+        
+      }
+    }
+
+    for( int iTrigBin = 0 ; iTrigBin < 4 ; ++iTrigBin ){
+      for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+        for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+          
+          float scale = tcmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Integral();
+          if( scale > 0 )  tcmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+          
+          scale = pfmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Integral();
+          if( scale > 0 )  pfmetTemplate_qcd[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+          
+        }
+      }
+    }
+
+
+    // make histos rootfile
+    TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+    rootdir->cd();
+    saveHist("qcd-mini-ntuple/victor_templates_2.root");
+    deleteHistos();
+  
+} // end ScanChain
+
+
+void makeVictorTemplates::fillUnderOverFlow(TH1F *h1, float value, float weight){
+
+  float min = h1->GetXaxis()->GetXmin();
+  float max = h1->GetXaxis()->GetXmax();
+
+  if (value > max) value = h1->GetBinCenter(h1->GetNbinsX());
+  if (value < min) value = h1->GetBinCenter(1);
+
+  h1->Fill(value, weight);
+
+}
+
+void makeVictorTemplates::bookHistos(){
+
+  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+  rootdir->cd();
+
+  hleadJetPt15  = new TH1F("hleadJetPt15", "",100,0,1000);
+  hleadJetPt30  = new TH1F("hleadJetPt30", "",100,0,1000);
+  hleadJetPt50  = new TH1F("hleadJetPt50", "",100,0,1000);
+  hleadJetPt100 = new TH1F("hleadJetPt100","",100,0,1000);
+
+  int maxmet = 200;
+
+  for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+    for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+      for( int iBosonPtBin = 0 ; iBosonPtBin < nBosonPtBins ; iBosonPtBin++ ){
+        
+        tcmetTemplate[iJetBin][iSumJetPtBin][iBosonPtBin] = new TH1F(Form("tcmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin),
+                                                                     Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str(),
+                                                                          bosonPtString(iBosonPtBin).c_str()),maxmet,0,maxmet);
+        
+        pfmetTemplate[iJetBin][iSumJetPtBin][iBosonPtBin] = new TH1F(Form("pfmetTemplate_%i_%i_%i",iJetBin,iSumJetPtBin,iBosonPtBin),
+                                                                     Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str(),
+                                                                          bosonPtString(iBosonPtBin).c_str()),maxmet,0,maxmet);
+        
+        tcmetTemplate[iJetBin][iSumJetPtBin][iBosonPtBin]->Sumw2();
+        pfmetTemplate[iJetBin][iSumJetPtBin][iBosonPtBin]->Sumw2();
+        
+        tcmetTemplate[iJetBin][iSumJetPtBin][iBosonPtBin]->GetXaxis()->SetTitle("tcmet (GeV)");
+        pfmetTemplate[iJetBin][iSumJetPtBin][iBosonPtBin]->GetXaxis()->SetTitle("pfmet (GeV)");          
+        
+      }
+    }
+  }
+
+  for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+    for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+      for( int iVtxBin = 0 ; iVtxBin < nVtxBins ; iVtxBin++ ){
+        
+        tcmetTemplate_njets_ht_nvtx[iJetBin][iSumJetPtBin][iVtxBin] = new TH1F(Form("tcmetTemplate_njets_ht_nvtx_%i_%i_%i",iJetBin,iSumJetPtBin,iVtxBin),
+                                                                               Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str(),
+                                                                                    nVTXString(iVtxBin).c_str()),maxmet,0,maxmet);
+                
+        pfmetTemplate_njets_ht_nvtx[iJetBin][iSumJetPtBin][iVtxBin] = new TH1F(Form("pfmetTemplate_njets_ht_nvtx_%i_%i_%i",iJetBin,iSumJetPtBin,iVtxBin),
+                                                                               Form("%s, %s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str(),
+                                                                                    nVTXString(iVtxBin).c_str()),maxmet,0,maxmet);
+        
+        tcmetTemplate_njets_ht_nvtx[iJetBin][iSumJetPtBin][iVtxBin]->Sumw2();
+        pfmetTemplate_njets_ht_nvtx[iJetBin][iSumJetPtBin][iVtxBin]->Sumw2();
+        
+        tcmetTemplate_njets_ht_nvtx[iJetBin][iSumJetPtBin][iVtxBin]->GetXaxis()->SetTitle("tcmet (GeV)");
+        pfmetTemplate_njets_ht_nvtx[iJetBin][iSumJetPtBin][iVtxBin]->GetXaxis()->SetTitle("pfmet (GeV)");          
+        
+      }
+    }
+  }
+  
+  
+  for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+    for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+      
+      
+      tcmetTemplate_combined[iJetBin][iSumJetPtBin] = new TH1F(Form("tcmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin),
+                                                               Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
+      
+      pfmetTemplate_combined[iJetBin][iSumJetPtBin] = new TH1F(Form("pfmetTemplate_combined_%i_%i",iJetBin,iSumJetPtBin),
+                                                               Form("%s, %s",jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
+      
+      tcmetTemplate_combined[iJetBin][iSumJetPtBin]->Sumw2();
+      pfmetTemplate_combined[iJetBin][iSumJetPtBin]->Sumw2();
+      
+      tcmetTemplate_combined[iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("tcmet (GeV)");
+      pfmetTemplate_combined[iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("pfmet (GeV)");          
+      
+    }
+  }
+  
+  char* trigName[4]={"15U","30U","50U","100U"};
+
+  for( int iTrigBin = 0 ; iTrigBin < 4 ; iTrigBin++ ){
+    for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+      for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
+        
+        
+        tcmetTemplate_qcd[iTrigBin][iJetBin][iSumJetPtBin] = new TH1F(Form("tcmetTemplate_qcd_%i_%i_%i",iTrigBin,iJetBin,iSumJetPtBin),
+                                                                      Form("%s, %s, %s",trigName[iTrigBin],
+                                                                           jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
+
+        pfmetTemplate_qcd[iTrigBin][iJetBin][iSumJetPtBin] = new TH1F(Form("pfmetTemplate_qcd_%i_%i_%i",iTrigBin,iJetBin,iSumJetPtBin),
+                                                                      Form("%s, %s, %s",trigName[iTrigBin],
+                                                                           jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
+        
+ 
+        
+        tcmetTemplate_qcd[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
+        pfmetTemplate_qcd[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
+        
+        tcmetTemplate_qcd[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("tcmet (GeV)");
+        pfmetTemplate_qcd[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("pfmet (GeV)");          
+        
+      }
+    }
+  }
+
+}
+
+
+void makeVictorTemplates::setBranches (TTree* tree){
+  
+  tree->SetBranchAddress("tcMET",               &tcmet_              );
+  tree->SetBranchAddress("pfMET",               &pfmet_              );
+  tree->SetBranchAddress("nPFJets30GeV",        &nJets_              );
+  tree->SetBranchAddress("pfHT",                &sumJetPt_           );
+  tree->SetBranchAddress("nGoodVertices",       &nvtx_               );
+  tree->SetBranchAddress("leadJetPT",           &maxjetpt_           );
+  tree->SetBranchAddress("prescale",            &prescale_           );
+
+  tree->SetBranchAddress("firedJet15U",         &firedJet15U_        );
+  tree->SetBranchAddress("jet15U_L1Prescale",   &jet15U_L1Prescale_  );
+  tree->SetBranchAddress("jet15U_HLTPrescale",  &jet15U_HLTPrescale_ );
+
+  tree->SetBranchAddress("firedJet30U",         &firedJet30U_        );
+  tree->SetBranchAddress("jet30U_L1Prescale",   &jet30U_L1Prescale_  );
+  tree->SetBranchAddress("jet30U_HLTPrescale",  &jet30U_HLTPrescale_ );
+
+  tree->SetBranchAddress("firedJet50U",         &firedJet50U_        );
+  tree->SetBranchAddress("jet50U_L1Prescale",   &jet50U_L1Prescale_  );
+  tree->SetBranchAddress("jet50U_HLTPrescale",  &jet50U_HLTPrescale_ );
+
+  tree->SetBranchAddress("firedJet100U",        &firedJet100U_       );
+  tree->SetBranchAddress("jet100U_L1Prescale",  &jet100U_L1Prescale_ );
+  tree->SetBranchAddress("jet100U_HLTPrescale", &jet100U_HLTPrescale_);
+
+}
