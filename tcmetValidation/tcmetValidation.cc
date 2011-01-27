@@ -83,53 +83,71 @@ int main(int argc, char* argv[]){
   vector<int>   rebin;
   vector<float> prob;
 
-  //vars.push_back("trackD0PVTX");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
-  //vars.push_back("trackDZPVTX");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
-  //vars.push_back("trackD0BS");                       xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  //--------------------------------
+  //event vars
+  //-------------------------------- 
   vars.push_back("MET");                             xmin.push_back(0);    xmax.push_back(100);  rebin.push_back(1);
   vars.push_back("SumET");                           xmin.push_back(0);    xmax.push_back(2000); rebin.push_back(20);
   vars.push_back("MEx");                             xmin.push_back(-250); xmax.push_back(250);  rebin.push_back(10);
   vars.push_back("MEy");                             xmin.push_back(-250); xmax.push_back(250);  rebin.push_back(10);
+  vars.push_back("METPhi");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("METSig");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("Nevents");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+
+  if( !isData ){
+    vars.push_back("METPhiResolution_GenMETTrue");   xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+    vars.push_back("METResolution_GenMETTrue");      xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(2);
+    vars.push_back("METPhiResolution_GenMETCalo");   xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+    vars.push_back("METResolution_GenMETCalo");      xmin.push_back(-200); xmax.push_back(200);  rebin.push_back(5);
+  }
+
+  //vars.push_back("fracTracks");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   //vars.push_back("dMET");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   //vars.push_back("dMETx");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   //vars.push_back("dMETy");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   //vars.push_back("dMUx");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   //vars.push_back("dMUy");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("CorrectionFlag");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("METPhi");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  if( !isData ){
-    vars.push_back("METPhiResolution_GenMETTrue");   xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-    vars.push_back("METResolution_GenMETTrue");      xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(2);
-  }
-  vars.push_back("Nevents");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("electronHoverE");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
-  //vars.push_back("fracTracks");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+
+  //--------------------------------
+  //muon vars
+  //--------------------------------
+  vars.push_back("muonPt");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
   vars.push_back("muonEta");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(5);
-  vars.push_back("muonNormalizedChi2");              xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  //vars.push_back("muonSAhits");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  //vars.push_back("nMus");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  //vars.push_back("trackAlgo");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("trackEta");                        xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
-  vars.push_back("trackNormalizedChi2");             xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  //vars.push_back("trackPtErr");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  if( !isData ){
-    vars.push_back("METPhiResolution_GenMETCalo");   xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-    vars.push_back("METResolution_GenMETCalo");      xmin.push_back(-200); xmax.push_back(200);  rebin.push_back(5);
-  }
-  vars.push_back("METSig");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("MExCorrection");                   xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(5);
-  vars.push_back("MEyCorrection");                   xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(5);
-  vars.push_back("electronEta");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(5);
-  vars.push_back("electronPt");                      xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
   vars.push_back("muonD0");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
   vars.push_back("muonNhits");                       xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("muonPt");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  vars.push_back("muonNormalizedChi2");              xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("muonSAhits");                      xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);  
+  vars.push_back("MExCorrection");                   xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(5);
+  vars.push_back("MEyCorrection");                   xmin.push_back(-100); xmax.push_back(100);  rebin.push_back(5);
+  vars.push_back("CorrectionFlag");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("nMus");                            xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+
+  //--------------------------------
+  //electron vars
+  //--------------------------------
+  vars.push_back("electronEta");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(5);
+  vars.push_back("electronPt");                      xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  vars.push_back("electronHoverE");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+
+  //--------------------------------
+  //track vars
+  //--------------------------------
+  vars.push_back("trackPt");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(4);
+  vars.push_back("trackEta");                        xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  vars.push_back("trackNhits");                      xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  vars.push_back("trackNormalizedChi2");             xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+
+  //vars.push_back("trackD0PVTX");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  //vars.push_back("trackDZPVTX");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  //vars.push_back("trackD0BS");                       xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(2);
+  //vars.push_back("trackPtErr");                    xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   //vars.push_back("nEls");                          xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
   //vars.push_back("nMusAsPis");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  
-  vars.push_back("trackNhits");                      xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
-  vars.push_back("trackPt");                         xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(4);
   //vars.push_back("trackQuality");                  xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+  //vars.push_back("trackAlgo");                     xmin.push_back(-999); xmax.push_back(-999); rebin.push_back(1);
+
+
+
     
   //make TLegend
   TH1F* h1dummy = new TH1F("h1dummy","",1,0,1);

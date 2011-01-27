@@ -44,7 +44,8 @@ process.load("Validation.RecoMET.PFMET_cff")
 
 process.load("Validation.RecoMET.TCMET_cfi")
 process.tcMetAnalyzer.sample = cms.untracked.string("%(MYSAMPLE)s")
-
+process.tcMetAnalyzer.InputMETLabel = cms.InputTag("%(METCOLLECTION)s")
+                      
 process.load("Validation.RecoMET.MuonCorrectedCaloMET_cff")
 
 process.load("Configuration.StandardSequences.Geometry_cff")

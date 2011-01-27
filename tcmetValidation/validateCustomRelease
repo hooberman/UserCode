@@ -56,10 +56,11 @@ echo   $zeedataset > .zeedataset
 export zeeglobaltag=`dbsql find dataset.tag where dataset like ${zeedataset} | tail -n 1`
 echo  "ZEE globaltag                  :  " $zeeglobaltag
 
-python makeConfigFiles.py $zeedataset $zeeglobaltag zee
+python makeConfigFiles.py $zeedataset $zeeglobaltag zee tcMet
 
 cmsRun zee.py > zee.log 2>&1 &
 
+#if [ 0 = 1 ]  ; then
 #zmm sample
 echo "-------------------------------------------------------------------------------------"
 
@@ -70,7 +71,7 @@ echo  $zmmdataset > .zmmdataset
 export zmmglobaltag=`dbsql find dataset.tag where dataset like ${zmmdataset} | tail -n 1`
 echo  "ZMM globaltag                  :  " $zmmglobaltag
 
-python makeConfigFiles.py $zmmdataset $zmmglobaltag zmm
+python makeConfigFiles.py $zmmdataset $zmmglobaltag zmm tcMet
 
 cmsRun zmm.py > zmm.log 2>&1 &
 
@@ -84,7 +85,7 @@ echo  $ttbardataset > .ttbardataset
 export ttbarglobaltag=`dbsql find dataset.tag where dataset like ${ttbardataset} | tail -n 1`
 echo  "TTBAR globaltag                :  " $ttbarglobaltag
 
-python makeConfigFiles.py $ttbardataset $ttbarglobaltag ttbar
+python makeConfigFiles.py $ttbardataset $ttbarglobaltag ttbar tcMet
 
 cmsRun ttbar.py > ttbar.log 2>&1 &
 
@@ -98,7 +99,7 @@ echo  $qcddataset > .qcddataset
 export qcdglobaltag=`dbsql find dataset.tag where dataset like ${qcddataset} | tail -n 1`
 echo  "QCD globaltag                  :  " $qcdglobaltag
 
-python makeConfigFiles.py $qcddataset $qcdglobaltag qcd
+python makeConfigFiles.py $qcddataset $qcdglobaltag qcd tcMet
 
 cmsRun qcd.py > qcd.log 2>&1 &
 
@@ -108,7 +109,7 @@ echo "--------------------------------------------------------------------------
 #cmsRun data.py > data.log 2>&1 &
 #echo  '/MinimumBias/Commissioning10-GOODCOLL-Jun9thSkim_v1/RECO'  > .datadataset
 
-
+#fi
 
 
 rm -f validateRelease.log
