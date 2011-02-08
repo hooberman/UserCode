@@ -4,6 +4,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
+#include "TProfile.h"
 #include <vector>
 #include <fstream>
 
@@ -34,6 +35,9 @@ class Z_looper
   void fillUnderOverFlow(TH1F *h1, float value, float weight);
   void fillHistos(TH1F *h1[4],    float value, float weight, int myType);
   void fillHistos(TH1F *h1[4][4], float value, float weight, int myType, int nJetsIdx);
+  float PassGenSelection( bool isData );
+  float getMetError(  vector<int> goodMuonIndices );
+  float getMetError_claudio(  vector<int> goodMuonIndices );
         
  private:
         
@@ -68,7 +72,10 @@ class Z_looper
   Int_t   nGoodVertex_;
   Float_t weight_;
   Float_t pthat_;
+  Float_t mllgen_;
   Float_t maxemf_;
+  Float_t metError_;
+  Float_t metErrorC_;
 
   // genmet stuff
   Float_t genmet_;
@@ -80,10 +87,21 @@ class Z_looper
   Float_t pfmetphi_;
   Float_t pfsumet_;
 
+  //pfmuon stuff
+  Int_t   npfmuons_;
+  Int_t   nmatchedpfmuons_;
+  Float_t ptll_pf_;
+  Float_t ptlt_pf_;
+
   // calomet stuff
   Float_t met_;
   Float_t metphi_;
   Float_t sumet_;
+
+  Float_t ptlltrk_;
+  Float_t ptlttrk_;
+  Float_t ptllgfit_;
+  Float_t ptltgfit_;
 
   // muon-corrected calomet stuff
   Float_t mumet_;
@@ -154,11 +172,14 @@ class Z_looper
   Int_t   idlt_;
   Float_t ptll_;
   Float_t ptlt_;
+  Float_t pterrll_;
+  Float_t pterrlt_;
   Float_t etall_;
   Float_t etalt_;
   Float_t phill_;
   Float_t philt_;
   Float_t dilmass_;
+  Float_t dilmasspf_;
   Float_t dilpt_;
   Int_t   flagll_;
   Int_t   flaglt_;
@@ -169,6 +190,9 @@ class Z_looper
   Int_t   goodvtx_;    
   Int_t   goodtrks_;   
 
+  TH1F* hgenmet_all;
+  TH1F* hgenmet_pass;
+  TProfile* hresponse;  
   TH1F*   hgenps_pthat;
   TH1F*   hphotonpt;
 

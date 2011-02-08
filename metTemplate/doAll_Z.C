@@ -14,18 +14,25 @@
   gROOT->ProcessLine(".L runZLooper.C+");
   
   //run on samples
-  //runZLooper("lepdata_skim"   , true ,  Z_looper::e_ZSelection );
-  //runZLooper("lepdata"        , true ,  Z_looper::e_ZSelection );
-  //runZLooper("TTbar"          , false , Z_looper::e_ZSelection ); 
-  runZLooper("ZJets"          , false , Z_looper::e_ZSelection );
-  runZLooper("WJets"          , false , Z_looper::e_ZSelection );
-  runZLooper("WW"             , false , Z_looper::e_ZSelection );
-  runZLooper("WZ"             , false , Z_looper::e_ZSelection );
-  runZLooper("ZZ"             , false , Z_looper::e_ZSelection );
-  runZLooper("tW"             , false , Z_looper::e_ZSelection );
-  runZLooper("LM4"            , false , Z_looper::e_ZSelection );
-
+  runZLooper("lepdata_skim"   , true ,  Z_looper::e_ZSelection );
+//   //   //runZLooper("lepdata"        , true ,  Z_looper::e_ZSelection );
+//   runZLooper("TTbar"          , false , Z_looper::e_ZSelection ); 
+//   runZLooper("ZJets"          , false , Z_looper::e_ZSelection );
+//   runZLooper("DY"             , false , Z_looper::e_ZSelection );
+//   runZLooper("WJets"          , false , Z_looper::e_ZSelection );
+//   runZLooper("WW"             , false , Z_looper::e_ZSelection );
+//   runZLooper("WZ"             , false , Z_looper::e_ZSelection );
+//   runZLooper("ZZ"             , false , Z_looper::e_ZSelection );
+//   runZLooper("tW"             , false , Z_looper::e_ZSelection );
+//   runZLooper("LM0"            , false , Z_looper::e_ZSelection );
+//   runZLooper("LM1"            , false , Z_looper::e_ZSelection );
+//   runZLooper("LM2"            , false , Z_looper::e_ZSelection );
+//   runZLooper("LM3"            , false , Z_looper::e_ZSelection );
+//   runZLooper("LM4"            , false , Z_looper::e_ZSelection );
+//   runZLooper("LM8"            , false , Z_looper::e_ZSelection );
+//   runZLooper("LM9"            , false , Z_looper::e_ZSelection );
+  
   //runZLooper("testdata"                          , true ,  Z_looper::e_ZSelection         );
-
+  
 
 }

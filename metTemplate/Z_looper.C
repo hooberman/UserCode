@@ -34,6 +34,8 @@
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
+#include "CORE/mcSelections.cc"
+#include "CORE/mcSUSYkfactor.cc"
 
 using namespace tas;
 inline double fround(double n, double d){
@@ -55,7 +57,7 @@ metType myMetType               = e_tcmet;
 templateSource myTemplateSource = e_PhotonJet;
 
 float lumi         = 33.96e-3; 
-char* iter         = "v5";
+char* iter         = "v7";
 char* jsonfilename = "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt";
 
 //--------------------------------------------------------------------
@@ -205,6 +207,27 @@ string sumJetPtString( int bin ){
 
 //--------------------------------------------------------------------
 
+bool isMuMuEvent(){
+
+ 
+  if( evt_run() ==  146430 && evt_lumiBlock() ==        3  && evt_event() ==    460014 ) return true;
+  if( evt_run() ==  147216 && evt_lumiBlock() ==       48  && evt_event() ==  35885648 ) return true;
+  if( evt_run() ==  147217 && evt_lumiBlock() ==       75  && evt_event() ==  55188718 ) return true;
+  if( evt_run() ==  148031 && evt_lumiBlock() ==      765  && evt_event() == 595250802 ) return true;
+  if( evt_run() ==  147450 && evt_lumiBlock() ==       82  && evt_event() ==  29253181 ) return true;
+  if( evt_run() ==  148029 && evt_lumiBlock() ==      534  && evt_event() == 414899947 ) return true;
+  if( evt_run() ==  148862 && evt_lumiBlock() ==      350  && evt_event() == 522383338 ) return true;
+  if( evt_run() ==  149181 && evt_lumiBlock() ==     1769  && evt_event() == 1675896175) return true;
+  if( evt_run() ==  149182 && evt_lumiBlock() ==      167  && evt_event() == 145682218)  return true;
+  if( evt_run() ==  149291 && evt_lumiBlock() ==      205  && evt_event() == 199787369)  return true;
+  if( evt_run() ==  149291 && evt_lumiBlock() ==      232  && evt_event() == 235101408)  return true;
+  if( evt_run() ==  149291 && evt_lumiBlock() ==      616  && evt_event() == 641847074)  return true;
+  
+  return false;
+}
+
+//--------------------------------------------------------------------
+
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, metAlgo algo, int nEvents, float kFactor){
 
@@ -318,6 +341,26 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   int nSkip_els_conv_dist = 0;
   if(debug) cout << "Begin file loop" << endl;
 
+  int  nTot               = 0;  //total number of events
+  
+  int nGenPass60         = 0;  //number of events generated in sig window
+  float nGenPass60_K     = 0;  //number of events generated in sig window
+  int nRecoPassGenPass60 = 0;  //number of events reconstructed in sig window which pass gen
+  int nRecoPassGenFail60 = 0;  //number of events reconstructed in sig window which fail gen
+
+  int nGenPass120         = 0;  //number of events generated in sig window
+  float nGenPass120_K     = 0;  //number of events generated in sig window
+  int nRecoPassGenPass120 = 0;  //number of events reconstructed in sig window which pass gen
+  int nRecoPassGenFail120 = 0;  //number of events reconstructed in sig window which fail gen
+
+  float sigma      = 1;
+  int   nTotEvents = 1;
+
+  const int ncuts = 10;
+  int nRecoPass_cut[ncuts];
+  for( unsigned int icut = 0 ; icut < ncuts ; ++icut )
+    nRecoPass_cut[icut] = 0;
+
   // file loop
   TIter fileIter(listOfFiles);
   TFile* currentFile = 0;
@@ -334,6 +377,38 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       cms2.GetEntry(event);
       ++nEventsTotal;
+
+      if( !isData ) sigma = cms2.evt_xsec_incl();
+
+      nTot++;
+
+      
+      //if( !isMuMuEvent() ) continue;
+
+      //if( !( evt_run()==142557 && evt_lumiBlock()==192 && evt_event()==80895186) ) continue;
+
+      //cout << "Found event " << currentFile->GetTitle() <<  endl;
+
+      float ksusy = 1;
+      if( strcmp( prefix , "LM4" ) == 0 ) ksusy = kfactorSUSY( "lm4" );
+      if( strcmp( prefix , "LM8" ) == 0 ) ksusy = kfactorSUSY( "lm8" );
+
+      if( PassGenSelection( isData ) > 60. ){
+	nGenPass60++;
+	nRecoPass_cut[0]++;
+	nGenPass60_K += ksusy;
+      }
+      if( PassGenSelection( isData ) > 120. ){
+	nGenPass120++;
+	nRecoPass_cut[0]++;
+	nGenPass120_K += ksusy;
+      }
+
+      if( !isData ){
+	hresponse->Fill( gen_met() , evt_pfmet() / gen_met() );
+      	hgenmet_all->Fill( gen_met() );
+	if( evt_pfmet() > 60 ) hgenmet_pass->Fill( gen_met() );
+      }
 
       // progress feedback to user
       if (nEventsTotal % 1000 == 0){
@@ -365,10 +440,39 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         nSkip_els_conv_dist++;
         continue;
       }
+      
+      if( !isData ){
+
+	//splice together the DY samples - if its madgraph, then we do nothing
+	if(TString(prefix).Contains("DY") && TString(evt_dataset()).Contains("madgraph") == false) {	
+	  bool doNotContinue = false;
+	  for(unsigned int i = 0; i < genps_p4().size(); i++){
+	    if(abs(genps_id()[i]) == 23 && genps_p4()[i].M() > 50.)
+	      doNotContinue = true;
+	  }
+	  if(doNotContinue)
+	    continue;	
+	}
+	
+	//extract pthat
+	if(TString(prefix).Contains("DY")){
+	  int nz = 0;
+	  for(unsigned int i = 0; i < genps_p4().size(); i++){
+	    if(abs(genps_id()[i]) == 23){
+	      mllgen_ = genps_p4()[i].M();
+	      nz++;
+	    }
+	  }
+	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
+	}
+      }
+
 
       //good run+event selection-----------------------------------------------------------
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       if( !cleaning_standardAugust2010( isData) )                    continue;
+
+      if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[1]++;
       
       if(debug) cout << "Pass event selection" << endl;
 
@@ -384,6 +488,18 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       pthat_  = -1;
       if( !isData ){
         weight_ = cms2.evt_scale1fb() * kFactor * lumi;
+	if( TString(prefix).Contains("LM") ){
+	  if( strcmp( prefix , "LM0" ) == 0 ) weight_ *= kfactorSUSY( "lm0" );
+	  if( strcmp( prefix , "LM1" ) == 0 ) weight_ *= kfactorSUSY( "lm1" );
+	  if( strcmp( prefix , "LM2" ) == 0 ) weight_ *= kfactorSUSY( "lm2" );
+	  if( strcmp( prefix , "LM3" ) == 0 ) weight_ *= kfactorSUSY( "lm3" );
+	  if( strcmp( prefix , "LM4" ) == 0 ) weight_ *= kfactorSUSY( "lm4" );
+	  if( strcmp( prefix , "LM5" ) == 0 ) weight_ *= kfactorSUSY( "lm5" );
+	  if( strcmp( prefix , "LM6" ) == 0 ) weight_ *= kfactorSUSY( "lm6" );
+	  if( strcmp( prefix , "LM7" ) == 0 ) weight_ *= kfactorSUSY( "lm7" );
+	  if( strcmp( prefix , "LM8" ) == 0 ) weight_ *= kfactorSUSY( "lm8" );
+	  if( strcmp( prefix , "LM9" ) == 0 ) weight_ *= kfactorSUSY( "lm9" );
+	}
         pthat_  = cms2.genps_pthat();
       }
 
@@ -408,9 +524,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       int nHypPass = 0;
 
       VofP4 goodLeptons;
+      vector<int> goodMuonIndices;
+      vector<int> goodPFMuonIndices;
       vector<bool>  killedJet;
       goodLeptons.clear();
       killedJet.clear();
+      goodMuonIndices.clear();
+      goodPFMuonIndices.clear();
 
       if( generalLeptonVeto ){
         
@@ -426,6 +546,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           if( !muonId( imu , OSZ_v1 ))               continue;
           goodLeptons.push_back( mus_p4().at(imu) );
           killedJet.push_back( false );
+	  goodMuonIndices.push_back( imu );
+	  int ipf = mus_pfmusidx().at(imu);
+	  if( ipf < pfmus_p4().size() && ipf >= 0 ){
+	    goodPFMuonIndices.push_back( imu );
+	  }
         }
 
       }
@@ -467,6 +592,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       unsigned int hypIdx = selectBestZHyp(v_goodHyps);
 
+      if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[2]++;
+
       leptype_ = 99;
       if (hyp_type()[hypIdx] == 3) leptype_ = 0;                           // ee
       if (hyp_type()[hypIdx] == 0) leptype_ = 1;                           // mm
@@ -488,13 +615,76 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       idll_             = hyp_ll_id()[hypIdx];   
       idlt_             = hyp_lt_id()[hypIdx];        
       ptll_             = hyp_ll_p4()[hypIdx].pt();
-      ptlt_             = hyp_lt_p4()[hypIdx].pt();
+      ptlt_             = hyp_lt_p4()[hypIdx].pt();  
       etall_            = hyp_ll_p4()[hypIdx].eta();
       etalt_            = hyp_lt_p4()[hypIdx].eta();
       phill_            = hyp_ll_p4()[hypIdx].phi();
       philt_            = hyp_lt_p4()[hypIdx].phi();
       dilmass_          = hyp_p4()[hypIdx].mass(); 
       dilpt_            = hyp_p4()[hypIdx].pt(); 
+      metError_         = getMetError( goodMuonIndices );
+      metErrorC_        = getMetError_claudio( goodMuonIndices );
+
+      npfmuons_ = 0;
+      nmatchedpfmuons_ = 0;
+
+      for( unsigned int ipf = 0 ; ipf < pfmus_p4().size() ; ipf++ ){
+	if( pfmus_p4().at(ipf).pt()  < 20. )         continue;
+	if( fabs( pfmus_p4().at(ipf).eta() ) > 2.5 ) continue;
+	npfmuons_++;
+
+      }
+      
+      if( abs( hyp_ll_id()[hypIdx] ) == 13 ){
+	int ipf_ll = mus_pfmusidx().at(hyp_ll_index().at(hypIdx));
+	if( ipf_ll >= pfmus_p4().size() || ipf_ll < 0 ){
+	  cout << "Error, pfmuon ll index out of range " << ipf_ll << endl;
+	}else{
+	  ptll_pf_ = pfmus_p4().at(ipf_ll).pt();
+	  nmatchedpfmuons_ ++;
+	  if( fabs( ptll_ - ptll_pf_ ) > 0.01 ){
+	    cout << "ERROR: " << ptll_ << " " << ptll_pf_ << endl;
+	  }
+	}
+
+	int muidx  = hyp_ll_index().at(hypIdx);
+	ptlltrk_   = mus_trk_p4().at(muidx).pt();
+	ptllgfit_  = mus_gfit_p4().at(muidx).pt();
+	pterrll_   = mus_ptErr().at(muidx);
+      }
+
+      if( abs( hyp_lt_id()[hypIdx] ) == 13 ){
+	int ipf_lt = mus_pfmusidx()[hyp_lt_index()[hypIdx]];
+	if( ipf_lt >= pfmus_p4().size() || ipf_lt < 0 ){
+	  cout << "Error, pfmuon lt index out of range " << ipf_lt << endl;
+	}else{
+	  ptlt_pf_ = pfmus_p4().at(ipf_lt).pt();
+	  nmatchedpfmuons_ ++;
+	  if( fabs( ptlt_ - ptlt_pf_ ) > 0.01 ){
+	    cout << "ERROR: " << ptlt_ << " " << ptlt_pf_ << endl;
+	  }
+	}
+
+	int muidx  = hyp_lt_index().at(hypIdx);
+	ptlttrk_   = mus_trk_p4().at(muidx).pt();
+	ptltgfit_  = mus_gfit_p4().at(muidx).pt();
+	pterrlt_   = mus_ptErr().at(muidx);
+      }
+
+      if( leptype_ == 1 && npfmuons_ >= 2 ){
+
+	int ipf_ll = mus_pfmusidx().at(hyp_ll_index().at(hypIdx));
+	int ipf_lt = mus_pfmusidx().at(hyp_lt_index().at(hypIdx));
+	
+	dilmasspf_ = -9999;
+	
+	if( ipf_lt >= pfmus_p4().size() || ipf_ll >= pfmus_p4().size() ){
+	  cout << "Error, pfmuon out of range: SHOULDN'T GET HERE!!" << endl;
+	}else{
+	  dilmasspf_ = ( pfmus_p4().at(ipf_ll) + pfmus_p4().at(ipf_lt) ).mass();
+	}
+      }
+
 
       if( abs( hyp_ll_id()[hypIdx] ) == 11 ){
         passe_ll_ttbarV1_      = pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_ttbarV1 , isData , true ) ? 1 : 0;
@@ -974,6 +1164,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //fill histos and ntuple----------------------------------------------------------- 
 
       FillBabyNtuple();
+
+
+
+
       fillHistos( htcmet            , tcmet_           , weight_ , leptype_ , nJets_ );
       fillHistos( htcmetNew         , tcmetNew_        , weight_ , leptype_ , nJets_ );
       fillHistos( hpfmet            , pfmet_           , weight_ , leptype_ , nJets_  );
@@ -995,6 +1189,41 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           
       }
 
+      //-----------------------
+      //signal region selection
+      //-----------------------
+
+      if( dilmass_ < 81. || dilmass_ > 101. )    continue;
+      if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[3]++;
+
+      if( leptype_ == 2 )                        continue;
+      if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[4]++;
+
+      if( nJets_ < 2 )                           continue;
+      if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[5]++;
+
+      if( pfmet_ < 60 )                          continue;
+      if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[6]++;
+
+      if( leptype_ == 0 ){
+	if( jetpt_ll_ - ptll_ < -5  ) continue; 
+	if( jetpt_lt_ - ptlt_ < -5  ) continue; 
+      }
+      if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[7]++;
+      
+
+      if( pfmet_ > 60 ){
+	if( PassGenSelection( isData ) > 60. ) nRecoPassGenPass60++;
+	else                           nRecoPassGenFail60++;
+      }
+      if( pfmet_ > 120 ){
+	if( PassGenSelection( isData ) > 120. ) nRecoPassGenPass120++;
+	else                            nRecoPassGenFail120++;
+      }
+
+
+      continue;
+      /*
       //met templates-------------------------------------------------------------------- 
  
       if ( nJets_ < 1 )                                                     continue;
@@ -1097,11 +1326,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
         
       delete hmet;
-
+      */
       //}// end loop over hypIdx
  
       if( nHypPass > 1 && isData ) 
         cout << "Found " << nHypPass << " hypotheses passing selection" << endl;
+
+
+
     } // end loop over events
   } // end loop over files
 
@@ -1115,6 +1347,30 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   cout << nGoodEl << " ee events in Z mass window" << endl;
   cout << nGoodMu << " mm events in Z mass window" << endl;
   cout << nGoodEM << " em events in Z mass window" << endl;
+
+  cout << endl;
+  cout << "nTot                " << nTot               << endl;
+
+  cout << "Loose signal region-----------------------" << endl;
+  cout << "nGenPass            " << nGenPass60         << endl;
+  cout << "nGenPass X K        " << nGenPass60_K       << endl;
+  cout << "nRecoPassGenPass    " << nRecoPassGenPass60 << endl;
+  cout << "nRecoPassGenFail    " << nRecoPassGenFail60 << endl;
+  cout << "Efficiency          " << nRecoPassGenPass60 / (float) nGenPass60 << endl;
+
+  cout << "Tight signal region-----------------------"  << endl;
+  cout << "nGenPass            " << nGenPass120         << endl;
+  cout << "nGenPass X K        " << nGenPass120_K       << endl;
+  cout << "nRecoPassGenPass    " << nRecoPassGenPass120 << endl;
+  cout << "nRecoPassGenFail    " << nRecoPassGenFail120 << endl;
+  cout << "Efficiency          " << nRecoPassGenPass120 / (float) nGenPass120 << endl;
+
+  cout << "Cut flow----------------------------------" << endl;
+  for( int icut = 0 ; icut < 8 ; icut++ ){
+    float eff = 1;
+    if( icut > 0 ) eff = nRecoPass_cut[icut] / (float) nRecoPass_cut[icut-1];
+    cout << "nRecoPass cut " << icut << " " << nRecoPass_cut[icut] << " " << Form("%.2f",eff) << endl;
+  }
 
   CloseBabyNtuple();
 
@@ -1182,6 +1438,7 @@ void Z_looper::InitBabyNtuple (){
   event_        = -999999;
   weight_       = -999999.;
   pthat_        = -999999.;
+  mllgen_       = -999999.;
   nGoodVertex_  = -999999;
   leptype_      = -999999;
   ecaltype_     = -999999;
@@ -1195,6 +1452,12 @@ void Z_looper::InitBabyNtuple (){
   pfmet_     = -999999.;
   pfmetphi_  = -999999.;
   pfsumet_   = -999999.;
+
+  //pfmuon stuff
+  npfmuons_         = -999999;
+  nmatchedpfmuons_  = -999999;
+  ptll_pf_   =  999999.;
+  ptlt_pf_   =  999999.;
 
   // calomet stuff
   met_          = -999999.;
@@ -1258,6 +1521,12 @@ void Z_looper::InitBabyNtuple (){
   pdgid_           = -999999;
   ptll_            = -999999;
   ptlt_            = -999999;
+  pterrll_         = -999999;
+  pterrlt_         = -999999;
+  ptlltrk_         = -999999;
+  ptlttrk_         = -999999;
+  ptllgfit_        = -999999;
+  ptltgfit_        = -999999;
   idll_            = -999999;
   idlt_            = -999999;
   etall_           = -999999;
@@ -1265,6 +1534,7 @@ void Z_looper::InitBabyNtuple (){
   phill_           = -999999;
   philt_           = -999999;
   dilmass_         = -999999.;
+  dilmasspf_       = -999999.;
   dilmasscor_      = -999999.;
   dilpt_           = -999999.;
   flagll_          = -999999;
@@ -1293,6 +1563,13 @@ void Z_looper::bookHistos(){
     hptz[iJ] = new TH1F(Form("hptz_%i",iJ),pttitle[iJ],200,0,200);
     hptz[iJ]->GetXaxis()->SetTitle("Z p_{T} (GeV)");
   }
+
+  hgenmet_all  = new TH1F("hgenmet_all","",100,0,200);
+  hgenmet_pass = new TH1F("hgenmet_pass","",100,0,200);
+  hresponse    = new TProfile("hresponse","",100,0,200,0,2);
+
+  hgenmet_all->Sumw2();
+  hgenmet_pass->Sumw2();
 
   Int_t maxmet = 200;
 
@@ -1389,6 +1666,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I");
   babyTree_->Branch("weight",       &weight_,       "weight/F");
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F");
+  babyTree_->Branch("mllgen",       &mllgen_,       "mllgen/F");
 
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
@@ -1468,8 +1746,20 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("passe_lt_ttbarV1",      &passe_lt_ttbarV1_,      "passe_lt_ttbarV1/I");  
   babyTree_->Branch("passe_lt_ttbarV2",      &passe_lt_ttbarV2_,      "passe_lt_ttbarV2/I");  
   babyTree_->Branch("passe_lt_cand01",       &passe_lt_cand01_,       "passe_lt_cand01/I");  
+  babyTree_->Branch("meterror",              &metError_,              "metError/F");  
+  babyTree_->Branch("meterrorc",             &metErrorC_,             "metErrorc/F");  
   babyTree_->Branch("ptll",                  &ptll_,                  "ptll/F");  
   babyTree_->Branch("ptlt",                  &ptlt_,                  "ptlt/F");  
+  babyTree_->Branch("pterrll",               &pterrll_,               "pterrll/F");  
+  babyTree_->Branch("pterrlt",               &pterrlt_,               "pterrlt/F");  
+  babyTree_->Branch("ptlltrk",               &ptlltrk_,               "ptlltrk/F");  
+  babyTree_->Branch("ptlttrk",               &ptlttrk_,               "ptlttrk/F");  
+  babyTree_->Branch("ptllgfit",              &ptllgfit_,              "ptllgfit/F");  
+  babyTree_->Branch("ptltgfit",              &ptltgfit_,              "ptltgfit/F");  
+  babyTree_->Branch("ptllpf",                &ptll_pf_,               "ptllpf/F");  
+  babyTree_->Branch("ptltpf",                &ptlt_pf_,               "ptltpf/F");  
+  babyTree_->Branch("npfmuons",              &npfmuons_,              "npfmuons/I");  
+  babyTree_->Branch("nmatchedpfmuons",       &nmatchedpfmuons_,       "nmatchedpfmuons/I");  
   babyTree_->Branch("idll",                  &idll_,                  "idll/I");  
   babyTree_->Branch("idlt",                  &idlt_,                  "idlt/I");  
   babyTree_->Branch("etall",                 &etall_,                 "etall/F");  
@@ -1477,6 +1767,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("phill",                 &phill_,                 "phill/F");  
   babyTree_->Branch("philt",                 &philt_,                 "philt/F");  
   babyTree_->Branch("dilmass",               &dilmass_,               "dilmass/F");  
+  babyTree_->Branch("dilmasspf",             &dilmasspf_,             "dilmasspf/F");  
   babyTree_->Branch("dilmasscor",            &dilmasscor_,            "dilmasscor/F");  
   babyTree_->Branch("dilpt",                 &dilpt_,                 "dilpt/F");  
   babyTree_->Branch("flagll",                &flagll_,                "flagll/I");  
@@ -1523,3 +1814,152 @@ void Z_looper::fillHistos(TH1F *h1[4][4],float value, float weight, int myType, 
 }
 
 //--------------------------------------------------------------------
+
+float Z_looper::getMetError(  vector<int> goodMuonIndices ){
+
+  //error is zero if no muons
+  if( goodMuonIndices.size() == 0 ) return 0.;
+
+  float metError = 0.;
+
+  float met_x = evt_pfmet() * cos( evt_pfmetPhi() );
+  float met_y = evt_pfmet() * sin( evt_pfmetPhi() );
+  float met   = evt_pfmet();
+
+  //loop over all muons in goodMuonIndices (pt > 20 GeV, |eta| < 2.4, OSZ_v1)
+  for( unsigned int i = 0 ; i < goodMuonIndices.size() ; ++i ){
+    int imu = goodMuonIndices.at(i);
+
+    //calculate uncertainties in muon x,y momentum components
+    //I am assuming that dpx = dpt * cos(phi)
+    float dpx = cos( mus_p4().at(imu).phi() ) * mus_ptErr().at(imu);
+    float dpy = sin( mus_p4().at(imu).phi() ) * mus_ptErr().at(imu);
+
+    //check how much met changes when I alter the muon pt by (dpx,dpy)
+    float metxprime = met_x + dpx;
+    float metyprime = met_y + dpy;
+    float metprime  = sqrt( metxprime * metxprime + metyprime * metyprime );
+    float dmet      = metprime - met;
+
+    //sum the errors from each muon in quadrature
+    metError += dmet * dmet;
+    
+  }
+
+  metError = sqrt( metError );
+
+  return metError;
+}
+
+//--------------------------------------------------------------------
+
+float Z_looper::getMetError_claudio(  vector<int> goodMuonIndices ){
+   
+  //error is zero if no muons
+  if( goodMuonIndices.size() == 0 ) return 0.;
+  
+
+  float met_x = evt_pfmet() * cos( evt_pfmetPhi() );
+  float met_y = evt_pfmet() * sin( evt_pfmetPhi() );
+  float met   = evt_pfmet();
+
+  float metError = 0.;
+
+  //loop over all muons in goodMuonIndices (pt > 20 GeV, |eta| < 2.4, OSZ_v1)
+  for( unsigned int i = 0 ; i < goodMuonIndices.size() ; ++i ){
+    int imu = goodMuonIndices.at(i);
+ 
+    float phi  = mus_p4().at(imu).phi();
+    float dpt  = mus_ptErr().at(imu);
+    float dmet = ( ( cos(phi) * met_x + sin(phi) * met_y ) * dpt ) / met;
+    metError += dmet * dmet;
+  
+  }
+  
+  metError = sqrt(metError);
+  
+  return metError;
+  
+}
+
+//--------------------------------------------------------------------
+
+float Z_looper::PassGenSelection( bool isData ){
+  
+  if( isData ) return -999.;
+
+  //---------------------------------------------
+  // does this event pass the analysis selection?
+  //---------------------------------------------
+  
+  // mc leptons
+  std::vector<unsigned int> mcLeptonIndices;
+  int nGoodLep = 0;
+  for (size_t i = 0; i < cms2.genps_id().size(); ++i){
+    
+    //electron or muon
+    if (!(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13))      continue;
+
+    //pt > 20 GeV, |eta| < 2.5
+    if ( cms2.genps_p4()[i].Pt() < 20.0 || abs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
+
+    nGoodLep++;
+    mcLeptonIndices.push_back(i);
+  }
+
+  if( nGoodLep < 2 ) return -1.;
+
+  //look for OS pt > 20,10 GeV pair Z mass veto
+  bool foundPair = false;
+
+  for( unsigned int i = 0 ; i < mcLeptonIndices.size() ; ++i ){
+    unsigned int ilep = mcLeptonIndices.at(i);
+    for( unsigned int j = i + 1 ; j < mcLeptonIndices.size() ; ++j ){
+      unsigned int jlep = mcLeptonIndices.at(j);
+
+	//OS
+	if ( cms2.genps_id()[ilep] * cms2.genps_id()[jlep] > 0 )                            continue;
+
+	//SF
+	if ( abs( cms2.genps_id()[ilep] ) != abs( cms2.genps_id()[jlep] ) )                 continue;
+
+	//Z mass 81-101 GeV
+	float dilmass = ( cms2.genps_p4()[ilep] + cms2.genps_p4()[jlep] ).mass();
+	if( dilmass < 81.0 || dilmass > 101. ) continue;
+	
+	//found OS pair!
+	foundPair = true;
+	     
+      }
+    }
+
+    if( !foundPair ) return -2.;
+   
+    // mc jets
+    
+    int nGoodJet   = 0;
+    float sumJetPt = 0.;
+    for (size_t j = 0; j < cms2.evt_ngenjets(); ++j) 
+    {
+        if (cms2.genjets_p4()[j].Pt() < 30.0)       continue;
+        if (fabs(cms2.genjets_p4()[j].Eta()) > 2.5) continue;
+        bool clean = true;
+        for ( size_t i = 0; i < mcLeptonIndices.size(); ++i) 
+        {
+            if (ROOT::Math::VectorUtil::DeltaR(cms2.genjets_p4()[j], cms2.genps_p4()[mcLeptonIndices[i]]) < 0.4) {
+                clean = false;
+                break;
+            }
+        }
+        if (clean){
+	  nGoodJet ++;
+	  sumJetPt += genjets_p4()[j].Pt();
+	}
+    }
+    
+    if( nGoodJet < 2          ) return -3.;
+
+    //hooray! return met
+    return cms2.gen_met();
+    
+}
