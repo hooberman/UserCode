@@ -1,4 +1,4 @@
-// @(#)root/tmva $Id: TMVA_HWW.C,v 1.1 2011/02/04 13:00:34 benhoob Exp $
+// @(#)root/tmva $Id: TMVA_HWW.C,v 1.1 2011/02/04 13:02:26 benhoob Exp $
 /**********************************************************************************
  * Project   : TMVA - a ROOT-integrated toolkit for multivariate data analysis    *
  * Package   : TMVA                                                               *
@@ -155,7 +155,7 @@ void TMVA_HWW( TString myMethodList = "" )
    // --- Here the preparation phase begins
 
    // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
-   TString outfileName( "TMVA.root" );
+   TString outfileName( "TMVA_HWW.root" );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
    // Create the factory object. Later you can choose the methods
@@ -184,10 +184,20 @@ void TMVA_HWW( TString myMethodList = "" )
    //factory->AddVariable( "var3",                "Variable 3", "units", 'F' );
    //factory->AddVariable( "var4",                "Variable 4", "units", 'F' );
 
-   factory->AddVariable( "lephard_pt",            "1st lepton pt", "GeV", 'F' );
-   factory->AddVariable( "lepsoft_pt",            "2nd lepton pt", "GeV", 'F' );
-   factory->AddVariable( "dil_dphi",              "dphi(ll)",      "",    'F' );
-   factory->AddVariable( "dil_mass",              "M(ll)",         "GeV", 'F' );
+   //--------------------------------------------------------
+   // choose which variables to include in training
+   //--------------------------------------------------------
+
+   factory->AddVariable( "lephard_pt",            "1st lepton pt",   "GeV", 'F' );
+   factory->AddVariable( "lepsoft_pt",            "2nd lepton pt",   "GeV", 'F' );
+   factory->AddVariable( "dil_dphi",              "dphi(ll)",        "",    'F' );
+   factory->AddVariable( "dil_mass",              "M(ll)",           "GeV", 'F' );
+//    factory->AddVariable( "event_type",            "Dil Flavor Type", "",    'I' );
+//    factory->AddVariable( "met_projpt",            "Proj. MET",       "GeV", 'F' );
+//    factory->AddVariable( "met_pt",                "MET",             "GeV", 'F' );
+//    factory->AddVariable( "mt_lephardmet",         "MT(lep1,MET)",    "GeV", 'F' );
+//    factory->AddVariable( "mt_lepsoftmet",         "MT(lep2,MET)",    "GeV", 'F' );
+
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -195,34 +205,85 @@ void TMVA_HWW( TString myMethodList = "" )
    //factory->AddSpectator( "spec1 := var1*2",  "Spectator 1", "units", 'F' );
    //factory->AddSpectator( "spec2 := var1*3",  "Spectator 2", "units", 'F' );
 
-   // Read training and test data
-   // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
-//    TString fname = "./tmva_class_example.root";
-   
-//    if (gSystem->AccessPathName( fname ))  // file does not exist in local directory
-//       gSystem->Exec("wget http://root.cern.ch/files/tmva_class_example.root");
-   
-//    TFile *input = TFile::Open( fname );
-   
-//    std::cout << "--- TMVAClassification       : Using input file: " << input->GetName() << std::endl;
-   
-//    // --- Register the training and test trees
 
-   TString fname_sig = "HToWWTo2L2NuM130_PU_testFinal_baby.root";
-   TString fname_bkg = "WWTo2L2Nu_PU_testFinal_baby.root";
+   //---------------------------------
+   //choose bkg samples to include
+   //---------------------------------
 
-   TFile *input_sig = TFile::Open( fname_sig );
-   TFile *input_bkg = TFile::Open( fname_bkg );
+   char* prefix = "babies/v3";
 
-   TTree *signal     = (TTree*)input_sig->Get("Events");
-   TTree *background = (TTree*)input_bkg->Get("Events");
+   TChain *chbackground = new TChain("Events");
+   chbackground->Add(Form("%s/WWTo2L2Nu_PU_testFinal_baby.root",prefix));
+   chbackground->Add(Form("%s/GluGluToWWTo4L_PU_testFinal_baby.root",prefix));
+   chbackground->Add(Form("%s/WZ_PU_testFinal_baby.root",prefix));
+   chbackground->Add(Form("%s/ZZ_PU_testFinal_baby.root",prefix));
+   chbackground->Add(Form("%s/TTJets_PU_testFinal_baby.root",prefix));
+   chbackground->Add(Form("%s/tW_PU_testFinal_baby.root",prefix));
+   chbackground->Add(Form("%s/WJetsToLNu_PU_testFinal_baby.root",prefix));
+   chbackground->Add(Form("%s/DYToMuMuM20_PU_testFinal_baby.root",prefix) );
+   chbackground->Add(Form("%s/DYToMuMuM10To20_PU_testFinal_baby.root",prefix) );
+   chbackground->Add(Form("%s/DYToEEM20_PU_testFinal_baby.root",prefix) );
+   chbackground->Add(Form("%s/DYToEEM10To20_PU_testFinal_baby.root",prefix) );
+   chbackground->Add(Form("%s/DYToTauTauM20_PU_testFinal_baby.root",prefix) );
+   chbackground->Add(Form("%s/DYToTauTauM10To20_PU_testFinal_baby.root",prefix) );
 
-   std::cout << "--- TMVAClassification       : Using sig input file: " << input_sig->GetName() << std::endl;
-   std::cout << "--- TMVAClassification       : Using bkg input file: " << input_bkg->GetName() << std::endl;
-   
+   //---------------------------------
+   //choose signal sample to include
+   //---------------------------------
+
+   int mH = 130;
+   //int mH = 160;
+   //int mH = 200;
+
+   TChain *chsignal = new TChain("Events");
+
+   if( mH == 130 ){
+     chsignal->Add(Form("%s/HToWWTo2L2NuM130_PU_testFinal_baby.root",prefix));
+     chsignal->Add(Form("%s/HToWWToLNuTauNuM130_PU_testFinal_baby.root",prefix));
+     chsignal->Add(Form("%s/HToWWTo2Tau2NuM130_PU_testFinal_baby.root",prefix));
+   }
+   else if( mH == 160 ){
+     chsignal->Add(Form("%s/HToWWTo2L2NuM160_PU_testFinal_baby.root",prefix));
+     chsignal->Add(Form("%s/HToWWToLNuTauNuM160_PU_testFinal_baby.root",prefix));
+     chsignal->Add(Form("%s/HToWWTo2Tau2NuM160_PU_testFinal_baby.root",prefix));
+   }
+   else if( mH == 200 ){
+     chsignal->Add(Form("%s/HToWWTo2L2NuM200_PU_testFinal_baby.root",prefix));
+     chsignal->Add(Form("%s/HToWWToLNuTauNuM200_PU_testFinal_baby.root",prefix));
+     chsignal->Add(Form("%s/HToWWTo2Tau2NuM200_PU_testFinal_baby.root",prefix));
+   }
+   else{
+     std::cout << "Error, unrecognized higgs mass " << mH << " GeV, quitting" << std::endl;
+     exit(0);
+   }
+
+
+   TTree *signal     = (TTree*) chsignal;
+   TTree *background = (TTree*) chbackground;
+
+   std::cout << "--- TMVAClassification       : Using bkg input files: -------------------" <<  std::endl;
+
+   TObjArray *listOfBkgFiles = chbackground->GetListOfFiles();
+   TIter bkgFileIter(listOfBkgFiles);
+   TChainElement* currentBkgFile = 0;
+
+   while((currentBkgFile = (TChainElement*)bkgFileIter.Next())) {
+     std::cout << currentBkgFile->GetTitle() << std::endl;
+   }
+
+   std::cout << "--- TMVAClassification       : Using sig input files: -------------------" <<  std::endl;
+
+   TObjArray *listOfSigFiles = chsignal->GetListOfFiles();
+   TIter sigFileIter(listOfSigFiles);
+   TChainElement* currentSigFile = 0;
+
+   while((currentSigFile = (TChainElement*)sigFileIter.Next())) {
+     std::cout << currentSigFile->GetTitle() << std::endl;
+   }
+
    // global event weights per tree (see below for setting event-wise weights)
-   Double_t signalWeight     = 0.00411;
-   Double_t backgroundWeight = 0.04075;
+   Double_t signalWeight     = 1.0;
+   Double_t backgroundWeight = 1.0;
    
    // You can add an arbitrary number of signal or background trees
    factory->AddSignalTree    ( signal,     signalWeight     );
@@ -268,26 +329,23 @@ void TMVA_HWW( TString myMethodList = "" )
    // --- end of tree registration 
 
    // Set individual event weights (the variables must exist in the original TTree)
-   //    for signal    : factory->SetSignalWeightExpression    ("weight1*weight2");
-   //    for background: factory->SetBackgroundWeightExpression("weight1*weight2");
-
+   factory->SetSignalWeightExpression    ("event_scale1fb");
+   factory->SetBackgroundWeightExpression("event_scale1fb");
 
    //---------------------------
-   //set individual event weight
+   // define event selection
    //---------------------------
-   //factory->SetBackgroundWeightExpression( "weight" );
-
-
-   TCut met_projpt = "(event_type!=2&met_projpt>35)|(event_type==2&met_projpt>20)";
-   //all cuts in 2010 analysis h->ww m=130
-   //TCut cutsh130 = "lepsoft_pt>20&lephard_pt>25&dil_dphi<1.05&dil_mass<45.&jets_num==0&extralep_num==0&lowptbtags_num==0"+met_projpt;
-   //some cuts from 2010 analysis h->ww m=130
-   TCut cutsh130 = "jets_num==0&extralep_num==0&lowptbtags_num==0"+met_projpt;
-
+   
+   TCut met_projpt = "(event_type!=1 && event_type!=2 && met_projpt>35) || (event_type!=0 && event_type!=3 && met_projpt>20)";  
+   TCut pt2020     = "lephard_pt > 20 && lepsoft_pt > 20";
+   TCut pt2010     = "lephard_pt > 20 && lepsoft_pt > 10";
+   TCut jetveto    = "jets_num==0 && extralep_num==0 && lowptbtags_num==0 && softmu_num==0";
+   TCut mll12      = "dil_mass > 12.";
+   TCut sel        = pt2010 + met_projpt + jetveto + mll12;
 
    // Apply additional cuts on the signal and background samples (can be different)
-   TCut mycuts = cutsh130; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
-   TCut mycutb = cutsh130; // for example: TCut mycutb = "abs(var1)<0.5";
+   TCut mycuts = sel; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
+   TCut mycutb = sel; // for example: TCut mycutb = "abs(var1)<0.5";
 
    // Tell the factory how to use the training and testing events
    //
@@ -297,8 +355,15 @@ void TMVA_HWW( TString myMethodList = "" )
    // To also specify the number of testing events, use:
    //    factory->PrepareTrainingAndTestTree( mycut,
    //                                         "NSigTrain=3000:NBkgTrain=3000:NSigTest=3000:NBkgTest=3000:SplitMode=Random:!V" );
+  
+   //Use random splitting
    factory->PrepareTrainingAndTestTree( mycuts, mycutb,
                                         "nTrain_Signal=0:nTrain_Background=0:SplitMode=Random:NormMode=NumEvents:!V" );
+
+   //Use alternate splitting 
+   //(this is preferable since its easier to track which events were used for training, but the job crashes! need to fix this...)
+   //factory->PrepareTrainingAndTestTree( mycuts, mycutb,
+   //                                     "nTrain_Signal=0:nTrain_Background=0:SplitMode=Alternate:NormMode=NumEvents:!V" );
 
    // ---- Book MVA methods
    //
