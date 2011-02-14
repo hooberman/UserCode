@@ -392,6 +392,10 @@ void Classify_HWW( TString myMethodList = "" )
 
       float weight = event_scale1fb_ * 0.0355;
 
+      //--------------------------------------------------------
+      // important: here we associate branches to MVA variables
+      //--------------------------------------------------------
+
       lephard_pt = lephard_pt_;
       lepsoft_pt = lepsoft_pt_;
       dil_mass   = dil_mass_;
