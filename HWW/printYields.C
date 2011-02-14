@@ -52,10 +52,10 @@ void printYields(){
 
   enum selectionEnum { WW = 0, H130 = 1 , H160 = 2 , H200 = 3 };
   
-  //selectionEnum selType = WW;
+  selectionEnum selType = WW;
   //selectionEnum selType = H130;
   //selectionEnum selType = H160;
-  selectionEnum selType = H200;
+  //selectionEnum selType = H200;
 
 
   //-------------------------------------------------------
@@ -64,6 +64,7 @@ void printYields(){
   
   TCut met_projpt = "(event_type != 2 && met_projpt>35. ) || (event_type == 2 && met_projpt > 20.)";
   TCut pt2020     = "lephard_pt > 20 && lepsoft_pt > 20";
+  TCut pt2015     = "lephard_pt > 20 && lepsoft_pt > 15";
   TCut pt2010     = "lephard_pt > 20 && lepsoft_pt > 10";
   TCut jetveto    = "jets_num==0 && extralep_num==0 && lowptbtags_num==0 && softmu_num==0";
   TCut eetype     = "event_type==3";
@@ -74,7 +75,7 @@ void printYields(){
   TCut h160sel    = "dil_dphi < 1.05 && dil_mass < 50. && lephard_pt > 30 && lepsoft_pt > 25";
   TCut h200sel    = "dil_dphi < 1.75 && dil_mass < 90. && lephard_pt > 40 && lepsoft_pt > 25";
   TCut weight     = "event_scale1fb * 0.0355";
-  TCut wwsel      = pt2020 + met_projpt + jetveto + mll12;
+  TCut wwsel      = pt2015 + met_projpt + jetveto + mll12;
   TCut sel;
 
   if( selType == WW ){
@@ -124,6 +125,7 @@ void printYields(){
   mcsamples.push_back("tW");
   mcsamples.push_back("WJetsToLNu");
   mcsamples.push_back("DY");
+  mcsamples.push_back("Higgs130");
   if( selType == H130 ) mcsamples.push_back("Higgs130");
   if( selType == H160 ) mcsamples.push_back("Higgs160");
   if( selType == H200 ) mcsamples.push_back("Higgs200");
@@ -329,3 +331,6 @@ void print( TH1F* h , string label , bool error ){
   
   
 }
+
+
+

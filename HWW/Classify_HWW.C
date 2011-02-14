@@ -139,14 +139,14 @@ void Classify_HWW( TString myMethodList = "" )
 
   vector<char*> samples;
   samples.push_back("WWTo2L2Nu");
-  //   samples.push_back("GluGluToWWTo4L");
-  //   samples.push_back("WZ");
-  //   samples.push_back("ZZ");
-  //   samples.push_back("TTJets");
-  //   samples.push_back("tW");
-  //   samples.push_back("WJetsToLNu");
-  //   samples.push_back("DY");
-  //   samples.push_back("Higgs130");
+  samples.push_back("GluGluToWWTo4L");
+  samples.push_back("WZ");
+  samples.push_back("ZZ");
+  samples.push_back("TTJets");
+  samples.push_back("tW");
+  samples.push_back("WJetsToLNu");
+  samples.push_back("DY");
+  samples.push_back("Higgs130");
   //   samples.push_back("Higgs160");
   //   samples.push_back("Higgs200");
 
@@ -193,7 +193,9 @@ void Classify_HWW( TString myMethodList = "" )
     // --- Book the MVA methods
 
     //TString dir    = "weights/";
-    TString path   = "Trainings/H130_WWTo2L2Nu/";
+    //TString path   = "Trainings/H130_WWTo2L2Nu/";
+    //TString path   = "Trainings/H130_WWTo2L2Nu_WJetsToLNu/";
+    TString path   = "Trainings/H130_allbkg/";
     TString dir    = path + "weights/";
     TString outdir = path + "output/";
 
@@ -209,7 +211,7 @@ void Classify_HWW( TString myMethodList = "" )
     }
    
     // Book output histograms
-    UInt_t nbin = 100;
+    UInt_t nbin = 1000;
     TH1F   *histLk(0), *histLkD(0), *histLkPCA(0), *histLkKDE(0), *histLkMIX(0), *histPD(0), *histPDD(0);
     TH1F   *histPDPCA(0), *histPDEFoam(0), *histPDEFoamErr(0), *histPDEFoamSig(0), *histKNN(0), *histHm(0);
     TH1F   *histFi(0), *histFiG(0), *histFiB(0), *histLD(0), *histNn(0),*histNnbfgs(0),*histNnbnn(0);
@@ -265,19 +267,6 @@ void Classify_HWW( TString myMethodList = "" )
     // in this example, there is a toy tree with signal and one with background events
     // we'll later on use only the "signal" events for the test in this example.
     //   
-    //    TFile *input(0);
-    //    TString fname = "./tmva_example.root";   
-    //    if (!gSystem->AccessPathName( fname )) 
-    //       input = TFile::Open( fname ); // check if file in local directory exists
-    //    else    
-    //       input = TFile::Open( "http://root.cern.ch/files/tmva_class_example.root" ); // if not: download from ROOT server
-   
-    //    if (!input) {
-    //       std::cout << "ERROR: could not open data file" << std::endl;
-    //       exit(1);
-    //    }
-    //    std::cout << "--- TMVAClassificationApp    : Using input file: " << input->GetName() << std::endl;
-   
 
     char* iter = "v2";
     TChain *ch = new TChain("Events");
@@ -310,49 +299,6 @@ void Classify_HWW( TString myMethodList = "" )
     }
 
 
-    //    TChain *chbackground = new TChain("Events");
-    //    if( sample == "WW" ) chbackground->Add(Form("babies/%s/WWTo2L2Nu_PU_testFinal_baby.root",iter));
-    //    chbackground->Add(Form("babies/%s/GluGluToWWTo4L_PU_testFinal_baby.root",iter));
-    //    chbackground->Add(Form("babies/%s/WZ_PU_testFinal_baby.root",iter));
-    //    chbackground->Add(Form("babies/%s/ZZ_PU_testFinal_baby.root",iter));
-    //    chbackground->Add(Form("babies/%s/TTJets_PU_testFinal_baby.root",iter));
-    //    chbackground->Add(Form("babies/%s/tW_PU_testFinal_baby.root",iter));
-    //    chbackground->Add(Form("babies/%s/WJetsToLNu_PU_testFinal_baby.root",iter));
-    //    chbackground->Add(Form("babies/%s/DYToMuMuM20_PU_testFinal_baby.root",iter) );
-    //    chbackground->Add(Form("babies/%s/DYToMuMuM10To20_PU_testFinal_baby.root",iter) );
-    //    chbackground->Add(Form("babies/%s/DYToEEM20_PU_testFinal_baby.root",iter) );
-    //    chbackground->Add(Form("babies/%s/DYToEEM10To20_PU_testFinal_baby.root",iter) );
-    //    chbackground->Add(Form("babies/%s/DYToTauTauM20_PU_testFinal_baby.root",iter) );
-    //    chbackground->Add(Form("babies/%s/DYToTauTauM10To20_PU_testFinal_baby.root",iter) );
-
-    //    int mH = 130;
-    //    //int mH = 160;
-    //    //int mH = 200;
-
-    //    TChain *chsignal = new TChain("Events");
-
-    //    if( mH == 130 ){
-    //      chsignal->Add(Form("babies/%s/HToWWTo2L2NuM130_PU_testFinal_baby.root",iter));
-    //      chsignal->Add(Form("babies/%s/HToWWToLNuTauNuM130_PU_testFinal_baby.root",iter));
-    //      chsignal->Add(Form("babies/%s/HToWWTo2Tau2NuM130_PU_testFinal_baby.root",iter));
-    //    }
-    //    else if( mH == 160 ){
-    //      chsignal->Add(Form("babies/%s/HToWWTo2L2NuM160_PU_testFinal_baby.root",iter));
-    //      chsignal->Add(Form("babies/%s/HToWWToLNuTauNuM160_PU_testFinal_baby.root",iter));
-    //      chsignal->Add(Form("babies/%s/HToWWTo2Tau2NuM160_PU_testFinal_baby.root",iter));
-    //    }
-    //    else if( mH == 200 ){
-    //      chsignal->Add(Form("babies/%s/HToWWTo2L2NuM200_PU_testFinal_baby.root",iter));
-    //      chsignal->Add(Form("babies/%s/HToWWToLNuTauNuM200_PU_testFinal_baby.root",iter));
-    //      chsignal->Add(Form("babies/%s/HToWWTo2Tau2NuM200_PU_testFinal_baby.root",iter));
-    //    }
-    //    else{
-    //      std::cout << "Error, unrecognized higgs mass " << mH << " GeV, quitting" << std::endl;
-    //      exit(0);
-    //}
-
-
-
 
     // --- Event loop
 
@@ -362,16 +308,6 @@ void Classify_HWW( TString myMethodList = "" )
     //   but of course you can use different ones and copy the values inside the event loop
     //
   
-   
-
-
-    //    TTree* theTree = (TTree*)input->Get("TreeS");
-    //    Float_t userVar1, userVar2;
-    //    theTree->SetBranchAddress( "var1", &userVar1 );
-    //    theTree->SetBranchAddress( "var2", &userVar2 );
-    //    theTree->SetBranchAddress( "var3", &var3 );
-    //    theTree->SetBranchAddress( "var4", &var4 );
-
     TTree *theTree     = (TTree*) ch;
 
     std::cout << "--- Using input files: -------------------" <<  std::endl;
@@ -384,8 +320,6 @@ void Classify_HWW( TString myMethodList = "" )
       std::cout << currentFile->GetTitle() << std::endl;
     }
 
-    //TTree *theTree     = (TTree*) chsignal;
-    //TTree *theTree     = (TTree*) chbackground;
     Float_t lephard_pt_;
     Float_t lepsoft_pt_;
     Float_t dil_dphi_;
@@ -431,7 +365,8 @@ void Classify_HWW( TString myMethodList = "" )
       if( event_type_ == 2 && met_projpt_ < 20. )   continue;
       if( event_type_ != 2 && met_projpt_ < 35. )   continue;
       if( lephard_pt_ < 20.    )                    continue;
-      if( lepsoft_pt_ < 10.    )                    continue;
+      //if( lepsoft_pt_ < 10.    )                    continue;
+      if( lepsoft_pt_ < 20.    )                    continue;
       if( jets_num_ > 0        )                    continue;
       if( extralep_num_ > 0    )                    continue;
       if( lowptbtags_num_ > 0  )                    continue;
