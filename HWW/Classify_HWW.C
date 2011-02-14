@@ -192,6 +192,12 @@ void Classify_HWW( TString myMethodList = "" )
 
     // --- Book the MVA methods
 
+    //--------------------------------------------------------------------------------------
+    // tell Classify_HWW where to find the weights dir, which contains the trained MVA's. 
+    // In this example, the weights dir is located at [path]/[dir]
+    // and the output root file is written to [path]/[output]
+    //--------------------------------------------------------------------------------------
+
     //TString dir    = "weights/";
     //TString path   = "Trainings/H130_WWTo2L2Nu/";
     //TString path   = "Trainings/H130_WWTo2L2Nu_WJetsToLNu/";
@@ -268,34 +274,34 @@ void Classify_HWW( TString myMethodList = "" )
     // we'll later on use only the "signal" events for the test in this example.
     //   
 
-    char* iter = "v2";
+    char* prefix = "babies/v3";
     TChain *ch = new TChain("Events");
 
     if( strcmp( samples.at(i) , "DY" ) == 0 ){
-      ch -> Add( Form("babies/%s/DYToMuMuM20_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/DYToMuMuM10To20_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/DYToEEM20_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/DYToEEM10To20_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/DYToTauTauM20_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/DYToTauTauM10To20_PU_testFinal_baby.root",iter) );
+      ch -> Add( Form("%s/DYToMuMuM20_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/DYToMuMuM10To20_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/DYToEEM20_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/DYToEEM10To20_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/DYToTauTauM20_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/DYToTauTauM10To20_PU_testFinal_baby.root",prefix) );
     }
     else if( strcmp( samples.at(i) , "Higgs130" ) == 0 ){
-      ch -> Add( Form("babies/%s/HToWWTo2L2NuM130_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/HToWWToLNuTauNuM130_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/HToWWTo2Tau2NuM130_PU_testFinal_baby.root",iter) );
+      ch -> Add( Form("%s/HToWWTo2L2NuM130_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/HToWWToLNuTauNuM130_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/HToWWTo2Tau2NuM130_PU_testFinal_baby.root",prefix) );
     }
     else if( strcmp( samples.at(i) , "Higgs160" ) == 0 ){
-      ch -> Add( Form("babies/%s/HToWWTo2L2NuM160_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/HToWWToLNuTauNuM160_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/HToWWTo2Tau2NuM160_PU_testFinal_baby.root",iter) );
+      ch -> Add( Form("%s/HToWWTo2L2NuM160_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/HToWWToLNuTauNuM160_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/HToWWTo2Tau2NuM160_PU_testFinal_baby.root",prefix) );
     }
     else if( strcmp( samples.at(i) , "Higgs200" ) == 0 ){
-      ch -> Add( Form("babies/%s/HToWWTo2L2NuM200_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/HToWWToLNuTauNuM200_PU_testFinal_baby.root",iter) );
-      ch -> Add( Form("babies/%s/HToWWTo2Tau2NuM200_PU_testFinal_baby.root",iter) );
+      ch -> Add( Form("%s/HToWWTo2L2NuM200_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/HToWWToLNuTauNuM200_PU_testFinal_baby.root",prefix) );
+      ch -> Add( Form("%s/HToWWTo2Tau2NuM200_PU_testFinal_baby.root",prefix) );
     }
     else{
-      ch -> Add( Form("babies/%s/%s_PU_testFinal_baby.root",iter,samples.at(i)) );
+      ch -> Add( Form("%s/%s_PU_testFinal_baby.root",prefix,samples.at(i)) );
     }
 
 
@@ -362,8 +368,19 @@ void Classify_HWW( TString myMethodList = "" )
 
       theTree->GetEntry(ievt);
 
-      if( event_type_ == 2 && met_projpt_ < 20. )   continue;
-      if( event_type_ != 2 && met_projpt_ < 35. )   continue;
+      //-------------------------------------------------------
+      // event selection
+      //-------------------------------------------------------
+
+      //em
+      if( event_type_ == 1 || event_type == 2 ){
+        if( met_projpt_ < 20. )   continue;
+      }
+      //ee/mm
+      if( event_type_ == 0 || event_type == 3 ){
+        if( met_projpt_ < 35. )   continue;
+      }
+
       if( lephard_pt_ < 20.    )                    continue;
       //if( lepsoft_pt_ < 10.    )                    continue;
       if( lepsoft_pt_ < 20.    )                    continue;
