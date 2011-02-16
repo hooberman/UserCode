@@ -1,4 +1,4 @@
-// @(#)root/tmva $Id: TMVA_HWW.C,v 1.1 2011/02/04 13:02:26 benhoob Exp $
+// @(#)root/tmva $Id: TMVA_HWW.C,v 1.2 2011/02/14 12:34:31 benhoob Exp $
 /**********************************************************************************
  * Project   : TMVA - a ROOT-integrated toolkit for multivariate data analysis    *
  * Package   : TMVA                                                               *
@@ -48,6 +48,8 @@
 #include "TMVA/Tools.h"
 #endif
 
+
+
 void TMVA_HWW( TString myMethodList = "" )
 {
    // The explicit loading of the shared libTMVA is done in TMVAlogon.C, defined in .rootrc
@@ -64,6 +66,93 @@ void TMVA_HWW( TString myMethodList = "" )
    // (an example is given for using the BDT as plugin (see below),
    // but of course the real application is when you write your own
    // method based)
+
+
+  //-----------------------------------------------------
+  // define event selection (store in TCut sel)
+  //-----------------------------------------------------
+   
+  TCut met_projpt = "((event_type<0.5||event_type>2.5)&met_projpt>35)|((event_type>0.5&&event_type<2.5)&met_projpt>20)";
+  //TCut met_projpt  = "(event_type!=1 && event_type!=2 && met_projpt>35) || (event_type!=0 && event_type!=3 && met_projpt>20)";  
+  TCut pt2020      = "lephard_pt > 20 && lepsoft_pt > 20";
+  TCut pt2010      = "lephard_pt > 20 && lepsoft_pt > 10";
+  TCut jetveto     = "jets_num==0 && extralep_num==0 && lowptbtags_num==0 && softmu_num==0";
+  TCut mll12       = "dil_mass > 12.";
+  TCut tight_el_ID = "lepsoft_passTighterId==1";
+  TCut mutype      = "event_type < 1.5";
+  TCut eltype      = "event_type > 1.5";
+  TCut sel         = pt2010 + met_projpt + jetveto + mll12 + tight_el_ID;
+  
+  //-----------------------------------------------------
+  // choose which variables to include in MVA training
+  //-----------------------------------------------------
+  
+  std::map<std::string,int> mvaVar;
+  mvaVar[ "lephard_pt" ]      = 1;
+  mvaVar[ "lepsoft_pt" ]      = 1;
+  mvaVar[ "dil_dphi" ]        = 1;
+  mvaVar[ "dil_mass" ]        = 1;
+  mvaVar[ "event_type" ]      = 0;
+  mvaVar[ "met_projpt" ]      = 1;
+  mvaVar[ "met_pt" ]          = 0;
+  mvaVar[ "mt_lephardmet" ]   = 1;
+  mvaVar[ "mt_lepsoftmet" ]   = 1;
+  mvaVar[ "dphi_lephardmet" ] = 1;
+  mvaVar[ "dphi_lepsoftmet" ] = 1;
+
+  //---------------------------------
+  //choose bkg samples to include
+  //---------------------------------
+  
+  const char* babyPath = "/tas/cerati/HtoWWmvaBabies/latest";
+  const char* suffix   = "_testFinal_baby";
+  
+  TChain *chbackground = new TChain("Events");
+  chbackground->Add(Form("%s/WWTo2L2Nu_PU%s.root",babyPath,suffix));
+  chbackground->Add(Form("%s/GluGluToWWTo4L_PU%s.root",babyPath,suffix));
+  //chbackground->Add(Form("%s/WZ_PU%s.root",babyPath,suffix));
+  //chbackground->Add(Form("%s/ZZ_PU%s.root",babyPath,suffix));
+  //chbackground->Add(Form("%s/TTJets_PU%s.root",babyPath,suffix));
+  //chbackground->Add(Form("%s/tW_PU%s.root",babyPath,suffix));
+  chbackground->Add(Form("%s/WJetsToLNu_PU%s.root",babyPath,suffix));
+  //chbackground->Add(Form("%s/DYToMuMuM20_PU%s.root",babyPath,suffix) );
+  //chbackground->Add(Form("%s/DYToMuMuM10To20_PU%s.root",babyPath,suffix) );
+  //chbackground->Add(Form("%s/DYToEEM20_PU%s.root",babyPath,suffix) );
+  //chbackground->Add(Form("%s/DYToEEM10To20_PU%s.root",babyPath,suffix) );
+  //chbackground->Add(Form("%s/DYToTauTauM20_PU%s.root",babyPath,suffix) );
+  //chbackground->Add(Form("%s/DYToTauTauM10To20_PU%s.root",babyPath,suffix) );
+  
+   //---------------------------------
+   //choose signal sample to include
+   //---------------------------------
+
+   int mH = 130;
+   //int mH = 160;
+   //int mH = 200;
+
+   TChain *chsignal = new TChain("Events");
+
+   if( mH == 130 ){
+     chsignal->Add(Form("%s/HToWWTo2L2NuM130_PU%s.root",babyPath,suffix));
+     chsignal->Add(Form("%s/HToWWToLNuTauNuM130_PU%s.root",babyPath,suffix));
+     chsignal->Add(Form("%s/HToWWTo2Tau2NuM130_PU%s.root",babyPath,suffix));
+   }
+   else if( mH == 160 ){
+     chsignal->Add(Form("%s/HToWWTo2L2NuM160_PU%s.root",babyPath,suffix));
+     chsignal->Add(Form("%s/HToWWToLNuTauNuM160_PU%s.root",babyPath,suffix));
+     chsignal->Add(Form("%s/HToWWTo2Tau2NuM160_PU%s.root",babyPath,suffix));
+   }
+   else if( mH == 200 ){
+     chsignal->Add(Form("%s/HToWWTo2L2NuM200_PU%s.root",babyPath,suffix));
+     chsignal->Add(Form("%s/HToWWToLNuTauNuM200_PU%s.root",babyPath,suffix));
+     chsignal->Add(Form("%s/HToWWTo2Tau2NuM200_PU%s.root",babyPath,suffix));
+   }
+   else{
+     std::cout << "Error, unrecognized higgs mass " << mH << " GeV, quitting" << std::endl;
+     exit(0);
+   }
+
+
 
    //---------------------------------------------------------------
    // This loads the library
@@ -188,15 +277,29 @@ void TMVA_HWW( TString myMethodList = "" )
    // choose which variables to include in training
    //--------------------------------------------------------
 
-   factory->AddVariable( "lephard_pt",            "1st lepton pt",   "GeV", 'F' );
-   factory->AddVariable( "lepsoft_pt",            "2nd lepton pt",   "GeV", 'F' );
-   factory->AddVariable( "dil_dphi",              "dphi(ll)",        "",    'F' );
-   factory->AddVariable( "dil_mass",              "M(ll)",           "GeV", 'F' );
-//    factory->AddVariable( "event_type",            "Dil Flavor Type", "",    'I' );
-//    factory->AddVariable( "met_projpt",            "Proj. MET",       "GeV", 'F' );
-//    factory->AddVariable( "met_pt",                "MET",             "GeV", 'F' );
-//    factory->AddVariable( "mt_lephardmet",         "MT(lep1,MET)",    "GeV", 'F' );
-//    factory->AddVariable( "mt_lepsoftmet",         "MT(lep2,MET)",    "GeV", 'F' );
+   if (mvaVar["lephard_pt"])       factory->AddVariable( "lephard_pt",            "1st lepton pt",     "GeV", 'F' );
+   if (mvaVar["lepsoft_pt"])       factory->AddVariable( "lepsoft_pt",            "2nd lepton pt",     "GeV", 'F' );
+   if (mvaVar["dil_dphi"])         factory->AddVariable( "dil_dphi",              "dphi(ll)",          "",    'F' );
+   if (mvaVar["dil_mass"])         factory->AddVariable( "dil_mass",              "M(ll)",             "GeV", 'F' );
+   if (mvaVar["event_type"])       factory->AddVariable( "event_type",            "Dil Flavor Type",   "",    'F' );
+   if (mvaVar["met_projpt"])       factory->AddVariable( "met_projpt",            "Proj. MET",         "GeV", 'F' );
+   if (mvaVar["met_pt"])           factory->AddVariable( "met_pt",                "MET",               "GeV", 'F' );
+   if (mvaVar["mt_lephardmet"])    factory->AddVariable( "mt_lephardmet",         "MT(lep1,MET)",      "GeV", 'F' );
+   if (mvaVar["mt_lepsoftmet"])    factory->AddVariable( "mt_lepsoftmet",         "MT(lep2,MET)",      "GeV", 'F' );
+   if (mvaVar["dphi_lephardmet"])  factory->AddVariable( "dphi_lephardmet",       "dphi(lep1,MET)",    "GeV", 'F' );
+   if (mvaVar["dphi_lepsoftmet"])  factory->AddVariable( "dphi_lepsoftmet",       "dphi(lep2,MET)",    "GeV", 'F' );
+
+   if (mvaVar["lephard_pt"])       cout << "Adding variable to MVA training: lephard_pt"      << endl;
+   if (mvaVar["lepsoft_pt"])       cout << "Adding variable to MVA training: lepsoft_pt"      << endl;
+   if (mvaVar["dil_dphi"])         cout << "Adding variable to MVA training: dil_dphi"        << endl;
+   if (mvaVar["dil_mass"])         cout << "Adding variable to MVA training: dil_mass"        << endl;
+   if (mvaVar["event_type"])       cout << "Adding variable to MVA training: event_type"      << endl;
+   if (mvaVar["met_projpt"])       cout << "Adding variable to MVA training: met_projpt"      << endl;
+   if (mvaVar["met_pt"])           cout << "Adding variable to MVA training: met_pt"          << endl;
+   if (mvaVar["mt_lephardmet"])    cout << "Adding variable to MVA training: mt_lephardmet"   << endl;
+   if (mvaVar["mt_lepsoftmet"])    cout << "Adding variable to MVA training: mt_lepsoftmet"   << endl;
+   if (mvaVar["dphi_lephardmet"])  cout << "Adding variable to MVA training: dphi_lephardmet" << endl;
+   if (mvaVar["dphi_lepsoftmet"])  cout << "Adding variable to MVA training: dphi_lepsoftmet" << endl;
 
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
@@ -204,59 +307,6 @@ void TMVA_HWW( TString myMethodList = "" )
    // input variables, the response values of all trained MVAs, and the spectator variables
    //factory->AddSpectator( "spec1 := var1*2",  "Spectator 1", "units", 'F' );
    //factory->AddSpectator( "spec2 := var1*3",  "Spectator 2", "units", 'F' );
-
-
-   //---------------------------------
-   //choose bkg samples to include
-   //---------------------------------
-
-   char* prefix = "babies/v3";
-
-   TChain *chbackground = new TChain("Events");
-   chbackground->Add(Form("%s/WWTo2L2Nu_PU_testFinal_baby.root",prefix));
-   chbackground->Add(Form("%s/GluGluToWWTo4L_PU_testFinal_baby.root",prefix));
-   chbackground->Add(Form("%s/WZ_PU_testFinal_baby.root",prefix));
-   chbackground->Add(Form("%s/ZZ_PU_testFinal_baby.root",prefix));
-   chbackground->Add(Form("%s/TTJets_PU_testFinal_baby.root",prefix));
-   chbackground->Add(Form("%s/tW_PU_testFinal_baby.root",prefix));
-   chbackground->Add(Form("%s/WJetsToLNu_PU_testFinal_baby.root",prefix));
-   chbackground->Add(Form("%s/DYToMuMuM20_PU_testFinal_baby.root",prefix) );
-   chbackground->Add(Form("%s/DYToMuMuM10To20_PU_testFinal_baby.root",prefix) );
-   chbackground->Add(Form("%s/DYToEEM20_PU_testFinal_baby.root",prefix) );
-   chbackground->Add(Form("%s/DYToEEM10To20_PU_testFinal_baby.root",prefix) );
-   chbackground->Add(Form("%s/DYToTauTauM20_PU_testFinal_baby.root",prefix) );
-   chbackground->Add(Form("%s/DYToTauTauM10To20_PU_testFinal_baby.root",prefix) );
-
-   //---------------------------------
-   //choose signal sample to include
-   //---------------------------------
-
-   int mH = 130;
-   //int mH = 160;
-   //int mH = 200;
-
-   TChain *chsignal = new TChain("Events");
-
-   if( mH == 130 ){
-     chsignal->Add(Form("%s/HToWWTo2L2NuM130_PU_testFinal_baby.root",prefix));
-     chsignal->Add(Form("%s/HToWWToLNuTauNuM130_PU_testFinal_baby.root",prefix));
-     chsignal->Add(Form("%s/HToWWTo2Tau2NuM130_PU_testFinal_baby.root",prefix));
-   }
-   else if( mH == 160 ){
-     chsignal->Add(Form("%s/HToWWTo2L2NuM160_PU_testFinal_baby.root",prefix));
-     chsignal->Add(Form("%s/HToWWToLNuTauNuM160_PU_testFinal_baby.root",prefix));
-     chsignal->Add(Form("%s/HToWWTo2Tau2NuM160_PU_testFinal_baby.root",prefix));
-   }
-   else if( mH == 200 ){
-     chsignal->Add(Form("%s/HToWWTo2L2NuM200_PU_testFinal_baby.root",prefix));
-     chsignal->Add(Form("%s/HToWWToLNuTauNuM200_PU_testFinal_baby.root",prefix));
-     chsignal->Add(Form("%s/HToWWTo2Tau2NuM200_PU_testFinal_baby.root",prefix));
-   }
-   else{
-     std::cout << "Error, unrecognized higgs mass " << mH << " GeV, quitting" << std::endl;
-     exit(0);
-   }
-
 
    TTree *signal     = (TTree*) chsignal;
    TTree *background = (TTree*) chbackground;
@@ -332,16 +382,7 @@ void TMVA_HWW( TString myMethodList = "" )
    factory->SetSignalWeightExpression    ("event_scale1fb");
    factory->SetBackgroundWeightExpression("event_scale1fb");
 
-   //---------------------------
-   // define event selection
-   //---------------------------
-   
-   TCut met_projpt = "(event_type!=1 && event_type!=2 && met_projpt>35) || (event_type!=0 && event_type!=3 && met_projpt>20)";  
-   TCut pt2020     = "lephard_pt > 20 && lepsoft_pt > 20";
-   TCut pt2010     = "lephard_pt > 20 && lepsoft_pt > 10";
-   TCut jetveto    = "jets_num==0 && extralep_num==0 && lowptbtags_num==0 && softmu_num==0";
-   TCut mll12      = "dil_mass > 12.";
-   TCut sel        = pt2010 + met_projpt + jetveto + mll12;
+
 
    // Apply additional cuts on the signal and background samples (can be different)
    TCut mycuts = sel; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
