@@ -45,8 +45,23 @@ for line in commands.getoutput('dbsql find file where dataset like %s' % dataset
 print 'List of LFNs:'
 print listOfFiles
 
+##added to deal with pf cluster issues after 3_11_0 
+filepieces=listOfFiles.split("/")
+release=''
+for piece in filepieces:
+    if "CMSSW" in piece:
+        release=piece
+        break
+numbers=release.split("_")
+number=int(numbers[1]+numbers[2]+numbers[3])
+pftoggle=False
+if number>=3110:
+    pftoggle=True
+
+
+  
 #print 'SET NEVENTS = 100!!!'
-vars = { 'MYFILENAMES' : listOfFiles, 'MYNEVENTS' : -1, 'MYGLOBALTAG' : globaltag, 'MYROOTFILE' : mykey + '.root', 'MYSAMPLE' : mykey , 'METCOLLECTION' : metcoll }
+vars = { 'MYFILENAMES' : listOfFiles, 'MYNEVENTS' : -1, 'MYGLOBALTAG' : globaltag, 'MYROOTFILE' : mykey + '.root', 'MYSAMPLE' : mykey , 'METCOLLECTION' : metcoll, 'MODMETRECO':pftoggle}
 
 template = open('template.py','r')
 templatestring = ''
