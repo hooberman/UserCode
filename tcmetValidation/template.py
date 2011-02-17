@@ -83,6 +83,47 @@ reportEvery = cms.untracked.int32(100)     # every 1000th only
 ))
 process.MessageLogger.statistics.append('cout')
       
+from RecoMET.Configuration.RecoMET_cff import metreco as metreco2
+from RecoJets.Configuration.CaloTowersES_cfi import *
+from RecoMET.METProducers.CaloTowersOpt_cfi import *
+from RecoMET.METProducers.CaloMET_cfi import *
+from RecoMET.METProducers.HTMET_cfi import *
+from RecoMET.METProducers.CaloMETSignif_cfi import *
+#from RecoMET.METProducers.TCMET_cfi import *
+from RecoMET.METProducers.hcalnoiseinfoproducer_cfi import *
+from RecoMET.METProducers.MuonMETValueMapProducer_cff import *
+from RecoMET.METProducers.MuonTCMETValueMapProducer_cff import *
+from RecoMET.METProducers.MetMuonCorrections_cff import *
+from RecoMET.Configuration.RecoMET_BeamHaloId_cff import *
+from RecoMET.Configuration.RecoTCMET_cff import *
+
+
+metreco2 = cms.Sequence(
+       met+
+       metNoHF+
+       metHO+
+       metNoHFHO+
+       calotoweroptmaker+
+       metOpt+
+       metOptNoHF+
+       calotoweroptmakerWithHO+
+       metOptHO+
+       metOptNoHFHO+
+       htMetKT4+
+       htMetKT6+
+       htMetIC5+
+       htMetAK5+
+       htMetAK7+
+       muonMETValueMapProducer+
+       corMetGlobalMuons+
+       muonTCMETValueMapProducer+
+       tcMet+
+       BeamHaloId
+       )
+
+
+if %(MODMETRECO)s:
+    process.metreco = metreco2
 
 
 process.fileSaver = cms.EDAnalyzer("METFileSaver",
