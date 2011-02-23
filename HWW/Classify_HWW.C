@@ -54,10 +54,11 @@ void Classify_HWW( TString myMethodList = "" )
 
   //--------------------------------------------------------------------
   // path to weights dir (this is where MVA training info is stored)
+  // output root file will be stored at [path]/output
   //--------------------------------------------------------------------
 
-  //TString path   = "Trainings/H130_WW_GGWW_WJets_4vars/";
-  TString path   = "Trainings/H130_allbkg_4vars/";
+  //TString path   = "Trainings/H130_WJetsFO3_tight_4vars/";
+  TString path   = "./";
 
   //-----------------------------------
   // select samples to run over
@@ -75,6 +76,7 @@ void Classify_HWW( TString myMethodList = "" )
   samples.push_back("WJetsToLNu");
   samples.push_back("DY");
   samples.push_back("Higgs130");
+  samples.push_back("WJetsFO3");
   //   samples.push_back("Higgs160");
   //   samples.push_back("Higgs200");
 
@@ -83,17 +85,20 @@ void Classify_HWW( TString myMethodList = "" )
   //--------------------------------------------------------------------------------
   
   std::map<std::string,int> mvaVar;
-  mvaVar[ "lephard_pt" ]      = 1;
-  mvaVar[ "lepsoft_pt" ]      = 1;
-  mvaVar[ "dil_dphi" ]        = 1;
-  mvaVar[ "dil_mass" ]        = 1;
-  mvaVar[ "event_type" ]      = 0;
-  mvaVar[ "met_projpt" ]      = 0;
-  mvaVar[ "met_pt" ]          = 0;
-  mvaVar[ "mt_lephardmet" ]   = 0;
-  mvaVar[ "mt_lepsoftmet" ]   = 0;
-  mvaVar[ "dphi_lephardmet" ] = 0;
-  mvaVar[ "dphi_lepsoftmet" ] = 0;
+  mvaVar[ "lephard_pt" ]        = 1;
+  mvaVar[ "lepsoft_pt" ]        = 1;
+  mvaVar[ "dil_dphi" ]          = 1;
+  mvaVar[ "dil_mass" ]          = 1;
+  mvaVar[ "event_type" ]        = 0;
+  mvaVar[ "met_projpt" ]        = 0;
+  mvaVar[ "met_pt" ]            = 0;
+  mvaVar[ "mt_lephardmet" ]     = 0;
+  mvaVar[ "mt_lepsoftmet" ]     = 0;
+  mvaVar[ "dphi_lephardmet" ]   = 0;
+  mvaVar[ "dphi_lepsoftmet" ]   = 0;
+  mvaVar[ "lepsoft_fbrem" ]     = 0;
+  mvaVar[ "lepsoft_eOverPIn" ]  = 0;
+  mvaVar[ "lepsoft_qdphi" ]     = 0;
 
   //---------------------------------------------------------------
 
@@ -219,18 +224,24 @@ void Classify_HWW( TString myMethodList = "" )
     Float_t mt_lepsoftmet;
     Float_t dphi_lephardmet;
     Float_t dphi_lepsoftmet;
+    Float_t lepsoft_fbrem;
+    Float_t lepsoft_eOverPIn;
+    Float_t lepsoft_qdphi;
 
-    if( mvaVar["lephard_pt"])      reader->AddVariable( "lephard_pt"        ,   &lephard_pt ); 
-    if( mvaVar["lepsoft_pt"])      reader->AddVariable( "lepsoft_pt"        ,   &lepsoft_pt ); 
-    if( mvaVar["dil_dphi"])        reader->AddVariable( "dil_dphi"          ,   &dil_dphi   ); 
-    if( mvaVar["dil_mass"])        reader->AddVariable( "dil_mass"          ,   &dil_mass   ); 
-    if( mvaVar["event_type"])      reader->AddVariable( "event_type"        ,   &event_type );
-    if( mvaVar["met_projpt"])      reader->AddVariable( "met_projpt"        ,   &met_pt     );
-    if( mvaVar["met_pt"])          reader->AddVariable( "met_pt"            ,   &met_pt     );
-    if( mvaVar["mt_lephardmet"])   reader->AddVariable( "mt_lephardmet"     ,   &mt_lephardmet     );
-    if( mvaVar["mt_lepsoftmet"])   reader->AddVariable( "mt_lepsoftmet"     ,   &mt_lepsoftmet     );
-    if( mvaVar["dphi_lephardmet"]) reader->AddVariable( "dphi_lephardmet"   ,   &dphi_lephardmet     );
-    if( mvaVar["dphi_lepsoftmet"]) reader->AddVariable( "dphi_lepsoftmet"   ,   &dphi_lepsoftmet     );
+    if( mvaVar["lephard_pt"])       reader->AddVariable( "lephard_pt"                  ,   &lephard_pt ); 
+    if( mvaVar["lepsoft_pt"])       reader->AddVariable( "lepsoft_pt"                  ,   &lepsoft_pt ); 
+    if( mvaVar["dil_dphi"])         reader->AddVariable( "dil_dphi"                    ,   &dil_dphi   ); 
+    if( mvaVar["dil_mass"])         reader->AddVariable( "dil_mass"                    ,   &dil_mass   ); 
+    if( mvaVar["event_type"])       reader->AddVariable( "event_type"                  ,   &event_type );
+    if( mvaVar["met_projpt"])       reader->AddVariable( "met_projpt"                  ,   &met_pt     );
+    if( mvaVar["met_pt"])           reader->AddVariable( "met_pt"                      ,   &met_pt     );
+    if( mvaVar["mt_lephardmet"])    reader->AddVariable( "mt_lephardmet"               ,   &mt_lephardmet     );
+    if( mvaVar["mt_lepsoftmet"])    reader->AddVariable( "mt_lepsoftmet"               ,   &mt_lepsoftmet     );
+    if( mvaVar["dphi_lephardmet"])  reader->AddVariable( "dphi_lephardmet"             ,   &dphi_lephardmet   );
+    if( mvaVar["dphi_lepsoftmet"])  reader->AddVariable( "dphi_lepsoftmet"             ,   &dphi_lepsoftmet   );
+    if( mvaVar["lepsoft_fbrem"])    reader->AddVariable( "lepsoft_fbrem"               ,   &lepsoft_fbrem     );
+    if( mvaVar["lepsoft_eOverPIn"]) reader->AddVariable( "lepsoft_eOverPIn"            ,   &lepsoft_eOverPIn  );
+    if( mvaVar["lepsoft_qdphi"])    reader->AddVariable( "lepsoft_q * lepsoft_dPhiIn"  ,   &lepsoft_qdphi     );
  
 
     // Spectator variables declared in the training have to be added to the reader, too
@@ -254,13 +265,8 @@ void Classify_HWW( TString myMethodList = "" )
     // and the output root file is written to [path]/[output]
     //--------------------------------------------------------------------------------------
 
-    //TString dir    = "weights/";
-    //TString path   = "Trainings/H130_WWTo2L2Nu/";
-    //TString path   = "Trainings/H130_WWTo2L2Nu_WJetsToLNu/";
-  
     TString dir    = path + "weights/";
     TString outdir = path + "output/";
-
     TString prefix = "TMVAClassification";
 
     // Book method(s)
@@ -299,7 +305,7 @@ void Classify_HWW( TString myMethodList = "" )
     if (Use["MLPBNN"])        histNnbnn   = new TH1F( "MVA_MLPBNN",        "MVA_MLPBNN",        nbin, -1.25, 1.5 );
     if (Use["CFMlpANN"])      histNnC     = new TH1F( "MVA_CFMlpANN",      "MVA_CFMlpANN",      nbin,  0, 1 );
     if (Use["TMlpANN"])       histNnT     = new TH1F( "MVA_TMlpANN",       "MVA_TMlpANN",       nbin, -1.3, 1.3 );
-    if (Use["BDT"])           histBdt     = new TH1F( "MVA_BDT",           "MVA_BDT",           nbin, -1.5, 0.5 );
+    if (Use["BDT"])           histBdt     = new TH1F( "MVA_BDT",           "MVA_BDT",           nbin, -1. , 1. );
     if (Use["BDTD"])          histBdtD    = new TH1F( "MVA_BDTD",          "MVA_BDTD",          nbin, -0.8, 0.8 );
     if (Use["BDTG"])          histBdtG    = new TH1F( "MVA_BDTG",          "MVA_BDTG",          nbin, -1.0, 1.0 );
     if (Use["RuleFit"])       histRf      = new TH1F( "MVA_RuleFit",       "MVA_RuleFit",       nbin, -2.0, 2.0 );
@@ -356,9 +362,6 @@ void Classify_HWW( TString myMethodList = "" )
       rarityHistFi = new TH1F( "MVA_Fisher_Rarity", "MVA_Fisher_Rarity", nbin, 0, 1 );
     }
 
-    TH1F *hdilmass_BDT    = new TH1F("hdilmass_BDT",   "",100,0,200);
-    TH1F *hdilmass_MLPBNN = new TH1F("hdilmass_MLPBNN","",100,0,200);
-
     // Prepare input tree (this must be replaced by your data source)
     // in this example, there is a toy tree with signal and one with background events
     // we'll later on use only the "signal" events for the test in this example.
@@ -374,6 +377,10 @@ void Classify_HWW( TString myMethodList = "" )
       ch -> Add( Form("%s/DYToEEM10To20_PU_testFinal_baby.root",babyPath) );
       ch -> Add( Form("%s/DYToTauTauM20_PU_testFinal_baby.root",babyPath) );
       ch -> Add( Form("%s/DYToTauTauM10To20_PU_testFinal_baby.root",babyPath) );
+    }
+    if( strcmp( samples.at(i) , "WJetsFO3" ) == 0 ){
+      ch -> Add( Form("%s/WJetsToLNu_FOv3_PU_testFinal_baby.root",babyPath) );
+      ch -> Add( Form("%s/WToLNu_FOv3_testFinal_baby.root",babyPath) );
     }
     else if( strcmp( samples.at(i) , "Higgs130" ) == 0 ){
       ch -> Add( Form("%s/HToWWTo2L2NuM130_PU_testFinal_baby.root",babyPath) );
@@ -393,8 +400,6 @@ void Classify_HWW( TString myMethodList = "" )
     else{
       ch -> Add( Form("%s/%s_PU_testFinal_baby.root",babyPath,samples.at(i)) );
     }
-
-
 
     // --- Event loop
 
@@ -418,6 +423,7 @@ void Classify_HWW( TString myMethodList = "" )
 
     Float_t lephard_pt_;
     Float_t lepsoft_pt_;
+    Float_t lepsoft_fr_;
     Float_t dil_dphi_;
     Float_t dil_mass_;
     Float_t event_type_;
@@ -433,9 +439,14 @@ void Classify_HWW( TString myMethodList = "" )
     Float_t mt_lepsoftmet_;
     Float_t dphi_lephardmet_;
     Float_t dphi_lepsoftmet_;
+    Float_t lepsoft_fbrem_;
+    Float_t lepsoft_eOverPIn_;
+    Float_t lepsoft_q_;
+    Float_t lepsoft_dPhiIn_;
 
     theTree->SetBranchAddress( "lephard_pt_"             ,   &lephard_pt_              ); 
     theTree->SetBranchAddress( "lepsoft_pt_"             ,   &lepsoft_pt_              ); 
+    theTree->SetBranchAddress( "lepsoft_fr_"             ,   &lepsoft_fr_              ); 
     theTree->SetBranchAddress( "dil_dphi_"               ,   &dil_dphi_                ); 
     theTree->SetBranchAddress( "dil_mass_"               ,   &dil_mass_                ); 
     theTree->SetBranchAddress( "event_type_"             ,   &event_type_              ); 
@@ -446,12 +457,15 @@ void Classify_HWW( TString myMethodList = "" )
     theTree->SetBranchAddress( "softmu_num_"             ,   &softmu_num_              ); 
     theTree->SetBranchAddress( "event_scale1fb_"         ,   &event_scale1fb_          ); 
     theTree->SetBranchAddress( "lepsoft_passTighterId_"  ,   &lepsoft_passTighterId_   );
-    theTree->SetBranchAddress( "event_type_"             ,   &event_type_              );
     theTree->SetBranchAddress( "met_pt_"                 ,   &met_pt_                  );
     theTree->SetBranchAddress( "mt_lephardmet_"          ,   &mt_lephardmet_           );
     theTree->SetBranchAddress( "mt_lepsoftmet_"          ,   &mt_lepsoftmet_           );
     theTree->SetBranchAddress( "dphi_lephardmet_"        ,   &dphi_lephardmet_         );
     theTree->SetBranchAddress( "dphi_lepsoftmet_"        ,   &dphi_lepsoftmet_         );
+    theTree->SetBranchAddress( "lepsoft_fbrem_"          ,   &lepsoft_fbrem_           );
+    theTree->SetBranchAddress( "lepsoft_eOverPIn_"       ,   &lepsoft_eOverPIn_        );
+    theTree->SetBranchAddress( "lepsoft_q_"              ,   &lepsoft_q_               );
+    theTree->SetBranchAddress( "lepsoft_dPhiIn_"         ,   &lepsoft_dPhiIn_          );
 
     // Efficiency calculator for cut method
     Int_t    nSelCutsGA = 0;
@@ -463,8 +477,9 @@ void Classify_HWW( TString myMethodList = "" )
     TStopwatch sw;
     sw.Start();
 
-    int npass = 0;
-
+    int npass   = 0;
+    float yield = 0.;
+    
     for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
 
       if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
@@ -484,36 +499,42 @@ void Classify_HWW( TString myMethodList = "" )
         if( met_projpt_ < 35. )   continue;
       }
 
-      if( lephard_pt_ < 20.    )                    continue;
-      if( lepsoft_pt_ < 10.    )                    continue;
-      //if( lepsoft_pt_ < 20.    )                    continue;
-      if( jets_num_ > 0        )                    continue;
-      if( extralep_num_ > 0    )                    continue;
-      if( lowptbtags_num_ > 0  )                    continue;
-      if( softmu_num_ > 0      )                    continue;
-      if( dil_mass_ < 12.      )                    continue;
-      if( lepsoft_passTighterId_ == 0 )             continue;
-      if( dil_mass_ > 90. )                         continue;
+       if( lephard_pt_ < 20.    )                    continue;
+       if( lepsoft_pt_ < 10.    )                    continue;
+       //if( lepsoft_pt_ < 20.    )                    continue;
+       if( jets_num_ > 0        )                    continue;
+       if( extralep_num_ > 0    )                    continue;
+       if( lowptbtags_num_ > 0  )                    continue;
+       if( softmu_num_ > 0      )                    continue;
+       if( dil_mass_ < 12.      )                    continue;
+       if( lepsoft_passTighterId_ == 0 )             continue;
+       if( event_type_ < 1.5    )                    continue;
+       if( dil_mass_ > 90. )                         continue;
 
-      float weight = event_scale1fb_ * 0.0355;
+      float weight = event_scale1fb_ * lepsoft_fr_ * 0.5;
 
       //--------------------------------------------------------
       // important: here we associate branches to MVA variables
       //--------------------------------------------------------
 
-      lephard_pt      = lephard_pt_;
-      lepsoft_pt      = lepsoft_pt_;
-      dil_mass        = dil_mass_;
-      dil_dphi        = dil_dphi_;
-      event_type      = event_type_;
-      met_pt          = met_pt_;
-      met_projpt      = met_projpt_;
-      mt_lephardmet   = mt_lephardmet_;
-      mt_lepsoftmet   = mt_lepsoftmet_;
-      dphi_lephardmet = dphi_lephardmet_;
-      dphi_lepsoftmet = dphi_lepsoftmet_;
+      lephard_pt        = lephard_pt_;
+      lepsoft_pt        = lepsoft_pt_;
+      dil_mass          = dil_mass_;
+      dil_dphi          = dil_dphi_;
+      event_type        = event_type_;
+      met_pt            = met_pt_;
+      met_projpt        = met_projpt_;
+      mt_lephardmet     = mt_lephardmet_;
+      mt_lepsoftmet     = mt_lepsoftmet_;
+      dphi_lephardmet   = dphi_lephardmet_;
+      dphi_lepsoftmet   = dphi_lepsoftmet_;
+      lepsoft_fbrem     = lepsoft_fbrem_;
+      lepsoft_eOverPIn  = lepsoft_eOverPIn_;
+      lepsoft_qdphi     = lepsoft_q_ * lepsoft_dPhiIn_;
 
       npass++;
+      yield+=weight;
+
       //       var1 = userVar1 + userVar2;
       //       var2 = userVar1 - userVar2;
 
@@ -556,13 +577,6 @@ void Classify_HWW( TString myMethodList = "" )
       if (Use["Category"     ])   histCat    ->Fill( reader->EvaluateMVA( "Category method"      ) , weight);
       if (Use["Plugin"       ])   histPBdt   ->Fill( reader->EvaluateMVA( "P_BDT method"         ) , weight);
 
-      if( reader->EvaluateMVA( "BDT method" ) < -0.8 ){
-        fillUnderOverFlow( hdilmass_BDT , dil_mass_ , weight );
-      }
-      if( reader->EvaluateMVA( "MLPBNN method" ) < 0.1 ){
-        fillUnderOverFlow( hdilmass_MLPBNN , dil_mass_ , weight );
-      }
-
       // Retrieve also per-event error
       if (Use["PDEFoam"]) {
         Double_t val = reader->EvaluateMVA( "PDEFoam method" );
@@ -579,7 +593,7 @@ void Classify_HWW( TString myMethodList = "" )
       }
     }
 
-    std::cout << npass << " events passing selection" << std::endl;
+    std::cout << npass << " events passing selection, yield " << yield << std::endl;
  
     // Get elapsed time
     sw.Stop();
@@ -649,8 +663,6 @@ void Classify_HWW( TString myMethodList = "" )
     if (Use["FDA_GA"       ])   histFDAGA  ->Write();
     if (Use["Category"     ])   histCat    ->Write();
     if (Use["Plugin"       ])   histPBdt   ->Write();
-    hdilmass_BDT->Write();
-    hdilmass_MLPBNN->Write();
 
     // Write also error and significance histos
     if (Use["PDEFoam"]) { histPDEFoam->Write(); histPDEFoamErr->Write(); histPDEFoamSig->Write(); }
