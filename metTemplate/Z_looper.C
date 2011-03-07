@@ -57,9 +57,9 @@ metType myMetType               = e_tcmet;
 templateSource myTemplateSource = e_PhotonJet;
 
 float lumi         = 33.96e-3; 
-char* iter         = "v7";
+char* iter         = "v8";
 char* jsonfilename = "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt";
-
+//char* jsonfilename = "Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON_goodruns.txt";
 //--------------------------------------------------------------------
 
 struct DorkyEventIdentifier {
@@ -224,6 +224,15 @@ bool isMuMuEvent(){
   if( evt_run() ==  149291 && evt_lumiBlock() ==      616  && evt_event() == 641847074)  return true;
   
   return false;
+}
+
+//--------------------------------------------------------------------
+
+void printEvent(){
+
+  cout << evt_dataset() << endl;
+  cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+
 }
 
 //--------------------------------------------------------------------
@@ -625,6 +634,19 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       metError_         = getMetError( goodMuonIndices );
       metErrorC_        = getMetError_claudio( goodMuonIndices );
 
+
+      float mom1 = hyp_ll_p4()[hypIdx].P();
+      float mom2 = hyp_lt_p4()[hypIdx].P();
+      if( mom2 > mom1 ){
+        mom1 = mom2;
+        mom2 = mom1;
+      }
+
+      float one_minus_cosalpha = (dilmass_ * dilmass_) / (2 * mom1 * mom2 );
+      
+      dpdm_ = dilmass_ /( mom2 * one_minus_cosalpha );
+
+
       npfmuons_ = 0;
       nmatchedpfmuons_ = 0;
 
@@ -638,12 +660,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( abs( hyp_ll_id()[hypIdx] ) == 13 ){
 	int ipf_ll = mus_pfmusidx().at(hyp_ll_index().at(hypIdx));
 	if( ipf_ll >= pfmus_p4().size() || ipf_ll < 0 ){
-	  cout << "Error, pfmuon ll index out of range " << ipf_ll << endl;
+	  //cout << "Error, pfmuon ll index out of range " << ipf_ll << endl;
+          //printEvent();
 	}else{
 	  ptll_pf_ = pfmus_p4().at(ipf_ll).pt();
 	  nmatchedpfmuons_ ++;
 	  if( fabs( ptll_ - ptll_pf_ ) > 0.01 ){
-	    cout << "ERROR: " << ptll_ << " " << ptll_pf_ << endl;
+	    //cout << "ERROR: " << ptll_ << " " << ptll_pf_ << endl;
 	  }
 	}
 
@@ -651,17 +674,28 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	ptlltrk_   = mus_trk_p4().at(muidx).pt();
 	ptllgfit_  = mus_gfit_p4().at(muidx).pt();
 	pterrll_   = mus_ptErr().at(muidx);
+
+        if( !isData ){
+          int mcid   = mus_mc3idx().at(muidx);
+          //cout << "ll mcid " << mcid << endl;
+          if( mcid >=0 && mcid < genps_p4().size() ){
+            ptllgen_   = genps_p4().at(mcid).pt();
+          }else{
+            //cout << "Error, ll MC index " << mcid << " size " << genps_p4().size() << endl;
+          }
+        }
       }
 
       if( abs( hyp_lt_id()[hypIdx] ) == 13 ){
 	int ipf_lt = mus_pfmusidx()[hyp_lt_index()[hypIdx]];
 	if( ipf_lt >= pfmus_p4().size() || ipf_lt < 0 ){
-	  cout << "Error, pfmuon lt index out of range " << ipf_lt << endl;
+	  //cout << "Error, pfmuon lt index out of range " << ipf_lt << endl;
+          //printEvent();
 	}else{
 	  ptlt_pf_ = pfmus_p4().at(ipf_lt).pt();
 	  nmatchedpfmuons_ ++;
 	  if( fabs( ptlt_ - ptlt_pf_ ) > 0.01 ){
-	    cout << "ERROR: " << ptlt_ << " " << ptlt_pf_ << endl;
+	    //cout << "ERROR: " << ptlt_ << " " << ptlt_pf_ << endl;
 	  }
 	}
 
@@ -669,6 +703,17 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	ptlttrk_   = mus_trk_p4().at(muidx).pt();
 	ptltgfit_  = mus_gfit_p4().at(muidx).pt();
 	pterrlt_   = mus_ptErr().at(muidx);
+
+        if( !isData ){
+          int mcid   = mus_mc3idx().at(muidx);
+          //cout << "lt mcid " << mcid << endl;
+          if( mcid >=0 && mcid < genps_p4().size() ){
+            ptltgen_   = genps_p4().at(mcid).pt();
+          }else{
+            //cout << "Error, lt MC index " << mcid << " size " << genps_p4().size() <<endl;
+          }
+        }
+
       }
 
       if( leptype_ == 1 && npfmuons_ >= 2 ){
@@ -1502,6 +1547,10 @@ void Z_looper::InitBabyNtuple (){
   jetmax_pt_        = -999999;
   jetmax_dphimet_   = -999999;
 
+  metError_         = -999999;
+  metErrorC_        = -999999;
+  dpdm_             = -999999;
+
   //Z stuff
   passz_           = -999999;
   passe_ll_ttbar_     = -999999;
@@ -1524,6 +1573,8 @@ void Z_looper::InitBabyNtuple (){
   pterrll_         = -999999;
   pterrlt_         = -999999;
   ptlltrk_         = -999999;
+  ptllgen_         = -999999;
+  ptltgen_         = -999999;
   ptlttrk_         = -999999;
   ptllgfit_        = -999999;
   ptltgfit_        = -999999;
@@ -1746,6 +1797,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("passe_lt_ttbarV1",      &passe_lt_ttbarV1_,      "passe_lt_ttbarV1/I");  
   babyTree_->Branch("passe_lt_ttbarV2",      &passe_lt_ttbarV2_,      "passe_lt_ttbarV2/I");  
   babyTree_->Branch("passe_lt_cand01",       &passe_lt_cand01_,       "passe_lt_cand01/I");  
+  babyTree_->Branch("dpdm",                  &dpdm_,                  "dpdm/F");  
   babyTree_->Branch("meterror",              &metError_,              "metError/F");  
   babyTree_->Branch("meterrorc",             &metErrorC_,             "metErrorc/F");  
   babyTree_->Branch("ptll",                  &ptll_,                  "ptll/F");  
@@ -1758,6 +1810,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ptltgfit",              &ptltgfit_,              "ptltgfit/F");  
   babyTree_->Branch("ptllpf",                &ptll_pf_,               "ptllpf/F");  
   babyTree_->Branch("ptltpf",                &ptlt_pf_,               "ptltpf/F");  
+  babyTree_->Branch("ptllgen",               &ptllgen_,               "ptllgen/F");  
+  babyTree_->Branch("ptltgen",               &ptltgen_,               "ptltgen/F");  
   babyTree_->Branch("npfmuons",              &npfmuons_,              "npfmuons/I");  
   babyTree_->Branch("nmatchedpfmuons",       &nmatchedpfmuons_,       "nmatchedpfmuons/I");  
   babyTree_->Branch("idll",                  &idll_,                  "idll/I");  

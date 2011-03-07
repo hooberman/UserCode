@@ -74,6 +74,7 @@ class Z_looper
   Float_t pthat_;
   Float_t mllgen_;
   Float_t maxemf_;
+  Float_t dpdm_;
   Float_t metError_;
   Float_t metErrorC_;
 
@@ -99,6 +100,8 @@ class Z_looper
   Float_t sumet_;
 
   Float_t ptlltrk_;
+  Float_t ptllgen_;
+  Float_t ptltgen_;
   Float_t ptlttrk_;
   Float_t ptllgfit_;
   Float_t ptltgfit_;
