@@ -115,7 +115,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
       cms2.Init(tree);
 
       // event loop
-      unsigned int nEvents = tree->GetEntries()/100;
+      unsigned int nEvents = tree->GetEntries();
 
       for (unsigned int event = 0; event < nEvents; ++event)
         {
@@ -191,10 +191,6 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 
           }
 
- 	  fillUnderOverFlow( htcmet ,       tcmet_    );
-	  fillUnderOverFlow( htcmetNew ,    tcmetNew_ );
- 	  fillUnderOverFlow( hpfmet ,       pfmet_    );
-          
           eventTree_->Fill();
     
         } // end loop over events
