@@ -26,6 +26,11 @@ class looper
 	void fillUnderOverFlow(TH1F *h1, float value, float weight = 1);
         void printEvent(  ostream& ostr = cout );
         float deltaPhi( float phi1 , float phi2 );
+        float dz(const unsigned int trkidx, const unsigned int vtxidx);
+        float ZanettiMET(const unsigned int vtxIdx, const unsigned int hypIdx, float threshold);
+        float HooberMET(const unsigned int vtxIdx, const unsigned int hypIdx, 
+                        float dz_thresh, float pt_thresh, float etacut , bool usePFCandidatePt = false );
+
     private:
         
         //ntuple, file
@@ -50,11 +55,16 @@ class looper
         TH1F* hdtcmet_mumet;
         TH1F* hdtcmet_mujesmet;
 
+        TH1F* hneutralpt_0jet;
+        TH1F* hneutralpt_1jet;
+
         // event stuff
         Int_t   run_;
         Int_t   lumi_;
         Int_t   event_;
-        
+        Int_t   leptype_;
+        Int_t   njets25_;
+
 	// genmet stuff
 	Float_t genmet_;
 	Float_t genmetphi_;
@@ -75,10 +85,30 @@ class looper
 	Float_t tcmetphi_;
 	Float_t tcsumet_;
 
+	// pfcandmet stuff
+	Float_t pfcandmet_;
+	Float_t pfcandmetphi_;
+	Float_t pfcandsumet_;
+
 	// latest-and-greatest tcmet stuff
 	Float_t tcmetNew_;
 	Float_t tcmetphiNew_;
 	Float_t tcsumetNew_;
+
+        Float_t hmet_;
+        Float_t hmetpf_;
+        Float_t hmetpf0_;
+        Float_t hmetpf1_;
+        Float_t hmetpf2_;
+        Float_t hmetpf3_;
+        Float_t hmetpf4_;
+        Float_t hmetpf5_;
+        Float_t hmetpf6_;
+        Float_t hmetpf7_;
+        Float_t hmetpf8_;
+        Float_t hmetpf9_;
+        Float_t hmetpf10_;
+        Float_t zmet_;
 
         ofstream ofile;
 };
