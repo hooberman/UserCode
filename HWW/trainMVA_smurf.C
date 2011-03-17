@@ -1,4 +1,4 @@
-// @(#)root/tmva $Id: TMVA_HWW.C,v 1.4 2011/03/03 11:57:58 benhoob Exp $
+// @(#)root/tmva $Id: trainMVA_smurf.C,v 1.1 2011/03/17 15:17:19 benhoob Exp $
 /**********************************************************************************
  * Project   : TMVA - a ROOT-integrated toolkit for multivariate data analysis    *
  * Package   : TMVA                                                               *
@@ -56,7 +56,7 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector; 
 
-void trainMVA_smurf( TString myMethodList = "" )
+void trainMVA_smurf( int mH , TString myMethodList = "" )
 {
   // The explicit loading of the shared libTMVA is done in TMVAlogon.C, defined in .rootrc
   // if you use your private .rootrc, or run from a different directory, please copy the
@@ -77,11 +77,20 @@ void trainMVA_smurf( TString myMethodList = "" )
   // choose higgs mass
   //-----------------------------------------------------
 
-  int  mH      = 160;
-
-  //-----------------------------------------------------
-  // define event selection (store in TCut sel)
-  //-----------------------------------------------------
+  cout << "Training MVA Higgs mass " << mH << endl;
+   
+  //-------------------------------------------------------------------------------------
+  // define event selection
+  //
+  // current selection is:
+  //
+  // 0-jets (evtype==0)
+  // dilep.mass() < dilmass_cut
+  //
+  // The event selection is applied below, see: 
+  // SIGNAL EVENT SELECTION and BACKGROUND EVENT SELECTION
+  // if you want to apply any additional selection this needs to be implemented below
+  //-------------------------------------------------------------------------------------
 
   TCut sel = "";
   
@@ -95,6 +104,8 @@ void trainMVA_smurf( TString myMethodList = "" )
     std::cout << "Error, unrecognized higgs mass " << mH << " GeV, quitting" << std::endl;
     exit(0);
   }
+
+  cout << "Using dilepton mass < " << dilmass_cut << endl;
 
   //-----------------------------------------------------
   // choose which variables to include in MVA training
@@ -418,6 +429,10 @@ void trainMVA_smurf( TString myMethodList = "" )
     
     signal->GetEntry(i);
 
+    //--------------------------------------------------
+    // SIGNAL EVENT SELECTION
+    //--------------------------------------------------
+
     if( evtype != 0 )                 continue; // select 0-jet events
     if( dilep->mass() > dilmass_cut ) continue; // cut on dilepton mass
 
@@ -491,6 +506,10 @@ void trainMVA_smurf( TString myMethodList = "" )
   for (UInt_t i=0; i<background->GetEntries(); i++) {
     
     background->GetEntry(i);
+
+    //--------------------------------------------------
+    // BACKGROUND EVENT SELECTION
+    //--------------------------------------------------
 
     if( evtype != 0 )                 continue; // select 0-jet events
     if( dilep->mass() > dilmass_cut ) continue; // cut on dilepton mass
