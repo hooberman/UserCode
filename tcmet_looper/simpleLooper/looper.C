@@ -38,6 +38,8 @@ bool makebaby       = true;
 bool debug          = false;
 bool calculateTCMET = false;
 
+typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
+
 // inline double fround(double n, double d){
 //   return floor(n * pow(10., d) + .5) / pow(10., d);
 // }
@@ -87,6 +89,30 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
 
 //--------------------------------------------------------------------
 
+bool jetMatchedToGenJet( LorentzVector vjet , int hypIdx){
+
+    
+  for( int ijet = 0 ; ijet < genjets_p4().size() ; ijet++ ){
+
+    LorentzVector vgenjet = genjets_p4().at(ijet);
+    LorentzVector vlt     = hyp_lt_p4()[hypIdx];
+    LorentzVector vll     = hyp_ll_p4()[hypIdx];
+    
+    if( dRbetweenVectors(vgenjet, vll) < 0.4 )   continue;
+    if( dRbetweenVectors(vgenjet, vlt) < 0.4 )   continue;
+    if( fabs( vgenjet.eta() ) > 3.0 )            continue;
+    if( vgenjet.pt() < 30. )                     continue;
+    if( dRbetweenVectors(vgenjet, vjet) > 0.4 )  continue;
+
+    return true;
+  }
+
+  return false;
+
+}
+
+//--------------------------------------------------------------------
+
 using namespace tas;
 void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEvents){
 
@@ -117,7 +143,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
       cms2.Init(tree);
 
       // event loop
-      unsigned int nEvents = tree->GetEntries();
+      unsigned int nEvents = tree->GetEntries() / 10;
 
       for (unsigned int event = 0; event < nEvents; ++event)
         {
@@ -213,6 +239,9 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 
           njets25_ = 0;
 
+          vector<int> goodjets;
+          goodjets.clear();
+
           for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
             LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
@@ -223,9 +252,77 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
             if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
             if( fabs( vjet.eta() ) > 3.0 )           continue;
             if( !passesPFJetID(ijet) )               continue;
-            if( vjet.pt() < 25. )                    continue;
-            
+            if( vjet.pt() < 30. )                    continue;
+
+            if( !jetFromSignalPV( ijet , vtxIdx ) ) continue;
+           
             njets25_++;
+            goodjets.push_back(ijet);
+            
+//             LorentzVector pfcands_tot(0,0,0,0);
+
+//             vector<int> pfcands = pfjets_pfcandIndicies().at(ijet);
+
+//             float dzmin =  100;
+//             float dzmax = -100;
+
+//             for( vector<int>::iterator ipf = pfcands.begin() ; ipf < pfcands.end() ; ++ipf ){
+              
+//               pfcands_tot += pfcands_p4().at(*ipf);
+              
+//               if( pfcands_charge().at(*ipf) == 0 ) continue;
+              
+//               int itrk = pfcands_trkidx().at(*ipf);
+
+//               if( itrk > trks_trk_p4().size() ) continue;
+
+//               float thisdz = dz_trk_vtx(itrk,vtxIdx);
+//               cout << "dz " << thisdz << endl;
+
+//               if( thisdz < dzmin )    dzmin = thisdz;
+//               if( thisdz > dzmax )    dzmax = thisdz;
+                
+//             }
+          
+//             cout << endl;
+//             cout << "pt " << pfjets_p4().at(ijet).pt() << " " << pfcands_tot.pt() << endl;
+//             cout << "spread " << dzmax - dzmin << endl;
+          }
+
+
+          for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+            LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+            LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+            LorentzVector vll  = hyp_ll_p4()[hypIdx];
+            
+            if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
+            if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+            if( fabs( vjet.eta() ) > 3.0 )           continue;
+            if( !passesPFJetID(ijet) )               continue;
+            if( vjet.pt() < 30. )                    continue;
+
+            if( jetFromSignalPV( ijet , vtxIdx ) ){
+             
+              fillUnderOverFlow( hmismatch_jetpt_tot , vjet.pt() );
+              fillUnderOverFlow( hmismatch_nvtx_tot  , goodVertices().size()    );
+              
+              if( !jetMatchedToGenJet( vjet , hypIdx) ){
+                fillUnderOverFlow( hmismatch_jetpt_pass , vjet.pt() ); 
+                fillUnderOverFlow( hmismatch_nvtx_pass  , goodVertices().size() ); 
+              }
+            }
+
+            if( jetMatchedToGenJet( vjet , hypIdx) ){
+              
+              fillUnderOverFlow( hmatch_jetpt_tot , vjet.pt() );
+              fillUnderOverFlow( hmatch_nvtx_tot  , goodVertices().size()     );
+              
+              if( jetFromSignalPV( ijet , vtxIdx ) ){
+                fillUnderOverFlow( hmatch_jetpt_pass , vjet.pt() ); 
+                fillUnderOverFlow( hmatch_nvtx_pass  , goodVertices().size() ); 
+              }
+            }
           }
 
           if( debug ) cout << "Filling ntuple" << endl;
@@ -235,6 +332,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           lumi_    = cms2.evt_lumiBlock();
           event_   = cms2.evt_event();
           leptype_ = cms2.hyp_type().at(hypIdx);
+          nvtx_    = goodVertices().size();
 
           // pf met stuff
           pfmet_    = cms2.evt_pfmet();
@@ -388,7 +486,15 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           hmetpf8_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 8.    , etacut , true );
           hmetpf9_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 9.    , etacut , true );
           hmetpf10_ = HooberMET  ( vtxIdx,  hypIdx, dzcut, 10.   , etacut , true );
+       
+          //hmet_     = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut, 1.e10 , etacut , false , false );
+          //hmetpf_   = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut, 1.e10 , etacut ,  true , false );
+          //hmetpf4_  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut,    4. , etacut ,  true , false );
+          //jetzmet_  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut,    4. , etacut ,  true ,  true );
 
+          //if( fabs( hmet_2 - hmet_ )       > 0.001 ) cout << "Error hmet "    << hmet_    << " " << hmet_2 << endl;
+          //if( fabs( hmetpf_2 - hmetpf_ )   > 0.001 ) cout << "Error hmetpf "  << hmetpf_  << " " << hmetpf_2 << endl;
+          //if( fabs( hmetpf4_2 - hmetpf4_ ) > 0.001 ) cout << "Error hmetpf4 " << hmetpf4_ << " " << hmetpf4_2 << endl;
 
           if( calculateTCMET ){
             
@@ -434,6 +540,7 @@ void looper::InitBabyNtuple ()
   run_             = -999999;
   lumi_            = -999999;
   event_           = -999999;
+  nvtx_            = -999999;
   leptype_         = -999999;
   njets25_         = -999999;
 
@@ -518,7 +625,26 @@ void looper::bookHistos(){
   hneutralpt_0jet = new TH1F("hneutralpt_0jet","",100,0,30);
   hneutralpt_1jet = new TH1F("hneutralpt_1jet","",100,0,30);
 
+  hmismatch_jetpt_tot    =    new TH1F("hmismatch_jetpt_tot",    "", 100,0,100);
+  hmismatch_jetpt_pass   =    new TH1F("hmismatch_jetpt_pass",   "", 100,0,100);
+  hmatch_jetpt_tot       =    new TH1F("hmatch_jetpt_tot",       "", 100,0,100);
+  hmatch_jetpt_pass      =    new TH1F("hmatch_jetpt_pass",      "", 100,0,100);
 
+  hmismatch_jetpt_tot->Sumw2();
+  hmismatch_jetpt_pass->Sumw2();
+  hmatch_jetpt_tot->Sumw2();
+  hmatch_jetpt_pass->Sumw2();
+
+  hmismatch_nvtx_tot     =    new TH1F("hmismatch_nvtx_tot",     "", 15,0.5,15.5);
+  hmismatch_nvtx_pass    =    new TH1F("hmismatch_nvtx_pass",    "", 15,0.5,15.5);
+  hmatch_nvtx_tot        =    new TH1F("hmatch_nvtx_tot",        "", 15,0.5,15.5);
+  hmatch_nvtx_pass       =    new TH1F("hmatch_nvtx_pass",       "", 15,0.5,15.5);
+
+  hmismatch_nvtx_tot->Sumw2();
+  hmismatch_nvtx_pass->Sumw2();
+  hmatch_nvtx_tot->Sumw2();
+  hmatch_nvtx_pass->Sumw2();
+  
 }
 
 //--------------------------------------------------------------------
@@ -536,6 +662,7 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   eventTree_->Branch("run"              , &run_              , "run/I"  );
   eventTree_->Branch("lumi"             , &lumi_             , "lumi/I" );
   eventTree_->Branch("event"            , &event_            , "event/I");
+  eventTree_->Branch("nvtx"             , &nvtx_             , "nvtx/I");
   eventTree_->Branch("leptype"          , &leptype_          , "leptype/I");
   eventTree_->Branch("njets25"          , &njets25_          , "njets25/I");
 
@@ -576,6 +703,7 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   eventTree_->Branch("hmetpf8"          , &hmetpf8_          , "hmetpf8/F"    );
   eventTree_->Branch("hmetpf9"          , &hmetpf9_          , "hmetpf9/F"    );
   eventTree_->Branch("hmetpf10"         , &hmetpf10_         , "hmetpf10/F"   );
+  eventTree_->Branch("jetzmet"          , &jetzmet_          , "jetzmet/F"    );
 
   eventTree_->Branch("zmet"             , &zmet_             , "zmet/F"      );
 
@@ -640,9 +768,9 @@ float looper::ZanettiMET(const unsigned int vtxIdx, const unsigned int hypIdx, f
         float mindz = 999.;
         int vtxi = -1;
         for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
-            float dz = cms2.vtxs_position()[ivtx].z() - trkz;
-            if (fabs(dz) < fabs(mindz)) {
-                mindz = dz;
+            float thisdz = cms2.vtxs_position()[ivtx].z() - trkz;
+            if (fabs(thisdz) < fabs(mindz)) {
+                mindz = thisdz;
                 vtxi = ivtx;
             }
         }
@@ -781,7 +909,7 @@ float looper::HooberMET(const unsigned int vtxIdx, const unsigned int hypIdx, fl
       int vtxi    = -1;
         
       for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
-        float mydz = dz(itrk,ivtx);
+        float mydz = dz_trk_vtx(itrk,ivtx);
         //float mydz = cms2.vtxs_position()[ivtx].z() - cms2.trks_vertex_p4()[itrk].z();
         if (fabs(mydz) < fabs(mindz)) {
           mindz = mydz;
@@ -828,7 +956,296 @@ float looper::HooberMET(const unsigned int vtxIdx, const unsigned int hypIdx, fl
 
 //--------------------------------------------------------------------
 
-float looper::dz(const unsigned int trkidx, const unsigned int vtxidx){
+vector<int> looper::goodVertices(){
+
+  vector<int> myVertices;
+  myVertices.clear();
+  
+  for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
+    if( !isGoodVertex(v) ) continue;
+    myVertices.push_back(v);
+  }
+  
+  return myVertices;
+}
+
+//--------------------------------------------------------------------
+
+float looper::PFCandidateMET(const unsigned int vtxIdx, const unsigned int hypIdx, vector<int> goodjets, 
+                             float dz_thresh, float pt_thresh, float etacut , bool usePFCandidatePt , bool correctJets ){
+  
+  float tmet_x = 0.;
+  float tmet_y = 0.;
+  
+  //------------------------------------------------
+  // start by adding hypothesis leptons to tmet
+  //------------------------------------------------
+  
+  if (abs(cms2.hyp_lt_id()[hypIdx]) == 11) {
+    tmet_x -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].px();
+    tmet_y -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].py();
+  }
+  else if (abs(cms2.hyp_lt_id()[hypIdx]) == 13) {
+    tmet_x -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].px();
+    tmet_y -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].py();
+  }
+  
+  if (abs(cms2.hyp_ll_id()[hypIdx]) == 11) {
+    tmet_x -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].px();
+    tmet_y -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].py();
+  }
+  else if (abs(cms2.hyp_ll_id()[hypIdx]) == 13) {
+    tmet_x -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].px();
+    tmet_y -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].py();
+  }
+  
+  //------------------------------------------------
+  // next, add selected jets to met
+  //------------------------------------------------
+  
+  if( correctJets ){
+
+    for( vector<int>::iterator igoodjet = goodjets.begin() ; igoodjet < goodjets.end() ; ++igoodjet ){
+      
+      LorentzVector vjet = pfjets_p4().at(*igoodjet) * pfjets_cor().at(*igoodjet);
+      
+      tmet_x -= vjet.px();
+      tmet_y -= vjet.py();
+      
+    }
+    
+  }
+  
+  //---------------------------------------------------
+  // loop over PFCandidates
+  //---------------------------------------------------
+
+  for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+
+    //----------------------------------------------------------------------
+    // exclude particles belonging to jets that were already corrected for
+    //----------------------------------------------------------------------
+
+    if( correctJets ){
+      
+      bool skipPFCandidate = false;
+      
+      for( vector<int>::iterator jet_it = goodjets.begin() ; jet_it != goodjets.end() ; jet_it++ ){
+        
+        vector<int> jetConstituents = pfjets_pfcandIndicies().at(*jet_it);
+        
+        for( vector<int>::iterator pf_it = jetConstituents.begin() ; pf_it != jetConstituents.end() ; pf_it++ ){
+          if( ipf == *pf_it ) skipPFCandidate = true;
+        }
+        
+      }
+    
+      if( skipPFCandidate ) continue;
+      
+    }
+
+    //--------------------
+    //deal with neutrals
+    //--------------------
+  
+    if( cms2.pfcands_charge().at(ipf) == 0 ){
+      
+      //--------------------
+      // pt, eta cuts
+      //--------------------
+      
+      if( pfcands_p4().at(ipf).pt()          < pt_thresh ) continue;
+      if( fabs( pfcands_p4().at(ipf).eta() ) > etacut    ) continue;
+      
+      if (dRbetweenVectors(pfcands_p4().at(ipf) , cms2.hyp_lt_p4()[hypIdx]) < 0.1)  continue;
+      if (dRbetweenVectors(pfcands_p4().at(ipf) , cms2.hyp_ll_p4()[hypIdx]) < 0.1)  continue;
+      
+      //-----------------------------------------
+      // correct MET for neutral PFCandidate
+      //-----------------------------------------
+      
+      tmet_x -= pfcands_p4().at(ipf).px();
+      tmet_y -= pfcands_p4().at(ipf).py();
+      
+    }
+    
+    //-------------------------------
+    // deal with charged particles
+    //-------------------------------
+    
+    else{
+      
+       //------------------------------------
+       // get track matched to PFCandidate
+       //------------------------------------
+    
+       int itrk = cms2.pfcands_trkidx().at(ipf);
+    
+       if( itrk >= trks_trk_p4().size() || itrk < 0 ){
+         //note: this should only happen for electrons which do not have a matched track
+         //currently we are just ignoring these guys
+         continue;
+       }
+    
+       //----------------------------------------
+       // find closest PV and dz w.r.t. that PV
+       //----------------------------------------
+    
+       float mindz = 999.;
+       int vtxi    = -1;
+      
+       for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
+       
+         float mydz = dz_trk_vtx(itrk,ivtx);
+         //float mydz = cms2.vtxs_position()[ivtx].z() - cms2.trks_vertex_p4()[itrk].z();
+         
+         if (fabs(mydz) < fabs(mindz)) {
+           mindz = mydz;
+           vtxi = ivtx;
+         }
+         
+       }
+    
+       //----------------------------------------------------------------------------
+       // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
+       //----------------------------------------------------------------------------
+    
+       if ( vtxi != vtxIdx )                                                               continue;
+       if ( fabs(mindz) > dz_thresh )                                                      continue;
+       if ( dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_lt_p4()[hypIdx]) < 0.03 )  continue;
+       if ( dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_ll_p4()[hypIdx]) < 0.03 )  continue;
+    
+
+       //---------------------------------------
+       // correct MET for charged PFCandidate
+       //---------------------------------------
+
+       if( usePFCandidatePt ){
+         tmet_x -= cms2.pfcands_p4()[ipf].px();
+         tmet_y -= cms2.pfcands_p4()[ipf].py();
+       }
+    
+       else{
+         tmet_x -= cms2.trks_trk_p4()[itrk].px();
+         tmet_y -= cms2.trks_trk_p4()[itrk].py();
+       }
+    
+     } 
+   }// end loop over tracks
+  
+
+   return sqrt(tmet_x * tmet_x + tmet_y * tmet_y);
+ }
+
+
+
+ bool looper::jetFromSignalPV( int ijet , int vtxIdx ){
+
+   //cout << endl << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+
+   //------------------------------------------
+   // loop over PFCandidates matched to pfjet
+   //------------------------------------------
+   vector<int> pfcands = pfjets_pfcandIndicies().at(ijet);
+
+   //cout << pfcands.size() << " matched PFCandidates" << endl;
+
+   LorentzVector v_pfcands(0,0,0,0);
+
+   vector<int> matchedTracks;
+   matchedTracks.clear();
+
+   float sumPtTot = 0.;
+
+   for( unsigned int i = 0 ; i < pfcands.size() ; ++i ){
+     
+     int ipf = pfcands.at(i);
+
+     v_pfcands += pfcands_p4().at(ipf);
+
+     //---------------------------------------------
+     // find track index of charged PFCandidates
+     //---------------------------------------------
+     
+     if( pfcands_charge().at(ipf) == 0 ) continue;
+
+     int itrk = cms2.pfcands_trkidx().at(ipf);
+     
+     //note: this should only happen for electrons which do not have a matched track, currently ignoring these guys
+     if( itrk >= trks_trk_p4().size() || itrk < 0 )  continue;
+     
+     //----------------------------------
+     // store indices of matched tracks
+     //----------------------------------
+     
+     //cout << "Storing matched track " << itrk << " pt " << trks_trk_p4().at(itrk).pt() << endl;
+     matchedTracks.push_back( itrk );
+
+     sumPtTot += trks_trk_p4().at(itrk).pt();
+
+   }
+
+   //cout << "Found " << matchedTracks.size() << " matched tracks, sumpt " << sumPtTot << endl;
+
+   if( fabs( pfjets_p4().at(ijet).pt() - v_pfcands.pt() ) > 0.1 ){
+     cout << "Warning: pfjet pt " << pfjets_p4().at(ijet).pt() 
+          << " doesn't match sum of PFCandidates pt " << v_pfcands.pt() << endl;
+   }
+
+   vector<int> myGoodVertices = goodVertices();
+   const unsigned int nGoodVertices = myGoodVertices.size();
+
+   if( nGoodVertices == 0 ){
+     cout << "Didn't find any good vertices!" << endl;
+     return false;
+   }
+
+   float beta[nGoodVertices];
+   for( unsigned int ivtx = 0 ; ivtx < nGoodVertices ; ++ivtx ) beta[ivtx] = 0.0;
+
+   for (vector<int>::iterator itrk = matchedTracks.begin(); itrk != matchedTracks.end(); ++itrk) {
+     
+     float mindz = 1000;
+     int   vtxi  = -1;
+     
+     for (vector<int>::iterator ivtx = myGoodVertices.begin(); ivtx != myGoodVertices.end() ; ++ivtx ){
+       
+       float thisdz = dz_trk_vtx(*itrk,*ivtx);
+       
+       if (fabs(thisdz) < fabs(mindz)) {
+         mindz = thisdz;
+         vtxi  = *ivtx;
+       }
+     }
+     
+     beta[vtxi] += trks_trk_p4().at(*itrk).pt() / sumPtTot;
+     
+   }
+   
+   float betamax = -1.;
+   int   imax    = -1;
+   for( unsigned int ivtx = 0 ; ivtx < nGoodVertices ; ++ivtx ){
+     //cout << "beta[" << ivtx << "] " << beta[ivtx] << endl;
+
+     if( beta[ivtx] > betamax ){
+       betamax = beta[ivtx];
+       imax    = ivtx;
+     }
+   }
+
+   //cout << "imax " << imax << " betamax " << betamax << endl; 
+
+   if( imax == vtxIdx ){
+     //cout << "It's good!" << endl;
+     return true;
+   }
+
+   return false;
+ }
+
+//--------------------------------------------------------------------
+
+float looper::dz_trk_vtx(const unsigned int trkidx, const unsigned int vtxidx){
   
   return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
   
