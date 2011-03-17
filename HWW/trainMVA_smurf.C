@@ -1,4 +1,4 @@
-// @(#)root/tmva $Id: trainMVA_smurf.C,v 1.1 2011/03/17 15:17:19 benhoob Exp $
+// @(#)root/tmva $Id: trainMVA_smurf.C,v 1.2 2011/03/17 17:11:02 benhoob Exp $
 /**********************************************************************************
  * Project   : TMVA - a ROOT-integrated toolkit for multivariate data analysis    *
  * Package   : TMVA                                                               *
@@ -129,7 +129,7 @@ void trainMVA_smurf( int mH , TString myMethodList = "" )
   //this path specifies directory containing smurf baby ntuples
   //-------------------------------------------------------------
 
-  const char* babyPath = "/smurf/data/Fall10PU/tas-2020"; 
+  const char* babyPath = "/smurf/benhoob/MVA/SmurfBabies/tas-2020";
 
   //---------------------------------
   //choose bkg samples to include

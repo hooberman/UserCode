@@ -70,30 +70,25 @@ void evaluateMVA_smurf( int mH , TString myMethodList = "" )
   // select samples to run over
   //-----------------------------------
 
-  const char* babyPath = "/smurf/data/Fall10PU/tas-2020"; 
-
+  const char* babyPath = "/smurf/benhoob/MVA/SmurfBabies/tas-2020";
+  
   cout << "Looking for smurf babies at " << babyPath << endl;
 
   vector<char*> samples;
   samples.push_back("ww");
-//   samples.push_back("ggww");
-//   samples.push_back("wz");
-//   samples.push_back("zz");
-//   samples.push_back("ttbar");
-//   samples.push_back("wjets");
-//   samples.push_back("dyee");
-//   samples.push_back("dymm");
-//   samples.push_back("dytt");
-//   samples.push_back("tw");
-
-  if     ( mH == 130 ) samples.push_back("hww130");
-  else if( mH == 160 ) samples.push_back("hww160");
-  else if( mH == 200 ) samples.push_back("hww200");
-  else if( mH == 250 ) samples.push_back("hww250");
-  else{
-    cout << "Error, unrecognized Higgs mass " << mH << " GeV, quitting" << endl;
-    exit(0);
-  }
+  samples.push_back("ggww");
+  samples.push_back("wz");
+  samples.push_back("zz");
+  samples.push_back("ttbar");
+  samples.push_back("wjets");
+  samples.push_back("dyee");
+  samples.push_back("dymm");
+  samples.push_back("dytt");
+  samples.push_back("tw");
+  samples.push_back("hww130");
+  samples.push_back("hww160");
+  samples.push_back("hww200");
+  samples.push_back("hww250");
 
   //--------------------------------------------------------------------------------
   // IMPORTANT: set the following variables to the same set used for MVA training!!!
@@ -114,7 +109,21 @@ void evaluateMVA_smurf( int mH , TString myMethodList = "" )
   mvaVar[ "dPhiLep2MET" ]       = 0;  //delta phi btw leading sub-lepton and met
 
   //---------------------------------------------------------------
+  // specifies the selection applied to events in the training
+  //---------------------------------------------------------------
 
+  float dilmass_cut = 10000;
+  
+  if     ( mH == 130 ) dilmass_cut =  90.0;
+  else if( mH == 160 ) dilmass_cut = 100.0;
+  else if( mH == 200 ) dilmass_cut = 130.0;
+  else if( mH == 250 ) dilmass_cut = 250.0;
+  else{
+    std::cout << "Error, unrecognized higgs mass " << mH << " GeV, quitting" << std::endl;
+    exit(0);
+  }
+
+  cout << "Using dilepton mass < " << dilmass_cut << endl;
 
 
 
@@ -405,10 +414,12 @@ void evaluateMVA_smurf( int mH , TString myMethodList = "" )
     Float_t bdt;
     Float_t nn;
     Float_t fisher;
+    Int_t   test;
 
-    TBranch* br_bdt;
-    TBranch* br_nn;
-    TBranch* br_fisher;
+    TBranch* br_bdt    = 0;
+    TBranch* br_nn     = 0;
+    TBranch* br_fisher = 0;
+    TBranch* br_test = clone->Branch(Form("test_hww%i_ww",mH) , &test , Form("test_hww%i_ww/I" , mH) );
 
     if(Use["BDT"])    br_bdt    = clone->Branch(Form("bdt_hww%i_ww"    ,mH) , &bdt    , Form("bdt_hww%i_ww/F"    ,mH) );
     if(Use["MLPBNN"]) br_nn     = clone->Branch(Form("nn_hww%i_ww"     ,mH) , &nn     , Form("nn_hww%i_ww/F"     ,mH) );
@@ -527,6 +538,12 @@ void evaluateMVA_smurf( int mH , TString myMethodList = "" )
         fisher  = reader->EvaluateMVA( "Fisher method" );
         br_fisher->Fill();
       } 
+
+
+      test = 0;
+      if( evtype_ == 0 && dilep_->mass() < dilmass_cut && event_ %2 == 1 ) test = 1; 
+      br_test->Fill();
+
 
       if (Use["CutsGA"]) {
         // Cuts is a special case: give the desired signal efficienciy

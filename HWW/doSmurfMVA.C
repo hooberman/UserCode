@@ -3,13 +3,15 @@
   gROOT->ProcessLine(".L trainMVA_smurf.C+");
   gROOT->ProcessLine(".L evaluateMVA_smurf.C+");
 
-
+  gROOT->ProcessLine(".! rm SmurfBabies/tas-2020/*root");
+  gROOT->ProcessLine(".! cp data/*root SmurfBabies/tas-2020/.");
+  
   //----------------------------------------
   // choose which MVA types to add to babies
   //----------------------------------------
 
-  char* mva = "Fisher";
-  //char* mva = "BDT,MLPBNN";
+  //char* mva = "Fisher";
+  char* mva = "BDT,MLPBNN";
 
   //-------------------------------------------------
   // choose which Higgs mass MVA's to add to babies
@@ -18,8 +20,8 @@
   vector<int> mH;
   mH.push_back(130);
   mH.push_back(160);
-  //mH.push_back(200);
-  //mH.push_back(250);
+  mH.push_back(200);
+  mH.push_back(250);
   
   //------------------------------------------
   // run!
@@ -36,6 +38,7 @@
 
     //evaluate MVA
     evaluateMVA_smurf(mH.at(i),mva);
+    gROOT->ProcessLine( Form( ".! cp  SmurfTraining/hww%i_ww/output/*.root SmurfBabies/tas-2020/." , mH.at(i) ) );
 
   }
 
