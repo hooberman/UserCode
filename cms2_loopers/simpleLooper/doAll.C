@@ -7,6 +7,9 @@
   gROOT->ProcessLine(".L CORE/electronSelectionsParameters.cc+");
   gROOT->ProcessLine(".L CORE/electronSelections.cc+");
   gROOT->ProcessLine(".L CORE/muonSelections.cc+");
+  gROOT->ProcessLine(".L CORE/jetSelections.cc+");
+  gROOT->ProcessLine(".L CORE/triggerUtils.cc+");
+  gROOT->ProcessLine(".L CORE/ttbarSelections.cc+");
   gROOT->ProcessLine(".L histtools.C+");
   gROOT->ProcessLine(".L runLooper.C+");
   gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
