@@ -7,7 +7,7 @@ void runLooper(char* prefix){
   bool isData = false;
   
   if( strcmp( prefix , "zmm" ) == 0 ){
-    ch->Add("/tas/cms2/Zmumu_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root");
+    ch->Add("/tas/cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Winter10-E7TeV_ProbDist_2011Flat_BX156_START39_V8-v1/V04-00-05-03/merged_ntuple_1.root");
   }
   
   else{

@@ -23,10 +23,11 @@
 #include "CORE/electronSelectionsParameters.h"
 #include "CORE/electronSelections.h"
 #include "CORE/muonSelections.h"
+#include "CORE/ttbarSelections.cc"
 #include "Tools/goodrun.cc"
 #include "CORE/utilities.cc"
 #include "histtools.h"
-
+#include "CORE/jetSelections.cc"
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
@@ -35,11 +36,7 @@ char* iter          = "default";
 bool makebaby       = true;
 bool debug          = false;
 bool calculateTCMET = true;
-
-// inline double fround(double n, double d){
-//   return floor(n * pow(10., d) + .5) / pow(10., d);
-// }
-
+float lumi          = 1.;
 
 //--------------------------------------------------------------------
 
@@ -105,6 +102,12 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 
   if( debug ) cout << "Begin looping over files" << endl;
 
+  float nee  = 0.;
+  float nmm  = 0.;
+  float nem  = 0.;
+  float ntot = 0.;
+
+
   // file loop
   TIter fileIter(listOfFiles);
   TFile* currentFile = 0;
@@ -115,7 +118,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
       cms2.Init(tree);
 
       // event loop
-      unsigned int nEvents = tree->GetEntries();
+      unsigned int nEvents = tree->GetEntries() / 10;
 
       for (unsigned int event = 0; event < nEvents; ++event)
         {
@@ -144,21 +147,124 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
             }
           }
          
-          //APPLY BASIC EVENT SELECTIONS
-          //TRIGGER, TRACKING AND VERTEX
-      
-	  if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))  continue;
-          if( !cleaning_standardAugust2010( isData) )                    continue;
-          
-          // N.B. BABY NTUPLE IS FILLED
-          // FOR EACH EVENT
+          //---------------------------------------------
+          // Event Selection
+          //---------------------------------------------
 
           InitBabyNtuple();
 
+	  //if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))  continue;
+          //if( !cleaning_standardOctober2010() )                          continue;
+
+          vector<unsigned int> v_goodHyps;
+          v_goodHyps.clear();
+          vector<unsigned int> v_vtxIndices;
+          v_vtxIndices.clear();
+
+          for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
+            
+            //if( !passSUSYTrigger_v1( isData , hyp_type()[i] ) ) continue;
+            
+            //check that hyp leptons come from same vertex
+            if( !hypsFromSameVtx( i ) )    continue;
+            
+            //OS, pt > (20,10) GeV, dilmass > 10 GeV
+            if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )  continue;
+                      
+            //pt > (20,10) GeV
+            if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 20. )   continue;
+            if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 10. )   continue;
+            if( hyp_p4()[i].mass() < 10 )                                         continue;
+            
+            //cout << "Check muons" << endl;
+            //muon ID
+            if (abs(hyp_ll_id()[i]) == 13  && !( muonId(hyp_ll_index()[i] , NominalWWV1 ) ) )   continue;
+            if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , NominalWWV1 ) ) )   continue;
+            
+            //OSV1
+            if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_wwV1 , false , false ))) continue;
+            if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_wwV1 , false , false ))) continue;
+            
+            v_goodHyps.push_back( i );
+            
+          }
+          
+          //skip events with no good hyps
+          if( v_goodHyps.size() == 0 ) continue;
+
+          if( debug ) cout << "Pass event selection" << endl;
+
+          //returns the index of the best hypothesis in the vector of hypotheses
+          unsigned int hypIdx = selectHypByHighestSumPt(v_goodHyps);
+          
+          //---------------------------------------
+          // jet counting
+          //---------------------------------------
+
+          njets_ = 0;
+
+          vector<int> goodjets;
+          goodjets.clear();
+
+          int imaxjet    = -1;
+          float maxjetpt = -1.;
+
+          for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+            LorentzVector vjet = pfjets_corL1L2L3().at(ijet) * pfjets_p4().at(ijet);
+            LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+            LorentzVector vll  = hyp_ll_p4()[hypIdx];
+            
+            if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
+            if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+            if( fabs( vjet.eta() ) > 3.0 )           continue;
+            if( !passesPFJetID(ijet) )               continue;
+            if( vjet.pt() < 30. )                    continue;
+
+            njets_++;
+            goodjets.push_back(ijet);
+            
+            if( vjet.pt() > maxjetpt ){
+              imaxjet = ijet;
+              maxjetpt = vjet.pt();
+            }
+          }
+          
+          if( imaxjet > -1 ){
+            jet_     = &(pfjets_corL1L2L3().at(imaxjet) * pfjets_p4().at(imaxjet));
+            
+          }
+          
+          //------------------------------------------
+          // baby ntuple branches
+          //------------------------------------------
+      
           // event stuff
           run_    = cms2.evt_run();
           lumi_   = cms2.evt_lumiBlock();
           event_  = cms2.evt_event();
+
+          nvtx_    = goodVertices().size();
+          leptype_ = hyp_type().at(hypIdx);
+          dilep_   = &hyp_p4().at(hypIdx);
+          
+          weight_ = 1;
+          if( !isData ) weight_ = evt_scale1fb() * lumi;
+
+          if( leptype_ == 0 ) nmm += weight_;
+          if( leptype_ == 1 ) nem += weight_;
+          if( leptype_ == 2 ) nem += weight_;
+          if( leptype_ == 3 ) nee += weight_;
+          ntot += weight_;
+
+          
+          if( hyp_ll_p4().at(hypIdx).pt() > hyp_lt_p4().at(hypIdx).pt() ){
+            lep1_ = &hyp_ll_p4().at(hypIdx);
+            lep2_ = &hyp_lt_p4().at(hypIdx);
+          }else{
+            lep1_ = &hyp_lt_p4().at(hypIdx);
+            lep2_ = &hyp_ll_p4().at(hypIdx);
+          }
 
           // pf met stuff
           pfmet_    = cms2.evt_pfmet();
@@ -198,6 +304,13 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
   
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
+
+  cout << "Yields passing selection" << endl;
+  cout << "ee    " << nee  << endl;
+  cout << "mm    " << nmm  << endl;
+  cout << "em    " << nem  << endl;
+  cout << "to    " << ntot << endl;
+
   
   CloseBabyNtuple();
 
@@ -216,12 +329,31 @@ void looper::printEvent(  ostream& ostr ){
 
 //--------------------------------------------------------------------
 
+vector<int> looper::goodVertices(){
+
+  vector<int> myVertices;
+  myVertices.clear();
+  
+  for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
+    if( !isGoodVertex(v) ) continue;
+    myVertices.push_back(v);
+  }
+  
+  return myVertices;
+}
+
+//--------------------------------------------------------------------
+
 void looper::InitBabyNtuple ()
 {
   // event stuff
   run_             = -999999;
   lumi_            = -999999;
   event_           = -999999;
+  weight_          = -999999.;
+  nvtx_            = -999999;
+  leptype_         = -999999;
+  njets_           = -999999;
 
   // genmet stuff
   genmet_          = -999999.;
@@ -247,6 +379,11 @@ void looper::InitBabyNtuple ()
   tcmetNew_        = -999999.;
   tcmetphiNew_     = -999999.;
   tcsumetNew_      = -999999.;
+
+  dilep_ = 0;
+  jet_   = 0;
+  lep1_  = 0;
+  lep2_  = 0;
 
 }
 
@@ -297,6 +434,15 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyFile_->cd();
   eventTree_ = new TTree("Events", "Events Tree");
 
+  eventTree_->Branch("dilep", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_ );
+  eventTree_->Branch("lep1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_  );
+  eventTree_->Branch("lep2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_  );
+  eventTree_->Branch("jet"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_   );
+
+  eventTree_->Branch("weight"           , &weight_           , "weight/F"  );
+  eventTree_->Branch("nvtx"             , &nvtx_             , "nvtx/I");
+  eventTree_->Branch("leptype"          , &leptype_          , "leptype/I");
+  eventTree_->Branch("njets"            , &njets_            , "njets/I");
   eventTree_->Branch("run"              , &run_              , "run/I"  );
   eventTree_->Branch("lumi"             , &lumi_             , "lumi/I" );
   eventTree_->Branch("event"            , &event_            , "event/I");

@@ -7,6 +7,14 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include "Math/LorentzVector.h"
+#include "Math/VectorUtil.h"
+
+#include "TLorentzVector.h"
+
+
+typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector; 
 
 class TChain;
 
@@ -26,8 +34,15 @@ class looper
 	void fillUnderOverFlow(TH1F *h1, float value, float weight = 1);
         void printEvent(  ostream& ostr = cout );
         float deltaPhi( float phi1 , float phi2 );
+        vector<int> goodVertices();
+
     private:
         
+        LorentzVector*  lep1_;
+        LorentzVector*  lep2_;
+        LorentzVector*  dilep_;
+        LorentzVector*  jet_;
+
         //ntuple, file
         TFile *babyFile_;
         TTree *eventTree_;
@@ -54,6 +69,12 @@ class looper
         Int_t   run_;
         Int_t   lumi_;
         Int_t   event_;
+        Int_t   nvtx_;
+        Int_t   leptype_;
+        Int_t   njets_;
+        Float_t weight_;
+
+
         
 	// genmet stuff
 	Float_t genmet_;
