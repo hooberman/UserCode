@@ -30,7 +30,7 @@ ttdilepsolve::ttdilepsolve()
   //cout << "ttdilepsolve_class: constructor executing!" << endl;
 
   //PDF initialization
-  LHAPDF::initPDFSet("CORE/topmass/pdfs/cteq61.LHgrid");
+  LHAPDF::initPDFSet("../CORE/topmass/pdfs/cteq61.LHgrid");
   
   return;
 }
