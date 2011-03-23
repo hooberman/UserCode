@@ -18,27 +18,27 @@
 #include "ossusy_looper.h"
 #include "getMt2.C"
 
-#include "CORE/CMS2.h"
-#include "CORE/metSelections.h"
-#include "CORE/trackSelections.h"
-#include "CORE/eventSelections.h"
-#include "CORE/electronSelections.h"
-#include "CORE/electronSelectionsParameters.h"
-#include "CORE/mcSelections.h"
-#include "CORE/muonSelections.h"
-#include "CORE/MT2/MT2.h"
-#include "Tools/goodrun.cc"
-#include "CORE/utilities.cc"
+#include "../CORE/CMS2.h"
+#include "../CORE/metSelections.h"
+#include "../CORE/trackSelections.h"
+#include "../CORE/eventSelections.h"
+#include "../CORE/electronSelections.h"
+#include "../CORE/electronSelectionsParameters.h"
+#include "../CORE/mcSelections.h"
+#include "../CORE/muonSelections.h"
+#include "../CORE/MT2/MT2.h"
+#include "../Tools/goodrun.cc"
+#include "../CORE/utilities.cc"
 #include "histtools.h"
-#include "CORE/ttbarSelections.cc"
-#include "CORE/susySelections.cc"
-#include "CORE/mcSUSYkfactor.cc"
-#include "CORE/triggerSuperModel.cc"
-#include "CORE/jetSelections.cc"
-//#include "CORE/triggerUtils.cc"
+#include "../CORE/ttbarSelections.cc"
+#include "../CORE/susySelections.cc"
+#include "../CORE/mcSUSYkfactor.cc"
+#include "../CORE/triggerSuperModel.cc"
+#include "../CORE/jetSelections.cc"
+//#include "../CORE/triggerUtils.cc"
 
-//#include "../CORE/topmass/getTopMassEstimate.icc"
-#include "CORE/topmass/getTopMassEstimate.icc"
+//#include "../../CORE/topmass/getTopMassEstimate.icc"
+#include "../CORE/topmass/getTopMassEstimate.icc"
 
 using namespace std;
 using namespace tas;
@@ -143,7 +143,7 @@ void ossusy_looper::makeTree(char *prefix)
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output/%s/%s_smallTree.root",g_version,prefix), "RECREATE");
+  outFile   = new TFile(Form("../output/%s/%s_smallTree.root",g_version,prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");

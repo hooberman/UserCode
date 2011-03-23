@@ -52,23 +52,23 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   const char* version = "V00-00-00";
 
   //Load CORE stuff
-  gROOT->ProcessLine(".L CORE/CMS2.cc+");
-  gROOT->ProcessLine(".L CORE/trackSelections.cc+");
-  gROOT->ProcessLine(".L CORE/metSelections.cc+");
-  gROOT->ProcessLine(".L CORE/eventSelections.cc+");
-  gROOT->ProcessLine(".L CORE/electronSelectionsParameters.cc+");
-  gROOT->ProcessLine(".L CORE/electronSelections.cc+");
-  gROOT->ProcessLine(".L CORE/muonSelections.cc+");
-  gROOT->ProcessLine(".L CORE/SimpleFakeRate.cc+");
-  gROOT->ProcessLine(".L CORE/mcSelections.cc+");
-  gROOT->ProcessLine(".L CORE/MT2/MT2.cc+");
+  gROOT->ProcessLine(".L ../CORE/CMS2.cc+");
+  gROOT->ProcessLine(".L ../CORE/trackSelections.cc+");
+  gROOT->ProcessLine(".L ../CORE/metSelections.cc+");
+  gROOT->ProcessLine(".L ../CORE/eventSelections.cc+");
+  gROOT->ProcessLine(".L ../CORE/electronSelectionsParameters.cc+");
+  gROOT->ProcessLine(".L ../CORE/electronSelections.cc+");
+  gROOT->ProcessLine(".L ../CORE/muonSelections.cc+");
+  gROOT->ProcessLine(".L ../CORE/SimpleFakeRate.cc+");
+  gROOT->ProcessLine(".L ../CORE/mcSelections.cc+");
+  gROOT->ProcessLine(".L ../CORE/MT2/MT2.cc+");
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
-  gROOT->ProcessLine(".L ./CORE/topmass/ttdilepsolve.cpp+");
+  gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+");
 
   // Load FWLite
-  gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
+  gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
 
   // Load and compile the looping code
   gSystem->CompileMacro("ossusy_looper.C","++k", "libossusy_looper");
@@ -1109,11 +1109,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                   
                   // save all the histograms
                   if(doFakeApp) {
-                    const char* outFile = Form("output/%s/ossusy_%s_%s%s_%s_FakeApp.root", version,
+                    const char* outFile = Form("../output/%s/ossusy_%s_%s%s_%s_FakeApp.root", version,
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output/%s/ossusy_%s_%s%s.root", version,
+                    const char* outFile = Form("../output/%s/ossusy_%s_%s%s.root", version,
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   
