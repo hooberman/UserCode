@@ -33,10 +33,13 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
+const float lumi = 0.020;
+
 char* iter          = "default";
 bool makebaby       = true;
 bool debug          = false;
 bool calculateTCMET = false;
+bool doReweight     = true;
 
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
@@ -119,7 +122,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
   bookHistos();
 
   set_goodrun_file("Cert_TopAug25_Merged_135059-143336_goodruns.txt");
-  ofile.open( Form( "output/%s_%s_events.txt" , prefix , iter) );
+  ofile.open( Form( "output/PVT/express/%s_%s_events.txt" , prefix , iter) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -129,9 +132,28 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
   nEventsChain = nEvents;
   unsigned int nEventsTotal = 0;
 
-  MakeBabyNtuple( Form( "output/%s_%s_baby.root" , prefix , iter) );
+  MakeBabyNtuple( Form( "output/PVT/express/%s_%s_baby.root" , prefix , iter) );
 
   if( debug ) cout << "Begin looping over files" << endl;
+
+  TH1F* h_reweight = new TH1F();
+
+  if( doReweight ){
+    TFile* f_reweight = TFile::Open("vtx_reweight.root");
+
+    h_reweight = (TH1F*) f_reweight->Get("hratio");
+
+    cout << "Doing reweighting" << endl;
+    for( unsigned int ibin = 1 ; ibin <= h_reweight->GetNbinsX() ; ibin++ ){
+      cout << ibin << " " << h_reweight->GetBinContent(ibin) << endl;
+    }
+
+  }
+
+  float nee  = 0.;
+  float nmm  = 0.;
+  float nem  = 0.;
+  float ntot = 0.;
 
   // file loop
   TIter fileIter(listOfFiles);
@@ -187,64 +209,73 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           v_goodHyps.clear();
           vector<unsigned int> v_vtxIndices;
           v_vtxIndices.clear();
-
+	  
           for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
             
-            if( !passSUSYTrigger_v1( isData , hyp_type()[i] ) ) continue;
-        
+            //if( !passSUSYTrigger_v1( isData , hyp_type()[i] ) ) continue;
+            
             //check that hyp leptons come from same vertex
             if( !hypsFromSameVtx( i ) )    continue;
-
+            
             //OS, pt > (20,10) GeV, dilmass > 10 GeV
             if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )  continue;
-          
+                      
             //pt > (20,10) GeV
             if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 20. )   continue;
             if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 10. )   continue;
             if( hyp_p4()[i].mass() < 10 )                                         continue;
-                    
-            //muon ID
-            if (abs(hyp_ll_id()[i]) == 13  && !( muonId(hyp_ll_index()[i] , OSGeneric_v1 ) ) )   continue;
-            if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , OSGeneric_v1 ) ) )   continue;
             
-            //OSV1
-            if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV1 , false , false ))) continue;
-            if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV1 , false , false ))) continue;
+	    //if leading lepton is electron, require pt > 27 GeV
+	    //int id = -1;
+	    //if( hyp_ll_p4()[i].pt() > hyp_lt_p4()[i].pt() ) id = hyp_ll_id()[i];
+	    //else                                            id = hyp_lt_id()[i];
+	    //if( abs(id) == 11 && TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 27. )   continue;
+
+            // OSZ lepton selection
+            //if (abs(hyp_ll_id()[i]) == 13  && !( muonId(hyp_ll_index()[i] , OSZ_v1 ) ) )   continue;
+            //if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , OSZ_v1 ) ) )   continue;
+            //if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV1 ))) continue;
+            //if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV1 ))) continue;
+
+            //WW lepton selection
+            if (abs(hyp_ll_id()[i]) == 13  && !( muonId(hyp_ll_index()[i] , NominalWWV1 ) ) )   continue;
+            if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , NominalWWV1 ) ) )   continue;
+            if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_wwV1 ))) continue;
+            if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_wwV1 ))) continue;
             
             v_goodHyps.push_back( i );
             
-          }
-          
+	    }
+	  
+
+
           //skip events with no good hyps
           if( v_goodHyps.size() == 0 ) continue;
+
+          if( debug ) cout << "Pass event selection" << endl;
 
           //returns the index of the best hypothesis in the vector of hypotheses
           unsigned int hypIdx = selectHypByHighestSumPt(v_goodHyps);
           int          vtxIdx = hypsFromSameVtx_int( hypIdx );
 
           InitBabyNtuple();
-
-//           bool skipevent = true;
-          
-//           if( evt_run() == 1 && evt_lumiBlock() == 3 && evt_event() == 1393221 ) skipevent = false;
-//           if( evt_run() == 1 && evt_lumiBlock() == 2 && evt_event() == 722068  ) skipevent = false;
-          
-//           if( skipevent ) continue;
-          
-//           cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
           
           //---------------------------------------
           // jet counting
           //---------------------------------------
 
           njets25_ = 0;
+          njets30_ = 0;
 
           vector<int> goodjets;
           goodjets.clear();
 
+          int imaxjet    = -1;
+          float maxjetpt = -1.;
+
           for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-            LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+            LorentzVector vjet = pfjets_corL1L2L3().at(ijet) * pfjets_p4().at(ijet);
             LorentzVector vlt  = hyp_lt_p4()[hypIdx];
             LorentzVector vll  = hyp_ll_p4()[hypIdx];
             
@@ -252,78 +283,74 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
             if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
             if( fabs( vjet.eta() ) > 3.0 )           continue;
             if( !passesPFJetID(ijet) )               continue;
-            if( vjet.pt() < 30. )                    continue;
 
-            if( !jetFromSignalPV( ijet , vtxIdx ) ) continue;
+            //if( !jetFromSignalPV( ijet , vtxIdx ) )  continue;
+
+            if( vjet.pt() < 25. )                    continue;
            
             njets25_++;
-            goodjets.push_back(ijet);
-            
-//             LorentzVector pfcands_tot(0,0,0,0);
 
-//             vector<int> pfcands = pfjets_pfcandIndicies().at(ijet);
-
-//             float dzmin =  100;
-//             float dzmax = -100;
-
-//             for( vector<int>::iterator ipf = pfcands.begin() ; ipf < pfcands.end() ; ++ipf ){
-              
-//               pfcands_tot += pfcands_p4().at(*ipf);
-              
-//               if( pfcands_charge().at(*ipf) == 0 ) continue;
-              
-//               int itrk = pfcands_trkidx().at(*ipf);
-
-//               if( itrk > trks_trk_p4().size() ) continue;
-
-//               float thisdz = dz_trk_vtx(itrk,vtxIdx);
-//               cout << "dz " << thisdz << endl;
-
-//               if( thisdz < dzmin )    dzmin = thisdz;
-//               if( thisdz > dzmax )    dzmax = thisdz;
-                
-//             }
-          
-//             cout << endl;
-//             cout << "pt " << pfjets_p4().at(ijet).pt() << " " << pfcands_tot.pt() << endl;
-//             cout << "spread " << dzmax - dzmin << endl;
-          }
-
-
-          for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
-            LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
-            LorentzVector vlt  = hyp_lt_p4()[hypIdx];
-            LorentzVector vll  = hyp_ll_p4()[hypIdx];
-            
-            if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
-            if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
-            if( fabs( vjet.eta() ) > 3.0 )           continue;
-            if( !passesPFJetID(ijet) )               continue;
             if( vjet.pt() < 30. )                    continue;
 
-            if( jetFromSignalPV( ijet , vtxIdx ) ){
-             
-              fillUnderOverFlow( hmismatch_jetpt_tot , vjet.pt() );
-              fillUnderOverFlow( hmismatch_nvtx_tot  , goodVertices().size()    );
-              
-              if( !jetMatchedToGenJet( vjet , hypIdx) ){
-                fillUnderOverFlow( hmismatch_jetpt_pass , vjet.pt() ); 
-                fillUnderOverFlow( hmismatch_nvtx_pass  , goodVertices().size() ); 
-              }
+            njets30_++;
+            goodjets.push_back(ijet);
+            
+            if( vjet.pt() > maxjetpt ){
+              imaxjet = ijet;
+              maxjetpt = vjet.pt();
             }
+          }
+          
+          if( imaxjet > -1 ){
+            LorentzVector vjet = pfjets_corL1L2L3().at(imaxjet) * pfjets_p4().at(imaxjet);
 
-            if( jetMatchedToGenJet( vjet , hypIdx) ){
+            jetpt_   = vjet.pt();
+            jeteta_  = vjet.eta();
+            jetphi_  = vjet.phi();
+            jetpv_   = jetFromSignalPV( imaxjet , vtxIdx , 2 ) ? 1 : 0;
+            jetbeta_ = beta_jet_vtx( imaxjet , vtxIdx , 2 );
+            jet_     = &(pfjets_corL1L2L3().at(imaxjet) * pfjets_p4().at(imaxjet));
+
+          }
+        
+
+          if( !isData ){
+            for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
               
-              fillUnderOverFlow( hmatch_jetpt_tot , vjet.pt() );
-              fillUnderOverFlow( hmatch_nvtx_tot  , goodVertices().size()     );
+              LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+              LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+              LorentzVector vll  = hyp_ll_p4()[hypIdx];
+              
+              if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
+              if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+              if( fabs( vjet.eta() ) > 3.0 )           continue;
+              if( !passesPFJetID(ijet) )               continue;
+              if( vjet.pt() < 30. )                    continue;
               
               if( jetFromSignalPV( ijet , vtxIdx ) ){
-                fillUnderOverFlow( hmatch_jetpt_pass , vjet.pt() ); 
-                fillUnderOverFlow( hmatch_nvtx_pass  , goodVertices().size() ); 
+                
+                fillUnderOverFlow( hmismatch_jetpt_tot , vjet.pt() );
+                fillUnderOverFlow( hmismatch_nvtx_tot  , goodVertices().size()    );
+              
+                if( !jetMatchedToGenJet( vjet , hypIdx) ){
+                  fillUnderOverFlow( hmismatch_jetpt_pass , vjet.pt() ); 
+                  fillUnderOverFlow( hmismatch_nvtx_pass  , goodVertices().size() ); 
+                }
+              }
+              
+              if( jetMatchedToGenJet( vjet , hypIdx) ){
+                
+                fillUnderOverFlow( hmatch_jetpt_tot , vjet.pt() );
+                fillUnderOverFlow( hmatch_nvtx_tot  , goodVertices().size()     );
+                
+                if( jetFromSignalPV( ijet , vtxIdx ) ){
+                  fillUnderOverFlow( hmatch_jetpt_pass , vjet.pt() ); 
+                  fillUnderOverFlow( hmatch_nvtx_pass  , goodVertices().size() ); 
+                }
               }
             }
           }
+          
 
           if( debug ) cout << "Filling ntuple" << endl;
 
@@ -333,6 +360,41 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           event_   = cms2.evt_event();
           leptype_ = cms2.hyp_type().at(hypIdx);
           nvtx_    = goodVertices().size();
+	  ndavtx_  = goodDAVertices().size();
+          dilmass_ = hyp_p4().at(hypIdx).mass();
+          vtxIdx_  = vtxIdx;
+          dilep_   = &hyp_p4().at(hypIdx);
+
+
+          weight_    = 1;
+          vtxweight_ = 1;
+          if( !isData ){
+
+            if( doReweight ){
+              vtxweight_ = h_reweight->GetBinContent( nvtx_ + 1 );
+            }
+
+	    if( TString(prefix).Contains("dymm_spring11") ){
+	      weight_ = ( 0.84 ) * lumi;
+	    }
+	    else{
+	      weight_ = evt_scale1fb() * lumi;
+	    }
+	  }
+
+          if( leptype_ == 0 ) nmm += weight_;
+          if( leptype_ == 1 ) nem += weight_;
+          if( leptype_ == 2 ) nem += weight_;
+          if( leptype_ == 3 ) nee += weight_;
+          ntot += weight_;
+        
+          if( hyp_ll_p4().at(hypIdx).pt() > hyp_lt_p4().at(hypIdx).pt() ){
+            lep1_ = &hyp_ll_p4().at(hypIdx);
+            lep2_ = &hyp_lt_p4().at(hypIdx);
+          }else{
+            lep1_ = &hyp_lt_p4().at(hypIdx);
+            lep2_ = &hyp_ll_p4().at(hypIdx);
+          }
 
           // pf met stuff
           pfmet_    = cms2.evt_pfmet();
@@ -374,25 +436,25 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
             if( dRbetweenVectors(pfcands_p4().at(i) , hyp_lt_p4().at(hypIdx)) < 0.1)  continue;
             if( dRbetweenVectors(pfcands_p4().at(i) , hyp_ll_p4().at(hypIdx)) < 0.1)  continue;
 
-            if( njets25_ == 0 )        fillUnderOverFlow( hneutralpt_0jet , pfcands_p4().at(i).pt()    );
-            if( njets25_ == 1 )        fillUnderOverFlow( hneutralpt_1jet , pfcands_p4().at(i).pt()    );
+            if( njets30_ == 0 )        fillUnderOverFlow( hneutralpt_0jet , pfcands_p4().at(i).pt()    );
+            if( njets30_ == 1 )        fillUnderOverFlow( hneutralpt_1jet , pfcands_p4().at(i).pt()    );
             
             /*  
-            if( njets25_ == 0 ){
-              fillUnderOverFlow( hneutralpt_0jet , pfcands_p4().at(i).pt()    );
+                if( njets25_ == 0 ){
+                fillUnderOverFlow( hneutralpt_0jet , pfcands_p4().at(i).pt()    );
 
                    
-              if( pfcands_p4().at(i).pt() > 25 ){
+                if( pfcands_p4().at(i).pt() > 25 ){
                 
                 cout << endl            << endl 
-                     << evt_run()       << " " 
-                     << evt_lumiBlock() << " " 
-                     << evt_event()     << endl;
+                << evt_run()       << " " 
+                << evt_lumiBlock() << " " 
+                << evt_event()     << endl;
                 
                 cout << " pt " << pfcands_p4().at(i).pt() 
-                     << " eta " << pfcands_p4().at(i).eta() 
-                     << " phi " << pfcands_p4().at(i).phi() 
-                     << " ID " << pfcands_particleId().at(i) << endl;
+                << " eta " << pfcands_p4().at(i).eta() 
+                << " phi " << pfcands_p4().at(i).phi() 
+                << " ID " << pfcands_particleId().at(i) << endl;
 
                 cout << "drll " << dRbetweenVectors( pfcands_p4().at(i) , hyp_ll_p4().at(hypIdx) ) << endl;
                 cout << "drlt " << dRbetweenVectors( pfcands_p4().at(i) , hyp_lt_p4().at(hypIdx) ) << endl;
@@ -403,40 +465,40 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
                 for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
                   
                   
-                  float dr = dRbetweenVectors(pfcands_p4().at(i),pfjets_p4().at(ijet));
+                float dr = dRbetweenVectors(pfcands_p4().at(i),pfjets_p4().at(ijet));
 
-                  if( dr < drmin ){
-                    drmin = dr;
-                    imin = ijet;
-                  }
+                if( dr < drmin ){
+                drmin = dr;
+                imin = ijet;
+                }
                 }
                 
                 cout << "drmin " << drmin << endl;
                 
                 if( imin > -1 ){
-                  for (unsigned int ijet = imin ; ijet < imin+1 ; ijet++) {
+                for (unsigned int ijet = imin ; ijet < imin+1 ; ijet++) {
                   
-                    LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
-                    LorentzVector vlt  = hyp_lt_p4()[hypIdx];
-                    LorentzVector vll  = hyp_ll_p4()[hypIdx];
+                LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+                LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+                LorentzVector vll  = hyp_ll_p4()[hypIdx];
                     
-                    cout << "jet pt " << vjet.pt() << " eta " << vjet.eta() << " phi " << vjet.phi() << endl;
+                cout << "jet pt " << vjet.pt() << " eta " << vjet.eta() << " phi " << vjet.phi() << endl;
                     
-                    if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
-                    cout << "pass ll veto" << endl;
-                    if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
-                    cout << "pass lt veto" << endl;
-                    if( fabs( vjet.eta() ) > 3.0 )           continue;
-                    cout << "pass eta cut" << endl;
-                    if( !passesPFJetID(ijet) )               continue;
-                    cout << "pass pfjetid" << endl;
-                    if( vjet.pt() < 25. )                    continue;
-                    cout << "pass ptcut" << endl;
+                if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
+                cout << "pass ll veto" << endl;
+                if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+                cout << "pass lt veto" << endl;
+                if( fabs( vjet.eta() ) > 3.0 )           continue;
+                cout << "pass eta cut" << endl;
+                if( !passesPFJetID(ijet) )               continue;
+                cout << "pass pfjetid" << endl;
+                if( vjet.pt() < 25. )                    continue;
+                cout << "pass ptcut" << endl;
                     
-                  }
                 }
-              }
-            }
+                }
+                }
+                }
             */
 
            
@@ -465,36 +527,85 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           pfcandmet_    = sqrt( pow( pfcandmet_x , 2 ) + pow( pfcandmet_y , 2 ) );
           pfcandmetphi_ = atan2( pfcandmet_y , pfcandmet_x );
           
-          //-------------------------------------
-          // Zanetti/HooberMET
-          //-------------------------------------
 
+          pair<float, float> p_test = pfmetByHand( -1 , 1e20 );
+          float pfmet_test = p_test.first;
+          if( fabs( pfmet_test - evt_pfmet() ) > 1 ){
+            cout << "pfmet " << evt_pfmet() << " by hand " << pfmet_test << endl;
+          }
+
+          //-------------------------------------
+          // custom MET types
+          //-------------------------------------
+         
           float dzcut  = 0.1; // dz(trk,vtx) requirement
           float etacut = 3.0; // neutral PFCandidate eta requirement
-          
-          zmet_     = ZanettiMET ( vtxIdx,  hypIdx, dzcut                        );
-          hmet_     = HooberMET  ( vtxIdx,  hypIdx, dzcut, 1.e10 , etacut        );
-          hmetpf_   = HooberMET  ( vtxIdx,  hypIdx, dzcut, 1.e10 , etacut , true );
-          hmetpf0_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 0.    , etacut , true );
-          hmetpf1_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 1.    , etacut , true );
-          hmetpf2_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 2.    , etacut , true );
-          hmetpf3_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 3.    , etacut , true );
-          hmetpf4_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 4.    , etacut , true );
-          hmetpf5_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 5.    , etacut , true );
-          hmetpf6_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 6.    , etacut , true );
-          hmetpf7_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 7.    , etacut , true );
-          hmetpf8_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 8.    , etacut , true );
-          hmetpf9_  = HooberMET  ( vtxIdx,  hypIdx, dzcut, 9.    , etacut , true );
-          hmetpf10_ = HooberMET  ( vtxIdx,  hypIdx, dzcut, 10.   , etacut , true );
-       
-          //hmet_     = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut, 1.e10 , etacut , false , false );
-          //hmetpf_   = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut, 1.e10 , etacut ,  true , false );
-          //hmetpf4_  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut,    4. , etacut ,  true , false );
-          //jetzmet_  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut,    4. , etacut ,  true ,  true );
 
-          //if( fabs( hmet_2 - hmet_ )       > 0.001 ) cout << "Error hmet "    << hmet_    << " " << hmet_2 << endl;
-          //if( fabs( hmetpf_2 - hmetpf_ )   > 0.001 ) cout << "Error hmetpf "  << hmetpf_  << " " << hmetpf_2 << endl;
-          //if( fabs( hmetpf4_2 - hmetpf4_ ) > 0.001 ) cout << "Error hmetpf4 " << hmetpf4_ << " " << hmetpf4_2 << endl;
+          //met built from tracks
+          pair<float, float> p_pfmetByHand = pfmetByHand( -1 , 3.0 );
+          pfmet3_      = p_pfmetByHand.first;
+          pfmetphi3_   = p_pfmetByHand.second;
+          pfmet3proj_  = projectedMET( pfmet3_ , pfmetphi3_ , hypIdx );
+
+          //met built from tracks
+          pair<float, float> p_zmet = ZanettiMET( vtxIdx,  hypIdx, dzcut );
+          zmet_      = p_zmet.first;
+          zmetphi_   = p_zmet.second;
+          zmetproj_  = projectedMET( zmet_ , zmetphi_ , hypIdx );
+
+          //met built from tracks matched to PFCandidates
+          pair<float, float> p_hmet    = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut, 1.e10 , etacut , false , false );
+          hmet_      = p_hmet.first;
+          hmetphi_   = p_hmet.second;
+          hmetproj_  = projectedMET( hmet_ , hmetphi_ , hypIdx );
+
+          //met built from leptons only
+          pair<float, float> p_hmetpfnotrks    = PFCandidateMET( vtxIdx,  hypIdx, goodjets, -1. , 1.e10 , etacut , true , false );
+          hmetpfnotrks_        = p_hmetpfnotrks.first;
+          hmetphipfnotrks_     = p_hmetpfnotrks.second;
+          hmetpfnotrksproj_    = projectedMET( hmetpfnotrks_ , hmetphipfnotrks_ , hypIdx );
+
+          //met built from charged PFCandidates
+          pair<float, float> p_hmetpf  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut, 1.e10 , etacut ,  true , false );
+          hmetpf_      = p_hmetpf.first;
+          hmetphipf_   = p_hmetpf.second;
+          hmetpfproj_  = projectedMET( hmetpf_ , hmetphipf_ , hypIdx );
+
+          //met built from charged PFCandidates and neutral PFCandidates pt > 4 GeV
+          pair<float, float> p_hmetpf4  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut,    4. , etacut ,  true , false );
+          hmetpf4_      = p_hmetpf4.first;
+          hmetphipf4_   = p_hmetpf4.second;
+          hmetpf4proj_  = projectedMET( hmetpf4_ , hmetphipf4_ , hypIdx );
+
+          //met built from charged PFCandidates and neutral PFCandidates pt > 8 GeV
+          pair<float, float> p_hmetpf8  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut,    8. , etacut ,  true , false );
+          hmetpf8_      = p_hmetpf8.first;
+          hmetphipf8_   = p_hmetpf8.second;
+          hmetpf8proj_  = projectedMET( hmetpf8_ , hmetphipf8_ , hypIdx );
+
+          //met built from jets and leptons
+          pair<float, float> p_jetzmetnotrks  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, -1. ,  1.e10 , etacut ,  true ,  true );
+          jetzmetnotrks_         = p_jetzmetnotrks.first;
+          jetzmetphinotrks_      = p_jetzmetnotrks.second;
+          jetzmetnotrksproj_     = projectedMET( jetzmetnotrks_ , jetzmetphinotrks_ , hypIdx );
+          
+          //met built from jets and charged PFCandidates
+          pair<float, float> p_jetzmet  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut,  1.e10 , etacut ,  true ,  true );
+          jetzmet_      = p_jetzmet.first;
+          jetzmetphi_   = p_jetzmet.second;
+          jetzmetproj_  = projectedMET( jetzmet_ , jetzmetphi_ , hypIdx );          
+
+          //met built from jets and charged PFCandidates and neutral PFCandidates pt > 4 GeV
+          pair<float, float> p_jetzmet4  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut,     4. , etacut ,  true ,  true );
+          jetzmet4_      = p_jetzmet4.first;
+          jetzmetphi4_   = p_jetzmet4.second;
+          jetzmet4proj_  = projectedMET( jetzmet4_ , jetzmetphi4_ , hypIdx );          
+          
+          //met built from jets and charged PFCandidates
+          pair<float, float> p_jetzmet8  = PFCandidateMET( vtxIdx,  hypIdx, goodjets, dzcut,     8. , etacut ,  true ,  true );
+          jetzmet8_      = p_jetzmet8.first;
+          jetzmetphi8_   = p_jetzmet8.second;
+          jetzmet8proj_  = projectedMET( jetzmet8_ , jetzmetphi8_ , hypIdx );          
 
           if( calculateTCMET ){
             
@@ -516,14 +627,22 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
   
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
+
+  cout << "Yields passing selection" << endl;
+  cout << "ee    " << nee  << endl;
+  cout << "mm    " << nmm  << endl;
+  cout << "em    " << nem  << endl;
+  cout << "to    " << ntot << endl;
+
   
   CloseBabyNtuple();
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
-  saveHist( Form( "output/%s_%s_histos.root" , prefix , iter ) );
+  saveHist( Form( "output/PVT/express/%s_%s_histos.root" , prefix , iter ) );
   deleteHistos();
-  
+
+  already_seen.clear();
 } // end ScanChain
 
 //--------------------------------------------------------------------
@@ -537,13 +656,26 @@ void looper::printEvent(  ostream& ostr ){
 void looper::InitBabyNtuple ()
 {
   // event stuff
+  weight_          = -999999.;
+  vtxweight_       = -999999.;
   run_             = -999999;
   lumi_            = -999999;
   event_           = -999999;
   nvtx_            = -999999;
+  ndavtx_          = -999999;
+  vtxIdx_          = -999999;
+  dilmass_         = -999999.;
   leptype_         = -999999;
   njets25_         = -999999;
+  njets30_         = -999999;
 
+  //leading jet stuff
+  jetpt_           = -999999.;
+  jeteta_          = -999999.;
+  jetphi_          = -999999.;
+  jetpv_           = -999999;
+  jetbeta_         = -999999.;
+  
   // genmet stuff
   genmet_          = -999999.;
   genmetphi_       = -999999.;
@@ -575,6 +707,7 @@ void looper::InitBabyNtuple ()
   pfcandsumet_     = -999999.;
 
   hmet_            = -999999.;
+  hmetpfnotrks_    = -999999.;
   hmetpf_          = -999999.;
   hmetpf0_         = -999999.;
   hmetpf1_         = -999999.;
@@ -588,6 +721,59 @@ void looper::InitBabyNtuple ()
   hmetpf9_         = -999999.;
   hmetpf10_        = -999999.;
   zmet_            = -999999.;
+  jetzmetnotrks_   = -999999.;
+  jetzmet_         = -999999.;
+  jetzmet4_        = -999999.;
+  jetzmet8_        = -999999.;
+  pfmet3_          = -999999.;
+
+
+  hmetphi_            = -999999.;
+  hmetphipf_          = -999999.;
+  hmetphipfnotrks_    = -999999.;
+  hmetphipf0_         = -999999.;
+  hmetphipf1_         = -999999.;
+  hmetphipf2_         = -999999.;
+  hmetphipf3_         = -999999.;
+  hmetphipf4_         = -999999.;
+  hmetphipf5_         = -999999.;
+  hmetphipf6_         = -999999.;
+  hmetphipf7_         = -999999.;
+  hmetphipf8_         = -999999.;
+  hmetphipf9_         = -999999.;
+  hmetphipf10_        = -999999.;
+  zmetphi_            = -999999.;
+  jetzmetphi_         = -999999.;
+  jetzmetphinotrks_   = -999999.;
+  jetzmetphi4_        = -999999.;
+  jetzmetphi8_        = -999999.;
+  pfmetphi3_          = -999999.;
+
+  hmetproj_            = -999999.;
+  hmetpfproj_          = -999999.;
+  hmetpfnotrksproj_    = -999999.;
+  hmetpf0proj_         = -999999.;
+  hmetpf1proj_         = -999999.;
+  hmetpf2proj_         = -999999.;
+  hmetpf3proj_         = -999999.;
+  hmetpf4proj_         = -999999.;
+  hmetpf5proj_         = -999999.;
+  hmetpf6proj_         = -999999.;
+  hmetpf7proj_         = -999999.;
+  hmetpf8proj_         = -999999.;
+  hmetpf9proj_         = -999999.;
+  hmetpf10proj_        = -999999.;
+  zmetproj_            = -999999.;
+  jetzmetproj_         = -999999.;
+  jetzmetnotrksproj_   = -999999.;
+  jetzmet4proj_        = -999999.;
+  jetzmet8proj_        = -999999.;
+  pfmet3proj_          = -999999.;
+
+  dilep_ = 0;
+  jet_   = 0;
+  lep1_  = 0;
+  lep2_  = 0;
 }
 
 //--------------------------------------------------------------------
@@ -659,12 +845,30 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyFile_->cd();
   eventTree_ = new TTree("Events", "Events Tree");
 
+  eventTree_->Branch("dilep", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_ );
+  eventTree_->Branch("lep1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_  );
+  eventTree_->Branch("lep2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_  );
+  eventTree_->Branch("jet"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_   );
+
+  eventTree_->Branch("weight"           , &weight_           , "weight/F"  );
+  eventTree_->Branch("vtxweight"        , &vtxweight_        , "vtxweight/F"  );
   eventTree_->Branch("run"              , &run_              , "run/I"  );
   eventTree_->Branch("lumi"             , &lumi_             , "lumi/I" );
   eventTree_->Branch("event"            , &event_            , "event/I");
   eventTree_->Branch("nvtx"             , &nvtx_             , "nvtx/I");
+  eventTree_->Branch("ndavtx"           , &ndavtx_           , "ndavtx/I");
+  eventTree_->Branch("vtxIdx"           , &vtxIdx_           , "vtxIdx/I");
+  eventTree_->Branch("dilmass"          , &dilmass_          , "dilmass/F");
   eventTree_->Branch("leptype"          , &leptype_          , "leptype/I");
   eventTree_->Branch("njets25"          , &njets25_          , "njets25/I");
+  eventTree_->Branch("njets30"          , &njets30_          , "njets30/I");
+
+  eventTree_->Branch("jetpt"            , &jetpt_            , "jetpt/F"   );
+  eventTree_->Branch("jeteta"           , &jeteta_           , "jeteta/F"  );
+  eventTree_->Branch("jetphi"           , &jetphi_           , "jetphi/F"  );
+  eventTree_->Branch("jetpv"            , &jetpv_            , "jetpv/I"   );
+  eventTree_->Branch("jetbeta"          , &jetbeta_          , "jetbeta/F" );
+
 
   eventTree_->Branch("genmet"           , &genmet_           , "genmet/F"   );
   eventTree_->Branch("genmetphi"        , &genmetphi_        , "genmetphi/F");
@@ -690,23 +894,68 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   eventTree_->Branch("tcmetphinew"      , &tcmetphiNew_      , "tcmetphinew/F"   );
   eventTree_->Branch("tcsumetnew"       , &tcsumetNew_       , "tcsumetnew/F"    );
 
-  eventTree_->Branch("hmet"             , &hmet_             , "hmet/F"       );
-  eventTree_->Branch("hmetpf"           , &hmetpf_           , "hmetpf/F"     );
-  eventTree_->Branch("hmetpf0"          , &hmetpf0_          , "hmetpf0/F"    );
-  eventTree_->Branch("hmetpf1"          , &hmetpf1_          , "hmetpf1/F"    );
-  eventTree_->Branch("hmetpf2"          , &hmetpf2_          , "hmetpf2/F"    );
-  eventTree_->Branch("hmetpf3"          , &hmetpf3_          , "hmetpf3/F"    );
-  eventTree_->Branch("hmetpf4"          , &hmetpf4_          , "hmetpf4/F"    );
-  eventTree_->Branch("hmetpf5"          , &hmetpf5_          , "hmetpf5/F"    );
-  eventTree_->Branch("hmetpf6"          , &hmetpf6_          , "hmetpf6/F"    );
-  eventTree_->Branch("hmetpf7"          , &hmetpf7_          , "hmetpf7/F"    );
-  eventTree_->Branch("hmetpf8"          , &hmetpf8_          , "hmetpf8/F"    );
-  eventTree_->Branch("hmetpf9"          , &hmetpf9_          , "hmetpf9/F"    );
-  eventTree_->Branch("hmetpf10"         , &hmetpf10_         , "hmetpf10/F"   );
-  eventTree_->Branch("jetzmet"          , &jetzmet_          , "jetzmet/F"    );
+  eventTree_->Branch("hmet"             , &hmet_             , "hmet/F"           );
+  eventTree_->Branch("hmetpfnotrks"     , &hmetpfnotrks_     , "hmetpfnotrks/F"   );
+  eventTree_->Branch("hmetpf"           , &hmetpf_           , "hmetpf/F"         );
+  eventTree_->Branch("hmetpf0"          , &hmetpf0_          , "hmetpf0/F"        );
+  eventTree_->Branch("hmetpf1"          , &hmetpf1_          , "hmetpf1/F"        );
+  eventTree_->Branch("hmetpf2"          , &hmetpf2_          , "hmetpf2/F"        );
+  eventTree_->Branch("hmetpf3"          , &hmetpf3_          , "hmetpf3/F"        );
+  eventTree_->Branch("hmetpf4"          , &hmetpf4_          , "hmetpf4/F"        );
+  eventTree_->Branch("hmetpf5"          , &hmetpf5_          , "hmetpf5/F"        );
+  eventTree_->Branch("hmetpf6"          , &hmetpf6_          , "hmetpf6/F"        );
+  eventTree_->Branch("hmetpf7"          , &hmetpf7_          , "hmetpf7/F"        );
+  eventTree_->Branch("hmetpf8"          , &hmetpf8_          , "hmetpf8/F"        );
+  eventTree_->Branch("hmetpf9"          , &hmetpf9_          , "hmetpf9/F"        );
+  eventTree_->Branch("hmetpf10"         , &hmetpf10_         , "hmetpf10/F"       );
+  eventTree_->Branch("jetzmetnotrks"    , &jetzmetnotrks_    , "jetzmetnotrks/F"  );
+  eventTree_->Branch("jetzmet"          , &jetzmet_          , "jetzmet/F"        );
+  eventTree_->Branch("jetzmet4"         , &jetzmet4_         , "jetzmet4/F"       );
+  eventTree_->Branch("jetzmet8"         , &jetzmet8_         , "jetzmet8/F"       );
+  eventTree_->Branch("zmet"             , &zmet_             , "zmet/F"           );
+  eventTree_->Branch("pfmet3"           , &pfmet3_           , "pfmet3/F"         );
 
-  eventTree_->Branch("zmet"             , &zmet_             , "zmet/F"      );
+  eventTree_->Branch("hmetphi"          , &hmetphi_          , "hmetphi/F"            );
+  eventTree_->Branch("hmetphipfnotrks"  , &hmetphipfnotrks_  , "hmetphipfnotrks/F"    );
+  eventTree_->Branch("hmetphipf"        , &hmetphipf_        , "hmetphipf/F"          );
+  eventTree_->Branch("hmetphipf0"       , &hmetphipf0_       , "hmetphipf0/F"         );
+  eventTree_->Branch("hmetphipf1"       , &hmetphipf1_       , "hmetphipf1/F"         );
+  eventTree_->Branch("hmetphipf2"       , &hmetphipf2_       , "hmetphipf2/F"         );
+  eventTree_->Branch("hmetphipf3"       , &hmetphipf3_       , "hmetphipf3/F"         );
+  eventTree_->Branch("hmetphipf4"       , &hmetphipf4_       , "hmetphipf4/F"         );
+  eventTree_->Branch("hmetphipf5"       , &hmetphipf5_       , "hmetphipf5/F"         );
+  eventTree_->Branch("hmetphipf6"       , &hmetphipf6_       , "hmetphipf6/F"         );
+  eventTree_->Branch("hmetphipf7"       , &hmetphipf7_       , "hmetphipf7/F"         );
+  eventTree_->Branch("hmetphipf8"       , &hmetphipf8_       , "hmetphipf8/F"         );
+  eventTree_->Branch("hmetphipf9"       , &hmetphipf9_       , "hmetphipf9/F"         );
+  eventTree_->Branch("hmetphipf10"      , &hmetphipf10_      , "hmetphipf10/F"        );
+  eventTree_->Branch("jetzmetphinotrks" , &jetzmetphinotrks_ , "jetzmetphinotrks/F"   );
+  eventTree_->Branch("jetzmetphi"       , &jetzmetphi_       , "jetzmetphi/F"         );
+  eventTree_->Branch("jetzmetphi4"      , &jetzmetphi4_      , "jetzmetphi4/F"        );
+  eventTree_->Branch("jetzmetphi8"      , &jetzmetphi8_      , "jetzmetphi8/F"        );
+  eventTree_->Branch("zmetphi"          , &zmetphi_          , "zmetphi/F"            );
+  eventTree_->Branch("pfmetphi3"        , &pfmetphi3_        , "pfmetphi3/F"         );
 
+  eventTree_->Branch("hmetproj"          , &hmetproj_          , "hmetproj/F"            );
+  eventTree_->Branch("hmetpfnotrksproj"  , &hmetpfnotrksproj_  , "hmetpfnotrksproj/F"    );
+  eventTree_->Branch("hmetpfproj"        , &hmetpfproj_        , "hmetpfproj/F"          );
+  eventTree_->Branch("hmetpf0proj"       , &hmetpf0proj_       , "hmetpf0proj/F"         );
+  eventTree_->Branch("hmetpf1proj"       , &hmetpf1proj_       , "hmetpf1proj/F"         );
+  eventTree_->Branch("hmetpf2proj"       , &hmetpf2proj_       , "hmetpf2proj/F"         );
+  eventTree_->Branch("hmetpf3proj"       , &hmetpf3proj_       , "hmetpf3proj/F"         );
+  eventTree_->Branch("hmetpf4proj"       , &hmetpf4proj_       , "hmetpf4proj/F"         );
+  eventTree_->Branch("hmetpf5proj"       , &hmetpf5proj_       , "hmetpf5proj/F"         );
+  eventTree_->Branch("hmetpf6proj"       , &hmetpf6proj_       , "hmetpf6proj/F"         );
+  eventTree_->Branch("hmetpf7proj"       , &hmetpf7proj_       , "hmetpf7proj/F"         );
+  eventTree_->Branch("hmetpf8proj"       , &hmetpf8proj_       , "hmetpf8proj/F"         );
+  eventTree_->Branch("hmetpf9proj"       , &hmetpf9proj_       , "hmetpf9proj/F"         );
+  eventTree_->Branch("hmetpf10proj"      , &hmetpf10proj_      , "hmetpf10proj/F"        );
+  eventTree_->Branch("jetzmetnotrksproj" , &jetzmetnotrksproj_ , "jetzmetnotrksproj/F"   );
+  eventTree_->Branch("jetzmetproj"       , &jetzmetproj_       , "jetzmetproj/F"         );
+  eventTree_->Branch("jetzmet4proj"      , &jetzmet4proj_      , "jetzmet4proj/F"        );
+  eventTree_->Branch("jetzmet8proj"      , &jetzmet8proj_      , "jetzmet8proj/F"        );
+  eventTree_->Branch("zmetproj"          , &zmetproj_          , "zmetproj/F"            );
+  eventTree_->Branch("pfmet3proj"        , &pfmet3proj_        , "pfmet3proj/F"         );
 }
 
 //--------------------------------------------------------------------
@@ -735,224 +984,90 @@ void looper::CloseBabyNtuple (){
 
 //--------------------------------------------------------------------
 
-float looper::ZanettiMET(const unsigned int vtxIdx, const unsigned int hypIdx, float threshold)
-{
-    float tmet_x = 0.;
-    float tmet_y = 0.;
+std::pair<float,float> looper::pfmetByHand( float ptcut , float etacut ){
 
-    // start by adding hypothesis leptons to tmet
-    if (abs(cms2.hyp_lt_id()[hypIdx]) == 11) {
-        tmet_x -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].px();
-        tmet_y -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].py();
-    }
-    else if (abs(cms2.hyp_lt_id()[hypIdx]) == 13) {
-        tmet_x -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].px();
-        tmet_y -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].py();
-    }
+  float met_x = 0;
+  float met_y = 0;
 
-    if (abs(cms2.hyp_ll_id()[hypIdx]) == 11) {
-        tmet_x -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].px();
-        tmet_y -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].py();
-    }
-    else if (abs(cms2.hyp_ll_id()[hypIdx]) == 13) {
-        tmet_x -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].px();
-        tmet_y -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].py();
-    }
+  for( unsigned int i = 0 ; i < pfcands_p4().size() ; ++i ){
 
-    // now, loop over tracks and for each track determine the closest
-    // vertex;  if this vertex is the same one to which the hypothesis
-    // leptons are matched AND the track is within a DeltaZ of 500 um
-    // include the track in the tmet calculation
-    for (unsigned int itrk = 0; itrk < cms2.trks_trk_p4().size(); itrk++) {
-        float trkz = cms2.trks_vertex_p4()[itrk].z();
-        float mindz = 999.;
-        int vtxi = -1;
-        for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
-            float thisdz = cms2.vtxs_position()[ivtx].z() - trkz;
-            if (fabs(thisdz) < fabs(mindz)) {
-                mindz = thisdz;
-                vtxi = ivtx;
-            }
-        }
+    if( pfcands_p4().at(i).pt()          < ptcut  ) continue;
+    if( fabs( pfcands_p4().at(i).eta() ) > etacut ) continue;
 
-        if (vtxi != vtxIdx)
-            continue;
-        if (fabs(mindz) > threshold)
-            continue;
-        if (dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_lt_p4()[hypIdx]) < 0.03)
-            continue;
-        if (dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_ll_p4()[hypIdx]) < 0.03)
-            continue;
+    met_x  -= pfcands_p4().at(i).px();
+    met_y  -= pfcands_p4().at(i).py();
+    
+  }
 
-        tmet_x -= cms2.trks_trk_p4()[itrk].px();
-        tmet_y -= cms2.trks_trk_p4()[itrk].py();
-    } // end loop over tracks
+  float met = sqrt( met_x * met_x + met_y * met_y);
+  float metphi = atan2( met_y , met_x );
+  
+  return make_pair( met , metphi );
 
-    return sqrt(tmet_x * tmet_x + tmet_y * tmet_y);
 }
 
 //--------------------------------------------------------------------
 
-float looper::HooberMET(const unsigned int vtxIdx, const unsigned int hypIdx, float dz_thresh, 
-                        float pt_thresh, float etacut , bool usePFCandidatePt ){
-  
+std::pair<float,float> looper::ZanettiMET(const unsigned int vtxIdx, const unsigned int hypIdx, float threshold)
+{
   float tmet_x = 0.;
   float tmet_y = 0.;
-  
-  //------------------------------------------------
+
   // start by adding hypothesis leptons to tmet
-  //------------------------------------------------
-  
   if (abs(cms2.hyp_lt_id()[hypIdx]) == 11) {
     tmet_x -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].px();
     tmet_y -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].py();
-
-    //cout << "Correcting for electron (pt,phi) (" << cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].pt() 
-    //     << " , " << cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].phi() << endl; 
   }
   else if (abs(cms2.hyp_lt_id()[hypIdx]) == 13) {
     tmet_x -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].px();
     tmet_y -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].py();
   }
-  
+
   if (abs(cms2.hyp_ll_id()[hypIdx]) == 11) {
     tmet_x -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].px();
     tmet_y -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].py();
-
-    //cout << "Correcting for electron (pt,phi) (" << cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].pt() 
-    //     << " , " << cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].phi() << endl; 
-
   }
   else if (abs(cms2.hyp_ll_id()[hypIdx]) == 13) {
     tmet_x -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].px();
     tmet_y -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].py();
   }
 
-  //---------------------------------------------------
-  // loop over PFCandidates
-  //---------------------------------------------------
-  
-  for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
-  
-    //--------------------
-    //deal with neutrals
-    //--------------------
-    
-    if( cms2.pfcands_charge().at(ipf) == 0 ){
-
-      //--------------------
-      // pt, eta cuts
-      //--------------------
-      
-      if( pfcands_p4().at(ipf).pt()  < pt_thresh         ) continue;
-      if( fabs( pfcands_p4().at(ipf).eta() ) > etacut    ) continue;
-      
-      if (dRbetweenVectors(pfcands_p4().at(ipf) , cms2.hyp_lt_p4()[hypIdx]) < 0.1)  continue;
-      if (dRbetweenVectors(pfcands_p4().at(ipf) , cms2.hyp_ll_p4()[hypIdx]) < 0.1)  continue;
-
-      //--------------------------------------------------
-      // for photons, require dr(photon,electron) > 0.1
-      //--------------------------------------------------
-      /*
-      float dr = 100.;
-       
-      if( pfcands_particleId().at(ipf) == 22 ){
-        
-        if (abs(cms2.hyp_lt_id()[hypIdx]) == 11) {
-          float dr_lt = dRbetweenVectors( pfcands_p4().at(ipf) , cms2.hyp_lt_p4()[hypIdx] );
-          if( dr_lt < dr ) dr = dr_lt;
-        }
-        
-        if (abs(cms2.hyp_ll_id()[hypIdx]) == 11) {
-          float dr_ll = dRbetweenVectors( pfcands_p4().at(ipf) , cms2.hyp_ll_p4()[hypIdx] );
-          if( dr_ll < dr ) dr = dr_ll;
-        }
-        
-        if( dr < 0.1 ) continue;
+  // now, loop over tracks and for each track determine the closest
+  // vertex;  if this vertex is the same one to which the hypothesis
+  // leptons are matched AND the track is within a DeltaZ of 500 um
+  // include the track in the tmet calculation
+  for (unsigned int itrk = 0; itrk < cms2.trks_trk_p4().size(); itrk++) {
+    float trkz = cms2.trks_vertex_p4()[itrk].z();
+    float mindz = 999.;
+    int vtxi = -1;
+    for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
+      float thisdz = cms2.vtxs_position()[ivtx].z() - trkz;
+      if (fabs(thisdz) < fabs(mindz)) {
+        mindz = thisdz;
+        vtxi = ivtx;
       }
-      */
-      //-----------------------------------------
-      // correct MET for neutral PFCandidate
-      //-----------------------------------------
-      
-      tmet_x -= pfcands_p4().at(ipf).px();
-      tmet_y -= pfcands_p4().at(ipf).py();
-      
-      //cout << "Correcting for neutral PFCandidate (pt,phi) (" << cms2.pfcands_p4()[ipf].pt() 
-      //     << " , " << cms2.pfcands_p4()[ipf].phi() << " id " << pfcands_particleId()[ipf] << endl; 
-      
     }
-    
-    //-------------------------------
-    // deal with charged particles
-    //-------------------------------
 
-    else{
+    if (vtxi != vtxIdx)
+      continue;
+    if (fabs(mindz) > threshold)
+      continue;
+    if (dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_lt_p4()[hypIdx]) < 0.03)
+      continue;
+    if (dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_ll_p4()[hypIdx]) < 0.03)
+      continue;
 
-      //------------------------------------
-      // get track matched to PFCandidate
-      //------------------------------------
-      
-      int itrk = cms2.pfcands_trkidx().at(ipf);
-      
-      if( itrk >= trks_trk_p4().size() || itrk < 0 ){
-        //note: this should only happen for electrons which do not have a matched track
-        //currently we are just ignoring these guys
-        continue;
-      }
-      
-      //----------------------------------------
-      // find closest PV and dz w.r.t. that PV
-      //----------------------------------------
-      
-      float mindz = 999.;
-      int vtxi    = -1;
-        
-      for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
-        float mydz = dz_trk_vtx(itrk,ivtx);
-        //float mydz = cms2.vtxs_position()[ivtx].z() - cms2.trks_vertex_p4()[itrk].z();
-        if (fabs(mydz) < fabs(mindz)) {
-          mindz = mydz;
-          vtxi = ivtx;
-        }
-      }
-      
-      //----------------------------------------------------------------------------
-      // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
-      //----------------------------------------------------------------------------
-      
-      if (vtxi != vtxIdx)
-        continue;
-      if (fabs(mindz) > dz_thresh)
-        continue;
-      if (dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_lt_p4()[hypIdx]) < 0.03)
-        continue;
-      if (dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_ll_p4()[hypIdx]) < 0.03)
-        continue;
-      
+    tmet_x -= cms2.trks_trk_p4()[itrk].px();
+    tmet_y -= cms2.trks_trk_p4()[itrk].py();
+  } // end loop over tracks
 
-      //---------------------------------------
-      // correct MET for charged PFCandidate
-      //---------------------------------------
+  float met = sqrt(tmet_x * tmet_x + tmet_y * tmet_y);
+  float metphi = atan2( tmet_y , tmet_x );
+  
+  return make_pair( met , metphi );
 
-      if( usePFCandidatePt ){
-        tmet_x -= cms2.pfcands_p4()[ipf].px();
-        tmet_y -= cms2.pfcands_p4()[ipf].py();
-
-        //cout << "Correcting for charged PFCandidate (pt,phi) (" << cms2.pfcands_p4()[ipf].pt() 
-        //     << " , " << cms2.pfcands_p4()[ipf].phi() << endl; 
-      }
-      
-      else{
-        tmet_x -= cms2.trks_trk_p4()[itrk].px();
-        tmet_y -= cms2.trks_trk_p4()[itrk].py();
-      }
-      
-    } 
-  }// end loop over tracks
-
-  return sqrt(tmet_x * tmet_x + tmet_y * tmet_y);
 }
+
 
 //--------------------------------------------------------------------
 
@@ -968,11 +1083,25 @@ vector<int> looper::goodVertices(){
   
   return myVertices;
 }
+ //--------------------------------------------------------------------
+
+vector<int> looper::goodDAVertices(){
+
+  vector<int> myVertices;
+  myVertices.clear();
+  
+  for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+    if( !isGoodDAVertex(v) ) continue;
+    myVertices.push_back(v);
+  }
+  
+  return myVertices;
+}
 
 //--------------------------------------------------------------------
 
-float looper::PFCandidateMET(const unsigned int vtxIdx, const unsigned int hypIdx, vector<int> goodjets, 
-                             float dz_thresh, float pt_thresh, float etacut , bool usePFCandidatePt , bool correctJets ){
+std::pair<float,float> looper::PFCandidateMET(const unsigned int vtxIdx, const unsigned int hypIdx, vector<int> goodjets, 
+                                              float dz_thresh, float pt_thresh, float etacut , bool usePFCandidatePt , bool correctJets ){
   
   float tmet_x = 0.;
   float tmet_y = 0.;
@@ -1007,7 +1136,7 @@ float looper::PFCandidateMET(const unsigned int vtxIdx, const unsigned int hypId
 
     for( vector<int>::iterator igoodjet = goodjets.begin() ; igoodjet < goodjets.end() ; ++igoodjet ){
       
-      LorentzVector vjet = pfjets_p4().at(*igoodjet) * pfjets_cor().at(*igoodjet);
+      LorentzVector vjet = pfjets_p4().at(*igoodjet) * pfjets_corL1L2L3().at(*igoodjet);
       
       tmet_x -= vjet.px();
       tmet_y -= vjet.py();
@@ -1075,173 +1204,190 @@ float looper::PFCandidateMET(const unsigned int vtxIdx, const unsigned int hypId
     
     else{
       
-       //------------------------------------
-       // get track matched to PFCandidate
-       //------------------------------------
+      //------------------------------------
+      // get track matched to PFCandidate
+      //------------------------------------
     
-       int itrk = cms2.pfcands_trkidx().at(ipf);
+      int itrk = cms2.pfcands_trkidx().at(ipf);
     
-       if( itrk >= trks_trk_p4().size() || itrk < 0 ){
-         //note: this should only happen for electrons which do not have a matched track
-         //currently we are just ignoring these guys
-         continue;
-       }
+      if( itrk >= trks_trk_p4().size() || itrk < 0 ){
+        //note: this should only happen for electrons which do not have a matched track
+        //currently we are just ignoring these guys
+        continue;
+      }
     
-       //----------------------------------------
-       // find closest PV and dz w.r.t. that PV
-       //----------------------------------------
+      //----------------------------------------
+      // find closest PV and dz w.r.t. that PV
+      //----------------------------------------
     
-       float mindz = 999.;
-       int vtxi    = -1;
+      float mindz = 999.;
+      int vtxi    = -1;
       
-       for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
+      for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
        
-         float mydz = dz_trk_vtx(itrk,ivtx);
-         //float mydz = cms2.vtxs_position()[ivtx].z() - cms2.trks_vertex_p4()[itrk].z();
+        float mydz = dz_trk_vtx(itrk,ivtx);
+        //float mydz = cms2.vtxs_position()[ivtx].z() - cms2.trks_vertex_p4()[itrk].z();
          
-         if (fabs(mydz) < fabs(mindz)) {
-           mindz = mydz;
-           vtxi = ivtx;
-         }
+        if (fabs(mydz) < fabs(mindz)) {
+          mindz = mydz;
+          vtxi = ivtx;
+        }
          
-       }
+      }
     
-       //----------------------------------------------------------------------------
-       // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
-       //----------------------------------------------------------------------------
+      //----------------------------------------------------------------------------
+      // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
+      //----------------------------------------------------------------------------
     
-       if ( vtxi != vtxIdx )                                                               continue;
-       if ( fabs(mindz) > dz_thresh )                                                      continue;
-       if ( dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_lt_p4()[hypIdx]) < 0.03 )  continue;
-       if ( dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_ll_p4()[hypIdx]) < 0.03 )  continue;
+      if ( vtxi != vtxIdx )                                                               continue;
+      if ( fabs(mindz) > dz_thresh )                                                      continue;
+      if ( dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_lt_p4()[hypIdx]) < 0.03 )  continue;
+      if ( dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_ll_p4()[hypIdx]) < 0.03 )  continue;
     
 
-       //---------------------------------------
-       // correct MET for charged PFCandidate
-       //---------------------------------------
+      //---------------------------------------
+      // correct MET for charged PFCandidate
+      //---------------------------------------
 
-       if( usePFCandidatePt ){
-         tmet_x -= cms2.pfcands_p4()[ipf].px();
-         tmet_y -= cms2.pfcands_p4()[ipf].py();
-       }
+      if( usePFCandidatePt ){
+        tmet_x -= cms2.pfcands_p4()[ipf].px();
+        tmet_y -= cms2.pfcands_p4()[ipf].py();
+      }
     
-       else{
-         tmet_x -= cms2.trks_trk_p4()[itrk].px();
-         tmet_y -= cms2.trks_trk_p4()[itrk].py();
-       }
+      else{
+        tmet_x -= cms2.trks_trk_p4()[itrk].px();
+        tmet_y -= cms2.trks_trk_p4()[itrk].py();
+      }
     
-     } 
-   }// end loop over tracks
+    } 
+  }// end loop over tracks
   
+  float met = sqrt(tmet_x * tmet_x + tmet_y * tmet_y);
+  float metphi = atan2( tmet_y , tmet_x );
+  
+  return make_pair( met , metphi );
+}
 
-   return sqrt(tmet_x * tmet_x + tmet_y * tmet_y);
- }
+float looper::beta_jet_vtx( int ijet , int vtxIdx , int beta_exponent ){
 
+  //------------------------------------------
+  // loop over PFCandidates matched to pfjet
+  //------------------------------------------
+  
+  vector<int> pfcands = pfjets_pfcandIndicies().at(ijet);
+  
+  LorentzVector v_pfcands(0,0,0,0);
 
+  vector<int> matchedTracks;
+  matchedTracks.clear();
 
- bool looper::jetFromSignalPV( int ijet , int vtxIdx ){
+  float sumPtTot = 0.;
 
-   //cout << endl << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
-
-   //------------------------------------------
-   // loop over PFCandidates matched to pfjet
-   //------------------------------------------
-   vector<int> pfcands = pfjets_pfcandIndicies().at(ijet);
-
-   //cout << pfcands.size() << " matched PFCandidates" << endl;
-
-   LorentzVector v_pfcands(0,0,0,0);
-
-   vector<int> matchedTracks;
-   matchedTracks.clear();
-
-   float sumPtTot = 0.;
-
-   for( unsigned int i = 0 ; i < pfcands.size() ; ++i ){
+  for( vector<int>::iterator ipf = pfcands.begin() ; ipf < pfcands.end() ; ++ipf ){
      
-     int ipf = pfcands.at(i);
+    v_pfcands += pfcands_p4().at(*ipf);
 
-     v_pfcands += pfcands_p4().at(ipf);
-
-     //---------------------------------------------
-     // find track index of charged PFCandidates
-     //---------------------------------------------
+    //---------------------------------------------
+    // find track index of charged PFCandidates
+    //---------------------------------------------
      
-     if( pfcands_charge().at(ipf) == 0 ) continue;
+    if( pfcands_charge().at(*ipf) == 0 ) continue;
 
-     int itrk = cms2.pfcands_trkidx().at(ipf);
+    int itrk = cms2.pfcands_trkidx().at(*ipf);
      
-     //note: this should only happen for electrons which do not have a matched track, currently ignoring these guys
-     if( itrk >= trks_trk_p4().size() || itrk < 0 )  continue;
+    //note: this should only happen for electrons which do not have a matched track, currently ignoring these guys
+    if( itrk >= trks_trk_p4().size() || itrk < 0 )  continue;
      
-     //----------------------------------
-     // store indices of matched tracks
-     //----------------------------------
+    //----------------------------------
+    // store indices of matched tracks
+    //----------------------------------
      
-     //cout << "Storing matched track " << itrk << " pt " << trks_trk_p4().at(itrk).pt() << endl;
-     matchedTracks.push_back( itrk );
+    matchedTracks.push_back( itrk );
 
-     sumPtTot += trks_trk_p4().at(itrk).pt();
+    sumPtTot += pow( trks_trk_p4().at(itrk).pt() , beta_exponent );
 
-   }
+  }
 
-   //cout << "Found " << matchedTracks.size() << " matched tracks, sumpt " << sumPtTot << endl;
+  //-------------
+  //sanity check
+  //-------------
+  
+  if( fabs( pfjets_p4().at(ijet).pt() - v_pfcands.pt() ) > 0.1 ){
+    cout << "Warning: pfjet pt " << pfjets_p4().at(ijet).pt() 
+         << " doesn't match sum of PFCandidates pt " << v_pfcands.pt() << endl;
+  }
 
-   if( fabs( pfjets_p4().at(ijet).pt() - v_pfcands.pt() ) > 0.1 ){
-     cout << "Warning: pfjet pt " << pfjets_p4().at(ijet).pt() 
-          << " doesn't match sum of PFCandidates pt " << v_pfcands.pt() << endl;
-   }
+  //----------------------------------
+  // find good vertices
+  //----------------------------------
 
-   vector<int> myGoodVertices = goodVertices();
-   const unsigned int nGoodVertices = myGoodVertices.size();
+  vector<int> myGoodVertices = goodVertices();
+  const unsigned int nGoodVertices = myGoodVertices.size();
 
-   if( nGoodVertices == 0 ){
-     cout << "Didn't find any good vertices!" << endl;
-     return false;
-   }
+  if( nGoodVertices == 0 ){
+    cout << "Didn't find any good vertices!" << endl;
+    return -1.;
+  }
 
-   float beta[nGoodVertices];
-   for( unsigned int ivtx = 0 ; ivtx < nGoodVertices ; ++ivtx ) beta[ivtx] = 0.0;
+  float beta = 0.;
 
-   for (vector<int>::iterator itrk = matchedTracks.begin(); itrk != matchedTracks.end(); ++itrk) {
+  //------------------------------------------------------------------------------------------------
+  // loop over tracks. if track_i is closest to signal PV, add pow(track_i pt,beta_exponent) to beta
+  //------------------------------------------------------------------------------------------------
+
+  for (vector<int>::iterator itrk = matchedTracks.begin(); itrk != matchedTracks.end(); ++itrk) {
      
-     float mindz = 1000;
-     int   vtxi  = -1;
+    float mindz = 1000;
+    int   vtxi  = -1;
      
-     for (vector<int>::iterator ivtx = myGoodVertices.begin(); ivtx != myGoodVertices.end() ; ++ivtx ){
+    for (vector<int>::iterator ivtx = myGoodVertices.begin(); ivtx != myGoodVertices.end() ; ++ivtx ){
        
-       float thisdz = dz_trk_vtx(*itrk,*ivtx);
+      float thisdz = dz_trk_vtx(*itrk,*ivtx);
        
-       if (fabs(thisdz) < fabs(mindz)) {
-         mindz = thisdz;
-         vtxi  = *ivtx;
-       }
-     }
+      if ( fabs( thisdz ) < fabs( mindz ) ) {
+        mindz = thisdz;
+        vtxi  = *ivtx;
+      }
+    }
      
-     beta[vtxi] += trks_trk_p4().at(*itrk).pt() / sumPtTot;
-     
-   }
-   
-   float betamax = -1.;
-   int   imax    = -1;
-   for( unsigned int ivtx = 0 ; ivtx < nGoodVertices ; ++ivtx ){
-     //cout << "beta[" << ivtx << "] " << beta[ivtx] << endl;
+    if( vtxi == vtxIdx ){
+      beta += pow( trks_trk_p4().at(*itrk).pt() , beta_exponent ) / sumPtTot;
+    }
+  }
+ 
+  return beta;
 
-     if( beta[ivtx] > betamax ){
-       betamax = beta[ivtx];
-       imax    = ivtx;
-     }
-   }
+}
 
-   //cout << "imax " << imax << " betamax " << betamax << endl; 
+//--------------------------------------------------------------------
 
-   if( imax == vtxIdx ){
-     //cout << "It's good!" << endl;
-     return true;
-   }
+bool looper::jetFromSignalPV( int ijet , int vtxIdx , int beta_exponent ){
 
-   return false;
- }
+  vector<int> myGoodVertices       = goodVertices();
+  const unsigned int nGoodVertices = myGoodVertices.size();
+
+  if( nGoodVertices == 0 ){
+    cout << "Didn't find any good vertices!" << endl;
+    return false;
+  }
+
+  float betamax = -1;
+  int   imax    = -1;
+
+  for (vector<int>::iterator ivtx = myGoodVertices.begin(); ivtx != myGoodVertices.end() ; ++ivtx ){
+    
+    float beta = beta_jet_vtx( ijet , *ivtx , beta_exponent );
+
+    if( beta > betamax ){
+      betamax = beta;
+      imax    = *ivtx;
+    }
+
+  }
+  
+  if( imax == vtxIdx )  return true;
+  return false;
+}
 
 //--------------------------------------------------------------------
 
@@ -1252,3 +1398,201 @@ float looper::dz_trk_vtx(const unsigned int trkidx, const unsigned int vtxidx){
 }
 
 //--------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//--------------------------------------------------------------------
+
+// std::pair<float,float> looper::HooberMET(const unsigned int vtxIdx, const unsigned int hypIdx, float dz_thresh, 
+//                                          float pt_thresh, float etacut , bool usePFCandidatePt ){
+  
+//   float tmet_x = 0.;
+//   float tmet_y = 0.;
+  
+//   //------------------------------------------------
+//   // start by adding hypothesis leptons to tmet
+//   //------------------------------------------------
+  
+//   if (abs(cms2.hyp_lt_id()[hypIdx]) == 11) {
+//     tmet_x -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].px();
+//     tmet_y -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].py();
+
+//     //cout << "Correcting for electron (pt,phi) (" << cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].pt() 
+//     //     << " , " << cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].phi() << endl; 
+//   }
+//   else if (abs(cms2.hyp_lt_id()[hypIdx]) == 13) {
+//     tmet_x -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].px();
+//     tmet_y -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].py();
+//   }
+  
+//   if (abs(cms2.hyp_ll_id()[hypIdx]) == 11) {
+//     tmet_x -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].px();
+//     tmet_y -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].py();
+
+//     //cout << "Correcting for electron (pt,phi) (" << cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].pt() 
+//     //     << " , " << cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].phi() << endl; 
+
+//   }
+//   else if (abs(cms2.hyp_ll_id()[hypIdx]) == 13) {
+//     tmet_x -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].px();
+//     tmet_y -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].py();
+//   }
+
+//   //---------------------------------------------------
+//   // loop over PFCandidates
+//   //---------------------------------------------------
+  
+//   for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+  
+//     //--------------------
+//     //deal with neutrals
+//     //--------------------
+    
+//     if( cms2.pfcands_charge().at(ipf) == 0 ){
+
+//       //--------------------
+//       // pt, eta cuts
+//       //--------------------
+      
+//       if( pfcands_p4().at(ipf).pt()  < pt_thresh         ) continue;
+//       if( fabs( pfcands_p4().at(ipf).eta() ) > etacut    ) continue;
+      
+//       if (dRbetweenVectors(pfcands_p4().at(ipf) , cms2.hyp_lt_p4()[hypIdx]) < 0.1)  continue;
+//       if (dRbetweenVectors(pfcands_p4().at(ipf) , cms2.hyp_ll_p4()[hypIdx]) < 0.1)  continue;
+
+//       //--------------------------------------------------
+//       // for photons, require dr(photon,electron) > 0.1
+//       //--------------------------------------------------
+//       /*
+//         float dr = 100.;
+       
+//         if( pfcands_particleId().at(ipf) == 22 ){
+        
+//         if (abs(cms2.hyp_lt_id()[hypIdx]) == 11) {
+//         float dr_lt = dRbetweenVectors( pfcands_p4().at(ipf) , cms2.hyp_lt_p4()[hypIdx] );
+//         if( dr_lt < dr ) dr = dr_lt;
+//         }
+        
+//         if (abs(cms2.hyp_ll_id()[hypIdx]) == 11) {
+//         float dr_ll = dRbetweenVectors( pfcands_p4().at(ipf) , cms2.hyp_ll_p4()[hypIdx] );
+//         if( dr_ll < dr ) dr = dr_ll;
+//         }
+        
+//         if( dr < 0.1 ) continue;
+//         }
+//       */
+//       //-----------------------------------------
+//       // correct MET for neutral PFCandidate
+//       //-----------------------------------------
+      
+//       tmet_x -= pfcands_p4().at(ipf).px();
+//       tmet_y -= pfcands_p4().at(ipf).py();
+      
+//       //cout << "Correcting for neutral PFCandidate (pt,phi) (" << cms2.pfcands_p4()[ipf].pt() 
+//       //     << " , " << cms2.pfcands_p4()[ipf].phi() << " id " << pfcands_particleId()[ipf] << endl; 
+      
+//     }
+    
+//     //-------------------------------
+//     // deal with charged particles
+//     //-------------------------------
+
+//     else{
+
+//       //------------------------------------
+//       // get track matched to PFCandidate
+//       //------------------------------------
+      
+//       int itrk = cms2.pfcands_trkidx().at(ipf);
+      
+//       if( itrk >= trks_trk_p4().size() || itrk < 0 ){
+//         //note: this should only happen for electrons which do not have a matched track
+//         //currently we are just ignoring these guys
+//         continue;
+//       }
+      
+//       //----------------------------------------
+//       // find closest PV and dz w.r.t. that PV
+//       //----------------------------------------
+      
+//       float mindz = 999.;
+//       int vtxi    = -1;
+        
+//       for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
+//         float mydz = dz_trk_vtx(itrk,ivtx);
+//         //float mydz = cms2.vtxs_position()[ivtx].z() - cms2.trks_vertex_p4()[itrk].z();
+//         if (fabs(mydz) < fabs(mindz)) {
+//           mindz = mydz;
+//           vtxi = ivtx;
+//         }
+//       }
+      
+//       //----------------------------------------------------------------------------
+//       // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
+//       //----------------------------------------------------------------------------
+      
+//       if (vtxi != vtxIdx)
+//         continue;
+//       if (fabs(mindz) > dz_thresh)
+//         continue;
+//       if (dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_lt_p4()[hypIdx]) < 0.03)
+//         continue;
+//       if (dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_ll_p4()[hypIdx]) < 0.03)
+//         continue;
+      
+
+//       //---------------------------------------
+//       // correct MET for charged PFCandidate
+//       //---------------------------------------
+
+//       if( usePFCandidatePt ){
+//         tmet_x -= cms2.pfcands_p4()[ipf].px();
+//         tmet_y -= cms2.pfcands_p4()[ipf].py();
+
+//         //cout << "Correcting for charged PFCandidate (pt,phi) (" << cms2.pfcands_p4()[ipf].pt() 
+//         //     << " , " << cms2.pfcands_p4()[ipf].phi() << endl; 
+//       }
+      
+//       else{
+//         tmet_x -= cms2.trks_trk_p4()[itrk].px();
+//         tmet_y -= cms2.trks_trk_p4()[itrk].py();
+//       }
+      
+//     } 
+//   }// end loop over tracks
+
+  
+//   float met = sqrt(tmet_x * tmet_x + tmet_y * tmet_y);
+//   float metphi = atan2( tmet_y , tmet_x );
+  
+//   return make_pair( met , metphi );
+
+// }

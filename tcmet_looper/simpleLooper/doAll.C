@@ -13,13 +13,26 @@
   gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
   
   //choose samples to run over----------------------
-  runLooper("dyee");
-  runLooper("dymm");
-  runLooper("h130");
+
+  //runLooper("data");
+  runLooper("dyee_spring11");
+  runLooper("dymm_spring11");
+  // runLooper("tt_spring11");
+  // runLooper("h130_spring11");
+  // runLooper("dyee_winter10");
+  // runLooper("dymm_winter10");
+
+  //runLooper("dyee");
+  //runLooper("dymm");
+  //runLooper("h130");
+  //runLooper("tt");
+  //runLooper("data");
   //runLooper("dyee_nopu");
   //runLooper("dymm_nopu");
   //runLooper("h130_nopu");
   //runLooper("test384");
   //runLooper("test412");
+  //runLooper("test");
   
 }
+        
