@@ -55,10 +55,11 @@ const bool generalLeptonVeto    = true;
 const bool doTemplatePrediction = false;
 metType myMetType               = e_tcmet;
 templateSource myTemplateSource = e_PhotonJet;
+const bool doReweight           = true;
 
-float lumi         = 33.96e-3; 
-char* iter         = "V00-00-00";
-char* jsonfilename = "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt";
+float lumi         = 0.020; 
+char* iter         = "V00-00-01";
+char* jsonfilename = "json_DCSONLY_ManualCert_goodruns.txt";
 //char* jsonfilename = "Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -331,6 +332,22 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   bookHistos();
 
+  //get vtx reweighting histo
+  TH1F* h_reweight = new TH1F();
+
+  if( doReweight ){
+    TFile* f_reweight = TFile::Open("vtx_reweight.root");
+
+    h_reweight = (TH1F*) f_reweight->Get("hratio");
+
+    cout << "Doing reweighting" << endl;
+    for( unsigned int ibin = 1 ; ibin <= h_reweight->GetNbinsX() ; ibin++ ){
+      cout << ibin << " " << h_reweight->GetBinContent(ibin) << endl;
+    }
+
+  }
+
+
   // make a baby ntuple
   stringstream babyfilename;
   babyfilename << prefix << "_baby.root";
@@ -479,7 +496,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 
       //good run+event selection-----------------------------------------------------------
-      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      //if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       if( !cleaning_standardAugust2010( isData) )                    continue;
 
       if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[1]++;
@@ -494,10 +511,19 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       lumi_   = cms2.evt_lumiBlock();
       event_  = cms2.evt_event();
 
+      goodrun_ = 1;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) goodrun_ = 0;
+
       weight_ = 1.;
       pthat_  = -1;
       if( !isData ){
-        weight_ = cms2.evt_scale1fb() * kFactor * lumi;
+       
+	if( TString(prefix).Contains("dymm_spring11") ){
+	  weight_ = ( 1666000. / 2000000. ) * lumi;
+	}else{
+	  weight_ = cms2.evt_scale1fb() * kFactor * lumi;
+	}
+
 	if( TString(prefix).Contains("LM") ){
 	  if( strcmp( prefix , "LM0" ) == 0 ) weight_ *= kfactorSUSY( "lm0" );
 	  if( strcmp( prefix , "LM1" ) == 0 ) weight_ *= kfactorSUSY( "lm1" );
@@ -512,6 +538,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
         pthat_  = cms2.genps_pthat();
       }
+
+
 
       // calomet, pfmet, genmet
       met_       = cms2.evt_met();
@@ -568,7 +596,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
 
-        if( !passSUSYTrigger_v1( isData , hyp_type()[hypIdx] ) ) continue;
+        //if( !passSUSYTrigger_v1( isData , hyp_type()[hypIdx] ) ) continue;
 
         //check that hyp leptons come from same vertex
         if(!hypsFromSameVtx(hypIdx))   continue;
@@ -580,6 +608,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
+
+	//leading electron pt > 27 GeV
+	int id = -1;
+	if( hyp_ll_p4()[hypIdx].pt() > hyp_lt_p4()[hypIdx].pt() ) id = hyp_ll_id()[hypIdx];
+	else                                                      id = hyp_lt_id()[hypIdx];
+	if( abs(id) == 11 && TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 27. )   continue;
 
         //nominal muon ID
         if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , OSZ_v1 )))   continue;
@@ -837,6 +871,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       tcmetphi_ = tcmetStruct.metphi;
       tcsumet_  = tcmetStruct.sumet;   
 
+      //sanity check
+      pair<float,float> p_tcmet = getMet( "tcMET"    , hypIdx);
+      float mytcmet = p_tcmet.first;
+
+      if( fabs( tcmet_ - mytcmet ) > 0.1 ) cout << "Warning! tcmet mismatch " << tcmet_ << " " << mytcmet << endl; 
+
       if( calculateTCMET ){
         
           
@@ -868,6 +908,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       nGoodVertex_ = 0;
       for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
         if(isGoodVertex(v)) nGoodVertex_++;
+      }
+
+      vtxweight_ = 1;
+      if( !isData && doReweight ){
+	vtxweight_ = h_reweight->GetBinContent( nGoodVertex_ + 1 );
       }
 
       // electron energy scale stuff
@@ -1479,10 +1524,12 @@ void Z_looper::InitBabyNtuple (){
 
   // event stuff
   run_          = -999999;
+  goodrun_      = -999999;
   memset(dataset_, '\0', 200);
   lumi_         = -999999;
   event_        = -999999;
   weight_       = -999999.;
+  vtxweight_    = -999999.;
   pthat_        = -999999.;
   mllgen_       = -999999.;
   nGoodVertex_  = -999999;
@@ -1709,16 +1756,18 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_ = new TTree("T1", "A Baby Ntuple");
 
   //event stuff
-  babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C");
-  babyTree_->Branch("run",          &run_,          "run/I"  );
-  babyTree_->Branch("lumi",         &lumi_,         "lumi/I" );
-  babyTree_->Branch("event",        &event_,        "event/I");
-  babyTree_->Branch("failjetid",    &failjetid_,    "failjetid/I");
-  babyTree_->Branch("maxemf",       &maxemf_,       "maxemf/F");
-  babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I");
-  babyTree_->Branch("weight",       &weight_,       "weight/F");
-  babyTree_->Branch("pthat",        &pthat_,        "pthat/F");
-  babyTree_->Branch("mllgen",       &mllgen_,       "mllgen/F");
+  babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C" );
+  babyTree_->Branch("run",          &run_,          "run/I"          );
+  babyTree_->Branch("goodrun",      &goodrun_,      "goodrun/I"      );
+  babyTree_->Branch("lumi",         &lumi_,         "lumi/I"         );
+  babyTree_->Branch("event",        &event_,        "event/I"        );
+  babyTree_->Branch("failjetid",    &failjetid_,    "failjetid/I"    );
+  babyTree_->Branch("maxemf",       &maxemf_,       "maxemf/F"       );
+  babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I"         );
+  babyTree_->Branch("weight",       &weight_,       "weight/F"       );
+  babyTree_->Branch("vtxweight",    &vtxweight_,    "vtxweight/F"    );
+  babyTree_->Branch("pthat",        &pthat_,        "pthat/F"        );
+  babyTree_->Branch("mllgen",       &mllgen_,       "mllgen/F"       );
 
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );

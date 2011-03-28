@@ -10,6 +10,7 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
   char* datapath = "/tas/cms2";
 
   //------------------------------------------------------------------------------------------------------------
+
   if( strcmp( prefix , "testdata" ) == 0 ){
     cout << "Sample not present on UAF!" << endl;
     exit(0);
@@ -18,8 +19,14 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
 
   //------------------------------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "express_data" ) == 0 ){
+    ch->Add("/tas/cms2/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/n*root");
+  }
+
+  //------------------------------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "dyee_spring11" ) == 0 ){
-    ch->Add("/tas/benhoob/cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-00-10/n*root");
+    ch->Add("/tas/cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root");
   }
 
   //------------------------------------------------------------------------------------------------------------
@@ -31,14 +38,13 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
   //------------------------------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "tt_spring11" ) == 0 ){
-    ch->Add("/tas/benhoob/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-00-10/n*root");
+    ch->Add("/tas/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root");
   }
 
   //------------------------------------------------------------------------------------------------------------
 
-  else if( strcmp( prefix , "ZJets" ) == 0 ){
-    //ch->Add("Form("%s/ZJets-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged_ntuple*root",datapath));
-    ch->Add(Form("%s/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/merged*root",datapath));
+  else if( strcmp( prefix , "zjets_spring11" ) == 0 ){
+    ch->Add(Form("%s/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",datapath));
   }
 
   //------------------------------------------------------------------------------------------------------------
@@ -140,21 +146,29 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
   else if ( strcmp( prefix , "WJets" ) == 0 ){
     ch->Add(Form("%s/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-13-07/diLepPt2010Skim/skimmed*root",datapath));
   }
+
+  //------------------------------------------------------------------------------------------------------------
   
   else if ( strcmp( prefix , "WW" ) == 0 ){
     //ch->Add(Form("%s/WW_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root",datapath));
     ch->Add(Form("%s/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged*root",datapath));
   }        
-  
+
+  //------------------------------------------------------------------------------------------------------------  
+
   else if ( strcmp( prefix , "WZ" ) == 0 ){
     //ch->Add(Form("%s/WZ_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root",datapath));
     ch->Add(Form("%s/WZTo3LNu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged*root",datapath));
   } 
+
+  //------------------------------------------------------------------------------------------------------------
   
   else if ( strcmp( prefix , "ZZ" ) == 0 ){
     //ch->Add(Form("%s/ZZ_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*root",datapath));
     ch->Add(Form("%s/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/merged*root",datapath));
   }
+
+  //------------------------------------------------------------------------------------------------------------
   
   else if ( strcmp( prefix , "tW" ) == 0 ){
     //ch->Add(Form("%s/SingleTop_sChannel-madgraph_Spring10-START3X_V26_S09-v1/V03-04-13-07/merged*.root",datapath));

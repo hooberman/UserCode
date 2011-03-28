@@ -65,12 +65,14 @@ class Z_looper
   // event stuff
   char    dataset_[200];
   Int_t   run_;
+  Int_t   goodrun_;
   Int_t   lumi_;
   Int_t   event_;
   Int_t   leptype_;
   Int_t   ecaltype_;
   Int_t   nGoodVertex_;
   Float_t weight_;
+  Float_t vtxweight_;
   Float_t pthat_;
   Float_t mllgen_;
   Float_t maxemf_;
