@@ -24,12 +24,13 @@
 #include "../CORE/electronSelectionsParameters.h"
 #include "../CORE/muonSelections.h"
 #include "../Tools/goodrun.cc"
-//#include "../CORE/utilities.cc"
 #include "histtools.h"
 #include "../CORE/ttbarSelections.cc"
-//#include "../CORE/jetSelections.cc"
 #include "../CORE/triggerUtils.cc"
 #include "../CORE/photonSelections.cc"
+
+//#include "../CORE/utilities.cc"
+//#include "../CORE/jetSelections.cc"
 
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
@@ -93,10 +94,10 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
 
 int makePhotonBabies::passThisHLTTrigger( char* hltname ){
 
-  cout << "Checking for pattern " << hltname << endl;
+  if( debug) cout << "Checking for pattern " << hltname << endl;
 
   //-------------------------------------------------------
-  // First check if trigger is present. If not return -1.
+  // First check if trigger is present. If not, return -1.
   //-------------------------------------------------------
 
   bool    foundTrigger  = false;
@@ -111,7 +112,7 @@ int makePhotonBabies::passThisHLTTrigger( char* hltname ){
   }
 
   if( !foundTrigger ){
-    cout << "Did not find trigger" << endl;
+    if( debug ) cout << "Did not find trigger" << endl;
     return -1;
   }
 
@@ -119,15 +120,15 @@ int makePhotonBabies::passThisHLTTrigger( char* hltname ){
   // Now check if trigger passed. If so return prescale
   //----------------------------------------------------
 
-  cout << "Found trigger " << exact_hltname << endl;
+  if( debug) cout << "Found trigger " << exact_hltname << endl;
 
   if( !passHLTTrigger( exact_hltname ) ){
-    cout << "Trigger did not pass" << endl;
+    if( debug ) cout << "Trigger did not pass" << endl;
     return 0;
   }
   else{
     int PS = HLT_prescale( exact_hltname );
-    cout << "Trigger passed, prescale " << PS << endl;
+    if( debug ) cout << "Trigger passed, prescale " << PS << endl;
     return PS;
   }
 
@@ -165,7 +166,10 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
   int npass = 0;
   
+  //---------------------
   // make a baby ntuple
+  //---------------------
+  
   MakeBabyNtuple( Form("../templates/%s/%s_baby.root", iter , prefix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
@@ -176,11 +180,12 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
   nEventsChain = nEvents;
   unsigned int nEventsTotal = 0;
   
-  //pass fail counters
-  int nSkip_els_conv_dist = 0;
   if(debug) cout << "Begin file loop" << endl;
 
-  // file loop
+  //------------------
+  // begin file loop
+  //------------------
+
   TIter fileIter(listOfFiles);
   TFile* currentFile = 0;
   while ((currentFile = (TFile*)fileIter.Next())){
@@ -189,7 +194,6 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
     TTree *tree = (TTree*)f.Get("Events");
     cms2.Init(tree);
 
-    // event loop
     unsigned int nEvents = tree->GetEntries();
  
     for (unsigned int event = 0 ; event < nEvents; ++event){
@@ -197,10 +201,12 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       cms2.GetEntry(event);
       ++nEventsTotal;
 
+      //-------------------------------
       // progress feedback to user
+      //-------------------------------
+
       if (nEventsTotal % 1000 == 0){
-            
-        // xterm magic from L. Vacavant and A. Cerri
+
         if (isatty(1)){
                 
           printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
@@ -209,28 +215,19 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
         }
       }
       
+      //------------------------------
+      // duplicate event cleaning
+      //------------------------------
+      
       if( isData ) {
 	DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
 	if (is_duplicate(id) )
 	  continue;
       }
-      /*
-      //skip events with bad els_conv_dist 
-      bool skipEvent = false;
-      for( unsigned int iEl = 0 ; iEl < els_conv_dist().size() ; ++iEl ){
-        if( els_conv_dist().at(iEl) != els_conv_dist().at(iEl) ){
-          skipEvent = true;
-        }
-      }
       
-      if( skipEvent ){
-        cout << "SKIPPING EVENT WITH BAD ELS_CONV_DIST" << endl;       
-        nSkip_els_conv_dist++;
-        continue;
-      }
-      */
-      
-      //good run+event selection-----------------------------------------------------------
+      //--------------------------
+      //good run+event selection
+      //--------------------------
 
       //if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       if( !cleaning_standardAugust2010( isData) )                    continue;
@@ -287,10 +284,11 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       // access HLT triggers
       //-------------------------
      
-      hlt20_ = passThisHLTTrigger( "HLT_Photon20_CaloIdVL_IsoL_v" );
-      hlt30_ = passThisHLTTrigger( "HLT_Photon30_CaloIdVL_IsoL_v" );
-      hlt50_ = passThisHLTTrigger( "HLT_Photon50_CaloIdVL_IsoL_v" );
-      hlt75_ = passThisHLTTrigger( "HLT_Photon75_CaloIdVL_IsoL_v" );      
+      hlt20_  = passThisHLTTrigger( "HLT_Photon20_CaloIdVL_IsoL_v"  );
+      hlt30_  = passThisHLTTrigger( "HLT_Photon30_CaloIdVL_IsoL_v"  );
+      hlt50_  = passThisHLTTrigger( "HLT_Photon50_CaloIdVL_IsoL_v"  );
+      hlt75_  = passThisHLTTrigger( "HLT_Photon75_CaloIdVL_IsoL_v"  );      
+      hlt125_ = passThisHLTTrigger( "HLT_Photon125_NoSpikeFilter_v" );
               
       //-------------------------
       // calomet, pfmet, genmet
@@ -379,13 +377,12 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       
       if( igmax < 0 ) continue;
       
-      ijetg = isGoodEMObject(igmax);
+      ijetg = isGoodEMObject( igmax );
       
       if( ijetg < 0 ) continue;
       
       etg_        = photons_p4().at(igmax).pt();
       etag_       = photons_p4().at(igmax).eta();
-      
       phig_       = photons_p4().at(igmax).phi();
       hoe_        = photons_hOverE().at(igmax);
       swiss_      = photons_swissSeed().at(igmax);
@@ -466,7 +463,10 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       failjetid_ =  0;
       maxemf_    = -1;
       
-      //loop over pfjets pt > 30 GeV |eta| < 2.5
+      //-----------------------------------------
+      // loop over pfjets pt > 30 GeV |eta| < 2.5
+      //-----------------------------------------
+
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
         
         //skip jet matched to photon
@@ -541,8 +541,6 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
           
       }
                             
-      
-
       jetmax_pt_ = -1;
 
       if( imaxjet > -1 ){
@@ -613,8 +611,9 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       
       tcmetNew_type1_pt15_ = type1TCMET15.met;
       
-
-      //fill histos and ntuple----------------------------------------------------------- 
+      //-------------------------
+      // fill histos and ntuple
+      //-------------------------
               
       npass++;
       FillBabyNtuple();
@@ -636,10 +635,6 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
     } // end loop over events
   } // end loop over files
 
-  if( nSkip_els_conv_dist > 0 ){
-    cout << "Skipped " << nSkip_els_conv_dist << " events due to nan in els_conv_dist branch" << endl;
-  }
-
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
   
@@ -647,10 +642,6 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
   cout << "numEvents passing selection " << npass << endl;
 
-  // make histos rootfile
-  //TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-  //rootdir->cd();
-  //saveHist( Form("output/%s/%s_templates.root", iter , prefix ) );
   deleteHistos();
   
 } // end ScanChain
@@ -682,133 +673,133 @@ void makePhotonBabies::fillUnderOverFlow(TH1F *h1, float value, float weight){
 void makePhotonBabies::InitBabyNtuple (){
 
   // trigger stuff
-  hlt20_  = -9999;
-  hlt30_  = -9999;
-  hlt50_  = -9999;
-  hlt75_  = -9999;
-  hlt125_ = -9999;
+  hlt20_			= -9999;
+  hlt30_			= -9999;
+  hlt50_			= -9999;
+  hlt75_			= -9999;
+  hlt125_			= -9999;
 
   // event stuff
-  run_          = -999999;
+  run_				= -999999;
   memset(dataset_, '\0', 200);
-  lumi_         = -999999;
-  event_        = -999999;
-  weight_       = -999999.;
-  pthat_        = -999999.;
-  nGoodVertex_  = -999999;
-  leptype_      = -999999;
+  lumi_				= -999999;
+  event_			= -999999;
+  weight_			= -999999.;
+  pthat_			= -999999.;
+  nGoodVertex_			= -999999;
+  leptype_			= -999999;
 
   // genmet stuff
-  genmet_     = -999999.;
-  genmetphi_  = -999999.;
-  gensumet_   = -999999.;
+  genmet_			= -999999.;
+  genmetphi_			= -999999.;
+  gensumet_			= -999999.;
 
   // pfmet stuff
-  pfmet_                = -999999.;
-  pfmet_type1_pt30_     = -999999.;
-  pfmet_type1_pt15_     = -999999.;
-  pfmetphi_             = -999999.;
-  pfsumet_              = -999999.;
+  pfmet_			= -999999.;
+  pfmet_type1_pt30_		= -999999.;
+  pfmet_type1_pt15_		= -999999.;
+  pfmetphi_			= -999999.;
+  pfsumet_			= -999999.;
 
   // calomet stuff
-  met_          = -999999.;
-  metphi_       = -999999.;
-  sumet_        = -999999.;
+  met_				= -999999.;
+  metphi_			= -999999.;
+  sumet_			= -999999.;
 
   // muon-corrected calomet stuff
-  mumet_        = -999999.;
-  mumetphi_     = -999999.;
-  musumet_      = -999999.;
+  mumet_			= -999999.;
+  mumetphi_			= -999999.;
+  musumet_			= -999999.;
 
   // calomet stuff
-  mujesmet_     = -999999.;
-  mujesmetphi_  = -999999.;
-  mujessumet_   = -999999.;
+  mujesmet_			= -999999.;
+  mujesmetphi_			= -999999.;
+  mujessumet_			= -999999.;
 
   // tcmet stuff
-  dphixmet_     = -999999.;
-  metPar_       = -999999.;
-  metPerp_      = -999999.;
+  dphixmet_			= -999999.;
+  metPar_			= -999999.;
+  metPerp_			= -999999.;
 
-  tcmet_        = -999999.;
-  tcmetphi_     = -999999.;
-  tcsumet_      = -999999.;
+  tcmet_			= -999999.;
+  tcmetphi_			= -999999.;
+  tcsumet_			= -999999.;
 
-  tcmetNew_             = -999999.;
-  tcmetNew_type1_pt30_  = -999999.;
-  tcmetNew_type1_pt15_  = -999999.;
-  tcsumetNew_           = -999999.;
-  tcmetphiNew_          = -999999.;
+  tcmetNew_			= -999999.;
+  tcmetNew_type1_pt30_		= -999999.;
+  tcmetNew_type1_pt15_		= -999999.;
+  tcsumetNew_			= -999999.;
+  tcmetphiNew_			= -999999.;
 
-  nJets_        = -999999;
-  sumJetPt_     = -999999;
-  vecJetPt_     = -999999;
-  nJets40_      = -999999;
-  nJets10_      = -999999;
-  nJets15_      = -999999;
-  nJets20_      = -999999;
-  sumJetPt10_   = -999999;
+  nJets_			= -999999;
+  sumJetPt_			= -999999;
+  vecJetPt_			= -999999;
+  nJets40_			= -999999;
+  nJets10_			= -999999;
+  nJets15_			= -999999;
+  nJets20_			= -999999;
+  sumJetPt10_			= -999999;
 
-  nbtags_       = -999999;
-  dphijetmet_   = -999999;
+  nbtags_			= -999999;
+  dphijetmet_			= -999999;
 
   //leading jet stuff
-  jetmax_pt_        = -999999;
-  jetmax_dphimet_   = -999999;
+  jetmax_pt_			= -999999;
+  jetmax_dphimet_		= -999999;
 
-  failjetid_       = -999999;
-  maxemf_          = -999999.;
+  failjetid_			= -999999;
+  maxemf_			= -999999.;
 
   //photon stuff
-  nPhotons_ = -999999;
-  etg_      = -999999.;
-  etag_     = -999999.;
-  phig_     = -999999.;
-  hoe_      = -999999.;
-  eciso_    = -999999.;
-  hciso_    = -999999.;
-  tkiso_    = -999999.;
-  swiss_    = -999999.;
-  seed_     = -999999.;
-  s4_       = -999999.;
-  r4_       = -999999.;
+  nPhotons_			= -999999;
+  etg_				= -999999.;
+  etag_				= -999999.;
+  phig_				= -999999.;
+  hoe_				= -999999.;
+  eciso_			= -999999.;
+  hciso_			= -999999.;
+  tkiso_			= -999999.;
+  swiss_			= -999999.;
+  seed_				= -999999.;
+  s4_				= -999999.;
+  r4_				= -999999.;
 
   //more photon stuff
-  photon_scidx_            = -999999;
-  photon_pixelseed_        = -999999;
-  photon_e15_              = -999999.;
-  photon_e25max_           = -999999.;
-  photon_e33_              = -999999.;
-  photon_e55_              = -999999.;
-  photon_ecalIso03_        = -999999.;
-  photon_ecalIso04_        = -999999.;
-  photon_hcalIso03_        = -999999.;
-  photon_hcalIso04_        = -999999.;
-  photon_ntkIsoHollow03_   = -999999.;
-  photon_ntkIsoHollow04_   = -999999.;
-  photon_ntkIsoSolid03_    = -999999.;
-  photon_ntkIsoSolid04_    = -999999.;
-  photon_sigmaEtaEta_      = -999999.;
-  photon_sigmaIEtaIEta_    = -999999.;
-  photon_tkisoHollow03_    = -999999.;
-  photon_tkisoHollow04_    = -999999.;
-  photon_tkisoSolid03_     = -999999.;
-  photon_tkisoSolid04_     = -999999.;
+  photon_scidx_			= -999999;
+  photon_pixelseed_		= -999999;
+  photon_e15_			= -999999.;
+  photon_e25max_		= -999999.;
+  photon_e33_			= -999999.;
+  photon_e55_			= -999999.;
+  photon_ecalIso03_		= -999999.;
+  photon_ecalIso04_		= -999999.;
+  photon_hcalIso03_		= -999999.;
+  photon_hcalIso04_		= -999999.;
+  photon_ntkIsoHollow03_	= -999999.;
+  photon_ntkIsoHollow04_	= -999999.;
+  photon_ntkIsoSolid03_		= -999999.;
+  photon_ntkIsoSolid04_		= -999999.;
+  photon_sigmaEtaEta_		= -999999.;
+  photon_sigmaIEtaIEta_		= -999999.;
+  photon_tkisoHollow03_		= -999999.;
+  photon_tkisoHollow04_		= -999999.;
+  photon_tkisoSolid03_		= -999999.;
+  photon_tkisoSolid04_		= -999999.;
                                   
   //photon-matched jet stuff
-  jet_eta_          = -999999.;  
-  jet_energy_       = -999999.;  
-  jet_pt_           = -999999.;  
-  jet_chg_emfrac_   = -999999.;  
-  jet_chg_hadfrac_  = -999999.;  
-  jet_neu_emfrac_   = -999999.;  
-  jet_neu_hadfrac_  = -999999.;  
-  jet_nchg_         = -999999;      
-  jet_nmuon_        = -999999;  
-  jet_nneu_         = -999999;  
-  jet_dphimet_      = -999999.;  
-  jet_pfjetid_      = -999999;  
-  jet_dpt_          = -999999.;  
+  jet_eta_			= -999999.;  
+  jet_energy_			= -999999.;  
+  jet_pt_			= -999999.;  
+  jet_chg_emfrac_		= -999999.;  
+  jet_chg_hadfrac_		= -999999.;  
+  jet_neu_emfrac_		= -999999.;  
+  jet_neu_hadfrac_		= -999999.;  
+  jet_nchg_			= -999999;      
+  jet_nmuon_			= -999999;  
+  jet_nneu_			= -999999;  
+  jet_dphimet_			= -999999.;  
+  jet_pfjetid_			= -999999;  
+  jet_dpt_			= -999999.;  
 
 }
 
@@ -871,119 +862,119 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_ = new TTree("T1", "A Baby Ntuple");
 
   //event stuff
-  babyTree_->Branch("dataset",      &dataset_,        "dataset[200]/C"   );
-  babyTree_->Branch("run",          &run_,            "run/I"            );
-  babyTree_->Branch("lumi",         &lumi_,           "lumi/I"           );
-  babyTree_->Branch("event",        &event_,          "event/I"          );
-  babyTree_->Branch("nvtx",         &nGoodVertex_,    "nvtx/I"           );
-  babyTree_->Branch("ndavtx",       &nGoodDAVertex_,  "ndavtx/I"         );
-  babyTree_->Branch("weight",       &weight_,         "weight/F"         );
-  babyTree_->Branch("pthat",        &pthat_,          "pthat/F"          );
-  babyTree_->Branch("failjetid",    &failjetid_,      "failjetid/I"      );
-  babyTree_->Branch("maxemf",       &maxemf_,         "maxemf/F"         );
+  babyTree_->Branch("dataset"			,	&dataset_      ,		"dataset[200]/C"   );
+  babyTree_->Branch("run"			,       &run_          ,			"run/I"            );
+  babyTree_->Branch("lumi"			,       &lumi_         ,			"lumi/I"           );
+  babyTree_->Branch("event"			,       &event_,		"event/I"          );
+  babyTree_->Branch("nvtx"			,       &nGoodVertex_,		"nvtx/I"           );
+  babyTree_->Branch("ndavtx"			,       &nGoodDAVertex_,	"ndavtx/I"         );
+  babyTree_->Branch("weight"			,       &weight_,		"weight/F"         );
+  babyTree_->Branch("pthat"			,       &pthat_,		"pthat/F"          );
+  babyTree_->Branch("failjetid"			,	&failjetid_,		"failjetid/I"      );
+  babyTree_->Branch("maxemf"			,       &maxemf_,		"maxemf/F"         );
 
   //met stuff
-  babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"   );
-  babyTree_->Branch("pfmet_type1_pt30",        &pfmet_type1_pt30_,        "pfmet_type1_pt30/F"   );
-  babyTree_->Branch("pfmet_type1_pt15",        &pfmet_type1_pt15_,        "pfmet_type1_pt15/F"   );
-  babyTree_->Branch("pfmetphi",     &pfmetphi_,     "pfmetphi/F");
-  babyTree_->Branch("pfsumet",      &pfsumet_,      "pfsumet/F" );
-  babyTree_->Branch("met",          &met_,          "met/F"      );
-  babyTree_->Branch("metphi",       &metphi_,       "metphi/F"   );
-  babyTree_->Branch("sumet",        &sumet_,        "sumet/F"    );
-  babyTree_->Branch("mumet",        &mumet_,        "mumet/F"      );
-  babyTree_->Branch("mumetphi",     &mumetphi_,     "mumetphi/F"   );
-  babyTree_->Branch("musumet",      &musumet_,      "musumet/F"    );
-  babyTree_->Branch("mujesmet",     &mujesmet_,     "mujesmet/F"      );
-  babyTree_->Branch("mujesmetphi",  &mujesmetphi_,  "mujesmetphi/F"   );
-  babyTree_->Branch("mujessumet",   &mujessumet_,   "mujessumet/F"    );
-  babyTree_->Branch("genmet",       &genmet_,       "genmet/F"   );
-  babyTree_->Branch("genmetphi",    &genmetphi_,    "genmetphi/F");
-  babyTree_->Branch("gensumet",     &gensumet_,     "gensumet/F" );
-  babyTree_->Branch("dphixmet",     &dphixmet_,      "dphixmet/F"    );
-  babyTree_->Branch("metpar",       &metPar_,        "metpar/F"      );
-  babyTree_->Branch("metperp",      &metPerp_,       "metperp/F"     );
-  babyTree_->Branch("tcmet",        &tcmet_,        "tcmet/F"      );
-  babyTree_->Branch("tcmetphi",     &tcmetphi_,     "tcmetphi/F"   );
-  babyTree_->Branch("tcsumet",      &tcsumet_,      "tcsumet/F"    );
-  babyTree_->Branch("tcmetNew",     &tcmetNew_,     "tcmetNew/F"      );
-  babyTree_->Branch("tcmetNew_type1_pt30",     &tcmetNew_type1_pt30_,     "tcmetNew_type1_pt30/F"      );
-  babyTree_->Branch("tcmetNew_type1_pt15",     &tcmetNew_type1_pt15_,     "tcmetNew_type1_pt15/F"      );
-  babyTree_->Branch("tcmetphiNew",  &tcmetphiNew_,  "tcmetphiNew/F"   );
-  babyTree_->Branch("tcsumetNew",   &tcsumetNew_,   "tcsumetNew/F"    );
+  babyTree_->Branch("pfmet"			,       &pfmet_,        "pfmet/F"   );
+  babyTree_->Branch("pfmet_type1_pt30"		,       &pfmet_type1_pt30_,        "pfmet_type1_pt30/F"   );
+  babyTree_->Branch("pfmet_type1_pt15"		,       &pfmet_type1_pt15_,        "pfmet_type1_pt15/F"   );
+  babyTree_->Branch("pfmetphi"			,	&pfmetphi_,     "pfmetphi/F");
+  babyTree_->Branch("pfsumet"			,	&pfsumet_,      "pfsumet/F" );
+  babyTree_->Branch("met"			,       &met_,          "met/F"      );
+  babyTree_->Branch("metphi"			,       &metphi_,       "metphi/F"   );
+  babyTree_->Branch("sumet"			,       &sumet_,        "sumet/F"    );
+  babyTree_->Branch("mumet"			,       &mumet_,        "mumet/F"      );
+  babyTree_->Branch("mumetphi"			,	&mumetphi_,     "mumetphi/F"   );
+  babyTree_->Branch("musumet"			,	&musumet_,      "musumet/F"    );
+  babyTree_->Branch("mujesmet"			,	&mujesmet_,     "mujesmet/F"      );
+  babyTree_->Branch("mujesmetphi"		,	&mujesmetphi_,  "mujesmetphi/F"   );
+  babyTree_->Branch("mujessumet"		,	&mujessumet_,   "mujessumet/F"    );
+  babyTree_->Branch("genmet"			,       &genmet_,       "genmet/F"   );
+  babyTree_->Branch("genmetphi"			,	&genmetphi_,    "genmetphi/F");
+  babyTree_->Branch("gensumet"			,	&gensumet_,     "gensumet/F" );
+  babyTree_->Branch("dphixmet"			,	&dphixmet_,      "dphixmet/F"    );
+  babyTree_->Branch("metpar"			,       &metPar_,        "metpar/F"      );
+  babyTree_->Branch("metperp"			,	&metPerp_,       "metperp/F"     );
+  babyTree_->Branch("tcmet"			,       &tcmet_,        "tcmet/F"      );
+  babyTree_->Branch("tcmetphi"			,	&tcmetphi_,     "tcmetphi/F"   );
+  babyTree_->Branch("tcsumet"			,	&tcsumet_,      "tcsumet/F"    );
+  babyTree_->Branch("tcmetNew"			,	&tcmetNew_,     "tcmetNew/F"      );
+  babyTree_->Branch("tcmetNew_type1_pt30"	,	&tcmetNew_type1_pt30_,     "tcmetNew_type1_pt30/F"      );
+  babyTree_->Branch("tcmetNew_type1_pt15"	,	&tcmetNew_type1_pt15_,     "tcmetNew_type1_pt15/F"      );
+  babyTree_->Branch("tcmetphiNew"		,	&tcmetphiNew_,  "tcmetphiNew/F"   );
+  babyTree_->Branch("tcsumetNew"		,	&tcsumetNew_,   "tcsumetNew/F"    );
 
   //jet stuff
-  babyTree_->Branch("njets",          &nJets_,          "njets/I"       );
-  babyTree_->Branch("njets10",        &nJets10_,        "njets10/I"       );
-  babyTree_->Branch("njets15",        &nJets15_,        "njets15/I"       );
-  babyTree_->Branch("njets20",        &nJets20_,        "njets20/I"       );
-  babyTree_->Branch("njets40",        &nJets40_,        "njets40/I"     );
-  babyTree_->Branch("sumjetpt",       &sumJetPt_,       "sumjetpt/F"    );
-  babyTree_->Branch("sumjetpt10",     &sumJetPt10_,     "sumjetpt10/F"    );
-  babyTree_->Branch("vecjetpt",       &vecJetPt_,       "vecjetpt/F"    );
-  babyTree_->Branch("nbtags",         &nbtags_,         "nbtags/I");
-  babyTree_->Branch("ndphijetmet",    &dphijetmet_,     "dphijetmet/F");
-  babyTree_->Branch("maxjetpt",       &jetmax_pt_,      "maxjetpt/F");
-  babyTree_->Branch("maxjetdphimet",  &jetmax_dphimet_, "maxjetdphimet/F");
+  babyTree_->Branch("njets"			,       &nJets_,          "njets/I"       );
+  babyTree_->Branch("njets10"			,       &nJets10_,        "njets10/I"       );
+  babyTree_->Branch("njets15"			,       &nJets15_,        "njets15/I"       );
+  babyTree_->Branch("njets20"			,       &nJets20_,        "njets20/I"       );
+  babyTree_->Branch("njets40"			,       &nJets40_,        "njets40/I"     );
+  babyTree_->Branch("sumjetpt"			,       &sumJetPt_,       "sumjetpt/F"    );
+  babyTree_->Branch("sumjetpt10"		,	&sumJetPt10_,     "sumjetpt10/F"    );
+  babyTree_->Branch("vecjetpt"			,       &vecJetPt_,       "vecjetpt/F"    );
+  babyTree_->Branch("nbtags"			,       &nbtags_,         "nbtags/I");
+  babyTree_->Branch("ndphijetmet"		,	&dphijetmet_,     "dphijetmet/F");
+  babyTree_->Branch("maxjetpt"			,       &jetmax_pt_,      "maxjetpt/F");
+  babyTree_->Branch("maxjetdphimet"		,	&jetmax_dphimet_, "maxjetdphimet/F");
                                    
   //trigger stuff
-  babyTree_->Branch("hlt20"   ,   &hlt20_  ,  "hlt20/I"    );  
-  babyTree_->Branch("hlt30"   ,   &hlt30_  ,  "hlt30/I"    );  
-  babyTree_->Branch("hlt50"   ,   &hlt50_  ,  "hlt50/I"    );  
-  babyTree_->Branch("hlt75"   ,   &hlt75_  ,  "hlt60/I"    );  
-  babyTree_->Branch("hlt125"  ,   &hlt125_ ,  "hlt125/I"   );  
+  babyTree_->Branch("hlt20"			,	&hlt20_  ,  "hlt20/I"    );  
+  babyTree_->Branch("hlt30"			,	&hlt30_  ,  "hlt30/I"    );  
+  babyTree_->Branch("hlt50"			,	&hlt50_  ,  "hlt50/I"    );  
+  babyTree_->Branch("hlt75"			,	&hlt75_  ,  "hlt60/I"    );  
+  babyTree_->Branch("hlt125"			,	&hlt125_ ,  "hlt125/I"   );  
 
   //photon stuff
-  babyTree_->Branch("ng",      &nPhotons_, "ng/I"); 
-  babyTree_->Branch("etg",     &etg_,      "etg/F");	   
-  babyTree_->Branch("etag",    &etag_,     "etag/F");	   
-  babyTree_->Branch("phig",    &phig_,     "phig/F");
-  babyTree_->Branch("hoe",     &hoe_,      "hoe/F");	   
-  babyTree_->Branch("eciso",   &eciso_,    "eciso/F");	   
-  babyTree_->Branch("hciso",   &hciso_,    "hciso/F");	   
-  babyTree_->Branch("tkiso",   &tkiso_,    "tkiso/F");
-  babyTree_->Branch("swiss",   &swiss_,    "swiss/F");
-  babyTree_->Branch("seed",    &seed_,     "seed/F");
-  babyTree_->Branch("s4",      &s4_,       "s4/F");
-  babyTree_->Branch("r4",      &r4_,       "r4/F");
+  babyTree_->Branch("ng"			,	&nPhotons_, "ng/I"); 
+  babyTree_->Branch("etg"			,	&etg_,      "etg/F");	   
+  babyTree_->Branch("etag"			,	&etag_,     "etag/F");	   
+  babyTree_->Branch("phig"			,	&phig_,     "phig/F");
+  babyTree_->Branch("hoe"			,	&hoe_,      "hoe/F");	   
+  babyTree_->Branch("eciso"			,	&eciso_,    "eciso/F");	   
+  babyTree_->Branch("hciso"			,	&hciso_,    "hciso/F");	   
+  babyTree_->Branch("tkiso"			,	&tkiso_,    "tkiso/F");
+  babyTree_->Branch("swiss"			,	&swiss_,    "swiss/F");
+  babyTree_->Branch("seed"			,	&seed_,     "seed/F");
+  babyTree_->Branch("s4"			,	&s4_,       "s4/F");
+  babyTree_->Branch("r4"			,	&r4_,       "r4/F");
 
   //more photon stuff
-  babyTree_->Branch("photon_scidx",             &photon_scidx_,             "photon_scidx/I");         
-  babyTree_->Branch("photon_pixelseed",         &photon_pixelseed_,         "photon_pixelseed/I");         
-  babyTree_->Branch("photon_e15",               &photon_e15_,               "photon_e15/F");                
-  babyTree_->Branch("photon_e25max",            &photon_e25max_,            "photon_e25max/F");             
-  babyTree_->Branch("photon_e33",               &photon_e33_,               "photon_e33/F");                
-  babyTree_->Branch("photon_e55",               &photon_e55_,               "photon_e55/F");                
-  babyTree_->Branch("photon_ecalIso03",         &photon_ecalIso03_,         "photon_ecalIso03/F");          
-  babyTree_->Branch("photon_ecalIso04",         &photon_ecalIso04_,         "photon_ecalIso04/F");          
-  babyTree_->Branch("photon_hcalIso03",         &photon_hcalIso03_,         "photon_hcalIso03/F");          
-  babyTree_->Branch("photon_hcalIso04",         &photon_hcalIso04_,         "photon_hcalIso04/F");          
-  babyTree_->Branch("photon_ntkIsoHollow03",    &photon_ntkIsoHollow03_,    "photon_ntkIsoHollow03/F");     
-  babyTree_->Branch("photon_ntkIsoHollow04",    &photon_ntkIsoHollow04_,    "photon_ntkIsoHollow04/F");     
-  babyTree_->Branch("photon_ntkIsoSolid03",     &photon_ntkIsoSolid03_,     "photon_ntkIsoSolid03/F");      
-  babyTree_->Branch("photon_ntkIsoSolid04",     &photon_ntkIsoSolid04_,     "photon_ntkIsoSolid04/F");      
-  babyTree_->Branch("photon_sigmaEtaEta",       &photon_sigmaEtaEta_,       "photon_sigmaEtaEta/F");        
-  babyTree_->Branch("photon_sigmaIEtaIEta",     &photon_sigmaIEtaIEta_,     "photon_sigmaIEtaIEta/F");      
-  babyTree_->Branch("photon_tkisoHollow03",     &photon_tkisoHollow03_,     "photon_tkisoHollow03/F");      
-  babyTree_->Branch("photon_tkisoHollow04",     &photon_tkisoHollow04_,     "photon_tkisoHollow04/F");      
-  babyTree_->Branch("photon_tkisoSolid03",      &photon_tkisoSolid03_,      "photon_tkisoSolid03/F");      
-  babyTree_->Branch("photon_tkisoSolid04",      &photon_tkisoSolid04_,      "photon_tkisoSolid04/F");           
+  babyTree_->Branch("photon_scidx"		,       &photon_scidx_,             "photon_scidx/I");         
+  babyTree_->Branch("photon_pixelseed"		,       &photon_pixelseed_,         "photon_pixelseed/I");         
+  babyTree_->Branch("photon_e15"		,       &photon_e15_,               "photon_e15/F");                
+  babyTree_->Branch("photon_e25max"		,       &photon_e25max_,            "photon_e25max/F");             
+  babyTree_->Branch("photon_e33"		,       &photon_e33_,               "photon_e33/F");                
+  babyTree_->Branch("photon_e55"		,       &photon_e55_,               "photon_e55/F");                
+  babyTree_->Branch("photon_ecalIso03"		,       &photon_ecalIso03_,         "photon_ecalIso03/F");          
+  babyTree_->Branch("photon_ecalIso04"		,       &photon_ecalIso04_,         "photon_ecalIso04/F");          
+  babyTree_->Branch("photon_hcalIso03"		,       &photon_hcalIso03_,         "photon_hcalIso03/F");          
+  babyTree_->Branch("photon_hcalIso04"		,       &photon_hcalIso04_,         "photon_hcalIso04/F");          
+  babyTree_->Branch("photon_ntkIsoHollow03"	,	&photon_ntkIsoHollow03_,    "photon_ntkIsoHollow03/F");     
+  babyTree_->Branch("photon_ntkIsoHollow04"	,	&photon_ntkIsoHollow04_,    "photon_ntkIsoHollow04/F");     
+  babyTree_->Branch("photon_ntkIsoSolid03"	,	&photon_ntkIsoSolid03_,     "photon_ntkIsoSolid03/F");      
+  babyTree_->Branch("photon_ntkIsoSolid04"	,	&photon_ntkIsoSolid04_,     "photon_ntkIsoSolid04/F");      
+  babyTree_->Branch("photon_sigmaEtaEta"	,       &photon_sigmaEtaEta_,       "photon_sigmaEtaEta/F");        
+  babyTree_->Branch("photon_sigmaIEtaIEta"	,	&photon_sigmaIEtaIEta_,     "photon_sigmaIEtaIEta/F");      
+  babyTree_->Branch("photon_tkisoHollow03"	,	&photon_tkisoHollow03_,     "photon_tkisoHollow03/F");      
+  babyTree_->Branch("photon_tkisoHollow04"	,	&photon_tkisoHollow04_,     "photon_tkisoHollow04/F");      
+  babyTree_->Branch("photon_tkisoSolid03"	,	&photon_tkisoSolid03_,      "photon_tkisoSolid03/F");      
+  babyTree_->Branch("photon_tkisoSolid04"	,	&photon_tkisoSolid04_,      "photon_tkisoSolid04/F");           
                                                                             
   //photon-matched jet stuff
-  babyTree_->Branch("jetdr",                 &jet_dr_,               "jetdr/F");
-  babyTree_->Branch("jetpt",                 &jet_pt_,               "jetpt/F");
-  babyTree_->Branch("pfjetid",               &jet_pfjetid_,          "pfjetid/I");
-  babyTree_->Branch("jeteta",                &jet_eta_,              "jeteta/F");
-  babyTree_->Branch("jetenergy",             &jet_energy_,           "jetenergy/F");
-  babyTree_->Branch("jetchargedemfrac",      &jet_chg_emfrac_,       "jetchargedemfrac/F");
-  babyTree_->Branch("jetchargedhadfrac",     &jet_chg_hadfrac_,      "jetchargedhadfrac/F");
-  babyTree_->Branch("jetneutralemfrac",      &jet_neu_emfrac_,       "jetneutralemfrac/F");
-  babyTree_->Branch("jetneutralhadfrac",     &jet_neu_hadfrac_,      "jetneutralhadfrac/F");
-  babyTree_->Branch("jetncharged",           &jet_nchg_,             "jetncharged/I");
-  babyTree_->Branch("jetnmuon",              &jet_nmuon_,            "jetnmuon/I");
-  babyTree_->Branch("jetnneutral",           &jet_nneu_,             "jetnneutral/I");
-  babyTree_->Branch("jetdphimet",            &jet_dphimet_,          "jetdphimet/F");
-  babyTree_->Branch("jetdpt",                &jet_dpt_,              "jetdpt/F");
+  babyTree_->Branch("jetdr"			,       &jet_dr_,               "jetdr/F");
+  babyTree_->Branch("jetpt"			,       &jet_pt_,               "jetpt/F");
+  babyTree_->Branch("pfjetid"			,       &jet_pfjetid_,          "pfjetid/I");
+  babyTree_->Branch("jeteta"			,       &jet_eta_,              "jeteta/F");
+  babyTree_->Branch("jetenergy"			,       &jet_energy_,           "jetenergy/F");
+  babyTree_->Branch("jetchargedemfrac"		,	&jet_chg_emfrac_,       "jetchargedemfrac/F");
+  babyTree_->Branch("jetchargedhadfrac"		,	&jet_chg_hadfrac_,      "jetchargedhadfrac/F");
+  babyTree_->Branch("jetneutralemfrac"		,	&jet_neu_emfrac_,       "jetneutralemfrac/F");
+  babyTree_->Branch("jetneutralhadfrac"		,	&jet_neu_hadfrac_,      "jetneutralhadfrac/F");
+  babyTree_->Branch("jetncharged"		,       &jet_nchg_,             "jetncharged/I");
+  babyTree_->Branch("jetnmuon"			,       &jet_nmuon_,            "jetnmuon/I");
+  babyTree_->Branch("jetnneutral"		,       &jet_nneu_,             "jetnneutral/I");
+  babyTree_->Branch("jetdphimet"		,       &jet_dphimet_,          "jetdphimet/F");
+  babyTree_->Branch("jetdpt"			,       &jet_dpt_,              "jetdpt/F");
 
 }
 

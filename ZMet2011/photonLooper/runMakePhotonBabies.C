@@ -21,12 +21,12 @@ void runMakePhotonBabies(char* prefix , bool isData = true, float kFactor = 1.){
     ch->Add("/tas/cms2/EG_Run2010A-PromptReco-v4_RECO/V03-04-26-12/pfJetPt30Skim/skimmed_ntuple_144112_19.root");
   }
 
+
   //------------------------------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "Photon" ) == 0 ){
-    //ch->Add("/tas/cms2/Photon_Run2010B-PromptReco-v2_RECO/V03-06-09/merged_ntuple_147926_0.root");
-    ch->Add("/tas/cms2/Photon_Run2010B-PromptReco-v2_RECO/V03-06-14/merged*root");
-    ch->Add("/tas/cms2/Photon_Run2010B-PromptReco-v2_RECO/V03-06-09/merged*root");
+    //ch->Add("/tas/cms2/Photon_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-01-02_merged/merged_ntuple_161312_0.root");
+    ch->Add("/tas/cms2/Photon_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-01-02_merged/merged*root");
   }
 
   //------------------------------------------------------------------------------------------------------------
