@@ -71,6 +71,7 @@ class Z_looper
   Int_t   leptype_;
   Int_t   ecaltype_;
   Int_t   nGoodVertex_;
+  Int_t   nGoodDAVertex_;
   Float_t weight_;
   Float_t vtxweight_;
   Float_t pthat_;

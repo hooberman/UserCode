@@ -5,7 +5,6 @@
 #include <math.h>
 #include <fstream>
 
-
 #include "TChain.h"
 #include "TDirectory.h"
 #include "TFile.h"
@@ -29,13 +28,12 @@
 #include "../CORE/ttbarSelections.cc"
 #include "../CORE/susySelections.cc"
 #include "../CORE/jetSelections.cc"
-//#include "../CORE/triggerUtils.cc"
-
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
-//#include "../CORE/mcSelections.cc"
 #include "../CORE/mcSUSYkfactor.cc"
+//#include "../CORE/triggerUtils.cc"
+//#include "../CORE/mcSelections.cc"
 
 using namespace tas;
 inline double fround(double n, double d){
@@ -47,19 +45,13 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 //--------------------------------------------------------------------
 
-bool debug = false;
-const int nJetBins              = 3;
-const int nSumJetPtBins         = 7;
-const int nBosonPtBins          = 4;
-const bool generalLeptonVeto    = true;
-const bool doTemplatePrediction = false;
-metType myMetType               = e_tcmet;
-templateSource myTemplateSource = e_PhotonJet;
-const bool doReweight           = true;
+const bool  generalLeptonVeto    = true;
+const bool  debug                = false;
+const bool  doReweight           = true;
+const float lumi                 = 0.023; 
+const char* iter                 = "V00-00-02";
 
-float lumi         = 0.020; 
-char* iter         = "V00-00-01";
-char* jsonfilename = "json_DCSONLY_ManualCert_goodruns.txt";
+const char* jsonfilename = "json_DCSONLY_ManualCert_goodruns.txt";
 //char* jsonfilename = "Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -106,109 +98,6 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
 
 //--------------------------------------------------------------------
 
-int getBosonPtBin( float x ){
-
-  if     ( x < 40.           ) return 0;
-  else if( x > 40 && x < 60  ) return 1;
-  else if( x > 60 && x < 100 ) return 2;
-  else if( x > 100           ) return 3;
-  else { 
-    cout << "Error could not find boson pt bin x = " << x << endl;
-    exit(0);
-  }
-}
-
-//--------------------------------------------------------------------
-
-string bosonPtString( int bin ){
-
-  if     ( bin == 0 ) return "boson p_{T} < 40 GeV";
-  else if( bin == 1 ) return "40 < boson p_{T} < 60 GeV";
-  else if( bin == 2 ) return "60 < boson p_{T} < 100 GeV";
-  else if( bin == 3 ) return "boson p_{T} > 100 GeV";
-  else{
-    cout << "Error unrecognized boson pt bin " << bin << endl;
-    exit(0);
-  }
-
-}
-
-//--------------------------------------------------------------------
-
-int getJetBin( int njets ){
-
-  int bin = -1;
-
-  if     ( njets == 1 ) bin = 0;
-  else if( njets == 2 ) bin = 1;
-  else if( njets >= 3 ) bin = 2;
-  else{
-    cout << "Error " << njets << " jets passed as argument to met templates" << endl;
-    exit(0);
-  }
-
-  return bin;
-}
-
-//--------------------------------------------------------------------
-
-string jetString( int bin ){
-
-  string js;
-
-  if     ( bin == 0 ) js = "njets = 1";
-  else if( bin == 1 ) js = "njets = 2";
-  else if( bin == 2 ) js = "njets >= 3";
-  else{
-    cout << "Error invalid bin passed as argument to met templates" << endl;
-    exit(0);
-  }
-
-  return js;
-
-}
-
-//--------------------------------------------------------------------
-
-int getSumJetPtBin( float x ){
-
-  //bins array defines the sumJetPt binning
-  //float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
-  float bins[nSumJetPtBins+1]={0,30,60,90,120,150,250,5000};
-  
-  if( x < bins[0] )              return 0;
-  if( x >= bins[nSumJetPtBins] ) return nSumJetPtBins - 1;
-
-  int ptbin = -1;
-
-  for( int ibin = 0 ; ibin < nSumJetPtBins+1 ; ibin++){
-    if( x >= bins[ibin] && x< bins[ibin+1] ){
-      ptbin = ibin;
-      break;
-    }
-  }
-
-  if( ptbin == -1 ) 
-    cout << "ERROR CANNOT FIND BIN FOR SUMJETPT " << x << endl;
-
-  return ptbin;
-}
-
-//--------------------------------------------------------------------
-
-string sumJetPtString( int bin ){
-
-  //float bins[nSumJetPtBins+1]={0,25,50,75,100,150,250,5000};
-  float bins[nSumJetPtBins+1]={0,30,60,90,120,150,250,5000};
-
-  stringstream s;
-  s << bins[bin] << " < sumJetPt < " << bins[bin+1] << " GeV";
-
-  return s.str();
-}
-
-//--------------------------------------------------------------------
-
 bool isMuMuEvent(){
 
  
@@ -242,75 +131,6 @@ void printEvent(){
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, metAlgo algo, int nEvents, float kFactor){
 
-  algo_ = algo;
-
-  if     ( algo_ == e_makeTemplate )    cout << "metAlgo makeTemplate" << endl;
-  else if( algo_ == e_photonSelection ) cout << "metAlgo photonSelection" << endl;
-  else if( algo_ == e_ZSelection )      cout << "metAlgo ZSelection" << endl;
-  else { cout << "Unrecognized algo" << endl; exit(0); }
-
-  if     ( myMetType == e_tcmet    ) cout << "metType tcmet" << endl;
-  else if( myMetType == e_pfmet    ) cout << "metType pfmet" << endl;
-  else if( myMetType == e_tcmetNew ) cout << "metType tcmetNew" << endl;
-  else { cout << "Unrecognized metType" << endl; exit(0); }
-
-  if     ( myTemplateSource == e_QCD       ) cout << "QCD templates" << endl;
-  else if( myTemplateSource == e_PhotonJet ) cout << "photon+jets templates" << endl;
-  else { cout << "Unrecognized templateSource" << endl; exit(0); }
-
-  TFile *metTemplateFile   = new TFile();
-  string metTemplateString = "";
-  char* templateFileName   = "";
-
-  if( doTemplatePrediction ){
-
-    //select templates
-    if( isData ){
-      
-      if( myTemplateSource == e_QCD ){
-        cout << "QCD templates are deprecated. If you want to use this you"
-             << "need to make QCD templates using makeTemplates.C." << endl;
-        exit(0);
-        //       templateFileName = Form("output/%s/JetMETTau_templates.root",iter);
-        //       cout << "Using template file " << templateFileName << endl;
-        //       metTemplateString = "_JetMETTauTemplate";
-        //       metTemplateFile = TFile::Open( templateFileName );
-      }
-      
-      else if( myTemplateSource == e_PhotonJet ){
-        templateFileName = Form("output/%s/EG_templates.root",iter);
-        cout << "Using template file " << templateFileName << endl;
-        metTemplateString = "_EGTemplate";
-        metTemplateFile = TFile::Open( templateFileName );
-      }
-      
-    }else{
-      
-      if( myTemplateSource == e_QCD ){
-        cout << "QCD templates are deprecated. If you want to use this you"
-             << "need to make QCD templates using makeTemplates.C." << endl;
-        exit(0);
-        //       templateFileName = Form("output/%s/QCD_Pt15_templates.root",iter);
-        //       cout << "Using template file " << templateFileName << endl;
-        //       metTemplateString = "_QCD_Pt15Template";
-        //       metTemplateFile = TFile::Open( templateFileName ); 
-      }
-      
-      else if( myTemplateSource == e_PhotonJet ){
-        templateFileName = Form("output/%s/PhotonJet_templates.root",iter);
-        cout << "Using template file " << templateFileName << endl;
-        metTemplateString = "_PhotonJetTemplate";
-        metTemplateFile = TFile::Open( templateFileName );
-      }
-    }
-    
-    if( metTemplateFile == 0 ){
-      cout << "Error couldn't find " << templateFileName << endl;
-      exit(0);
-    }
-
-  }
-
   set_goodrun_file( jsonfilename );
  
   if( isData ){
@@ -333,9 +153,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   bookHistos();
 
   //get vtx reweighting histo
-  TH1F* h_reweight = new TH1F();
+
+  TH1F* h_reweight    = new TH1F();
+  //TH1F* h_DA_reweight = new TH1F();
 
   if( doReweight ){
+
     TFile* f_reweight = TFile::Open("vtx_reweight.root");
 
     h_reweight = (TH1F*) f_reweight->Get("hratio");
@@ -344,7 +167,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     for( unsigned int ibin = 1 ; ibin <= h_reweight->GetNbinsX() ; ibin++ ){
       cout << ibin << " " << h_reweight->GetBinContent(ibin) << endl;
     }
-
   }
 
 
@@ -370,10 +192,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   int  nTot               = 0;  //total number of events
   
-  int nGenPass60         = 0;  //number of events generated in sig window
-  float nGenPass60_K     = 0;  //number of events generated in sig window
-  int nRecoPassGenPass60 = 0;  //number of events reconstructed in sig window which pass gen
-  int nRecoPassGenFail60 = 0;  //number of events reconstructed in sig window which fail gen
+  int nGenPass60          = 0;  //number of events generated in sig window
+  float nGenPass60_K      = 0;  //number of events generated in sig window
+  int nRecoPassGenPass60  = 0;  //number of events reconstructed in sig window which pass gen
+  int nRecoPassGenFail60  = 0;  //number of events reconstructed in sig window which fail gen
 
   int nGenPass120         = 0;  //number of events generated in sig window
   float nGenPass120_K     = 0;  //number of events generated in sig window
@@ -408,17 +230,22 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( !isData ) sigma = cms2.evt_xsec_incl();
 
       nTot++;
-
-      
-      //if( !isMuMuEvent() ) continue;
-
-      //if( !( evt_run()==142557 && evt_lumiBlock()==192 && evt_event()==80895186) ) continue;
-
-      //cout << "Found event " << currentFile->GetTitle() <<  endl;
-
+    
       float ksusy = 1;
-      if( strcmp( prefix , "LM4" ) == 0 ) ksusy = kfactorSUSY( "lm4" );
-      if( strcmp( prefix , "LM8" ) == 0 ) ksusy = kfactorSUSY( "lm8" );
+      if( strcmp( prefix , "LM0"  ) == 0 ) ksusy = kfactorSUSY( "lm0"  );
+      if( strcmp( prefix , "LM1"  ) == 0 ) ksusy = kfactorSUSY( "lm1"  );
+      if( strcmp( prefix , "LM2"  ) == 0 ) ksusy = kfactorSUSY( "lm2"  );
+      if( strcmp( prefix , "LM3"  ) == 0 ) ksusy = kfactorSUSY( "lm3"  );
+      if( strcmp( prefix , "LM4"  ) == 0 ) ksusy = kfactorSUSY( "lm4"  );
+      if( strcmp( prefix , "LM5"  ) == 0 ) ksusy = kfactorSUSY( "lm5"  );
+      if( strcmp( prefix , "LM6"  ) == 0 ) ksusy = kfactorSUSY( "lm6"  );
+      if( strcmp( prefix , "LM7"  ) == 0 ) ksusy = kfactorSUSY( "lm7"  );
+      if( strcmp( prefix , "LM8"  ) == 0 ) ksusy = kfactorSUSY( "lm8"  );
+      if( strcmp( prefix , "LM9"  ) == 0 ) ksusy = kfactorSUSY( "lm9"  );
+      if( strcmp( prefix , "LM10" ) == 0 ) ksusy = kfactorSUSY( "lm10" );
+      if( strcmp( prefix , "LM11" ) == 0 ) ksusy = kfactorSUSY( "lm11" );
+      if( strcmp( prefix , "LM12" ) == 0 ) ksusy = kfactorSUSY( "lm12" );
+      if( strcmp( prefix , "LM13" ) == 0 ) ksusy = kfactorSUSY( "lm13" );
 
       if( PassGenSelection( isData ) > 60. ){
 	nGenPass60++;
@@ -516,6 +343,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       weight_ = 1.;
       pthat_  = -1;
+
       if( !isData ){
        
 	if( TString(prefix).Contains("dymm_spring11") ){
@@ -905,9 +733,15 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
        
       }
 
-      nGoodVertex_ = 0;
+      nGoodVertex_   = 0;
+      nGoodDAVertex_ = 0;
+
       for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
         if(isGoodVertex(v)) nGoodVertex_++;
+      }
+
+      for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+        if(isGoodDAVertex(v)) nGoodDAVertex_++;
       }
 
       vtxweight_ = 1;
@@ -1470,7 +1304,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   // make histos rootfile
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
-  saveHist( Form("../output/%s/%s%s.root", iter , prefix , metTemplateString.c_str() ) );
+  saveHist( Form("../output/%s/%s.root", iter , prefix ) );
   deleteHistos();
   
 } // end ScanChain
@@ -1533,6 +1367,7 @@ void Z_looper::InitBabyNtuple (){
   pthat_        = -999999.;
   mllgen_       = -999999.;
   nGoodVertex_  = -999999;
+  nGoodDAVertex_= -999999;
   leptype_      = -999999;
   ecaltype_     = -999999;
 
@@ -1707,14 +1542,14 @@ void Z_looper::bookHistos(){
   metPerpObserved->Sumw2();
   metPerpPredicted->Sumw2();
 
-  for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
+  // for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
 
-    metObserved_njets[iJetBin]  = new TH1F(Form("metObserved_njets%i",iJetBin), Form("Observed MET NJets %i", iJetBin),maxmet,0,maxmet);
-    metPredicted_njets[iJetBin] = new TH1F(Form("metPredicted_njets%i",iJetBin),Form("Predicted MET NJets %i",iJetBin),maxmet,0,maxmet);
+  //   metObserved_njets[iJetBin]  = new TH1F(Form("metObserved_njets%i",iJetBin), Form("Observed MET NJets %i", iJetBin),maxmet,0,maxmet);
+  //   metPredicted_njets[iJetBin] = new TH1F(Form("metPredicted_njets%i",iJetBin),Form("Predicted MET NJets %i",iJetBin),maxmet,0,maxmet);
     
-    metObserved_njets[iJetBin] ->Sumw2();
-    metPredicted_njets[iJetBin]->Sumw2();
-  }
+  //   metObserved_njets[iJetBin] ->Sumw2();
+  //   metPredicted_njets[iJetBin]->Sumw2();
+  // }
   
   char* leptype[4]   = {"ee", "mm", "em", "all"};
   char* jetbin[4]    = {"0j", "1j", "geq2j", "allj"};
@@ -1764,6 +1599,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("failjetid",    &failjetid_,    "failjetid/I"    );
   babyTree_->Branch("maxemf",       &maxemf_,       "maxemf/F"       );
   babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I"         );
+  babyTree_->Branch("ndavtx",       &nGoodDAVertex_,"ndavtx/I"       );
   babyTree_->Branch("weight",       &weight_,       "weight/F"       );
   babyTree_->Branch("vtxweight",    &vtxweight_,    "vtxweight/F"    );
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F"        );
