@@ -818,11 +818,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 
 	  //if leading lepton is electron, require pt > 27 GeV
-	  int id = -1;
-	  if( hyp_ll_p4()[i].pt() > hyp_lt_p4()[i].pt() ) id = hyp_ll_id()[i];
-	  else                                            id = hyp_lt_id()[i];
-	  if( abs(id) == 11 && TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 27. )   continue;
-
+	  //int id = -1;
+	  //if( hyp_ll_p4()[i].pt() > hyp_lt_p4()[i].pt() ) id = hyp_ll_id()[i];
+	  //else                                            id = hyp_lt_id()[i];
+	  //if( abs(id) == 11 && TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 27. )   continue;
           
         }
         
