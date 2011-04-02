@@ -65,7 +65,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
-  gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+");
+
+  //gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+"); REPLACETOPMASS
 
   // Load FWLite
   gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
@@ -186,7 +187,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML7      = 1;
   int preML8      = 1;
   int preLMscan   = 1;
-
+  cout << __LINE__ << endl;
   /*
   //Flags for files to run over
   bool rundata     = 1;

@@ -35,7 +35,7 @@
 #include "../CORE/mcSUSYkfactor.cc"
 #include "../CORE/triggerSuperModel.cc"
 #include "../CORE/jetSelections.cc"
-#include "../CORE/topmass/getTopMassEstimate.icc"
+//#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
 
 using namespace std;
@@ -585,8 +585,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     cout << "DATA!!!" << endl;
     isData = true;
   }
-  // instanciate topmass solver
-  ttdilepsolve * d_llsol = new ttdilepsolve;
+  // instanciate topmass solver REPLACETOPMASS
+  //ttdilepsolve * d_llsol = new ttdilepsolve;
 
 
   //instantiate SimpleFakeRate class for electrons and muons
@@ -1531,6 +1531,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         double dphilep = fabs(hyp_lt_p4()[hypIdx].phi() - hyp_ll_p4()[hypIdx].phi());
         if (dphilep > TMath::Pi()) dphilep = TMath::TwoPi() - dphilep;
 
+
+	/* REPLACETOPMASS
         // calculate the top mass
         float topMass = getTopMassEstimate(d_llsol, hypIdx, vjpts_p4, tcmet, tcmetphi);
         if(topMass != -999 && 42 != 42) std::cout<<"And top mass from exteral: "<<topMass<<std::endl;
@@ -1553,6 +1555,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
             ++topMassCounter;
           }
         }
+	*/
 
         //get various met types
         
@@ -1621,7 +1624,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( strcmp( prefix , "LM1" )  == 0 ) k_ = kfactorSUSY( "lm1" );
           smeff_         = isData ? 1 : triggerSuperModelEffic( hypIdx ); //trigger supermodel efficiency
           proc_          = getProcessType(prefix);       //integer specifying sample
-          topmass_       = topMass;                      //topepton mass
+          topmass_       = -999;// topMass;              //topepton mass //REPLACE TOPMASS
           dilmass_       = hyp_p4()[hypIdx].mass();      //dilepton mass
           dilpt_         = hyp_p4()[hypIdx].pt();        //dilepton pT
           dileta_        = hyp_p4()[hypIdx].eta();       //dilepton eta
@@ -1990,11 +1993,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         // dilepton mass
         //fillHistos(hdilMass, hyp_p4()[hypIdx].mass(), weight, myType, nJetsIdx);
         // top mass
+	/* REPLACE TOPMASS
         if(topMass > 0.) fillHistos(htopMass, topMass, weight, myType, nJetsIdx);
 
         for(int imass = 0; imass < topMassAllComb.size(); ++imass) {
           if( topMassAllComb.at(imass) > 0. ) fillHistos(htopMassAllComb, topMassAllComb.at(imass), weight, myType, nJetsIdx);
         }
+	*/
 
         // delta phi btw leptons
         double dphi = fabs(hyp_lt_p4()[hypIdx].phi() - hyp_ll_p4()[hypIdx].phi());
@@ -2163,7 +2168,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
 
-  delete d_llsol;
+  //delete d_llsol; //REPLACETOPMASS
 
   return 0;
 
