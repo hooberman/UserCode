@@ -35,10 +35,8 @@
 #include "../CORE/mcSUSYkfactor.cc"
 #include "../CORE/triggerSuperModel.cc"
 #include "../CORE/jetSelections.cc"
-//#include "../CORE/triggerUtils.cc"
-
-//#include "../../CORE/topmass/getTopMassEstimate.icc"
 #include "../CORE/topmass/getTopMassEstimate.icc"
+//#include "../CORE/triggerUtils.cc"
 
 using namespace std;
 using namespace tas;
@@ -137,8 +135,7 @@ int getIndexFromM12(float m12){
 
 //--------------------------------------------------------------------
 
-void ossusy_looper::makeTree(char *prefix)
-{
+void ossusy_looper::makeTree(char *prefix){
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
@@ -581,9 +578,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 //     exit(0);
   }
 
-  set_goodrun_file("Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt");
-  //set_goodrun_file( "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt");
-  //set_goodrun_file( "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v2_goodruns.txt" );
+  set_goodrun_file("json_DCSONLY.txt_160404-161312.goodruns");
   
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
@@ -751,8 +746,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       bool foundMu_lt[20];
       bool foundEl_ll[20];
       bool foundEl_lt[20];
-
-         
+   
       VofP4 goodLeptons;
 
       ngoodlep_ = 0;
@@ -781,7 +775,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                  
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
 
-        if( !passSUSYTrigger_v1( isData , hyp_type()[i] ) ) continue;
+        //if( !passSUSYTrigger_v1( isData , hyp_type()[i] ) ) continue;
         
         //check that hyp leptons come from same vertex
         if( !hypsFromSameVtx( i ) )    continue;
@@ -821,6 +815,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           //OSV1
           if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV1 , false , false ))) continue;
           if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV1 , false , false ))) continue;
+
+
+	  //if leading lepton is electron, require pt > 27 GeV
+	  int id = -1;
+	  if( hyp_ll_p4()[i].pt() > hyp_lt_p4()[i].pt() ) id = hyp_ll_id()[i];
+	  else                                            id = hyp_lt_id()[i];
+	  if( abs(id) == 11 && TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 27. )   continue;
+
           
         }
         
