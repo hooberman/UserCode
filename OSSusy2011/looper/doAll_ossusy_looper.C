@@ -319,15 +319,15 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   if(rundata){
   
     pickSkimIfExists(chdata,
-		     "cms2/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged*root",
+		     "cms2_data/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged*root",
                      "data");
 
     pickSkimIfExists(chdata,
-		     "cms2/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root",
+		     "cms2_data/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root",
                      "data");
     
     pickSkimIfExists(chdata,
-		     "cms2/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root",
+		     "cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root",
                      "data");
 
   }
