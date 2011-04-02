@@ -2509,8 +2509,8 @@ void ossusy_looper::BookHistos(char *prefix)
       hDtcmetgenmetVsumJetPt[i][j] = new TH2F(Form("%s_hDtcmetgenmetVsumJetPt_%s",prefix,suffix),Form("%s_DtcmetgenmetVsumJetPt_%s",prefix,suffix),5,binedges1500,40,-50.,50.);
       hDmetmuonjesgenmetVsumJetPt[i][j] = new TH2F(Form("%s_hDmetmuonjesgenmetVsumJetPt_%s",prefix,suffix),Form("%s_DmetmuonjesgenmetVsumJetPt_%s",prefix,suffix),5,binedges1500,40,-50.,50.);
 
-      hsumJptPt[i][j] = new TH1F(Form("%s_hsumJptPt_%s",prefix,suffix),Form("%s_sumJptPt_%s",prefix,suffix),100,0,500);
-      hsumJptPt_cut[i][j] = new TH1F(Form("%s_hsumJptPt_cut_%s",prefix,suffix),Form("%s_sumJptPt_cut_%s",prefix,suffix),100,0,500);
+      hsumJptPt[i][j] = new TH1F(Form("%s_hsumJptPt_%s",prefix,suffix),Form("%s_sumJptPt_%s",prefix,suffix),100,0,1000);
+      hsumJptPt_cut[i][j] = new TH1F(Form("%s_hsumJptPt_cut_%s",prefix,suffix),Form("%s_sumJptPt_cut_%s",prefix,suffix),100,0,1000);
       hmeffJPT[i][j] = new TH1F(Form("%s_hmeffJPT_%s",prefix,suffix),Form("%s_meffJPT_%s",prefix,suffix),100,0,1000);
 
       hsumHypPt[i][j] = new TH1F(Form("%s_hsumHypPt_%s",prefix,suffix),Form("%s_sumHypPt_%s",prefix,suffix),5,binedges1500);
