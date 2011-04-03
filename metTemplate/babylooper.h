@@ -4,6 +4,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
+#include "TProfile.h"
 #include <vector>
 #include <fstream>
 
@@ -30,9 +31,10 @@ class babylooper
         void fillHistos(TH1F *h1[4],    float value, float weight, int myType);
         void fillHistos(TH1F *h1[4][4], float value, float weight, int myType, int nJetsIdx);
         TH1F* getMetTemplate( TFile* file, int iTrigBin , int iJetBin , int iSumJetPtBin , 
-                              int iBosonPtBin , int iVtxBin, float weight );
+                              int iBosonPtBin , int iVtxBin, float Zpt , float weight );
         void setErrors( TFile* file,  TH1F* hist , int n[3][7] );
         void setErrors( TFile* file,  TH1F* hist , int n[4][3][7] );
+	TH1F* correctedMetTemplate( TH1F* h_metTemplate , float ptZ );
 
     private:
         
@@ -60,6 +62,7 @@ class babylooper
         Int_t   lumi_;
         Int_t   event_;
         Int_t   nvtx_;
+        Int_t   npfmuons_;
         Float_t weight_;
         Float_t pthat_;
 
@@ -200,6 +203,7 @@ class babylooper
         Int_t   flagll_;
         Int_t   flaglt_;
         Float_t dilmass_;
+        Float_t dilmasspf_;
         Float_t dilmasscor_;
         Float_t dilpt_;
 
@@ -214,11 +218,17 @@ class babylooper
         TH1F* hyield;
         TH1F* hyield_pfmet30;
         TH1F* hyield_pfmet60;
+        TH1F* hyield_pfmet120;
         TH1F* hpthad[5];
         TH1F* hgenps_pthat;
         TH1F* hphotonpt;
         TH1F* hr4;
+	TH1F* hnVtx;
+	TH1F* hvecJetPt;
 
+	TH1F* hgenmet_all;
+	TH1F* hgenmet_pass;
+	TProfile* hresponse;
         TH1F* metPredicted;
         int   n_metPredicted[3][7];
         int   n_metPredicted_ee[3][7];
@@ -234,6 +244,7 @@ class babylooper
         TH1F* metObserved_sf;
         TH1F* metPredicted_df;
         TH1F* metObserved_df;
+        TH1F* metObserved_df_nozveto;
         TH1F* metPredicted_ptlt40;
         TH1F* metObserved_ptlt40;
         TH1F* metPredicted_ptlt50;
@@ -254,6 +265,7 @@ class babylooper
         TH1F* metPerpObserved;
 
         TH1F* hdilmass[4][4];
+        TH1F* hdilmass_pfmet60[4][4];
         TH1F* htcmet[4][4];
         TH1F* htcmetNew[4][4];
         TH1F* hpfmet[4][4];
