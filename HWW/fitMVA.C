@@ -32,23 +32,23 @@
 using namespace std;
 using namespace RooFit;
 
+
 void fitMVA(){
 
+  //-------------------------------
+  // user parameters
+  //-------------------------------
+  
+  const int  nTrials  = 1000;  // number of trials in fit validation
+  const bool display  = false; // display fit? Set to false for large nTrials
+  const bool printgif = true; // print canvases to gif files?
   
   //---------------------------------------
   // name of MVA branch in ntuple
   //---------------------------------------
   
-  const char*   mvaname = "nn_hww160_ww";
-  const int     nbins   =   20;
-  const float   xmin    = -0.5;
-  const float   xmax    =  1.5;
-
-  //const char*   mvaname = "bdt_hww160_ww";
-  //const int     nbins   =   30;
-  //const float   xmin    = -1.0;
-  //const float   xmax    =  0.5;
-
+  //const char*   mvaname = "nn_hww160_ww";
+  const char*   mvaname = "bdt_hww160_ww";
 
   //-----------------------------------------
   // selection to apply to sig, bkg samples
@@ -61,19 +61,17 @@ void fitMVA(){
   TCut pmet1("pmet >= 20 && (type == 1 || type == 2)");	 
   TCut pmet2("pmet >= 35 && (type == 0 || type == 3)");
   TCut pmet = pmet1 || pmet2;
-  //TCut lid("lid3 == 0");
-  //TCut lowptb("jetLowBtag <= 2.1");
-  //TCut softmu("nSoftMuons == 0");  
-  //TCut sel160 = "lep1.pt()>30 && lep2.pt()>25 && dilep.mass()<50 && dPhi<1.05";
+  TCut lid("lid3 == 0");
+  TCut lowptb("jetLowBtag <= 2.1");
+  TCut softmu("nSoftMuons == 0");  
+  TCut sel160("lep1.pt()>30 && lep2.pt()>25 && dilep.mass()<50 && dPhi<1.05");
  
-  TCut sel = jet + mll100 + OS + pt2010 + pmet;
-  TCut weight = "0.5 * scale1fb";
-
+  TCut sel       = jet + mll100 + OS + pt2010 + pmet;
+  TCut weight    = "0.5 * scale1fb";
   TCut selweight = sel*weight;
 
   //--------------------------------------------------
-  // Get sig and bkg samples.
-  // These samples will be used to __MAKE__ the PDFs.
+  // get sig and bkg samples
   //--------------------------------------------------
 
   char* babyPath = "/smurf/benhoob/MVA/SmurfTraining/hww160_ww/output";
@@ -84,6 +82,28 @@ void fitMVA(){
   TChain* bkg = new TChain("tree");
   bkg->Add(Form("%s/ww.root",babyPath));
 
+  //------------------------------------
+  // set binning
+  //------------------------------------
+
+  int   nbins = 0;
+  float xmin  = 0.;
+  float xmax  = 0.;
+
+  if( strcmp( mvaname , "nn_hww160_ww" ) == 0 ){
+    nbins   =   20;
+    xmin    = -0.5;
+    xmax    =  1.5;
+  }
+  else if( strcmp( mvaname , "bdt_hww160_ww" ) == 0 ){
+    nbins   =   30;
+    xmin    = -1.0;
+    xmax    =  0.5;
+  }else{
+    cout << "Unrecognized MVA " << mvaname << ", quitting" << endl;
+    exit(0);
+  }
+  
   //------------------------
   // declare variables
   //------------------------
@@ -107,28 +127,13 @@ void fitMVA(){
   mva_bkg->Sumw2();
 
   TCanvas *ctemp = new TCanvas();
+  ctemp->cd();
   sig->Draw(Form("%s >> mva_sig",mvaname),selweight);
   bkg->Draw(Form("%s >> mva_bkg",mvaname),selweight);
+  delete ctemp;
 
   float nsigtrue = mva_sig->Integral();
   float nbkgtrue = mva_bkg->Integral();
-
-  /*
-  TCanvas *c1 = new TCanvas();
-  c1->cd();
-  mva_bkg->GetXaxis()->SetTitle(mvaname);
-  mva_bkg->Draw("hist");
-  mva_sig->SetLineColor(2);
-  mva_sig->SetMarkerColor(2);
-  mva_sig->Draw("sameE1");
-  
-  TLegend *leg = new TLegend(0.65,0.6,0.85,0.8);
-  leg->AddEntry(mva_sig,"Signal","p");
-  leg->AddEntry(mva_bkg,"Background");
-  leg->SetFillColor(0);
-  leg->SetBorderSize(1);
-  leg->Draw();
-  */
 
   //---------------------------------------------------
   // convert MVA distributions to RooHistPdf objects
@@ -145,83 +150,110 @@ void fitMVA(){
 
   RooAddPdf datapdf("datapdf", "Data PDF", RooArgList(sigpdf,bkgpdf), RooArgList(nsig,nbkg));
 
-  const unsigned int nTrials = 1;
-  
+  //-------------------------------------------------
+  // perform fit (nTrials iterations)
+  //-------------------------------------------------
+
   float nsigfit[nTrials];
   float nbkgfit[nTrials];
   float nsigerrfit[nTrials];
   float nbkgerrfit[nTrials];
   float significance[nTrials];
+  TCanvas *can[nTrials];
 
   TH1F* hsig		= new TH1F("hsig","Sig Yield",100,0,100);
-  TH1F* hbkg		= new TH1F("hbkg","Bkg Yield",100,0,500);
+  TH1F* hbkg		= new TH1F("hbkg","Bkg Yield",100,0,200);
   TH1F* hsigpull	= new TH1F("hsigpull","Sig Pull",100,-5,5);
   TH1F* hbkgpull	= new TH1F("hbkgpull","Bkg Pull",100,-5,5);
   TH1F* hsignificance	= new TH1F("hsignificance","Significance",100,0,10);
 
-  for( unsigned int i = 0 ; i < nTrials ; ++i ){
+  for( int i = 0 ; i < nTrials ; ++i ){
 
     nsig.setVal( nsigtrue );
     nbkg.setVal( nbkgtrue );
 
+    //-------------------------------------
+    // generate pseudo-dataset from PDF
+    //-------------------------------------
+
     RooDataSet *gendata = datapdf.generate(RooArgList(mva),nsigtrue+nbkgtrue,Extended(kTRUE));
 
-    cout << "nsigtrue " << nsigtrue << endl;
-    cout << "nbkgtrue " << nbkgtrue << endl;
-    cout << "ntot     " << nsigtrue + nbkgtrue << endl;
-    cout << "data     " << gendata->sumEntries() << endl;
-    
-    
-    TCanvas *c4 = new TCanvas();
-    c4->cd();
-    
-    RooPlot* frame4 = mva.frame();
-    frame4->SetXTitle(mvaname);
-    gendata->plotOn(frame4);
-    //sigpdf.plotOn(frame4,Normalization(nsig.getVal()/gendata->sumEntries()));
-    //bkgpdf.plotOn(frame4,LineColor(kRed),Normalization(nbkg.getVal()/gendata->sumEntries()));
-    datapdf.plotOn(frame4,Components(sigpdf));
-    datapdf.plotOn(frame4,Components(bkgpdf),LineColor(kRed));
-    datapdf.plotOn(frame4,LineColor(kOrange));
+    //-------------------------------------
+    // perform fit with nsig fixed to 0
+    //-------------------------------------
 
-    //datapdf.paramOn(frame4,Format("NEU",AutoPrecision(1)));
-    frame4->Draw();
-        
     nsig.setVal(0);
+    nbkg.setVal(gendata->sumEntries());
     nsig.setConstant();
+
+    RooAbsReal* mynll_bkg = bkgpdf.createNLL( *gendata );
+    RooAbsReal* mynll_tot = datapdf.createNLL( *gendata );
     
+    cout << "nll_bkg  " << mynll_bkg->getVal() << endl;
+    cout << "nll_tot  " << mynll_tot->getVal() << endl;
+
+    cout << endl;
+    cout << "-------------------------------------------" << endl;
+    cout << "Performing fit with signal yield fixed to 0" << endl;
+    cout << "-------------------------------------------" << endl;
+    cout << endl;
+
     RooFitResult *bkg_result = datapdf.fitTo( *gendata , Save() , Extended(kTRUE) );
+
+    /*
+    TCanvas *bkgcan = new TCanvas("bkgcan","bkgcan",600,600);
+    bkgcan->cd();
+
+    RooPlot* bkgframe = mva.frame();
+    bkgframe->SetXTitle(mvaname);
+    gendata->plotOn(bkgframe);
+    datapdf.plotOn(bkgframe,Components(sigpdf));
+    datapdf.plotOn(bkgframe,Components(bkgpdf),LineColor(kRed));
+    datapdf.plotOn(bkgframe,LineColor(kOrange));
+    bkgframe->Draw();
+    */
+
+    //-------------------------------------
+    // perform fit with nsig floated in fit
+    //-------------------------------------
     
-    nsig.setVal(50);
+    //nsig.setVal(50);
     nsig.setConstant(kFALSE);
-    
+
+    cout << endl;
+    cout << "----------------------------------------" << endl;
+    cout << "Performing fit with signal yield floated" << endl;
+    cout << "----------------------------------------" << endl;
+    cout << endl;
+
     RooFitResult *result = datapdf.fitTo( *gendata , Save() , Extended(kTRUE) );
     
-    /*
-      TCanvas *c3 = new TCanvas();
-      c3->cd();
-      
-      RooPlot* dataframe = mva.frame();
-      gendata->plotOn(dataframe);
-      sigpdf.plotOn(dataframe,LineStyle(kDashed),LineColor(kRed),Normalization(nsig.getVal()/gendata->sumEntries()));
-      bkgpdf.plotOn(dataframe,LineStyle(kDashed),LineColor(kOrange),Normalization(nbkg.getVal()/gendata->sumEntries()));
-      datapdf.plotOn(dataframe);
-      dataframe->Draw();
-    */
+    if( display ){
+
+      can[i] = new TCanvas(Form("can_%i",i),Form("can_%i",i),600,600);
+      can[i]->cd();
     
-    //int nfloatpars = result->floatParsFinal().getSize();
-    //int ndf        = nbins - nfloatpars;
-    //float chi2     = dataframe->chiSquare(nfloatpars)*ndf;
-    //float prob     = TMath::Prob(chi2,ndf);
-    
+      RooPlot* frame = mva.frame();
+      frame->SetXTitle(mvaname);
+      gendata->plotOn(frame);
+      datapdf.plotOn(frame,Components(sigpdf));
+      datapdf.plotOn(frame,Components(bkgpdf),LineColor(kRed));
+      datapdf.plotOn(frame,LineColor(kOrange));
+      frame->Draw();
+
+      if( printgif ) can[i]->Print(Form("plots/%s_%i.gif",mvaname,i));
+    }
+
+    //---------------------------------------------
+    // print output to screen
+    //---------------------------------------------
+
     float nll     = result->minNll();
     float bkg_nll = bkg_result->minNll();
     float signif  = sqrt( -2 * ( nll - bkg_nll ) );
 
     cout << endl << endl;
     cout << "Fit Results-------------------------------------------"       << endl;
-    //cout << "chi2/ndf   = " << chi2 << " / " << ndf                        << endl;
-    //cout << "prob       = " << prob                                        << endl;  
     cout << "gen events = " << gendata->sumEntries()                       << endl;
     cout << "nll (BKG)  = " << bkg_nll                                     << endl;
     cout << "nll        = " << nll                                         << endl;
@@ -247,127 +279,37 @@ void fitMVA(){
     hsignificance->Fill( significance[i] );
   }
 
-  gStyle->SetOptFit(1111);
+  gStyle->SetOptFit(0111);
 
-  TCanvas *c5 = new TCanvas("c5","",1200,800);
-  c5->Divide(3,2);
+  TCanvas *c1 = new TCanvas("c1","",1200,800);
+  c1->Divide(3,2);
 
-  c5->cd(1);
+  c1->cd(1);
   hsig->GetXaxis()->SetTitle("Sig Yield");
   hsig->Draw();
   hsig->Fit("gaus");
 
-  c5->cd(2);
+  c1->cd(2);
   hsigpull->GetXaxis()->SetTitle("Sig Pull");
   hsigpull->Draw();
   hsigpull->Fit("gaus");
 
-  c5->cd(4);
+  c1->cd(4);
   hbkg->GetXaxis()->SetTitle("Bkg Yield");
   hbkg->Draw();
   hbkg->Fit("gaus");
 
-  c5->cd(5);
+  c1->cd(5);
   hbkgpull->GetXaxis()->SetTitle("Bkg Pull");
   hbkgpull->Draw();
   hbkgpull->Fit("gaus");
 
-  c5->cd(3);
+  c1->cd(3);
   hsignificance->GetXaxis()->SetTitle("Significance");
   hsignificance->Draw();
   hsignificance->Fit("gaus");
 
-  //c5->Print("plots/fitMVA.gif");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /*
-  //--------------------------------------------------
-  // now get "data" MVA output distributions
-  // for now, using sig+bkg MC as "pseudo-data"
-  //--------------------------------------------------
-
-  TChain* data = new TChain("tree");
-  data->Add(Form("%s/hww160.root" , babyPath));
-  data->Add(Form("%s/ww.root"     , babyPath));
-
-  TH1F* mva_data = new TH1F("mva_data","MVA Output for Data" , nbins , xmin , xmax );
-  mva_data->Sumw2();
-
-  data->Draw(Form("%s >> mva_data",mvaname),selodd);
-  delete ctemp;
-
-  RooDataHist datahist("datahist","Data PDF Hist" , RooArgSet(mva),mva_data);
-
-  TCanvas *c2 = new TCanvas();
-  c2->cd();
-
-  RooPlot* frame = mva.frame();
-  frame->SetXTitle(mvaname);
-  sigpdf.plotOn(frame);
-  bkgpdf.plotOn(frame,LineColor(kRed));
-  datahist.plotOn(frame,LineColor(kOrange));
-  frame->Draw();
-  //gPad->SetLogy();
-  */
-
-  //-----------------------------------------------------------
-  // construct PDF from sum of sig, bkg PDFs and fit to data
-  //-----------------------------------------------------------
-
-
-  /*
-  RooFitResult *result = datapdf.fitTo( datahist , Save() , SumW2Error(kFALSE) , Extended(kTRUE) );
-
-  TCanvas *c3 = new TCanvas();
-  c3->cd();
-
-  RooPlot* dataframe = mva.frame();
-  datahist.plotOn(dataframe);
-  datapdf.plotOn(dataframe);
-  sigpdf.plotOn(dataframe,LineStyle(kDashed),LineColor(kRed),Normalization(nsig.getVal()/mva_data->Integral()));
-  bkgpdf.plotOn(dataframe,LineStyle(kDashed),LineColor(kOrange),Normalization(nbkg.getVal()/mva_data->Integral()));
-  datahist.plotOn(dataframe);
-  datapdf.plotOn(dataframe);
-  dataframe->Draw();
-
-  int nfloatpars = result->floatParsFinal().getSize();
-  int ndf        = nbins - nfloatpars;
-  float chi2     = dataframe->chiSquare(nfloatpars)*ndf;
-  float prob     = TMath::Prob(chi2,ndf);
- 
-  cout << endl << endl;
-  cout << "Fit Results-------------------------------------------"       << endl;
-  cout << "chi2/ndf   = " << chi2 << " / " << ndf                        << endl;
-  cout << "prob       = " << prob                                        << endl;  
-  cout << "nll        = " << result->minNll()                            << endl;
-  cout << "nsig       = " << nsig.getVal() << " +/- " << nsig.getError() << endl;
-  cout << "nsig(true) = " << nsigtrue                                    << endl;
-  cout << "nbkg       = " << nbkg.getVal() << " +/- " << nbkg.getError() << endl;
-  cout << "nbkg(true) = " << nbkgtrue                                    << endl;
-  cout << "------------------------------------------------------"       << endl;
-  cout << endl << endl;
-  
-  */
-
-
-
-
-
-
+  if( printgif ) c1->Print(Form("plots/%s_fitval.gif",mvaname));
 
 
 }
