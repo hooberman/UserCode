@@ -15,12 +15,16 @@
   //choose samples to run over----------------------
 
   //runLooper("data");
-  runLooper("dyee_spring11");
-  runLooper("dymm_spring11");
-  // runLooper("tt_spring11");
-  // runLooper("h130_spring11");
+  runLooper("dyee");
+  runLooper("dymm");  
+  //runLooper("tt"); 
+  //runLooper("zjets");
+ 
+  //runLooper("h130_spring11");
   // runLooper("dyee_winter10");
   // runLooper("dymm_winter10");
+
+
 
   //runLooper("dyee");
   //runLooper("dymm");

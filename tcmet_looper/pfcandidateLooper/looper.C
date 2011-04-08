@@ -33,7 +33,9 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
-const float lumi = 0.020;
+const float lumi         = 0.023;
+const char* path         = "output/PVT/promptreco/dcsonly";
+const bool  doTenPercent = true;
 
 char* iter          = "default";
 bool makebaby       = true;
@@ -94,7 +96,6 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
 
 bool jetMatchedToGenJet( LorentzVector vjet , int hypIdx){
 
-    
   for( int ijet = 0 ; ijet < genjets_p4().size() ; ijet++ ){
 
     LorentzVector vgenjet = genjets_p4().at(ijet);
@@ -103,7 +104,7 @@ bool jetMatchedToGenJet( LorentzVector vjet , int hypIdx){
     
     if( dRbetweenVectors(vgenjet, vll) < 0.4 )   continue;
     if( dRbetweenVectors(vgenjet, vlt) < 0.4 )   continue;
-    if( fabs( vgenjet.eta() ) > 3.0 )            continue;
+    if( fabs( vgenjet.eta() ) > 5.0 )            continue;
     if( vgenjet.pt() < 30. )                     continue;
     if( dRbetweenVectors(vgenjet, vjet) > 0.4 )  continue;
 
@@ -119,10 +120,21 @@ bool jetMatchedToGenJet( LorentzVector vjet , int hypIdx){
 using namespace tas;
 void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEvents){
 
+  if( doTenPercent ){
+    cout << endl;
+    cout << "-----------------------------------------------" << endl;
+    cout << "| PROCESSING TEN PERCENT OF SAMPLE!!!!!!!!!!!!|" << endl;
+    cout << "-----------------------------------------------" << endl;
+    cout << endl;
+  }
+
+
   bookHistos();
 
-  set_goodrun_file("Cert_TopAug25_Merged_135059-143336_goodruns.txt");
-  ofile.open( Form( "output/PVT/express/%s_%s_events.txt" , prefix , iter) );
+  set_goodrun_file("json_DCSONLY.txt_160404-161312.goodruns");
+  //set_goodrun_file("Cert_160404-161216_7TeV_PromptReco_Collisions11_JSON_goodruns.txt");
+
+  ofile.open( Form( "%s/%s_%s_events.txt" , path , prefix , iter) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -132,20 +144,28 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
   nEventsChain = nEvents;
   unsigned int nEventsTotal = 0;
 
-  MakeBabyNtuple( Form( "output/PVT/express/%s_%s_baby.root" , prefix , iter) );
+  MakeBabyNtuple( Form( "%s/%s_%s_baby.root" , path , prefix , iter) );
 
   if( debug ) cout << "Begin looping over files" << endl;
 
-  TH1F* h_reweight = new TH1F();
+  TH1F* h_reweight    = new TH1F();
+  TH1F* h_da_reweight = new TH1F();
 
   if( doReweight ){
-    TFile* f_reweight = TFile::Open("vtx_reweight.root");
+    TFile* f_reweight    = TFile::Open("vtx_reweight.root");
+    TFile* f_da_reweight = TFile::Open("vtx_DA_reweight.root");
 
-    h_reweight = (TH1F*) f_reweight->Get("hratio");
+    h_reweight    = (TH1F*) f_reweight->Get("hratio");
+    h_da_reweight = (TH1F*) f_da_reweight->Get("hratio");
 
-    cout << "Doing reweighting" << endl;
+    cout << "Doing reweighting (standard)" << endl;
     for( unsigned int ibin = 1 ; ibin <= h_reweight->GetNbinsX() ; ibin++ ){
       cout << ibin << " " << h_reweight->GetBinContent(ibin) << endl;
+    }
+
+    cout << "Doing reweighting (DA)" << endl;
+    for( unsigned int ibin = 1 ; ibin <= h_da_reweight->GetNbinsX() ; ibin++ ){
+      cout << ibin << " " << h_da_reweight->GetBinContent(ibin) << endl;
     }
 
   }
@@ -165,14 +185,21 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
       cms2.Init(tree);
 
       // event loop
-      unsigned int nEvents = tree->GetEntries() / 10;
+      unsigned int nEvents = tree->GetEntries()/100;
 
       for (unsigned int event = 0; event < nEvents; ++event)
         {
           if( debug ) cout << "Event " << event << endl;
 
-          cms2.GetEntry(event);
           ++nEventsTotal;
+
+	  // //SKIP 9/10 EVENTS!!!
+	  // if( doTenPercent ){
+	  //   if( nEventsTotal%100 != 0 ) continue;
+	  // }
+
+          cms2.GetEntry(event);
+
 
           // progress feedback to user
           if (nEventsTotal % 1000 == 0)
@@ -198,8 +225,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           // Apply basic event selections
           //--------------------------------------------------------------
 
-	  //if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))  continue;
-          //if( !cleaning_standardOctober2010() )                          continue;
+	  if ( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))  continue;
+          if( !cleaning_standardOctober2010() )                           continue;
           
           //------------------------------------------
           // hyp selection
@@ -281,7 +308,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
             
             if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
             if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
-            if( fabs( vjet.eta() ) > 3.0 )           continue;
+            if( fabs( vjet.eta() ) > 5.0 )           continue;
             if( !passesPFJetID(ijet) )               continue;
 
             //if( !jetFromSignalPV( ijet , vtxIdx ) )  continue;
@@ -310,7 +337,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
             jetpv_   = jetFromSignalPV( imaxjet , vtxIdx , 2 ) ? 1 : 0;
             jetbeta_ = beta_jet_vtx( imaxjet , vtxIdx , 2 );
             jet_     = &(pfjets_corL1L2L3().at(imaxjet) * pfjets_p4().at(imaxjet));
-
+	    jetgen_  = jetMatchedToGenJet( vjet , hypIdx) ? 1 : 0;
           }
         
 
@@ -323,7 +350,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
               
               if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
               if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
-              if( fabs( vjet.eta() ) > 3.0 )           continue;
+              if( fabs( vjet.eta() ) > 5.0 )           continue;
               if( !passesPFJetID(ijet) )               continue;
               if( vjet.pt() < 30. )                    continue;
               
@@ -366,20 +393,23 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           dilep_   = &hyp_p4().at(hypIdx);
 
 
-          weight_    = 1;
-          vtxweight_ = 1;
+          weight_      = 1;
+          davtxweight_ = 1;
+	  vtxweight_   = 1;
+
           if( !isData ){
 
             if( doReweight ){
-              vtxweight_ = h_reweight->GetBinContent( nvtx_ + 1 );
+              vtxweight_   = h_reweight->GetBinContent(    nvtx_   + 1 );
+              davtxweight_ = h_da_reweight->GetBinContent( ndavtx_ + 1 );
             }
 
-	    if( TString(prefix).Contains("dymm_spring11") ){
-	      weight_ = ( 0.84 ) * lumi;
-	    }
-	    else{
-	      weight_ = evt_scale1fb() * lumi;
-	    }
+	    //if( TString(prefix).Contains("dymm_spring11") ){
+	    //  weight_ = ( 0.84 ) * lumi;
+	    // }
+	    //else{
+	    weight_ = evt_scale1fb() * lumi;
+	    //}
 	  }
 
           if( leptype_ == 0 ) nmm += weight_;
@@ -402,8 +432,12 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           pfsumet_  = cms2.evt_pfsumet();
 
           // raw  tcmet stuff
-          tcmet_    = cms2.evt_tcmet();
-          tcmetphi_ = cms2.evt_tcmetPhi();
+	  pair<float,float> p_tcmet = getMet( "tcMET"    , hypIdx);
+	  tcmet_    = p_tcmet.first;
+	  tcmetphi_ = p_tcmet.second;
+
+          //tcmet_    = cms2.evt_tcmet();
+          //tcmetphi_ = cms2.evt_tcmetPhi();
           tcsumet_  = cms2.evt_tcsumet();
 
           // genmet stuff
@@ -639,7 +673,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
-  saveHist( Form( "output/PVT/express/%s_%s_histos.root" , prefix , iter ) );
+  saveHist( Form( "%s/%s_%s_histos.root" , path , prefix , iter ) );
   deleteHistos();
 
   already_seen.clear();
@@ -658,6 +692,7 @@ void looper::InitBabyNtuple ()
   // event stuff
   weight_          = -999999.;
   vtxweight_       = -999999.;
+  davtxweight_     = -999999.;
   run_             = -999999;
   lumi_            = -999999;
   event_           = -999999;
@@ -675,6 +710,7 @@ void looper::InitBabyNtuple ()
   jetphi_          = -999999.;
   jetpv_           = -999999;
   jetbeta_         = -999999.;
+  jetgen_          = -999999.;
   
   // genmet stuff
   genmet_          = -999999.;
@@ -852,6 +888,7 @@ void looper::MakeBabyNtuple (const char* babyFileName)
 
   eventTree_->Branch("weight"           , &weight_           , "weight/F"  );
   eventTree_->Branch("vtxweight"        , &vtxweight_        , "vtxweight/F"  );
+  eventTree_->Branch("davtxweight"      , &davtxweight_      , "davtxweight/F"  );
   eventTree_->Branch("run"              , &run_              , "run/I"  );
   eventTree_->Branch("lumi"             , &lumi_             , "lumi/I" );
   eventTree_->Branch("event"            , &event_            , "event/I");
@@ -864,6 +901,7 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   eventTree_->Branch("njets30"          , &njets30_          , "njets30/I");
 
   eventTree_->Branch("jetpt"            , &jetpt_            , "jetpt/F"   );
+  eventTree_->Branch("jetgen"           , &jetgen_           , "jetgen/F"  );
   eventTree_->Branch("jeteta"           , &jeteta_           , "jeteta/F"  );
   eventTree_->Branch("jetphi"           , &jetphi_           , "jetphi/F"  );
   eventTree_->Branch("jetpv"            , &jetpv_            , "jetpv/I"   );

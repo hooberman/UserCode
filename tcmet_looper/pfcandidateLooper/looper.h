@@ -92,6 +92,7 @@ class looper
         TH1F* hmatch_nvtx_pass;      
 
         Float_t jetpt_;
+        Float_t jetgen_;
         Float_t jeteta_;
         Float_t jetphi_;
         Float_t jetbeta_;
@@ -110,6 +111,7 @@ class looper
         Float_t dilmass_;
         Float_t weight_;
         Float_t vtxweight_;
+        Float_t davtxweight_;
 
 	// genmet stuff
 	Float_t genmet_;

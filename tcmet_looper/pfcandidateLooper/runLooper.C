@@ -30,8 +30,13 @@ void runLooper(char* prefix){
     ch->Add("/tas/cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root");
   }
 
+  else if( strcmp( prefix , "zjets_spring11" ) == 0 ){
+    ch->Add("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root");
+  }
+
   else if( strcmp( prefix , "dymm_spring11" ) == 0 ){
-    ch->Add("/tas/benhoob/cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-00-10/n*root");
+    //ch->Add("/tas/benhoob/cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-00-10/n*root");
+    ch->Add("/tas/cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root");
   }
 
   else if( strcmp( prefix , "tt_spring11" ) == 0 ){
@@ -41,7 +46,7 @@ void runLooper(char* prefix){
 
   else if( strcmp( prefix , "h130_spring11" ) == 0 ){
     //ch->Add("/tas/benhoob/cms2/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-00-10/n*root");
-    ch->Add("/tas/cms2/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-10/merged*root");
+    ch->Add("/tas/cms2/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
   }
 
   else if( strcmp( prefix , "dyee_winter10" ) == 0 ){
@@ -55,7 +60,13 @@ void runLooper(char* prefix){
   else if( strcmp( prefix , "data" ) == 0 ){
     //ch->Add(Form("%s/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/ntuple.root",path));
     //ch->Add(Form("%s/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/ntuple_1.root",path));
-    ch->Add(Form("%s/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/ntuple*root",path));
+    //ch->Add(Form("%s/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/ntuple*root",path));
+
+    ch->Add("/tas/cms2/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged*root");
+    ch->Add("/tas/cms2/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
+    ch->Add("/tas/cms2/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
+
+
     isData = true;
   }
 
