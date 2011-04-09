@@ -48,7 +48,10 @@ class looper
         std::pair<float,float> pfmetByHand( float ptcut , float etacut );
         vector<int> goodVertices();
         vector<int> goodDAVertices();
-  
+
+	unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
+				       const std::vector<LorentzVector>& = std::vector<LorentzVector>());
+
     private:
 
         LorentzVector*  lep1_;
@@ -97,8 +100,10 @@ class looper
         Float_t jetphi_;
         Float_t jetbeta_;
         Int_t   jetpv_;
+        Float_t jetb_;
 
         // event stuff
+	char    dataset_[200];
         Int_t   run_;
         Int_t   lumi_;
         Int_t   event_;
@@ -112,6 +117,13 @@ class looper
         Float_t weight_;
         Float_t vtxweight_;
         Float_t davtxweight_;
+
+	//extra lepton stuff
+	Int_t   toptag_;
+	Int_t   softmu_;
+	Int_t   nLep_;
+	Int_t   nMu_;
+	Int_t   nEl_;
 
 	// genmet stuff
 	Float_t genmet_;

@@ -35,7 +35,7 @@
 
 const float lumi         = 0.023;
 const char* path         = "output/PVT/promptreco/dcsonly";
-const bool  doTenPercent = true;
+bool  doTenPercent       = false;
 
 char* iter          = "default";
 bool makebaby       = true;
@@ -45,10 +45,177 @@ bool doReweight     = true;
 
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
+
+enum WWJetType { CaloJet, jptJet, pfJet, TrkJet, GenJet };
+std::vector<LorentzVector> getJets(WWJetType type, 
+				   int i_hyp, 
+				   double etThreshold,
+				   double maxEta,
+				   bool sorted = false,
+				   bool btag = false);
+
+// analysis jet type is set here.
+WWJetType jetType();
+
+
 // inline double fround(double n, double d){
 //   return floor(n * pow(10., d) + .5) / pow(10., d);
 // }
 
+//--------------------------------------------------------------------
+
+double ww_muIsoVal(unsigned int index){
+  double sum =  cms2.mus_iso03_sumPt().at(index) +
+    cms2.mus_iso03_emEt().at(index)  +
+    cms2.mus_iso03_hadEt().at(index);
+  double pt  = cms2.mus_p4().at(index).pt();
+  return sum/pt;
+}
+
+//--------------------------------------------------------------------
+
+double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
+}
+
+//--------------------------------------------------------------------
+
+bool ww_mud0PV(unsigned int index){
+  if ( cms2.vtxs_sumpt().empty() ) return false;
+  double sumPtMax = -1;
+  int iMax = -1;
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+    if (cms2.vtxs_isFake()[i]) continue;
+    if (!isGoodVertex(i)) continue;
+    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+      iMax = i;
+      sumPtMax = cms2.vtxs_sumpt().at(i);
+    }
+  }
+  if (iMax<0) return false;
+  double dxyPV = cms2.mus_d0()[index]-
+    cms2.vtxs_position()[iMax].x()*sin(cms2.mus_trk_p4()[index].phi())+
+    cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
+  // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
+  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[iMax]);
+  if ( cms2.mus_p4().at(index).pt() < 20. )
+    return fabs(dxyPV) < 0.01 && fabs(dzpv)<1.0;
+  return fabs(dxyPV) < 0.02 && fabs(dzpv)<1.0;
+}
+
+//--------------------------------------------------------------------
+
+unsigned int looper::numberOfSoftMuons(int i_hyp, bool nonisolated,
+				       const std::vector<LorentzVector>& vetojets)
+{
+  unsigned int nMuons = 0;
+  for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
+    // quality cuts
+    // if (  ((cms2.mus_goodmask()[imu]) & (1<<14)) == 0 ) continue; // TMLastStationOptimizedLowPtTight
+    if (  ((cms2.mus_goodmask()[imu]) & (1<<19)) == 0 ) continue; // TMLastStationAngTight
+    if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
+    // if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
+    if ( TMath::Abs(ww_mud0PV(imu)) > 0.2) continue;
+    if ( cms2.mus_validHits()[imu] < 11) continue;
+    if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
+    if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
+    if ( nonisolated && ww_muIsoVal(imu)<0.1 && cms2.mus_p4()[imu].pt()>20 ) continue;
+    bool skip = false;
+    for ( std::vector<LorentzVector>::const_iterator ijet = vetojets.begin();
+	  ijet != vetojets.end(); ++ijet )
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.mus_p4()[imu])) < 0.3 ) skip=true;
+    if ( skip ) continue;
+    ++nMuons;
+  }
+  return nMuons;
+}
+
+//--------------------------------------------------------------------
+
+double BTag(WWJetType type, unsigned int iJet){
+  // find a jet in the jets list
+  // that matches the current type jet
+  LorentzVector jetP4;
+  switch ( type ) {
+  case jptJet:
+    jetP4 = cms2.jpts_p4().at(iJet);
+    break;
+  case CaloJet:
+    return cms2.jets_trackCountingHighEffBJetTag()[iJet];
+    break;
+  case pfJet:
+    return cms2.pfjets_trackCountingHighEffBJetTag()[iJet];
+    break;
+  default:
+    std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
+    assert(0);
+  }
+
+  int refJet = -1;
+  for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(jetP4,cms2.jets_p4()[i])) > 0.3 ) continue;
+    refJet = i;
+  }
+  if (refJet == -1){
+    // std::cout << "Warning: failed to find a matching jet for b-tagging." << std::endl; 
+    return 0.0;
+  }
+  return cms2.jets_trackCountingHighEffBJetTag().at(refJet);
+}
+
+//--------------------------------------------------------------------
+
+bool defaultBTag(WWJetType type, unsigned int iJet){
+  return BTag(type,iJet)>2.1;
+}
+
+//--------------------------------------------------------------------
+
+bool toptag( WWJetType type, int i_hyp, double minPt, std::vector<LorentzVector> ignoreJets=std::vector<LorentzVector>() )
+{
+  
+     std::vector<LorentzVector> jets;
+     const double vetoCone    = 0.3;
+
+     switch ( type ){
+     case pfJet:
+       for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
+	 if ( cms2.pfjets_p4()[i].pt() < minPt ) continue;
+	 bool ignoreJet = false;
+	 for ( std::vector<LorentzVector>::const_iterator ijet = ignoreJets.begin();
+	       ijet != ignoreJets.end(); ++ijet )
+	   if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.pfjets_p4()[i])) < vetoCone ) ignoreJet=true;
+	 if ( ignoreJet ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+	 if ( defaultBTag(type,i) ) return true;
+       }
+       break;
+     case CaloJet:
+       for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
+	 if ( cms2.jets_p4()[i].pt() < minPt ) continue;
+	 bool ignoreJet = false;
+	 for ( std::vector<LorentzVector>::const_iterator ijet = ignoreJets.begin();
+	       ijet != ignoreJets.end(); ++ijet )
+	   if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.jets_p4()[i])) < vetoCone ) ignoreJet=true;
+	 if ( ignoreJet ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ) continue;
+// 	 if ( defaultBTag(type,i) && ignoreJets.size()==1 ){
+// 	   cout << "b-tagged jet pt: " << cms2.jets_p4()[i].pt() << " \teta: " << cms2.jets_p4()[i].eta() <<
+// 	     " \tphi: " << cms2.jets_p4()[i].phi() << endl;
+// 	 }
+	 if ( defaultBTag(type,i) ) return true;
+       }
+       break;
+     default:
+       std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
+     }
+
+
+     return false;
+
+}
 
 //--------------------------------------------------------------------
 
@@ -120,10 +287,14 @@ bool jetMatchedToGenJet( LorentzVector vjet , int hypIdx){
 using namespace tas;
 void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEvents){
 
+  if( isData ){
+    doTenPercent = false;
+  }
+
   if( doTenPercent ){
     cout << endl;
     cout << "-----------------------------------------------" << endl;
-    cout << "| PROCESSING TEN PERCENT OF SAMPLE!!!!!!!!!!!!|" << endl;
+    cout << "|  PROCESSING TEN PERCENT OF SAMPLE!!!!!!!!!  |" << endl;
     cout << "-----------------------------------------------" << endl;
     cout << endl;
   }
@@ -151,7 +322,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
   TH1F* h_reweight    = new TH1F();
   TH1F* h_da_reweight = new TH1F();
 
-  if( doReweight ){
+  if( doReweight && !isData ){
     TFile* f_reweight    = TFile::Open("vtx_reweight.root");
     TFile* f_da_reweight = TFile::Open("vtx_DA_reweight.root");
 
@@ -185,7 +356,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
       cms2.Init(tree);
 
       // event loop
-      unsigned int nEvents = tree->GetEntries()/100;
+      unsigned int nEvents = tree->GetEntries();
 
       for (unsigned int event = 0; event < nEvents; ++event)
         {
@@ -193,13 +364,17 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 
           ++nEventsTotal;
 
-	  // //SKIP 9/10 EVENTS!!!
-	  // if( doTenPercent ){
-	  //   if( nEventsTotal%100 != 0 ) continue;
-	  // }
+	  //--------------------
+	  // SKIP 9/10 EVENTS!!!
+	  //--------------------
+
+	  if( doTenPercent ){
+	    if( nEventsTotal % 10 != 0 ) continue;
+	  }
+
+
 
           cms2.GetEntry(event);
-
 
           // progress feedback to user
           if (nEventsTotal % 1000 == 0)
@@ -286,6 +461,38 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           int          vtxIdx = hypsFromSameVtx_int( hypIdx );
 
           InitBabyNtuple();
+
+
+	  nEl_  = 0;
+	  nMu_  = 0;
+	  nLep_ = 0;
+
+	  //----------------------------------------
+	  // count additional leptons
+	  //----------------------------------------
+
+	  LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+	  LorentzVector vll  = hyp_ll_p4()[hypIdx];
+
+	  for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	    if( els_p4().at(iel).pt() < 10 )                              continue;
+	    if( !pass_electronSelection( iel , electronSelection_wwV1 ) ) continue;            
+            if( dRbetweenVectors(els_p4().at(iel), vll) < 0.4 )           continue;
+            if( dRbetweenVectors(els_p4().at(iel), vlt) < 0.4 )           continue;
+
+	    nEl_++;
+	    nLep_++;
+	  }
+        
+	  for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+	    if( mus_p4().at(imu).pt() < 10 )                     continue;
+	    if( !muonId( imu , NominalWWV1 ))                    continue;
+            if( dRbetweenVectors(mus_p4().at(imu), vll) < 0.4 )  continue;
+            if( dRbetweenVectors(mus_p4().at(imu), vlt) < 0.4 )  continue;
+
+	    nMu_++;
+	    nLep_++;	    
+	  }
           
           //---------------------------------------
           // jet counting
@@ -302,9 +509,9 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 
           for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-            LorentzVector vjet = pfjets_corL1L2L3().at(ijet) * pfjets_p4().at(ijet);
-            LorentzVector vlt  = hyp_lt_p4()[hypIdx];
-            LorentzVector vll  = hyp_ll_p4()[hypIdx];
+            LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+            //LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+            //LorentzVector vll  = hyp_ll_p4()[hypIdx];
             
             if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
             if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
@@ -337,7 +544,9 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
             jetpv_   = jetFromSignalPV( imaxjet , vtxIdx , 2 ) ? 1 : 0;
             jetbeta_ = beta_jet_vtx( imaxjet , vtxIdx , 2 );
             jet_     = &(pfjets_corL1L2L3().at(imaxjet) * pfjets_p4().at(imaxjet));
-	    jetgen_  = jetMatchedToGenJet( vjet , hypIdx) ? 1 : 0;
+	    if( !isData ) jetgen_  = jetMatchedToGenJet( vjet , hypIdx) ? 1 : 0;
+	    jetb_    = pfjets_simpleSecondaryVertexHighEffBJetTag().at(imaxjet);
+
           }
         
 
@@ -382,7 +591,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           if( debug ) cout << "Filling ntuple" << endl;
 
           // event stuff
-          run_     = cms2.evt_run();
+	  strcpy(dataset_, cms2.evt_dataset().Data());        
+	  run_     = cms2.evt_run();
           lumi_    = cms2.evt_lumiBlock();
           event_   = cms2.evt_event();
           leptype_ = cms2.hyp_type().at(hypIdx);
@@ -391,7 +601,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
           dilmass_ = hyp_p4().at(hypIdx).mass();
           vtxIdx_  = vtxIdx;
           dilep_   = &hyp_p4().at(hypIdx);
-
+	  toptag_  = toptag( CaloJet , hypIdx , 0 ) ? 1 : 0;
+	  softmu_  = numberOfSoftMuons( hypIdx , true );
 
           weight_      = 1;
           davtxweight_ = 1;
@@ -404,12 +615,9 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
               davtxweight_ = h_da_reweight->GetBinContent( ndavtx_ + 1 );
             }
 
-	    //if( TString(prefix).Contains("dymm_spring11") ){
-	    //  weight_ = ( 0.84 ) * lumi;
-	    // }
-	    //else{
 	    weight_ = evt_scale1fb() * lumi;
-	    //}
+	 
+	    if( doTenPercent ) weight_ *= 10.0;
 	  }
 
           if( leptype_ == 0 ) nmm += weight_;
@@ -689,127 +897,137 @@ void looper::printEvent(  ostream& ostr ){
 
 void looper::InitBabyNtuple ()
 {
+
   // event stuff
-  weight_          = -999999.;
-  vtxweight_       = -999999.;
-  davtxweight_     = -999999.;
-  run_             = -999999;
-  lumi_            = -999999;
-  event_           = -999999;
-  nvtx_            = -999999;
-  ndavtx_          = -999999;
-  vtxIdx_          = -999999;
-  dilmass_         = -999999.;
-  leptype_         = -999999;
-  njets25_         = -999999;
-  njets30_         = -999999;
+  weight_		= -999999.;
+  vtxweight_		= -999999.;
+  davtxweight_		= -999999.;
+  memset(dataset_, '\0', 200);
+  run_			= -999999;
+  toptag_		= -999999;
+  softmu_		= -999999;
+  lumi_			= -999999;
+  event_		= -999999;
+  nvtx_			= -999999;
+  ndavtx_		= -999999;
+  vtxIdx_		= -999999;
+  dilmass_		= -999999.;
+  leptype_		= -999999;
+  njets25_		= -999999;
+  njets30_		= -999999;
+
+  //extra lepton stuff
+  nEl_                  = -999999;
+  nMu_                  = -999999;
+  nLep_                 = -999999;
 
   //leading jet stuff
-  jetpt_           = -999999.;
-  jeteta_          = -999999.;
-  jetphi_          = -999999.;
-  jetpv_           = -999999;
-  jetbeta_         = -999999.;
-  jetgen_          = -999999.;
+  jetpt_		= -999999.;
+  jeteta_		= -999999.;
+  jetphi_		= -999999.;
+  jetpv_		= -999999;
+  jetb_ 		= -999999;
+  jetbeta_		= -999999.;
+  jetgen_		= -999999.;
   
   // genmet stuff
-  genmet_          = -999999.;
-  genmetphi_       = -999999.;
-  gensumet_        = -999999.;
+  genmet_		= -999999.;
+  genmetphi_		= -999999.;
+  gensumet_		= -999999.;
 
   // pfmet stuff
-  pfmet_           = -999999.;
-  pfmetphi_        = -999999.;
-  pfsumet_         = -999999.;
+  pfmet_		= -999999.;
+  pfmetphi_		= -999999.;
+  pfsumet_		= -999999.;
 
   // calomet stuff
-  met_             = -999999.;
-  metphi_          = -999999.;
-  sumet_           = -999999.;
+  met_			= -999999.;
+  metphi_		= -999999.;
+  sumet_		= -999999.;
 
   // tcmet stuff
-  tcmet_           = -999999.;
-  tcmetphi_        = -999999.;
-  tcsumet_         = -999999.;
+  tcmet_		= -999999.;
+  tcmetphi_		= -999999.;
+  tcsumet_		= -999999.;
 
   // latest-and-greatest tcmet stuff
-  tcmetNew_        = -999999.;
-  tcmetphiNew_     = -999999.;
-  tcsumetNew_      = -999999.;
+  tcmetNew_		= -999999.;
+  tcmetphiNew_		= -999999.;
+  tcsumetNew_		= -999999.;
 
   // met from pfcandidates
-  pfcandmet_       = -999999.;
-  pfcandmetphi_    = -999999.;
-  pfcandsumet_     = -999999.;
+  pfcandmet_		= -999999.;
+  pfcandmetphi_		= -999999.;
+  pfcandsumet_		= -999999.;
 
-  hmet_            = -999999.;
-  hmetpfnotrks_    = -999999.;
-  hmetpf_          = -999999.;
-  hmetpf0_         = -999999.;
-  hmetpf1_         = -999999.;
-  hmetpf2_         = -999999.;
-  hmetpf3_         = -999999.;
-  hmetpf4_         = -999999.;
-  hmetpf5_         = -999999.;
-  hmetpf6_         = -999999.;
-  hmetpf7_         = -999999.;
-  hmetpf8_         = -999999.;
-  hmetpf9_         = -999999.;
-  hmetpf10_        = -999999.;
-  zmet_            = -999999.;
-  jetzmetnotrks_   = -999999.;
-  jetzmet_         = -999999.;
-  jetzmet4_        = -999999.;
-  jetzmet8_        = -999999.;
-  pfmet3_          = -999999.;
+  hmet_			= -999999.;
+  hmetpfnotrks_		= -999999.;
+  hmetpf_		= -999999.;
+  hmetpf0_		= -999999.;
+  hmetpf1_		= -999999.;
+  hmetpf2_		= -999999.;
+  hmetpf3_		= -999999.;
+  hmetpf4_		= -999999.;
+  hmetpf5_		= -999999.;
+  hmetpf6_		= -999999.;
+  hmetpf7_		= -999999.;
+  hmetpf8_		= -999999.;
+  hmetpf9_		= -999999.;
+  hmetpf10_		= -999999.;
+  zmet_			= -999999.;
+  jetzmetnotrks_	= -999999.;
+  jetzmet_		= -999999.;
+  jetzmet4_		= -999999.;
+  jetzmet8_		= -999999.;
+  pfmet3_		= -999999.;
 
 
-  hmetphi_            = -999999.;
-  hmetphipf_          = -999999.;
-  hmetphipfnotrks_    = -999999.;
-  hmetphipf0_         = -999999.;
-  hmetphipf1_         = -999999.;
-  hmetphipf2_         = -999999.;
-  hmetphipf3_         = -999999.;
-  hmetphipf4_         = -999999.;
-  hmetphipf5_         = -999999.;
-  hmetphipf6_         = -999999.;
-  hmetphipf7_         = -999999.;
-  hmetphipf8_         = -999999.;
-  hmetphipf9_         = -999999.;
-  hmetphipf10_        = -999999.;
-  zmetphi_            = -999999.;
-  jetzmetphi_         = -999999.;
-  jetzmetphinotrks_   = -999999.;
-  jetzmetphi4_        = -999999.;
-  jetzmetphi8_        = -999999.;
-  pfmetphi3_          = -999999.;
+  hmetphi_		= -999999.;
+  hmetphipf_		= -999999.;
+  hmetphipfnotrks_	= -999999.;
+  hmetphipf0_		= -999999.;
+  hmetphipf1_		= -999999.;
+  hmetphipf2_		= -999999.;
+  hmetphipf3_		= -999999.;
+  hmetphipf4_		= -999999.;
+  hmetphipf5_		= -999999.;
+  hmetphipf6_		= -999999.;
+  hmetphipf7_		= -999999.;
+  hmetphipf8_		= -999999.;
+  hmetphipf9_		= -999999.;
+  hmetphipf10_		= -999999.;
+  zmetphi_		= -999999.;
+  jetzmetphi_		= -999999.;
+  jetzmetphinotrks_	= -999999.;
+  jetzmetphi4_		= -999999.;
+  jetzmetphi8_		= -999999.;
+  pfmetphi3_		= -999999.;
 
-  hmetproj_            = -999999.;
-  hmetpfproj_          = -999999.;
-  hmetpfnotrksproj_    = -999999.;
-  hmetpf0proj_         = -999999.;
-  hmetpf1proj_         = -999999.;
-  hmetpf2proj_         = -999999.;
-  hmetpf3proj_         = -999999.;
-  hmetpf4proj_         = -999999.;
-  hmetpf5proj_         = -999999.;
-  hmetpf6proj_         = -999999.;
-  hmetpf7proj_         = -999999.;
-  hmetpf8proj_         = -999999.;
-  hmetpf9proj_         = -999999.;
-  hmetpf10proj_        = -999999.;
-  zmetproj_            = -999999.;
-  jetzmetproj_         = -999999.;
-  jetzmetnotrksproj_   = -999999.;
-  jetzmet4proj_        = -999999.;
-  jetzmet8proj_        = -999999.;
-  pfmet3proj_          = -999999.;
+  hmetproj_		= -999999.;
+  hmetpfproj_		= -999999.;
+  hmetpfnotrksproj_	= -999999.;
+  hmetpf0proj_		= -999999.;
+  hmetpf1proj_		= -999999.;
+  hmetpf2proj_		= -999999.;
+  hmetpf3proj_		= -999999.;
+  hmetpf4proj_		= -999999.;
+  hmetpf5proj_		= -999999.;
+  hmetpf6proj_		= -999999.;
+  hmetpf7proj_		= -999999.;
+  hmetpf8proj_		= -999999.;
+  hmetpf9proj_		= -999999.;
+  hmetpf10proj_		= -999999.;
+  zmetproj_		= -999999.;
+  jetzmetproj_		= -999999.;
+  jetzmetnotrksproj_	= -999999.;
+  jetzmet4proj_		= -999999.;
+  jetzmet8proj_		= -999999.;
+  pfmet3proj_		= -999999.;
 
-  dilep_ = 0;
-  jet_   = 0;
-  lep1_  = 0;
-  lep2_  = 0;
+  dilep_		= 0;
+  jet_			= 0;
+  lep1_			= 0;
+  lep2_			= 0;
 }
 
 //--------------------------------------------------------------------
@@ -880,120 +1098,114 @@ void looper::MakeBabyNtuple (const char* babyFileName)
   babyFile_ = new TFile(Form("%s", babyFileName), "RECREATE");
   babyFile_->cd();
   eventTree_ = new TTree("Events", "Events Tree");
-
-  eventTree_->Branch("dilep", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_ );
-  eventTree_->Branch("lep1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_  );
-  eventTree_->Branch("lep2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_  );
-  eventTree_->Branch("jet"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_   );
-
-  eventTree_->Branch("weight"           , &weight_           , "weight/F"  );
-  eventTree_->Branch("vtxweight"        , &vtxweight_        , "vtxweight/F"  );
-  eventTree_->Branch("davtxweight"      , &davtxweight_      , "davtxweight/F"  );
-  eventTree_->Branch("run"              , &run_              , "run/I"  );
-  eventTree_->Branch("lumi"             , &lumi_             , "lumi/I" );
-  eventTree_->Branch("event"            , &event_            , "event/I");
-  eventTree_->Branch("nvtx"             , &nvtx_             , "nvtx/I");
-  eventTree_->Branch("ndavtx"           , &ndavtx_           , "ndavtx/I");
-  eventTree_->Branch("vtxIdx"           , &vtxIdx_           , "vtxIdx/I");
-  eventTree_->Branch("dilmass"          , &dilmass_          , "dilmass/F");
-  eventTree_->Branch("leptype"          , &leptype_          , "leptype/I");
-  eventTree_->Branch("njets25"          , &njets25_          , "njets25/I");
-  eventTree_->Branch("njets30"          , &njets30_          , "njets30/I");
-
-  eventTree_->Branch("jetpt"            , &jetpt_            , "jetpt/F"   );
-  eventTree_->Branch("jetgen"           , &jetgen_           , "jetgen/F"  );
-  eventTree_->Branch("jeteta"           , &jeteta_           , "jeteta/F"  );
-  eventTree_->Branch("jetphi"           , &jetphi_           , "jetphi/F"  );
-  eventTree_->Branch("jetpv"            , &jetpv_            , "jetpv/I"   );
-  eventTree_->Branch("jetbeta"          , &jetbeta_          , "jetbeta/F" );
-
-
-  eventTree_->Branch("genmet"           , &genmet_           , "genmet/F"   );
-  eventTree_->Branch("genmetphi"        , &genmetphi_        , "genmetphi/F");
-  eventTree_->Branch("gensumet"         , &gensumet_         , "gensumet/F" );
- 
-  eventTree_->Branch("pfmet"            , &pfmet_            , "pfmet/F"   );
-  eventTree_->Branch("pfmetphi"         , &pfmetphi_         , "pfmetphi/F");
-  eventTree_->Branch("pfsumet"          , &pfsumet_          , "pfsumet/F" );
-
-  eventTree_->Branch("met"              , &met_              , "met/F"      );
-  eventTree_->Branch("metphi"           , &metphi_           , "metphi/F"   );
-  eventTree_->Branch("sumet"            , &sumet_            , "sumet/F"    );
- 
-  eventTree_->Branch("tcmet"            , &tcmet_            , "tcmet/F"      );
-  eventTree_->Branch("tcmetphi"         , &tcmetphi_         , "tcmetphi/F"   );
-  eventTree_->Branch("tcsumet"          , &tcsumet_          , "tcsumet/F"    );
-
-  eventTree_->Branch("pfcandmet"        , &pfcandmet_        , "pfcandmet/F"      );
-  eventTree_->Branch("pfcandmetphi"     , &pfcandmetphi_     , "pfcandmetphi/F"   );
-  eventTree_->Branch("pfcandsumet"      , &pfcandsumet_      , "pfcandsumet/F"    );
-
-  eventTree_->Branch("tcmetnew"         , &tcmetNew_         , "tcmetnew/F"      );
-  eventTree_->Branch("tcmetphinew"      , &tcmetphiNew_      , "tcmetphinew/F"   );
-  eventTree_->Branch("tcsumetnew"       , &tcsumetNew_       , "tcsumetnew/F"    );
-
-  eventTree_->Branch("hmet"             , &hmet_             , "hmet/F"           );
-  eventTree_->Branch("hmetpfnotrks"     , &hmetpfnotrks_     , "hmetpfnotrks/F"   );
-  eventTree_->Branch("hmetpf"           , &hmetpf_           , "hmetpf/F"         );
-  eventTree_->Branch("hmetpf0"          , &hmetpf0_          , "hmetpf0/F"        );
-  eventTree_->Branch("hmetpf1"          , &hmetpf1_          , "hmetpf1/F"        );
-  eventTree_->Branch("hmetpf2"          , &hmetpf2_          , "hmetpf2/F"        );
-  eventTree_->Branch("hmetpf3"          , &hmetpf3_          , "hmetpf3/F"        );
-  eventTree_->Branch("hmetpf4"          , &hmetpf4_          , "hmetpf4/F"        );
-  eventTree_->Branch("hmetpf5"          , &hmetpf5_          , "hmetpf5/F"        );
-  eventTree_->Branch("hmetpf6"          , &hmetpf6_          , "hmetpf6/F"        );
-  eventTree_->Branch("hmetpf7"          , &hmetpf7_          , "hmetpf7/F"        );
-  eventTree_->Branch("hmetpf8"          , &hmetpf8_          , "hmetpf8/F"        );
-  eventTree_->Branch("hmetpf9"          , &hmetpf9_          , "hmetpf9/F"        );
-  eventTree_->Branch("hmetpf10"         , &hmetpf10_         , "hmetpf10/F"       );
-  eventTree_->Branch("jetzmetnotrks"    , &jetzmetnotrks_    , "jetzmetnotrks/F"  );
-  eventTree_->Branch("jetzmet"          , &jetzmet_          , "jetzmet/F"        );
-  eventTree_->Branch("jetzmet4"         , &jetzmet4_         , "jetzmet4/F"       );
-  eventTree_->Branch("jetzmet8"         , &jetzmet8_         , "jetzmet8/F"       );
-  eventTree_->Branch("zmet"             , &zmet_             , "zmet/F"           );
-  eventTree_->Branch("pfmet3"           , &pfmet3_           , "pfmet3/F"         );
-
-  eventTree_->Branch("hmetphi"          , &hmetphi_          , "hmetphi/F"            );
-  eventTree_->Branch("hmetphipfnotrks"  , &hmetphipfnotrks_  , "hmetphipfnotrks/F"    );
-  eventTree_->Branch("hmetphipf"        , &hmetphipf_        , "hmetphipf/F"          );
-  eventTree_->Branch("hmetphipf0"       , &hmetphipf0_       , "hmetphipf0/F"         );
-  eventTree_->Branch("hmetphipf1"       , &hmetphipf1_       , "hmetphipf1/F"         );
-  eventTree_->Branch("hmetphipf2"       , &hmetphipf2_       , "hmetphipf2/F"         );
-  eventTree_->Branch("hmetphipf3"       , &hmetphipf3_       , "hmetphipf3/F"         );
-  eventTree_->Branch("hmetphipf4"       , &hmetphipf4_       , "hmetphipf4/F"         );
-  eventTree_->Branch("hmetphipf5"       , &hmetphipf5_       , "hmetphipf5/F"         );
-  eventTree_->Branch("hmetphipf6"       , &hmetphipf6_       , "hmetphipf6/F"         );
-  eventTree_->Branch("hmetphipf7"       , &hmetphipf7_       , "hmetphipf7/F"         );
-  eventTree_->Branch("hmetphipf8"       , &hmetphipf8_       , "hmetphipf8/F"         );
-  eventTree_->Branch("hmetphipf9"       , &hmetphipf9_       , "hmetphipf9/F"         );
-  eventTree_->Branch("hmetphipf10"      , &hmetphipf10_      , "hmetphipf10/F"        );
-  eventTree_->Branch("jetzmetphinotrks" , &jetzmetphinotrks_ , "jetzmetphinotrks/F"   );
-  eventTree_->Branch("jetzmetphi"       , &jetzmetphi_       , "jetzmetphi/F"         );
-  eventTree_->Branch("jetzmetphi4"      , &jetzmetphi4_      , "jetzmetphi4/F"        );
-  eventTree_->Branch("jetzmetphi8"      , &jetzmetphi8_      , "jetzmetphi8/F"        );
-  eventTree_->Branch("zmetphi"          , &zmetphi_          , "zmetphi/F"            );
-  eventTree_->Branch("pfmetphi3"        , &pfmetphi3_        , "pfmetphi3/F"         );
-
-  eventTree_->Branch("hmetproj"          , &hmetproj_          , "hmetproj/F"            );
-  eventTree_->Branch("hmetpfnotrksproj"  , &hmetpfnotrksproj_  , "hmetpfnotrksproj/F"    );
-  eventTree_->Branch("hmetpfproj"        , &hmetpfproj_        , "hmetpfproj/F"          );
-  eventTree_->Branch("hmetpf0proj"       , &hmetpf0proj_       , "hmetpf0proj/F"         );
-  eventTree_->Branch("hmetpf1proj"       , &hmetpf1proj_       , "hmetpf1proj/F"         );
-  eventTree_->Branch("hmetpf2proj"       , &hmetpf2proj_       , "hmetpf2proj/F"         );
-  eventTree_->Branch("hmetpf3proj"       , &hmetpf3proj_       , "hmetpf3proj/F"         );
-  eventTree_->Branch("hmetpf4proj"       , &hmetpf4proj_       , "hmetpf4proj/F"         );
-  eventTree_->Branch("hmetpf5proj"       , &hmetpf5proj_       , "hmetpf5proj/F"         );
-  eventTree_->Branch("hmetpf6proj"       , &hmetpf6proj_       , "hmetpf6proj/F"         );
-  eventTree_->Branch("hmetpf7proj"       , &hmetpf7proj_       , "hmetpf7proj/F"         );
-  eventTree_->Branch("hmetpf8proj"       , &hmetpf8proj_       , "hmetpf8proj/F"         );
-  eventTree_->Branch("hmetpf9proj"       , &hmetpf9proj_       , "hmetpf9proj/F"         );
-  eventTree_->Branch("hmetpf10proj"      , &hmetpf10proj_      , "hmetpf10proj/F"        );
-  eventTree_->Branch("jetzmetnotrksproj" , &jetzmetnotrksproj_ , "jetzmetnotrksproj/F"   );
-  eventTree_->Branch("jetzmetproj"       , &jetzmetproj_       , "jetzmetproj/F"         );
-  eventTree_->Branch("jetzmet4proj"      , &jetzmet4proj_      , "jetzmet4proj/F"        );
-  eventTree_->Branch("jetzmet8proj"      , &jetzmet8proj_      , "jetzmet8proj/F"        );
-  eventTree_->Branch("zmetproj"          , &zmetproj_          , "zmetproj/F"            );
-  eventTree_->Branch("pfmet3proj"        , &pfmet3proj_        , "pfmet3proj/F"         );
+  eventTree_->Branch("dilep"			, "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
+  eventTree_->Branch("lep1"			, "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
+  eventTree_->Branch("lep2"			, "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
+  eventTree_->Branch("jet"			, "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
+  eventTree_->Branch("dataset"                  , &dataset_           , "dataset[200]/C"                                );
+  eventTree_->Branch("weight"			, &weight_            , "weight/F"					);
+  eventTree_->Branch("vtxweight"		, &vtxweight_         , "vtxweight/F"					);
+  eventTree_->Branch("davtxweight"		, &davtxweight_       , "davtxweight/F"					);
+  eventTree_->Branch("run"			, &run_               , "run/I"						);
+  eventTree_->Branch("toptag"			, &toptag_            , "toptag/I"				    	);
+  eventTree_->Branch("softmu"			, &softmu_            , "softmu/I"					);
+  eventTree_->Branch("nel"			, &nEl_               , "nel/I"						);
+  eventTree_->Branch("nmu"			, &nMu_               , "nmu/I"						);
+  eventTree_->Branch("nlep"			, &nLep_              , "nlep/I"				       	);
+  eventTree_->Branch("lumi"			, &lumi_              , "lumi/I"					);
+  eventTree_->Branch("event"			, &event_             , "event/I"					);
+  eventTree_->Branch("nvtx"			, &nvtx_              , "nvtx/I"					);
+  eventTree_->Branch("ndavtx"			, &ndavtx_            , "ndavtx/I"					);
+  eventTree_->Branch("vtxIdx"			, &vtxIdx_            , "vtxIdx/I"					);
+  eventTree_->Branch("dilmass"			, &dilmass_           , "dilmass/F"					);
+  eventTree_->Branch("leptype"			, &leptype_           , "leptype/I"					);
+  eventTree_->Branch("njets25"			, &njets25_           , "njets25/I"					);
+  eventTree_->Branch("njets30"			, &njets30_           , "njets30/I"					);
+  eventTree_->Branch("jetpt"			, &jetpt_             , "jetpt/F"					);
+  eventTree_->Branch("jetgen"			, &jetgen_            , "jetgen/F"					);
+  eventTree_->Branch("jeteta"			, &jeteta_            , "jeteta/F"					);
+  eventTree_->Branch("jetphi"			, &jetphi_            , "jetphi/F"					);
+  eventTree_->Branch("jetpv"			, &jetpv_             , "jetpv/I"					);
+  eventTree_->Branch("jetb"			, &jetb_              , "jetb/F"					);
+  eventTree_->Branch("jetbeta"			, &jetbeta_           , "jetbeta/F"					);
+  eventTree_->Branch("genmet"			, &genmet_            , "genmet/F"					);
+  eventTree_->Branch("genmetphi"		, &genmetphi_         , "genmetphi/F"					);
+  eventTree_->Branch("gensumet"			, &gensumet_          , "gensumet/F"					);
+  eventTree_->Branch("pfmet"			, &pfmet_             , "pfmet/F"					);
+  eventTree_->Branch("pfmetphi"			, &pfmetphi_          , "pfmetphi/F"					);
+  eventTree_->Branch("pfsumet"			, &pfsumet_           , "pfsumet/F"					);
+  eventTree_->Branch("met"			, &met_               , "met/F"						);
+  eventTree_->Branch("metphi"			, &metphi_            , "metphi/F"					);
+  eventTree_->Branch("sumet"			, &sumet_             , "sumet/F"					);
+  eventTree_->Branch("tcmet"			, &tcmet_             , "tcmet/F"					);
+  eventTree_->Branch("tcmetphi"			, &tcmetphi_          , "tcmetphi/F"					);
+  eventTree_->Branch("tcsumet"			, &tcsumet_           , "tcsumet/F"					);
+  eventTree_->Branch("pfcandmet"		, &pfcandmet_         , "pfcandmet/F"					);
+  eventTree_->Branch("pfcandmetphi"		, &pfcandmetphi_      , "pfcandmetphi/F"				);
+  eventTree_->Branch("pfcandsumet"		, &pfcandsumet_       , "pfcandsumet/F"					);
+  eventTree_->Branch("tcmetnew"			, &tcmetNew_          , "tcmetnew/F"					);
+  eventTree_->Branch("tcmetphinew"		, &tcmetphiNew_       , "tcmetphinew/F"					);
+  eventTree_->Branch("tcsumetnew"		, &tcsumetNew_        , "tcsumetnew/F"					);
+  eventTree_->Branch("hmet"			, &hmet_              , "hmet/F"					);
+  eventTree_->Branch("hmetpfnotrks"		, &hmetpfnotrks_      , "hmetpfnotrks/F"				);
+  eventTree_->Branch("hmetpf"			, &hmetpf_            , "hmetpf/F"					);
+  eventTree_->Branch("hmetpf0"			, &hmetpf0_           , "hmetpf0/F"					);
+  eventTree_->Branch("hmetpf1"			, &hmetpf1_           , "hmetpf1/F"					);
+  eventTree_->Branch("hmetpf2"			, &hmetpf2_           , "hmetpf2/F"					);
+  eventTree_->Branch("hmetpf3"			, &hmetpf3_           , "hmetpf3/F"					);
+  eventTree_->Branch("hmetpf4"			, &hmetpf4_           , "hmetpf4/F"					);
+  eventTree_->Branch("hmetpf5"			, &hmetpf5_           , "hmetpf5/F"					);
+  eventTree_->Branch("hmetpf6"			, &hmetpf6_           , "hmetpf6/F"					);
+  eventTree_->Branch("hmetpf7"			, &hmetpf7_           , "hmetpf7/F"					);
+  eventTree_->Branch("hmetpf8"			, &hmetpf8_           , "hmetpf8/F"					);
+  eventTree_->Branch("hmetpf9"			, &hmetpf9_           , "hmetpf9/F"					);
+  eventTree_->Branch("hmetpf10"			, &hmetpf10_          , "hmetpf10/F"					);
+  eventTree_->Branch("jetzmetnotrks"		, &jetzmetnotrks_     , "jetzmetnotrks/F"				);
+  eventTree_->Branch("jetzmet"			, &jetzmet_           , "jetzmet/F"					);
+  eventTree_->Branch("jetzmet4"			, &jetzmet4_          , "jetzmet4/F"					);
+  eventTree_->Branch("jetzmet8"			, &jetzmet8_          , "jetzmet8/F"					);
+  eventTree_->Branch("zmet"			, &zmet_              , "zmet/F"					);
+  eventTree_->Branch("pfmet3"			, &pfmet3_            , "pfmet3/F"					);
+  eventTree_->Branch("hmetphi"			, &hmetphi_           , "hmetphi/F"					);
+  eventTree_->Branch("hmetphipfnotrks"		, &hmetphipfnotrks_   , "hmetphipfnotrks/F"				);
+  eventTree_->Branch("hmetphipf"		, &hmetphipf_         , "hmetphipf/F"					);
+  eventTree_->Branch("hmetphipf0"		, &hmetphipf0_        , "hmetphipf0/F"					);
+  eventTree_->Branch("hmetphipf1"		, &hmetphipf1_        , "hmetphipf1/F"					);
+  eventTree_->Branch("hmetphipf2"		, &hmetphipf2_        , "hmetphipf2/F"					);
+  eventTree_->Branch("hmetphipf3"		, &hmetphipf3_        , "hmetphipf3/F"					);
+  eventTree_->Branch("hmetphipf4"		, &hmetphipf4_        , "hmetphipf4/F"					);
+  eventTree_->Branch("hmetphipf5"		, &hmetphipf5_        , "hmetphipf5/F"					);
+  eventTree_->Branch("hmetphipf6"		, &hmetphipf6_        , "hmetphipf6/F"					);
+  eventTree_->Branch("hmetphipf7"		, &hmetphipf7_        , "hmetphipf7/F"					);
+  eventTree_->Branch("hmetphipf8"		, &hmetphipf8_        , "hmetphipf8/F"					);
+  eventTree_->Branch("hmetphipf9"		, &hmetphipf9_        , "hmetphipf9/F"					);
+  eventTree_->Branch("hmetphipf10"		, &hmetphipf10_       , "hmetphipf10/F"					);
+  eventTree_->Branch("jetzmetphinotrks"		, &jetzmetphinotrks_  , "jetzmetphinotrks/F"				);
+  eventTree_->Branch("jetzmetphi"		, &jetzmetphi_        , "jetzmetphi/F"					);
+  eventTree_->Branch("jetzmetphi4"		, &jetzmetphi4_       , "jetzmetphi4/F"					);
+  eventTree_->Branch("jetzmetphi8"		, &jetzmetphi8_       , "jetzmetphi8/F"					);
+  eventTree_->Branch("zmetphi"			, &zmetphi_           , "zmetphi/F"					);
+  eventTree_->Branch("pfmetphi3"		, &pfmetphi3_         , "pfmetphi3/F"					);
+  eventTree_->Branch("hmetproj"			, &hmetproj_          , "hmetproj/F"					);
+  eventTree_->Branch("hmetpfnotrksproj"		, &hmetpfnotrksproj_  , "hmetpfnotrksproj/F"				);
+  eventTree_->Branch("hmetpfproj"		, &hmetpfproj_        , "hmetpfproj/F"					);
+  eventTree_->Branch("hmetpf0proj"		, &hmetpf0proj_       , "hmetpf0proj/F"					);
+  eventTree_->Branch("hmetpf1proj"		, &hmetpf1proj_       , "hmetpf1proj/F"					);
+  eventTree_->Branch("hmetpf2proj"		, &hmetpf2proj_       , "hmetpf2proj/F"					);
+  eventTree_->Branch("hmetpf3proj"		, &hmetpf3proj_       , "hmetpf3proj/F"					);
+  eventTree_->Branch("hmetpf4proj"		, &hmetpf4proj_       , "hmetpf4proj/F"					);
+  eventTree_->Branch("hmetpf5proj"		, &hmetpf5proj_       , "hmetpf5proj/F"					);
+  eventTree_->Branch("hmetpf6proj"		, &hmetpf6proj_       , "hmetpf6proj/F"					);
+  eventTree_->Branch("hmetpf7proj"		, &hmetpf7proj_       , "hmetpf7proj/F"					);
+  eventTree_->Branch("hmetpf8proj"		, &hmetpf8proj_       , "hmetpf8proj/F"					);
+  eventTree_->Branch("hmetpf9proj"		, &hmetpf9proj_       , "hmetpf9proj/F"					);
+  eventTree_->Branch("hmetpf10proj"		, &hmetpf10proj_      , "hmetpf10proj/F"				);
+  eventTree_->Branch("jetzmetnotrksproj"	, &jetzmetnotrksproj_ , "jetzmetnotrksproj/F"				);
+  eventTree_->Branch("jetzmetproj"		, &jetzmetproj_       , "jetzmetproj/F"					);
+  eventTree_->Branch("jetzmet4proj"		, &jetzmet4proj_      , "jetzmet4proj/F"				);
+  eventTree_->Branch("jetzmet8proj"		, &jetzmet8proj_      , "jetzmet8proj/F"				);
+  eventTree_->Branch("zmetproj"			, &zmetproj_          , "zmetproj/F"					);
+  eventTree_->Branch("pfmet3proj"		, &pfmet3proj_        , "pfmet3proj/F"					);
 }
 
 //--------------------------------------------------------------------
