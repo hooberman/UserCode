@@ -49,13 +49,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version = "V00-00-02";
+  const char* version = "V00-00-03";
 
   //Load CORE stuff
   gROOT->ProcessLine(".L ../CORE/CMS2.cc+");
   gROOT->ProcessLine(".L ../CORE/trackSelections.cc+");
   gROOT->ProcessLine(".L ../CORE/metSelections.cc+");
   gROOT->ProcessLine(".L ../CORE/eventSelections.cc+");
+  gROOT->ProcessLine(".L ../CORE/MITConversionUtilities.cc+");
   gROOT->ProcessLine(".L ../CORE/electronSelectionsParameters.cc+");
   gROOT->ProcessLine(".L ../CORE/electronSelections.cc+");
   gROOT->ProcessLine(".L ../CORE/muonSelections.cc+");
@@ -73,7 +74,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   // Load and compile the looping code
   gSystem->CompileMacro("ossusy_looper.C","++k", "libossusy_looper");
-
+  
   ossusy_looper* looper = new ossusy_looper();
   //use OS/SS baseline selection as documented in:
   //http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/SusyStudies3x
@@ -84,6 +85,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   looper->set_useBitMask(0);
   //set version
   looper->set_version(version);
+  //set trigger type
+  ossusy_looper::TrigEnum trig = ossusy_looper::e_lowpt;
+  //ossusy_looper::TrigEnum trig = ossusy_looper::e_highpt;
+  looper->set_trigger( trig );
 
   // K-factors
   // these have been k-factors NLO/LO before
@@ -187,7 +192,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML7      = 1;
   int preML8      = 1;
   int preLMscan   = 1;
-  cout << __LINE__ << endl;
+
   /*
   //Flags for files to run over
   bool rundata     = 1;
@@ -246,30 +251,27 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runttall    = 0;
-  bool runttdil    = 0;
-  bool runttall_spring11 = 0;
+  bool runttdil    = 1;
   bool runttrelval = 0;
   bool runttem     = 0;
-  bool runttotr    = 0;
+  bool runttotr    = 1;
   bool runVV       = 0;
-  bool runWW       = 0;
-  bool runWZ       = 0;
-  bool runZZ       = 0;
-  bool runWjets    = 0;
+  bool runWW       = 1;
+  bool runWZ       = 1;
+  bool runZZ       = 1;
+  bool runWjets    = 1;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 0;
+  bool runDYtot    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
-  bool runDYee_spring11 = 0;
-  bool runDYmm_spring11 = 0;
   bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
-  bool runtW       = 0;
+  bool runtW       = 1;
   bool runVQQ      = 0;
-  bool runLM0      = 0;
-  bool runLM1      = 0;
+  bool runLM0      = 1;
+  bool runLM1      = 1;
   bool runLM2      = 0;
   bool runLM3      = 0;
   bool runLM4      = 0;
@@ -317,43 +319,61 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chdata = new  TChain("Events");
   if(rundata){
-  
-    pickSkimIfExists(chdata,
-		     "cms2_data/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged*root",
-                     "data");
 
-    pickSkimIfExists(chdata,
-		     "cms2_data/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root",
-                     "data");
-    
-    pickSkimIfExists(chdata,
-		     "cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root",
-                     "data");
+    if( trig == ossusy_looper::e_highpt ){
+
+      cout << "Doing high-pT dilepton trigger data" << endl;
+  
+      pickSkimIfExists(chdata,
+		       "cms2_data/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged*root",
+		       "data");
+      
+      pickSkimIfExists(chdata,
+		       "cms2_data/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root",
+		       "data");
+      
+      pickSkimIfExists(chdata,
+		       "cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root",
+		       "data");
+    }
+
+    else if( trig == ossusy_looper::e_lowpt ){
+
+      cout << "Doing dilepton-HT trigger data" << endl;
+      
+      pickSkimIfExists(chdata,
+		       "cms2/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged_160329_161312.root",
+		       "data");
+   
+      pickSkimIfExists(chdata,
+		       "cms2/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312*root",
+		       "data");
+
+    }
 
   }
   
-  TChain* chQCDpt15 = new  TChain("Events");
-  if(runQCDpt15){
-    pickSkimIfExists(chQCDpt15, 
-                     "/tas/cms2/QCD_Pt15_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*root",
-                     "QCDpt15");
-  }
+  // TChain* chQCDpt15 = new  TChain("Events");
+  // if(runQCDpt15){
+  //   pickSkimIfExists(chQCDpt15, 
+  //                    "/tas/cms2/QCD_Pt15_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*root",
+  //                    "QCDpt15");
+
+  // }
   
-  TChain* chQCDpt30 = new  TChain("Events");
-  if(runQCDpt30){
-    pickSkimIfExists(chQCDpt30, 
-                     "/tas/cms2/QCD_Pt30_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*root",
-                     "QCDpt30");
-  }
+  // TChain* chQCDpt30 = new  TChain("Events");
+  // if(runQCDpt30){
+  //   pickSkimIfExists(chQCDpt30, 
+  //                    "/tas/cms2/QCD_Pt30_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*root",
+  //                    "QCDpt30");
+  // }
 
   TChain* chZjets = new  TChain("Events");
   if(runZjets){
-    pickSkimIfExists(chZjets, 
-                     //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
-                     Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
+    pickSkimIfExists(chZjets,
+		     "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_V04-01-01/merged*root", 
                      "Zjets");
 
-    cout << "Replace ZJets with skim" << endl;
   }
 
 
@@ -365,19 +385,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   }
 
-  TChain* chtopall_spring11 = new TChain("Events");
-  if (runttall_spring11) {
-    pickSkimIfExists(chtopall_spring11, 
-		     "/tas/benhoob/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-00-10/n*root",
-                     "TTJets");
-
-  }
-
   TChain* chtopdil = new TChain("Events");
   if (runttdil) {
     pickSkimIfExists(chtopdil,
-                     //Form("/tas/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir), 
-                     Form("/tas/cms2/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
+		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "TTJets");
 
   }
@@ -392,66 +403,66 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtopem = new TChain("Events");
   if (runttem) {
     pickSkimIfExists(chtopem, 
-                     //Form("/tas/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
-                     "/tas/cms2/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/merged*root",
+		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "TTJets");
-
   }
 
   TChain* chtopotr = new TChain("Events");
   if(runttotr){
     pickSkimIfExists(chtopotr, 
-                     //Form("/tas/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
-                     Form("/tas/cms2/TTJets_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
+		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "TTJets");
 
   }
 
   TChain* chvv = new TChain("Events");
-  if(runVV){
-    pickSkimIfExists(chvv, 
-                     Form("/tas/cms2/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
-                     "VV");
-  }
+  // if(runVV){
+  //   pickSkimIfExists(chvv, 
+  //                    Form("/tas/cms2/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+  //                    "VV");
+  // }
 
   TChain* chww = new TChain("Events");
   if(runWW){
     pickSkimIfExists(chww, 
-                     Form("/tas/cms2/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
-                     "WW");
+		     "cms2/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "WW");
   }
 
   TChain* chWZ = new TChain("Events");
   if(runWZ){
     pickSkimIfExists(chWZ, 
-                     "/tas/cms2/WZTo3LNu_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged*root",
-                     "WZ_incl");
+                     "cms2/WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+                     "WZ");
   }
 
   TChain* chZZ = new TChain("Events");
   if(runZZ){
     pickSkimIfExists(chZZ, 
-                     Form("/tas/cms2/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+                     "cms2/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "ZZ");
   }
 
   TChain* chWjets = new  TChain("Events");
   if(runWjets){
     pickSkimIfExists(chWjets, 
-                     "/tas/cms2/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-13-07/diLepPt2010Skim/skimmed*root",
-                     //"/tas/cms2/WJets-madgraph_Spring10-START3X_V26_S09-v1_SingleLep/V03-04-08/merged*.root",
-                     "WJets");
-
-    cout << "Using 36X Wjets MC" << endl;
+                     "cms2/WToENu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "WJets");
+    pickSkimIfExists(chWjets, 
+                     "cms2/WToMuNu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "WJets");
+    pickSkimIfExists(chWjets, 
+		     "cms2/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+		     "WJets");
   }
 
   TChain* chWcharm = new TChain("Events");
-  if(runWcharm){
-    pickSkimIfExists(chWcharm, 
-                     //is this the correct sample????
-   		     "/tas/cms2/WCJets_7TeV-madgraph_Spring10-START3X_V26-v1/V03-04-13-01/merged*root",
-                     "Wc");
-  }
+  // if(runWcharm){
+  //   pickSkimIfExists(chWcharm, 
+  //                    //is this the correct sample????
+  //  		     "/tas/cms2/WCJets_7TeV-madgraph_Spring10-START3X_V26-v1/V03-04-13-01/merged*root",
+  //                    "Wc");
+  // }
 
 
   TChain* chDYtot = new  TChain("Events");
@@ -472,7 +483,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "DYtot");
     
     pickSkimIfExists(chDYtot, 
-		     "cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+		     "cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "DYtot");
     
     pickSkimIfExists(chDYtot, 
@@ -488,63 +499,61 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		     "DYtot"); 
   }
 
-
-
-
   
   TChain* chDYtautau = new  TChain("Events");
-  if(runDYtautau){
+  // if(runDYtautau){
 
-    pickSkimIfExists(chDYtautau, 
-                     Form("/tas/cms2/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
-                     "DYtautau");
+  //   pickSkimIfExists(chDYtautau, 
+  //                    Form("/tas/cms2/DYToTauTau_M-20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+  //                    "DYtautau");
     
-    pickSkimIfExists(chDYtautau, 
-                     Form("/tas/cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
-                     "DYtautau");
+  //   pickSkimIfExists(chDYtautau, 
+  //                    Form("/tas/cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+  //                    "DYtautau");
     
-    pickSkimIfExists(chDYtautau, 
-                     //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
-                     Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
-                     "DYtautau"); 
+  //   pickSkimIfExists(chDYtautau, 
+  //                    //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+  //                    Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
+  //                    "DYtautau"); 
 
-  }
+  // }
   
   TChain* chDYee = new  TChain("Events");
-  if(runDYee){
+  // if(runDYee){
 
-    pickSkimIfExists(chDYee, 
-                     Form("/tas/cms2/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
-                     "DYee");
+  //   pickSkimIfExists(chDYee, 
+  //                    Form("/tas/cms2/DYToEE_M-20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+  //                    "DYee");
     
-    pickSkimIfExists(chDYee, 
-                     Form("/tas/cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
-                     "DYee");
+  //   pickSkimIfExists(chDYee, 
+  //                    Form("/tas/cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+  //                    "DYee");
     
-    pickSkimIfExists(chDYee, 
-                     //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
-                     Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
-                     "DYee"); 
+  //   pickSkimIfExists(chDYee, 
+  //                    //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+  //                    Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
+  //                    "DYee"); 
 
-  }
+  // }
 
-  if(runDYmm){
-    TChain* chDYmm = new  TChain("Events");
+  TChain* chDYmm = new  TChain("Events");
 
-    pickSkimIfExists(chDYmm, 
-                     Form("/tas/cms2/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
-                     "DYmm");
+  //  if(runDYmm){
+
+  //   pickSkimIfExists(chDYmm, 
+  //                    Form("/tas/cms2/DYToMuMu_M-20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+  //                    "DYmm");
     
-    pickSkimIfExists(chDYmm, 
-                     Form("/tas/cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
-                     "DYmm");
+  //   pickSkimIfExists(chDYmm, 
+  //                    Form("/tas/cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/%smerged*root",dir),
+  //                    "DYmm");
     
-    pickSkimIfExists(chDYmm, 
-                     //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
-                     Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
-                     "DYmm"); 
+  //   pickSkimIfExists(chDYmm, 
+  //                    //Form("/tas/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+  //                    Form("/tas/cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Fall10-START38_V12-v2/V03-06-17/%smerged*root",dir),
+  //                    "DYmm"); 
 
-  }
+  // }
 
 
   
@@ -586,15 +595,15 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtW = new  TChain("Events");
   if (runtW) {
     pickSkimIfExists(chtW, 
-                     Form("/tas/cms2/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Fall10-START38_V12-v2/V03-06-14/%smerged*root",dir),
+		     "cms2/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SingleTop_tWChannel"); 
 
     pickSkimIfExists(chtW, 
-                     Form("/tas/cms2/TToBLNu_TuneZ2_t-channel_7TeV-madgraph_Fall10-START38_V12-v2/V03-06-17/merged*root",dir),
+                     "cms2/TToBLNu_TuneZ2_t-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SingleTop_tChannel"); 
 
     pickSkimIfExists(chtW, 
-                     Form("/tas/cms2/TToBLNu_TuneZ2_s-channel_7TeV-madgraph_Fall10-START38_V12-v1/V03-06-17/merged*root",dir),
+		     "cms2/TToBLNu_TuneZ2_s-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SingleTop_sChannel"); 
 
   }
@@ -609,26 +618,23 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   		     "VQQ");
   }
   
-  // LM points currently being processed!!!!
   // LM0
   TChain *chLM0 = new TChain("Events");
   if (runLM0) {
     pickSkimIfExists(chLM0, 
-                     //"/tas/cms2/LM0_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1_fullGen/V03-06-14/merged*root",
-                     "/tas/cms2/LM0_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged*root",
+		     "cms2/LM0_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
                      "SUSY_LM0");
 
-    //cout << "USING LM0 FULL GEN!!!!!!!!!!!!!" << endl;
   }
   
   // LM1
   TChain *chLM1 = new TChain("Events");
   if (runLM1) {
     pickSkimIfExists(chLM1, 
-                     "/tas/cms2/LM1_SUSY_sftsht_7TeV-pythia6_Fall10-START38_V12-v1/V03-06-14/merged*root",
+                     "cms2/LM1_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
                      "SUSY_LM1");
   }
-
+  
   // LM2
   TChain *chLM2 = new TChain("Events");
   if (runLM2) {
@@ -1100,15 +1106,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     cout << "Done processing LMscan" << endl;
                     hist::color("LMscan", kOrange-7);
                   }
-                  
+
+
+		  char* dir = "";
+		  if( trig == ossusy_looper::e_lowpt  ) dir = "lowpt"  ;
+		  if( trig == ossusy_looper::e_highpt ) dir = "highpt" ;
                   
                   // save all the histograms
                   if(doFakeApp) {
-                    const char* outFile = Form("../output/%s/ossusy_%s_%s%s_%s_FakeApp.root", version,
+                    const char* outFile = Form("../output/%s/%s/ossusy_%s_%s%s_%s_FakeApp.root", version,dir,
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("../output/%s/ossusy_%s_%s%s.root", version,
+                    const char* outFile = Form("../output/%s/%s/ossusy_%s_%s%s.root", version,dir,
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   
