@@ -119,7 +119,7 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
       cms2.Init(tree);
 
       // event loop
-      unsigned int nEvents = tree->GetEntries() / 10;
+      unsigned int nEvents = tree->GetEntries();
 
       for (unsigned int event = 0; event < nEvents; ++event)
         {
@@ -154,8 +154,8 @@ void looper::ScanChain (TChain* chain, const char* prefix, bool isData, int nEve
 
           InitBabyNtuple();
 
-	  //if (!isData || goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))  continue;
-          //if( !cleaning_standardOctober2010() )                          continue;
+	  //if ( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()))  continue;
+          //if( !cleaning_standardOctober2010() )                           continue;
 
           vector<unsigned int> v_goodHyps;
           v_goodHyps.clear();
