@@ -149,6 +149,11 @@ void ossusy_looper::makeTree(char *prefix){
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
+
+  char* dir = "";
+  if     ( g_trig == e_lowpt  ) dir = "lowpt";
+  else if( g_trig == e_highpt ) dir = "highpt";
+
   //Super compressed ntuple here
   outFile   = new TFile(Form("../output/%s/%s/%s_smallTree.root",g_version,dir,prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
@@ -591,10 +596,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   cout << "setting json " << g_json << endl;
   set_goodrun_file( g_json );
 
-  float minpt = -1;
-  float maxpt = -1;
-  char* dir   = "";
-  float htcut = -1;
+  float minpt  = -1;
+  float maxpt  = -1;
+  char* dir    = "";
+  float htcut  = -1;
+  bool  highpt = false;
 
   if( g_trig == e_lowpt ){
     cout << "Doing 10,5 selection" << endl;
@@ -610,6 +616,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     maxpt = 20.;
     htcut = 100.;
     dir   = "highpt";
+    highpt = true;
   }
   
   bool isLM = TString(prefix).Contains("LM");
@@ -818,23 +825,18 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                  
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
 
-        //if( !passSUSYTrigger_v1( isData , hyp_type()[i] ) ) continue;
+        if( !passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) ) continue;
         
         //check that hyp leptons come from same vertex
-        if( !hypsFromSameVtx( i ) )    continue;
-
-        //veto Z mass
-        //if( type == 0 || type == 3 ){
-        //  if( hyp_p4()[i].mass() > 76 && hyp_p4()[i].mass() < 106 ) continue;
-        //}
+        if( !hypsFromSameVtx2011( i ) )    continue;
         
         //OS, pt > (20,10) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )  continue;
           
         //pt > (20,10) GeV
-        if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 20. )   continue;
-        if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 10. )   continue;
-        if( hyp_p4()[i].mass() < 10 )                                         continue;
+        if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < maxpt )   continue;
+        if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < minpt )   continue;
+        if( hyp_p4()[i].mass() < 10 )                                           continue;
         float FRweight = 1;
                  
         if(doFakeApp) {
