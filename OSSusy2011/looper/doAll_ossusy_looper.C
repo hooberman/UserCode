@@ -198,9 +198,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-
+  /*
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -216,7 +216,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjets    = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 0;
+  bool runDYtot    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -247,9 +247,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+  */  
 
-  /*      
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 0;
@@ -298,7 +297,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-*/
+
   char* dir = "";
 
   bool useMCSkims = true;
@@ -473,39 +472,71 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chDYtot = new  TChain("Events");
   if(runDYtot){
 
-    cout << "-----------------------------------------" << endl;
-    cout << "            Update DY samples!!!         " << endl;
-    cout << "-----------------------------------------" << endl;
+    if( useMCSkims ){
 
-    pickSkimIfExists(chDYtot, 
-		     "cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-                     "DYtot");
-    
-    //pickSkimIfExists(chDYtot, 
-    //                 "cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",
-    //                 "DYtot");
-    
-    pickSkimIfExists(chDYtot, 
-		     "cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
-                     "DYtot");
-    
-    pickSkimIfExists(chDYtot, 
-		     "cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-                     "DYtot");
-    
-    pickSkimIfExists(chDYtot, 
-		     "cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
-                     "DYtot");
-    
-    pickSkimIfExists(chDYtot, 
-     		     "cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-		     "DYtot");
-    
-    pickSkimIfExists(chDYtot, 
-		     "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-		     "DYtot"); 
+      char* dypath = "/tas03/home/benhoob/OSSusy2011/filter/output";
+
+      pickSkimIfExists(chDYtot, 
+		       Form("%s/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
+		       "DYtot");
+
+      pickSkimIfExists(chDYtot, 
+		       Form("%s/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
+		       "DYtot");
+
+      pickSkimIfExists(chDYtot, 
+		       Form("%s/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
+		       "DYtot");
+
+      pickSkimIfExists(chDYtot, 
+		       Form("%s/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
+		       "DYtot");
+
+      pickSkimIfExists(chDYtot, 
+		       Form("%s/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/met50skim/merged_ntuple.root",dypath),
+		       "DYtot");
+
+      pickSkimIfExists(chDYtot, 
+		       Form("%s/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
+		       "DYtot");
+
+      pickSkimIfExists(chDYtot, 
+		       Form("%s/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
+		       "DYtot");
+
+    }
+
+    else{
+
+      pickSkimIfExists(chDYtot, 
+		       "cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "DYtot");
+      
+      //pickSkimIfExists(chDYtot, 
+      //                 "cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",
+      //                 "DYtot");
+      
+      pickSkimIfExists(chDYtot, 
+		       "cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+		       "DYtot");
+      
+      pickSkimIfExists(chDYtot, 
+		       "cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "DYtot");
+      
+      pickSkimIfExists(chDYtot, 
+		       "cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+		       "DYtot");
+      
+      pickSkimIfExists(chDYtot, 
+		       "cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "DYtot");
+      
+      pickSkimIfExists(chDYtot, 
+		       "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "DYtot"); 
+    }
   }
-
   
   TChain* chDYtautau = new  TChain("Events");
   // if(runDYtautau){
