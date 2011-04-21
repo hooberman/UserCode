@@ -49,7 +49,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version = "V00-00-03";
+  const char* version   = "V00-00-04";
+  const char* jsonfile  = "json_DCSONLY.txt_160404-161312.goodruns";
+
+  cout << "Version : " << version     << endl;
+  cout << "json    : " << jsonfile    << endl;
 
   //Load CORE stuff
   gROOT->ProcessLine(".L ../CORE/CMS2.cc+");
@@ -63,6 +67,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   gROOT->ProcessLine(".L ../CORE/SimpleFakeRate.cc+");
   gROOT->ProcessLine(".L ../CORE/mcSelections.cc+");
   gROOT->ProcessLine(".L ../CORE/MT2/MT2.cc+");
+  gROOT->ProcessLine(".L ../CORE/triggerUtils.cc+");  
+  gROOT->ProcessLine(".L ../CORE/susySelections.cc+");
+  gROOT->ProcessLine(".L ../CORE/mcSUSYkfactor.cc+");
+  gROOT->ProcessLine(".L ../CORE/triggerSuperModel.cc+");
+  gROOT->ProcessLine(".L ../CORE/jetSelections.cc+");
+  gROOT->ProcessLine(".L ../CORE/ttbarSelections.cc+");
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
@@ -76,8 +86,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   gSystem->CompileMacro("ossusy_looper.C","++k", "libossusy_looper");
   
   ossusy_looper* looper = new ossusy_looper();
-  //use OS/SS baseline selection as documented in:
-  //http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/SusyStudies3x
+
+  //set looper parameters
   looper->set_susybaseline(0);
   //make baby ntuple
   looper->set_createTree(1);
@@ -86,16 +96,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //set version
   looper->set_version(version);
   //set trigger type
-  ossusy_looper::TrigEnum trig = ossusy_looper::e_lowpt;
-  //ossusy_looper::TrigEnum trig = ossusy_looper::e_highpt;
+  //ossusy_looper::TrigEnum trig = ossusy_looper::e_lowpt;
+  ossusy_looper::TrigEnum trig = ossusy_looper::e_highpt;
   looper->set_trigger( trig );
-
-  // K-factors
-  // these have been k-factors NLO/LO before
-  // now using them as sample normalizations to NLO
-
-  // these two are taken from Ceballos's pdf. 
-  // It looks like the top x-section is for mtop = 175 GeV
+  //set json
+  looper->set_json( jsonfile );
 
   //qcdpt15 correction
   // 	    * (8.158/8.762) // approximate ratio of cross section for pt-hat > 15 to 15 < pt-hat < 30
@@ -193,34 +198,34 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  /*
+
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runttall    = 0;
-  bool runttdil    = 1;
+  bool runttdil    = 0;
   bool runttem     = 0;
   bool runttrelval = 0;
-  bool runttotr    = 1;
+  bool runttotr    = 0;
   bool runVV       = 0;
-  bool runWW       = 1;
-  bool runWZ       = 1;
-  bool runZZ       = 1;
-  bool runWjets    = 1;
+  bool runWW       = 0;
+  bool runWZ       = 0;
+  bool runZZ       = 0;
+  bool runWjets    = 0;
   bool runWcharm   = 0;
-  bool runZjets    = 1;
-  bool runDYtot    = 1;
-  bool runDYee     = 1;
-  bool runDYmm     = 1;
-  bool runDYtautau = 1;
+  bool runZjets    = 0;
+  bool runDYtot    = 0;
+  bool runDYee     = 0;
+  bool runDYmm     = 0;
+  bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
-  bool runtW       = 1;
+  bool runtW       = 0;
   bool runVQQ      = 0;
-  bool runLM0      = 1;
-  bool runLM1      = 1;
+  bool runLM0      = 0;
+  bool runLM1      = 0;
   bool runLM2      = 0;
   bool runLM3      = 0;
   bool runLM4      = 0;
@@ -242,9 +247,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */  
+  
 
-    
+  /*      
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 0;
@@ -293,13 +298,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-
+*/
   char* dir = "";
 
   bool useMCSkims = true;
   if( useMCSkims ){
     cout << "Using MC skims" << endl;
-    dir = "skim201050/";
+    dir = "met50/";
   }
   else{
     cout << "Using full MC samples" << endl;
@@ -371,7 +376,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chZjets = new  TChain("Events");
   if(runZjets){
     pickSkimIfExists(chZjets,
-		     "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_V04-01-01/merged*root", 
+		     "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple_1*.root", 
                      "Zjets");
 
   }
@@ -468,7 +473,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chDYtot = new  TChain("Events");
   if(runDYtot){
 
-    cout << "Update DY samples!!!" << endl;
+    cout << "-----------------------------------------" << endl;
+    cout << "            Update DY samples!!!         " << endl;
+    cout << "-----------------------------------------" << endl;
 
     pickSkimIfExists(chDYtot, 
 		     "cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
@@ -491,11 +498,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "DYtot");
     
     pickSkimIfExists(chDYtot, 
-		     "cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
-                     "DYtot");
+     		     "cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "DYtot");
     
     pickSkimIfExists(chDYtot, 
-		     "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_V04-01-01/merged*root",
+		     "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		     "DYtot"); 
   }
 
@@ -808,7 +815,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //set luminosity to scale to
   //--------------------------------
   float lumi              = 0.023; 
-  bool  calculateTCMET    = true; //redo tcmet calculation on the fly
+  bool  calculateTCMET    = false; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
   char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
@@ -1106,7 +1113,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     cout << "Done processing LMscan" << endl;
                     hist::color("LMscan", kOrange-7);
                   }
-
 
 		  char* dir = "";
 		  if( trig == ossusy_looper::e_lowpt  ) dir = "lowpt"  ;
