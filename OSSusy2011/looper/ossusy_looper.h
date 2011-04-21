@@ -9,6 +9,7 @@
 
 //#include "../CORE/topmass/ttdilepsolve.h" REPLACETOPMASS
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 typedef map<unsigned int, unsigned int> m_uiui;
 
@@ -25,6 +26,9 @@ class ossusy_looper
         ossusy_looper();
         ~ossusy_looper() {}
 
+        enum TrigEnum { e_highpt = 0, e_lowpt };  
+        // e_highpt  :   high pt dilepton triggers, 20,10  
+        // e_lowpt   :   dilepton-HT cross triggers, 10,5            
         enum JetTypeEnum { e_JPT = 0, e_calo , e_pfjet };
         // e_JPT     :   jpt jets
         // e_calo    :   l1 and l2 corrected calo jets
@@ -42,8 +46,9 @@ class ossusy_looper
         enum FREnum   { e_qcd = 0, e_wjets };
         // e_qcd     :   derive prediction for 2 fake leptons
         // e_wjets   :   derive prediction for 1 real and one fake lepton
-
-        int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., int prescale = 1., float lumi = 1.,
+	
+        int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., 
+		       int prescale = 1., float lumi = 1.,
                        JetTypeEnum jetType = e_JPT, 
                        MetTypeEnum metType = e_tcmet,
                        ZVetoEnum zveto = e_standard,
@@ -56,12 +61,15 @@ class ossusy_looper
         bool passTrigger (int dilType);
         float getCosThetaStarWeight();
         float smearMet( float met , float sumjetpt , float metscale );
+	void InitBaby();
 
         // Set globals
-        void set_susybaseline (bool  b) { g_susybaseline = b; }
-        void set_createTree   (bool  b) { g_createTree   = b; }
-        void set_useBitMask   (bool  b) { g_useBitMask   = b; }
-        void set_version      (char* v) { g_version      = v; }
+        void set_susybaseline (bool  b)    { g_susybaseline = b; }
+        void set_createTree   (bool  b)    { g_createTree   = b; }
+        void set_useBitMask   (bool  b)    { g_useBitMask   = b; }
+        void set_version      (char* v)    { g_version      = v; }
+	void set_json         (char* v)    { g_json         = v; }        
+        void set_trigger      (TrigEnum t) { g_trig         = t; } 
 
         // Baby ntuple methods
         void makeTree (char *prefix);
@@ -74,8 +82,15 @@ class ossusy_looper
         bool  g_createTree;
         bool  g_useBitMask;
         char* g_version;
+	char* g_json;      
+	TrigEnum g_trig;
         TRandom3 *random3_;
 
+        LorentzVector*  lep1_;
+        LorentzVector*  lep2_;
+        LorentzVector*  dilep_;
+        LorentzVector*  jet_; 
+ 
         // Baby ntuple variables
         TFile  *outFile;
         TTree  *outTree;
@@ -135,6 +150,8 @@ class ossusy_looper
         Float_t m0_;
         Float_t m12_;
         Float_t ptl1_;
+	Int_t   id1_;
+	Int_t   id2_;
         Float_t ptl2_;
         Float_t ptj1_;
         Float_t ptj2_;
@@ -148,6 +165,9 @@ class ossusy_looper
         Int_t   run_;
         Int_t   lumi_;
         Int_t   event_;
+	Float_t y_;
+	Float_t ht_;
+	Int_t   ndavtx_;
 
         // for fakeRates
         bool isFakeableMuon (int index);
