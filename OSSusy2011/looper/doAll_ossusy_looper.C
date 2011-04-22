@@ -116,6 +116,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   float kWW       = 1.;
   float kWZ       = 1.;
   float kZZ       = 1.;
+  float kWjetsMG  = 1.;  // 11850 pb, 980000 events processed
   float kWjets    = 1.;  // 11850 pb, 980000 events processed
   float kWcharm   = 1.1;
   float kZjets    = 1.;  
@@ -164,6 +165,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preWZ       = 1;
   int preZZ       = 1;
   int preWjets    = 1;
+  int preWjetsMG  = 1;
   int preWcharm   = 1;
   int preZjets    = 1;
   int preDYee     = 1;
@@ -198,7 +200,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  /*
+
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 0;
@@ -214,9 +216,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWZ       = 0;
   bool runZZ       = 0;
   bool runWjets    = 0;
+  bool runWjetsMG  = 1;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 1;
+  bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -247,8 +250,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */  
 
+  /*
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 0;
@@ -264,6 +267,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWZ       = 1;
   bool runZZ       = 1;
   bool runWjets    = 1;
+  bool runWjetsMG  = 1;
   bool runWcharm   = 0;
   bool runZjets    = 0;
   bool runDYtot    = 1;
@@ -297,7 +301,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-
+  */
   char* dir = "";
 
   bool useMCSkims = true;
@@ -457,6 +461,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		     "WJets");
     pickSkimIfExists(chWjets, 
 		     "cms2/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+		     "WJets");
+  }
+
+  TChain* chWjetsMG = new  TChain("Events");
+  if(runWjetsMG){
+    pickSkimIfExists(chWjetsMG, 
+                     "cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		     "WJets");
   }
 
@@ -983,6 +994,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                     cout << "Done processing Wjets.." << endl;
                     hist::color("wjets", 40);
                   }
+                  if (runWjetsMG) {
+                    cout << "Processing Wjets MG.." << endl;
+                    looper->ScanChain(chWjetsMG,"wjetsMG", kWjetsMG, preWjetsMG, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing WjetsMG.." << endl;
+                    hist::color("wjetsMG", 40);
+                  }
                   if (runWcharm) {
                     cout << "Processing Wcharm.." << endl;
                     looper->ScanChain(chWcharm, "wcharm", kWcharm, preWcharm, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1155,7 +1172,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("../output/%s/%s/ossusy_%s_%s%s.root", version,dir,
+                    const char* outFile = Form("../output/%s/%s/ossusy_%s_%s%s_wjets.root", version,dir,
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   
