@@ -11,6 +11,9 @@
 #include "../CORE/electronSelectionsParameters.h"
 #include "../CORE/muonSelections.h"
 
+#include "../CORE/metSelections.h"
+#include "../CORE/ttbarSelections.h"
+
 #include "Rtypes.h"
 typedef ULong64_t uint64;
 
@@ -29,8 +32,16 @@ using namespace tas;
 // please be careful you don't create a file which is enormous (unless
 // you can handle enormous files)
 
+
+
 bool select (bool isData)
 {
+
+  for( unsigned int hypIdx = 0 ; hypIdx < hyp_p4().size() ; ++hypIdx ){
+    float tcmet = getMet( "tcMET" , hypIdx).first;
+    if( tcmet > 50 ) return true;
+  }
+
   if( cms2.evt_tcmet() > 50. ) return true;
   if( cms2.evt_pfmet() > 50. ) return true;
 
