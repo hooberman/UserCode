@@ -20,19 +20,6 @@
 
 
 
-
-  //Load CORE stuff
-
-  // gROOT->ProcessLine(".L ../CORE/muonSelections.cc+");
-
-  // gROOT->ProcessLine(".L ../CORE/triggerUtils.cc+");  
-  // gROOT->ProcessLine(".L ../CORE/susySelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/mcSUSYkfactor.cc+");
-  // gROOT->ProcessLine(".L ../CORE/triggerSuperModel.cc+");
-  // gROOT->ProcessLine(".L ../CORE/jetSelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/ttbarSelections.cc+");
-
-
   vector<char*> samples;
 
   //TAS
