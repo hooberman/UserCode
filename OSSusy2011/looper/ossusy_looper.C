@@ -206,6 +206,8 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("dilpt",           &dilpt_,            "dilpt/F");
   outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
+  outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
+  outTree->Branch("npfjets",         &npfjets_,          "npfjets/I");
   outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
   outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
   outTree->Branch("sumjetptUp",      &sumjetptUp_,       "sumjetptUp/F");
@@ -236,6 +238,9 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("event",           &event_,            "event/I");
   outTree->Branch("y",               &y_,                "y/F");  
   outTree->Branch("ht",              &ht_,               "ht/F");  
+  outTree->Branch("htgen",           &htgen_,            "htgen/F");  
+  outTree->Branch("htpf",            &htpf_,             "htpf/F");  
+
   outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
@@ -1021,6 +1026,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //pfjets
         VofP4 vpfjets_p4;
 
+	npfjets_ = 0.;
+	htpf_    = 0.;
+
         for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
           LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
@@ -1041,9 +1049,32 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( !passesPFJetID(ijet) )               continue;
           if( vjet.pt() < 30. )                    continue;
 
+	  npfjets_++;
+	  htpf_ += vjet.pt();
+
           vpfjets_p4.push_back( vjet );
         }
      
+	ngenjets_ = 0;
+	htgen_    = 0;
+
+	if( !isData ){
+	  for (unsigned int igjet = 0 ; igjet < genjets_p4().size() ; igjet++) {
+	    
+	    LorentzVector vgjet = genjets_p4().at(igjet);
+	    LorentzVector vlt   = hyp_lt_p4()[hypIdx];
+	    LorentzVector vll   = hyp_ll_p4()[hypIdx];
+	    
+	    if( vgjet.pt() < 30.                   )  continue;
+	    if( fabs( vgjet.eta() ) > 2.5          )  continue;
+	    if( dRbetweenVectors(vgjet, vll) < 0.4 )  continue;
+	    if( dRbetweenVectors(vgjet, vlt) < 0.4 )  continue;
+	    
+	    ngenjets_++;
+	    htgen_ += vgjet.pt();
+	  }
+	}
+
         // sumjetpt, meff calculation
         
         //calojets

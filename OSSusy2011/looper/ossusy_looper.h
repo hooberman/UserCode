@@ -110,6 +110,8 @@ class ossusy_looper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
+        Int_t   ngenjets_;
+        Int_t   npfjets_;
         Int_t   njetsUp_;
         Int_t   njetsDown_;
         Float_t sumjetptUp_;
@@ -167,6 +169,8 @@ class ossusy_looper
         Int_t   event_;
 	Float_t y_;
 	Float_t ht_;
+	Float_t htgen_;
+	Float_t htpf_;
 	Int_t   ndavtx_;
 
         // for fakeRates
