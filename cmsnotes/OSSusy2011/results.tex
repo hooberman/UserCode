@@ -1,0 +1,158 @@
+%\clearpage
+
+\section{Results}
+\label{sec:results}
+
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=0.75\linewidth]{abcd_jsonv3.png}
+\caption{\label{fig:abcdData}\protect Distributions of SumJetPt 
+vs. MET$/\sqrt{\rm SumJetPt}$ for SM Monte Carlo and data.}
+\end{center}
+\end{figure}
+
+The data, together with SM expectations is presented 
+in Figure~\ref{fig:abcdData}.  We see 1 event in the 
+signal region (region $D$).  For more information about
+this one candidate events, see Appendix~\ref{sec:cand}.
+The Standard Model MC expectation is 1.3 events.
+
+\subsection{Background estimate from the ABCD method}
+\label{sec:abcdres}
+
+The data yields in the 
+four regions are summarized in Table~\ref{tab:datayield}.
+The prediction of the ABCD method is is given by $A \times C / B = 1.3 \pm 0.8({\rm stat}) \pm 0.3({\rm syst})$.
+
+\begin{table}[hbt]
+\begin{center}
+\caption{\label{tab:datayield} Data yields in the four
+regions of Figure~\ref{fig:abcdData}, as well as the predicted yield in region D given
+by A $\times$ C / B.  The quoted uncertainty
+on the prediction in data is statistical only, assuming Gaussian errors.
+We also show the SM Monte Carlo expectations, scaled to 34.0~pb$^{-1}$.}
+\begin{tabular}{l||c|c|c|c||c}
+%%%official json v3 33.96/pb, 38X MC (D6T for ttbar and DY)
+\hline
+              sample                     &                   A   &                   B   &                   C   &                   D   &                PRED  \\
+\hline
+$t\bar{t}\rightarrow \ell^{+}\ell^{-}$   &   8.44  $\pm$  0.18   &  32.83  $\pm$  0.35   &   4.78  $\pm$  0.14   &   1.07  $\pm$  0.06   &   1.23  $\pm$  0.05  \\
+$t\bar{t}\rightarrow \mathrm{other}$     &   0.12  $\pm$  0.02   &   0.78  $\pm$  0.05   &   0.16  $\pm$  0.02   &   0.02  $\pm$  0.01   &   0.02  $\pm$  0.01  \\
+$Z^0 \rightarrow \ell^{+}\ell^{-}$       &   0.17  $\pm$  0.08   &   1.18  $\pm$  0.22   &   0.04  $\pm$  0.04   &   0.12  $\pm$  0.07   &   0.01  $\pm$  0.01  \\
+    $W^{\pm}$ + jets                     &   0.00  $\pm$  0.00   &   0.09  $\pm$  0.09   &   0.00  $\pm$  0.00   &   0.00  $\pm$  0.00   &   0.00  $\pm$  0.00  \\
+            $W^+W^-$                     &   0.11  $\pm$  0.01   &   0.29  $\pm$  0.02   &   0.02  $\pm$  0.01   &   0.03  $\pm$  0.01   &   0.01  $\pm$  0.00  \\
+        $W^{\pm}Z^0$                     &   0.01  $\pm$  0.00   &   0.04  $\pm$  0.00   &   0.00  $\pm$  0.00   &   0.00  $\pm$  0.00   &   0.00  $\pm$  0.00  \\
+            $Z^0Z^0$                     &   0.01  $\pm$  0.00   &   0.02  $\pm$  0.00   &   0.00  $\pm$  0.00   &   0.00  $\pm$  0.00   &   0.00  $\pm$  0.00  \\
+          single top                     &   0.29  $\pm$  0.01   &   1.04  $\pm$  0.03   &   0.04  $\pm$  0.01   &   0.01  $\pm$  0.00   &   0.01  $\pm$  0.00  \\
+\hline
+         total SM MC                     &   9.14  $\pm$  0.20   &  36.26  $\pm$  0.43   &   5.05  $\pm$  0.14   &   1.27  $\pm$  0.10   &   1.27  $\pm$  0.05  \\
+\hline
+                data                     &                  12   &                  37   &                   4   &                   1   &   1.30  $\pm$  0.78  \\
+\hline
+                 LM0                     &   4.04  $\pm$  0.19   &   4.45  $\pm$  0.20   &  13.92  $\pm$  0.36   &   8.63  $\pm$  0.27   &  12.63  $\pm$  0.88  \\
+                 LM1                     &   0.52  $\pm$  0.02   &   0.26  $\pm$  0.02   &   1.64  $\pm$  0.04   &   3.56  $\pm$  0.06   &   3.33  $\pm$  0.27  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+%As a cross-check, we can subtract from the yields in 
+%Table~\ref{tab:datayield} the expected DY contributions
+%from Table~\ref{tab:ABCD-DY} in order to get a ``purer''
+%estimate of the $t\bar{t}$ contribution.  The result
+%of this exercise is {\color{red} xx} events.
+
+%\clearpage
+
+\subsection{Background estimate from the $P_T(\ell\ell)$ method}
+\label{sec:victoryres}
+
+We first use the $P_T(\ell \ell)$ method to predict the number of events 
+in control region A, defined in Sec.~\ref{sec:abcd} as 
+$125<{\rm SumJetPt}>300$~GeV and $\met/\sqrt{\rm SumJetPt}>$8.5~GeV$^{1/2}$.
+We count the number of events in region
+$A'$, defined in Sec.~\ref{sec:othBG} by replacing the above $\met/\sqrt{\rm SumJetPt}$
+cut with the same cut on the quantity $P_T(\ell\ell)/\sqrt{\rm SumJetPt}$,
+and find $N_{A'}=5$. We subtract off the expected DY contribution in this region
+$N_{DY} = 1.3 \pm 0.9$, derived in Sec.~\ref{sec:othBG}.
+To predict the yield in region A we take 
+$N_A = K \cdot K_C \cdot ( N_{A'} - N_{DY} ) = 9.0 \pm 6.0$
+where we have taken $K = 1.7$ and $K_C = 1.4$.
+This uncertainty takes into account the statistical uncertainties in $N_{A'}$ and $N_{DY}$,
+assuming Gaussian errors. This yield is consistent
+with the observed yield of 12 events, as shown in 
+Table~\ref{tab:victory} and displayed in Fig.~\ref{fig:victory} (left).
+
+Encouraged by the good agreement between predicted and observed yields
+in the control region, we proceed to perform the $P_T(\ell \ell)$ method 
+in the signal region ${\rm SumJetPt}>300$~GeV.
+The number of data events in region $D'$, which is defined in 
+Section~\ref{sec:othBG} to be the same as region $D$ but with the
+$\met/\sqrt{\rm SumJetPt}$ requirement 
+replaced by a $P_T(\ell\ell)/\sqrt{\rm SumJetPt}$ requirement,
+is $N_{D'}=1$.  
+%We next subtract off the expected DY contribution of 
+%$N_{DY}$ = $0.4 \pm 0.4$ events, as calculated 
+%in Sec.~\ref{sec:othBG}. 
+The BG prediction is 
+$N_D = K \cdot K_C \cdot (N_{D'}-N_{DY}) = 2.1 \pm 2.1({\rm stat}) \pm 0.6({\rm syst})$ 
+where $K=1.5$ as derived in Sec.~\ref{sec:victory} and $K_C = 1.4 \pm 0.4$.
+This prediction is consistent with the observed yield of 1 event, as summarized 
+in Table~\ref{tab:victory} and Fig.~\ref{fig:victory} (right).
+
+
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[width=0.48\linewidth]{victory_control_jsonv3.png}
+\includegraphics[width=0.48\linewidth]{victory_signal_jsonv3.png}
+\caption{\label{fig:victory}\protect Distributions of 
+tcMet/$\sqrt{\rm SumJetPt}$ for the control and signal region.
+We show the oberved distributions in both Monte Carlo and data.
+We also show the distributions predicted from 
+${P_T(\ell\ell)}/\sqrt{\rm SumJetPt}$ in both MC and data.}
+\end{center}
+\end{figure}
+
+
+\begin{table}[hbt]
+\begin{center}
+\caption{\label{tab:victory}Results of the dilepton $p_{T}$ template method in the control region
+($125 < \mathrm{SumJetPt} < 300$~GeV) and signal region ($\mathrm{SumJetPt} > 300$~GeV). The predicted and 
+observed yields for the region $\mathrm{tcmet}/\sqrt{\mathrm{sumJetPt}} > 8.5$~GeV$^{1/2}$. The errors are
+statistical only, assuming Gaussian errors. Note that the correction factor $K_C$ has been applied to
+the data but not to the MC.  }
+\begin{tabular}{l|cc|cc}
+\hline
+              &    Control Region   &                        &   Signal Region    &               \\
+\hline
+              & Predicted           &   Observed             &   Predicted        &  Observed     \\              
+\hline
+total SM   MC &      6.45           &       9.14             &   0.92             &  1.27         \\
+         data &  $9.0 \pm 6.0$      &         12             &   $2.1 \pm 2.1$    &  1            \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+% \clearpage
+\subsection{Summary of results}
+
+In summary, in the signal region defined as $\mathrm{SumJetPt}>300$~GeV and $\met/\sqrt{\rm SumJetPt} > 8.5$~GeV$^{1/2}$:\\ 
+We observe 1 event. \\
+We expect 1.3 events from Standard Model MC prediction. \\
+The ABCD data driven method predicts $1.3 \pm 0.8({\rm stat}) \pm 0.3({\rm syst})$ events. \\
+The  $P_T(\ell\ell)$ method predicts $2.1 \pm 2.1({\rm stat}) \pm 0.6({\rm syst})$ events. \\
+  
+All three background estimates are consistent within their uncertainties.
+We thus take as our best estimate of the Standard Model yield in 
+the signal region the average of the predicted yields from the 2 data-driven methods, 
+weighted by their uncertainties.
+This procedure gives an expected background yield $N_{BG}=1.4 \pm 0.8$.
+
+We conclude that we see no evidence for an anomalous 
+rate of opposite sign isolated dilepton events
+at high \met and high SumJetPt.  The extraction of 
+quantitative limits on new physics models is discussed
+in Section~\ref{sec:limit}.

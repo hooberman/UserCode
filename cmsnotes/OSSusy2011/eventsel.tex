@@ -1,0 +1,237 @@
+\section{Event Preselection}
+\label{sec:eventSel}
+The purpose of the preselection is to define a data sample rich 
+in $t\bar{t} \to$ dileptons.  We compare the kinematical 
+properties of this sample with expectations from $t\bar{t}$ 
+Monte Carlo.
+
+The preselection is based on the 
+$t\bar{t}$ analysis~\cite{ref:top}.  
+We select events with two opposite sign, well-identified and isolated
+leptons ($ee$, $e\mu$, or $\mu\mu$); one of the leptons must 
+have $P_T > 20$ GeV,
+the other one must have $P_T > 10$ GeV. Events with dilepton mass
+consistent with $Z \to ee/\mu\mu$ are rejected.
+In case of events with 
+more than two such leptons, we select the pair that maximizes the scalar 
+sum of lepton $P_T$'s.
+There must be two JPT
+jets of $P_T > 30$ GeV and $|\eta| < 2.5$; the scalar sum of the 
+$P_T$ of all such jets must exceed 100 GeV; jets must pass
+{\tt caloJetId} and be separated by $\Delta R >$ 0.4 from any 
+lepton with $P_T > 10$~GeV passing the selection.
+Finally $\met > 50$ GeV (we use tcMet). More details are given in the subsections below.
+
+\subsection{Event Cleanup}
+\label{sec:cleanup}
+\begin{itemize}
+\item Scraping cut: if there are $\geq$ 10 tracks, require at
+least 25\% of them to be high purity.
+\item Require at least one good vertex:
+\begin{itemize}
+\item not fake
+\item ndof $>$ 4
+\item $|\rho| < 2$ cm
+\item $|z| < 24$ cm.  
+\end{itemize}
+\end{itemize}
+
+
+\subsection{Muon Selection}
+\label{sec:muon}
+
+Muon candidates are RECO muon objects passing the following
+requirements:
+\begin{itemize}
+
+\item $|\eta| < 2.4$.
+
+\item Global Muon and Tracker Muon.
+
+\item $\chi^2$/ndof of global fit $<$ 10.
+
+\item At least 11 hits in the tracker fit.
+
+\item Transverse impact parameter with respect to the beamspot $<$ 200 $\mu$m.
+
+\item $Iso \equiv $ $E_T^{\rm iso}$/Max(20 GeV, $P_T$) $<$ 0.15.  
+$E_T^{\rm iso}$
+is defined as the sum of transverse energy/momentum deposits in ecal,
+hcal, and tracker, in a cone of 0.3.
+
+\item At least one of the hits from the 
+standalone muon must be used in the global fit.
+
+\item Require tracker $\Delta P_T/P_T < 0.1$. This cut was not in the original top analysis.
+It is motivated by the observation of
+poorly measured muons in data with large
+relative $P_T$ uncertainty, giving significant contributions to the \met.
+%{\color{red} This is not applied to the 11 pb iteration.}
+
+
+\end{itemize}
+
+
+
+\subsection{Electron Selection}
+\label{sec:electron}
+
+Electron candidates are RECO GSF electrons passing the following
+requirements:
+
+\begin{itemize}
+
+% \item $P_T > 10$ GeV.  (The $t\bar{t}$ analysis uses 20 GeV but for
+% completeness we calculate FR down to 10 GeV).
+
+\item $|\eta| < 2.5$.
+
+\item SuperCluster $E_T > 10$ GeV.  
+
+\item The electron must be ecal seeded.
+
+\item VBTF90 identification\cite{ref:vbtf}.
+
+\item Transverse impact parameter with respect to the beamspot $<$ 400 $\mu$m.
+
+\item $Iso \equiv $ $E_T^{\rm iso}$/Max(20 GeV, $P_T$) $<$ 0.15.  
+$E_T^{\rm iso}$
+is defined as the sum of transverse energy/momentum deposits in ecal,
+hcal, and tracker, in a 
+cone of 0.3.  A 1 GeV pedestal is subtracted from the ecal energy 
+deposition in the EB, however the ecal energy is never allowed to 
+go negative.
+
+\item Electrons with a tracker or global muon within $\Delta R$ of 
+0.1 are vetoed.
+
+\item The number of missing expected inner hits must be less than 
+two\cite{ref:conv}.
+
+\item Conversion removal via partner track finding: any electron
+where an additional GeneralTrack is found with $Dist < 0.02$ cm 
+and $\Delta \cot \theta < 0.02$ is vetoed\cite{ref:conv}.
+
+\item Cleaning for ECAL spike (aka Swiss-Cross cleaning) has been applied
+at the reconstruction level (CMSSW 38x).
+
+\end{itemize}
+
+\subsection{Invariant mass requirement}
+\label{sec:zveto}
+
+We remove $e^+e^-$ and $\mu^+ \mu^-$ events with invariant 
+mass between 76 and 106 GeV.  We also remove events
+with invariant mass $<$ 10 GeV, since this kinematical region is 
+not well reprodced in CMS Monte Carlos.
+
+In addition, we remove $Z \to \mu\mu\gamma$
+candidates with the $\gamma$ collinear with one of the muons.  This is
+done as follows:
+if the ecal energy associated with one of the muons is greater than 6 GeV,
+we add this energy to the momentum of the initial muon, and we recompute
+the $\mu\mu$ mass.  If this mass is between 76 and 106 GeV, the event is rejected.
+
+
+\subsection{Trigger Selection}
+\label{sec:trigSel}
+
+Because most of the triggers implemented in the 2nd half of the
+2010 run were not implemented in the Monte Carlo, 
+we do not make any requirements on HLT bits in the Monte Carlo.
+Instead, as discussed in 
+Section~\ref{sec:trgEff}, a trigger efficiency weight is applied
+to each event, based on the trigger efficiencies measured on data.
+Trigger efficiency weights are very close to 1.
+
+%For data, we require the logical OR of all (or most?) unprescaled
+%single and double lepton triggers that were deployed during the 2010
+%run.  These are:
+%{\color{red} Here we need to list the triggers, somehow.}
+
+For data, we use a cocktail of unprescaled single 
+and double lepton triggers. An event
+in the $ee$ final state is required to pass at least 1 
+single- or double-electron trigger, a
+$\mu\mu$ event is required to pass at least 1 single 
+or double-muon trigger, while an $e\mu$ event
+is required to pass at least 1 single-muon, single-electron, 
+or $e-\mu$ cross trigger. 
+% We currently
+% do not require MC events to pass any triggers.
+
+
+
+
+
+
+
+
+
+\begin{itemize}
+\item single-muon triggers
+  \begin{itemize}
+  \item \verb=HLT_Mu5=
+  \item \verb=HLT_Mu7=       
+  \item \verb=HLT_Mu9=        
+  \item \verb=HLT_Mu11=      
+  \item \verb=HLT_Mu13_v1=    
+  \item \verb=HLT_Mu15_v1=    
+  \item \verb=HLT_Mu17_v1=    
+  \item \verb=HLT_Mu19_v1=    
+  \end{itemize}
+\item double-muon triggers
+  \begin{itemize}
+  \item \verb=HLT_DoubleMu3=
+  \item \verb=HLT_DoubleMu3_v2=
+  \item \verb=HLT_DoubleMu5_v1=
+  \end{itemize}
+\item single-electron triggers
+  \begin{itemize}
+  \item \verb=HLT_Ele10_SW_EleId_L1R=
+  \item \verb=HLT_Ele10_LW_EleId_L1R=
+  \item \verb=HLT_Ele10_LW_L1R=
+  \item \verb=HLT_Ele10_SW_L1R=
+  \item \verb=HLT_Ele15_SW_CaloEleId_L1R=
+  \item \verb=HLT_Ele15_SW_EleId_L1R=
+  \item \verb=HLT_Ele15_SW_L1R=
+  \item \verb=HLT_Ele15_LW_L1R=
+  \item \verb=HLT_Ele17_SW_TightEleId_L1R=
+  \item \verb=HLT_Ele17_SW_TighterEleId_L1R_v1=
+  \item \verb=HLT_Ele17_SW_CaloEleId_L1R=
+  \item \verb=HLT_Ele17_SW_EleId_L1R=
+  \item \verb=HLT_Ele17_SW_LooseEleId_L1R=
+  \item \verb=HLT_Ele17_SW_TighterEleIdIsol_L1R_v1=
+  \item \verb=HLT_Ele17_SW_TighterEleIdIsol_L1R_v2=
+  \item \verb=HLT_Ele17_SW_TighterEleIdIsol_L1R_v3=
+  \item \verb=HLT_Ele20_SW_L1R=
+  \item \verb=HLT_Ele22_SW_TighterEleId_L1R_v2=
+  \item \verb=HLT_Ele22_SW_TighterEleId_L1R_v3=
+  \item \verb=HLT_Ele22_SW_TighterCaloIdIsol_L1R_v2=
+  \item \verb=HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1=
+  \item \verb=HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1=
+  \item \verb=HLT_Ele32_SW_TighterEleId_L1R_v1=
+  \item \verb=HLT_Ele32_SW_TighterEleId_L1R_v2=
+  \end{itemize}
+\item double-electron triggers
+  \begin{itemize}
+  \item \verb=HLT_DoubleEle15_SW_L1R_v1=                
+  \item \verb=HLT_DoubleEle17_SW_L1R_v1=  
+  \item \verb=HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v1=
+  \item \verb=HLT_Ele17_SW_TightCaloEleId_Ele8HE_L1R_v2=
+  \item \verb=HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1=
+  \item \verb=HLT_DoubleEle10_SW_L1R=
+  \item \verb=HLT_DoubleEle5_SW_L1R=
+  \end{itemize}
+\item e-$\mu$ cross triggers
+  \begin{itemize}
+  \item \verb=HLT_Mu5_Ele5_v1=
+  \item \verb=HLT_Mu5_Ele9_v1=
+  \item \verb=HLT_Mu11_Ele8_v1=
+  \item \verb=HLT_Mu8_Ele8_v1=
+  \item \verb=HLT_Mu5_Ele13_v1=
+  \item \verb=HLT_Mu5_Ele13_v2=
+  \item \verb=HLT_Mu5_Ele17_v1=
+  \item \verb=HLT_Mu5_Ele17_v2=
+  \end{itemize}
+\end{itemize}

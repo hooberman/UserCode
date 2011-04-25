@@ -1,0 +1,85 @@
+\documentclass{cmspaper}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{slashbox}
+\usepackage{epstopdf}  %added for MAC compiler
+\usepackage{pdfpages}
+\usepackage{appendix}
+\usepackage{lineno}
+\RequirePackage{lineno} 
+\newcommand{\met}{\mbox{$\raisebox{.3ex}{$\not$}E_T$\hspace*{0.5ex}}} 
+
+\begin{document}
+  
+%==============================================================================
+% title page for few authors
+
+\begin{titlepage}
+    \pagestyle {plain}
+    \pagenumbering{arabic}
+     %\linenumbers
+     % select one of the following and type in the proper number:
+  % \cmsnote{2010/000}
+ %\date{Oct 23 16:00 PM}
+
+  \title {Search for new physics in the opposite sign dilepton sample}
+\begin{Authlist}
+D. Barge, C. Campagnari, P.~Kalavase, D.~Kovalskyi, V.~Krutelyov, J.~Ribnik
+\Instfoot{ucsb}{University of California, Santa Barbara}
+W.~Andrews, D.~Evans, F.~Golf, J. M\"ulmenst\"adt, S. Padhi, Y.~Tu, F. W\"urthwein, A. Yagil, J.~Yoo
+\Instfoot{ucsd}{University of California, San Diego}
+L. Bauerdick, I.~Bloch, K.~Burkett, I.~Fisk, Y.~ Gao,~O.~Gutsche,~B. Hooberman
+\Instfoot{fnal}{Fermi National Accelerator Laboratory, Batavia, Illinois}
+\end{Authlist}
+ 
+
+    \begin{abstract}
+We present the result of a search for new physics in the opposite-sign 
+dileptons $+$ jets $+$ missing energy final state based on 34.0~pb$^{-1}$ 
+of 2010 CMS data.  We find no evidence for an anomalous rate of events
+accompanied by large missing transverse energy and significant hadronic
+activity.
+
+  \end{abstract}
+
+\end{titlepage}
+\newpage
+
+
+\tableofcontents
+\newpage
+\linenumbers
+\input{changes.tex}
+\input{introduction.tex}
+\input{datasets.tex}
+\input{eventsel.tex}
+\input{triggereff.tex}
+\input{yields.tex}
+\input{bulk.tex}
+\input{sigregion.tex}
+\input{datadriven.tex}
+\input{otherBG.tex}
+\input{results.tex}
+\input{systematics.tex}
+\input{limit.tex}
+
+\clearpage
+\input{bibliography.tex}
+\clearpage
+%\appendix
+%\renewcommand\thesection{Appendix \Alph{section}}
+\appendixtitleon
+\appendixtitletocon
+\begin{appendices}
+   \input{appendix_trigger.tex}
+   \input{appendix_candidates.tex}
+   \input{appendix.tex}
+\end{appendices}
+% \setcounter{page}{2}%JPP
+
+
+
+
+
+\end{document}
