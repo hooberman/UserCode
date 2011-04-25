@@ -1,0 +1,98 @@
+
+%%%%%%%%%%%
+%remove tag+probe ref
+%%%%%%%%%%%
+
+
+\section{Top Background Estimation}
+\label{sec:topbkg}
+
+
+The MET templates method is used to estimate the contribution of SM \Z production
+ to the signal region due to the fake MET tail. However,
+it does not account for the \ttbar background in which the dileptons happen to lie
+ in the \Z mass window, which is accompanied by genuine MET. 
+To estimate this contribution we use an opposite-flavor subtraction
+technique which takes advantage of the fact that the \ttbar yield in the 
+opposite-flavor final state ($e\mu$) is the same as in the same-flavor final state
+($ee+\mu\mu$), modulo differences in efficiency in the $e$ vs. $\mu$ selection.
+ Hence the \ttbar yield in the same-flavor final state can be estimated
+using the corresponding yield in the opposite-flavor final state. 
+It is important to note that other backgrounds for which the lepton flavors are
+uncorrelated (for example $VV$ and DY$\rightarrow \tau\tau$) will also be included in
+this estimate.
+
+The simplest option
+ is to take the $e\mu$ yield inside the \Z mass window and scale this
+to predict the $ee$ and $\mu\mu$ yields, based on $e$ and $\mu$ selection efficiencies.
+Only the ratio of muon to electron selection efficiency is needed, which we evaluate
+ as $\epsilon_{\mu e} = \sqrt{\frac{N_{Z\mu\mu}}{N_{Zee}}}$. 
+Here $N_{Zee}$ ($N_{Z\mu\mu}$) is the total number of events in the $ee$ ($\mu\mu$)
+ final state passing the pre-selection in Section~\ref{sec:yields},
+without the requirement of at least 2 jets. We find
+ $\epsilon_{\mu e}=1.11 \pm 0.01$ (stat). (Note that in the following
+ $\epsilon_{e\mu} = 1/\epsilon_{\mu e}$.)
+Systematic uncertainties on the prediction are assessed in section~\ref{sec:systematicsof}, and only statistical uncertainties are given in this section.
+
+This procedure yields the following predicted yields $n_{pred}$,
+based on an observed yield of 3 $e\mu$ events in the loose signal region:
+
+\begin{equation}
+n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)\epsilon_{\mu e} = 1.67 \pm 0.96
+\end{equation}
+\begin{equation}
+n_{pred}(ee)     = \frac{1}{2}n(e\mu)\epsilon_{e\mu} = 1.35 \pm 0.78
+\end{equation}
+
+The predicted same flavor \ttbar yields agree well with the MC expectation of 2.0 ($\mu\mu$) %really 
+and 1.9 ($ee$) %really 
+as shown in Fig.~\ref{fig:ttbar}.
+Due to the small statistics, the errors on the predicted yields using this procedure are quite large.
+To improve the statistical errors, we instead determine the $e\mu$ yield
+without requiring the leptons to fall in the \Z mass window. 
+This yield is scaled by a factor determined from MC, $K= 0.16$, 
+which accounts for the fraction of \ttbar events expected to fall in the $Z$ mass
+window. This procedure yields the following
+predicted yields based on 27 observed $e\mu$ events:
+
+\begin{equation}
+n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)K\epsilon_{\mu e} = 2.34 \pm 0.45
+\end{equation}
+\begin{equation}
+n_{pred}(ee)     = \frac{1}{2}n(e\mu)K\epsilon_{e\mu} = 1.90 \pm 0.36
+\end{equation}
+
+Notice that the yields are consistent with those predicted without using $K$, but the relative statistical uncertainty is reduced by a factor of approximately 2.
+Since the total uncertainty is expected to be statistically-dominated, the second method yields a better prediction and we use this as our estimate
+of the \ttbar~background. Predicted yields for the tight signal region are given in the tables under Figs.~\ref{fig:pfmet_eemm}-\ref{fig:pfmet_mm}.
+% while the systematic uncertainty has increased slightly. This systematic
+%uncertainty is a preliminary, conservative estimate. The total uncertainty on the prediction is improved significantly using the second method.
+
+\begin{figure}[hbt]
+  \begin{center}
+    \resizebox{0.75\linewidth}{!}{\includegraphics{plots/flavorsubdata.png}}
+    \caption{Dilepton mass distribution for events passing the loose signal region selection. The solid histograms represent the yields in the same-flavor
+      final state for each SM contribution, while the solid black line (OFOS) indicates the sum of the MC contributions in the opposite-flavor final state.
+      %The observed ttbar yields inside the $Z$ mass window in the $ee$ and $\mu\mu$ final states are indicated. 
+      The \ttbar distribution in the same-flavor final state is well-modeled by the OFOS prediction.}
+    \label{fig:ttbar}
+  \end{center}
+\end{figure}
+
+%
+
+%\begin{wrapfigure}{r}{0.6\textwidth}
+%\vspace{-25pt}
+%\begin{center}
+%\includegraphics[width=0.8\textwidth]{plots/flavorsubdata}
+%    \caption{     \label{fig:ttbar} Dilepton mass distribution for events passing the signal region selection. The solid histograms represent the yields in the same-flavor
+%      final state for each SM contribution, while the solid black line (OFOS) indicates the sum of the MC contributions in the opposite-flavor final state.
+%      %The observed ttbar yields inside the $Z$ mass window in the $ee$ and $\mu\mu$ final states are indicated. 
+%      The ttbar distribution in the same-flavor final state is well-modeled by the OFOS prediction.}
+%\end{center}
+%\vspace{-20pt}
+%\end{wrapfigure}
+
+
+
+

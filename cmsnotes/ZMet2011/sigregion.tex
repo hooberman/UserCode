@@ -1,0 +1,172 @@
+\section{Definition of the signal regions}
+\label{sec:sigregion}
+
+We define signal regions to look for possible
+new physics contributions by adding the requirement of large MET to the preselection. Our choice of MET requirements 
+to define the signal regions is driven by the MET distributions expected from $Z$ and $t\bar{t}$ MC, as shown in Fig.~\ref{fig:metdist}.
+
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=0.75\linewidth]{plots/met_ttbar_Z.pdf}
+\caption{\label{fig:metdist}\protect Distributions of MET in $Z$ and $t\bar{t}$ MC normalized to \lumi.}
+\end{center}
+\end{figure}
+
+We define two signal regions for our search:
+\begin{itemize}
+\item MET $>$ 60 GeV (loose signal region):
+In this region of MET there is a contribution from the tail of the MET distribution 
+in \Z plus jets events. There is also a contribution from \ttbar events where the leptons happen to be in the \Z 
+mass window. 
+%We expect the MC simulation to do a good job on the second source, as it is well within the 
+%bulk of the \ttbar phase space. However, for the first we must rely on data driven procedures. 
+
+The MC and data yields for this signal region are given in Table~\ref{sigyieldtable60} and the dilepton
+mass distributions are shown in Fig.~\ref{fig:dilmass60}.
+
+More information on the data events in this signal region is given in Table~\ref{sig60events} and information 
+on the muons in these events is given in Table~\ref{sig60muons}.
+
+\item MET $>$ 120 GeV (tight signal region):
+This signal region was selected by picking a region where the SM prediction 
+for the dataset we have is  $\approx$ 1 event. 
+At this kinematical region the dominant background contribution is expected to be from \ttbar.
+
+The MC and data yields for this signal region are given in Table~\ref{sigyieldtable120}.
+\end{itemize}
+
+\noindent The data driven technique used to predict the missing transverse energy accompanying 
+a \Z event is described in Section~\ref{sec:templates}.
+
+\noindent To estimate the \ttbar background we will use the opposite flavor subtraction
+ described in Section~\ref{sec:topbkg}.
+
+
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet60_ee_allj.pdf}
+\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet60_mm_allj.pdf}
+\caption{\label{fig:dilmass60}\protect Dilepton mass distribution for events passing the pre-selection 
+  and MET $>$ 60~GeV for \lumi\ in the $ee$ (left) and $\mu\mu$ (right) final states. Backgrounds from single top 
+  and $W$+jets are omitted since they are negligible.}
+\end{center}
+\end{figure}
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{sigyieldtable60} Data and Monte Carlo yields for the loose signal region MET $>$ 60~GeV  for \lumi.}
+\begin{tabular}{lccccc}
+%%%official PVT json v3, 38X MC 
+\hline
+              Sample   &                $ee$   &            $\mu\mu$   &              $e\mu$   &                 tot  \\
+\hline
+               ZJets   &     0.21 $\pm$ 0.09   &     0.21 $\pm$ 0.09   &     0.04 $\pm$ 0.04   &     0.46 $\pm$ 0.14  \\
+               TTbar   &     1.89 $\pm$ 0.09   &     2.04 $\pm$ 0.09   &     4.17 $\pm$ 0.13   &     8.11 $\pm$ 0.18  \\
+               WJets   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00  \\
+                  WW   &     0.01 $\pm$ 0.00   &     0.02 $\pm$ 0.00   &     0.03 $\pm$ 0.01   &     0.06 $\pm$ 0.01  \\
+                  WZ   &     0.06 $\pm$ 0.00   &     0.06 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.12 $\pm$ 0.00  \\
+                  ZZ   &     0.03 $\pm$ 0.00   &     0.03 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.06 $\pm$ 0.00  \\
+                  tW   &     0.06 $\pm$ 0.01   &     0.06 $\pm$ 0.01   &     0.14 $\pm$ 0.01   &     0.26 $\pm$ 0.01  \\
+\hline
+           tot SM MC   &     2.26 $\pm$ 0.13   &     2.43 $\pm$ 0.13   &     4.39 $\pm$ 0.13   &     9.07 $\pm$ 0.22  \\
+\hline
+                data   &                   0   &                   7   &                   3   &                  10  \\
+\hline
+                 LM4   &     0.42 $\pm$ 0.01   &     0.44 $\pm$ 0.01   &     0.07 $\pm$ 0.01   &     0.93 $\pm$ 0.02  \\
+                 LM8   &     0.19 $\pm$ 0.01   &     0.22 $\pm$ 0.01   &     0.07 $\pm$ 0.00   &     0.48 $\pm$ 0.01  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{sig60events} Details of data events for the loose signal region MET $>$ 60~GeV for \lumi. 
+All 7 events are in the $\mu\mu$ final states. The SimpleSecondaryVertexTagger high efficiency medium 
+working point is used for b-tagging, for which the efficiency is $\sim40$\% and the mistag rate is $\sim1$\%.}
+\begin{tabular}{rrrrrrrrrr}
+
+\hline
+
+Run & Lumi & Event & Njet & N B Tag & pfMET & tcMET & Dilep Mass & Sum & Z \pt\\
+ &  Section &  &  &  &  &  &  & jet \pt &  \\
+\hline
+147216 & 48 & 35885648 & 2 & 0 & 78.9 & 72.9 & 95.0 & 216.4 & 116.4\\
+147217 & 75 & 55188718 & 2 & 0 & 79.7 & 67.8 & 90.7 & 75.7 & 39.1\\
+147450 & 82 & 29253181 & 5 & 0 & 63.6 & 70.8 & 97.9 & 429.5 & 312.0\\
+148862 & 350 & 522383338 & 4 & 1 & 90.0 & 75.7 & 82.4 & 373.4 & 87.0\\
+149181 & 1769 & 1675896175 & 2 & 1 & 67.8 & 64.4 & 97.2 & 163.9 & 128.6\\
+149291 & 205 & 199787369 & 4 & 0 & 74.5 & 92.9 & 85.0 & 303.1 & 64.3\\
+149291 & 232 & 235101408 & 2 & 1 & 87.3 & 90.0 & 88.7 & 315.4 & 32.4\\
+
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{sig60muons} Details of the muons in events in the loose signal region MET $>$ 60~GeV for \lumi. 
+Shown are the transverse momentum, the relative error in the transverse momentum, d0 calculated with respect to the beamspot,
+the number of hits in the Silicon track, the number of layers crossed by the Silicon track, the normalized $\chi^2$,
+whether a muon segment was found in the last chamber traversed by the muon, and the number of hits in the muon chambers used in the global fit. }
+\begin{tabular}{rrrrrrrrrr}
+\hline
+
+Event & Si \pt &  Si \pt & gfit \pt & d0 & N Si Hits & N Si & Si $\chi^2$ & TMLast & gfit STA \\
+ &  &  rel err &  &  &  &  Layers &  & Station & hits \\
+ &  &  &  &  &  &  &  & Loose &  \\
+\hline
+35885648 & 110.2 & 0.030 & 111.3 & -0.001 & 29 & 15 & 0.65 & 1 & 18 \\
+35885648 & 27.5 & 0.012 & 27.5 & 0.005 & 16 & 12 & 0.26 & 1 & 18 \\
+55188718 & 22.4 & 0.017 & 22.4 & -0.003 & 15 & 10 & 0.93 & 1 & 25 \\
+55188718 & 46.7 & 0.016 & 46.9 & 0.007 & 19 & 13 & 0.79 & 1 & 35 \\
+29253181 & 71.2 & 0.026 & 70.5 & -0.011 & 25 & 15 & 0.78 & 1 & 13 \\
+29253181 & 255.7 & 0.068 & 301.0 & -0.011 & 24 & 15 & 0.69 & 1 & 13 \\
+522383338 & 89.1 & 0.018 & 89.4 & -0.000 & 16 & 12 & 0.43 & 1 & 26 \\
+522383338 & 27.1 & 0.011 & 27.1 & -0.004 & 16 & 12 & 0.13 & 1 & 36 \\
+1675896175 & 80.3 & 0.017 & 80.1 & 0.002 & 19 & 13 & 0.60 & 1 & 32 \\
+1675896175 & 77.6 & 0.016 & 77.5 & -0.000 & 17 & 13 & 0.21 & 1 & 25 \\
+199787369 & 22.6 & 0.018 & 22.5 & -0.000 & 21 & 14 & 0.59 & 1 & 12 \\
+199787369 & 82.0 & 0.033 & 80.9 & -0.002 & 12 & 10 & 0.61 & 1 & 14 \\
+235101408 & 30.6 & 0.014 & 30.9 & -0.007 & 16 & 11 & 0.14 & 1 & 29 \\
+235101408 & 59.7 & 0.013 & 59.9 & 0.006 & 20 & 13 & 0.37 & 1 & 16 \\
+
+
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{sigyieldtable120} Data and Monte Carlo yields for the loose signal region MET $>$ 120~GeV  for \lumi.}
+\begin{tabular}{lccccc}
+%%%official PVT json v3, 38X MC
+\hline
+              Sample   &                $ee$   &            $\mu\mu$   &              $e\mu$   &                 tot  \\
+\hline
+               ZJets   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00  \\
+               TTbar   &     0.26 $\pm$ 0.03   &     0.28 $\pm$ 0.03   &     0.55 $\pm$ 0.05   &     1.09 $\pm$ 0.06  \\
+               WJets   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00  \\
+                  WW   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.01 $\pm$ 0.00  \\
+                  WZ   &     0.01 $\pm$ 0.00   &     0.01 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.02 $\pm$ 0.00  \\
+                  ZZ   &     0.01 $\pm$ 0.00   &     0.01 $\pm$ 0.00   &     0.00 $\pm$ 0.00   &     0.02 $\pm$ 0.00  \\
+                  tW   &     0.00 $\pm$ 0.00   &     0.01 $\pm$ 0.00   &     0.02 $\pm$ 0.00   &     0.03 $\pm$ 0.00  \\
+\hline
+           tot SM MC   &     0.29 $\pm$ 0.03   &     0.31 $\pm$ 0.03   &     0.58 $\pm$ 0.05   &     1.17 $\pm$ 0.07  \\
+\hline
+                data   &                   0   &                   0   &                   0   &                   0  \\
+\hline
+                 LM4   &     0.33 $\pm$ 0.01   &     0.35 $\pm$ 0.01   &     0.06 $\pm$ 0.01   &     0.74 $\pm$ 0.02  \\
+                 LM8   &     0.14 $\pm$ 0.01   &     0.16 $\pm$ 0.01   &     0.06 $\pm$ 0.00   &     0.36 $\pm$ 0.01  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
