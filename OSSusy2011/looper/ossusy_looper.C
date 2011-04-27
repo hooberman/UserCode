@@ -1275,6 +1275,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           lumi_         = evt_lumiBlock();              //lumi
           event_        = evt_event();                  //event
 	  ndavtxweight_ = vtxweight();
+	  wlt_          = leptonIsFromW(cms2.hyp_lt_index()[hypIdx],cms2.hyp_lt_id()[hypIdx]);
+	  wll_          = leptonIsFromW(cms2.hyp_ll_index()[hypIdx],cms2.hyp_ll_id()[hypIdx]);
+
 
           k_				= 1;
           if( strcmp( prefix , "LM0"  )  == 0 ) k_ = kfactorSUSY( "lm0"  );
@@ -3236,6 +3239,8 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");
   outTree->Branch("id2",             &id2_,              "id2/I");
+  outTree->Branch("wll",             &wll_,              "wll/I");
+  outTree->Branch("wlt",             &wlt_,              "wlt/I");
   outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
   outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
   outTree->Branch("ptj1",            &ptj1_,             "ptj1/F");

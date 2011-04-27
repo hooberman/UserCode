@@ -156,6 +156,8 @@ class ossusy_looper
         Float_t ptl1_;
 	Int_t   id1_;
 	Int_t   id2_;
+	Int_t   wll_;
+	Int_t   wlt_;
         Float_t ptl2_;
         Float_t ptj1_;
         Float_t ptj2_;
