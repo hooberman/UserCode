@@ -75,6 +75,8 @@ class ossusy_looper
         void makeTree (char *prefix);
         void closeTree ();
 
+	bool initialized;
+
     private:
 
         // Globals

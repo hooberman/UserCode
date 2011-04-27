@@ -245,12 +245,7 @@ ossusy_looper::ossusy_looper()
   g_createTree   = false;
   g_useBitMask   = false;
   random3_ = new TRandom3(1);
-
-
-  cout << "setting json " << g_json << endl;
-  set_goodrun_file( g_json );
-
-  set_vtxreweight_rootfile("/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root",true);
+  initialized = false;
 
 }
 
@@ -265,6 +260,15 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                              JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 {
 
+
+  if( !initialized ){
+    cout << "setting json " << g_json << endl;
+    set_goodrun_file( g_json );
+
+    set_vtxreweight_rootfile("vtxreweight_Spring11MC_23pbPR.root",true);
+
+    initialized = true;
+  }
 
   float minpt  = -1;
   float maxpt  = -1;
