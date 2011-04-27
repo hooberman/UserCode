@@ -50,8 +50,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //---------------------------------------------------------------
 
   const char* version   = "V00-00-05";
-  //const char* version   = "temp";
-  const char* jsonfile  = "json_DCSONLY.txt_160404-161312.goodruns";
+  const char* jsonfile  = "json_DCSONLY.txt_160404-163339_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -344,6 +343,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       pickSkimIfExists(chdata,
 		       "cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root",
 		       "data");
+
+      pickSkimIfExists(chdata,
+		       "/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root".
+		       "data");
+
+      pickSkimIfExists(chdata,
+		       "/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
+		       "data");
+
+      pickSkimIfExists(chdata,
+		       "/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
+		       "data");
+
     }
 
     else if( trig == ossusy_looper::e_lowpt ){
@@ -356,6 +368,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
    
       pickSkimIfExists(chdata,
 		       "cms2/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312*root",
+		       "data");
+
+      pickSkimIfExists(chdata,
+		       "/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-01-03/MuHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
+		       "data");
+
+      pickSkimIfExists(chdata,
+		       "/hadoop/cms/store/user/imacneill/CMSSW_4_1_2_patch1_V04-01-03/ElectronHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
 		       "data");
 
     }
@@ -859,7 +879,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  float lumi              = 0.023; 
+  float lumi              = 0.090; 
   bool  calculateTCMET    = false; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
