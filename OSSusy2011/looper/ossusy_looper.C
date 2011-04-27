@@ -398,8 +398,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 //     exit(0);
   }
 
-  set_goodrun_file("json_DCSONLY.txt_160404-161312.goodruns");
-  
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
     cout << "DATA!!!" << endl;
@@ -466,16 +464,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   float nee = 0.;
   float nmm = 0.;
   float nem = 0.;
-  /*
-  // btag discriminant working points
-  // { loose, medium, tight }
-  float trackCountingHighEffBJetTag_wp[3]    = { 2.03,  4.38,  14.2  };
-  float trackCountingHighPurBJetTag_wp[3]    = { 1.47,  2.36,  5.36  };
-  float jetProbabilityBJetTag_wp[3]          = { 0.241, 0.49,  0.795 };
-  float jetBProbabilityBJetTag_wp[3]         = { 1.1,   1.37,  1.39  };
-  float simpleSecondaryVertexBJetTag_wp[3]   = { 1.25,  2.05,  4.07  };
-  float combinedSecondaryVertexBJetTag_wp[3] = { 0.387, 0.838, 0.94  };
-  */
+
+  float neetot = 0.;
+  float nmmtot = 0.;
+  float nemtot = 0.;
 
   if(g_createTree) makeTree(prefix);
 
@@ -490,8 +482,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
     for(unsigned int z = 0; z < nEntries; ++z) {
       ++nEventsTotal;
-      //if (!((nEventsTotal+1)%10000))
-      //  cout << "Processing event " << nEventsTotal+1 << " of " << nEventsChain << " in " << prefix << endl;
 
       // progress feedback to user
       if (nEventsTotal % 1000 == 0){
@@ -505,11 +495,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
       }
 
-      //if( nEventsTotal % 100 != 0 ) continue;
       cms2.GetEntry(z);
 
-      //if( evt_run() != 147929 || evt_event() != 537145133 ) continue;
-  
       float pthat_cutoff = 30.;
       if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
         continue;
@@ -519,9 +506,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       if( isData ) {
         DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
         if (is_duplicate(id) ){
-          //cout << "Found duplicate!" << endl;
-          //cout << evt_dataset() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
-          //cout << currentFile->GetTitle() << endl << endl;
           continue;
         }
       }
@@ -547,7 +531,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   
       //goodrun list + event cleaning
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      if( !cleaning_standardAugust2010( isData) )                    continue;
+      if( !cleaning_standardApril2011() )                            continue;
       
       //find good hyps, store in v_goodHyps
       vector<unsigned int> v_goodHyps;
@@ -591,14 +575,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
 
         if( !passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) ) continue;
-        
-        //check that hyp leptons come from same vertex
-        if( !hypsFromSameVtx2011( i ) )    continue;
-        
+           
         //OS, pt > (20,10) GeV, dilmass > 10 GeV
-        if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )  continue;
-          
-        //pt > (20,10) GeV
+        if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )                               continue;
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < maxpt )   continue;
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < minpt )   continue;
         if( hyp_p4()[i].mass() < 10 )                                           continue;
@@ -623,14 +602,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , OSGeneric_v2 ) ) )   continue;
           
           //OSV1
-          if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV2 , false , false ))) continue;
-          if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV2 , false , false ))) continue;
-
-	  //if leading lepton is electron, require pt > 27 GeV
-	  //int id = -1;
-	  //if( hyp_ll_p4()[i].pt() > hyp_lt_p4()[i].pt() ) id = hyp_ll_id()[i];
-	  //else                                            id = hyp_lt_id()[i];
-	  //if( abs(id) == 11 && TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < 27. )   continue;
+          if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV2  ))) continue;
+          if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV2  ))) continue;
           
         }
         
@@ -812,6 +785,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 ) nSS++;
         else nOS++;
+
 
 
         int nels = 0;
@@ -1044,7 +1018,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           
           if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
-          if( fabs( vjet.eta() ) > 2.5 )           continue;
+          if( fabs( vjet.eta() ) > 3.0 )           continue;
           if( !passesPFJetID(ijet) )               continue;
           if( vjet.pt() < 30. )                    continue;
 
@@ -1103,8 +1077,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           meff_pfjets_p4     += vpfjets_p4.at(ijet).Pt();
         }
 
-
-
         float pt_lt  = hyp_lt_p4()[hypIdx].pt();
         float pt_ll  = hyp_ll_p4()[hypIdx].pt();
      
@@ -1119,36 +1091,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           genmetphi  = gen_metPhi();
 
         }
-    
-        /*
-        //tcmet stuff
-        float tcmet    = -9999;
-        float tcsumet  = -9999;
-        float tcmetphi = -9999;
-        
-        if( calculateTCMET ) {
-          //on-the-fly tcmet calculation
-          metStruct tcmetStruct = correctedTCMET();
-          tcmet    = tcmetStruct.met;
-          tcsumet  = tcmetStruct.sumet;
-          tcmetphi = tcmetStruct.metphi;
-        }
-        else{
-          //take tcmet from event
-          tcmet    = evt_tcmet();
-          tcsumet  = evt_tcsumet();
-          tcmetphi = evt_tcmetPhi();
-        }
-        */
 
         //ttdil tcmet definition
 	pair<float, float> p_met; //met and met phi
-        
-        //if( isData )   p_met = getMet( "tcMET"    , hypIdx);
-        //else           p_met = getMet( "tcMET35X" , hypIdx);
-        //else           p_met = getMet( "tcMET" , hypIdx);  //Summer09: use tcMET        
         p_met = getMet( "tcMET"    , hypIdx);
-        //p_met = getMet( "tcMET35X"    , hypIdx);  //REPLACE
         
         float tcmet    = p_met.first;
         float tcmetphi = p_met.second;
@@ -1257,29 +1203,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
             if( strcmp( prefix , "LM1" ) == 0 ) weight *= kfactorSUSY( "lm1" );
           }
         }
-
-        /*
-        if( !isData ){
-          
-          if(TString(prefix).Contains("DY") ) {
-            
-            //mll > 50
-            if(TString(evt_dataset()).Contains("madgraph") == true) { 
-              weight = weight*3048./2400.;
-            } 
-
-            //10 < mll < 20 
-            else if(TString(evt_dataset()).Contains("M10to20") == true) { 
-              weight = weight*3457./2659.;
-            } 
-            
-            // 20 < mll < 50
-            else {
-              weight = weight * 1666./1300.;
-            }
-          }
-        }
-        */
 
         if( doFakeApp ) {  // multiply orig weight with FR hyp weight (1 for std running, FRweight for FR run)
           weight *= v_weights.at(i);
@@ -1541,6 +1464,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                 
           outTree->Fill();
         }
+
+
+	if     ( leptype_ == 0 ) neetot += weight;
+	else if( leptype_ == 1 ) nmmtot += weight;
+	else if( leptype_ == 2 ) nemtot += weight;
 
 
 
@@ -2031,11 +1959,18 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   if( nSkip_els_conv_dist > 0 )
     cout << "Skipped " << nSkip_els_conv_dist << " events due to nan in els_conv_dist" << endl;
 
+  cout << "Dilepton yields" << endl;
+  cout << "nee " << neetot << endl;
+  cout << "nmm " << nmmtot << endl;
+  cout << "nem " << nemtot << endl;
+  cout << "tot " << neetot+nmmtot+nemtot << endl;
+
   cout << "Preselection yields" << endl;
   cout << "nee " << nee << endl;
   cout << "nmm " << nmm << endl;
   cout << "nem " << nem << endl;
   cout << "tot " << nee+nmm+nem << endl;
+
 
   if(g_createTree) closeTree();
   
