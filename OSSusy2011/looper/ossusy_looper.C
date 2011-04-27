@@ -485,12 +485,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     TFile f(currentFile->GetTitle());
     TTree *tree = (TTree*)f.Get("Events");
     cms2.Init(tree);
-
-//     TBranch *jpts_btag_branch = tree->GetBranch("jpts_simpleSecondaryVertexHighEffBJetTag");
-//     if( jpts_btag_branch == 0 ){
-//       cout << "Didn't find jpts btag branch" << endl;
       
-
     unsigned int nEntries = tree->GetEntries();
 
     for(unsigned int z = 0; z < nEntries; ++z) {
