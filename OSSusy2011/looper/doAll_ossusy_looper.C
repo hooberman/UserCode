@@ -343,9 +343,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       pickSkimIfExists(chdata,
 		       "cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root",
 		       "data");
-
+      
       pickSkimIfExists(chdata,
-		       "/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root".
+		       "/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
 		       "data");
 
       pickSkimIfExists(chdata,
@@ -365,6 +365,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       pickSkimIfExists(chdata,
 		       "cms2/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged_160329_161312.root",
 		       "data");
+
+
    
       pickSkimIfExists(chdata,
 		       "cms2/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312*root",
