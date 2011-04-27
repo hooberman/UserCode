@@ -33,6 +33,7 @@
 #include "../CORE/mcSUSYkfactor.h"
 #include "../CORE/triggerSuperModel.h"
 #include "../CORE/jetSelections.h"
+#include "../Tools/vtxreweight.cc"
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -214,6 +215,7 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("sumjetptDown",    &sumjetptDown_,     "sumjetptDown/F");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
+  outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
   outTree->Branch("nbtags",          &nbtags_,           "nbtags/I");
   outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
   outTree->Branch("pass",            &pass_,             "pass/I");
@@ -361,6 +363,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   cout << "setting json " << g_json << endl;
   set_goodrun_file( g_json );
+
+  set_vtxreweight_rootfile("/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root",true);
 
   float minpt  = -1;
   float maxpt  = -1;
@@ -1503,6 +1507,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           run_          = evt_run();                    //run
           lumi_         = evt_lumiBlock();              //lumi
           event_        = evt_event();                  //event
+	  ndavtxweight_ = vtxweight();
 
           k_				= 1;
           if( strcmp( prefix , "LM0"  )  == 0 ) k_ = kfactorSUSY( "lm0"  );
