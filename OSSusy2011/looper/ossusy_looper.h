@@ -172,6 +172,7 @@ class ossusy_looper
 	Float_t htgen_;
 	Float_t htpf_;
 	Int_t   ndavtx_;
+	Float_t ndavtxweight_;
 
         // for fakeRates
         bool isFakeableMuon (int index);
