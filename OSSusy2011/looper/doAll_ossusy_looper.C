@@ -49,8 +49,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  //const char* version   = "V00-00-04";
-  const char* version   = "temp";
+  const char* version   = "V00-00-05";
+  //const char* version   = "temp";
   const char* jsonfile  = "json_DCSONLY.txt_160404-161312.goodruns";
 
   cout << "Version : " << version     << endl;
@@ -207,7 +207,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runttdil    = 0;
   bool runttem     = 0;
   bool runttrelval = 0;
@@ -220,7 +220,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 0;
+  bool runDYtot    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -869,9 +869,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool doFakeApp          = false;
 
   // Process files one at a time, and color them as needed
-  for (int jetTypeIdx = 0; jetTypeIdx < 1; ++jetTypeIdx)
+  for (int jetTypeIdx = 2; jetTypeIdx < 3; ++jetTypeIdx)
     {
-      for (int metTypeIdx = 0; metTypeIdx < 1; ++metTypeIdx)
+      for (int metTypeIdx = 3; metTypeIdx < 4; ++metTypeIdx)
         {
           for (int zvetoIdx = 0; zvetoIdx < 1; ++zvetoIdx)
             {

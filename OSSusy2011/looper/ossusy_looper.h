@@ -172,6 +172,9 @@ class ossusy_looper
 	Float_t htgen_;
 	Float_t htpf_;
 	Int_t   ndavtx_;
+	Int_t   nels_;
+	Int_t   nmus_;
+	Int_t   ntaus_;
 	Float_t ndavtxweight_;
 
         // for fakeRates

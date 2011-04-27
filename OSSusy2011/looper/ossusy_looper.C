@@ -142,112 +142,9 @@ void ossusy_looper::InitBaby(){
   lep1_			= 0;
   lep2_			= 0;
 
-}
-
-//--------------------------------------------------------------------
-
-void ossusy_looper::makeTree(char *prefix){
-  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-  rootdir->cd();
-
-
-  char* dir = "";
-  if     ( g_trig == e_lowpt  ) dir = "lowpt";
-  else if( g_trig == e_highpt ) dir = "highpt";
-
-  //Super compressed ntuple here
-  outFile   = new TFile(Form("../output/%s/%s/%s_smallTree.root",g_version,dir,prefix), "RECREATE");
-  //outFile   = new TFile("temp.root","RECREATE");
-  outFile->cd();
-  outTree = new TTree("t","Tree");
-
-  //Set branch addresses
-  //variables must be declared in ossusy_looper.h
-  outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
-  outTree->Branch("weight",          &weight_,           "weight/F");
-  outTree->Branch("smeff",           &smeff_,            "smeff/F");
-  outTree->Branch("k",               &k_,                "k/F");
-  outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
-  outTree->Branch("nlep",            &nlep_,             "nlep/I");
-  outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
-  outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
-  outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
-  outTree->Branch("mull",            &mull_,             "mull/I");
-  outTree->Branch("mult",            &mult_,             "mult/I");
-  outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
-  outTree->Branch("multgen",         &multgen_,          "multgen/I");
-  outTree->Branch("proc",            &proc_,             "proc/I");
-  outTree->Branch("leptype",         &leptype_,          "leptype/I");
-  outTree->Branch("topmass",         &topmass_,          "topmass/F");
-  outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
-  outTree->Branch("tcmet",           &tcmet_,            "tcmet/F");
-  outTree->Branch("tcmet00",         &tcmet00_,          "tcmet00/F");
-  outTree->Branch("tcmet10",         &tcmet10_,          "tcmet10/F");
-  outTree->Branch("tcmet20",         &tcmet20_,          "tcmet20/F");
-  outTree->Branch("tcmet30",         &tcmet30_,          "tcmet30/F");
-  outTree->Branch("tcmet40",         &tcmet40_,          "tcmet40/F");
-  outTree->Branch("tcmet50",         &tcmet50_,          "tcmet50/F");
-  outTree->Branch("genmet",          &genmet_,           "genmet/F");
-  outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
-  outTree->Branch("mucormet",        &mucormet_,         "mucormet/F");
-  outTree->Branch("mucorjesmet",     &mucorjesmet_,      "mucorjesmet/F");
-  outTree->Branch("tcmet35X",        &tcmet_35X_,        "tcmet35X/F");
-  outTree->Branch("tcmetevent",      &tcmet_event_,      "tcmetevent/F");
-  outTree->Branch("tcmetlooper",     &tcmet_looper_,     "tcmetlooper/F");
-  outTree->Branch("tcmetphi",        &tcmetphi_,         "tcmetphi/F");
-  outTree->Branch("tcsumet",         &tcsumet_,          "tcsumet/F");
-  outTree->Branch("tcmetUp",         &tcmetUp_,          "tcmetUp/F");
-  outTree->Branch("tcmetDown",       &tcmetDown_,        "tcmetDown/F");
-  outTree->Branch("tcmetTest",       &tcmetTest_,        "tcmetTest/F");
-  outTree->Branch("mt2",             &mt2_,              "mt2/F");  
-  outTree->Branch("mt2j",            &mt2j_,             "mt2j/F");  
-  outTree->Branch("mt2jcore",        &mt2jcore_,         "mt2jcore/F");  
-  outTree->Branch("sumjetpt",        &sumjetpt_,         "sumjetpt/F");
-  outTree->Branch("dileta",          &dileta_,           "dileta/F");
-  outTree->Branch("dilpt",           &dilpt_,            "dilpt/F");
-  outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
-  outTree->Branch("njets",           &njets_,            "njets/I");
-  outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
-  outTree->Branch("npfjets",         &npfjets_,          "npfjets/I");
-  outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
-  outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
-  outTree->Branch("sumjetptUp",      &sumjetptUp_,       "sumjetptUp/F");
-  outTree->Branch("sumjetptDown",    &sumjetptDown_,     "sumjetptDown/F");
-  outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
-  outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
-  outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
-  outTree->Branch("nbtags",          &nbtags_,           "nbtags/I");
-  outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
-  outTree->Branch("pass",            &pass_,             "pass/I");
-  outTree->Branch("passz",           &passz_,            "passz/I");
-  outTree->Branch("m0",              &m0_,               "m0/F");
-  outTree->Branch("m12",             &m12_,              "m12/F");
-  outTree->Branch("id1",             &id1_,              "id1/I");
-  outTree->Branch("id2",             &id2_,              "id2/I");
-  outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
-  outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
-  outTree->Branch("ptj1",            &ptj1_,             "ptj1/F");
-  outTree->Branch("ptj2",            &ptj2_,             "ptj2/F");
-  outTree->Branch("etal1",           &etal1_,            "etal1/F");
-  outTree->Branch("etal2",           &etal2_,            "etal2/F");
-  outTree->Branch("phil1",           &phil1_,            "phil1/F");
-  outTree->Branch("phil2",           &phil2_,            "phil2/F");
-  outTree->Branch("meff",            &meff_,             "meff/F");
-  outTree->Branch("mt",              &mt_,               "mt/F");
-  outTree->Branch("dataset",         &dataset_,          "dataset[200]/C");
-  outTree->Branch("run",             &run_,              "run/I");
-  outTree->Branch("lumi",            &lumi_,             "lumi/I");
-  outTree->Branch("event",           &event_,            "event/I");
-  outTree->Branch("y",               &y_,                "y/F");  
-  outTree->Branch("ht",              &ht_,               "ht/F");  
-  outTree->Branch("htgen",           &htgen_,            "htgen/F");  
-  outTree->Branch("htpf",            &htpf_,             "htpf/F");  
-
-  outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
-  outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
-  outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
-  outTree->Branch("jet"	    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	        );
-
+  nels_  = -1;
+  nmus_  = -1;
+  ntaus_ = -1;
 
 }
 
@@ -347,6 +244,13 @@ ossusy_looper::ossusy_looper()
   g_createTree   = false;
   g_useBitMask   = false;
   random3_ = new TRandom3(1);
+
+
+  cout << "setting json " << g_json << endl;
+  set_goodrun_file( g_json );
+
+  set_vtxreweight_rootfile("/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root",true);
+
 }
 
 //--------------------------------------------------------------------
@@ -360,11 +264,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                              JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 {
 
-
-  cout << "setting json " << g_json << endl;
-  set_goodrun_file( g_json );
-
-  set_vtxreweight_rootfile("/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root",true);
 
   float minpt  = -1;
   float maxpt  = -1;
@@ -392,11 +291,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   bool isLM = TString(prefix).Contains("LM");
   int nSS = 0;
   int nOS = 0;
-
-  if( doFakeApp ){
-//     cout << "Currently not set up to do fake rate calculation, quitting" << endl;
-//     exit(0);
-  }
 
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
@@ -653,7 +547,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( dRbetweenVectors(vjet, vll) < 0.4) continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4) continue;
           if( vjet.pt() < 30.          )         continue;
-          if( fabs( vjet.eta() ) > 2.5 )         continue;
+          if( fabs( vjet.eta() ) > 3.0 )         continue;
           if( !passesCaloJetID( vjet ) )         continue;
 
           if( generalLeptonVeto ){
@@ -720,43 +614,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       v_weights.clear();
       v_goodHyps.push_back(goodHyp);
       v_weights.push_back(goodHyp_weight);
-      
-      /*
-      //perform hypothesis disambiguation if >1 good hyp
-      if( v_goodHyps.size() > 1 ){
-        
-        //first check for any hyp in Z mass window
-        vector<unsigned int> v_goodZHyps;
-        v_goodZHyps.clear();
-
-        for(unsigned int i = 0 ; i < v_goodHyps.size() ; ++i ){
-          if( hyp_p4()[i].mass() > 76 && hyp_p4()[i].mass() < 106 )
-            v_goodZHyps.push_back( i );
-        }
-
-        //if exactly 1 hyp in Z mass window, choose that one
-        if( v_goodZHyps.size() == 1 ){
-          v_goodHyps.clear();
-          v_goodHyps.push_back( v_goodZHyps.at(0) );
-        }
-
-        //if no hyps in Z mass window, choose hyp with highest pt_lep1 + pt_lep2
-        else if( v_goodZHyps.size() == 0 ){
-          unsigned int goodHyp = selectHypByHighestSumPt(v_goodHyps);
-          v_goodHyps.clear();
-          v_goodHyps.push_back( goodHyp );
-        }
-
-        //
-        //if >1 hyps in Z mass window, choose Z hyp with highest pt_lep1 + pt_lep2
-        else if( v_goodZHyps.size() > 1 ){
-          unsigned int goodHyp = selectHypByHighestSumPt(v_goodZHyps);
-          v_goodHyps.clear();
-          v_goodHyps.push_back( goodHyp );
-        }
-
-      }
-      */
 
       if( v_goodHyps.size() != 1 ){
         cout << "Error, nhyps = " << v_goodHyps.size() << ", this shouldn't happen!!!!" << endl;
@@ -786,8 +643,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 ) nSS++;
         else nOS++;
 
-
-
         int nels = 0;
         int nmus  = 0;
         int ntaus = 0;
@@ -806,6 +661,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( strcmp(prefix,"ttdil") == 0 && nleps != 2           ) continue;
           if( strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
 
+	  nels_  = nels;
+	  nmus_  = nmus;
+	  ntaus_ = ntaus;
+
           LorentzVector vdilepton(0,0,0,0);
           
           for ( int igen = 0 ; igen < genps_id().size() ; igen++ ) { 
@@ -814,9 +673,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           }
           
           if( nels + nmus == 2) dilptgen = vdilepton.pt();
-
-          //if( strcmp(prefix , "DYee"     ) == 0 )  cout << "PREFIX DYEE" << endl;
-          //cout << prefix << endl;
           
           if ( strcmp(prefix , "DYee"     ) == 0 &&  nels  != 2  ) continue;
           if ( strcmp(prefix , "DYmm"     ) == 0 &&  nmus  != 2  ) continue;
@@ -847,8 +703,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
 
 
-
-
         //for tt, check if 2 leptons are from W's
         //if(strcmp(prefix,"ttdil") == 0 && ttbarconstituents(hypIdx) != 1 ) continue;
         //if(strcmp(prefix,"ttotr") == 0 && ttbarconstituents(hypIdx) == 1 ) continue;
@@ -861,8 +715,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //if (prefixStr == "DYee"     && genpCountPDGId(11)       != 2) continue;
         //if (prefixStr == "DYmm"     && genpCountPDGId(13)       != 2) continue;
         //if (prefixStr == "DYtautau" && genpCountPDGId(15)       != 2) continue;
-
-
 
       
         int id_lt = hyp_lt_id()[hypIdx];
@@ -895,10 +747,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           }
         */
 
-        //
-
         // jet counting
-          
+          	
         //calojets
         VofP4 vjets_noetacut_p4;
         VofP4 vjets_p4;
@@ -940,9 +790,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         for (unsigned int ijet = 0; ijet < jpts_p4().size(); ijet++) {
           
-          LorentzVector vjet     = jpts_p4().at(ijet) * jpts_cor().at(ijet); 
-          LorentzVector vjetUp   = jpts_p4().at(ijet) * jpts_cor().at(ijet) * 1.05; 
-          LorentzVector vjetDown = jpts_p4().at(ijet) * jpts_cor().at(ijet) * 0.95; 
+          LorentzVector vjet     = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet); 
+          LorentzVector vjetUp   = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet) * 1.05; 
+          LorentzVector vjetDown = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet) * 0.95; 
           LorentzVector vlt      = hyp_lt_p4()[hypIdx];
           LorentzVector vll      = hyp_ll_p4()[hypIdx];
 
@@ -958,12 +808,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( dRbetweenVectors(vjet, vlt) < 0.4) continue;
           if( !passesCaloJetID( vjet ) )         continue;
 
-          if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 2.5 ){
+          if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 3.0 ){
             njetsUp_++;
             sumjetptUp_ += vjetUp.pt();
           }
 
-          if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 2.5 ){
+          if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 3.0 ){
             njetsDown_++;
             sumjetptDown_ += vjetDown.pt();
           }
@@ -972,7 +822,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
           vjpts_noetacut_p4.push_back( vjet );
 
-          if( fabs( vjet.eta() ) > 2.5 )         continue;
+          if( fabs( vjet.eta() ) > 3.0 )         continue;
 
           vjpts_p4.push_back( vjet );
           vjpts_p4_tot += vjet;
@@ -1004,7 +854,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-          LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+          LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
           LorentzVector vlt  = hyp_lt_p4()[hypIdx];
           LorentzVector vll  = hyp_ll_p4()[hypIdx];
 
@@ -1324,12 +1174,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //get various met types
         
         float tcmet_35X = -9999;
-
-        if( !isData ){
-          //p_met = getMet( "tcMET35X"    , hypIdx);
-          //p_met = getMet( "tcMET"    , hypIdx); //Summer09: use tcMET
-          //tcmet_35X = p_met.first;
-        }
 
         p_met = getMet( "tcMET_looper"    , hypIdx);
         float tcmet_looper = p_met.first;
@@ -3305,4 +3149,114 @@ double ossusy_looper::getFRWeight(const int hypIdx, string elFRversion, SimpleFa
   } //emu case
 
   return -9999.;
+}
+
+//--------------------------------------------------------------------
+
+void ossusy_looper::makeTree(char *prefix){
+  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+  rootdir->cd();
+
+
+  char* dir = "";
+  if     ( g_trig == e_lowpt  ) dir = "lowpt";
+  else if( g_trig == e_highpt ) dir = "highpt";
+
+  //Super compressed ntuple here
+  outFile   = new TFile(Form("../output/%s/%s/%s_smallTree.root",g_version,dir,prefix), "RECREATE");
+  //outFile   = new TFile("temp.root","RECREATE");
+  outFile->cd();
+  outTree = new TTree("t","Tree");
+
+  //Set branch addresses
+  //variables must be declared in ossusy_looper.h
+  outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
+  outTree->Branch("weight",          &weight_,           "weight/F");
+  outTree->Branch("smeff",           &smeff_,            "smeff/F");
+  outTree->Branch("k",               &k_,                "k/F");
+  outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
+  outTree->Branch("nlep",            &nlep_,             "nlep/I");
+  outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
+  outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
+  outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
+  outTree->Branch("mull",            &mull_,             "mull/I");
+  outTree->Branch("mult",            &mult_,             "mult/I");
+  outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
+  outTree->Branch("multgen",         &multgen_,          "multgen/I");
+  outTree->Branch("proc",            &proc_,             "proc/I");
+  outTree->Branch("leptype",         &leptype_,          "leptype/I");
+  outTree->Branch("topmass",         &topmass_,          "topmass/F");
+  outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
+  outTree->Branch("tcmet",           &tcmet_,            "tcmet/F");
+  outTree->Branch("tcmet00",         &tcmet00_,          "tcmet00/F");
+  outTree->Branch("tcmet10",         &tcmet10_,          "tcmet10/F");
+  outTree->Branch("tcmet20",         &tcmet20_,          "tcmet20/F");
+  outTree->Branch("tcmet30",         &tcmet30_,          "tcmet30/F");
+  outTree->Branch("tcmet40",         &tcmet40_,          "tcmet40/F");
+  outTree->Branch("tcmet50",         &tcmet50_,          "tcmet50/F");
+  outTree->Branch("genmet",          &genmet_,           "genmet/F");
+  outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
+  outTree->Branch("mucormet",        &mucormet_,         "mucormet/F");
+  outTree->Branch("mucorjesmet",     &mucorjesmet_,      "mucorjesmet/F");
+  outTree->Branch("tcmet35X",        &tcmet_35X_,        "tcmet35X/F");
+  outTree->Branch("tcmetevent",      &tcmet_event_,      "tcmetevent/F");
+  outTree->Branch("tcmetlooper",     &tcmet_looper_,     "tcmetlooper/F");
+  outTree->Branch("tcmetphi",        &tcmetphi_,         "tcmetphi/F");
+  outTree->Branch("tcsumet",         &tcsumet_,          "tcsumet/F");
+  outTree->Branch("tcmetUp",         &tcmetUp_,          "tcmetUp/F");
+  outTree->Branch("tcmetDown",       &tcmetDown_,        "tcmetDown/F");
+  outTree->Branch("tcmetTest",       &tcmetTest_,        "tcmetTest/F");
+  outTree->Branch("mt2",             &mt2_,              "mt2/F");  
+  outTree->Branch("mt2j",            &mt2j_,             "mt2j/F");  
+  outTree->Branch("mt2jcore",        &mt2jcore_,         "mt2jcore/F");  
+  outTree->Branch("sumjetpt",        &sumjetpt_,         "sumjetpt/F");
+  outTree->Branch("dileta",          &dileta_,           "dileta/F");
+  outTree->Branch("dilpt",           &dilpt_,            "dilpt/F");
+  outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
+  outTree->Branch("njets",           &njets_,            "njets/I");
+  outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
+  outTree->Branch("npfjets",         &npfjets_,          "npfjets/I");
+  outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
+  outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
+  outTree->Branch("sumjetptUp",      &sumjetptUp_,       "sumjetptUp/F");
+  outTree->Branch("sumjetptDown",    &sumjetptDown_,     "sumjetptDown/F");
+  outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
+  outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
+  outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
+  outTree->Branch("nbtags",          &nbtags_,           "nbtags/I");
+  outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
+  outTree->Branch("pass",            &pass_,             "pass/I");
+  outTree->Branch("passz",           &passz_,            "passz/I");
+  outTree->Branch("m0",              &m0_,               "m0/F");
+  outTree->Branch("m12",             &m12_,              "m12/F");
+  outTree->Branch("id1",             &id1_,              "id1/I");
+  outTree->Branch("id2",             &id2_,              "id2/I");
+  outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
+  outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
+  outTree->Branch("ptj1",            &ptj1_,             "ptj1/F");
+  outTree->Branch("ptj2",            &ptj2_,             "ptj2/F");
+  outTree->Branch("etal1",           &etal1_,            "etal1/F");
+  outTree->Branch("etal2",           &etal2_,            "etal2/F");
+  outTree->Branch("phil1",           &phil1_,            "phil1/F");
+  outTree->Branch("phil2",           &phil2_,            "phil2/F");
+  outTree->Branch("meff",            &meff_,             "meff/F");
+  outTree->Branch("mt",              &mt_,               "mt/F");
+  outTree->Branch("dataset",         &dataset_,          "dataset[200]/C");
+  outTree->Branch("run",             &run_,              "run/I");
+  outTree->Branch("lumi",            &lumi_,             "lumi/I");
+  outTree->Branch("event",           &event_,            "event/I");
+  outTree->Branch("y",               &y_,                "y/F");  
+  outTree->Branch("ht",              &ht_,               "ht/F");  
+  outTree->Branch("htgen",           &htgen_,            "htgen/F");  
+  outTree->Branch("htpf",            &htpf_,             "htpf/F");  
+  outTree->Branch("nels",            &nels_,             "nels/I");  
+  outTree->Branch("nmus",            &nmus_,             "nmus/I");  
+  outTree->Branch("ntaus",           &ntaus_,            "ntaus/I");  
+
+  outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
+  outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
+  outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
+  outTree->Branch("jet"	    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	        );
+
+
 }
