@@ -154,6 +154,7 @@ int getProcessType(char *prefix)
 {
   int proc = -1;
 
+  if(strcmp(prefix,"data")   == 0) proc = 0;
   if(strcmp(prefix,"Zjets")  == 0) proc = 1;
   if(strcmp(prefix,"ttdil")  == 0) proc = 2;
   if(strcmp(prefix,"ttotr")  == 0) proc = 3;
