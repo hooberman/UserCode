@@ -137,6 +137,9 @@ int getIndexFromM12(float m12){
 
 void ossusy_looper::InitBaby(){
 
+  w1_ = -999;
+  w2_ = -999;
+
   dilep_		= 0;
   jet_			= 0;
   lep1_			= 0;
@@ -1275,9 +1278,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           lumi_         = evt_lumiBlock();              //lumi
           event_        = evt_event();                  //event
 	  ndavtxweight_ = vtxweight();
-	  wlt_          = leptonIsFromW(cms2.hyp_lt_index()[hypIdx],cms2.hyp_lt_id()[hypIdx]);
-	  wll_          = leptonIsFromW(cms2.hyp_ll_index()[hypIdx],cms2.hyp_ll_id()[hypIdx]);
-
 
           k_				= 1;
           if( strcmp( prefix , "LM0"  )  == 0 ) k_ = kfactorSUSY( "lm0"  );
@@ -1294,18 +1294,64 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( strcmp( prefix , "LM11" )  == 0 ) k_ = kfactorSUSY( "lm11" );
           if( strcmp( prefix , "LM12" )  == 0 ) k_ = kfactorSUSY( "lm12" );
 
+	  //--------------------------
+	  // leading lepton = ll
+	  //--------------------------
+
+	  int index1 = -1;
+	  int index2 = -1;
+
           if( hyp_ll_p4().at(hypIdx).pt() > hyp_lt_p4().at(hypIdx).pt() ){
+
+	    index1 = hyp_ll_index()[hypIdx];
+	    index2 = hyp_lt_index()[hypIdx];
+
             lep1_ = &hyp_ll_p4().at(hypIdx);
             lep2_ = &hyp_lt_p4().at(hypIdx);
 	    id1_  = hyp_ll_id()[hypIdx];
 	    id2_  = hyp_lt_id()[hypIdx];
-          }else{
+
+	  }
+
+	  //--------------------------
+	  // leading lepton = lt
+	  //--------------------------
+
+	  else{
+
+	    index1 = hyp_lt_index()[hypIdx];
+	    index2 = hyp_ll_index()[hypIdx];
+
             lep1_ = &hyp_lt_p4().at(hypIdx);
             lep2_ = &hyp_ll_p4().at(hypIdx);
 	    id1_  = hyp_lt_id()[hypIdx];
 	    id2_  = hyp_ll_id()[hypIdx];
-          }
 
+	  }
+
+	  if( !isData ){
+	    w1_          = leptonIsFromW( index1 , id1_ );
+	    w2_          = leptonIsFromW( index2 , id2_ );
+	  }
+
+	  if( abs(id1_) == 11 ){
+	    iso1_   = electronIsolation_rel   ( index1 , true ); //truncated
+	    isont1_ = electronIsolation_rel_v1( index1 , true ); //non-truncated
+	  }
+	  else if( abs(id1_) == 13 ){
+	    iso1_   = muonIsoValue( index1 , true  ); //truncated 
+	    isont1_ = muonIsoValue( index1 , false ); //non-truncated
+	  }
+	  
+	  if( abs(id2_) == 11 ){
+	    iso2_   = electronIsolation_rel   ( index2 , true ); //truncated
+	    isont2_ = electronIsolation_rel_v1( index2 , true ); //non-truncated
+	  }
+	  else if( abs(id2_) == 13 ){
+	    iso2_   = muonIsoValue( index2 , true  ); //truncated 
+	    isont2_ = muonIsoValue( index2 , false ); //non-truncated
+	  }
+	  
 	  dilep_   = &hyp_p4().at(hypIdx);
 
           leptype_ = -1;
@@ -3239,8 +3285,12 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");
   outTree->Branch("id2",             &id2_,              "id2/I");
-  outTree->Branch("wll",             &wll_,              "wll/I");
-  outTree->Branch("wlt",             &wlt_,              "wlt/I");
+  outTree->Branch("w1",              &w1_,               "w1/I");
+  outTree->Branch("w2",              &w2_,               "w2/I");
+  outTree->Branch("iso1",            &iso1_,             "iso1/F");
+  outTree->Branch("isont1",          &isont1_,           "isont1/F");
+  outTree->Branch("iso2",            &iso2_,             "iso2/F");
+  outTree->Branch("isont2",          &isont2_,           "isont2/F");
   outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
   outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
   outTree->Branch("ptj1",            &ptj1_,             "ptj1/F");
