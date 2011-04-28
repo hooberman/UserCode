@@ -399,6 +399,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       cms2.GetEntry(z);
 
+      InitBaby();
+
       float pthat_cutoff = 30.;
       if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
         continue;
@@ -662,16 +664,16 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if( !isData ){
 
           //splitting ttbar into ttdil/ttotr
-          nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
-          //nleps = leptonGenpCount(nels, nmus, ntaus);
-
-          if( strcmp(prefix,"ttem")  == 0 && ( nels + nmus ) != 2 ) continue;
-          if( strcmp(prefix,"ttdil") == 0 && nleps != 2           ) continue;
-          if( strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
+          //nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
+          nleps = leptonGenpCount(nels, nmus, ntaus);
 
 	  nels_  = nels;
 	  nmus_  = nmus;
 	  ntaus_ = ntaus;
+
+          if( strcmp(prefix,"ttem")  == 0 && ( nels + nmus ) != 2 ) continue;
+          if( strcmp(prefix,"ttdil") == 0 && nleps != 2           ) continue;
+          if( strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
 
           LorentzVector vdilepton(0,0,0,0);
           
@@ -1215,7 +1217,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //fill tree for baby ntuple 
         if(g_createTree){
 
-	  InitBaby();
+
 
           costhetaweight_ = -3;
           //if(strcmp(prefix,"ttdil") == 0 )
