@@ -1081,7 +1081,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //int nJptsIdx =        min(new_njpts, 2);
 
         //extra variables for baby ntuple
-        int pass   = ( theSumJetPt > 100 && theNJets >= 2 && theMet > 50. && id_lt * id_ll < 0 ) ? 1 : 0;
+        int pass   = ( theSumJetPt > htcut && theNJets >= 2 && theMet > 50. && id_lt * id_ll < 0 ) ? 1 : 0;
         int passz  = (passZSelection ( hypIdx ) || vetoZmumuGamma( hypIdx ) ) ? 1 : 0;
         float etaZ = hyp_p4()[hypIdx].eta();
         float m0   = -9999.;
@@ -1332,8 +1332,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  }
 
 	  if( !isData ){
-	    w1_          = leptonIsFromW( index1 , id1_ );
-	    w2_          = leptonIsFromW( index2 , id2_ );
+	    w1_          = leptonIsFromW( index1 , id1_ , isLM );
+	    w2_          = leptonIsFromW( index2 , id2_ , isLM );
 	  }
 
 	  if( abs(id1_) == 11 ){
@@ -1859,18 +1859,24 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   if( nSkip_els_conv_dist > 0 )
     cout << "Skipped " << nSkip_els_conv_dist << " events due to nan in els_conv_dist" << endl;
 
+  cout << endl;
+  cout << "------------------------------" << endl;
   cout << "Dilepton yields" << endl;
+  cout << "------------------------------" << endl;
   cout << "nee " << neetot << endl;
   cout << "nmm " << nmmtot << endl;
   cout << "nem " << nemtot << endl;
   cout << "tot " << neetot+nmmtot+nemtot << endl;
 
+  cout << endl;
+  cout << "------------------------------" << endl;
   cout << "Preselection yields" << endl;
+  cout << "------------------------------" << endl;
   cout << "nee " << nee << endl;
   cout << "nmm " << nmm << endl;
   cout << "nem " << nem << endl;
   cout << "tot " << nee+nmm+nem << endl;
-
+  cout << endl;
 
   if(g_createTree) closeTree();
   
