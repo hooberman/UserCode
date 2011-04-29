@@ -104,6 +104,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   float kqcdpt15    = (8.158/8.762)*(490779./381623.);  
   float kqcdpt30    = 1.;  
   float kttall    = 1.;  //157.5/165.0;  
+  float kttpowheg = 1.;  //157.5/165.0;  
   float kttdil    = 1.;  //157.5/165.0;  
   float kttrelval = 1;  
   float kttem     = 1.;  //157.5/165.0;  
@@ -152,6 +153,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preqcdpt15  = 1;
   int preqcdpt30  = 1;
   int prettall    = 1;
+  int prettpowheg = 1;
   int prettdil    = 1;
   int prettem     = 1;
   int prettrelval = 1;
@@ -202,7 +204,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
+  bool runttpowheg = 1;
   bool runttdil    = 0;
   bool runttem     = 0;
   bool runttrelval = 0;
@@ -215,7 +218,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 1;
+  bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -246,14 +249,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
+  
 
-  /*
+  /*  
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
+  bool runttpowheg = 1;
   bool runttdil    = 1;
   bool runttrelval = 0;
   bool runttem     = 0;
@@ -297,7 +302,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+  */ 
   char* dir = "";
 
   bool useMCSkims = true;
@@ -348,7 +353,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chtopall, 
 		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		     "TTJets");
+  }
 
+  TChain* chtoppowheg = new TChain("Events");
+  if (runttpowheg) {
+    pickSkimIfExists(chtoppowheg, 
+		     "/tas/cms2/TTTo2L2Nu2B_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "TTPowheg");
   }
 
   TChain* chtopdil = new TChain("Events");
@@ -885,9 +896,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       }
     }
 
-
-
-
     for (int jetTypeIdx = 2; jetTypeIdx < 3; ++jetTypeIdx)
       {
 	for (int metTypeIdx = 3; metTypeIdx < 4; ++metTypeIdx)
@@ -950,7 +958,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      cout << "Done processing  QCDpt15.. " << endl;
 		      hist::color("qcdpt15", kOrange);
 		    }
-                  
 		    if (runQCDpt30) {
 		      cout << "Processing QCDpt30.. " << endl;
 		      looper->ScanChain(chQCDpt30,"qcdpt30", kqcdpt30, preqcdpt30, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
@@ -962,6 +969,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing ttbar all.. " << endl;
 		      hist::color("ttall", kYellow);
+		    }
+		    if (runttpowheg) {
+		      cout << "Processing ttbar powheg.. " << endl;
+		      looper->ScanChain(chtoppowheg,"ttpowheg", kttpowheg, prettpowheg, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing ttbar powheg.. " << endl;
+		      hist::color("ttpowheg", kYellow);
 		    }
 		    if (runttdil) {
 		      cout << "Processing ttbar dileptonic.. " << endl;
@@ -1194,7 +1207,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 						 jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
 		    }
 		    else {
-		      const char* outFile = Form("../output/%s/%s/ossusy_%s_%s%s_dy.root", version,dir,
+		      const char* outFile = Form("../output/%s/%s/ossusy_%s_%s%s.root", version,dir,
 						 jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
 		    }
                   
