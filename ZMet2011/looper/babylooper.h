@@ -64,6 +64,8 @@ class babylooper
         Int_t   nvtx_;
         Int_t   npfmuons_;
         Float_t weight_;
+        Float_t vtxweight_;
+        Float_t davtxweight_;
         Float_t pthat_;
 
 	// genmet stuff

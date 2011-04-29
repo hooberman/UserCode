@@ -246,9 +246,11 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       }
 
       //weight_ = 1;
+      float mcweight = 1;
+      if( !isData ) mcweight = weight_ * davtxweight_;
 
-      fillUnderOverFlow( hgenps_pthat  , pthat_ , weight_ );
-      fillUnderOverFlow( hphotonpt     , etg_   , weight_ );
+      fillUnderOverFlow( hgenps_pthat  , pthat_ , mcweight );
+      fillUnderOverFlow( hphotonpt     , etg_   , mcweight );
 
       float theMet = -1;
       if     ( myMetType == e_tcmet    ) theMet = tcmet_;
@@ -294,20 +296,20 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         if( dilmass_ > 76. && dilmass_ < 106. ){
 
           if( nJets_ == 0 ){
-            hyield_0j->Fill(0.5,          weight_);
-            hyield_0j->Fill(1.5+leptype_, weight_);
+            hyield_0j->Fill(0.5,          mcweight);
+            hyield_0j->Fill(1.5+leptype_, mcweight);
           }
           if( nJets_ == 1 ){
-            hyield_1j->Fill(0.5,          weight_);
-            hyield_1j->Fill(1.5+leptype_, weight_);
+            hyield_1j->Fill(0.5,          mcweight);
+            hyield_1j->Fill(1.5+leptype_, mcweight);
           }
           if( nJets_ == 2 ){
-            hyield_2j->Fill(0.5,          weight_);
-            hyield_2j->Fill(1.5+leptype_, weight_);
+            hyield_2j->Fill(0.5,          mcweight);
+            hyield_2j->Fill(1.5+leptype_, mcweight);
           }
           if( nJets_ > 2 ){
-            hyield_g2j->Fill(0.5,          weight_);
-            hyield_g2j->Fill(1.5+leptype_, weight_);
+            hyield_g2j->Fill(0.5,          mcweight);
+            hyield_g2j->Fill(1.5+leptype_, mcweight);
           }
         }
 
@@ -329,11 +331,11 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	//fill histos before Z-veto
 	//------------------------------
 
-        fillHistos( hdilmass , dilmass_ , weight_ , leptype_ , nJets_ );
+        fillHistos( hdilmass , dilmass_ , mcweight , leptype_ , nJets_ );
 	if( pfmet_ > 60. ){
-	  fillHistos( hdilmass_pfmet60 , dilmass_ , weight_ , leptype_ , nJets_ );
+	  fillHistos( hdilmass_pfmet60 , dilmass_ , mcweight , leptype_ , nJets_ );
 	}
-	if( leptype_ == 2) fillUnderOverFlow( metObserved_df_nozveto , theMet , weight_  );
+	if( leptype_ == 2) fillUnderOverFlow( metObserved_df_nozveto , theMet , mcweight  );
 
 	//Zmass
 	if( leptype_ == 1 ){
@@ -385,9 +387,9 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
 
       
-        fillHistos( htcmet            , tcmet_           , weight_ , leptype_ , nJets_ );
-        fillHistos( htcmetNew         , tcmetNew_        , weight_ , leptype_ , nJets_ );
-        fillHistos( hpfmet            , pfmet_           , weight_ , leptype_ , nJets_  );
+        fillHistos( htcmet            , tcmet_           , mcweight , leptype_ , nJets_ );
+        fillHistos( htcmetNew         , tcmetNew_        , mcweight , leptype_ , nJets_ );
+        fillHistos( hpfmet            , pfmet_           , mcweight , leptype_ , nJets_  );
         
         if( isData && ( pfmet_ > 60 ) ){
           string lepstring[3]={"ee","mm","em"};
@@ -412,24 +414,24 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
       npass++;
 
-      hyield->Fill(0.5,          weight_);
-      hyield->Fill(1.5+leptype_, weight_);
+      hyield->Fill(0.5,          mcweight);
+      hyield->Fill(1.5+leptype_, mcweight);
 
       if( pfmet_ > 30. ){
-        hyield_pfmet30->Fill(0.5,          weight_);
-        hyield_pfmet30->Fill(1.5+leptype_, weight_);
+        hyield_pfmet30->Fill(0.5,          mcweight);
+        hyield_pfmet30->Fill(1.5+leptype_, mcweight);
       }
       if( pfmet_ > 60. ){
-        hyield_pfmet60->Fill(0.5,          weight_);
-        hyield_pfmet60->Fill(1.5+leptype_, weight_);
+        hyield_pfmet60->Fill(0.5,          mcweight);
+        hyield_pfmet60->Fill(1.5+leptype_, mcweight);
       }
       if( pfmet_ > 120. ){
-        hyield_pfmet120->Fill(0.5,          weight_);
-        hyield_pfmet120->Fill(1.5+leptype_, weight_);
+        hyield_pfmet120->Fill(0.5,          mcweight);
+        hyield_pfmet120->Fill(1.5+leptype_, mcweight);
       }
 
-      hnVtx->Fill( nvtx_ , weight_ );
-      hvecJetPt->Fill( vecJetPt_ , weight_ );
+      hnVtx->Fill( nvtx_ , mcweight );
+      hvecJetPt->Fill( vecJetPt_ , mcweight );
 
       float pthad = -1;
       if( selection_ == e_photonSelection ) pthad = etg_;
@@ -444,7 +446,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         int iBosonPtBin      = getBosonPtBin( etg_ );
         int iVtxBin          = getVtxBin( nvtx_ );
 
-        float templateWeight = weight_;
+        float templateWeight = mcweight;
         if( doVtxReweight ){
           int vtxBin = nvtx_ + 1;
           if( vtxBin > 6 ) vtxBin = 6;
@@ -491,8 +493,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       int iJ = nJets_;
       if( iJ > 4 ) iJ = 4;
        
-      fillUnderOverFlow( hpthad[iJ] ,  pthad , weight_ );
-      fillUnderOverFlow( hpthad[0]  ,  pthad , weight_ );
+      fillUnderOverFlow( hpthad[iJ] ,  pthad , mcweight );
+      fillUnderOverFlow( hpthad[0]  ,  pthad , mcweight );
 
       //fill predicted and observed met histos--------------------------------------------------
 
@@ -510,22 +512,22 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         //cout << iTrigBin << " " << iJetBin << " " << iSumJetPtBin << endl;
 
         TH1F* hmet = getMetTemplate( metTemplateFile , iTrigBin , iJetBin , iSumJetPtBin , 
-                                     iBosonPtBin , iVtxBin, dilpt_ , weight_ );
+                                     iBosonPtBin , iVtxBin, dilpt_ , mcweight );
 
-        hmet->Scale( weight_ );
+        hmet->Scale( mcweight );
         
         if( selection_ == e_ZSelection ){
           if( leptype_ == 2 ){
-            fillUnderOverFlow( metObserved_df , theMet , weight_  );
+            fillUnderOverFlow( metObserved_df , theMet , mcweight  );
             metPredicted_df->Add( hmet );
             continue; //exclude emu final state
           }
         }
         
-        fillUnderOverFlow( metObserved_njets[iJetBin] , theMet , weight_ );
+        fillUnderOverFlow( metObserved_njets[iJetBin] , theMet , mcweight );
         metPredicted_njets[iJetBin]->Add( hmet );
         
-        fillUnderOverFlow( metObserved , theMet , weight_ );
+        fillUnderOverFlow( metObserved , theMet , mcweight );
         metPredicted->Add( hmet );
         
         //counters to track how many times each template is picked
@@ -553,20 +555,20 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         if( selection_ == e_ZSelection ) {
                 
           if( leptype_ == 0 ){
-            fillUnderOverFlow( metObserved_ee , theMet , weight_ );
+            fillUnderOverFlow( metObserved_ee , theMet , mcweight );
             metPredicted_ee->Add( hmet );
           }
           if( leptype_ == 1 ){
-            fillUnderOverFlow( metObserved_mm , theMet , weight_ );
+            fillUnderOverFlow( metObserved_mm , theMet , mcweight );
             metPredicted_mm->Add( hmet );
           }
         
           if( leptype_ == 0 || leptype_ == 1 ){
-            fillUnderOverFlow( metObserved_sf , theMet , weight_  );
+            fillUnderOverFlow( metObserved_sf , theMet , mcweight  );
             metPredicted_sf->Add( hmet );
           }
           else if( leptype_ == 2 ){
-            //fillUnderOverFlow( metObserved_df , tcmet_ , weight_  );
+            //fillUnderOverFlow( metObserved_df , tcmet_ , mcweight  );
             //metPredicted_df->Add( hmet );
             cout << "SHOULD NOT GET HERE!!!!!!" << endl;
           }
@@ -578,22 +580,22 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         if( selection_ == e_photonSelection ||  selection_ == e_ZSelection){
 
           if( pthad < 40 ){
-            fillUnderOverFlow( metObserved_ptlt40 , theMet , weight_ );
+            fillUnderOverFlow( metObserved_ptlt40 , theMet , mcweight );
             metPredicted_ptlt40->Add( hmet );
           }
           if( pthad > 40 && pthad < 60 ){
-            fillUnderOverFlow( metObserved_pt40_60 , theMet , weight_ );
+            fillUnderOverFlow( metObserved_pt40_60 , theMet , mcweight );
             metPredicted_pt40_60->Add( hmet );
           }
           if( pthad > 60 ){
-            fillUnderOverFlow( metObserved_ptgt60 , theMet , weight_ );
+            fillUnderOverFlow( metObserved_ptgt60 , theMet , mcweight );
             metPredicted_ptgt60->Add( hmet );
           }
           if( pthad < 50 ){
-            fillUnderOverFlow( metObserved_ptlt50 , theMet , weight_ );
+            fillUnderOverFlow( metObserved_ptlt50 , theMet , mcweight );
             metPredicted_ptlt50->Add( hmet );
           }else{
-            fillUnderOverFlow( metObserved_ptgt50 , theMet , weight_ );
+            fillUnderOverFlow( metObserved_ptgt50 , theMet , mcweight );
             metPredicted_ptgt50->Add( hmet );
           }
         }
@@ -1167,6 +1169,8 @@ void babylooper::bookHistos(){
 void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("run",          &run_          );
   tree->SetBranchAddress("weight",       &weight_       );
+  tree->SetBranchAddress("vtxweight",    &vtxweight_    );
+  tree->SetBranchAddress("davtxweight",  &davtxweight_  );
   tree->SetBranchAddress("pthat",        &pthat_        );
   tree->SetBranchAddress("lumi",         &lumi_         );
   tree->SetBranchAddress("event",        &event_        );

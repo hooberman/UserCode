@@ -3,11 +3,16 @@
 
 #include "TFile.h"
 #include "TTree.h"
+#include "TMath.h"
 #include "TH1.h"
 #include "TProfile.h"
 #include <vector>
+#include <map>
 #include <fstream>
+#include "Math/LorentzVector.h"
+//#include "Math/PxPyPzE4D.h"
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 class TChain;
 
@@ -20,15 +25,12 @@ class Z_looper
     delete babyTree_;
   };
 
-  enum metAlgo   { e_makeTemplate = 0, e_photonSelection = 1, e_ZSelection = 2};
-
-
   void MakeBabyNtuple (const char *);
   void InitBabyNtuple ();
   void FillBabyNtuple ();
   void CloseBabyNtuple ();
   void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false,
-                  metAlgo algo = e_makeTemplate, int nEvents = -1, float kFactor = 1.);
+                  int my_nEvents = -1, float kFactor = 1.);
   void bookHistos();
   bool isGoodTrack(int, bool usePV = false);
   float deltaPhi( float phi1 , float phi2);
@@ -40,27 +42,12 @@ class Z_looper
   float getMetError_claudio(  vector<int> goodMuonIndices );
         
  private:
-        
-  metAlgo algo_;
-        
+                
   //ntuple, file
   TFile *babyFile_;
   TTree *babyTree_;
     
   //histos
-
-  //triggers
-  Int_t HLT_L1Jet6U_;
-  Int_t HLT_L1Jet10U_;
-  Int_t HLT_Jet15U_;
-  Int_t HLT_Jet30U_;
-  Int_t L1_SingleEG5_;
-  Int_t HLT_Photon10_L1R_;
-  Int_t HLT_Photon15_L1R_;
-  Int_t HLT_Photon10_Cleaned_L1R_;
-  Int_t HLT_Photon15_Cleaned_L1R_;
-  Int_t HLT_Photon20_Cleaned_L1R_;
-  Int_t HLT_Photon20_L1R_;
 
   // event stuff
   char    dataset_[200];
@@ -74,12 +61,20 @@ class Z_looper
   Int_t   nGoodDAVertex_;
   Float_t weight_;
   Float_t vtxweight_;
+  Float_t davtxweight_;
   Float_t pthat_;
   Float_t mllgen_;
   Float_t maxemf_;
   Float_t dpdm_;
   Float_t metError_;
   Float_t metErrorC_;
+  Int_t   id1_;
+  Int_t   id2_;
+
+  LorentzVector*  lep1_;
+  LorentzVector*  lep2_;
+  LorentzVector*  dilep_;
+  LorentzVector*  jet_; 
 
   // genmet stuff
   Float_t genmet_;
@@ -159,20 +154,6 @@ class Z_looper
 
   //Z stuff
   Int_t   passz_;
-  Int_t   passe_ll_ttbar_;
-  Int_t   passe_ll_ttbarV1_;
-  Int_t   passe_ll_ttbarV2_;
-  Int_t   passe_ll_cand01_;
-  Int_t   passm_ll_nomttbar_;
-  Int_t   passm_ll_nomttbarV2_;
-  Int_t   passm_ll_nom_;
-  Int_t   passe_lt_ttbar_;
-  Int_t   passe_lt_ttbarV1_;
-  Int_t   passe_lt_ttbarV2_;
-  Int_t   passe_lt_cand01_;
-  Int_t   passm_lt_nomttbar_;
-  Int_t   passm_lt_nomttbarV2_;
-  Int_t   passm_lt_nom_;
   Int_t   pdgid_;
   Int_t   idll_;
   Int_t   idlt_;
@@ -231,8 +212,6 @@ class Z_looper
   TH1F* metParTemplate[11][23];
   TH1F* metPerpTemplate[11][23];
 
-  ofstream ofile_tcmet;
-  ofstream ofile_events;
 
 };
 

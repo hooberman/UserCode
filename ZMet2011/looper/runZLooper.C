@@ -2,39 +2,54 @@
 #include "Z_looper.C"
 //#include "Z_looper.h"
 
-void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_looper::e_makeTemplate, float kFactor = 1.){
+
+void pickSkimIfExists( TChain *ch, const std::string& base )
+{
+
+  TChain *dummy = new TChain("Events");
+  int nFiles = 0;
+  if (dummy->Add(base.c_str())) {
+    nFiles = ch->Add(base.c_str());
+    std::cout << "Main " <<base.c_str() << " exists: use it. Loaded " 
+              << nFiles << " files" << std::endl;
+  } else{
+    std::cout << "Didn't find sample, quitting" << std::endl;
+    exit(0);
+  }
+
+  // be paranoid
+  if (nFiles == 0) {
+    std::cout << "ERROR: expected to read files " 
+              << base.c_str() << "  but found none" << std::endl;
+    assert(0);
+  }
+
+  return;
+}
+
+void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   TChain* ch = new TChain("Events");
 
-  //char* datapath = "/nfs-3/userdata/cms2";
-  char* datapath = "/tas/cms2";
-
   //----------------------------------------------------------------------------------------
 
-  if( strcmp( prefix , "express_data" ) == 0 ){
-    ch->Add("/tas/cms2/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/n*root");
+  if( strcmp( prefix , "data" ) == 0 ){
+    pickSkimIfExists(ch,"cms2/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
+    pickSkimIfExists(ch,"cms2/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
   }
-
-  //----------------------------------------------------------------------------------------
-
-  else if( strcmp( prefix , "pr_data" ) == 0 ){
-    ch->Add("/tas/cms2/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged*root");
-    ch->Add("/tas/cms2/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
-    //ch->Add("/tas/cms2/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
-  }
-
+  
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "ttbar" ) == 0 ){
-    ch->Add(Form("%s/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",datapath));
+    pickSkimIfExists(ch,"cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zjets" ) == 0 ){
-    ch->Add(Form("%s/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",datapath));
+    pickSkimIfExists(ch,"cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
   }
-
+  
   //----------------------------------------------------------------------------------------
 
   else{
@@ -49,7 +64,7 @@ void runZLooper(char* prefix , bool isData = true, Z_looper::metAlgo algo = Z_lo
   Z_looper* myLooper = new Z_looper();
   
   cout << "Running on sample " << prefix << endl;
-  myLooper->ScanChain(ch, prefix, isData, calculateTCMET, algo, -1 ,kFactor);
+  myLooper->ScanChain(ch, prefix, isData, calculateTCMET, -1 ,kFactor);
   
 }
 
