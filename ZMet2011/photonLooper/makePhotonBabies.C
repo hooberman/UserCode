@@ -25,12 +25,12 @@
 #include "../CORE/muonSelections.h"
 #include "../Tools/goodrun.cc"
 #include "histtools.h"
-#include "../CORE/ttbarSelections.cc"
-#include "../CORE/triggerUtils.cc"
-#include "../CORE/photonSelections.cc"
+#include "../CORE/ttbarSelections.h"
+#include "../CORE/triggerUtils.h"
+#include "../CORE/photonSelections.h"
 
-//#include "../CORE/utilities.cc"
-//#include "../CORE/jetSelections.cc"
+#include "../CORE/utilities.cc"
+#include "../CORE/jetSelections.h"
 
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
@@ -44,9 +44,9 @@ inline double fround(double n, double d){
 //--------------------------------------------------------------------
 
 const bool debug                = false;
-const float lumi                = 0.034;
-const char* iter                = "V00-00-01";
-const char* jsonfilename        = "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt";
+const float lumi                = 0.043;
+const char* iter                = "V00-00-02";
+const char* jsonfilename        = "Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -229,8 +229,8 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       //good run+event selection
       //--------------------------
 
-      //if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      if( !cleaning_standardAugust2010( isData) )                    continue;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      if( !cleaning_standardApril2011() )                            continue;
 
       if(debug) cout << "Pass event selection" << endl;
 
@@ -419,7 +419,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       photon_tkisoSolid03_     = photons_tkIsoSolid03().at(igmax);   
       photon_tkisoSolid04_     = photons_tkIsoSolid04().at(igmax);  
       
-      LorentzVector myvjet = pfjets_cor().at(ijetg) * pfjets_p4().at(ijetg);
+      LorentzVector myvjet = pfjets_corL1FastL2L3().at(ijetg) * pfjets_p4().at(ijetg);
       LorentzVector myvg   = photons_p4().at(igmax);
       
       jet_dr_             = dRbetweenVectors(myvjet, myvg);
@@ -472,8 +472,8 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
         //skip jet matched to photon
         if( (int)ijet == ijetg ) continue;
  
-        LorentzVector vjet      = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
-        if( fabs( vjet.eta() ) > 2.5 )           continue;
+        LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+        if( fabs( vjet.eta() ) > 3.0 )           continue;
 
         if( !passesPFJetID(ijet) ){
           failjetid_ = 1;
@@ -544,7 +544,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       jetmax_pt_ = -1;
 
       if( imaxjet > -1 ){
-        jetmax_pt_       = pfjets_cor().at(imaxjet) * pfjets_p4().at(imaxjet).pt();
+        jetmax_pt_       = pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet).pt();
         jetmax_dphimet_  = deltaPhi( pfjets_p4().at(imaxjet).phi() , tcmetphi_);
       }
 
@@ -561,9 +561,9 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
         //skip jet matched to photon
         if( (int)ijet == ijetg ) continue;
         
-        LorentzVector vjet = jpts_p4().at(ijet) * jpts_cor().at(ijet); 
+        LorentzVector vjet = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet); 
         
-        if( fabs( vjet.eta() ) > 2.5 )         continue;
+        if( fabs( vjet.eta() ) > 3.0 )         continue;
         if( !passesCaloJetID( vjet ) )         continue;
         
         if ( vjet.pt() > 15. ){
