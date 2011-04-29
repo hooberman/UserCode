@@ -49,10 +49,9 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doReweight           = true;
 const float lumi                 = 0.023; 
-const char* iter                 = "V00-00-02";
-
-const char* jsonfilename = "json_DCSONLY_ManualCert_goodruns.txt";
-//char* jsonfilename = "Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON_goodruns.txt";
+//const char* iter                 = "V00-00-02";
+const char* iter                 = "temp";
+const char* jsonfilename         = "json_DCSONLY.txt_160404-161312.goodruns";
 
 //--------------------------------------------------------------------
 
@@ -151,21 +150,30 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 
   bookHistos();
-
-  //get vtx reweighting histo
+  
+  //-------------------------------
+  // get vtx reweighting histos
+  //-------------------------------
 
   TH1F* h_reweight    = new TH1F();
-  //TH1F* h_DA_reweight = new TH1F();
+  TH1F* h_DA_reweight = new TH1F();
 
-  if( doReweight ){
+  if( doReweight && !isData ){
 
-    TFile* f_reweight = TFile::Open("vtx_reweight.root");
+    TFile* f_reweight    = TFile::Open(Form("../output/%s/nvtx_reweight.root"   , iter));
+    TFile* f_DA_reweight = TFile::Open(Form("../output/%s/ndavtx_reweight.root" , iter));
 
-    h_reweight = (TH1F*) f_reweight->Get("hratio");
+    h_reweight    = (TH1F*) f_reweight->Get("hratio");
+    h_DA_reweight = (TH1F*) f_DA_reweight->Get("hratio");
 
-    cout << "Doing reweighting" << endl;
+    cout << "Do reweighting using file " << Form("../output/%s/nvtx_reweight.root" , iter) << endl;
     for( unsigned int ibin = 1 ; ibin <= h_reweight->GetNbinsX() ; ibin++ ){
       cout << ibin << " " << h_reweight->GetBinContent(ibin) << endl;
+    }
+
+    cout << "Do DA reweighting using file " << Form("../output/%s/ndavtx_reweight.root" , iter) << endl;
+    for( unsigned int ibin = 1 ; ibin <= h_DA_reweight->GetNbinsX() ; ibin++ ){
+      cout << ibin << " " << h_DA_reweight->GetBinContent(ibin) << endl;
     }
   }
 
@@ -320,10 +328,15 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
 	}
       }
+      
+      if( evt_run()==160957 && evt_lumiBlock()==75 && evt_event()==39826384){
+	cout << "Found!" << endl;
+      }else{
+	continue;
 
 
       //good run+event selection-----------------------------------------------------------
-      //if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       if( !cleaning_standardAugust2010( isData) )                    continue;
 
       if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[1]++;
@@ -436,12 +449,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
-
-	//leading electron pt > 27 GeV
-	int id = -1;
-	if( hyp_ll_p4()[hypIdx].pt() > hyp_lt_p4()[hypIdx].pt() ) id = hyp_ll_id()[hypIdx];
-	else                                                      id = hyp_lt_id()[hypIdx];
-	if( abs(id) == 11 && TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 27. )   continue;
 
         //nominal muon ID
         if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , OSZ_v1 )))   continue;
@@ -744,9 +751,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if(isGoodDAVertex(v)) nGoodDAVertex_++;
       }
 
-      vtxweight_ = 1;
+      vtxweight_   = 1;
+      davtxweight_ = 1;
       if( !isData && doReweight ){
-	vtxweight_ = h_reweight->GetBinContent( nGoodVertex_ + 1 );
+	vtxweight_   = h_reweight->GetBinContent( nGoodVertex_ + 1 );
+	davtxweight_ = h_DA_reweight->GetBinContent( nGoodDAVertex_ + 1 );
       }
 
       // electron energy scale stuff
@@ -1364,6 +1373,7 @@ void Z_looper::InitBabyNtuple (){
   event_        = -999999;
   weight_       = -999999.;
   vtxweight_    = -999999.;
+  davtxweight_  = -999999.;
   pthat_        = -999999.;
   mllgen_       = -999999.;
   nGoodVertex_  = -999999;
@@ -1602,6 +1612,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ndavtx",       &nGoodDAVertex_,"ndavtx/I"       );
   babyTree_->Branch("weight",       &weight_,       "weight/F"       );
   babyTree_->Branch("vtxweight",    &vtxweight_,    "vtxweight/F"    );
+  babyTree_->Branch("davtxweight",  &davtxweight_,  "davtxweight/F"  );
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F"        );
   babyTree_->Branch("mllgen",       &mllgen_,       "mllgen/F"       );
 
