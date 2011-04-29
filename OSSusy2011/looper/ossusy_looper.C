@@ -1860,18 +1860,20 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     cout << "Skipped " << nSkip_els_conv_dist << " events due to nan in els_conv_dist" << endl;
 
   cout << endl;
-  cout << "------------------------------" << endl;
-  cout << "Dilepton yields" << endl;
-  cout << "------------------------------" << endl;
+  cout << "Sample: " << prefix << endl;
+  cout << endl;
+  cout << "-------------------" << endl;
+  cout << "| Dilepton yields |" << endl;
+  cout << "-------------------" << endl;
   cout << "nee " << neetot << endl;
   cout << "nmm " << nmmtot << endl;
   cout << "nem " << nemtot << endl;
   cout << "tot " << neetot+nmmtot+nemtot << endl;
 
   cout << endl;
-  cout << "------------------------------" << endl;
-  cout << "Preselection yields" << endl;
-  cout << "------------------------------" << endl;
+  cout << "-----------------------" << endl;
+  cout << "| Preselection yields |" << endl;
+  cout << "-----------------------" << endl;
   cout << "nee " << nee << endl;
   cout << "nmm " << nmm << endl;
   cout << "nem " << nem << endl;
