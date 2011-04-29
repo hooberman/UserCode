@@ -110,38 +110,6 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter ){
 
       int iTrigBin = -1;
 
-      if( hlt20_ > 0 ){
-        
-        templateWeight = hlt20_;
-        iTrigBin = 0;
-
-        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
-        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
-
-        fillUnderOverFlow( hphotonPt20 , etg_ , templateWeight );
-      }
-
-      if( hlt30_ > 0 ){
-        
-        templateWeight = hlt30_;
-        iTrigBin = 1;
-
-        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
-        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
-
-        fillUnderOverFlow( hphotonPt30 , etg_ , templateWeight );
-      }
-
-      if( hlt50_ > 0 ){
-        
-        templateWeight = hlt50_;
-        iTrigBin = 2;
-
-        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
-        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
-
-        fillUnderOverFlow( hphotonPt50 , etg_ , templateWeight );
-      }
 
       if( hlt75_ > 0 ){
         
@@ -152,6 +120,39 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter ){
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
 
         fillUnderOverFlow( hphotonPt70 , etg_ , templateWeight );
+      }
+
+      else if( hlt50_ > 0 ){
+	
+        templateWeight = hlt50_;
+        iTrigBin = 2;
+
+        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
+        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+
+        fillUnderOverFlow( hphotonPt50 , etg_ , templateWeight );
+      }
+
+      else if( hlt30_ > 0 ){
+        
+        templateWeight = hlt30_;
+        iTrigBin = 1;
+
+        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
+        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+
+        fillUnderOverFlow( hphotonPt30 , etg_ , templateWeight );
+      }
+
+      else if( hlt20_ > 0 ){
+        
+        templateWeight = hlt20_;
+        iTrigBin = 0;
+
+        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
+        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+
+        fillUnderOverFlow( hphotonPt20 , etg_ , templateWeight );
       }
 
 
@@ -322,7 +323,7 @@ void makePhotonTemplates::bookHistos(){
     }
   }
   
-  char* trigName[4]={"20","30","50","75"};
+  char* trigName[4]={"HLT20","HLT30","HLT50","HLT75"};
 
   for( int iTrigBin = 0 ; iTrigBin < 4 ; iTrigBin++ ){
     for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
@@ -330,14 +331,12 @@ void makePhotonTemplates::bookHistos(){
         
         
         tcmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin] = new TH1F(Form("tcmetTemplate_photon_%i_%i_%i",iTrigBin,iJetBin,iSumJetPtBin),
-                                                                      Form("%s, %s, %s",trigName[iTrigBin],
-                                                                           jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
-
+									 Form("%s, %s, %s",trigName[iTrigBin],
+									      jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
+	
         pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin] = new TH1F(Form("pfmetTemplate_photon_%i_%i_%i",iTrigBin,iJetBin,iSumJetPtBin),
-                                                                      Form("%s, %s, %s",trigName[iTrigBin],
-                                                                           jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
-        
- 
+									 Form("%s, %s, %s",trigName[iTrigBin],
+									      jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
         
         tcmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
         pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
