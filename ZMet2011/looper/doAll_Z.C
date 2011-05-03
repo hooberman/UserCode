@@ -21,6 +21,8 @@
   runZLooper("data"           , true );
   runZLooper("ttbar"          , false );
   runZLooper("zjets"          , false );
+  runZLooper("LM4"            , false );
+  runZLooper("LM8"            , false );
 
 }
 

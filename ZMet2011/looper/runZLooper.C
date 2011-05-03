@@ -37,6 +37,10 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     pickSkimIfExists(ch,"cms2/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
     pickSkimIfExists(ch,"cms2/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
     pickSkimIfExists(ch,"cms2/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
+ 
+    pickSkimIfExists(ch,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleElectronTriggerSkim/skimmed*root");
+    pickSkimIfExists(ch,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleMuTriggerSkim/skimmed*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
   }
   
   //----------------------------------------------------------------------------------------
@@ -49,6 +53,18 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   else if( strcmp( prefix , "zjets" ) == 0 ){
     pickSkimIfExists(ch,"cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "LM4" ) == 0 ){
+    pickSkimIfExists(ch,"cms2/LM4_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*root");
+  }
+  
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "LM8" ) == 0 ){
+    pickSkimIfExists(ch,"cms2/LM8_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*root");
   }
   
   //----------------------------------------------------------------------------------------
