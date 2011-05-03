@@ -36,6 +36,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   if( strcmp( prefix , "data" ) == 0 ){
     pickSkimIfExists(ch,"cms2/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
     pickSkimIfExists(ch,"cms2/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
+    pickSkimIfExists(ch,"cms2/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
   }
   
   //----------------------------------------------------------------------------------------

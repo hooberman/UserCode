@@ -48,7 +48,6 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const float lumi                 = 0.023; 
 const char* iter                 = "V00-00-03";
-//const char* iter                 = "temp";
 const char* jsonfilename         = "json_DCSONLY.txt_160404-161312.goodruns";
 
 //--------------------------------------------------------------------
@@ -347,7 +346,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
 
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
-
+	
         if( !passSUSYTrigger2011_v1( isData , hyp_type()[hypIdx] , true ) ) continue;
 
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
@@ -365,7 +364,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_el_OSV2  ))) continue;
         
         nHypPass++;
-      
+	
         v_goodHyps.push_back( hypIdx );
       
       }
