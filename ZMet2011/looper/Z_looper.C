@@ -425,7 +425,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	
       }
 
-      //dilep_   = &hyp_p4().at(hypIdx);
+      dilep_   = &hyp_p4().at(hypIdx);
 
       float dilmass = hyp_p4().at(hypIdx).mass();
 
