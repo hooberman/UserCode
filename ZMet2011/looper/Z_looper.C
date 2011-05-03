@@ -46,9 +46,9 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
-const float lumi                 = 0.023; 
-const char* iter                 = "V00-00-03";
-const char* jsonfilename         = "json_DCSONLY.txt_160404-161312.goodruns";
+const float lumi                 = 0.175; 
+const char* iter                 = "V00-00-04";
+const char* jsonfilename         = "json_DCSONLY.txt_160404-163668_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -125,6 +125,9 @@ void printEvent(){
 
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, int my_nEvents, float kFactor){
+
+  cout << "version : " << iter         << endl;
+  cout << "json    : " << jsonfilename << endl;
 
   set_goodrun_file( jsonfilename );
 
