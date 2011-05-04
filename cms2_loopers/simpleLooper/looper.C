@@ -36,7 +36,7 @@
 char* iter          = "default";
 bool makebaby       = true;
 bool debug          = false;
-bool calculateTCMET = true;
+bool calculateTCMET = false;
 float lumi          = 1.;
 
 //--------------------------------------------------------------------
