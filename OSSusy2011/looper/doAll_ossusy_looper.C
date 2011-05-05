@@ -50,8 +50,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-00-06";
-  const char* jsonfile  = "Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-00-07";
+  const char* jsonfile  = "json_DCSONLY.txt_160404-163668_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
