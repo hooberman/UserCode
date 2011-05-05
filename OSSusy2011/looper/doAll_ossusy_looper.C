@@ -50,7 +50,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //---------------------------------------------------------------
 
   const char* version   = "V00-00-05";
-  const char* jsonfile  = "json_DCSONLY.txt_160404-163339_goodruns.txt";
+  const char* jsonfile  = "Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -198,14 +198,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-
+  /*
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runttall    = 1;
-  bool runttpowheg = 1;
+  bool runttall    = 0;
+  bool runttpowheg = 0;
   bool runttdil    = 0;
   bool runttem     = 0;
   bool runttrelval = 0;
@@ -218,10 +218,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 0;
-  bool runDYee     = 0;
-  bool runDYmm     = 0;
-  bool runDYtautau = 0;
+  bool runDYtot    = 1;
+  bool runDYee     = 1;
+  bool runDYmm     = 1;
+  bool runDYtautau = 1;
   bool runppMuX    = 0;
   bool runEM       = 0;
   bool runtW       = 0;
@@ -249,9 +249,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+  */  
 
-  /*  
+    
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 0;
@@ -259,10 +259,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt30  = 0;
   bool runttall    = 1;
   bool runttpowheg = 1;
-  bool runttdil    = 1;
+  bool runttdil    = 0;
   bool runttrelval = 0;
   bool runttem     = 0;
-  bool runttotr    = 1;
+  bool runttotr    = 0;
   bool runVV       = 0;
   bool runWW       = 1;
   bool runWZ       = 1;
@@ -281,8 +281,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runVQQ      = 0;
   bool runLM0      = 1;
   bool runLM1      = 1;
-  bool runLM2      = 0;
-  bool runLM3      = 0;
+  bool runLM2      = 1;
+  bool runLM3      = 1;
   bool runLM4      = 0;
   bool runLM5      = 0;
   bool runLM6      = 0;
@@ -302,7 +302,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */ 
+
   char* dir = "";
 
   bool useMCSkims = true;
@@ -358,7 +358,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtoppowheg = new TChain("Events");
   if (runttpowheg) {
     pickSkimIfExists(chtoppowheg, 
-		     "/tas/cms2/TTTo2L2Nu2B_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "cms2/TTTo2L2Nu2B_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		     "TTPowheg");
   }
 
@@ -642,7 +642,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM0 = new TChain("Events");
   if (runLM0) {
     pickSkimIfExists(chLM0, 
-		     "cms2/LM0_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+		     "cms2/LM0_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM0");
 
   }
@@ -651,7 +651,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM1 = new TChain("Events");
   if (runLM1) {
     pickSkimIfExists(chLM1, 
-                     "cms2/LM1_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+                     "cms2/LM1_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM1");
   }
   
@@ -659,7 +659,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM2 = new TChain("Events");
   if (runLM2) {
     pickSkimIfExists(chLM2, 
-                     "/tas/cms2/LM2_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM2_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM2");
   }
 
@@ -667,7 +667,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM3 = new TChain("Events");
   if (runLM3) {
     pickSkimIfExists(chLM3, 
-                     "/tas/cms2/LM3_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM3_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM3");
   }
 
@@ -675,7 +675,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM4 = new TChain("Events");
   if (runLM4) {
     pickSkimIfExists(chLM4, 
-                     "/tas/cms2/LM4_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM4_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM4");
   }
 
@@ -683,7 +683,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM5 = new TChain("Events");
   if (runLM5) {
     pickSkimIfExists(chLM5, 
-                     "/tas/cms2/LM5_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM5_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM5");
   }
 
@@ -691,7 +691,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM6 = new TChain("Events");
   if (runLM6) {
     pickSkimIfExists(chLM6, 
-                     "/tas/cms2/LM6_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM6_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM6");
   }
 
@@ -699,7 +699,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM7 = new TChain("Events");
   if (runLM7) {
     pickSkimIfExists(chLM7, 
-                     "/tas/cms2/LM7_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM7_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM7");
   }
 
@@ -707,7 +707,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM8 = new TChain("Events");
   if (runLM8) {
     pickSkimIfExists(chLM8, 
-                     "/tas/cms2/LM8_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM8_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM8");
   }
 
@@ -715,7 +715,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM9 = new TChain("Events");
   if (runLM9) {
     pickSkimIfExists(chLM9, 
-                     "/tas/cms2/LM9_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM9_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM9");
   }
 
@@ -723,7 +723,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM10 = new TChain("Events");
   if (runLM10) {
     pickSkimIfExists(chLM10, 
-                     "/tas/cms2/LM10_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM10_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM10");
   }
 
@@ -731,7 +731,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM11 = new TChain("Events");
   if (runLM11) {
     pickSkimIfExists(chLM11, 
-                     "/tas/cms2/LM11_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM11_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM11");
   }
 
@@ -739,7 +739,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM12 = new TChain("Events");
   if (runLM12) {
     pickSkimIfExists(chLM12, 
-                     "/tas/cms2/LM12_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM12_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM12");
   }
 
@@ -747,7 +747,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM13 = new TChain("Events");
   if (runLM13) {
     pickSkimIfExists(chLM13, 
-                     "/tas/cms2/LM13_Spring10-START3X_V26_S09-v1/V03-04-13-01/merged*.root", 
+                     "cms2/LM13_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM13");
   }
   
@@ -827,7 +827,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  float lumi              = 0.090; 
+  float lumi              = 0.043; 
   bool  calculateTCMET    = false; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
