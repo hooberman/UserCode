@@ -10,7 +10,7 @@
 #include <iostream>
 #endif
 
-void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& skimPrefix )
+void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& skimPrefix = "" )
 {
   TChain *dummy = new TChain("Events");
 
@@ -25,6 +25,7 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
     std::cout << "Skim " << skimName.c_str() << " does not exist: use " << base.c_str() << std::endl;
     }
   */
+
   if (dummy->Add(base.c_str())) {
     int nFiles = ch->Add(base.c_str());
     std::cout << "Main " <<base.c_str() << " exists: use it. Loaded " 
@@ -49,7 +50,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-00-05";
+  const char* version   = "V00-00-06";
   const char* jsonfile  = "Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -198,9 +199,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  /*
+
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -218,10 +219,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 1;
-  bool runDYee     = 1;
-  bool runDYmm     = 1;
-  bool runDYtautau = 1;
+  bool runDYtot    = 0;
+  bool runDYee     = 0;
+  bool runDYmm     = 0;
+  bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
   bool runtW       = 0;
@@ -249,9 +250,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */  
-
     
+
+  /*    
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 0;
@@ -302,7 +303,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-
+  */
   char* dir = "";
 
   bool useMCSkims = true;
@@ -856,43 +857,30 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       if( trig == ossusy_looper::e_highpt ){
 	
 	cout << "Doing high-pT dilepton trigger data" << endl;
+
+	//DoubleElectron re-reco
+	pickSkimIfExists(ch,"cms2/DoubleElectron_Run2011A-Apr22ReReco-v2_AOD/V04-01-05/DoubleElectronTriggerSkim/skim*root");
 	
-	pickSkimIfExists(chdata,
-			 "cms2_data/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged*root",
-			 "data");
-	pickSkimIfExists(chdata,
-			 "cms2_data/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root",
-			 "data");
-	pickSkimIfExists(chdata,
-			 "cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root",
-			 "data");
-	pickSkimIfExists(chdata,
-	 		 "/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
-	 		 "data");	
-	pickSkimIfExists(chdata,
-	 		 "/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
-	 		 "data");
-	pickSkimIfExists(chdata,
-	 		 "/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
-	 		 "data");
+	//v1 datasets (merged)
+	pickSkimIfExists(ch,"cms2/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
+	pickSkimIfExists(ch,"cms2/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
+	pickSkimIfExists(ch,"cms2/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
+	
+	//v2 datasets (not merged)
+	pickSkimIfExists(ch,"cms2/DoubleElectron_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleElectronTriggerSkim/skimmed*root");
+	pickSkimIfExists(ch,"cms2/DoubleMu_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleMuTriggerSkim/skimmed*root");
+	pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
+	
       }
       
       else if( trig == ossusy_looper::e_lowpt ){
 	
 	cout << "Doing dilepton-HT trigger data" << endl;
 	
-	pickSkimIfExists(chdata,
-			 "cms2/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged_160329_161312.root",
-			 "data");
-	pickSkimIfExists(chdata,
-			 "cms2/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312*root",
-			 "data");
-	pickSkimIfExists(chdata,
-			 "/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-01-03/MuHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
-			 "data");
-	pickSkimIfExists(chdata,
-			 "/hadoop/cms/store/user/imacneill/CMSSW_4_1_2_patch1_V04-01-03/ElectronHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root",
-			 "data");
+	pickSkimIfExists(chdata,"cms2/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged_160329_161312.root");
+	pickSkimIfExists(chdata,"cms2/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-01-03/MuHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_1_2_patch1_V04-01-03/ElectronHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
       }
     }
 
