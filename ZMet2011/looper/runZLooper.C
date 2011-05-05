@@ -13,7 +13,7 @@ void pickSkimIfExists( TChain *ch, const std::string& base )
     std::cout << "Main " <<base.c_str() << " exists: use it. Loaded " 
               << nFiles << " files" << std::endl;
   } else{
-    std::cout << "Didn't find sample, quitting" << std::endl;
+    std::cout << "Didn't find sample " << base << " , quitting" << std::endl;
     exit(0);
   }
 
@@ -47,6 +47,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     pickSkimIfExists(ch,"cms2/DoubleElectron_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleElectronTriggerSkim/skimmed*root");
     pickSkimIfExists(ch,"cms2/DoubleMu_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleMuTriggerSkim/skimmed*root");
     pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
+
   }
   
   //----------------------------------------------------------------------------------------
