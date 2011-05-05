@@ -46,9 +46,9 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
-const float lumi                 = 0.175; 
-const char* iter                 = "V00-00-04";
-const char* jsonfilename         = "json_DCSONLY.txt_160404-163668_goodruns.txt";
+const float lumi                 = 0.043; 
+const char* iter                 = "V00-00-06";
+const char* jsonfilename         = "Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
