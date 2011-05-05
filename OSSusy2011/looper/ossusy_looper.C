@@ -434,7 +434,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       }
   
       //goodrun list + event cleaning
-      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+
+      json_ = 1;
+      //if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) json_ = 0;
       if( !cleaning_standardApril2011() )                            continue;
       
       //find good hyps, store in v_goodHyps
@@ -887,6 +890,73 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
           vpfjets_p4.push_back( vjet );
         }
+ 
+	//---------------------------------
+	// L1offset jets
+	//---------------------------------
+
+	htoffset_    = 0.;
+	njetsoffset_ = 0;
+
+        for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+          LorentzVector vjet = pfjets_corL1L2L3().at(ijet) * pfjets_p4().at(ijet);
+          LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+          LorentzVector vll  = hyp_ll_p4()[hypIdx];
+
+          if( generalLeptonVeto ){
+            bool rejectJet = false;
+            for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+              if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+            }
+            if( rejectJet ) continue;
+          }
+          
+          if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
+          if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+          if( fabs( vjet.eta() ) > 3.0 )           continue;
+          if( !passesPFJetID(ijet) )               continue;
+          if( vjet.pt() < 30. )                    continue;
+
+	  njetsoffset_++;
+	  htoffset_ += vjet.pt();
+
+	}
+
+ 
+	//---------------------------------
+	// uncorrected jets
+	//---------------------------------
+
+	htuncor_    = 0.;
+	njetsuncor_ = 0;
+
+        for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+          LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+          LorentzVector vlt  = hyp_lt_p4()[hypIdx];
+          LorentzVector vll  = hyp_ll_p4()[hypIdx];
+
+          if( generalLeptonVeto ){
+            bool rejectJet = false;
+            for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+              if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+            }
+            if( rejectJet ) continue;
+          }
+          
+          if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
+          if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
+          if( fabs( vjet.eta() ) > 3.0 )           continue;
+          if( !passesPFJetID(ijet) )               continue;
+          if( vjet.pt() < 30. )                    continue;
+
+	  njetsuncor_++;
+	  htuncor_ += vjet.pt();
+
+	}
+
+
      
 	ngenjets_ = 0;
 	htgen_    = 0;
@@ -3234,6 +3304,11 @@ void ossusy_looper::makeTree(char *prefix){
 
   //Set branch addresses
   //variables must be declared in ossusy_looper.h
+  outTree->Branch("json",            &json_,             "json/I");
+  outTree->Branch("htoffset",        &htoffset_,         "htoffset/F");
+  outTree->Branch("htuncor",         &htuncor_,          "htuncor/F");
+  outTree->Branch("njetsoffset",     &njetsoffset_,      "njetsoffset/I");
+  outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
   outTree->Branch("smeff",           &smeff_,            "smeff/F");

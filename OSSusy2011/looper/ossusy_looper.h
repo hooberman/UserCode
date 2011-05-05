@@ -102,6 +102,7 @@ class ossusy_looper
         Float_t mllgen_;
         Float_t costhetaweight_;
         Int_t   mull_;
+        Int_t   json_;
         Int_t   mult_;
         Int_t   mullgen_;
         Int_t   multgen_;
@@ -177,8 +178,13 @@ class ossusy_looper
         Int_t   event_;
 	Float_t y_;
 	Float_t ht_;
+	Float_t htoffset_;
+	Float_t htuncor_;
+	Int_t   njetsuncor_;
+	Int_t   njetsoffset_;
 	Float_t htgen_;
 	Float_t htpf_;
+	
 	Int_t   ndavtx_;
 	Int_t   nels_;
 	Int_t   nmus_;
