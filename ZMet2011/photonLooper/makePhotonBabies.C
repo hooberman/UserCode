@@ -44,9 +44,9 @@ inline double fround(double n, double d){
 //--------------------------------------------------------------------
 
 const bool debug                = false;
-const float lumi                = 0.043;
+const float lumi                = 0.153;
 const char* iter                = "V00-00-03";
-const char* jsonfilename        = "Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+const char* jsonfilename        = "Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
