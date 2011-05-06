@@ -436,8 +436,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       //goodrun list + event cleaning
 
       json_ = 1;
-      //if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) json_ = 0;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       if( !cleaning_standardApril2011() )                            continue;
       
       //find good hyps, store in v_goodHyps
