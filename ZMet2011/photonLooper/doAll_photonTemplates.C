@@ -4,6 +4,6 @@
   gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
   gROOT->ProcessLine(".L runPhotonTemplates.C+");
   
-  runPhotonTemplates("V00-00-01");
+  runPhotonTemplates("V00-00-03");
   
 }
