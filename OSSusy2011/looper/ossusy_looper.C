@@ -783,7 +783,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( dRbetweenVectors(vjet, vlt) < 0.4) continue;
           if( vjet.pt() < 30.          )         continue;
           if( !passesCaloJetID( vjet ) )         continue;
-          vjets_noetacut_p4.push_back( vjet );
+
           if( fabs( vjet.eta() ) > 2.5 )         continue;
           vjets_p4.push_back( vjet );
         }
@@ -863,6 +863,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	npfjets_ = 0.;
 	htpf_    = 0.;
+	nbtags_  = 0;
 
 	int   imaxjet   = -1;
 	float maxjetpt  = -1.;
@@ -883,14 +884,21 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           
           if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
-          if( fabs( vjet.eta() ) > 3.0 )           continue;
           if( !passesPFJetID(ijet) )               continue;
           if( vjet.pt() < 30. )                    continue;
+
+          vjets_noetacut_p4.push_back( vjet );
+
+          if( fabs( vjet.eta() ) > 3.0 )           continue;
 
 	  npfjets_++;
 	  htpf_ += vjet.pt();
 
           vpfjets_p4.push_back( vjet );
+
+	  if( pfjets_simpleSecondaryVertexHighEffBJetTag().at(ijet) > 1.74 ){
+	    nbtags_++;
+	  }
 
 	  if( vjet.pt() > maxjetpt ){
 	    maxjetpt = vjet.pt();
@@ -1045,13 +1053,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float tcsumet  = 1;
 
         meff_jets_p4      += hyp_ll_p4()[hypIdx].Pt()+hyp_lt_p4()[hypIdx].Pt();
-        meff_jets_p4      += tcmet;
+        meff_jets_p4      += evt_pfmet();
         
         meff_jpts_p4      += hyp_ll_p4()[hypIdx].Pt()+hyp_lt_p4()[hypIdx].Pt();
-        meff_jpts_p4      += tcmet;
+        meff_jpts_p4      += evt_pfmet();
         
         meff_pfjets_p4    += hyp_ll_p4()[hypIdx].Pt()+hyp_lt_p4()[hypIdx].Pt();
-        meff_pfjets_p4    += tcmet;
+        meff_pfjets_p4    += evt_pfmet();
 
         // choose which met type to use
         float theMet = -999999.;
@@ -1068,13 +1076,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float theSumJetPt = -999999.;
         int theNJets      = -999999;
         float vecjetpt    = -999999.;
-        int theNBtags     = -999999;
+        //int theNBtags     = -999999;
 
         if (jetType == e_JPT) {
           theSumJetPt = sumjetpt_jpts_p4;
           theNJets = vjpts_p4.size();
           vecjetpt = vjpts_p4_tot.pt();
-          theNBtags = vjpts_btag_p4.size();
+          //theNBtags = vjpts_btag_p4.size();
         } 
 
         else if (jetType == e_calo) {
@@ -1101,11 +1109,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float thisMetPhi = tcmetphi;
 
         // Using code in the CORE
-        float mt2core = MT2(thisMet, thisMetPhi, hyp_ll_p4()[hypIdx], hyp_lt_p4()[hypIdx], 0., false);
+        float mt2core = MT2(evt_pfmet(), evt_pfmetPhi(), hyp_ll_p4()[hypIdx], hyp_lt_p4()[hypIdx], 0., false);
 
         float mt2jcore = -1.;
         if (vjets_noetacut_p4.size() > 1)
-          mt2jcore = MT2J(thisMet, thisMetPhi, hyp_ll_p4()[hypIdx], hyp_lt_p4()[hypIdx], vjets_noetacut_p4);
+          mt2jcore = MT2J(evt_pfmet(), evt_pfmetPhi(), hyp_ll_p4()[hypIdx], hyp_lt_p4()[hypIdx], vjets_noetacut_p4);
 
         // Custom Mt2
         for (unsigned int i=0; i<vjets_noetacut_p4.size(); i++) {
@@ -1343,7 +1351,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           njets_        = theNJets;                     //njets w pt>30 and |eta|<2.5
           nvtx_         = nvtx;                         //number of good vertices in this event
           ndavtx_       = ndavtx;                       //number of good DA vertices in this event
-          nbtags_       = theNBtags;                    //number of btags 
           vecjetpt_     = vecjetpt;                     //vector sum jet pt
           pass_         = pass;                         //pass kinematic cuts
           passz_        = passz;                        //pass Z selection
