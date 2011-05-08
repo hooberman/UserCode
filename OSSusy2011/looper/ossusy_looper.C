@@ -864,6 +864,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	npfjets_ = 0.;
 	htpf_    = 0.;
 
+	int   imaxjet   = -1;
+	float maxjetpt  = -1.;
+
         for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
           LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
@@ -888,8 +891,20 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  htpf_ += vjet.pt();
 
           vpfjets_p4.push_back( vjet );
+
+	  if( vjet.pt() > maxjetpt ){
+	    maxjetpt = vjet.pt();
+	    imaxjet  = ijet;
+	  }
         }
- 
+
+	if( imaxjet > -1 ){ 
+	  jet_ = &(pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet));
+
+          LorentzVector vjet = pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet);
+	  dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
+	}
+
 	//---------------------------------
 	// L1offset jets
 	//---------------------------------
@@ -1261,7 +1276,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float tcmet_event = p_met.first;
 
         p_met = getMet( "pfMET"    , hypIdx);
-        float pfmet = p_met.first;
+        float pfmet    = p_met.first;
+	float pfmetphi = p_met.second;
 
         p_met = getMet( "muCorMET"    , hypIdx);
         float mucormet = p_met.first;
@@ -1304,6 +1320,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           tcmetDown_    = metDown.first;
           tcmetTest_    = metTest.first;
           pfmet_        = pfmet;
+          pfmetphi_     = pfmetphi;
           mucormet_     = mucormet;
           mucorjesmet_  = mucorjesmet;
           genmet_       = genmet;                       //generated met from neutrinos/LSP
@@ -3334,6 +3351,7 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("tcmet50",         &tcmet50_,          "tcmet50/F");
   outTree->Branch("genmet",          &genmet_,           "genmet/F");
   outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
+  outTree->Branch("pfmetphi",        &pfmetphi_,         "pfmetphi/F");
   outTree->Branch("mucormet",        &mucormet_,         "mucormet/F");
   outTree->Branch("mucorjesmet",     &mucorjesmet_,      "mucorjesmet/F");
   outTree->Branch("tcmet35X",        &tcmet_35X_,        "tcmet35X/F");
@@ -3396,6 +3414,7 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("nels",            &nels_,             "nels/I");  
   outTree->Branch("nmus",            &nmus_,             "nmus/I");  
   outTree->Branch("ntaus",           &ntaus_,            "ntaus/I");  
+  outTree->Branch("dphijm",          &dphijm_,           "dphijm/F");  
 
   outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);

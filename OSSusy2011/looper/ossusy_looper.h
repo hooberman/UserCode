@@ -100,6 +100,7 @@ class ossusy_looper
         Float_t smeff_;
         Float_t k_;
         Float_t mllgen_;
+        Float_t dphijm_;
         Float_t costhetaweight_;
         Int_t   mull_;
         Int_t   json_;
@@ -134,6 +135,7 @@ class ossusy_looper
         Float_t mucormet_;
         Float_t mucorjesmet_;
         Float_t pfmet_;
+        Float_t pfmetphi_;
         Float_t tcmet_35X_;
         Float_t tcmet_event_;
         Float_t tcmet_looper_;
