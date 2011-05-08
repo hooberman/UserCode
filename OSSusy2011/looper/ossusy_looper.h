@@ -63,6 +63,10 @@ class ossusy_looper
         float smearMet( float met , float sumjetpt , float metscale );
 	void InitBaby();
 
+	float dz_trk_vtx(const unsigned int trkidx, const unsigned int vtxidx);
+	float beta_jet_vtx( int ijet , int vtxIdx , int beta_exponent );
+	bool jetFromSignalPV( int ijet , int vtxIdx , int beta_exponent );
+	  
         // Set globals
         void set_susybaseline (bool  b)    { g_susybaseline = b; }
         void set_createTree   (bool  b)    { g_createTree   = b; }
@@ -116,6 +120,8 @@ class ossusy_looper
         Int_t   njets_;
         Int_t   ngenjets_;
         Int_t   npfjets_;
+        Int_t   npfjets40_;
+        Int_t   npfjetspv_;
         Int_t   njetsUp_;
         Int_t   njetsDown_;
         Float_t sumjetptUp_;
@@ -186,6 +192,8 @@ class ossusy_looper
 	Int_t   njetsoffset_;
 	Float_t htgen_;
 	Float_t htpf_;
+	Float_t htpf40_;
+	Float_t htpfpv_;
 	
 	Int_t   ndavtx_;
 	Int_t   nels_;

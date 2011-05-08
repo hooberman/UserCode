@@ -268,7 +268,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     cout << "setting json " << g_json << endl;
     set_goodrun_file( g_json );
 
-    set_vtxreweight_rootfile("vtxreweight_Spring11MC_23pbPR.root",true);
+    set_vtxreweight_rootfile("vtxreweight_Spring11MC_153pb_Zselection.root",true);
 
     initialized = true;
   }
@@ -865,6 +865,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	htpf_    = 0.;
 	nbtags_  = 0;
 
+	npfjets40_  = 0;
+	htpf40_     = 0.;
+
+	npfjetspv_  = 0;
+	htpfpv_     = 0.;
+
 	int   imaxjet   = -1;
 	float maxjetpt  = -1.;
 
@@ -890,6 +896,16 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           vjets_noetacut_p4.push_back( vjet );
 
           if( fabs( vjet.eta() ) > 3.0 )           continue;
+
+	  if( vjet.pt() > 40. ){
+	    npfjets40_ ++;
+	    htpf40_    += vjet.pt();
+	  }
+
+	  if( jetFromSignalPV( ijet , 0 , 2 ) ){
+	    npfjetspv_ ++;
+	    htpfpv_    += vjet.pt();
+	  }
 
 	  npfjets_++;
 	  htpf_ += vjet.pt();
@@ -1076,7 +1092,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float theSumJetPt = -999999.;
         int theNJets      = -999999;
         float vecjetpt    = -999999.;
-        //int theNBtags     = -999999;
+        int theNBtags     = -999999;
 
         if (jetType == e_JPT) {
           theSumJetPt = sumjetpt_jpts_p4;
@@ -1093,6 +1109,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         else if (jetType == e_pfjet) {
           theSumJetPt = sumjetpt_pfjets_p4;
           theNJets = vpfjets_p4.size();
+	  theNBtags     = nbtags_;
         }
         
         else {
@@ -1248,9 +1265,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if (dphilep > TMath::Pi()) dphilep = TMath::TwoPi() - dphilep;
 
 
-	/* REPLACETOPMASS
+	/*
+	  //REPLACETOPMASS
         // calculate the top mass
-        float topMass = getTopMassEstimate(d_llsol, hypIdx, vjpts_p4, tcmet, tcmetphi);
+        float topMass = getTopMassEstimate(d_llsol, hypIdx, vpfjets_p4, evt_pfmet(), evt_pfmetPhi());
         if(topMass != -999 && 42 != 42) std::cout<<"And top mass from exteral: "<<topMass<<std::endl;
 
         vector<float> topMassAllComb;
@@ -1336,7 +1354,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           //smeff_        = isData ? 1 : triggerSuperModelEffic( hypIdx ); //trigger supermodel efficiency
           smeff_        = 1;
           proc_         = getProcessType(prefix);       //integer specifying sample
-          topmass_      = -999;// topMass;              //topepton mass //REPLACE TOPMASS
+          topmass_      = -999;//topMass;                      //topepton mass //REPLACE TOPMASS
           dilmass_      = hyp_p4()[hypIdx].mass();      //dilepton mass
           dilpt_        = hyp_p4()[hypIdx].pt();        //dilepton pT
           dileta_       = hyp_p4()[hypIdx].eta();       //dilepton eta
@@ -1364,7 +1382,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           etal2_        = etal2;                        //2nd highest pT lepton
           phil1_        = phil1;                        //highest phi lepton
           phil2_        = phil2;                        //2nd highest phi lepton
-          meff_         = meff_jpts_p4;                 //effective mass
+          meff_         = meff_pfjets_p4;               //effective mass
           mt_           = mt;                           //transverse mass of leading lepton+met
 	  y_		= theMet / sqrt( theSumJetPt ); //y=MET/sqrt(HT)
 	  ht_		= theSumJetPt;                  //HT
@@ -3379,6 +3397,8 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("njets",           &njets_,            "njets/I");
   outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
   outTree->Branch("npfjets",         &npfjets_,          "npfjets/I");
+  outTree->Branch("npfjets40",       &npfjets40_,        "npfjets40/I");
+  outTree->Branch("npfjetspv",       &npfjetspv_,        "npfjetspv/I");
   outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
   outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
   outTree->Branch("sumjetptUp",      &sumjetptUp_,       "sumjetptUp/F");
@@ -3418,6 +3438,8 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("ht",              &ht_,               "ht/F");  
   outTree->Branch("htgen",           &htgen_,            "htgen/F");  
   outTree->Branch("htpf",            &htpf_,             "htpf/F");  
+  outTree->Branch("htpf40",          &htpf40_,           "htpf40/F");  
+  outTree->Branch("htpfpv",          &htpfpv_,           "htpfpv/F");  
   outTree->Branch("nels",            &nels_,             "nels/I");  
   outTree->Branch("nmus",            &nmus_,             "nmus/I");  
   outTree->Branch("ntaus",           &ntaus_,            "ntaus/I");  
@@ -3430,3 +3452,150 @@ void ossusy_looper::makeTree(char *prefix){
 
 
 }
+
+//--------------------------------------------------------------------
+
+vector<int> goodDAVertices(){
+
+  vector<int> myVertices;
+  myVertices.clear();
+  
+  for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+    if( !isGoodDAVertex(v) ) continue;
+    myVertices.push_back(v);
+  }
+  
+  return myVertices;
+}
+
+//--------------------------------------------------------------------
+
+bool ossusy_looper::jetFromSignalPV( int ijet , int vtxIdx , int beta_exponent ){
+
+  vector<int> myGoodVertices       = goodDAVertices();
+  const unsigned int nGoodVertices = myGoodVertices.size();
+
+  if( nGoodVertices == 0 ){
+    cout << "Didn't find any good vertices!" << endl;
+    return false;
+  }
+
+  float betamax = -1;
+  int   imax    = -1;
+
+  for (vector<int>::iterator ivtx = myGoodVertices.begin(); ivtx != myGoodVertices.end() ; ++ivtx ){
+    
+    float beta = beta_jet_vtx( ijet , *ivtx , beta_exponent );
+
+    if( beta > betamax ){
+      betamax = beta;
+      imax    = *ivtx;
+    }
+
+  }
+  
+  if( imax == vtxIdx )  return true;
+  return false;
+}
+
+//--------------------------------------------------------------------
+
+float ossusy_looper::dz_trk_vtx(const unsigned int trkidx, const unsigned int vtxidx){
+  
+  return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
+  
+}
+
+//--------------------------------------------------------------------
+
+float ossusy_looper::beta_jet_vtx( int ijet , int vtxIdx , int beta_exponent ){
+
+  //------------------------------------------
+  // loop over PFCandidates matched to pfjet
+  //------------------------------------------
+  
+  vector<int> pfcands = pfjets_pfcandIndicies().at(ijet);
+  
+  LorentzVector v_pfcands(0,0,0,0);
+
+  vector<int> matchedTracks;
+  matchedTracks.clear();
+
+  float sumPtTot = 0.;
+
+  for( vector<int>::iterator ipf = pfcands.begin() ; ipf < pfcands.end() ; ++ipf ){
+     
+    v_pfcands += pfcands_p4().at(*ipf);
+
+    //---------------------------------------------
+    // find track index of charged PFCandidates
+    //---------------------------------------------
+     
+    if( pfcands_charge().at(*ipf) == 0 ) continue;
+
+    int itrk = cms2.pfcands_trkidx().at(*ipf);
+     
+    //note: this should only happen for electrons which do not have a matched track, currently ignoring these guys
+    if( itrk >= trks_trk_p4().size() || itrk < 0 )  continue;
+     
+    //----------------------------------
+    // store indices of matched tracks
+    //----------------------------------
+     
+    matchedTracks.push_back( itrk );
+
+    sumPtTot += pow( trks_trk_p4().at(itrk).pt() , beta_exponent );
+
+  }
+
+  //-------------
+  //sanity check
+  //-------------
+  
+  if( fabs( pfjets_p4().at(ijet).pt() - v_pfcands.pt() ) > 0.1 ){
+    cout << "Warning: pfjet pt " << pfjets_p4().at(ijet).pt() 
+         << " doesn't match sum of PFCandidates pt " << v_pfcands.pt() << endl;
+  }
+
+  //----------------------------------
+  // find good vertices
+  //----------------------------------
+
+  vector<int> myGoodVertices       = goodDAVertices();
+  const unsigned int nGoodVertices = myGoodVertices.size();
+
+  if( nGoodVertices == 0 ){
+    cout << "Didn't find any good vertices!" << endl;
+    return -1.;
+  }
+
+  float beta = 0.;
+
+  //------------------------------------------------------------------------------------------------
+  // loop over tracks. if track_i is closest to signal PV, add pow(track_i pt,beta_exponent) to beta
+  //------------------------------------------------------------------------------------------------
+
+  for (vector<int>::iterator itrk = matchedTracks.begin(); itrk != matchedTracks.end(); ++itrk) {
+     
+    float mindz = 1000;
+    int   vtxi  = -1;
+     
+    for (vector<int>::iterator ivtx = myGoodVertices.begin(); ivtx != myGoodVertices.end() ; ++ivtx ){
+       
+      float thisdz = dz_trk_vtx(*itrk,*ivtx);
+       
+      if ( fabs( thisdz ) < fabs( mindz ) ) {
+        mindz = thisdz;
+        vtxi  = *ivtx;
+      }
+    }
+     
+    if( vtxi == vtxIdx ){
+      beta += pow( trks_trk_p4().at(*itrk).pt() , beta_exponent ) / sumPtTot;
+    }
+  }
+ 
+  return beta;
+
+}
+

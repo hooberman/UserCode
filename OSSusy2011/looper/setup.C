@@ -25,17 +25,17 @@ void setup( bool skipFWLite = false ) {
         }
     }
 
-    // REPLACETOPMASS
-    // // Punch in more quesses where NtupleMacros are -- don't keep multiple copies ;)
+    
+    // Punch in more quesses where NtupleMacros are -- don't keep multiple copies ;)
     // gSystem->AddIncludePath(Form(" -w -I./ -I./CORE -I%s/CORE -I../CMS2/NtupleMacros/CORE -I../../CMS2/NtupleMacros/CORE\
-    //             -I../../../CMS2/NtupleMacros/CORE -I../../../../CMS2/NtupleMacros/CORE\
+    //             -I../../../CMS2/NtupleMacros/CORE -I../../../../CMS2/NtupleMacros/CORE \
     //             -I./CORE/topmass -I/tas07/disk00/jribnik/lhapdf/include	\
     //             -I%s -I../CMS2/NtupleMacros -I../../CMS2/NtupleMacros  -I../../../CMS2/NtupleMacros -I../../../../CMS2/NtupleMacros", 
-    //             cms2Location.c_str(),cms2Location.c_str() ));
-
+    // 				 cms2Location.c_str(),cms2Location.c_str() ));
+    
     // Punch in more quesses where NtupleMacros are -- don't keep multiple copies ;)
     gSystem->AddIncludePath(Form(" -w -I./ -I./CORE -I%s/CORE -I../CMS2/NtupleMacros/CORE -I../../CMS2/NtupleMacros/CORE\
-                -I../../../CMS2/NtupleMacros/CORE -I../../../../CMS2/NtupleMacros/CORE\
-                -I%s -I../CMS2/NtupleMacros -I../../CMS2/NtupleMacros  -I../../../CMS2/NtupleMacros -I../../../../CMS2/NtupleMacros", 
-                cms2Location.c_str(),cms2Location.c_str() ));
+                 -I../../../CMS2/NtupleMacros/CORE -I../../../../CMS2/NtupleMacros/CORE	\
+                 -I%s -I../CMS2/NtupleMacros -I../../CMS2/NtupleMacros  -I../../../CMS2/NtupleMacros -I../../../../CMS2/NtupleMacros", 
+				 cms2Location.c_str(),cms2Location.c_str() ));
 }

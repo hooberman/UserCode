@@ -50,7 +50,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-00-08";
+  const char* version   = "temp";//"V00-00-08";
   const char* jsonfile  = "Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -76,9 +76,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   gROOT->ProcessLine(".L ../CORE/ttbarSelections.cc+");
 
   // Load various tools  
+
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
 
-  //gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+"); REPLACETOPMASS
+  //gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+"); 
 
   // Load FWLite
   gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
@@ -201,7 +202,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -219,7 +220,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 0;
+  bool runDYtot    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -250,9 +251,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-    
+      
 
-  /*    
+  /*  
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 0;
@@ -260,10 +261,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt30  = 0;
   bool runttall    = 1;
   bool runttpowheg = 1;
-  bool runttdil    = 0;
+  bool runttdil    = 1;
   bool runttrelval = 0;
   bool runttem     = 0;
-  bool runttotr    = 0;
+  bool runttotr    = 1;
   bool runVV       = 0;
   bool runWW       = 1;
   bool runWZ       = 1;
@@ -271,11 +272,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjets    = 1;
   bool runWjetsMG  = 1;
   bool runWcharm   = 0;
-  bool runZjets    = 0;
+  bool runZjets    = 1;
   bool runDYtot    = 1;
-  bool runDYee     = 0;
-  bool runDYmm     = 0;
-  bool runDYtautau = 0;
+  bool runDYee     = 1;
+  bool runDYmm     = 1;
+  bool runDYtautau = 1;
   bool runppMuX    = 0;
   bool runEM       = 0;
   bool runtW       = 1;
@@ -303,7 +304,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+  */  
   char* dir = "";
 
   bool useMCSkims = true;
@@ -828,7 +829,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  float lumi              = 0.043; 
+  float lumi              = 0.153; 
   bool  calculateTCMET    = false; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
