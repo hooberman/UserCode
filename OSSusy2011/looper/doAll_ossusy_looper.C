@@ -50,7 +50,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "temp";//"V00-00-08";
+  const char* version   = "V00-00-09";
   const char* jsonfile  = "Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -76,9 +76,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   gROOT->ProcessLine(".L ../CORE/ttbarSelections.cc+");
 
   // Load various tools  
-
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
-
   //gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+"); 
 
   // Load FWLite
@@ -200,7 +198,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-
+  /*
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 0;
@@ -251,9 +249,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-      
+  */      
 
-  /*  
+    
   //Flags for files to run over
   bool rundata     = 0;
   bool rundataskim = 0;
@@ -304,10 +302,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */  
+
   char* dir = "";
 
-  bool useMCSkims = true;
+  bool useMCSkims = false;
   if( useMCSkims ){
     cout << "Using MC skims" << endl;
     dir = "met50/";
@@ -494,9 +492,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		       "cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		       "DYtot");
       
-      //pickSkimIfExists(chDYtot, 
-      //                 "cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Fall10-START38_V12-v1/V03-06-14/%smerged*root",
-      //                 "DYtot");
+      pickSkimIfExists(chDYtot, 
+                       "cms2/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/merged*root",
+                       "DYtot");
       
       pickSkimIfExists(chDYtot, 
 		       "cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
@@ -507,7 +505,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+		       "cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
