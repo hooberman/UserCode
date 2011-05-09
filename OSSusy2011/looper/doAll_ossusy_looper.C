@@ -198,13 +198,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-
+  /*
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runttpowheg = 0;
   bool runttdil    = 0;
   bool runttem     = 0;
@@ -249,20 +249,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-
-
-  /*    
+  */
+  
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runttall    = 1;
   bool runttpowheg = 1;
-  bool runttdil    = 1;
+  bool runttdil    = 0;
   bool runttrelval = 0;
   bool runttem     = 0;
-  bool runttotr    = 1;
+  bool runttotr    = 0;
   bool runVV       = 0;
   bool runWW       = 1;
   bool runWZ       = 1;
@@ -302,11 +301,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
-
+  
   char* dir = "";
 
-  bool useMCSkims = false;
+  bool useMCSkims = true;
   if( useMCSkims ){
     cout << "Using MC skims" << endl;
     dir = "met50/";
@@ -842,7 +840,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chdata = new  TChain("Events");
 
-  for( int pt = 0 ; pt < 1 ; ++pt ){
+  for( int pt = 0 ; pt < 2 ; ++pt ){
 
     //set trigger type
     if( pt == 0 ) trig = ossusy_looper::e_highpt;
@@ -859,17 +857,17 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	cout << "Doing high-pT dilepton trigger data" << endl;
 
 	//DoubleElectron re-reco
-	pickSkimIfExists(chdata,"cms2/DoubleElectron_Run2011A-Apr22ReReco-v2_AOD/V04-01-05/DoubleElectronTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-Apr22ReReco-v2_AOD/V04-01-05/DoubleElectronTriggerSkim/skim*root");
 	
 	//v1 datasets (merged)
-	pickSkimIfExists(chdata,"cms2/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
-	pickSkimIfExists(chdata,"cms2/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
-	pickSkimIfExists(chdata,"cms2/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
+	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
+	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
+	pickSkimIfExists(chdata,"cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
 	
 	//v2 datasets (not merged)
-	pickSkimIfExists(chdata,"cms2/DoubleElectron_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleElectronTriggerSkim_merged/merged*root");
-	pickSkimIfExists(chdata,"cms2/DoubleMu_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleMuTriggerSkim_merged/merged*root");
-	pickSkimIfExists(chdata,"cms2/MuEG_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
+	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleElectronTriggerSkim_merged/merged*root");
+	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleMuTriggerSkim_merged/merged*root");
+	pickSkimIfExists(chdata,"cms2_data/MuEG_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
 	
       }
       
@@ -877,11 +875,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	
 	cout << "Doing dilepton-HT trigger data" << endl;
 	
-	pickSkimIfExists(chdata,"cms2/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged_160329_161312.root");
-	pickSkimIfExists(chdata,"cms2/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-01-03/MuHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
+	pickSkimIfExists(chdata,"cms2_data/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged*root");
+	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged*root");
+	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_1_2_patch1_V04-01-03/ElectronHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
-	//pickSkimIfExists(chdata,"/nfs-3/userdata/benhoob/CMSSW_4_1_2_patch1_V04-01-03/ElectronHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
       }
     }
 
