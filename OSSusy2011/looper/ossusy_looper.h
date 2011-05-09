@@ -123,6 +123,7 @@ class ossusy_looper
         Int_t   npfjets40_;
         Int_t   npfjetspv_;
         Int_t   njetsUp_;
+        Int_t   npfjets25_;
         Int_t   njetsDown_;
         Float_t sumjetptUp_;
         Float_t sumjetptDown_;
@@ -193,6 +194,7 @@ class ossusy_looper
 	Float_t htgen_;
 	Float_t htpf_;
 	Float_t htpf40_;
+	Float_t htpf25_;
 	Float_t htpfpv_;
 	
 	Int_t   ndavtx_;

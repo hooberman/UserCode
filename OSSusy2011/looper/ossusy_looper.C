@@ -871,6 +871,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	npfjetspv_  = 0;
 	htpfpv_     = 0.;
 
+	htpf25_     = 0.;
+	npfjets25_  = 0;
+
 	int   imaxjet   = -1;
 	float maxjetpt  = -1.;
 
@@ -896,6 +899,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           vjets_noetacut_p4.push_back( vjet );
 
           if( fabs( vjet.eta() ) > 3.0 )           continue;
+
+	  if( fabs( vjet.eta() ) < 2.5 ){
+	    npfjets25_ ++;
+	    htpf25_  += vjet.pt();
+	  }
 
 	  if( vjet.pt() > 40. ){
 	    npfjets40_ ++;
@@ -3397,6 +3405,7 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("njets",           &njets_,            "njets/I");
   outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
   outTree->Branch("npfjets",         &npfjets_,          "npfjets/I");
+  outTree->Branch("npfjets25",       &npfjets25_,        "npfjets25/I");
   outTree->Branch("npfjets40",       &npfjets40_,        "npfjets40/I");
   outTree->Branch("npfjetspv",       &npfjetspv_,        "npfjetspv/I");
   outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
@@ -3438,6 +3447,7 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("ht",              &ht_,               "ht/F");  
   outTree->Branch("htgen",           &htgen_,            "htgen/F");  
   outTree->Branch("htpf",            &htpf_,             "htpf/F");  
+  outTree->Branch("htpf25",          &htpf25_,           "htpf25/F");  
   outTree->Branch("htpf40",          &htpf40_,           "htpf40/F");  
   outTree->Branch("htpfpv",          &htpfpv_,           "htpfpv/F");  
   outTree->Branch("nels",            &nels_,             "nels/I");  
