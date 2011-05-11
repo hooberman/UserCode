@@ -106,6 +106,8 @@ class ossusy_looper
         Float_t mllgen_;
         Float_t dphijm_;
         Float_t costhetaweight_;
+	Int_t   njpt_;
+	Float_t htjpt_;
         Int_t   mull_;
         Int_t   json_;
         Int_t   mult_;

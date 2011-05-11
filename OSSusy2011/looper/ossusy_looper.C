@@ -806,6 +806,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         sumjetptUp_   = 0.;
         sumjetptDown_ = 0.;
 
+	njpt_  = 0;
+	htjpt_ = 0.;
+
         for (unsigned int ijet = 0; ijet < jpts_p4().size(); ijet++) {
           
           LorentzVector vjet     = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet); 
@@ -841,6 +844,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           vjpts_noetacut_p4.push_back( vjet );
 
           if( fabs( vjet.eta() ) > 3.0 )         continue;
+
+	  njpt_++;
+	  htjpt_ += vjet.pt();
 
           vjpts_p4.push_back( vjet );
           vjpts_p4_tot += vjet;
@@ -3429,6 +3435,7 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("njets",           &njets_,            "njets/I");
   outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
   outTree->Branch("npfjets",         &npfjets_,          "npfjets/I");
+  outTree->Branch("njpt",            &njpt_,             "njpt/I");
   outTree->Branch("npfjets25",       &npfjets25_,        "npfjets25/I");
   outTree->Branch("npfjets40",       &npfjets40_,        "npfjets40/I");
   outTree->Branch("npfjetspv",       &npfjetspv_,        "npfjetspv/I");
@@ -3471,6 +3478,7 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("ht",              &ht_,               "ht/F");  
   outTree->Branch("htgen",           &htgen_,            "htgen/F");  
   outTree->Branch("htpf",            &htpf_,             "htpf/F");  
+  outTree->Branch("htjpt",           &htjpt_,            "htjpt/F");  
   outTree->Branch("htpf25",          &htpf25_,           "htpf25/F");  
   outTree->Branch("htpf40",          &htpf40_,           "htpf40/F");  
   outTree->Branch("htpfpv",          &htpfpv_,           "htpfpv/F");  
