@@ -149,11 +149,11 @@ void ossusy_looper::InitBaby(){
   nmus_  = -1;
   ntaus_ = -1;
 
-  ptjetraw    = -9999.;
-  ptjet23     = -9999.;
-  ptjetL23    = -9999.;
-  ptjetO23    = -9999.;
-  cosphijz    = -9999.;
+  ptjetraw_    = -9999.;
+  ptjet23_     = -9999.;
+  ptjetL23_    = -9999.;
+  ptjetO23_    = -9999.;
+  cosphijz_    = -9999.;
 
 }
 
