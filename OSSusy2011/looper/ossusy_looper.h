@@ -196,7 +196,12 @@ class ossusy_looper
 	Float_t htpf40_;
 	Float_t htpf25_;
 	Float_t htpfpv_;
-	
+	Float_t ptjetraw_;
+	Float_t ptjet23_;
+	Float_t ptjetF23_;
+	Float_t ptjetO23_;
+	Float_t cosphijz_;
+	Int_t   njets15_;
 	Int_t   ndavtx_;
 	Int_t   nels_;
 	Int_t   nmus_;

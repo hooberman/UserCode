@@ -149,6 +149,12 @@ void ossusy_looper::InitBaby(){
   nmus_  = -1;
   ntaus_ = -1;
 
+  ptjetraw    = -9999.;
+  ptjet23     = -9999.;
+  ptjetL23    = -9999.;
+  ptjetO23    = -9999.;
+  cosphijz    = -9999.;
+
 }
 
 //--------------------------------------------------------------------
@@ -873,6 +879,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	htpf25_     = 0.;
 	npfjets25_  = 0;
+	njets15_    = 0;
 
 	int   imaxjet   = -1;
 	float maxjetpt  = -1.;
@@ -894,6 +901,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
           if( !passesPFJetID(ijet) )               continue;
+
+	  if( vjet.pt() > 15 && fabs( vjet.eta() ) < 3.0 ){ 
+	    njets15_++;
+	  }
+
           if( vjet.pt() < 30. )                    continue;
 
           vjets_noetacut_p4.push_back( vjet );
@@ -933,6 +945,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	if( imaxjet > -1 ){ 
 	  jet_ = &(pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet));
 
+	  LorentzVector vjetraw = pfjets_p4().at(imaxjet);
+
+	  ptjetraw_     = vjetraw.pt();
+	  ptjet23_      = pfjets_cor().at(imaxjet)           * vjetraw.pt();
+	  ptjetF23_     = pfjets_corL1FastL2L3().at(imaxjet) * vjetraw.pt();
+	  ptjetO23_     = pfjets_corL1L2L3().at(imaxjet)     * vjetraw.pt();
+	  cosphijz_     = -1 * cos( vjetraw.phi() - hyp_p4()[hypIdx].phi() );
+	  
           LorentzVector vjet = pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet);
 	  dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
 	}
@@ -995,7 +1015,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
           if( fabs( vjet.eta() ) > 3.0 )           continue;
           if( !passesPFJetID(ijet) )               continue;
-          if( vjet.pt() < 30. )                    continue;
+          if( vjet.pt() < 15. )                    continue;
+
+
+
+	  if( vjet.pt() < 30. )                    continue;
 
 	  njetsuncor_++;
 	  htuncor_ += vjet.pt();
@@ -3454,7 +3478,13 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("nmus",            &nmus_,             "nmus/I");  
   outTree->Branch("ntaus",           &ntaus_,            "ntaus/I");  
   outTree->Branch("dphijm",          &dphijm_,           "dphijm/F");  
-
+  outTree->Branch("ptjetraw",        &ptjetraw_,         "ptjetraw/F");  
+  outTree->Branch("ptjet23",         &ptjet23_,          "ptjet23/F");  
+  outTree->Branch("ptjetF23",        &ptjetF23_,         "ptjetF23/F");  
+  outTree->Branch("ptjetO23",        &ptjetO23_,         "ptjetO23/F");  
+  outTree->Branch("cosphijz",        &cosphijz_,         "cosphijz/F");  
+  outTree->Branch("njets15",         &njets15_,          "njets15/I");  
+ 
   outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);

@@ -50,7 +50,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-00-09";
+  const char* version   = "temp";
   const char* jsonfile  = "Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -198,13 +198,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  /*
+
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
   bool runttem     = 0;
@@ -249,8 +249,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
-  
+
+
+  /*  
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 0;
@@ -301,6 +302,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
+  */
   
   char* dir = "";
 
@@ -840,7 +842,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chdata = new  TChain("Events");
 
-  for( int pt = 0 ; pt < 2 ; ++pt ){
+  for( int pt = 0 ; pt < 1 ; ++pt ){
 
     //set trigger type
     if( pt == 0 ) trig = ossusy_looper::e_highpt;
