@@ -1426,7 +1426,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           phil2_        = phil2;                        //2nd highest phi lepton
           meff_         = meff_pfjets_p4;               //effective mass
           mt_           = mt;                           //transverse mass of leading lepton+met
-	  y_		= theMet / sqrt( theSumJetPt ); //y=MET/sqrt(HT)
+	  y_		= theSumJetPt > 0 ? theMet / sqrt( theSumJetPt ) : 0; //y=MET/sqrt(HT)
 	  ht_		= theSumJetPt;                  //HT
           strcpy(dataset_, cms2.evt_dataset().Data());  //dataset name
           run_          = evt_run();                    //run
