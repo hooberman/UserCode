@@ -100,6 +100,8 @@ class ossusy_looper
         // Baby ntuple variables
         TFile  *outFile;
         TTree  *outTree;
+	Float_t pthat_;
+	Float_t qscale_;
         Float_t weight_;
         Float_t smeff_;
         Float_t k_;

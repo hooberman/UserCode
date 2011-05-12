@@ -101,8 +101,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //qcdpt15 correction
   // 	    * (8.158/8.762) // approximate ratio of cross section for pt-hat > 15 to 15 < pt-hat < 30
   // 	    * (490779./381623.); // ratio of number events with pt-hat < 30 to total with pt-hat > 15 ;; for the early data sample qcdPt15 and qcdPt30 MC
-  float kqcdpt15    = (8.158/8.762)*(490779./381623.);  
-  float kqcdpt30    = 1.;  
+  float kqcdpt15  = (8.158/8.762)*(490779./381623.);  
+  float kqcdpt30  = 1.;  
+  float kqcd      = 1.;  
   float kttall    = 1.;  //157.5/165.0;  
   float kttpowheg = 1.;  //157.5/165.0;  
   float kttdil    = 1.;  //157.5/165.0;  
@@ -152,6 +153,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // Prescales
   int preqcdpt15  = 1;
   int preqcdpt30  = 1;
+  int preqcd      = 1;
   int prettall    = 1;
   int prettpowheg = 1;
   int prettdil    = 1;
@@ -204,6 +206,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
+  bool runQCD      = 0;
   bool runttall    = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -257,6 +260,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
+  bool runQCD      = 0;
   bool runttall    = 1;
   bool runttpowheg = 1;
   bool runttdil    = 0;
@@ -341,6 +345,23 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //                    "/tas/cms2/QCD_Pt30_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*root",
   //                    "QCDpt30");
   // }
+
+  TChain* chQCD = new  TChain("Events");
+  if(runQCD){
+    pickSkimIfExists(chQCD, 
+		     "cms2/QCD_Pt_15to30_TuneZ2_7TeV_pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-03/merged*root",
+		     "QCD");
+
+    pickSkimIfExists(chQCD, 
+		     "cms2/QCD_Pt_30to50_TuneZ2_7TeV_pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-03/merged*root",
+		     "QCD");
+
+    pickSkimIfExists(chQCD, 
+		     "cms2/QCD_Pt_50to80_TuneZ2_7TeV_pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-03/merged*root",
+		     "QCD");
+
+
+  }
 
   TChain* chZjets = new  TChain("Events");
   if(runZjets){
@@ -939,6 +960,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing Zjets" << endl;
 		      hist::color("Zjets", kBlack);
+		    }
+		    if (runQCD) {
+		      cout << "Processing QCD.. " << endl;
+		      looper->ScanChain(chQCD,"qcd", kqcd, preqcd, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing  QCD.. " << endl;
+		      hist::color("qcd", kOrange);
 		    }
 		    if (runQCDpt15) {
 		      cout << "Processing QCDpt15.. " << endl;

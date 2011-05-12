@@ -668,8 +668,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         
         float dilptgen = -1;
         mllgen_ = -1;
-
+	pthat_  = -1;
+	qscale_ = -1;
         if( !isData ){
+
+	  pthat_  = genps_pthat();
+	  qscale_ = genps_qScale();
 
           //splitting ttbar into ttdil/ttotr
           //nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
@@ -3390,6 +3394,8 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
+  outTree->Branch("pthat",           &pthat_,            "pthat/F");
+  outTree->Branch("qscale",          &qscale_,           "qscale/F");
   outTree->Branch("smeff",           &smeff_,            "smeff/F");
   outTree->Branch("k",               &k_,                "k/F");
   outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
