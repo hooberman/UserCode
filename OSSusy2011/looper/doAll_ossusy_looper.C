@@ -26,12 +26,13 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
     }
   */
 
+  int nFiles = 0;
   if (dummy->Add(base.c_str())) {
-    int nFiles = ch->Add(base.c_str());
+    nFiles = ch->Add(base.c_str());
     std::cout << "Main " <<base.c_str() << " exists: use it. Loaded " 
               << nFiles << " files" << std::endl;
   } else
-    std::cout << "FUCK SHIT DAMN!" << std::endl;
+    std::cout << "Couldn't find " << base << std::endl;
 
   // be paranoid
   if (nFiles == 0) {
@@ -50,14 +51,15 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "temp";
-  const char* jsonfile  = "Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-00-10";
+  const char* jsonfile  = "Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
 
   //Load CORE stuff
   gROOT->ProcessLine(".L ../CORE/CMS2.cc+");
+  gROOT->ProcessLine(".L ../CORE/utilities.cc+");
   gROOT->ProcessLine(".L ../CORE/trackSelections.cc+");
   gROOT->ProcessLine(".L ../CORE/eventSelections.cc+");
   gROOT->ProcessLine(".L ../CORE/MITConversionUtilities.cc+");
@@ -200,14 +202,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-
+  /*
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
   bool runttem     = 0;
@@ -252,15 +254,15 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
+  */
 
-
-  /*  
+    
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runQCD      = 0;
+  bool runQCD      = 1;
   bool runttall    = 1;
   bool runttpowheg = 1;
   bool runttdil    = 0;
@@ -274,11 +276,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjets    = 1;
   bool runWjetsMG  = 1;
   bool runWcharm   = 0;
-  bool runZjets    = 1;
+  bool runZjets    = 0;
   bool runDYtot    = 1;
-  bool runDYee     = 1;
-  bool runDYmm     = 1;
-  bool runDYtautau = 1;
+  bool runDYee     = 0;
+  bool runDYmm     = 0;
+  bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
   bool runtW       = 1;
@@ -306,11 +308,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+
   
   char* dir = "";
 
-  bool useMCSkims = true;
+  bool useMCSkims = false;
   if( useMCSkims ){
     cout << "Using MC skims" << endl;
     dir = "met50/";
@@ -451,7 +453,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "cms2/WToMuNu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		     "WJets");
     pickSkimIfExists(chWjets, 
-		     "cms2/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+		     "cms2/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		     "WJets");
   }
 
@@ -519,7 +521,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                        "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-00/merged*root",
+		       "cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
@@ -849,7 +851,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  float lumi              = 0.153; 
+  float lumi              = 0.191; 
   bool  calculateTCMET    = false; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
@@ -863,7 +865,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chdata = new  TChain("Events");
 
-  for( int pt = 0 ; pt < 1 ; ++pt ){
+  for( int pt = 0 ; pt < 2 ; ++pt ){
 
     //set trigger type
     if( pt == 0 ) trig = ossusy_looper::e_highpt;
@@ -901,7 +903,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	pickSkimIfExists(chdata,"cms2_data/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged*root");
 	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged*root");
 	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_1_2_patch1_V04-01-03/ElectronHad_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
+	pickSkimIfExists(chdata,"cms2_data/ElectronHad_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
       }
     }
 
