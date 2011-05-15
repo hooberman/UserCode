@@ -805,10 +805,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         LorentzVector  vjpts_p4_tot(0,0,0,0);
         VofP4 vjpts_noetacut_p4;
 
-        njetsUp_      = 0;
-        njetsDown_    = 0;
-        sumjetptUp_   = 0.;
-        sumjetptDown_ = 0.;
+        //njetsUp_      = 0;
+        //njetsDown_    = 0;
+        //sumjetptUp_   = 0.;
+        //sumjetptDown_ = 0.;
 
 	njpt_  = 0;
 	htjpt_ = 0.;
@@ -816,8 +816,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         for (unsigned int ijet = 0; ijet < jpts_p4().size(); ijet++) {
           
           LorentzVector vjet     = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet); 
-          LorentzVector vjetUp   = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet) * 1.05; 
-          LorentzVector vjetDown = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet) * 0.95; 
+          //LorentzVector vjetUp   = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet) * 1.05; 
+          //LorentzVector vjetDown = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet) * 0.95; 
           LorentzVector vlt      = hyp_lt_p4()[hypIdx];
           LorentzVector vll      = hyp_ll_p4()[hypIdx];
 
@@ -833,15 +833,15 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( dRbetweenVectors(vjet, vlt) < 0.4) continue;
           if( !passesCaloJetID( vjet ) )         continue;
 
-          if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 3.0 ){
-            njetsUp_++;
-            sumjetptUp_ += vjetUp.pt();
-          }
+          // if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 3.0 ){
+          //   njetsUp_++;
+          //   sumjetptUp_ += vjetUp.pt();
+          // }
 
-          if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 3.0 ){
-            njetsDown_++;
-            sumjetptDown_ += vjetDown.pt();
-          }
+          // if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 3.0 ){
+          //   njetsDown_++;
+          //   sumjetptDown_ += vjetDown.pt();
+          // }
           
           if( vjet.pt() < 30.          )         continue;
 
@@ -891,14 +891,21 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	npfjets25_  = 0;
 	njets15_    = 0;
 
+	njetsUp_   = 0;
+	njetsDown_ = 0;
+	htUp_      = 0.;
+	htDown_    = 0.;
+
 	int   imaxjet   = -1;
 	float maxjetpt  = -1.;
 
         for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-          LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-          LorentzVector vlt  = hyp_lt_p4()[hypIdx];
-          LorentzVector vll  = hyp_ll_p4()[hypIdx];
+          LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+          LorentzVector vjetUp    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.1;
+          LorentzVector vjetDown  = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.9;
+          LorentzVector vlt       = hyp_lt_p4()[hypIdx];
+          LorentzVector vll       = hyp_ll_p4()[hypIdx];
 
           if( generalLeptonVeto ){
             bool rejectJet = false;
@@ -915,6 +922,16 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  if( vjet.pt() > 15 && fabs( vjet.eta() ) < 3.0 ){ 
 	    njets15_++;
 	  }
+
+          if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 3.0 ){
+            njetsUp_++;
+            htUp_ += vjetUp.pt();
+          }
+
+          if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 3.0 ){
+            njetsDown_++;
+            htDown_ += vjetDown.pt();
+          }
 
           if( vjet.pt() < 30. )                    continue;
 
@@ -1347,6 +1364,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float pfmet    = p_met.first;
 	float pfmetphi = p_met.second;
 
+        pair<float, float> pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.1 );
+        pair<float, float> pfmetDown = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.9 );
+        pair<float, float> pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.0 );
+
         p_met = getMet( "muCorMET"    , hypIdx);
         float mucormet = p_met.first;
 
@@ -1370,8 +1391,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //fill tree for baby ntuple 
         if(g_createTree){
 
-
-
           costhetaweight_ = -3;
           //if(strcmp(prefix,"ttdil") == 0 )
           //  costhetaweight_ = getCosThetaStarWeight();
@@ -1387,6 +1406,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           tcmetUp_      = metUp.first;
           tcmetDown_    = metDown.first;
           tcmetTest_    = metTest.first;
+          pfmetUp_      = pfmetUp.first;
+          pfmetDown_    = pfmetDown.first;
+          pfmetTest_    = pfmetTest.first;
           pfmet_        = pfmet;
           pfmetphi_     = pfmetphi;
           mucormet_     = mucormet;
@@ -1426,7 +1448,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           phil2_        = phil2;                        //2nd highest phi lepton
           meff_         = meff_pfjets_p4;               //effective mass
           mt_           = mt;                           //transverse mass of leading lepton+met
-	  y_		= theSumJetPt > 0 ? theMet / sqrt( theSumJetPt ) : 0; //y=MET/sqrt(HT)
+	  y_		= theMet / sqrt( theSumJetPt ); //y=MET/sqrt(HT)
 	  ht_		= theSumJetPt;                  //HT
           strcpy(dataset_, cms2.evt_dataset().Data());  //dataset name
           run_          = evt_run();                    //run
@@ -3431,6 +3453,9 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("tcmetUp",         &tcmetUp_,          "tcmetUp/F");
   outTree->Branch("tcmetDown",       &tcmetDown_,        "tcmetDown/F");
   outTree->Branch("tcmetTest",       &tcmetTest_,        "tcmetTest/F");
+  outTree->Branch("pfmetUp",         &pfmetUp_,          "pfmetUp/F");
+  outTree->Branch("pfmetDown",       &pfmetDown_,        "pfmetDown/F");
+  outTree->Branch("pfmetTest",       &pfmetTest_,        "pfmetTest/F");
   outTree->Branch("mt2",             &mt2_,              "mt2/F");  
   outTree->Branch("mt2j",            &mt2j_,             "mt2j/F");  
   outTree->Branch("mt2jcore",        &mt2jcore_,         "mt2jcore/F");  
@@ -3447,8 +3472,8 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("npfjetspv",       &npfjetspv_,        "npfjetspv/I");
   outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
   outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
-  outTree->Branch("sumjetptUp",      &sumjetptUp_,       "sumjetptUp/F");
-  outTree->Branch("sumjetptDown",    &sumjetptDown_,     "sumjetptDown/F");
+  outTree->Branch("htUp",            &htUp_,             "htUp/F");
+  outTree->Branch("htDown",          &htDown_,           "htDown/F");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
   outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");

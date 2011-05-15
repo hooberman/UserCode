@@ -129,8 +129,8 @@ class ossusy_looper
         Int_t   njetsUp_;
         Int_t   npfjets25_;
         Int_t   njetsDown_;
-        Float_t sumjetptUp_;
-        Float_t sumjetptDown_;
+        Float_t htUp_;
+        Float_t htDown_;
         Int_t   nvtx_;
         Int_t   nbtags_;
         Float_t dilmass_;
@@ -153,6 +153,9 @@ class ossusy_looper
         Float_t tcmetUp_;
         Float_t tcmetDown_;
         Float_t tcmetTest_;
+        Float_t pfmetUp_;
+        Float_t pfmetDown_;
+        Float_t pfmetTest_;
         Float_t tcsumet_;
         Float_t tcmetphi_;
         Float_t mt2_;
