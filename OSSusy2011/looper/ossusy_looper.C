@@ -1458,7 +1458,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           run_          = evt_run();                    //run
           lumi_         = evt_lumiBlock();              //lumi
           event_        = evt_event();                  //event
-	  ndavtxweight_ = vtxweight();
+	  ndavtxweight_ = vtxweight(isData,true);
 
           k_				= 1;
           if( strcmp( prefix , "LM0"  )  == 0 ) k_ = kfactorSUSY( "lm0"  );
