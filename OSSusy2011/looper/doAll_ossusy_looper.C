@@ -51,7 +51,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-00-10";
+  const char* version   = "temp";//"V00-00-10";
   const char* jsonfile  = "Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -202,9 +202,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  /*
+
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -223,7 +223,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 0;
+  bool runDYtot    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -254,9 +254,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
 
-    
+
+  /*    
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 0;
@@ -308,11 +308,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-
+  */
   
   char* dir = "";
 
-  bool useMCSkims = false;
+  bool useMCSkims = true;
   if( useMCSkims ){
     cout << "Using MC skims" << endl;
     dir = "met50/";

@@ -899,6 +899,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	int   imaxjet   = -1;
 	float maxjetpt  = -1.;
 
+	vector<int> goodjets;
+	goodjets.clear();
+
         for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
           LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
@@ -958,6 +961,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  htpf_ += vjet.pt();
 
           vpfjets_p4.push_back( vjet );
+	  goodjets.push_back(ijet);
 
 	  if( pfjets_simpleSecondaryVertexHighEffBJetTag().at(ijet) > 1.74 ){
 	    nbtags_++;
@@ -1470,6 +1474,33 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( strcmp( prefix , "LM10" )  == 0 ) k_ = kfactorSUSY( "lm10" );
           if( strcmp( prefix , "LM11" )  == 0 ) k_ = kfactorSUSY( "lm11" );
           if( strcmp( prefix , "LM12" )  == 0 ) k_ = kfactorSUSY( "lm12" );
+
+          float dzcut  = 0.1; // dz(trk,vtx) requirement
+          float etacut = 3.0; // neutral PFCandidate eta requirement
+
+          //met built from charged PFCandidates
+          pair<float, float> p_trkmet    = PFCandidateMET( 0, hypIdx, goodjets, dzcut, 1.e10  , etacut ,  true , false );
+          trkmet_      = p_trkmet.first;
+          trkmetphi_   = p_trkmet.second;
+          trkmetproj_  = projectedMET( trkmet_ , trkmetphi_ , hypIdx );
+
+          //met built from charged PFCandidates and neutral PFCandidates pt > 4 GeV
+          pair<float, float> p_trkmet4   = PFCandidateMET( 0, hypIdx, goodjets, dzcut,    4.  , etacut ,  true , false );
+          trkmet4_      = p_trkmet.first;
+          trkmet4phi_   = p_trkmet.second;
+          trkmet4proj_  = projectedMET( trkmet4_ , trkmet4phi_ , hypIdx );
+
+          //met built from charged PFCandidates and neutral PFCandidates pt > 8 GeV
+          pair<float, float> p_trkmet8   = PFCandidateMET( 0, hypIdx, goodjets, dzcut,    8.  , etacut ,  true , false );
+          trkmet8_      = p_trkmet8.first;
+          trkmet8phi_   = p_trkmet8.second;
+          trkmet8proj_  = projectedMET( trkmet8_ , trkmet8phi_ , hypIdx );
+
+          //met built from jets and charged PFCandidates
+          pair<float, float> p_trkjetmet = PFCandidateMET( 0, hypIdx, goodjets, dzcut,  1.e10 , etacut ,  true ,  true );
+          trkjetmet_      = p_trkjetmet.first;
+          trkjetmetphi_   = p_trkjetmet.second;
+          trkjetmetproj_  = projectedMET( trkjetmet_ , trkjetmetphi_ , hypIdx );          
 
 	  //--------------------------
 	  // leading lepton = ll
@@ -3434,6 +3465,20 @@ void ossusy_looper::makeTree(char *prefix){
   outTree->Branch("topmass",         &topmass_,          "topmass/F");
   outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
   outTree->Branch("tcmet",           &tcmet_,            "tcmet/F");
+
+  outTree->Branch("trkmet",          &trkmet_,           "trkmet/F");
+  outTree->Branch("trkmetphi",       &trkmetphi_,        "trkmetphi/F");
+  outTree->Branch("trkmetproj",      &trkmetproj_,       "trkmetproj/F");
+
+  outTree->Branch("trkmet4",         &trkmet4_,          "trkmet4/F");
+  outTree->Branch("trkmet4phi",      &trkmet4phi_,       "trkmet4phi/F");
+  outTree->Branch("trkmet4proj",     &trkmet4proj_,      "trkmet4proj/F");
+
+  outTree->Branch("trkmet8",         &trkmet8_,          "trkmet8/F");
+  outTree->Branch("trkmet8phi",      &trkmet8phi_,       "trkmet8phi/F");
+  outTree->Branch("trkmet8proj",     &trkmet8proj_,      "trkmet8proj/F");
+
+
   outTree->Branch("tcmet00",         &tcmet00_,          "tcmet00/F");
   outTree->Branch("tcmet10",         &tcmet10_,          "tcmet10/F");
   outTree->Branch("tcmet20",         &tcmet20_,          "tcmet20/F");
@@ -3678,3 +3723,171 @@ float ossusy_looper::beta_jet_vtx( int ijet , int vtxIdx , int beta_exponent ){
 
 }
 
+
+std::pair<float,float> ossusy_looper::PFCandidateMET(const unsigned int vtxIdx, const unsigned int hypIdx, vector<int> goodjets, 
+						     float dz_thresh, float pt_thresh, float etacut , bool usePFCandidatePt , bool correctJets ){
+  
+  float tmet_x = 0.;
+  float tmet_y = 0.;
+  
+  //------------------------------------------------
+  // start by adding hypothesis leptons to tmet
+  //------------------------------------------------
+  
+  if (abs(cms2.hyp_lt_id()[hypIdx]) == 11) {
+    tmet_x -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].px();
+    tmet_y -= cms2.els_p4()[cms2.hyp_lt_index()[hypIdx]].py();
+  }
+  else if (abs(cms2.hyp_lt_id()[hypIdx]) == 13) {
+    tmet_x -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].px();
+    tmet_y -= cms2.mus_p4()[cms2.hyp_lt_index()[hypIdx]].py();
+  }
+  
+  if (abs(cms2.hyp_ll_id()[hypIdx]) == 11) {
+    tmet_x -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].px();
+    tmet_y -= cms2.els_p4()[cms2.hyp_ll_index()[hypIdx]].py();
+  }
+  else if (abs(cms2.hyp_ll_id()[hypIdx]) == 13) {
+    tmet_x -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].px();
+    tmet_y -= cms2.mus_p4()[cms2.hyp_ll_index()[hypIdx]].py();
+  }
+  
+  //------------------------------------------------
+  // next, add selected jets to met
+  //------------------------------------------------
+  
+  if( correctJets ){
+
+    for( vector<int>::iterator igoodjet = goodjets.begin() ; igoodjet < goodjets.end() ; ++igoodjet ){
+      
+      LorentzVector vjet = pfjets_p4().at(*igoodjet) * pfjets_corL1FastL2L3().at(*igoodjet);
+      
+      tmet_x -= vjet.px();
+      tmet_y -= vjet.py();
+      
+    }
+    
+  }
+  
+  //---------------------------------------------------
+  // loop over PFCandidates
+  //---------------------------------------------------
+
+  for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+
+    //----------------------------------------------------------------------
+    // exclude particles belonging to jets that were already corrected for
+    //----------------------------------------------------------------------
+
+    if( correctJets ){
+      
+      bool skipPFCandidate = false;
+      
+      for( vector<int>::iterator jet_it = goodjets.begin() ; jet_it != goodjets.end() ; jet_it++ ){
+        
+        vector<int> jetConstituents = pfjets_pfcandIndicies().at(*jet_it);
+        
+        for( vector<int>::iterator pf_it = jetConstituents.begin() ; pf_it != jetConstituents.end() ; pf_it++ ){
+          if( ipf == *pf_it ) skipPFCandidate = true;
+        }
+        
+      }
+    
+      if( skipPFCandidate ) continue;
+      
+    }
+
+    //--------------------
+    //deal with neutrals
+    //--------------------
+  
+    if( cms2.pfcands_charge().at(ipf) == 0 ){
+      
+      //--------------------
+      // pt, eta cuts
+      //--------------------
+      
+      if( pfcands_p4().at(ipf).pt()          < pt_thresh ) continue;
+      if( fabs( pfcands_p4().at(ipf).eta() ) > etacut    ) continue;
+      
+      if( dRbetweenVectors(pfcands_p4().at(ipf) , cms2.hyp_lt_p4()[hypIdx]) < 0.1)  continue;
+      if( dRbetweenVectors(pfcands_p4().at(ipf) , cms2.hyp_ll_p4()[hypIdx]) < 0.1)  continue;
+      
+      //-----------------------------------------
+      // correct MET for neutral PFCandidate
+      //-----------------------------------------
+      
+      tmet_x -= pfcands_p4().at(ipf).px();
+      tmet_y -= pfcands_p4().at(ipf).py();
+      
+    }
+    
+    //-------------------------------
+    // deal with charged particles
+    //-------------------------------
+    
+    else{
+      
+      //------------------------------------
+      // get track matched to PFCandidate
+      //------------------------------------
+    
+      int itrk = cms2.pfcands_trkidx().at(ipf);
+    
+      if( itrk >= trks_trk_p4().size() || itrk < 0 ){
+        //note: this should only happen for electrons which do not have a matched track
+        //currently we are just ignoring these guys
+        continue;
+      }
+    
+      //----------------------------------------
+      // find closest PV and dz w.r.t. that PV
+      //----------------------------------------
+    
+      float mindz = 999.;
+      int vtxi    = -1;
+      
+      for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
+       
+        float mydz = dz_trk_vtx(itrk,ivtx);
+        //float mydz = cms2.vtxs_position()[ivtx].z() - cms2.trks_vertex_p4()[itrk].z();
+         
+        if (fabs(mydz) < fabs(mindz)) {
+          mindz = mydz;
+          vtxi = ivtx;
+        }
+         
+      }
+    
+      //----------------------------------------------------------------------------
+      // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
+      //----------------------------------------------------------------------------
+    
+      if ( vtxi != vtxIdx )                                                               continue;
+      if ( fabs(mindz) > dz_thresh )                                                      continue;
+      if ( dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_lt_p4()[hypIdx]) < 0.1 )   continue;
+      if ( dRbetweenVectors(cms2.trks_trk_p4()[itrk], cms2.hyp_ll_p4()[hypIdx]) < 0.1 )   continue;
+    
+
+      //---------------------------------------
+      // correct MET for charged PFCandidate
+      //---------------------------------------
+
+      if( usePFCandidatePt ){
+        tmet_x -= cms2.pfcands_p4()[ipf].px();
+        tmet_y -= cms2.pfcands_p4()[ipf].py();
+      }
+    
+      else{
+        tmet_x -= cms2.trks_trk_p4()[itrk].px();
+        tmet_y -= cms2.trks_trk_p4()[itrk].py();
+      }
+    
+    } 
+  }// end loop over tracks
+  
+  float met = sqrt(tmet_x * tmet_x + tmet_y * tmet_y);
+  float metphi = atan2( tmet_y , tmet_x );
+  
+  return make_pair( met , metphi );
+}

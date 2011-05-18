@@ -66,7 +66,10 @@ class ossusy_looper
 	float dz_trk_vtx(const unsigned int trkidx, const unsigned int vtxidx);
 	float beta_jet_vtx( int ijet , int vtxIdx , int beta_exponent );
 	bool jetFromSignalPV( int ijet , int vtxIdx , int beta_exponent );
-	  
+	
+        std::pair<float,float> PFCandidateMET(const unsigned int vtxIdx, const unsigned int hypIdx, vector<int> goodjets, 
+                                              float dz_thresh, float pt_thresh, float etacut , bool usePFCandidatePt , bool correctJets );
+	
         // Set globals
         void set_susybaseline (bool  b)    { g_susybaseline = b; }
         void set_createTree   (bool  b)    { g_createTree   = b; }
@@ -129,6 +132,18 @@ class ossusy_looper
         Int_t   njetsUp_;
         Int_t   npfjets25_;
         Int_t   njetsDown_;
+	Float_t trkmet_;
+	Float_t trkmetphi_;
+	Float_t trkmetproj_;
+	Float_t trkmet4_;
+	Float_t trkmet4phi_;
+	Float_t trkmet4proj_;
+	Float_t trkmet8_;
+	Float_t trkmet8phi_;
+	Float_t trkmet8proj_;
+	Float_t trkjetmet_;
+	Float_t trkjetmetphi_;
+	Float_t trkjetmetproj_;
         Float_t htUp_;
         Float_t htDown_;
         Int_t   nvtx_;
