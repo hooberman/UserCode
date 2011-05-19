@@ -73,6 +73,11 @@ void print( TH1F* h , string label ){
     sem  << Form( "%.0f" , h->GetBinContent(3) );
     stot << Form( "%.0f" , h->Integral()       );
   }else{
+    // see  << Form( "%.0f" , h->GetBinContent(1) );
+    // smm  << Form( "%.0f" , h->GetBinContent(2) );
+    // sem  << Form( "%.0f" , h->GetBinContent(3) );
+    // stot << Form( "%.0f" , h->Integral()       );
+
     see  << Form( "%.2f" , h->GetBinContent(1) ) << pm << Form( "%.2f" , h->GetBinError(1) );
     smm  << Form( "%.2f" , h->GetBinContent(2) ) << pm << Form( "%.2f" , h->GetBinError(2) );
     sem  << Form( "%.2f" , h->GetBinContent(3) ) << pm << Form( "%.2f" , h->GetBinError(3) );
@@ -138,6 +143,94 @@ void initSymbols( bool latex ){
 
 }
 
+//TH1F* doDYestimate( TChain *ch , TCut sel ){
+void doDYestimate( TChain *ch , TCut sel , TH1F* hyield ){
+
+  //-------------------
+  // set parameters
+  //-------------------
+
+  bool  verbose = true;
+  float R       = 0.13;
+  float R_err   = 0.07;
+  float k       = 1.11;
+
+  if( verbose ){
+    cout << "R : " << R << " +/- " << R_err << endl;
+    cout << "k : " << k << endl;
+  }
+
+  //-------------------
+  // invert Z-veto
+  //-------------------
+
+  TString selstring(sel.GetTitle());
+  selstring.ReplaceAll("passz == 0","dilmass>76&&dilmass<106");
+  TCut newsel = TCut(selstring);
+
+  if( verbose ){
+    cout << "Pre  : " << sel.GetTitle() << endl;
+    cout << "Post : " << newsel.GetTitle() << endl;
+  }
+
+  //-------------------
+  // get data yields
+  //-------------------
+
+  float ndata_ee_in = ch->GetEntries(newsel+"leptype==0");
+  float ndata_mm_in = ch->GetEntries(newsel+"leptype==1");
+  float ndata_em_in = ch->GetEntries(newsel+"leptype==2");
+
+  if( verbose ){
+    cout << "nee     " << ndata_ee_in << endl;
+    cout << "nmm     " << ndata_mm_in << endl;
+    cout << "nem     " << ndata_em_in << endl;
+  }
+
+  //-------------------
+  // do DY estimate
+  //-------------------
+
+  float neepred     = R     * ( ndata_ee_in - (1/k) * ndata_em_in );
+  float nmmpred     = R     * ( ndata_mm_in - k     * ndata_em_in );
+
+  float neeprederr  = 0.;
+  float nmmprederr  = 0.;
+
+  neeprederr  += pow( R_err * ( ndata_ee_in - (1/k) * ndata_em_in ) , 2 );
+  nmmprederr  += pow( R_err * ( ndata_mm_in - k     * ndata_em_in ) , 2 );
+
+  neeprederr  += pow( R * sqrt( ndata_ee_in + pow(1/k,2) * ndata_em_in ) , 2 );
+  nmmprederr  += pow( R * sqrt( ndata_mm_in + pow(k,2)   * ndata_em_in ) , 2 );
+
+  neeprederr = sqrt(neeprederr);
+  nmmprederr = sqrt(nmmprederr);
+
+  float ntotpred    = neepred + nmmpred;
+  float ntotprederr = sqrt( pow(neeprederr,2) + pow(nmmprederr,2) );
+
+  if( verbose ){
+    cout << "nee  pred " << neepred  << " +/- " << neeprederr  << endl;
+    cout << "nmm  pred " << nmmpred  << " +/- " << nmmprederr  << endl;
+    cout << "ntot pred " << ntotpred << " +/- " << ntotprederr << endl;
+  }
+
+  //-------------------
+  // set hist contents
+  //-------------------
+
+  hyield->SetBinContent( 1 , neepred );
+  hyield->SetBinContent( 2 , nmmpred );
+  hyield->SetBinContent( 3 , 0 );
+  hyield->SetBinContent( 4 , 0 );
+
+  hyield->SetBinError( 1 , neeprederr );
+  hyield->SetBinError( 2 , nmmprederr );
+  hyield->SetBinError( 3 , 0 );
+  hyield->SetBinError( 4 , 0 );
+
+}
+
 void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata , TCut sel , TCut weight , bool latex ){
 
   initSymbols( latex );
@@ -159,6 +252,9 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
   TCut ll ("(w1>0&&w2>0) && (w1<3&&w2<3)");
   TCut tau("(w1>0&&w2>0) && (w1>2||w2>2)");
   TCut fake("!(w1>0&&w2>0)");
+  TCut tautau("ntaus==2");
+  TCut hbhe("hbhe==1");
+
   TCut selclone = sel;
 
   //----------------------
@@ -170,19 +266,26 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
     if( TString(labels[imc]).Contains("LM") ) continue;
 
     sel = selclone;
-    if     ( strcmp(labels[imc],"ttll")   == 0 ) sel = sel + ll;
-    else if( strcmp(labels[imc],"tttau")  == 0 ) sel = sel + tau;
-    else if( strcmp(labels[imc],"ttfake") == 0 ) sel = sel + fake;
-    else if( strcmp(labels[imc],"ttdil")  == 0 ) sel = sel + dil;
-    else if( strcmp(labels[imc],"ttotr")  == 0 ) sel = sel + !dil;
+    if     ( strcmp(labels[imc],"ttll")     == 0 ) sel = sel + ll;
+    else if( strcmp(labels[imc],"tttau")    == 0 ) sel = sel + tau;
+    else if( strcmp(labels[imc],"ttfake")   == 0 ) sel = sel + fake;
+    else if( strcmp(labels[imc],"ttdil")    == 0 ) sel = sel + dil;
+    else if( strcmp(labels[imc],"ttotr")    == 0 ) sel = sel + !dil;
+    else if( strcmp(labels[imc],"DYtautau") == 0 ) sel = sel + tautau;
 
-    chmc[imc]->Draw("leptype>>hyield",sel*weight);
+    if( strcmp(labels[imc],"DYdata")   == 0 ){
+      //hyield = doDYestimate( chmc[imc] , sel );
+      doDYestimate( chmc[imc] , sel , hyield );
+    }else{
+      chmc[imc]->Draw("leptype>>hyield",sel*weight);
+    }
 
     if( imc == 0 ) hmctot = (TH1F*) hyield->Clone();
     else           hmctot->Add(hyield);
     
     print( hyield , labels[imc] );
 
+    //hyield->Reset();
   }
 
   printLine(latex);
@@ -196,6 +299,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
   printLine(latex);
  
   chdata->Draw("leptype>>hyield",sel);
+  //chdata->Draw("leptype>>hyield",sel+hbhe);
 
   print( hyield , "data" );
     
@@ -223,15 +327,16 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 }
 
 
-TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayData ){
+TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayData, float x1, float y1, float x2, float y2){
 
   int colors[]={2,5,7,4,6,8,9,15,12};
-
-  TLegend *leg = new TLegend(0.8,0.35,0.94,0.94);
+  
+  TLegend *leg = new TLegend(x1,y1,x2,y2);
 
   TH1F*    datahist = new TH1F("datahist","datahist",1,0,1);
+  datahist->Sumw2();
 
-  if( overlayData ) leg->AddEntry(datahist,"data","p");
+  if( overlayData ) leg->AddEntry(datahist,"data");
 
   const unsigned int nmc = chmc.size();
   TH1F*    mchist[nmc];
@@ -248,6 +353,7 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
     }
 
     leg->AddEntry(mchist[imc],labels.at(imc),"f");
+    
   }
 
   leg->SetFillColor(0);
@@ -259,7 +365,32 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
 
 void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata , char* var , 
 		    TCut sel , TCut weight , int nbins ,  float xmin , float xmax ,  
-		    char* xtitle , bool overlayData , bool drawLegend ){
+		    char* xtitle , bool overlayData , bool residual , bool drawLegend , bool log , char* flavor ){
+
+  TPad* fullpad = new TPad();
+  TPad* plotpad = new TPad();
+  TPad* respad  = new TPad();
+
+  if( residual ){
+    fullpad = new TPad("fullpad","fullpad",0,0,1,1);
+    fullpad->Draw();
+    fullpad->cd();
+
+    plotpad = new TPad("plotpad","plotpad",0,0,1,0.8);
+    plotpad->Draw();
+    plotpad->cd();
+    if( log ) plotpad->SetLogy();
+  }
+  else{
+    if( log ) gPad->SetLogy();
+  }
+
+  TString tvar(var);
+  tvar.ReplaceAll("()","");
+  tvar.ReplaceAll(".","");
+  const char* myvar = tvar;
+
+  cout << "Plotting var " << myvar << " flavor " << flavor << endl;
 
   int colors[]={2,5,7,4,6,8,9,15,12};
 
@@ -269,9 +400,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   THStack* mcstack = new THStack("mcstack","mcstack");
   TH1F*    mctothist = new TH1F();
   TH1F*    mchist[nmc];
-  TH1F*    datahist = new TH1F("datahist","datahist",nbins,xmin,xmax);
-
-  TLegend *leg = new TLegend(0.8,0.35,0.94,0.94);
+  TH1F*    datahist = new TH1F(Form("%s_datahist_%s",myvar,flavor),Form("%s_datahist_%s",myvar,flavor),nbins,xmin,xmax);
 
   TCut dil("(nels+nmus+ntaus)==2");
   TCut ll ("(w1>0&&w2>0) && (w1<3&&w2<3)");
@@ -279,11 +408,11 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   TCut fake("!(w1>0&&w2>0)");
   TCut selclone = sel;
 
-  if( overlayData ) leg->AddEntry(datahist,"data","p");
-  
   for( unsigned int imc = 0 ; imc < nmc ; imc++ ){
+  //for( int imc = nmc-1 ; imc > -1 ; imc-- ){
 
-    mchist[imc] = new TH1F(Form("mc_%i",imc),Form("mc_%i",imc),nbins,xmin,xmax);
+    mchist[imc] = new TH1F(Form("%s_mc_%i_%s",myvar,imc,flavor),Form("%s_mc_%i_%s",myvar,imc,flavor),nbins,xmin,xmax);
+    mchist[imc]->Sumw2();
 
     sel = selclone;
     if     ( strcmp(labels[imc],"ttll")   == 0 ) sel = sel + ll;
@@ -292,7 +421,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     else if( strcmp(labels[imc],"ttdil")  == 0 ) sel = sel + dil;
     else if( strcmp(labels[imc],"ttotr")  == 0 ) sel = sel + !dil;
 
-    chmc.at(imc)->Draw(Form("TMath::Min(%s,%f)>>mc_%i",var,xmax-0.01,imc),sel*weight);
+    chmc.at(imc)->Draw(Form("TMath::Min(%s,%f)>>%s_mc_%i_%s",var,xmax-0.01,myvar,imc,flavor),sel*weight);
 
     if( TString( labels.at(imc) ).Contains("LM") ){
       mchist[imc]->SetFillColor( 0 );
@@ -306,16 +435,18 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     if( imc == 0 ) mctothist = (TH1F*) mchist[imc]->Clone();
     else           mctothist->Add(mchist[imc]);
 
-    leg->AddEntry(mchist[imc],labels.at(imc),"f");
-
   }
 
-  chdata->Draw(Form("TMath::Min(%s,%f)>>datahist",var,xmax-0.01),sel);
+  chdata->Draw(Form("TMath::Min(%s,%f)>>%s_datahist_%s",var,xmax-0.01,myvar,flavor),sel);
 
   if( overlayData ){
+    float max = datahist->GetMaximum() + datahist->GetBinError(datahist->GetMaximumBin());
+    if( mctothist->GetMaximum() > max ) max = mctothist->GetMaximum();
+    if( log ) datahist->SetMaximum( 10 * max );
+    else      datahist->SetMaximum( 1.25 * max );
     datahist->GetXaxis()->SetTitle(xtitle);
     datahist->Draw("E1");
-    mcstack->Draw("same");
+    mcstack->Draw("samehist");
     datahist->Draw("sameE1");
     datahist->Draw("sameaxis");
   }
@@ -326,10 +457,6 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     mctothist->Draw("sameaxis");
   }
 
-  leg->SetFillColor(0);
-  leg->SetBorderSize(0);
-  //leg->Draw();
-
   if( drawLegend ){
     TLegend* myleg = getLegend( chmc , labels , overlayData );
     myleg->Draw();
@@ -337,10 +464,47 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
   TLatex *text = new TLatex();
   text->SetNDC();
-  text->SetTextSize(0.037);
-  text->DrawLatex(0.45,0.85,"CMS");
-  text->DrawLatex(0.45,0.80,"43 pb^{-1} at #sqrt{s} = 7 TeV");
-  text->DrawLatex(0.45,0.75,"Events with ee/#mu#mu/e#mu");
+  text->SetTextSize(0.05);
+  //text->DrawLatex(0.55,0.85,"CMS");
+  text->DrawLatex(0.2,0.87,"191 pb^{-1} at #sqrt{s} = 7 TeV");
+
+  if     ( TString(flavor).Contains("ee")  ) text->DrawLatex(0.2,0.82,"Events with ee");
+  else if( TString(flavor).Contains("mm")  ) text->DrawLatex(0.2,0.82,"Events with #mu#mu");
+  else if( TString(flavor).Contains("em")  ) text->DrawLatex(0.2,0.82,"Events with e#mu");
+  else if( TString(flavor).Contains("all") ) text->DrawLatex(0.2,0.82,"Events with ee/#mu#mu/e#mu");
+
+  if( residual ){
+    fullpad->cd();
+
+    respad = new TPad("respad","respad",0,0.8,1,1);
+    respad->Draw();
+    respad->cd();
+
+    gPad->SetGridy();
+
+    TH1F* ratio = (TH1F*) datahist->Clone(Form("%s_ratio",datahist->GetName()));
+    ratio->Divide(mctothist);
+
+    ratio->GetYaxis()->SetTitleOffset(0.3);
+    ratio->GetYaxis()->SetTitleSize(0.2);
+    ratio->GetYaxis()->SetNdivisions(5);
+    ratio->GetYaxis()->SetLabelSize(0.2);
+    ratio->GetYaxis()->SetRangeUser(0.5,1.5);
+    ratio->GetYaxis()->SetTitle("data/MC  ");
+    ratio->GetXaxis()->SetLabelSize(0);
+    ratio->GetXaxis()->SetTitleSize(0);
+    ratio->SetMarkerSize(0.7);
+    ratio->Draw();
+
+    TLine line;
+    line.SetLineWidth(1);
+    line.DrawLine(datahist->GetXaxis()->GetXmin(),1,datahist->GetXaxis()->GetXmax(),1);
+
+  }
+
+
+
+
 
 
 }
