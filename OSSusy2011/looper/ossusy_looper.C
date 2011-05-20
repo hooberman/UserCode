@@ -495,7 +495,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           // FRweight < -1 --> leptons don't satisfy FO selections
           if(FRweight < -1.) continue;
 
-	  std::cout << "hyp " << i << " fake rate weight = " << FRweight << std::endl;
+	  // std::cout << "hyp " << i << " fake rate weight = " << FRweight << std::endl;
           // v_goodHyps.push_back(hypIdx);
           // v_weights.push_back(FRweight); 
         }
@@ -1237,7 +1237,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         if( doFakeApp ) {  // multiply orig weight with FR hyp weight (1 for std running, FRweight for FR run)
           weight *= v_weights.at(i);
-	  cout << "weight " << weight << endl;
+	  //cout << "weight " << weight << endl;
         }
 
         // This isn't quite right, and works only if both em and ppmux are in play
