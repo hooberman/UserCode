@@ -79,7 +79,7 @@ class ossusy_looper
         void set_trigger      (TrigEnum t) { g_trig         = t; } 
 
         // Baby ntuple methods
-        void makeTree (char *prefix);
+        void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
         void closeTree ();
 
 	bool initialized;
@@ -235,7 +235,7 @@ class ossusy_looper
 
         // for fakeRates
         bool isFakeableMuon (int index);
-        double getFRWeight(const int hypIdx, string elFRversion, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
+        double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
 
         // Lots and lots of histograms
 
