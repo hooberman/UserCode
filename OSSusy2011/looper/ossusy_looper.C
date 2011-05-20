@@ -444,7 +444,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       json_ = 1;
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       if( !cleaning_standardApril2011() )                            continue;
-      
+
+
       //find good hyps, store in v_goodHyps
       vector<unsigned int> v_goodHyps;
       v_goodHyps.clear();
@@ -902,6 +903,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	vector<int> goodjets;
 	goodjets.clear();
 
+	jetid_   = 1;
+	jetid30_ = 1;
+
         for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
           LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
@@ -920,7 +924,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           
           if( dRbetweenVectors(vjet, vll) < 0.4 )  continue;
           if( dRbetweenVectors(vjet, vlt) < 0.4 )  continue;
-          if( !passesPFJetID(ijet) )               continue;
+          if( !passesPFJetID(ijet) ){
+	    jetid_ = 0;
+	    if( vjet.pt() > 30 && fabs( vjet.eta() ) < 3.0 ) jetid30_ = 0;
+	    continue;
+	  }
 
 	  if( vjet.pt() > 15 && fabs( vjet.eta() ) < 3.0 ){ 
 	    njets15_++;
@@ -1459,6 +1467,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           lumi_         = evt_lumiBlock();              //lumi
           event_        = evt_event();                  //event
 	  ndavtxweight_ = vtxweight(isData,true);
+	  hbhe_         = isData ? evt_hbheFilter() : 1;
 
           k_				= 1;
           if( strcmp( prefix , "LM0"  )  == 0 ) k_ = kfactorSUSY( "lm0"  );
@@ -3440,6 +3449,9 @@ void ossusy_looper::makeTree(char *prefix){
 
   //Set branch addresses
   //variables must be declared in ossusy_looper.h
+  outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
+  outTree->Branch("jetid",           &jetid_,            "jetid/I");
+  outTree->Branch("jetid30",         &jetid30_,          "jetid30/I");
   outTree->Branch("json",            &json_,             "json/I");
   outTree->Branch("htoffset",        &htoffset_,         "htoffset/F");
   outTree->Branch("htuncor",         &htuncor_,          "htuncor/F");
