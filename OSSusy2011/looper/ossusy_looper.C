@@ -333,7 +333,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     }
     else {
       std::cout<<"Using data derived FR files"<<std::endl;
-      std::cout<<"CURRENTLY USING DATA FR FOR MC FIXME!!!!!" std::endl;
+      std::cout<<"CURRENTLY USING DATA FR FOR MC FIXME!!!!!" <<std::endl;
       mufr = new SimpleFakeRate("fr_os19May2011.root", "fr_mu_OSGV2" );
       elfr = new SimpleFakeRate("fr_os19May2011.root", "fr_el"       );
     }
@@ -369,7 +369,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   float nmmtot = 0.;
   float nemtot = 0.;
 
-  if(g_createTree) makeTree(prefix);
+  if(g_createTree) makeTree(prefix, doFakeApp, frmode);
 
   bool hasJptBtagBranch = true;
 
@@ -3303,6 +3303,7 @@ double ossusy_looper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, Simple
       
       double FRElt = elfr->getFR(els_p4()[iElt].pt(), els_p4()[iElt].eta());
       double FREll = elfr->getFR(els_p4()[iEll].pt(), els_p4()[iEll].eta());
+      //cout << "ee, FRlt, FRll, FR " << FRElt << " " << FREll << " " << (FRElt/(1-FRElt))*(FREll/(1-FREll)) << endl;
       return (FRElt/(1-FRElt))*(FREll/(1-FREll));
     } 
     else if(estimateWJets) {
@@ -3328,17 +3329,17 @@ double ossusy_looper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, Simple
     int iEl = 0;
     int iMu = 0;
     
-    if     ( abs(hyp_ll_type()[hypIdx])==11 && abs(hyp_lt_type()[hypIdx])==13 ){
+    if     ( abs(hyp_ll_id()[hypIdx])==11 && abs(hyp_lt_id()[hypIdx])==13 ){
       iEl = hyp_ll_index()[hypIdx];
       iMu = hyp_lt_index()[hypIdx];
     }
-    else if( abs(hyp_ll_type()[hypIdx])==13 && abs(hyp_lt_type()[hypIdx])==11 ){
+    else if( abs(hyp_ll_id()[hypIdx])==13 && abs(hyp_lt_id()[hypIdx])==11 ){
       iEl = hyp_lt_index()[hypIdx];
       iMu = hyp_ll_index()[hypIdx];
     }
     else{
-      cout << "ID ll " << hyp_ll_type()[hypIdx] << endl;
-      cout << "ID lt " << hyp_lt_type()[hypIdx] << endl;
+      cout << "ID ll " << hyp_ll_id()[hypIdx] << endl;
+      cout << "ID lt " << hyp_lt_id()[hypIdx] << endl;
       cout << "Error in getFRWeight, quitting!" << endl;
       exit(0); 
     }
@@ -3398,7 +3399,7 @@ double ossusy_looper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, Simple
 
 //--------------------------------------------------------------------
 
-void ossusy_looper::makeTree(char *prefix){
+void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
