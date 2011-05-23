@@ -51,7 +51,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "temp";//"V00-00-10";
+  const char* version   = "V00-00-10";
   const char* jsonfile  = "Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -202,9 +202,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-
+  /*
   //Flags for files to run over
   bool rundata     = 0;
+  bool rundata42   = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -223,7 +224,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 1;
+  bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -254,11 +255,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
+  */
 
-
-  /*    
+      
   //Flags for files to run over
   bool rundata     = 1;
+  bool rundata42   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -308,7 +310,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+  
   
   char* dir = "";
 
@@ -863,7 +865,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   ossusy_looper::TrigEnum trig;
 
 
-  TChain* chdata = new  TChain("Events");
+  TChain* chdata   = new  TChain("Events");
+  TChain* chdata42 = new  TChain("Events");
 
   for( int pt = 0 ; pt < 2 ; ++pt ){
 
@@ -874,6 +877,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     looper->set_trigger( trig );
 
     chdata->Reset();
+    chdata42->Reset();
   
     if(rundata){
       
@@ -907,6 +911,24 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       }
     }
 
+    if(rundata42){
+
+      if( trig == ossusy_looper::e_highpt ){
+	
+	cout << "Doing high-pT dilepton trigger data 42X" << endl;
+
+	pickSkimIfExists(chdata42,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleElectronTriggerSkim/skim*root");
+	pickSkimIfExists(chdata42,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleMuTriggerSkim/skim*root");
+	pickSkimIfExists(chdata42,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_3_patch1_V04-03-00/MuEG_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-03-00_merged/V04-03-00/merged*root");
+
+      }
+      else if( trig == ossusy_looper::e_lowpt ){
+	//cout << "Doing dilepton-HT trigger data"                << endl;
+	cout << "ERROR! currently no low pt 42X data, quitting" << endl;
+	exit(0);
+      }
+    }
+
     for (int jetTypeIdx = 2; jetTypeIdx < 3; ++jetTypeIdx)
       {
 	for (int metTypeIdx = 3; metTypeIdx < 4; ++metTypeIdx)
@@ -920,7 +942,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		    ossusy_looper::MetTypeEnum  metType(metTypeIdx);
 		    ossusy_looper::ZVetoEnum    zveto(zvetoIdx);
 		    ossusy_looper::FREnum       frmode(frmodeIdx);
-   
+
+		    if( doFakeApp ){
+		      if( frmodeIdx == 0 ) cout << "Doing double fake estimate" << endl;
+		      if( frmodeIdx == 1 ) cout << "Doing single fake estimate" << endl;
+		    }
+
 		    if (rundataskim) {
 		      cout << "Processing data skim" << endl;
 		      looper->ScanChain(chdataskim,"dataskim", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -932,6 +959,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing data" << endl;
 		      hist::color("data", kBlack);
+		    }
+		    if (rundata42) {
+		      cout << "Processing data 42X" << endl;
+		      looper->ScanChain(chdata42,"data42", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing data 42X" << endl;
+		      hist::color("data42", kBlack);
 		    }
 		    if (runDYtot) {
 		      cout << "Processing DY->all" << endl;
