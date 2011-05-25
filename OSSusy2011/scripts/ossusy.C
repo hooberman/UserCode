@@ -46,6 +46,8 @@ void initialize(char* path){
 
     data->Reset();
     data2010->Reset();
+    datasf->Reset();
+    datadf->Reset();
     ttall->Reset();
     ttpowheg->Reset();
     ttdil->Reset();
@@ -66,6 +68,16 @@ void initialize(char* path){
     LM1->Reset();
     LM2->Reset();
     LM3->Reset();
+    LM4->Reset();
+    LM5->Reset();
+    LM6->Reset();
+    LM7->Reset();
+    LM8->Reset();
+    LM9->Reset();
+    LM10->Reset();
+    LM11->Reset();
+    LM12->Reset();
+    LM13->Reset();
     sm->Reset();
     sm_LM1->Reset();
     other->Reset();
@@ -79,6 +91,8 @@ void initialize(char* path){
 
     data	= new TChain("t");
     data2010	= new TChain("t");
+    datasf	= new TChain("t");
+    datadf	= new TChain("t");
     ttall	= new TChain("t");
     ttpowheg	= new TChain("t");
     ttdil	= new TChain("t");
@@ -99,6 +113,16 @@ void initialize(char* path){
     LM1 	= new TChain("t");
     LM2 	= new TChain("t");
     LM3 	= new TChain("t");
+    LM4 	= new TChain("t");
+    LM5 	= new TChain("t");
+    LM6 	= new TChain("t");
+    LM7 	= new TChain("t");
+    LM8 	= new TChain("t");
+    LM9 	= new TChain("t");
+    LM10 	= new TChain("t");
+    LM11 	= new TChain("t");
+    LM12 	= new TChain("t");
+    LM13 	= new TChain("t");
     sm          = new TChain("t");
     sm_LM1      = new TChain("t");
     other       = new TChain("t");
@@ -111,6 +135,8 @@ void initialize(char* path){
   //data->Add(Form("%s/data_smallTree_hbhe.root",path));
   //data->Add(Form("%s/data_smallTree_allpr_nojson.root",path));
   dydata->Add(Form("%s/data_smallTree.root",path));
+  datasf->Add(Form("%s/data_smallTree_singleFake.root",path));
+  datadf->Add(Form("%s/data_smallTree_doubleFake.root",path));
   data2010->Add("/tas03/home/benhoob/OSSusy/output_38X/nov5th_v6_skim/dataskim_smallTree.root");
   ttall->Add(Form("%s/ttall_smallTree.root",path));
   ttpowheg->Add(Form("%s/ttpowheg_smallTree.root",path));
@@ -134,21 +160,36 @@ void initialize(char* path){
   LM1->Add(Form("%s/LM1_smallTree.root",path));
   LM2->Add(Form("%s/LM2_smallTree.root",path));
   LM3->Add(Form("%s/LM3_smallTree.root",path));
+  LM4->Add(Form("%s/LM4_smallTree.root",path));
+  LM5->Add(Form("%s/LM5_smallTree.root",path));
+  LM6->Add(Form("%s/LM6_smallTree.root",path));
+  LM7->Add(Form("%s/LM7_smallTree.root",path));
+  LM8->Add(Form("%s/LM8_smallTree.root",path));
+  LM9->Add(Form("%s/LM9_smallTree.root",path));
+  //LM10->Add(Form("%s/LM10_smallTree.root",path));
+  LM11->Add(Form("%s/LM11_smallTree.root",path));
+  LM12->Add(Form("%s/LM12_smallTree.root",path));
+  LM13->Add(Form("%s/LM13_smallTree.root",path));
   other->Add(Form("%s/ww_smallTree.root",path));
   other->Add(Form("%s/wz_smallTree.root",path));
   other->Add(Form("%s/zz_smallTree.root",path));
   other->Add(Form("%s/tW_smallTree.root",path));
 
+  mc.push_back(ttpowheg);  mclabels.push_back("ttpowheg");
 
-  //mc.push_back(ttall);     mclabels.push_back("ttall");
+/*
+  mc.push_back(ttall);     mclabels.push_back("ttall");
   //mc.push_back(ttdil);     mclabels.push_back("ttdil");
   //mc.push_back(ttotr);     mclabels.push_back("ttotr");
   //mc.push_back(ttpowheg);  mclabels.push_back("ttpowheg");
   //mc.push_back(ttotr);    mclabels.push_back("ttotr");
-  mc.push_back(ttll);     mclabels.push_back("ttll");    mctex.push_back("$t\\bar{b}\\rightarrow\\ell^+\\ell^-$");
-  mc.push_back(tttau);    mclabels.push_back("tttau");   mctex.push_back("$t\\bar{b}\\rightarrow\\ell^{\\pm}\\tau^{\\mp}$");
-  mc.push_back(ttfake);   mclabels.push_back("ttfake");  mctex.push_back("$t\\bar{b}\\rightarrow$fake");
+  
+  //mc.push_back(ttll);     mclabels.push_back("ttll");    mctex.push_back("$t\\bar{b}\\rightarrow\\ell^+\\ell^-$");
+  //mc.push_back(tttau);    mclabels.push_back("tttau");   mctex.push_back("$t\\bar{b}\\rightarrow\\ell^{\\pm}\\tau^{\\mp}$");
+  //mc.push_back(ttfake);   mclabels.push_back("ttfake");  mctex.push_back("$t\\bar{b}\\rightarrow$fake");
   mc.push_back(wjets);    mclabels.push_back("wjets");       mctex.push_back("$W^{\\pm}$+jets");
+  //mc.push_back(datasf);   mclabels.push_back("single fakes");      mctex.push_back("single fakes");
+  //mc.push_back(datadf);   mclabels.push_back("double fakes");      mctex.push_back("double fakes");
   //mc.push_back(zjets);    mclabels.push_back("zjets");     mctex.push_back("$Z^0$+jets");
   //mc.push_back(dydata);   mclabels.push_back("DYdata");      mctex.push_back("DYdata");
   mc.push_back(dy);       mclabels.push_back("DY");          mctex.push_back("DY");
@@ -157,11 +198,23 @@ void initialize(char* path){
   mc.push_back(wz);       mclabels.push_back("WZ");          mctex.push_back("W^{\\pm}Z^0");
   mc.push_back(zz);       mclabels.push_back("ZZ");          mctex.push_back("Z^0Z^0");
   mc.push_back(t);        mclabels.push_back("t");           mctex.push_back("single top");
-  //mc.push_back(other);    mclabels.push_back("other");   mctex.push_back("WW/WZ/ZZ/t");
-  mc.push_back(LM0);      mclabels.push_back("LM0");     mctex.push_back("LM0");
-  mc.push_back(LM1);      mclabels.push_back("LM1");     mctex.push_back("LM1");
-  mc.push_back(LM2);      mclabels.push_back("LM2");     mctex.push_back("LM2");
-  mc.push_back(LM3);      mclabels.push_back("LM3");     mctex.push_back("LM3");
+*/
+  
+  // mc.push_back(other);    mclabels.push_back("other");   mctex.push_back("WW/WZ/ZZ/t");
+  // mc.push_back(LM0);      mclabels.push_back("LM0");     mctex.push_back("LM0");
+  // mc.push_back(LM1);      mclabels.push_back("LM1");     mctex.push_back("LM1");
+  // mc.push_back(LM2);      mclabels.push_back("LM2");     mctex.push_back("LM2");
+  // mc.push_back(LM3);      mclabels.push_back("LM3");     mctex.push_back("LM3");
+  // mc.push_back(LM4);      mclabels.push_back("LM4");     mctex.push_back("LM4");
+  // mc.push_back(LM5);      mclabels.push_back("LM5");     mctex.push_back("LM5");
+  // mc.push_back(LM6);      mclabels.push_back("LM6");     mctex.push_back("LM6");
+  // mc.push_back(LM7);      mclabels.push_back("LM7");     mctex.push_back("LM7");
+  // mc.push_back(LM8);      mclabels.push_back("LM8");     mctex.push_back("LM8");
+  // mc.push_back(LM9);      mclabels.push_back("LM9");     mctex.push_back("LM9");
+  // mc.push_back(LM10);     mclabels.push_back("LM10");    mctex.push_back("LM10");
+  // mc.push_back(LM11);     mclabels.push_back("LM11");    mctex.push_back("LM11");
+  // mc.push_back(LM12);     mclabels.push_back("LM12");    mctex.push_back("LM12");
+  // mc.push_back(LM13);     mclabels.push_back("LM13");    mctex.push_back("LM13");
   
   sm->Add(Form("%s/ttall_smallTree.root",path));
   sm->Add(Form("%s/wjetsMG_smallTree.root",path));
@@ -188,6 +241,8 @@ void initialize(char* path){
   alreadyInitialized_ = true;
 }
 
+
+
 //------------------------------------------
 // selection and weight to apply to babies
 //------------------------------------------
@@ -200,11 +255,13 @@ TCut selection_TCut( bool highpt ){
   TCut njets4("npfjets >= 4");
   TCut zveto("passz == 0");
   TCut zpass("dilep.mass()>76 && dilep.mass()<106");
+  TCut met100("pfmet > 100");
   TCut met50("pfmet > 50");
   TCut met30("pfmet > 30");
   TCut ht100("htpf > 100");
   TCut ht200("htpf > 200");
   TCut ht250("htpf > 250");
+  TCut ht300("htpf > 300");
   TCut pt2020("lep1.pt()>20 && lep2.pt()>20");
   TCut pt2010("lep1.pt()>20 && lep2.pt()>10");
   TCut pt1010("lep1.pt()>10 && lep2.pt()>10");
@@ -219,9 +276,18 @@ TCut selection_TCut( bool highpt ){
   TCut lep2tight("lep2.pt()>10 || isont2<0.15");
   TCut goodrun("json==1");
   TCut hbhe("hbhe == 1");
+  TCut nbtags1("nbtags > 0");
+  TCut nbtags2("nbtags > 1");
 
   TCut highptsel = zveto + njets2 + met50 + ht100 + pt2010;
-  TCut lowptsel  = zveto + njets2 + met50 + ht250 + pt105 + !pt2010 + lep2tight;
+  TCut lowptsel  = zveto + njets2 + met50 + ht200 + pt105 + !pt2010 + lep2tight;
+
+  //TCut lowptsel  = zveto + njets2 + met50 + ht200 + pt1010 + !pt2010 + lep2tight;
+  //TCut sigyht("y>14 && htpf>300");
+  //TCut sigmetht("pfmet>290 && ht>300");
+  //highptsel = highptsel + sigyht;
+  //highptsel = highptsel + sigmetht;
+  //TCut highptsel = zveto + njets2 + pt2020 +met30;
 
   //TCut highptsel = zpass + pt2020;
   //TCut highptsel = zveto + njets2 + met30 + pt2020 + "nbtags>0";
@@ -271,15 +337,16 @@ TCut selection_TCut( bool highpt ){
 
 TCut weight_TCut(){
 
-  //TCut weight("weight * ndavtxweight * (5.53/191.)");
-  TCut weight("weight * ndavtxweight");
+  //TCut weight("weight * ndavtxweight * (1000./191.)");
+  //TCut weight("weight * ndavtxweight");
   //TCut weight("weight*(186./43.)*1.17*ndavtxweight");
   //TCut weight("weight");
-  //TCut weight("1");
+  TCut weight("1");
 
   cout << "Using weight            : " << weight.GetTitle() << endl;
   return weight;
 }
+
 
 void HBHE( char* path ){
 
@@ -1043,6 +1110,213 @@ void printYieldTable( char* path , bool latex = false ){
 }
 
 
+void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
+
+  //------------------------
+  // setup
+  //------------------------
+
+  string sigregion = "y_ht";
+  //string sigregion = "met_ht";
+  float metcut = 175.;
+
+  int   nbinsx = 30;
+  int   nbinsy = 30;
+  float xmax   = 3000.;
+  float ymax   = 60.;
+
+  cout << "Signal region : " << sigregion << endl;
+
+  bool isData = (sample == "data");
+
+  gROOT->Reset();
+  deleteHistos();
+
+  bool highpt = false;
+  if( TString(path).Contains("highpt") ) highpt = true;
+
+  initialize(path);
+  initSymbols(latex);
+  
+  TCut sel    = selection_TCut(highpt);
+  //TCut weight = weight_TCut();
+  TCut weight = "1";
+
+  TChain *ch = new TChain();
+
+  if     ( sample == "data"     )    ch = data;
+  else if( sample == "ttpowheg" )    ch = ttpowheg;
+  else if( sample == "ttall"    )    ch = ttall;
+  else{
+    cout << "Unrecognized sample " << sample << ", quitting" << endl;
+    exit(0);
+  }
+
+  //------------------------------
+  // define regions in ABCD plane
+  //------------------------------
+  
+  float x1=125;
+  if( !highpt ) x1 = 200;
+  float x2=300;
+  float x3=300;
+  float x4=xmax;
+  
+  float y1 = 4.5;
+  float y2 = 8.5;
+  float y3 = 8.5;
+  float y4 = ymax;
+  
+  TCut ABCD(Form("htpf>%.0f && y>%.1f",x1,y1));
+  TCut A(Form("htpf>%.0f && htpf<%.0f && y>%.1f",x1,x2,y3));
+  TCut B(Form("htpf>%.0f && htpf<%.0f && y>%.1f && y<%.1f",x1,x2,y1,y2));
+  TCut C(Form("htpf>%.0f && y>%.1f && y<%.1f",x3,y1,y2));
+  TCut D(Form("htpf>%.0f && y>%.1f",x3,y3));
+  TCut lowx(Form("htpf>%.0f && htpf<%.0f && y>%.1f",x1,x2,y1));
+  TCut lowy(Form("y>%.0f && y<%.0f && htpf>%.0f",y1,y2,x1));
+
+  TCut sig;
+  if     ( sigregion == "y_ht"   ) sig = D;
+  else if( sigregion == "met_ht" ) sig = TCut(Form("htpf>%.0f && pfmet>%.0f",x3,metcut));
+  
+  cout << endl;
+  cout << "Region ABCD : " << ABCD.GetTitle() << endl;
+  cout << "Region A    : " << A.GetTitle() << endl;
+  cout << "Region B    : " << B.GetTitle() << endl;
+  cout << "Region C    : " << C.GetTitle() << endl;
+  cout << "Region D    : " << D.GetTitle() << endl;
+  cout << "Low x       : " << lowx.GetTitle() << endl;
+  cout << "Low y       : " << lowy.GetTitle() << endl;
+  cout << "Sig region  : " << sig.GetTitle() << endl;
+  cout << endl;
+
+  //------------------------
+  // fill histos
+  //------------------------
+
+  TH2F* habcd  = new TH2F( "habcd" , "habcd" , nbinsx , 0 , xmax , nbinsy , 0 , ymax ); 
+  TH1F* hx     = new TH1F( "hx"    , "hx"    , nbinsx , 0 , xmax );
+  TH1F* hy     = new TH1F( "hy"    , "hy"    , nbinsy , 0 , ymax );
+  TH1F* hxnew  = new TH1F( "hxnew" , "hxnew" , nbinsx , 0 , xmax );
+  TH1F* hynew  = new TH1F( "hynew" , "hynew" , nbinsy , 0 , ymax );
+
+  habcd->Sumw2();
+  hx->Sumw2();
+  hy->Sumw2();
+  hxnew->Sumw2();
+  hynew->Sumw2();
+
+  ch->Draw(Form("min(y,%.1f):min(htpf,%.0f) >> habcd" , ymax , xmax ) , (sel)           * weight);
+  ch->Draw(Form("min(htpf,%.0f)             >> hx"    , xmax        ) , (sel+lowy+!sig) * weight);
+  ch->Draw(Form("min(y,%.1f)                >> hy"    , ymax        ) , (sel+lowx+!sig) * weight);
+  //ch->Draw("htpf>>hx"      ,(sel+lowy) * weight);
+  //ch->Draw("y>>hy"         ,(sel+lowx) * weight);
+
+  float ncontrol = ch->GetEntries(sel+ABCD);
+  float nsig  = ch->GetEntries(sel+sig);
+  ncontrol -= nsig;
+
+  //---------------------
+  // draw stuff
+  //---------------------
+
+  TCanvas *abcd_can = new TCanvas();
+  abcd_can->cd();
+
+  habcd->SetMarkerColor(2);
+  habcd->SetMarkerSize(0.8);
+  habcd->GetYaxis()->SetTitle("y [ #sqrt{GeV} ]");
+  habcd->GetYaxis()->SetTitleOffset(1);
+  habcd->GetXaxis()->SetTitle("H_{T} [ GeV ]");
+  habcd->Draw();
+  //habcd->Draw("box");
+  //habcd->SetLineColor(4);
+  //habcd->SetMarkerColor(0);
+  //habcd->SetFillColor(0);
+
+  TLatex *text=new TLatex();
+  text->SetTextSize(0.05);
+  text->SetTextColor(1);
+    
+  drawSquare(x1,y1,x2,y2);
+  drawSquare(x3,y1,x4,y2);
+  drawSquare(x1,y3,x2,y4);
+  drawSquare(x3,y3,x4,y4);
+  
+  text->DrawLatex(x1+50,y1+1.5,"B");
+  text->DrawLatex(x1+50,y3+10,"A");
+  text->DrawLatex(x3+50,y1+1.5,"C");
+  text->DrawLatex(x3+50,y3+10,"D");
+
+  //-----------------------------------------
+  // sample from templates, get prediction
+  //-----------------------------------------
+
+  const unsigned int npoints = 100000;
+
+  float nfail  = 0.;
+  float npass = 0.;
+
+  for( unsigned int i = 0 ; i < npoints ; i++ ){
+
+    float ht = hx->GetRandom();
+    float y  = hy->GetRandom();
+    float met = y * sqrt(ht);
+    
+    hxnew->Fill(ht);
+    hynew->Fill(y);
+
+    if( sigregion == "y_ht" ){
+      if( ht > x3 && y > y3 ) npass++;
+      else                    nfail++;
+    }
+
+    else if( sigregion == "met_ht" ){
+      if( ht > x3 && met > metcut ) npass++;
+      else                    nfail++;
+    }
+  }
+
+  float npred = (npass/nfail)*ncontrol;
+
+  cout << endl;
+  cout << ncontrol      << " events in control regions" << endl;
+  cout << nsig          << " events in signal region"   << endl;
+  cout << nsig/ncontrol << " eff sig/control"           << endl;
+
+  cout << endl;
+  cout << "eff " << npass << " / " << nfail << " " << npass/nfail << endl;
+  cout << "prediction " << npred << endl;
+ 
+  cout << endl;
+  cout << "observed  : " << nsig         << endl;
+  cout << "predicted : " << npred        << endl;
+  cout << "o/p       : " << nsig / npred << endl;
+
+  TCanvas *projcan = new TCanvas("projcan","",1200,600);
+  projcan->Divide(2,1);
+
+  projcan->cd(1);
+  gPad->SetLogy();
+  hx->Draw("hist");
+  hx->GetXaxis()->SetTitle("H_{T} (GeV)");
+  hxnew->Scale( hx->Integral() / hxnew->Integral() );
+  hxnew->SetLineColor(2);
+  hxnew->SetMarkerColor(2);
+  hxnew->Draw("sameE1");
+
+  projcan->cd(2);
+  gPad->SetLogy();
+  hy->Draw("hist");
+  hy->GetXaxis()->SetTitle("y (GeV^{1/2})");
+  hynew->Scale( hy->Integral() / hynew->Integral() );
+  hynew->SetLineColor(2);
+  hynew->SetMarkerColor(2);
+  hynew->Draw("sameE1");
+
+}
+
+
 void njets( char* path , bool printplot = false ){
 
   deleteHistos();
@@ -1698,13 +1972,13 @@ void makePlots( char* path , bool printgif = false ){
   if( highpt ){
     vars.push_back("pfmet");     xt.push_back("pfmet (GeV)");      n.push_back(20); xi.push_back(0.); xf.push_back(200.);
     //vars.push_back("y");         xt.push_back("y #equiv MET  /  #sqrt{H_{T}} (GeV^{1/2})");    n.push_back(20); xi.push_back(0.); xf.push_back(20.);
-    //vars.push_back("htpf");      xt.push_back("H_{T} (GeV)");      n.push_back(20); xi.push_back(0.); xf.push_back(1000.);
-    //vars.push_back("dilmass");   xt.push_back("M(ll) (GeV)");      n.push_back(60); xi.push_back(1.); xf.push_back(301.);
+    vars.push_back("htpf");      xt.push_back("H_{T} (GeV)");      n.push_back(20); xi.push_back(0.); xf.push_back(1000.);
+    vars.push_back("dilmass");   xt.push_back("M(ll) (GeV)");      n.push_back(60); xi.push_back(1.); xf.push_back(301.);
     //vars.push_back("lep1.eta()");   xt.push_back("#eta(lep1)");      n.push_back(50); xi.push_back(-3.); xf.push_back(3.);
     //vars.push_back("lep2.eta()");   xt.push_back("#eta(lep2)");      n.push_back(50); xi.push_back(-3.); xf.push_back(3.);
     //vars.push_back("lep1.pt()");   xt.push_back("pt(lep1)");         n.push_back(50); xi.push_back(0.); xf.push_back(100.);
     //vars.push_back("lep2.pt()");   xt.push_back("pt(lep2)");         n.push_back(50); xi.push_back(0.); xf.push_back(100.);
-    //vars.push_back("dilpt");     xt.push_back("p_{T}(ll) (GeV)");  n.push_back(20); xi.push_back(0.); xf.push_back(300.);
+    vars.push_back("dilpt");     xt.push_back("p_{T}(ll) (GeV)");  n.push_back(20); xi.push_back(0.); xf.push_back(300.);
     //vars.push_back("npfjets");   xt.push_back("njets");            n.push_back(10); xi.push_back(0.); xf.push_back(10.);
     //vars.push_back("ndavtx");      xt.push_back("nDAVertices");      n.push_back(20); xi.push_back(0.); xf.push_back(20.);
     //vars.push_back("htoffset");  xt.push_back("L1Offset-H_{T} (GeV)");    n.push_back(10); xi.push_back(0.); xf.push_back(1000.);
@@ -1725,8 +1999,8 @@ void makePlots( char* path , bool printgif = false ){
   TPad* legpad[nvars];
   TPad* plotpad[nvars];
 
-  bool residual = true;
-  bool combine4 = false;
+  bool residual = false;
+  bool combine4 = true;
   int canCounter = -1;
   
   for( unsigned int ivar = 0 ; ivar < nvars ; ++ivar ){     
@@ -1768,6 +2042,268 @@ void makePlots( char* path , bool printgif = false ){
 }
 
 
+void printOFRow( char* sample, float nee, float nmm, float nem, float eeerr, float mmerr, float emerr ){
+
+  //float tot    = nee + nmm + nem;
+  //float toterr = sqrt( nee*nee + nmm*nmm + nem*nem );
+  
+  stringstream see;
+  stringstream smm;
+  stringstream sem;
+  stringstream stot;
+    
+  if( sample == "Observed"){
+    see     << nee;
+    smm     << nmm;
+    sem     << nem;
+    //stot    << tot;
+  }
+  else{
+    see     << Form("%.1f %s %.1f",  nee  , pm , eeerr  );
+    smm     << Form("%.1f %s %.1f",  nmm  , pm , mmerr  );
+    if( nem > -0.1 ) sem     << Form("%.1f %s %.1f",  nem  , pm , emerr  );
+    else             sem     << "";
+    //stot    << Form("%.1f %s %.1f",  tot , pm , toterr );
+  }
+  
+  cout  << delimstart << setw(width1) << sample         << setw(width2)
+        << delim      << setw(width1) << see.str()      << setw(width2)
+        << delim      << setw(width1) << smm.str()      << setw(width2)
+        << delim      << setw(width1) << sem.str()      << setw(width2)
+      //<< delim      << setw(width1) << stot.str()     << setw(width2)  
+	<< delimend << endl;
+
+}
+
+void printOFHeader(){
+  cout  << delimstart << setw(width1) << ""      << setw(width2)
+        << delim      << setw(width1) << ee      << setw(width2)
+        << delim      << setw(width1) << mm      << setw(width2)
+        << delim      << setw(width1) << em      << setw(width2)
+      //<< delim      << setw(width1) << "total" << setw(width2)  
+	<< delimend << endl;
+}
+
+
+void doOFSubtraction( char* path , string sample = "data", bool latex = false ){
+
+  bool isData = sample == "data";
+
+  //----------------------
+  // R=eff(mu)/eff(e)
+  //----------------------
+
+  const float R10 = 1.28;
+  const float R20 = 1.08;
+
+  //----------------------
+  // fake yields
+  //----------------------
+
+  float nee1010fake = 0.00;
+  float nmm1010fake = 0.37;
+  float nem1010fake = 0.89;
+    
+  float nee105fake  = 0.00;
+  float nmm105fake  = 1.71;
+  float nem105fake  = 1.07;
+
+  //----------------------
+  // trigger efficiencies
+  //----------------------
+  
+  float trigee = 1.00;
+  float trigmm = 0.90;
+  float trigem = 0.95;
+
+  if( !isData ){
+    nee1010fake = 0.;
+    nmm1010fake = 0.;
+    nem1010fake = 0.;
+
+    nee105fake = 0.;
+    nmm105fake = 0.;
+    nem105fake = 0.;
+
+    trigee = 1;
+    trigmm = 1;
+    trigem = 1;
+  }
+
+
+  gROOT->Reset();
+  deleteHistos();
+
+  bool highpt = false;
+  if( TString(path).Contains("highpt") ) highpt = true;
+
+  initialize(path);
+  initSymbols(latex);
+  linelength  = (width1+width2)*4+1;
+   
+  TCut sel    = selection_TCut(highpt);
+  TCut weight = weight_TCut();
+
+  TCut eetype("leptype==0");
+  TCut mmtype("leptype==1");
+  TCut emtype("leptype==2");
+  TCut pt2010("lep1.pt()>20 && lep2.pt()>10");
+  TCut pt1010("lep1.pt()>10 && lep2.pt()>10");
+  TCut pt105 ("lep1.pt()>10 && lep2.pt()>5 ");
+
+  TChain *ch = new TChain();
+  TCut myweight;
+
+  if( sample == "data" ){
+    cout << "Doing data" << endl;
+    ch = data;
+    myweight = TCut("1");
+  }
+  else if( sample == "ttall" ){
+    cout << "Doing ttbar madgraph" << endl;
+    ch = ttall;
+    myweight = weight;
+  }
+  else if( sample == "ttpowheg" ){
+    cout << "Doing ttbar madgraph" << endl;
+    ch = ttpowheg;
+    myweight = weight;
+  }
+  else{
+    cout << "Unrecognized sample " << sample << ", quitting" << endl;
+    exit(0);
+  }
+
+  TH1F* htemp = new TH1F("htemp","htemp",1,0,1);
+  htemp->Sumw2();
+  
+  float nee1010 = ch->GetEntries(sel+eetype+pt1010+!pt2010);
+  float nmm1010 = ch->GetEntries(sel+mmtype+pt1010+!pt2010);
+  float nem1010 = ch->GetEntries(sel+emtype+pt1010+!pt2010);
+
+  float nee105 = ch->GetEntries(sel+eetype+pt105+!pt1010);
+  float nmm105 = ch->GetEntries(sel+mmtype+pt105+!pt1010);
+  float nem105 = ch->GetEntries(sel+emtype+pt105+!pt1010);
+
+  if( isData ){
+    TCut fakeweight("weight");
+
+    TCanvas *ctemp = new TCanvas();
+    ctemp->cd();
+
+    datasf->Draw("0.5>>htemp",(sel+eetype+pt1010+!pt2010)*fakeweight);
+    nee1010fake = htemp->Integral();
+
+    datasf->Draw("0.5>>htemp",(sel+mmtype+pt1010+!pt2010)*fakeweight);
+    nmm1010fake = htemp->Integral();
+
+    datasf->Draw("0.5>>htemp",(sel+emtype+pt1010+!pt2010)*fakeweight);
+    nem1010fake = htemp->Integral();
+
+    datasf->Draw("0.5>>htemp",(sel+eetype+pt105+!pt1010)*fakeweight);
+    nee105fake = htemp->Integral();
+
+    datasf->Draw("0.5>>htemp",(sel+mmtype+pt105+!pt1010)*fakeweight);
+    nmm105fake = htemp->Integral();
+
+    datasf->Draw("0.5>>htemp",(sel+emtype+pt105+!pt1010)*fakeweight);
+    nem105fake = htemp->Integral();
+
+    delete ctemp;
+  }
+
+
+  cout << endl;
+  cout << "R(10-20)    : " << R10 << endl;
+  cout << "R(>20)      : " << R20 << endl;
+
+  cout << endl;
+  cout << "N(ee) 10,10 : " << nee1010 << endl;
+  cout << "N(mm) 10,10 : " << nmm1010 << endl;
+  cout << "N(em) 10,10 : " << nem1010 << endl;
+
+  cout << endl;
+  cout << "N(ee) 10,5  : " << nee105 << endl;
+  cout << "N(mm) 10,5  : " << nmm105 << endl;
+  cout << "N(em) 10,5  : " << nem105 << endl;
+
+  cout << endl;
+  cout << "N(ee) fake 10,10 : " << nee1010fake << endl;
+  cout << "N(mm) fake 10,10 : " << nmm1010fake << endl;
+  cout << "N(em) fake 10,10 : " << nem1010fake << endl;
+
+  cout << endl;
+  cout << "N(ee) fake 10,5  : " << nee105fake << endl;
+  cout << "N(mm) fake 10,5  : " << nmm105fake << endl;
+  cout << "N(em) fake 10,5  : " << nem105fake << endl;
+    
+  float predee1010 = (0.5/R10) * (nem1010-nem1010fake) * (trigee/trigem);
+  float predmm1010 = (0.5*R10) * (nem1010-nem1010fake) * (trigmm/trigem);
+  float predmm105  = R20       * (nem105-nem105fake)   * (trigmm/trigem);
+
+  float predee1010err = (0.5/R10) * sqrt(nem1010+pow(0.5*nem1010fake,2)) * (trigee/trigem);
+  float predmm1010err = (0.5*R10) * sqrt(nem1010+pow(0.5*nem1010fake,2)) * (trigmm/trigem);
+  float predmm105err  = R20       * sqrt(nem105 +pow(0.5*nem105fake,2))  * (trigmm/trigem);
+
+  cout << endl;
+  cout << "N(ee) pred 10,10 : " << predee1010 << endl;
+  cout << "N(mm) pred 10,10 : " << predmm1010 << endl;
+  cout << "N(mm) pred 10,5  : " << predmm105  << endl;
+
+  // cout << endl;
+  // cout << "ee obs         : " << nee1010    << endl;
+  // cout << "ee fake        : " << nee1010fake << endl;
+  // cout << "ee OF          : " << Form("%.1f +/- %.1f",predee1010,predee1010err) << endl;
+  // cout << "ee tot pred    : " << Form("%.1f +/- %.1f",predee1010+nee1010fake,predee1010err) << endl;
+
+  // cout << endl;
+  // cout << "mm obs         : " << nmm105+nmm1010 << endl;
+  // cout << "mm fake        : " << nmm105fake+nmm1010fake << endl;
+  // cout << "mm OF          : " << Form("%.1f +/- %.1f",predmmtot,predmmtoterr)  << endl;
+  // cout << "mm tot pred    : " << Form("%.1f +/- %.1f",predmmtot+nmm105fake+nmm1010fake,predmmtoterr)  << endl;
+
+  // cout << endl;
+  // cout << "mm obs  10,10  : " << nmm1010    << endl;
+  // cout << "mm pred 10,10  : " << Form("%.1f +/- %.1f",predmm1010,predmm1010err) << endl;
+
+  // cout << endl;
+  // cout << "mm obs  10,5   : " << nmm105     << endl;
+  // cout << "mm pred 10,5   : " << Form("%.1f +/- %.1f",predmm105,predmm105err)  << endl;
+
+  float neefake = nee105fake + nee1010fake;
+  float nmmfake = nmm105fake + nmm1010fake;
+  float nemfake = nem105fake + nem1010fake;
+
+  float predeetot  = predee1010;
+  float predmmtot  = predmm1010 + predmm105;
+
+  float predeetoterr  = predee1010err;
+  float predmmtoterr  = sqrt( pow(predmm1010err,2) + pow(predmm105err,2) );
+
+  cout << endl << endl;
+
+  printLine(latex);
+  printOFHeader();
+
+  if( isData ){
+    printLine(latex);
+    printOFRow( "Fakes"    , neefake    , nmmfake   , nemfake , 0.5 * neefake , 0.5 * nmmfake , 0.5 * nemfake );
+    
+    printOFRow( "OF pred"  , predeetot , predmmtot , -1       , predeetoterr , predmmtoterr  , -1 );
+    
+  }
+
+  printLine(latex);
+  printOFRow( "tot pred" , predeetot+neefake , predmmtot+nmmfake , -1 , 
+	      sqrt(pow(predeetoterr,2)+pow(0.5*neefake,2)) , sqrt(pow(predmmtoterr,2)+pow(0.5*nmmfake,2)) , -1 );
+
+  printLine(latex);
+  printOFRow( "Observed" , nee105 + nee1010 , nmm105+nmm1010 , nem105+nem1010 , 0 , 0 , 0 );
+
+  printLine(latex);
+  cout << endl << endl;
+
+}
 
 void makeStandardPlots( char* path , bool sigregion = false ){
 
