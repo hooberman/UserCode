@@ -35,27 +35,38 @@ signal regions  thus provides a data driven prediction for the \Z plus jets yiel
 The MET templates are derived from a set of photon triggered samples. 
 The Njet binning used is 2 jets and $\ge$ 3 jets. 
 The sum jet \pt binning is defined by the boundaries {0, 30, 60, 90, 120, 150, 250, 5000}~GeV.
-The photon triggers, and the ranges of \Z \pt for which they are selected, are (the triggers with ``v1'' in their name appear in later runs):
+The photon triggers, and the ranges of \Z \pt for which they are selected, are (where the ``\verb=v*='' stands for a verion number which increments with trigger menu changes):
 
 \begin{itemize}
-\item \verb=HLT_Photon20_Cleaned_L1R= (\Z \pt $<$ 32~GeV)
-\item \verb=HLT_Photon30_Cleaned_L1R= (32 GeV $<$ \Z \pt $<$ 52~GeV)
-\item \verb=HLT_Photon50_Cleaned_L1R= (52 GeV $<$ \Z \pt $<$ 72~GeV)
-\item \verb=HLT_Photon50_Cleaned_L1R_v1= (52 GeV $<$ \Z \pt $<$ 72~GeV)
-\item \verb=HLT_Photon70_Cleaned_L1R_v1= (\Z \pt $>$ 72~GeV)
+\item \verb=HLT_Photon20_CaloIdVL_IsoL_v*= (\Z \pt $<$ 33~GeV)
+\item \verb=HLT_Photon30_CaloIdVL_IsoL_v*= (33 GeV $<$ \Z \pt $<$ 55~GeV)
+\item \verb=HLT_Photon50_CaloIdVL_IsoL_v*= (55 GeV $<$ \Z \pt $<$ 81~GeV)
+\item \verb=HLT_Photon75_CaloIdVL_IsoL_v*= (\Z \pt $>$ 81~GeV)
 \end{itemize}
+
+The HLT requirements on the above triggers are \cite{ref:eghlt}:
+
+\begin{itemize}
+\item CaloIdVL: \\
+  H/E $<$ 0.15 (0.1), $\sigma_{i\eta i\eta} <$ 0.024 (0.04) in barrel (endcap)
+\item IsoL: \\
+  Ecal ET $<$ 5.5 + 0.012*ET, %\\
+  Hcal ET $<$ 3.5 + 0.005*ET, %\\
+  Trk PT $<$ 3.5 + 0.002*ET 
+\end{itemize}
+
+
+%last year for the thresholds we used trigger value +2. This year I observe a bit slower turn-on:
+
+%  //notes on turn on curves from drawing photon pts from data babies
+%  //the 20 trig is nearly fully efficient at 21, but use 22 to be conservative
+%  //the 30 trig is nearly fully efficient at 32, but use 33 to be conservative
+%  //the 50 trig is nearly fully efficient at 54, but use 55 to be conservative
+%  //the 75 trig is nearly fully efficient at 80, but use 81 to be conservative
 
 We show all the templates used in App.~\ref{sec:appendix_templates}.
 
 %The prediction is then formed by selecting the photon trigger based on the \pt of the \Z in the event which is being predicted
-%\begin{figure}[h]
-%  \begin{center}
-%    \resizebox{0.75\linewidth}{!}{\includegraphics{plots/alltemplates.png}}
-%    \caption{    \label{fig:templates} The templates for pfMET in Njet = 2 (left column), and Njet $\ge$ 3 (right column) in the sum jet \pt ranges printed on the plots.
-%      PhotonJet MC is indicated by the solid histogram, data is indicated by the points with error bars. The number of entries in each bin 
-%      are shown for MC (blue) and data (red).}
-%  \end{center}
-%\end{figure}
 
 %In order to select a photon sample whose \pt distribution matches the distribution of \Z \pt
 % in our preselection, a combination of photon triggers must be used (see below). 

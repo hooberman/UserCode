@@ -24,7 +24,12 @@
 \newcommand{\met}{\mbox{$\raisebox{.3ex}{$\not$}E_T$\hspace*{0.5ex}}} 
 
 %The lumi so that if it changes it's easier to update
-\newcommand{\lumi}{34.0~pb$^{-1}$}
+\newcommand{\lumi}{XX~pb$^{-1}$}
+
+%loose(tight) signal region met cut
+\newcommand{\signalmetl}{100}
+\newcommand{\signalmett}{200}
+
 
 \begin{document}
 
@@ -49,9 +54,9 @@
   \begin{abstract}
 
 We search for new physics in the dilepton final state of \Z plus two or more jets plus missing transverse 
-energy (MET) in the full dataset taken at $\sqrt{s}$ = 7~TeV in 2010 (\lumi). 
+energy (MET) in the $\sqrt{s}$ = 7~TeV data in 2011 (\lumi). 
 The \Z boson is reconstructed in its decay to $e^+e^-$ or $\mu^+\mu^-$, and
-the search regions are defined as MET $\ge$ 60~GeV (loose signal region) and MET $\ge$ 120~GeV (tight signal region). 
+the search regions are defined as MET $\ge$ \signalmetl~GeV (loose signal region) and MET $\ge$ \signalmett~GeV (tight signal region). 
 We use data driven techniques to predict the standard model background in these
 search regions. 
 Contributions from Drell-Yan production combined with detector mis-measurements that produce fake MET are modeled via MET templates based on photon plus jets events. 
@@ -66,11 +71,11 @@ flavors are uncorrelated, are modeled via $e^\pm\mu^\mp$ subtraction.
 \setcounter{page}{2}%JPP
 \newpage
 \tableofcontents
+
 \newpage
 \linenumbers
 \input{introduction.tex}
 \input{datasets.tex}
-%\input{triggers.tex}
 \input{eventsel.tex}
 \input{yields.tex}
 \input{sigregion.tex}
@@ -79,10 +84,19 @@ flavors are uncorrelated, are modeled via $e^\pm\mu^\mp$ subtraction.
 \input{topbkg.tex}
 \input{otherBG}
 \input{results.tex}
+
+%syst on bkgnd preds
 \input{systematics.tex}
+
+%UL on non-SM yeild
 \input{upperlimit}
+
+%Additional Information for Model Testing
 \input{outreach}
+
+%model-dependent limits
 \input{models}
+
 \input{conclusion}
 
 \clearpage

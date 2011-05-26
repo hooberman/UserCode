@@ -5,18 +5,17 @@
 \subsection{Triggers}
 \label{sec:trigSel}
 
-For data, we use a cocktail of unprescaled single 
-and double lepton triggers. An event
-in the $ee$ final state is required to pass at least one
-single or double electron trigger, a
-$\mu\mu$ event is required to pass at least one single 
-or double muon trigger, while an $e\mu$ event
-is required to pass at least one single muon, single electron, 
-or $e-\mu$ cross trigger. ($e\mu$ events are retained in a control sample used to estimate the ttbar contribution as described in Section~\ref{sec:topbkg})
+For data, we use a cocktail of unprescaled %single and %no more sinlges in 2011
+double lepton triggers. An event
+in the $ee$ final state is required to pass at least one %single or 
+double electron trigger, a
+$\mu\mu$ event is required to pass at least one %single or 
+double muon trigger, while an $e\mu$ event is required to pass at least one %single muon, single electron, or 
+$e-\mu$ cross trigger. 
+$e\mu$ events are retained in a control sample used to estimate the ttbar contribution as described in Section~\ref{sec:topbkg}.
 
 The detailed list of triggers used for selecting dilepton events can be found in Appendix~\ref{app:trigsel},
-and we evaluate the efficiency using the same trigger model discussed in~\cite{ref:GenericOS}. Since we require
-2 leptons with \pt $>$ 20 GeV, the trigger efficiency is very close to 1.
+and we evaluate the efficiency using the same trigger model discussed in~\cite{ref:GenericOS}.
 
 Triggers used for creation of photon templates are listed in Section~\ref{sec:templates}.
 
@@ -43,18 +42,14 @@ These event selections are implemented following the recommendation of PVT.
  
   \end{itemize}
 
-\item The following hadronic calorimeter cleaning requirements are applied:
+%we are apparently no longer using these...
 
-%[[Should we list these all?]]
-%[[fkw: if we use them, we need to list them, I think. If nothing else then to have a record for ourselves.]]
-%Start this, but I don't know what they all are
-%all but three are commented out, or have a 999 or 9999 value, which is not a cut
-
-  \begin{itemize} 
-  \item minE2 Over 10TS $\ge$ 0.7
-  \item max HPD Hits $<$ 17
-  \item maxZeros $<$ 10
-  \end{itemize}
+%\item The following hadronic calorimeter cleaning requirements are applied:
+%  \begin{itemize} 
+%  \item minE2 Over 10TS $\ge$ 0.7
+%  \item max HPD Hits $<$ 17
+%  \item maxZeros $<$ 10
+%  \end{itemize}
 
 %\begin{verbatim}
 %      if(cms2.hcalnoise_minE2Over10TS()<0.7) return false;
@@ -70,6 +65,7 @@ These event selections are implemented following the recommendation of PVT.
 
 \end{itemize}
 
+
 \subsection{Lepton Selection}
 
 Because Z $\rightarrow l^+l^-$ (where $l$ is an electron or muon) is a final state with very little background after a Z mass requirement is applied to the leptons,
@@ -77,29 +73,34 @@ Because Z $\rightarrow l^+l^-$ (where $l$ is an electron or muon) is a final sta
  Therefore two same flavor, opposite sign leptons passing the ID described below are required in each event. 
 %Z $\rightarrow \tau^+\tau^-$ is not as clean a signature, even if both taus decay leptonically, so we do not include such events in this analysis.
 
-%%%added now: {\bf modify Z mass window? (10 GeV). Needs to be done consistently.}
-%plots still need to be updated
-
-
 \begin{itemize}
 \item \pt $> 20$~GeV
 \item Opposite sign, same flavor ($e^\pm\mu^\mp$ events are retained in a control sample used to estimate the ttbar contribution)
-\item Z mass: between 81 and 101 GeV
-\item The two leptons are required to be from the same primary vertex within $|\delta z|<1$~cm
+\item Dilepton invariant mass is consistent with the Z mass: between 81 and 101 GeV
+
+%WE REMOVED THIS BUT...
+%\item The two leptons are required to be from the same primary vertex within $|\delta z|<1$~cm
+
 \item Electron ID
   \begin{itemize}
   \item $|\eta| < 2.5$
-  \item VBTF 90 ID from the Egamma group\cite{ref:vbtf}
-  \item $|d_0| <0.04$ (with respect to the beamspot)
+  \item VBTF 90 ID from the Egamma group\cite{ref:vbtf}, 
+	tightened to match HLT requirements CaloIdT+TrkIdVL which includes: \cite{ref:eghlt}
+	\begin{itemize}
+	\item H/E $<$ 0.1 (0.075), $\sigma_{i\eta i\eta} <$ 0.011 (0.031) in barrel (endcap)
+	\item d$\eta <$ 0.01 (0.01), d$\phi <$ 0.15 (0.1) in barrel (endcap)
+	\end{itemize}
+  \item $|d_0| <0.04$ (with respect to the nearest primary vertex)
+  \item $|d_z| <1.0$ (with respect to the nearest primary vertex)
   \item Isolation: The sum of the \pt of tracks and the transverse energy in both calorimeters in a cone of $dR =$ 0.3 divided by the \pt of the electron is required to be less than 0.15. In the barrel only, a pedestal of 1 GeV is subtracted from the ECAL energy.
   \item No muon is allowed to be within $dR < $0.1 of the electron
   \item No more than one missing inner tracker hit
-  \item Conversion distance $<$ 0.02, and $\Delta\cot\theta < $0.02\cite{ref:conv}
+  \item Conversion rejection (cite MIT)
+  %\item Conversion distance $<$ 0.02, and $\Delta\cot\theta < $0.02\cite{ref:conv}
   \item Supercluster $E_T >$ 10~GeV
-  \item The electron is seeded by the ECAL clustering algorithm
-  \item The electron is required to be matched to a particle flow jet which satisfies (pfjet \pt - photon \pt) $>$ -5~GeV
-	%new, may not stay in rereco
-  %\item A scale correction of (1\%,3\%) is applied to the \pt for electrons in the (EB,EE) 
+	%removed both below. Don't know why we removed the first, probably just not necessary. Second is very rare this year and not so necessary. It's worth checking again when we get more data.
+	%\item The electron is seeded by the ECAL clustering algorithm
+	%\item The electron is required to be matched to a particle flow jet which satisfies (pfjet \pt - photon \pt) $>$ -5~GeV
   \end{itemize}
 
 %static const cuts_t electronSelection_el_OSV1 =
@@ -126,22 +127,23 @@ Because Z $\rightarrow l^+l^-$ (where $l$ is an electron or muon) is a final sta
 
 \item Muon ID
   \begin{itemize}
-  \item muon $|\eta| < 2.4$
+  \item Muon $|\eta| < 2.4$
   \item Muon global fit is required to have $\chi^2$ divided by number of degrees of freedom less than 10
   \item Required to be both global and tracker
-  \item Track is required to have at least 11 hits
+  \item Silicon track is required to have at least 11 hits
   \item The ECAL energy in the calorimeter tower traversed by the muon cannot exceed 4 GeV
   \item The HCAL energy in the calorimeter tower traversed by the muon cannot exceed 6 GeV
   \item Must have at least one stand-alone hit
   \item The $d_0$ with respect to the beamspot is $<$ 0.02 cm
-  \item Relative transverse momentum error of track used for muon fit is  $\delta(p_{T})/p_{T} < $ 0.1
+  \item Relative transverse momentum error of silicon track used for muon fit is  $\delta(p_{T})/p_{T} < $ 0.1
+  \item The muon is required to be a PF muon whose \pt is no more than 1 GeV different than the reco muon (to ensure consistency with PF MET)
   \item The same isolation requirement is applied as in the electron case (but no pedestal is subtracted from the ECAL energy).
   \end{itemize}
 \item Dilepton Selection
   \begin{itemize}
   \item If more than 1 pair of leptons passing the above selection is present in the event, choose the
     pair with mass closest to $M_{Z}$. These leptons are referred to as the \Z hypothesis leptons.
-  %I think we're removing this
+  %Removed
   %\item The $\Delta\phi$ between each lepton and the MET is required to be less than $\pi$-0.1.
   \end{itemize}
 
@@ -155,6 +157,7 @@ Because Z $\rightarrow l^+l^-$ (where $l$ is an electron or muon) is a final sta
 %          if (cms2.mus_iso_hcalvetoDep().at(index) > 6)       return false; // HCalE < 6 
 %          if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers 
 %          if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot                          
+%	if (!isPFMuon(index,true,1.0))                                           return false; // require muon is pfmuon with same pt
 %       case Nominal:
 %	         isovalue = 0.1;
 
@@ -170,9 +173,12 @@ What is needed are jets that are predominantly electromagnetic, well measured in
 \item \pt $ > 22$ GeV
 \item $|\eta| < 2$
 \item $H/E < 0.1$
-\item There must be a pfjet of \pt $ >$ 10 GeV which passes loose particle flow jet identification requirements matched to the photon within $dR < 0.3$. The matched jet is required to have a neutral electromagnetic energy fraction of at least 70\%.
-\item A jet encompassing a photon has to have energy greater than or equal to that of the photon within its cone. We require that the pfjet \pt matched to the photon satisfy pfjet \pt - photon \pt $>$ -5~GeV. This removes a few cases in which ``overcleaning" of an ECAL recHit generated fake MET. The reasoning is the same in the electron case.
-%{\bf how much do we wanna get into this shit?? }
+\item There must be a pfjet of \pt $ >$ 10 GeV which passes loose particle flow jet identification requirements matched to the photon within $dR < 0.3$. The matched jet is required to have a neutral electromagnetic energy fraction of at least 
+%I'm not sure we've finalized this yet, but I think we've got an indication we want this
+%70\%.
+90\%.
+
+\item A jet encompassing a photon has to have energy greater than or equal to that of the photon within its cone. We require that the pfjet \pt matched to the photon satisfy pfjet \pt - photon \pt $>$ -5~GeV. This removes a few cases in which ``overcleaning" of an ECAL recHit generated fake MET.
 
 \end{itemize}
 
@@ -184,8 +190,9 @@ We use pfMET, henceforth referred to simply as ``MET.''
 
 \begin{itemize}
 \item PF jets
-\item $|\eta| < 2.5$
+\item $|\eta| < 3.0$ % was $2.5$ last year
 \item L2L3 corrected
+\item L1Fastjet corrected to account for pile up
 \item \pt $ > 30$ GeV for Njet counting, \pt $ > 15$ GeV for sum jet \pt counting
 \item For the creation of photon templates, the jet matched to the photon passing the photon selection described above is vetoed
 \item For the dilepton sample, jets are vetoed if they are within $dR < 0.4$ from any lepton \pt $ > 20$~GeV passing analysis selection
