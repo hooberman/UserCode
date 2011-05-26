@@ -38,7 +38,8 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
   if (nFiles == 0) {
     std::cout << "ERROR: expected to read files " 
               << base.c_str() << "  but found none" << std::endl;
-    assert(0);
+    //assert(0);
+    exit(0);
   }
 
   return;
@@ -51,8 +52,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-00-10";
-  const char* jsonfile  = "Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-01-00";
+  const char* jsonfile  = "Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -205,12 +206,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   /*
   //Flags for files to run over
   bool rundata     = 0;
-  bool rundata42   = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runttpowheg = 0;
   bool runttdil    = 0;
   bool runttem     = 0;
@@ -255,12 +255,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+  */  
 
-      
+
   //Flags for files to run over
   bool rundata     = 1;
-  bool rundata42   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -291,16 +290,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLM1      = 1;
   bool runLM2      = 1;
   bool runLM3      = 1;
-  bool runLM4      = 0;
-  bool runLM5      = 0;
-  bool runLM6      = 0;
-  bool runLM7      = 0;
-  bool runLM8      = 0;
-  bool runLM9      = 0;
-  bool runLM10     = 0;
-  bool runLM11     = 0;
-  bool runLM12     = 0;
-  bool runLM13     = 0;
+  bool runLM4      = 1;
+  bool runLM5      = 1;
+  bool runLM6      = 1;
+  bool runLM7      = 1;
+  bool runLM8      = 1;
+  bool runLM9      = 1;
+  bool runLM10     = 1;
+  bool runLM11     = 1;
+  bool runLM12     = 1;
+  bool runLM13     = 1;
   bool runML1      = 0;
   bool runML2      = 0;
   bool runML3      = 0;
@@ -310,7 +309,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+
   
   char* dir = "";
 
@@ -377,7 +376,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtopall = new TChain("Events");
   if (runttall) {
     pickSkimIfExists(chtopall, 
-		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     //"cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple.root",
 		     "TTJets");
   }
 
@@ -398,8 +398,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chttrelval = new TChain("Events");
   if (runttrelval) {
-    pickSkimIfExists(chttrelval, 
-                     "/tas/cms2/RelValProdTTbar_CMSSW_3_8_5-MC_38Y_V12-v1/V03-06-14/ntuple.root",
+    pickSkimIfExists(chttrelval,
+		     "ttbar_relval_3_11.root",
                      "TTJets");
   }
 
@@ -853,20 +853,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  float lumi              = 0.191; 
+  float lumi              = 0.204; 
   bool  calculateTCMET    = false; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
   char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
   char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
-  char* frmodeStrings[2] =  {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
+  char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
   bool doFakeApp          = false;
 
   ossusy_looper::TrigEnum trig;
 
 
   TChain* chdata   = new  TChain("Events");
-  TChain* chdata42 = new  TChain("Events");
 
   for( int pt = 0 ; pt < 2 ; ++pt ){
 
@@ -877,7 +876,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     looper->set_trigger( trig );
 
     chdata->Reset();
-    chdata42->Reset();
   
     if(rundata){
       
@@ -885,47 +883,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	
 	cout << "Doing high-pT dilepton trigger data" << endl;
 
-	//DoubleElectron re-reco
-	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-Apr22ReReco-v2_AOD/V04-01-05/DoubleElectronTriggerSkim/skim*root");
-	
-	//v1 datasets (merged)
-	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
-	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
-	pickSkimIfExists(chdata,"cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
-	
-	//v2 datasets (not merged)
-	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleElectronTriggerSkim_merged/merged*root");
-	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleMuTriggerSkim_merged/merged*root");
-	pickSkimIfExists(chdata,"cms2_data/MuEG_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleElectronTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleMuTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_3_patch1_V04-03-00/MuEG_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-03-00_merged/V04-03-00/merged*root");
 	
       }
       
       else if( trig == ossusy_looper::e_lowpt ){
 	
 	cout << "Doing dilepton-HT trigger data" << endl;
-	
-	pickSkimIfExists(chdata,"cms2_data/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged*root");
-	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged*root");
-	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
-	pickSkimIfExists(chdata,"cms2_data/ElectronHad_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
-      }
-    }
-
-    if(rundata42){
-
-      if( trig == ossusy_looper::e_highpt ){
-	
-	cout << "Doing high-pT dilepton trigger data 42X" << endl;
-
-	pickSkimIfExists(chdata42,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleElectronTriggerSkim/skim*root");
-	pickSkimIfExists(chdata42,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleMuTriggerSkim/skim*root");
-	pickSkimIfExists(chdata42,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_3_patch1_V04-03-00/MuEG_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-03-00_merged/V04-03-00/merged*root");
-
-      }
-      else if( trig == ossusy_looper::e_lowpt ){
-	//cout << "Doing dilepton-HT trigger data"                << endl;
-	cout << "ERROR! currently no low pt 42X data, quitting" << endl;
-	exit(0);
+	cout << "CURRENTLY NO DATA PRESENT!!!!!" << endl;
       }
     }
 
@@ -936,6 +903,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	    for (int zvetoIdx = 0; zvetoIdx < 1; ++zvetoIdx)
 	      {
 		for (int frmodeIdx = 0; frmodeIdx < (2-(1*!doFakeApp)); ++frmodeIdx)
+		//for (int frmodeIdx = 1; frmodeIdx < 2; ++frmodeIdx)
 		  {
                   
 		    ossusy_looper::JetTypeEnum  jetType(jetTypeIdx);
@@ -959,12 +927,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing data" << endl;
 		      hist::color("data", kBlack);
-		    }
-		    if (rundata42) {
-		      cout << "Processing data 42X" << endl;
-		      looper->ScanChain(chdata42,"data42", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing data 42X" << endl;
-		      hist::color("data42", kBlack);
 		    }
 		    if (runDYtot) {
 		      cout << "Processing DY->all" << endl;
