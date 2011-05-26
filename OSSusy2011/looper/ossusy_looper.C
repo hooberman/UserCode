@@ -432,11 +432,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       }
   
       //goodrun list + event cleaning
-
       json_ = 1;
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      if( !cleaning_standardApril2011() )                            continue;
-
+      if( !cleaning_goodDAVertexApril2011() )                        continue;
 
       //find good hyps, store in v_goodHyps
       vector<unsigned int> v_goodHyps;
@@ -461,7 +459,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           
         for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
           if( els_p4().at(iel).pt() < 10 )                                                 continue;
-          if( !pass_electronSelection( iel , electronSelection_el_OSV2 , false , false ) ) continue;
+          if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
           ngoodel_++;
           ngoodlep_++;
@@ -469,14 +467,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
           if( mus_p4().at(imu).pt() < 10 )           continue;
-          if( !muonId( imu , OSGeneric_v2 ))         continue;
+          if( !muonId( imu , OSGeneric_v3 ))         continue;
           goodLeptons.push_back( mus_p4().at(imu) );
           ngoodmu_++;
           ngoodlep_++;
         }
   
       }
-                 
+
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
 
         if( !passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) ) continue;
@@ -485,10 +483,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )                               continue;
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < maxpt )   continue;
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < minpt )   continue;
-        if( hyp_p4()[i].mass() < 10 )                                           continue;
+        if( hyp_p4()[i].mass() < 12 )                                           continue;
 
         float FRweight = 1;
-                 
+
         if(doFakeApp) {
           FRweight = getFRWeight(i, mufr, elfr, frmode, isData); 
           
@@ -502,18 +500,18 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         else{
           
           //muon ID
-          if (abs(hyp_ll_id()[i]) == 13  && !( muonId(hyp_ll_index()[i] , OSGeneric_v2 ) ) )   continue;
-          if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , OSGeneric_v2 ) ) )   continue;
+          if (abs(hyp_ll_id()[i]) == 13  && !( muonId(hyp_ll_index()[i] , OSGeneric_v3 ) ) )   continue;
+          if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , OSGeneric_v3 ) ) )   continue;
           
-          //OSV1
-          if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV2  ))) continue;
-          if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV2  ))) continue;
+          //OSV3
+          if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV3  ))) continue;
+          if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV3  ))) continue;
           
         }
-        
-        v_goodHyps.push_back( i );
+
+	v_goodHyps.push_back( i );
         v_weights.push_back( FRweight ); // this has to be multipiled to the orig weight later on! (FRweight is == 1 for std. run)
-       
+	
         if( hyp_p4()[i].mass() > 76. && hyp_p4()[i].mass() < 106. ){
           v_goodZHyps.push_back(i);
         }        
@@ -3217,16 +3215,16 @@ double ossusy_looper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, Simple
     unsigned int iMut = hyp_lt_index()[hypIdx];
     unsigned int iMul = hyp_ll_index()[hypIdx];
     
-    if( muonId( iMut , OSGeneric_v2 ) ) {
+    if( muonId( iMut , OSGeneric_v3 ) ) {
       isGoodMut = true;
     }
-    if( muonId( iMul , OSGeneric_v2 ) ) {
+    if( muonId( iMul , OSGeneric_v3 ) ) {
       isGoodMul = true;
     }
-    if( muonId( iMut , OSGeneric_v2_FO ) ) {
+    if( muonId( iMut , OSGeneric_v3_FO ) ) {
       isFOMut = true;
     }
-    if( muonId( iMul , OSGeneric_v2_FO ) ) {
+    if( muonId( iMul , OSGeneric_v3_FO ) ) {
       isFOMul = true;
     }
 
@@ -3277,16 +3275,16 @@ double ossusy_looper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, Simple
     bool isFOElt   = false;
     bool isFOEll   = false;
 
-    if( pass_electronSelection( iElt , electronSelection_el_OSV2 ) ) {
+    if( pass_electronSelection( iElt , electronSelection_el_OSV3 ) ) {
       isGoodElt = true;
     }
-    if( pass_electronSelection( iEll , electronSelection_el_OSV2 ) ) {
+    if( pass_electronSelection( iEll , electronSelection_el_OSV3 ) ) {
       isGoodEll = true;
     }
-    if( pass_electronSelection( iElt , electronSelection_el_OSV2_FO ) ) {
+    if( pass_electronSelection( iElt , electronSelection_el_OSV3_FO ) ) {
       isFOElt   = true;
     }
-    if( pass_electronSelection( iEll , electronSelection_el_OSV2_FO ) ) {
+    if( pass_electronSelection( iEll , electronSelection_el_OSV3_FO ) ) {
       isFOEll   = true;
     }
     
@@ -3349,16 +3347,16 @@ double ossusy_looper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, Simple
     bool isGoodMu = false;
     bool isFOMu   = false;
 
-    if( pass_electronSelection( iEl , electronSelection_el_OSV2 ) ){
+    if( pass_electronSelection( iEl , electronSelection_el_OSV3 ) ){
       isGoodEl = true;
     }
-    if( muonId( iMu , OSGeneric_v2 ) ) { 
+    if( muonId( iMu , OSGeneric_v3 ) ) { 
       isGoodMu = true;
     }
-    if( pass_electronSelection( iEl , electronSelection_el_OSV2_FO ) ){
+    if( pass_electronSelection( iEl , electronSelection_el_OSV3_FO ) ){
       isFOEl = true;
     }
-    if( muonId( iMu , OSGeneric_v2_FO ) ) { 
+    if( muonId( iMu , OSGeneric_v3_FO ) ) { 
       isFOMu = true;
     }
     
