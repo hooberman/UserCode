@@ -203,9 +203,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  /*
+
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
@@ -214,7 +214,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runttpowheg = 0;
   bool runttdil    = 0;
   bool runttem     = 0;
-  bool runttrelval = 0;
+  bool runttrelval = 1;
   bool runttotr    = 0;
   bool runVV       = 0;
   bool runWW       = 0;
@@ -255,9 +255,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */  
+    
 
-
+  /*
   //Flags for files to run over
   bool rundata     = 1;
   bool rundataskim = 0;
@@ -309,7 +309,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-
+  */
   
   char* dir = "";
 
@@ -376,8 +376,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtopall = new TChain("Events");
   if (runttall) {
     pickSkimIfExists(chtopall, 
-		     //"cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple.root",
+		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
 		     "TTJets");
   }
 
@@ -867,7 +866,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chdata   = new  TChain("Events");
 
-  for( int pt = 0 ; pt < 2 ; ++pt ){
+  for( int pt = 0 ; pt < 1 ; ++pt ){
 
     //set trigger type
     if( pt == 0 ) trig = ossusy_looper::e_highpt;
