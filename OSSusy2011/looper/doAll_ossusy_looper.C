@@ -108,6 +108,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   float kqcdpt30  = 1.;  
   float kqcd      = 1.;  
   float kttall    = 1.;  //157.5/165.0;  
+  float ktt42     = 1.;  //157.5/165.0;  
   float kttpowheg = 1.;  //157.5/165.0;  
   float kttdil    = 1.;  //157.5/165.0;  
   float kttrelval = 1;  
@@ -158,6 +159,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preqcdpt30  = 1;
   int preqcd      = 1;
   int prettall    = 1;
+  int prett42     = 1;
   int prettpowheg = 1;
   int prettdil    = 1;
   int prettem     = 1;
@@ -206,15 +208,17 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   //Flags for files to run over
   bool rundata     = 1;
+  bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
+  bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
   bool runttem     = 0;
-  bool runttrelval = 1;
+  bool runttrelval = 0;
   bool runttotr    = 0;
   bool runVV       = 0;
   bool runWW       = 0;
@@ -255,17 +259,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-    
+
 
   /*
   //Flags for files to run over
   bool rundata     = 1;
+  bool rundata41   = 1;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 1;
   bool runttall    = 1;
   bool runttpowheg = 1;
+  bool runtt42     = 1;
   bool runttdil    = 0;
   bool runttrelval = 0;
   bool runttem     = 0;
@@ -296,7 +302,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLM7      = 1;
   bool runLM8      = 1;
   bool runLM9      = 1;
-  bool runLM10     = 1;
+  bool runLM10     = 0;
   bool runLM11     = 1;
   bool runLM12     = 1;
   bool runLM13     = 1;
@@ -309,11 +315,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */
+  */  
   
   char* dir = "";
 
-  bool useMCSkims = true;
+  bool useMCSkims = false;
   if( useMCSkims ){
     cout << "Using MC skims" << endl;
     dir = "met50/";
@@ -377,6 +383,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   if (runttall) {
     pickSkimIfExists(chtopall, 
 		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "TTJets");
+  }
+
+  TChain* chtop42 = new TChain("Events");
+  if (runtt42) {
+    pickSkimIfExists(chtop42,
+		     "cms2/TT_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-12/merged*root",
 		     "TTJets");
   }
 
@@ -863,10 +876,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   ossusy_looper::TrigEnum trig;
 
+  TChain* chdata     = new  TChain("Events");
+  TChain* chdata41   = new  TChain("Events");
 
-  TChain* chdata   = new  TChain("Events");
-
-  for( int pt = 0 ; pt < 1 ; ++pt ){
+  for( int pt = 1 ; pt < 2 ; ++pt ){
 
     //set trigger type
     if( pt == 0 ) trig = ossusy_looper::e_highpt;
@@ -875,7 +888,47 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     looper->set_trigger( trig );
 
     chdata->Reset();
+    chdata41->Reset();
   
+    if(rundata41){
+
+      const char* jsonfile41  = "Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+     
+      cout << "Resetting json file to " << jsonfile41 << endl;
+      looper->set_json( jsonfile41 );
+
+      if( trig == ossusy_looper::e_highpt ){
+	
+	cout << "Doing high-pT dilepton trigger data 41X" << endl;
+	
+	//DoubleElectron re-reco
+	pickSkimIfExists(chdata41,"cms2_data/DoubleElectron_Run2011A-Apr22ReReco-v2_AOD/V04-01-05/DoubleElectronTriggerSkim/skim*root");
+	
+	//v1 datasets (merged)
+	pickSkimIfExists(chdata41,"cms2_data/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
+	pickSkimIfExists(chdata41,"cms2_data/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
+	pickSkimIfExists(chdata41,"cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
+	
+	//v2 datasets (not merged)
+	pickSkimIfExists(chdata41,"cms2_data/DoubleElectron_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleElectronTriggerSkim_merged/merged*root");
+	pickSkimIfExists(chdata41,"cms2_data/DoubleMu_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleMuTriggerSkim_merged/merged*root");
+	pickSkimIfExists(chdata41,"cms2_data/MuEG_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
+	
+      }
+      
+      else if( trig == ossusy_looper::e_lowpt ){
+	
+	cout << "Doing dilepton-HT trigger data 41X" << endl;
+	
+	pickSkimIfExists(chdata41,"cms2_data/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged*root");
+	pickSkimIfExists(chdata41,"cms2_data/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged*root");
+	pickSkimIfExists(chdata41,"cms2_data/MuHad_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
+	pickSkimIfExists(chdata41,"cms2_data/ElectronHad_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
+      }
+      
+    }
+
+
     if(rundata){
       
       if( trig == ossusy_looper::e_highpt ){
@@ -891,7 +944,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       else if( trig == ossusy_looper::e_lowpt ){
 	
 	cout << "Doing dilepton-HT trigger data" << endl;
-	cout << "CURRENTLY NO DATA PRESENT!!!!!" << endl;
+
+	//pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-12/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-12_merged/V04-02-12/merged_ntuple_999999_9.root");
+	//pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-13/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-13_merged/V04-02-13/merged_ntuple_999999_23.root");
+
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-12/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-12_merged/V04-02-12/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-13/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-13_merged/V04-02-13/merged*root");
+
       }
     }
 
@@ -926,6 +985,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing data" << endl;
 		      hist::color("data", kBlack);
+		    }
+		    if (rundata41) {
+		      cout << "Processing data 41X" << endl;
+		      looper->ScanChain(chdata41,"data41", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing data 41X" << endl;
+		      hist::color("data41", kBlack);
 		    }
 		    if (runDYtot) {
 		      cout << "Processing DY->all" << endl;
@@ -980,6 +1045,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing ttbar all.. " << endl;
 		      hist::color("ttall", kYellow);
+		    }
+		    if (runtt42) {
+		      cout << "Processing ttbar 42.. " << endl;
+		      looper->ScanChain(chtop42,"tt42", ktt42, prett42, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing ttbar 42.. " << endl;
+		      hist::color("tt42", kYellow);
 		    }
 		    if (runttpowheg) {
 		      cout << "Processing ttbar powheg.. " << endl;
