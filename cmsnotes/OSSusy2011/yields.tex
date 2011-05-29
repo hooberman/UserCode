@@ -1,43 +1,156 @@
 \section{Preselection yields}
 \label{sec:yields}
 
-The data yields and the MC predictions are given in Table~\ref{tab:yields}.
+The data yields and the MC predictions are given in Table~\ref{tab:yields1} (high \pt dilepton
+trigger sample) and Table~\ref{tab:yields2} (lepton-\Ht trigger sample). We also show the
+data and MC yields in the low \pt lepton region only, by requiring events to pass lepton
+\pt $>$ (10,5) GeV but fail lepton \pt $>$ (20,10) GeV (Table~\ref{tab:yields3}.
+Finally, we verify in Table~\ref{tab:yields4} that the data samples collected with high \pt dilepton
+triggers and lepton-\Ht cross triggers give consistent yields, after including the requirements
+\Ht $>$ 200 GeV and lepton \pt $>$ (20,10) GeV.
+
+
+
+
 The MC yields are normalized to \lumi using the cross-sections
-from Reference~\cite{ref:xsec}. As anticipated, the MC predicts that the 
-preselection is dominated by $t\bar{t}$.  The data yield is in good agreement 
-with the prediction. Also shown are the yields for LM0 and LM1, two of the LM 
-points which are benchmarks for SUSY analyses at CMS. Note that the LM yields
+from Reference~\cite{ref:xsec}. The MC is scaled by the approximate trigger efficiency (100\% for $ee$,
+95\% for $\mu\mu$, and 95\% for $e\mu$) and has been reweighted such that the distribution of 
+reconstructed DA vertices matches that in data. Contributions for \ttfake and \wjets  
+with 1 lepton not originating from $W/Z$ decay (fake lepton) and the contributions from QCD multijet events 
+with 2 fake leptons (single fakes and double fakes, respectively) are estimated with the data-driven
+fake rate method~\cite{ref:top}. {\color{red} \bf FAKES ESTIMATED WITH FR FROM OSV2 SELECTORS, TO BE 
+UPDATED WITH OSV3 SELECTORS. ALSO, NEED TO APPLY SPILLAGE CORRECTION HERE.}
+The DY contribution is dominated by DY$\rightarrow \tau^+\tau^-$,
+and we have verified with the data-driven $R_{out/in}$ method~\cite{ref:top} that the
+contributions from DY$\to e^{+}e^{-}$ and DY$\to \mu^{+}\mu^{-}$ are negligible.
+Also shown are the yields for LM1 and LM3, two of the LM 
+points which are benchmarks for SUSY analyses at CMS. The LM yields
 are calculated at NLO using process-dependent k-factors computed from Prospino.
 
+As anticipated, the MC predicts that the preselection is dominated by $t\bar{t}$.  
+We observe a slight excess in data with respect to MC expectations, which is most pronounced in the $e\mu$ channel.
 
 \begin{table}[htb]
 \begin{center}
-\caption{\label{tab:yields} Data and Monte Carlo yields for the preselection.
-(\ttll\ corrresponds  to dileptonic $t\bar{t}$ in which both $W$'s decay via $W\rightarrow e\nu$ or
+\caption{\label{tab:yields1}
+High \pt dilepton trigger data and Monte Carlo yields for the preselection 
+(njets $\geq$ 2, \Ht$>$100 GeV, met $>$ 50 GeV, lepton \pt $>$ (20,10) GeV).
+\ttll\ corrresponds  to dileptonic $t\bar{t}$ in which both $W$'s decay via $W\rightarrow e\nu$ or
 $W\rightarrow \mu\nu$, \tttau corresponds to dileptonic \ttbar\ in which both leptons come from
-$W$'s and at least 1 lepton is from $W \to \tau \to \ell$, \ttfake\ are all other $t\bar{t}$ modes).}
+$W$ decay and at least 1 lepton is from $W \to \tau \to \ell$.}
 \begin{tabular}{ccccc}
 
 %official json 204/pb, 42X data, Spring11 MC
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
-          \ttll   & 70.3 $\pm$ 1.7   & 86.4 $\pm$ 1.9   &197.1 $\pm$ 2.8   &353.9 $\pm$ 3.8  \\
-         \tttau   & 16.1 $\pm$ 0.8   & 21.7 $\pm$ 0.9   & 44.2 $\pm$ 1.4   & 82.0 $\pm$ 1.8  \\
-        \ttfake   &  2.6 $\pm$ 0.3   &  0.9 $\pm$ 0.2   &  5.0 $\pm$ 0.5   &  8.5 $\pm$ 0.6  \\
-            \DY   &  3.8 $\pm$ 1.0   &  6.3 $\pm$ 1.4   &  8.3 $\pm$ 1.6   & 18.4 $\pm$ 2.4  \\
-            \WW   &  0.8 $\pm$ 0.1   &  1.0 $\pm$ 0.1   &  2.1 $\pm$ 0.2   &  3.9 $\pm$ 0.2  \\
+          \ttll   & 70.3 $\pm$ 1.7   & 77.8 $\pm$ 1.7   &187.3 $\pm$ 2.7   &335.4 $\pm$ 3.6  \\
+         \tttau   & 16.1 $\pm$ 0.8   & 19.5 $\pm$ 0.9   & 42.0 $\pm$ 1.3   & 77.7 $\pm$ 1.8  \\
+   single fakes   &  8.9 $\pm$ 2.4   & 13.3 $\pm$ 2.2   & 17.9 $\pm$ 2.8   & 40.1 $\pm$ 4.3  \\
+   double fakes   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.2   &  0.8 $\pm$ 0.4   &  1.0 $\pm$ 0.4  \\
+            \DY   &  3.8 $\pm$ 1.0   &  5.7 $\pm$ 1.3   &  7.9 $\pm$ 1.5   & 17.4 $\pm$ 2.2  \\
+            \WW   &  0.8 $\pm$ 0.1   &  0.9 $\pm$ 0.1   &  2.0 $\pm$ 0.1   &  3.7 $\pm$ 0.2  \\
             \WZ   &  0.2 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.4 $\pm$ 0.0   &  0.8 $\pm$ 0.0  \\
-            \ZZ   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.3 $\pm$ 0.0  \\
-     single top   &  2.6 $\pm$ 0.1   &  3.3 $\pm$ 0.1   &  7.3 $\pm$ 0.2   & 13.2 $\pm$ 0.3  \\
-         \wjets   &  2.6 $\pm$ 1.2   &  0.0 $\pm$ 0.0   &  1.7 $\pm$ 1.0   &  4.3 $\pm$ 1.5  \\
+            \ZZ   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.2 $\pm$ 0.0  \\
+     single top   &  2.6 $\pm$ 0.1   &  2.9 $\pm$ 0.1   &  6.9 $\pm$ 0.2   & 12.5 $\pm$ 0.3  \\
 \hline
-      tot SM MC   & 99.2 $\pm$ 2.5   &119.9 $\pm$ 2.6   &266.2 $\pm$ 3.7   &485.3 $\pm$ 5.1  \\
+      tot SM MC   &102.8 $\pm$ 3.2   &120.6 $\pm$ 3.2   &265.3 $\pm$ 4.4   &488.7 $\pm$ 6.3  \\
 \hline
            data   &            113   &            122   &            313   &            548  \\
+\hline
+            LM1   & 13.1 $\pm$ 0.3   & 14.6 $\pm$ 0.3   &  7.5 $\pm$ 0.3   & 35.1 $\pm$ 0.6  \\
+            LM3   &  3.0 $\pm$ 0.1   &  3.7 $\pm$ 0.1   &  5.3 $\pm$ 0.1   & 12.0 $\pm$ 0.2  \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
 
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{tab:yields2}
+Dilepton-\Ht trigger data and Monte Carlo yields for the preselection 
+(njets $\geq$ 2, \Ht$>$200 GeV, met $>$ 50 GeV, lepton \pt $>$ (10,5) GeV).
+\ttll\ corrresponds  to dileptonic $t\bar{t}$ in which both $W$'s decay via $W\rightarrow e\nu$ or
+$W\rightarrow \mu\nu$, \tttau corresponds to dileptonic \ttbar\ in which both leptons come from
+$W$ decay and at least 1 lepton is from $W \to \tau \to \ell$. {\color{red} \bf ADD FAKE YIELDS}}
+\begin{tabular}{ccccc}
+
+%official json 204/pb, 42X data, Spring11 MC
+\hline
+         Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
+\hline
+          \ttll   & 31.1 $\pm$ 1.1   & 36.4 $\pm$ 1.2   & 81.4 $\pm$ 1.8   &148.9 $\pm$ 2.4  \\
+         \tttau   &  7.3 $\pm$ 0.6   &  9.7 $\pm$ 0.6   & 20.6 $\pm$ 0.9   & 37.6 $\pm$ 1.2  \\
+        \ttfake   &  1.5 $\pm$ 0.2   &  1.2 $\pm$ 0.2   &  3.5 $\pm$ 0.4   &  6.2 $\pm$ 0.5  \\
+         \wjets   &  0.9 $\pm$ 0.5   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.9 $\pm$ 0.5  \\
+             DY   &  1.5 $\pm$ 0.7   &  4.5 $\pm$ 1.2   &  4.0 $\pm$ 1.1   & 10.0 $\pm$ 1.7  \\
+            \WW   &  0.3 $\pm$ 0.1   &  0.2 $\pm$ 0.0   &  0.8 $\pm$ 0.1   &  1.3 $\pm$ 0.1  \\
+            \WZ   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.3 $\pm$ 0.0  \\
+            \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
+     single top   &  0.7 $\pm$ 0.1   &  0.9 $\pm$ 0.1   &  2.0 $\pm$ 0.1   &  3.6 $\pm$ 0.1  \\
+\hline
+      tot SM MC   & 43.5 $\pm$ 1.5   & 53.0 $\pm$ 1.8   &112.6 $\pm$ 2.3   &209.1 $\pm$ 3.3  \\
+\hline
+           data   &             51   &             55   &            122   &            228  \\
+\hline
+            LM1   & 12.8 $\pm$ 0.3   & 16.9 $\pm$ 0.4   &  9.3 $\pm$ 0.3   & 39.0 $\pm$ 0.6  \\
+            LM3   &  2.9 $\pm$ 0.1   &  3.8 $\pm$ 0.1   &  5.4 $\pm$ 0.1   & 12.2 $\pm$ 0.2  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{tab:yields3} 
+Dilepton-\Ht trigger data and Monte Carlo yields for the preselection 
+(njets $\geq$ 2, \Ht$>$200 GeV, met $>$ 50 GeV, lepton \pt $>$ (10,5) GeV and not passing 
+lepton \pt $>$ (20,10) GeV).
+\ttll\ corrresponds  to dileptonic $t\bar{t}$ in which both $W$'s decay via $W\rightarrow e\nu$ or
+$W\rightarrow \mu\nu$, \tttau corresponds to dileptonic \ttbar\ in which both leptons come from
+$W$ decay and at least 1 lepton is from $W \to \tau \to \ell$. {\color{red} \bf ADD FAKE YIELDS} }
+\begin{tabular}{ccccc}
+
+%official json 204/pb, 42X data, Spring11 MC
+\hline
+         Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
+\hline
+          \ttll   &  0.3 $\pm$ 0.1   &  2.2 $\pm$ 0.3   &  2.4 $\pm$ 0.3   &  4.9 $\pm$ 0.4  \\
+         \tttau   &  0.4 $\pm$ 0.1   &  2.3 $\pm$ 0.3   &  2.1 $\pm$ 0.3   &  4.7 $\pm$ 0.4  \\
+        \ttfake   &  0.1 $\pm$ 0.1   &  0.8 $\pm$ 0.2   &  0.9 $\pm$ 0.2   &  1.7 $\pm$ 0.3  \\
+         \wjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+             DY   &  0.0 $\pm$ 0.0   &  2.2 $\pm$ 0.8   &  0.4 $\pm$ 0.4   &  2.6 $\pm$ 0.9  \\
+            \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+            \WZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+            \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+     single top   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.4 $\pm$ 0.1  \\
+\hline
+      tot SM MC   &  0.8 $\pm$ 0.2   &  7.5 $\pm$ 0.9   &  6.0 $\pm$ 0.6   & 14.3 $\pm$ 1.1  \\
+\hline
+           data   &              1   &              7   &              5   &             13  \\
+\hline
+            LM1   &  0.3 $\pm$ 0.1   &  2.9 $\pm$ 0.2   &  2.3 $\pm$ 0.1   &  5.5 $\pm$ 0.2  \\
+            LM3   &  0.0 $\pm$ 0.0   &  0.4 $\pm$ 0.0   &  0.3 $\pm$ 0.0   &  0.7 $\pm$ 0.1  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{tab:yields4} Comparison of data yields in the high-\pt dilepton and lepton-\Ht 
+trigger samples, passing the selection njets $\geq$ 2, met $>$ 50 GeV, \Ht$>$200 GeV,  lepton \pt $>$ (20,10) GeV.}
+\begin{tabular}{ccccc}
+\hline
+                   Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
+\hline
+high-\pt dilepton trigger   &             50   &             49   &            124   &            223  \\
+
+lepton-\Ht trigger          &             50   &             48   &            117   &            215  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
