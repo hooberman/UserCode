@@ -52,8 +52,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-01-00";
-  const char* jsonfile  = "Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-01-01";
+  const char* jsonfile  = "Cert_160404-165542_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -865,21 +865,21 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
-  float lumi              = 0.204; 
+  float lumi              = 1.0; 
   bool  calculateTCMET    = false; //redo tcmet calculation on the fly
 
   char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
   char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
   char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
   char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
-  bool doFakeApp          = false;
+  bool doFakeApp          = true;
 
   ossusy_looper::TrigEnum trig;
 
   TChain* chdata     = new  TChain("Events");
   TChain* chdata41   = new  TChain("Events");
 
-  for( int pt = 1 ; pt < 2 ; ++pt ){
+  for( int pt = 0 ; pt < 1 ; ++pt ){
 
     //set trigger type
     if( pt == 0 ) trig = ossusy_looper::e_highpt;
@@ -938,7 +938,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleElectronTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleMuTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_3_patch1_V04-03-00/MuEG_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-03-00_merged/V04-03-00/merged*root");
-	
+
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-10/DoubleElectronTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-10/DoubleMuTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_3_patch1_V04-02-10/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-10_merged/V04-02-10/merged*root");
+
       }
       
       else if( trig == ossusy_looper::e_lowpt ){

@@ -1423,6 +1423,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           pfmetDown_    = pfmetDown.first;
           pfmetTest_    = pfmetTest.first;
           pfmet_        = pfmet;
+          pfmet_        = evt_pfmetSignificance();
           pfmetphi_     = pfmetphi;
           mucormet_     = mucormet;
           mucorjesmet_  = mucorjesmet;
@@ -3489,6 +3490,7 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("tcmet50",         &tcmet50_,          "tcmet50/F");
   outTree->Branch("genmet",          &genmet_,           "genmet/F");
   outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
+  outTree->Branch("pfmetsig",        &pfmetsig_,         "pfmetsig/F");
   outTree->Branch("pfmetphi",        &pfmetphi_,         "pfmetphi/F");
   outTree->Branch("mucormet",        &mucormet_,         "mucormet/F");
   outTree->Branch("mucorjesmet",     &mucorjesmet_,      "mucorjesmet/F");
