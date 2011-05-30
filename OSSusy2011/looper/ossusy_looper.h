@@ -106,6 +106,7 @@ class ossusy_looper
 	Float_t pthat_;
 	Float_t qscale_;
         Float_t weight_;
+        Float_t trgeff_;
         Float_t smeff_;
         Float_t k_;
         Float_t mllgen_;
@@ -151,6 +152,8 @@ class ossusy_looper
         Float_t htDown_;
         Int_t   nvtx_;
         Int_t   nbtags_;
+        Int_t   nbtagstcl_;
+        Int_t   nbtagstcm_;
         Float_t dilmass_;
         Float_t topmass_;
         Float_t tcmet_;

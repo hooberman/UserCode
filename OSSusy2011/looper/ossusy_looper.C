@@ -328,14 +328,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
     if(isData) {
       std::cout<<"Using data derived FR files"<<std::endl;
-      mufr = new SimpleFakeRate("fr_os19May2011.root", "fr_mu_OSGV2" );
-      elfr = new SimpleFakeRate("fr_os19May2011.root", "fr_el"       );
+      mufr = new SimpleFakeRate("fr_os27May2011.root", "fr_mu_OSGV3" );
+      elfr = new SimpleFakeRate("fr_os27May2011.root", "fr_el_OSGV3" );
     }
     else {
       std::cout<<"Using data derived FR files"<<std::endl;
       std::cout<<"CURRENTLY USING DATA FR FOR MC FIXME!!!!!" <<std::endl;
-      mufr = new SimpleFakeRate("fr_os19May2011.root", "fr_mu_OSGV2" );
-      elfr = new SimpleFakeRate("fr_os19May2011.root", "fr_el"       );
+      mufr = new SimpleFakeRate("fr_os27May2011.root", "fr_mu_OSGV3" );
+      elfr = new SimpleFakeRate("fr_os27May2011.root", "fr_el_OSGV3" );
     }
   }
 
@@ -871,6 +871,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	htpf_    = 0.;
 	nbtags_  = 0;
 
+	nbtagstcl_  = 0;
+	nbtagstcm_  = 0;
+
 	npfjets40_  = 0;
 	htpf40_     = 0.;
 
@@ -962,6 +965,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	  if( pfjets_simpleSecondaryVertexHighEffBJetTag().at(ijet) > 1.74 ){
 	    nbtags_++;
+	  }
+
+	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
+	    nbtagstcl_++;
+	  }
+
+	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
+	    nbtagstcm_++;
 	  }
 
 	  if( vjet.pt() > maxjetpt ){
@@ -1567,6 +1578,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if (hyp_type()[hypIdx] == 1) leptype_ = 2; // em
           if( hyp_type()[hypIdx] == 2) leptype_ = 2; // em
                 
+	  trgeff_ = 1;
+	  if(!isData){
+	    if( leptype_ == 0 ) trgeff_ = 1.00;
+	    if( leptype_ == 1 ) trgeff_ = 0.90;
+	    if( leptype_ == 2 ) trgeff_ = 0.95;
+	  }
+
           outTree->Fill();
         }
 
@@ -3430,6 +3448,7 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
+  outTree->Branch("trgeff",          &trgeff_,           "trgeff/F");
   outTree->Branch("pthat",           &pthat_,            "pthat/F");
   outTree->Branch("qscale",          &qscale_,           "qscale/F");
   outTree->Branch("smeff",           &smeff_,            "smeff/F");
@@ -3506,6 +3525,8 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
   outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
   outTree->Branch("nbtags",          &nbtags_,           "nbtags/I");
+  outTree->Branch("nbtagstcl",       &nbtagstcl_,        "nbtagstcl/I");
+  outTree->Branch("nbtagstcm",       &nbtagstcm_,        "nbtagstcm/I");
   outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
   outTree->Branch("pass",            &pass_,             "pass/I");
   outTree->Branch("passz",           &passz_,            "passz/I");
