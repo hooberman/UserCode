@@ -30,6 +30,7 @@ unit area template based on its number of jets, the scalar sum of jet \pt and th
 The sum of these templates for all selected \Z events then forms the 
 prediction of the MET distribution for the \Z sample. Integrating this prediction for our 
 signal regions  thus provides a data driven prediction for the \Z plus jets yields in the signal regions. 
+%The prediction is then formed by selecting the photon trigger based on the \pt of the \Z in the event which is being predicted
 
 
 The MET templates are derived from a set of photon triggered samples. 
@@ -66,12 +67,12 @@ The HLT requirements on the above triggers are \cite{ref:eghlt}:
 
 We show all the templates used in App.~\ref{sec:appendix_templates}.
 
-%The prediction is then formed by selecting the photon trigger based on the \pt of the \Z in the event which is being predicted
+%Below was commented out, but since I notice this procedure has a large effect due to the large prescale, I think it's important to include this text.
 
-%In order to select a photon sample whose \pt distribution matches the distribution of \Z \pt
-% in our preselection, a combination of photon triggers must be used (see below). 
-%In order to account for varying prescales of the triggers in different runs,
-% separate templates are created for each trigger line. 
-%Each event enters the template for the highest \pt trigger which fires in the event,
-% and the template is filled with a weight equal to the prescale of the corresponding trigger.
-%After this procedure, the templates are normalized to unity.
+In order to select a photon sample whose \pt distribution matches the distribution of \Z \pt
+ in our preselection, a combination of photon triggers must be used (see below). 
+In order to account for varying prescales of the triggers in different runs,
+ separate templates are created for each trigger line. 
+Each event enters the template for the highest \pt trigger which fires in the event,
+ and the template is filled with a weight equal to the prescale of the corresponding trigger.
+After this procedure, the templates are normalized to unity.

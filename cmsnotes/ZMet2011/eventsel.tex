@@ -94,9 +94,11 @@ Because Z $\rightarrow l^+l^-$ (where $l$ is an electron or muon) is a final sta
   \item $|d_z| <1.0$ (with respect to the nearest primary vertex)
   \item Isolation: The sum of the \pt of tracks and the transverse energy in both calorimeters in a cone of $dR =$ 0.3 divided by the \pt of the electron is required to be less than 0.15. In the barrel only, a pedestal of 1 GeV is subtracted from the ECAL energy.
   \item No muon is allowed to be within $dR < $0.1 of the electron
-  \item No more than one missing inner tracker hit
-  \item Conversion rejection (cite MIT)
-  %\item Conversion distance $<$ 0.02, and $\Delta\cot\theta < $0.02\cite{ref:conv}
+  \item No more than one missing inner tracker hit \cite{ref:sntconv}
+  \item In order to reject electrons from conversions, we veto electrons with a reconstructed conversion vertex \cite{ref:borisconv}
+	%Is below included in above (as implemented in electronselections.cc)???
+
+	%\item Conversion distance $<$ 0.02, and $\Delta\cot\theta < $0.02\cite{ref:conv}
   \item Supercluster $E_T >$ 10~GeV
 	%removed both below. Don't know why we removed the first, probably just not necessary. Second is very rare this year and not so necessary. It's worth checking again when we get more data.
 	%\item The electron is seeded by the ECAL clustering algorithm
