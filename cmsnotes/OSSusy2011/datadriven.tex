@@ -1,28 +1,65 @@
 \section{Data Driven Background Estimation Methods}
 \label{sec:datadriven}
-We have developed two data-driven methods to 
+We use 3 data-driven methods to 
 estimate the background in the signal region.
 The first one exploits the fact that 
 \Ht\ and $y$ are nearly 
 uncorrelated for the $t\bar{t}$ background 
 (Section~\ref{sec:abcd});  the second one 
 is based on the fact that in $t\bar{t}$ the
-$P_T$ of the dilepton pair is on average 
-nearly the same as the $P_T$ of the pair of neutrinos
+\pt\ of the dilepton pair is on average 
+nearly the same as the \pt\ of the pair of neutrinos
 from $W$-decays, which is reconstructed as \met\ in the
 detector.
 
 We study the closure of these methods using our madgraph \ttbar\ sample, as well as 
-the powheg sample TTTo2L2Nu2B\_7TeV-powheg-pythia6\_Spring11-PU\_S1\_START311\_V1G1-v1
+the powheg sample \\
+TTTo2L2Nu2B\_7TeV-powheg-pythia6\_Spring11-PU\_S1\_START311\_V1G1-v1
 which has approximately 10 times more events in the dilepton channel than the madgraph sample.
 We use these samples to estimate correction factors and systematic uncertainties for the background predictions. 
 However, the final choice of correction factors and uncertainties will be extracted from the Summer11 \ttbar\ madgraph
 sample which will have 50 times as many events as the current madgraph sample. 
-For these studies, we do not apply trigger efficiency corrections or reweighting for
+For the studies presented in this section, we do not apply trigger efficiency corrections or reweighting for
 number of reconstructed vertices since are not comparing MC to data. 
 
 \subsection{ABCD method}
 \label{sec:abcd}
+
+
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[width=0.48\linewidth]{uncor.png}
+\includegraphics[width=0.48\linewidth]{ttdil_uncor_38X.png}
+\caption{\label{fig:uncor}\protect 
+Left: distributions of SumJetPt 
+in MC $t\bar{t}$ events for different intervals of 
+MET$/\sqrt{\rm SumJetPt}$. h1, h2, and h3 refer to the MET$/\sqrt{\rm SumJetPt}$
+intervals 4.5-6.5, 6.5-8.5 and $>$8.5, respectively. Right: 
+Distributions of MET$/\sqrt{\rm SumJetPt}$ vs. 
+SumJetPt for SM Monte Carlo.  Here we also show our choice of ABCD regions. The correlation coefficient
+${\rm corr_{XY}}$ is computed for events falling in the ABCD regions.
+{\bf THESE PLOTS ARE OLD MC, WILL UPDATE}
+}
+\end{center}
+\end{figure}
+
+We find that in $t\bar{t}$ events \Ht\ and 
+$y$ are nearly uncorrelated, 
+as demonstrated in Fig.~\ref{fig:uncor} (left).
+Thus, we can use an ABCD method in the $y$ vs. \Ht
+plane to estimate the background in a data driven way. We dfine 4 regions in the 
+plane of $y$ vs. \Ht, as shown in Fig.~\ref{fig:uncor}.
+The region D is the signal region, and the regions A, B and C are control regions.
+The predicted background in region D is given by $N_A \times N_C / N_B$.
+
+In Table~\ref{tab:mcabcd}, we quote the MC expected yields for 1~fb$^{-1}$. In
+general we find that the prediction agrees with the observed yield in the signal region within
+$\sim$30-50\% for all signal regions. We also study the dependence of the ratio
+of observed to predicted signal yields, as a function of the $y$ and \Ht\
+requirements used to define the signal region.
+Based on these results, we apply the
+scale factors and uncertainties summarized in Table~\ref{tab:cor} to the
+predicted background from the ABCD method.
 
 
 \begin{figure}[hbt]
@@ -36,31 +73,15 @@ the signal region.}
 \end{figure}
 
 
-We find that in $t\bar{t}$ events \Ht\ and 
-$y$ are nearly uncorrelated, 
-as demonstrated in Fig.~\ref{fig:uncor}.
-Thus, we can use an ABCD method in the $y$ vs. \Ht
-plane to estimate the background in a data driven way. We dfine 4 regions in the 
-plane of $y$ vs. \Ht, as shown in Figs.~\ref{abcdData1}-\ref{abcdData2}.
-The region D is the signal region, and the regions A, B and C are control regions.
-The predicted background in region D is given by $N_A \times N_C / N_B$.
-
-In Table~\ref{tab:mcabcd}, we quote the MC expected yields for 1~fb$^{-1}$. In
-general we find that the prediction agrees with the observed signal yield within
-$\sim$30-50\% for all signal regions. Based on these results, we apply the
-scale factors and uncertainties summarized in Table~\ref{tab:cor} to the
-predicted background from the ABCD method.
-
-
 \begin{table}[hbt]
 \begin{center}
-\caption{\label{tab:mcabcd} Expected yields in 1~fb$^{-1}$ in the four
-ABCD regions (depicted in Figs.~\ref{abcdData1}-\ref{abcdData2},
+\caption{\label{tab:mcabcd} Expected yields from \ttbar\ MC in 1~fb$^{-1}$ in the four
+ABCD regions (depicted in Figs.~\ref{fig:abcdData1}-\ref{fig:abcdData3},
 as well as the predicted yield in region D given
 by A $\times$ C / B and the ratio of the observed signal yield to the prediction. The quoted uncertainties are statistical
 only, assuming Gaussian errors.
 }
-\begin{tabular}{lcccccccc}
+\begin{tabular}{llccccccc}
 \hline
 signal region &           sample  &                A  &                B  &                C  &                D  &   A $\times$ B / C   & obs/pred\\
 \hline
@@ -84,23 +105,6 @@ high \Ht\ signal region &   madgraph  & 251.3  $\pm$  6.1  &951.5  $\pm$  11.9  
 \hline
 %high $y$ signal region  & 
 
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-\begin{table}[hbt]
-\begin{center}
-\caption{\label{tab:cor} 
-}
-\begin{tabular}{lcc}
-\hline
-signal region               &           ABCD  &                \ptll  \\
-\hline
-2010 signal region          &   $1.0 \pm 0.2$ &        $1.4 \pm 0.2$   \\
-high $y$  signal region     &   $1.3 \pm 0.3$ &        $1.7 \pm 0.3$   \\
-high \Ht\ signal region     &   $1.2 \pm 0.2$ &        $1.3 \pm 0.2$   \\
 \hline
 \end{tabular}
 \end{center}
@@ -181,52 +185,44 @@ high \Ht\ signal region &   madgraph  & 2.9 $\pm$ 0.8   &       3.8 $\pm$ 0.8   
 $ K = \frac{\int_0^{\infty} {\cal N}(\ptll)~~d\ptll~}{\int_{50}^{\infty} {\cal N}(\ptll)~~d\ptll~} = 1.5$
 \end{center}
 
-{\color{red} \bf HERE I WILL PUT THE VICTORY MC CLOSURE STUDIES FOR THE 3 SIGNAL REGIONS}
-
-\subsection{Signal Contamination}
-\label{sec:sigcont}
-
-All data-driven methods are in principle subject to signal contaminations
-in the control regions, and the methods described in 
-Sections~\ref{sec:abcd} and~\ref{sec:victory} are not exceptions.
-Signal contamination tends to dilute the significance of a signal
-present in the data by inflating the background prediction.
-
-It is hard to quantify how important these effects are because we 
-do not know what signal may be hiding in the data.  Having two
-independent methods (in addition to Monte Carlo ``dead-reckoning'')
-adds redundancy because signal contamination can have different effects
-in the different control regions for the two methods.
-For example, in the extreme case of a
-new physics signal 
-with $P_T(\ell \ell) = \met$, an excess of events would be seen 
-in the ABCD method but not in the $P_T(\ell \ell)$ method.
+{\bf CURRENTLY TAKING K FROM MC, SHOULD WE TAKE IT FROM DATA?}
 
 
-The LM points are benchmarks for SUSY analyses at CMS.  The effects
-of signal contaminations for a couple such points are summarized
-in Table~\ref{tab:sigcont}. Signal contamination is definitely an important
-effect for these two LM points, but it does not totally hide the
-presence of the signal.
 
-
-\begin{table}[htb]
+\begin{table}[hbt]
 \begin{center}
-\caption{\label{tab:sigcont} Effects of signal contamination 
-for the two data-driven background estimates. The three columns give
-the expected yield in the signal region and the background estimates
-using the ABCD and $P_T(\ell \ell)$ methods. Results are normalized to 204~pb$^{-1}$.
-{\color{red} \bf UPDATE ME }
+\caption{\label{tab:cor} 
 }
-\begin{tabular}{lccc}
+\begin{tabular}{lcc}
 \hline
-            &      Yield      &      ABCD    & $P_T(\ell \ell)$  \\
+signal region               &           ABCD  &                \ptll  \\
 \hline
-SM only     &       1.3      &      1.3    &       0.9        \\
-SM + LM1    &       9.9      &      6.1    &       2.4        \\
-SM + LM3    &       4.8      &      1.8    &       1.6        \\
+2010 signal region          &   $1.0 \pm 0.2$ &        $1.4 \pm 0.2$   \\
+high $y$  signal region     &   $1.3 \pm 0.3$ &        $1.7 \pm 0.3$   \\
+high \Ht\ signal region     &   $1.2 \pm 0.2$ &        $1.3 \pm 0.2$   \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
+
+
+
+\subsection{Opposite-Flavor Subtraction}
+\label{sec:ofsubtraction}
+
+The opposite-flavor subtraction technique exploits the fact that in \ttbar, the flavor
+of the 2 leptons from $W$ decay are uncorrelated. Hence we expect equal rates of same-flavor (SF) 
+$ee$ or $\mu\mu$ vs. opposite-flavor (OF) $e\mu$ lepton pairs. In SUSY, the lepton flavors may be 
+correlated, producing an excess of same-flavor over opposite-flavor events. We use the observed 
+yield in the OF final state to predict the yields in the SF final state according to:
+
+\begin{center}
+$N(ee)     = \frac{1}{2R_{\mu e}}N(e\mu)$ \\
+$N(\mu\mu) = \frac{R_{\mu e}}{2}N(e\mu)$ \\
+\end{center}
+
+where $R_{\mu e} = X \pm Y$ is the ratio of muon to electron selection efficiencies.
+This quantity has been evaluated by taking the ratio of the number of observed
+$Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events in data, in the mass range 76-106 GeV
+with no jets or \met\ requirements.
 

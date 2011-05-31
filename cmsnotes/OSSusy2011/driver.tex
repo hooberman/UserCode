@@ -10,7 +10,7 @@
 \usepackage{verbatim}
 \RequirePackage{lineno} 
 %\newcommand{\met}{\mbox{$\raisebox{.3ex}{$\not$}E_T$\hspace*{0.5ex}}}
-\newcommand{\met}{\ensuremath{E_{T}^{miss}}}
+\newcommand{\met}{\ensuremath{\rm E_{T}^{miss}}}
 \newcommand{\lumi}{204~pb$^{-1}$}
 \newcommand{\pt}{$p_{T}$}
 \newcommand{\Ht}{$H_{T}$}
@@ -52,7 +52,7 @@ L. Bauerdick, I.~Bloch, K.~Burkett, I.~Fisk, Y.~ Gao,~O.~Gutsche,~B. Hooberman, 
 
     \begin{abstract}
 We present the result of a search for new physics in the opposite-sign 
-dileptons $+$ jets $+$ missing energy final state based on \lumi
+dileptons $+$ jets $+$ missing energy final state based on \lumi\
 of 2011 CMS data.  
 %We find no evidence for an anomalous rate of events
 %accompanied by large missing transverse energy and significant hadronic
@@ -67,11 +67,12 @@ of 2011 CMS data.
 \tableofcontents
 \newpage
 \linenumbers
-\input{changes.tex}
+%\input{changes.tex}
 \input{introduction.tex}
 \input{datasets.tex}
 \input{eventsel.tex}
 \input{triggereff.tex}
+\input{lepyields.tex}
 \input{yields.tex}
 \input{bulk.tex}
 \input{sigregion.tex}
@@ -88,11 +89,14 @@ of 2011 CMS data.
 %\renewcommand\thesection{Appendix \Alph{section}}
 \appendixtitleon
 \appendixtitletocon
-%\begin{appendices}
+\begin{appendices}
    %\input{appendix_trigger.tex}
    %\input{appendix_candidates.tex}
-   %\input{appendix.tex}
-%\end{appendices}
+   \input{appendix_abcdprime.tex}
+   %\input{appendix_datamc.tex}
+   %\input{appendix_datamc_sig.tex}
+
+\end{appendices}
 % \setcounter{page}{2}%JPP
 
 

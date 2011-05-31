@@ -47,7 +47,7 @@ requirements:
 
 \begin{itemize}
 
-\item $p_{T} > 5$~GeV $|\eta| < 2.4$
+\item $p_{T} > 5$~GeV and $|\eta| < 2.4$
 
 \item Global Muon and Tracker Muon
 
@@ -67,6 +67,8 @@ standalone muon must be used in the global fit
 It is motivated by the observation of poorly measured muons in data with large
 relative $p_T$ uncertainty, giving significant contributions to the \met
 
+\item {\color{red} \bf LIST FO DEFINITIONS HERE? }
+
 \end{itemize}
 
 
@@ -82,7 +84,7 @@ Electron candidates are RECO GSF electrons passing the following requirements:
 
 \item Veto electrons with a supercluster in the transition region $1.4442 < |\eta| < 1.556$.
 
-\item VBTF90 identification\cite{ref:vbtf} with requirements tightened to match the CaloIdT and TrkIdVL:
+\item VBTF90 identification\cite{ref:vbtf} with requirements tightened to match the CaloIdT and TrkIdVL HLT requirements:
 
   \begin{itemize}
   \item $\sigma_{i\eta i\eta} < $ 0.01 (EB), 0.03 (EE)
@@ -113,6 +115,8 @@ and $\Delta \cot \theta < 0.02$ is vetoed\cite{ref:conv}.
 \item Cleaning for ECAL spike (aka Swiss-Cross cleaning) has been applied
 at the reconstruction level (CMSSW 38x).
 
+\item {\color{red} \bf LIST FO DEFINITIONS HERE? }
+
 \end{itemize}
 
 \subsection{Invariant mass requirement}
@@ -121,7 +125,7 @@ at the reconstruction level (CMSSW 38x).
 We remove $e^+e^-$ and $\mu^+ \mu^-$ events with invariant 
 mass between 76 and 106 GeV.  We also remove events
 with invariant mass $<$ 12 GeV, since this kinematical region is 
-not well reprodced in CMS Monte Carlo and to remove Upsilons.
+not well reproduced in CMS Monte Carlo and to remove Upsilons.
 
 In addition, we remove $Z \to \mu\mu\gamma$
 candidates with the $\gamma$ collinear with one of the muons.  This is
@@ -139,13 +143,15 @@ Instead, as discussed in
 Section~\ref{sec:trgEff}, a trigger efficiency weight is applied
 to each event, based on the trigger efficiencies measured on data (see Sec.~\ref{sec:trgEff}).
 
-We select data events using the following triggers:
+We select data events using the following triggers. An event in the $ee$ channel is required
+to pass a DoubleElectron trigger, an event in the $\mu\mu$ channel is required to pass a 
+DoubleMu trigger, and an event in the $e\mu$ channel is required to pass a Ele-Mu cross trigger.
 
    \begin{itemize}
       \item High \pt\ dilepton trigger sample
       \begin{itemize}
          \item \verb=HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL=
-         \item \verb=HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL=
+         \item {\footnotesize \verb=HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL=}
          \item \verb=HLT_DoubleMu7=
          \item \verb=HLT_Mu13_Mu7=
          \item \verb=HLT_Mu17_Ele8_CaloIdL=
