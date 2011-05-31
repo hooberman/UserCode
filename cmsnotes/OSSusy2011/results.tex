@@ -7,15 +7,15 @@
 The data yields in the 
 four regions are summarized in Tables~\ref{tab:datayield1}-Table~\ref{tab:datayield3}
 for the 3 signal regions. The ABCD background prediction $N_A \times N_C / N_B$ is scaled
-by the correction factors determined in Sec.~\ref{sec:datadriven}, as summarized in Table~\ref{tab:abcd}.
+by the correction factors determined in Sec.~\ref{sec:datadriven}, as summarized in Table~\ref{tab:cor}.
 
 \newpage
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.7\linewidth]{plots/abcd_204pb_2010.png}
+\includegraphics[width=0.6\linewidth]{plots/abcd_204pb_2010.pdf}
 \caption{\label{fig:abcdData1}\protect Distributions of $y$ 
-vs. \Ht for SM Monte Carlo and data. The 2010 signal region boundaries are overlayed.}
+vs. \Ht\ for SM Monte Carlo and data. The 2010 signal region boundaries are overlayed.}
 \end{center}
 \end{figure}
 
@@ -27,7 +27,7 @@ regions of Figure~\ref{fig:abcdData1} for the 2010 signal region,
 as well as the predicted yield in region D given
 by A $\times$ C / B.  The quoted uncertainty
 on the prediction in data is statistical only, assuming Gaussian errors.
-We also show the SM Monte Carlo expectations.
+We also show the SM Monte Carlo expectations with statistical errors only.
 }
 \begin{tabular}{l||c|c|c|c||c}
 \hline
@@ -53,9 +53,9 @@ We also show the SM Monte Carlo expectations.
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.7\linewidth]{plots/abcd_204pb_highy.pdf}
+\includegraphics[width=0.6\linewidth]{plots/abcd_204pb_highy.pdf}
 \caption{\label{fig:abcdData2}\protect Distributions of $y$ 
-vs. \Ht for SM Monte Carlo and data. The high $y$ signal region boundaries are overlayed.}
+vs. \Ht\ for SM Monte Carlo and data. The high $y$ signal region boundaries are overlayed.}
 \end{center}
 \end{figure}
 
@@ -68,7 +68,7 @@ regions of Figure~\ref{fig:abcdData2} for the high $y$ signal region,
 as well as the predicted yield in region D given
 by A $\times$ C / B.  The quoted uncertainty
 on the prediction in data is statistical only, assuming Gaussian errors.
-We also show the SM Monte Carlo expectations.
+We also show the SM Monte Carlo expectations with statistical uncertainties.
 }
 \begin{tabular}{l||c|c|c|c||c}
 \hline
@@ -94,9 +94,9 @@ We also show the SM Monte Carlo expectations.
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.7\linewidth]{plots/abcd_204pb_highht.pdf}
+\includegraphics[width=0.6\linewidth]{plots/abcd_204pb_highht.pdf}
 \caption{\label{fig:abcdData3}\protect Distributions of $y$ 
-vs. \Ht for SM Monte Carlo and data. The high \Ht\ signal region boundaries are overlayed.}
+vs. \Ht\ for SM Monte Carlo and data. The high \Ht\ signal region boundaries are overlayed.}
 \end{center}
 \end{figure}
 
@@ -104,13 +104,13 @@ vs. \Ht for SM Monte Carlo and data. The high \Ht\ signal region boundaries are 
 \begin{center}
 \caption{\label{tab:datayield3} 
 Data yields in the four
-regions of Figure~\ref{fig:abcdData} for the high \Ht signal region, 
+regions of Figure~\ref{fig:abcdData3} for the high \Ht\ signal region, 
 as well as the predicted yield in region D given
 by A $\times$ C / B.  The quoted uncertainty
 on the prediction in data is statistical only, assuming Gaussian errors.
 Since the yield in region C is 0, we assess as the uncertainty the prediction
 corresponding to 1 observed event in 1.
-We also show the SM Monte Carlo expectations.
+We also show the SM Monte Carlo expectations with statistical uncertainties.
 }
 \begin{tabular}{l||c|c|c|c||c}
 \hline
@@ -136,7 +136,6 @@ We also show the SM Monte Carlo expectations.
 
 %\clearpage
 
-
 \begin{table}[hbt]
 \begin{center}
 \caption{\label{tab:victory} 
@@ -154,9 +153,6 @@ high \Ht\ signal region &          $0.0 \pm 0.3$    & $1.2 \pm 0.2$             
 \end{center}
 \end{table}
 
-
-
-
 \subsection{Background estimate from the $P_T(\ell\ell)$ method}
 \label{sec:victoryres}
 
@@ -167,19 +163,21 @@ Summary of results of the dilepton $p_{T}$ template method.
 The number of events in the given signal region with the $y$ requirement replaced by a \ptht\
 requirement is $N(D')$, the estimated DY contribution from the $R_{out/in}$ technique is $N(DY)$,
 the \met\ acceptance scaling factor is $K$, the residual correction factor is $K_C$, and
-the the prediction from the \ptll\ method is $pred$. The quoted statistical uncertainty is due to
+the the prediction from the \ptll\ method is $N_P$. The quoted statistical uncertainty is due to
 that of $N(D')$, the quoted systematic uncertainty includes that of $N(DY)$ and $K_C$.
-{\color{red} \bf K and KC taken from MC, do we want to take K and/or KC from data? }
+{\bf K and KC taken from MC, do we want to take K and/or KC from data? }
+{\bf Need to add jet/met uncertainty here}
 %{\color{red} \bf CURRENTLY USING 30\% UNCERTAINTY ON K_C IN 2010 REGION, WHICH IS WHAT WE HAD LAST YEAR (NEED TO REPEAT JET/MET UNCERTAINTIES?).}
 %{\color{red} \bf FOR HIGH Y/HIGH HT REGION, TAKING SYST UNCERTAINTY ON KC FROM MC STATS, WHICH IS PROBABLY DOMINANT}
 }
 \begin{tabular}{lccccc}
 \hline
-Signal Region           &  $N(D')$   &   $N(DY)$         &  $K$   &   $K_C$          & $pred$  \\ 
+Signal Region           &  $N(D')$   &   $N(DY)$         &  $K$   &   $K_C$          & $N_P$  \\ 
 \hline
-2010 signal region      &      3     &   $0.4 \pm 0.3$   &  1.5   &   $1.4 \pm 0.2$  & X $\pm$ X (stat) $\pm$ X (syst) \\
+2010 signal region      &      3     &   $0.4 \pm 0.3$   &  1.5   &   $1.4 \pm 0.2$  & 5.5 $\pm$ 3.6 (stat) $\pm$ 1.0 (syst) \\
 high $y$ signal region  &      2     &   $0.1 \pm 0.1$   &  1.5   &   $1.7 \pm 0.3$  & 4.8 $\pm$ 3.4 (stat) $\pm$ X (syst) \\
 high \Ht\ signal region &      0     &   $0.0 \pm 0.1$   &  1.3   &   $1.3 \pm 0.2$  & 0.0 $\pm$ 1.7 (stat) $\pm$ 0.3 (syst) \\
+\hline
 \end{tabular}
 \end{center}
 \end{table}
