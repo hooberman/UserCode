@@ -12,10 +12,9 @@ for the 3 signal regions.
 
 \newpage
 
-
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.75\linewidth]{plots/abcd_204pb_2010.png}
+\includegraphics[width=0.7\linewidth]{plots/abcd_204pb_2010.png}
 \caption{\label{fig:abcdData1}\protect Distributions of $y$ 
 vs. \Ht for SM Monte Carlo and data. The 2010 signal region boundaries are overlayed.}
 \end{center}
@@ -53,7 +52,7 @@ We also show the SM Monte Carlo expectations.}
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.75\linewidth]{plots/abcd_204pb_highy.pdf}
+\includegraphics[width=0.7\linewidth]{plots/abcd_204pb_highy.pdf}
 \caption{\label{fig:abcdData2}\protect Distributions of $y$ 
 vs. \Ht for SM Monte Carlo and data. The high $y$ signal region boundaries are overlayed.}
 \end{center}
@@ -92,7 +91,7 @@ We also show the SM Monte Carlo expectations.}
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.75\linewidth]{plots/abcd_204pb_highht.pdf}
+\includegraphics[width=0.7\linewidth]{plots/abcd_204pb_highht.pdf}
 \caption{\label{fig:abcdData3}\protect Distributions of $y$ 
 vs. \Ht for SM Monte Carlo and data. The high \Ht\ signal region boundaries are overlayed.}
 \end{center}
@@ -128,15 +127,38 @@ We also show the SM Monte Carlo expectations.}
 \end{center}
 \end{table}
 
-
-
-
-
+\newpage
 
 %\clearpage
 
 \subsection{Background estimate from the $P_T(\ell\ell)$ method}
 \label{sec:victoryres}
+
+\begin{table}[hbt]
+\begin{center}
+\caption{\label{tab:victory} 
+Summary of results of the dilepton $p_{T}$ template method.
+The number of events in the given signal region with the $y$ requirement replaced by a \ptht\
+requirement is $N(D')$, the estimated DY contribution from the $R_{out/in}$ technique is $N(DY)$,
+the \met\ acceptance scaling factor is $K$, the residual correction factor is $K_C$, and
+the the prediction from the \ptll\ method is $pred$. The quoted statistical uncertainty is due to
+that of $N(D')$, the quoted systematic uncertainty includes that of $N(DY)$ and $K_C$.
+{\color{red} \bf K and KC taken from MC, do we want to take K and/or KC from data? }
+%{\color{red} \bf CURRENTLY USING 30\% UNCERTAINTY ON K_C IN 2010 REGION, WHICH IS WHAT WE HAD LAST YEAR (NEED TO REPEAT JET/MET UNCERTAINTIES?).}
+%{\color{red} \bf FOR HIGH Y/HIGH HT REGION, TAKING SYST UNCERTAINTY ON KC FROM MC STATS, WHICH IS PROBABLY DOMINANT}
+}
+\begin{tabular}{lccccc}
+\hline
+Signal Region          &  $N(D')$   &   $N(DY)$         &  $K$   &   $K_C$          & $pred$  \\ 
+\hline
+2010 signal region     &      3     &   $0.4 \pm 0.3$   &  1.5   &   $1.3 \pm 0.3$  & 5.1 $\pm$ 3.4 (stat) $\pm$ 1.6 (syst) \\
+high $y$ signal region &      2     &   $0.1 \pm 0.1$   &  1.5   &   $1.2 \pm 0.6$  & 5.1 $\pm$ 3.4 (stat) $\pm$ 1.6 (syst) \\
+
+
+\end{tabular}
+\end{center}
+\end{table}
+
 
 We first use the $P_T(\ell \ell)$ method to predict the number of events 
 in control region A, defined in Sec.~\ref{sec:abcd} as 
@@ -172,17 +194,17 @@ This prediction is consistent with the observed yield of 1 event, as summarized
 in Table~\ref{tab:victory} and Fig.~\ref{fig:victory} (right).
 
 
-\begin{figure}[hbt]
-\begin{center}
-\includegraphics[width=0.48\linewidth]{victory_control_jsonv3.png}
-\includegraphics[width=0.48\linewidth]{victory_signal_jsonv3.png}
-\caption{\label{fig:victory}\protect Distributions of 
-tcMet/$\sqrt{\rm SumJetPt}$ for the control and signal region.
-We show the oberved distributions in both Monte Carlo and data.
-We also show the distributions predicted from 
-${P_T(\ell\ell)}/\sqrt{\rm SumJetPt}$ in both MC and data.}
-\end{center}
-\end{figure}
+%\begin{figure}[hbt]
+%\begin{center}
+%\includegraphics[width=0.48\linewidth]{victory_control_jsonv3.png}
+%\includegraphics[width=0.48\linewidth]{victory_signal_jsonv3.png}
+%\caption{\label{fig:victory}\protect Distributions of 
+%tcMet/$\sqrt{\rm SumJetPt}$ for the control and signal region.
+%We show the oberved distributions in both Monte Carlo and data.
+%We also show the distributions predicted from 
+%${P_T(\ell\ell)}/\sqrt{\rm SumJetPt}$ in both MC and data.}
+%\end{center}
+%\end{figure}
 
 
 \begin{table}[hbt]
