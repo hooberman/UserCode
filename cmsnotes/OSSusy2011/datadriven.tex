@@ -5,12 +5,14 @@ estimate the background in the signal region.
 The first one exploits the fact that 
 \Ht\ and $y$ are nearly 
 uncorrelated for the $t\bar{t}$ background 
-(Section~\ref{sec:abcd});  the second one 
+The second one 
 is based on the fact that in $t\bar{t}$ the
 \pt\ of the dilepton pair is on average 
 nearly the same as the \pt\ of the pair of neutrinos
 from $W$-decays, which is reconstructed as \met\ in the
-detector.
+detector. The third method exploits the fact that in \ttbar\ events
+the rates of same-flavor vs. opposite-flavor dilepton events are
+the same.
 
 We study the closure of these methods using our madgraph \ttbar\ sample, as well as 
 the powheg sample \\
@@ -46,13 +48,13 @@ ${\rm corr_{XY}}$ is computed for events falling in the ABCD regions.
 We find that in $t\bar{t}$ events \Ht\ and 
 $y$ are nearly uncorrelated, 
 as demonstrated in Fig.~\ref{fig:uncor} (left).
-Thus, we can use an ABCD method in the $y$ vs. \Ht
-plane to estimate the background in a data driven way. We dfine 4 regions in the 
-plane of $y$ vs. \Ht, as shown in Fig.~\ref{fig:uncor}.
+Thus, we can use an ABCD method in the $y$ vs. \Ht\
+plane to estimate the background in a data driven way. We define 4 regions in the 
+plane of $y$ vs. \Ht, as shown in Fig.~\ref{fig:uncor} (right).
 The region D is the signal region, and the regions A, B and C are control regions.
 The predicted background in region D is given by $N_A \times N_C / N_B$.
 
-In Table~\ref{tab:mcabcd}, we quote the MC expected yields for 1~fb$^{-1}$. In
+In Table~\ref{tab:mcabcd}, we quote the \ttbar\ MC expected yields for 1~fb$^{-1}$. In
 general we find that the prediction agrees with the observed yield in the signal region within
 $\sim$30-50\% for all signal regions. We also study the dependence of the ratio
 of observed to predicted signal yields, as a function of the $y$ and \Ht\
@@ -76,12 +78,12 @@ the signal region.}
 \begin{table}[hbt]
 \begin{center}
 \caption{\label{tab:mcabcd} Expected yields from \ttbar\ MC in 1~fb$^{-1}$ in the four
-ABCD regions (depicted in Figs.~\ref{fig:abcdData1}-\ref{fig:abcdData3},
+ABCD regions for the signal regions depicted in Figs.~\ref{fig:abcdData1}-\ref{fig:abcdData3},
 as well as the predicted yield in region D given
 by A $\times$ C / B and the ratio of the observed signal yield to the prediction. The quoted uncertainties are statistical
-only, assuming Gaussian errors.
+only.
 }
-\begin{tabular}{llccccccc}
+\begin{tabular}{llccccc|c}
 \hline
 signal region &           sample  &                A  &                B  &                C  &                D  &   A $\times$ B / C   & obs/pred\\
 \hline
@@ -127,10 +129,9 @@ Then, in order to predict the $t\bar{t} \to$ dilepton contribution to a
 selection with \met$+$X, one applies a cut on $P_T(\ell\ell)+$X instead.
 In practice one has to rescale the result of the $P_T(\ell\ell)+$X selection
 to account for the fact that any dilepton selection must include a 
-moderate \met cut in order to reduce Drell Yan backgrounds.  This 
-is discussed in Section 5.3 of Reference~\cite{ref:ourvictory}; for a \met
+moderate \met\ cut in order to reduce Drell Yan backgrounds.  This 
+is discussed in Section 5.3 of Reference~\cite{ref:ourvictory}; for a \met\
 cut of 50 GeV, the rescaling factor is obtained from the MC as
-
 
 \begin{figure}[hbt]
 \begin{center}
@@ -149,7 +150,7 @@ the signal region.}
 and the ratio of the observed signal yield to the prediction. The quoted uncertainties are statistical
 only, assuming Gaussian errors.
 }
-\begin{tabular}{lcccccccc}
+\begin{tabular}{llcc|c}
 \hline
 signal region &           sample  &                predicted  &                observed  &                obs/pred   \\ 
 \hline
@@ -179,14 +180,9 @@ high \Ht\ signal region &   madgraph  & 2.9 $\pm$ 0.8   &       3.8 $\pm$ 0.8   
 \end{center}
 \end{table}
 
-
-%
 \begin{center}
 $ K = \frac{\int_0^{\infty} {\cal N}(\ptll)~~d\ptll~}{\int_{50}^{\infty} {\cal N}(\ptll)~~d\ptll~} = 1.5$
 \end{center}
-
-{\bf CURRENTLY TAKING K FROM MC, SHOULD WE TAKE IT FROM DATA?}
-
 
 \begin{table}[hbt]
 \begin{center}
@@ -213,16 +209,16 @@ high \Ht\ signal region     &   $1.2 \pm 0.2$ &        $1.3 \pm 0.2$   \\
 The opposite-flavor subtraction technique exploits the fact that in \ttbar, the flavor
 of the 2 leptons from $W$ decay are uncorrelated. Hence we expect equal rates of same-flavor (SF) 
 $ee$ or $\mu\mu$ vs. opposite-flavor (OF) $e\mu$ lepton pairs. In SUSY, the lepton flavors may be 
-correlated, producing an excess of same-flavor over opposite-flavor events. We use the observed 
+correlated, producing an excess of SF over OF events. We use the observed 
 yield in the OF final state to predict the yields in the SF final state according to:
 
 \begin{center}
 $N(ee)     = \frac{1}{2R_{\mu e}}N(e\mu)$ and $N(\mu\mu) = \frac{R_{\mu e}}{2}N(e\mu)$
 \end{center}
 
-where $R_{\mu e} = 1.12 \pm 0.05$ is the ratio of muon to electron selection efficiencies.
-This quantity has been evaluated by taking the ratio of the number of observed
-$Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events in data, in the mass range 76-106 GeV
+where $R_{\mu e}$ is the ratio of muon to electron selection efficiencies.
+This quantity is evaluated by taking the ratio of the number of observed
+$Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events, in the mass range 76-106 GeV
 with no jets or \met\ requirements (see Fig.~\ref{fig:Z}). Alternatively, we can quantify
 the excess of SF vs. OF events with the quantity:
 
@@ -234,7 +230,7 @@ which is predicted to be 0 for processes with uncorrelated lepton flavors. In or
 for this technique to work, the kinematic selection applied to events in all dilepton
 flavor channels must be the same, which is not the case for our default selection because the
 $Z$ mass veto is applied only to same-flavor channels. Therefore when applying the OF
-subtraction technique we also apply the $Z$ mass veto to the $e\mu$ channel. The
+subtraction technique we also apply the $Z$ mass veto also to the $e\mu$ channel. The
 method is applied to \ttbar\ MC in Table~\ref{tab:mcof}, where $R_{\mu e} = 1.14 \pm 0.05$ is extracted
 from DY MC.
 {\bf Doing the subtraction in this way isn't exactly right. R here has trigger and selection efficiencies
@@ -247,8 +243,8 @@ The MC closure isn't great though, with 3 of 4 measurements off by 1-1.5$\sigma$
 \begin{table}[hbt]
 \begin{center}
 \caption{\label{tab:mcof} Expected yields in 1~fb$^{-1}$ \ttbar\ MC for the OF subtraction method,
-and the quantity $\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$ which is predicted
-to be consistent with 0 for \ttbar. The quoted systematic uncertainty refers to that of $R_{\mu e} = 1.14 \pm 0.05$.
+and the quantity $\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$. 
+The quoted systematic uncertainty refers to that of $R_{\mu e}$.
 }
 \begin{tabular}{lcccccccc}
 \hline

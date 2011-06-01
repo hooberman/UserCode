@@ -1,7 +1,7 @@
 \section{Event Preselection}
 \label{sec:eventSel}
-The purpose of the preselection is to define a data sample rich 
-in $t\bar{t} \to$ dileptons.  We compare the kinematical 
+The purpose of the preselection is to reject backgrounds other than 
+$t\bar{t} \to$ dileptons.  We compare the kinematical 
 properties of this sample with expectations from $t\bar{t}$ 
 Monte Carlo.
 
@@ -21,7 +21,7 @@ loose {\tt pfJetId} and be separated by $\Delta R >$ 0.4 from any
 lepton with $P_T > 10$~GeV passing the selection.
 The scalar sum \Ht\ of the 
 $P_T$ of all such jets must exceed 100 GeV, for the dilepton-\Ht\ sample
-this requirement is increased to 200 GeV since the trigger has large inefficiency
+this requirement is increased to 200 GeV since these triggers have large inefficiency
 below this threshold.
 Finally $\met > 50$ GeV (we use pfmet). More details are given in the subsections below.
 
@@ -106,14 +106,14 @@ go negative.
 0.1 are vetoed.
 
 \item The number of missing expected inner hits must be less than 
-two\cite{ref:conv}.
+two~\cite{ref:conv}.
 
 \item Conversion removal via partner track finding: any electron
 where an additional GeneralTrack is found with $Dist < 0.02$ cm 
-and $\Delta \cot \theta < 0.02$ is vetoed\cite{ref:conv}.
+and $\Delta \cot \theta < 0.02$ is vetoed~\cite{ref:conv}.
 
-\item Cleaning for ECAL spike (aka Swiss-Cross cleaning) has been applied
-at the reconstruction level (CMSSW 38x).
+%\item Cleaning for ECAL spike (aka Swiss-Cross cleaning) has been applied
+%at the reconstruction level (CMSSW 38x).
 
 \item {\color{red} \bf LIST FO DEFINITIONS HERE? }
 
@@ -145,7 +145,7 @@ to each event, based on the trigger efficiencies measured on data (see Sec.~\ref
 
 We select data events using the following triggers. An event in the $ee$ channel is required
 to pass a DoubleElectron trigger, an event in the $\mu\mu$ channel is required to pass a 
-DoubleMu trigger, and an event in the $e\mu$ channel is required to pass a Ele-Mu cross trigger.
+DoubleMu trigger, and an event in the $e\mu$ channel is required to pass a Ele-Mu trigger.
 
    \begin{itemize}
       \item High \pt\ dilepton trigger sample
