@@ -2,16 +2,30 @@
 \section{Results}
 \label{sec:results}
 
-The data and SM prediction are shown in Fig.~\ref{fig:pfmet_eemm}, and split between the $ee$ (Fig.~\ref{fig:pfmet_ee})
-and $\mu\mu$ (Fig.~\ref{fig:pfmet_mm}) final states. We observe 7  events (all in the $\mu\mu$ channel) in the loose signal 
-region (MET $>$ \signalmetl GeV), compared to a data-driven prediction of $6.0 \pm 0.8$, which is dominated by the estimated 
-\ttbar contribution. For the tight signal region defined by MET $>$ \signalmett GeV, we observe 0 events compared to a 
-data-driven prediction of $1.2 \pm 0.4$. These uncertainties are statistical only, systematic uncertainties will be 
-discussed in Sec.~\ref{sec:systematics}. We conclude that no excess of signal with respect to the data-driven prediciton is observed.
+The data and SM prediction are shown in Fig.~\ref{fig:pfmet_eemm}, 
+and split between the $ee$ (Fig.~\ref{fig:pfmet_ee})
+and $\mu\mu$ (Fig.~\ref{fig:pfmet_mm}) final states. 
+We observe 14 events (7 in each lepton flavor channel) 
+%We observe 7  events (all in the $\mu\mu$ channel) %2010
+in the loose signal region (MET $>$ \signalmetl GeV), 
+compared to a data-driven prediction of 
+13.6 $\pm$ 0.98,
+%$6.0 \pm 0.8$, %2010
+which is dominated by the estimated \ttbar contribution. 
+For the tight signal region defined by MET $>$ \signalmett GeV, 
+we observe 2 events compared to a 
+data-driven prediction of 
+1.34 $\pm$ 0.33.
+%$1.2 \pm 0.4$. %2010
+These uncertainties are statistical only, and systematic uncertainties will be 
+discussed in Sec.~\ref{sec:systematics}. We conclude that no excess of signal 
+with respect to the data-driven prediciton is observed.
 
-When we have enough data, we will display in the figures the predicted $t\bar{t}$ MET distribution obtained by scaling the $e\mu$ distribution
-in data. However, due to limited statistics we cannot currently do this. Therefore for display purposes only, we have taken the
-$t\bar{t}$ MET distribution from MC and normalized it such that the integral for MET$>$\signalmetl~GeV matches the data-driven prediction
+%When we have enough data, we will display in the figures the predicted $t\bar{t}$ MET distribution obtained by scaling the $e\mu$ distribution
+%in data. However, due to limited statistics we cannot currently do this. Therefore 
+For display purposes only, we have taken the
+$t\bar{t}$ MET distribution from MC and normalized it such that the integral for 
+MET$>$\signalmetl~GeV matches the data-driven prediction
 from the OF subtraction. 
 %{\bf I don't know if we want to do this in the final plots.} It's probably fine.
 
@@ -22,21 +36,31 @@ from the OF subtraction.
 
 \begin{figure}[hbtp]
   \begin{center}
-    \resizebox{1.0\linewidth}{!}{\includegraphics{plots/lep_metPredicted.pdf}}
+    \resizebox{1.0\linewidth}{!}{\includegraphics{plots/lep_metPredicted.png}}
+    %\resizebox{1.0\linewidth}{!}{\includegraphics{plots/lep_metPredicted.pdf}}
 
 	\medskip 
 
     %\resizebox{\linewidth}{!}{
-    \begin{tabular}{lccc}
+    \begin{tabular}{lcccc}
 \hline
-                        &   N(MET $>30$)  GeV    &   N(MET $>60$)  GeV    &   N(MET $>120$) GeV   \\
+                        &   N(MET $>30$)  GeV    &   N(MET $>60$)  GeV    &   N(MET $>100$) GeV    &   N(MET $>200$) GeV \\
 \hline
-              Z pred    &  38.47  $\pm$  0.90    &   1.81  $\pm$  0.13    &   0.14  $\pm$  0.03   \\
-                OFOS    &   6.43  $\pm$  1.00    &   4.24  $\pm$  0.82    &   1.10  $\pm$  0.42   \\
+              Z pred    & 413.60  $\pm$  1.87    &  15.27  $\pm$  0.19    &    1.84 $\pm$  0.10    &   0.21  $\pm$  0.03 \\
+                OFOS    &  54.26  $\pm$  2.08    &  34.55  $\pm$  1.66    &   11.76 $\pm$  0.97    &   1.13  $\pm$  0.33 \\
 \hline
-       Z pred + OFOS    &  44.90  $\pm$  1.35    &   6.04  $\pm$  0.82    &   1.24  $\pm$  0.42   \\
+       Z pred + OFOS    & 467.86  $\pm$  2.77    &  49.82  $\pm$  1.67    &   13.60 $\pm$  0.98    &   1.34  $\pm$  0.33 \\
 \hline
-                data    &                  51    &                   7    &                   0   \\
+                   data &   484                  &    39                  &    14                  &     2 \\
+
+
+%2010
+%              Z pred    &  38.47  $\pm$  0.90    &   1.81  $\pm$  0.13    &   0.14  $\pm$  0.03   \\
+%                OFOS    &   6.43  $\pm$  1.00    &   4.24  $\pm$  0.82    &   1.10  $\pm$  0.42   \\
+%\hline
+%       Z pred + OFOS    &  44.90  $\pm$  1.35    &   6.04  $\pm$  0.82    &   1.24  $\pm$  0.42   \\
+%\hline
+%                data    &                  51    &                   7    &                   0   \\
 \hline
     \end{tabular}
 
@@ -52,9 +76,11 @@ from the OF subtraction.
       pred),  the  predicted ttbar  yield  using  the opposite  flavor
       subtraction  technique (OFOS), the  sum of  these two
       contributions (Z pred + OFOS), and the observed MET distribution
-      (data), for  MET $>$ 30~GeV,  $>$ 60~GeV and $>$  120~GeV. The
-      quantity pull  = (data-Z prediction)/(Z prediction)  is shown on
-      top  of the  plot.  
+      (data), for  
+	  MET $>$ 30~GeV,  $>$ 60~GeV,  $>$ 100~GeV, and $>$  200~GeV. 
+	  %MET $>$ 30~GeV,  $>$ 60~GeV and $>$  120~GeV. %2010
+	  The quantity pull  = (data-Z prediction)/(Z prediction)  is shown on
+      top of the  plot.  
     }
     \label{fig:pfmet_eemm}
   \end{center}
@@ -62,21 +88,33 @@ from the OF subtraction.
 
 \begin{figure}[hbtp]
   \begin{center}
-    \resizebox{1.0\linewidth}{!}{\includegraphics{plots/lep_metPredicted_ee.pdf}}
+    \resizebox{1.0\linewidth}{!}{\includegraphics{plots/lep_metPredicted_ee.png}}
+    %\resizebox{1.0\linewidth}{!}{\includegraphics{plots/lep_metPredicted_ee.pdf}}
 
 	\medskip 
 
     %\resizebox{\linewidth}{!}{
-    \begin{tabular}{lccc}
+    \begin{tabular}{lcccc}
 \hline
-                        &   N(MET $>30$)  GeV    &   N(MET $>60$)  GeV    &   N(MET $>120$) GeV   \\
+
+                        &   N(MET $>30$)  GeV    &   N(MET $>60$)  GeV    &   N(MET $>100$) GeV    &   N(MET $>200$) GeV \\
 \hline
-              Z pred    &  16.45  $\pm$  0.37    &   0.79  $\pm$  0.05    &   0.06  $\pm$  0.01   \\
-                OFOS    &   2.88  $\pm$  0.45    &   1.90  $\pm$  0.36    &   0.49  $\pm$  0.19   \\
+              Z pred    & 199.58  $\pm$  1.30    &   7.67  $\pm$  0.13    &    0.94 $\pm$  0.07    &   0.12  $\pm$  0.02 \\
+                OFOS    &  25.56  $\pm$  1.38    &  16.28  $\pm$  1.10    &    5.54 $\pm$  0.64    &   0.53  $\pm$  0.22 \\
 \hline
-       Z pred + OFOS    &  19.32  $\pm$  0.58    &   2.68  $\pm$  0.37    &   0.56  $\pm$  0.19   \\
+       Z pred + OFOS    & 225.14  $\pm$  1.90    &  23.95  $\pm$  1.11    &    6.48 $\pm$  0.64    &   0.65  $\pm$  0.22 \\
 \hline
-                data    &                  22    &                   0    &                   0   \\
+                   data &   247                  &    22                  &     7                  &     0 \\
+
+%2010
+%                        &   N(MET $>30$)  GeV    &   N(MET $>60$)  GeV    &   N(MET $>120$) GeV   \\
+%\hline
+%              Z pred    &  16.45  $\pm$  0.37    &   0.79  $\pm$  0.05    &   0.06  $\pm$  0.01   \\
+%                OFOS    &   2.88  $\pm$  0.45    &   1.90  $\pm$  0.36    &   0.49  $\pm$  0.19   \\
+%\hline
+%       Z pred + OFOS    &  19.32  $\pm$  0.58    &   2.68  $\pm$  0.37    &   0.56  $\pm$  0.19   \\
+%\hline
+%                data    &                  22    &                   0    &                   0   \\
 \hline
     \end{tabular}
 
@@ -102,21 +140,32 @@ from the OF subtraction.
 
 \begin{figure}[hbtp]
   \begin{center}
-    \resizebox{1.0\linewidth}{!}{\includegraphics{plots/lep_metPredicted_mm.pdf}}
+    \resizebox{1.0\linewidth}{!}{\includegraphics{plots/lep_metPredicted_mm.png}}
+    %\resizebox{1.0\linewidth}{!}{\includegraphics{plots/lep_metPredicted_mm.pdf}}
 
 	\medskip 
 
     %\resizebox{\linewidth}{!}{
-    \begin{tabular}{lccc}
+    \begin{tabular}{lcccc}
 \hline
-                        &   N(MET $>30$)  GeV    &   N(MET $>60$)  GeV    &   N(MET $>120$) GeV   \\
+                        &   N(MET $>30$)  GeV    &   N(MET $>60$)  GeV    &   N(MET $>100$) GeV    &   N(MET $>200$) GeV \\
 \hline
-              Z pred    &  22.03  $\pm$  0.54    &   1.02  $\pm$  0.08    &   0.08  $\pm$  0.02   \\
-                OFOS    &   3.55  $\pm$  0.55    &   2.34  $\pm$  0.45    &   0.61  $\pm$  0.23   \\
+              Z pred    &  196.15 $\pm$  1.54    &   6.16  $\pm$  0.09    &    0.65 $\pm$  0.03    &   0.07  $\pm$  0.02 \\
+                OFOS    &   28.70 $\pm$  1.55    &  18.28  $\pm$  1.24    &    6.22 $\pm$  0.72    &   0.60  $\pm$  0.24 \\
 \hline
-       Z pred + OFOS    &  25.58  $\pm$  0.77    &   3.36  $\pm$  0.46    &   0.68  $\pm$  0.23   \\
+       Z pred + OFOS    &  224.85 $\pm$  2.18    &  24.44  $\pm$  1.24    &    6.87 $\pm$  0.72    &   0.67  $\pm$  0.24 \\
 \hline
-                data    &                  29    &                   7    &                   0   \\
+                   data &    237                 &    17                  &     7                  &     2 \\
+
+%2010
+%                        &   N(MET $>30$)  GeV    &   N(MET $>60$)  GeV    &   N(MET $>120$) GeV   \\
+%\hline
+%              Z pred    &  22.03  $\pm$  0.54    &   1.02  $\pm$  0.08    &   0.08  $\pm$  0.02   \\
+%                OFOS    &   3.55  $\pm$  0.55    &   2.34  $\pm$  0.45    &   0.61  $\pm$  0.23   \\
+%\hline
+%       Z pred + OFOS    &  25.58  $\pm$  0.77    &   3.36  $\pm$  0.46    &   0.68  $\pm$  0.23   \\
+%\hline
+%                data    &                  29    &                   7    &                   0   \\
 \hline
     \end{tabular}
 

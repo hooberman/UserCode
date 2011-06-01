@@ -16,8 +16,11 @@ and these templates are used to predict the MET distribution in ZJets MC. The MC
   \end{itemize}
 \item ZJet MC
   \begin{itemize}
-%or use pythia???
-  \item \verb=/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM=
+  \item \verb=/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Spring11-PU_S1_START311_V1G1-v1/AODSIM=
+  \item \verb=/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Spring11-PU_S1_START311_V1G1-v1/AODSIM=
+  \item \verb=/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM=
+	%use pythia
+	%\item \verb=/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola/Spring11-PU_S1_START311_V1G1-v1/AODSIM=
   \end{itemize}
 \end{itemize}
 
@@ -28,18 +31,26 @@ Good agreement between the observed and predicted MET distributions is observed,
     \resizebox{0.8\linewidth}{!}{\includegraphics{plots/mcclosure.png}}
 	\\ \medskip
     %\resizebox{\linewidth}{!}{
-    \begin{tabular}{r|r|r|r}
-      MET                   & $>$ 30 GeV & $>$ 60 GeV  & $>$ 120 GeV \\ \hline
-      Z+jets observed         &      184   &    10       & 0          \\
-      $\gamma$+jets predicted &   182.21   &    11.52    & 1.40       \\
+    \begin{tabular}{r|r|r|r|r}
+      MET        & $>$ 30 GeV       & $>$ 60 GeV        & $>$ 100 GeV       & $>$ 200  \\ \hline
+	  Z MC       &   919            &    15             &     1             &     0 \\
+	  Prediction & 950.35 $\pm$  2.37 &  17.89 $\pm$   0.07 &   2.44 $\pm$   0.02 &   0.11 $\pm$   0.01 \\
+
     \end{tabular}
 	%}
 	\\ \medskip
-    %\resizebox{0.5\linewidth}{!}{\includegraphics{plots/MET_pred_3ge_eb_ratio.png}}
-    \caption{The MET distribution in Z+jets MC (black) and prediction (blue) for Njet $\ge$ 2. Below the plot is tabulated the integral of the observed Z+jets MC MET and the predicted MET from $\gamma$+jets MC for MET $>$ 30 GeV, $>$ 60 GeV and $>$ 120 GeV. The quantity (observed-predicted)/predicted as a function of MET is shown above the plot.}
+    \caption{The MET distribution in Z+jets MC (black) and prediction (blue) for Njet $\ge$ 2. Below the plot is tabulated the integral of the observed Z+jets MC MET and the predicted MET from $\gamma$+jets MC for MET $>$ 30 GeV, $>$ 60 GeV and $>$ 120 GeV. }
+%to add:
+%The quantity (observed-predicted)/predicted as a function of MET is shown above the plot.}
     \label{fig:mcclosure}
   \end{center}
 \end{figure}
+
+
+%2010 results
+%      MET                   & $>$ 30 GeV & $>$ 60 GeV  & $>$ 120 GeV \\ \hline
+%      Z+jets observed         &      184   &    10       & 0          \\
+%      $\gamma$+jets predicted &   182.21   &    11.52    & 1.40       \\
 
 
 %\begin{wrapfigure}{r}{0.6\textwidth}
