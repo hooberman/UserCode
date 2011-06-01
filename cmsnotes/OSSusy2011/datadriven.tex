@@ -145,7 +145,7 @@ the signal region.}
 
 \begin{table}[hbt]
 \begin{center}
-\caption{\label{tab:mcabcd} Expected observed and predicted yields in 1~fb$^{-1}$ for the \ptll\ method, 
+\caption{\label{tab:mcabcd} Expected observed and predicted yields in 1~fb$^{-1}$ for \ttbar\ MC for the \ptll\ method, 
 and the ratio of the observed signal yield to the prediction. The quoted uncertainties are statistical
 only, assuming Gaussian errors.
 }
@@ -217,12 +217,59 @@ correlated, producing an excess of same-flavor over opposite-flavor events. We u
 yield in the OF final state to predict the yields in the SF final state according to:
 
 \begin{center}
-$N(ee)     = \frac{1}{2R_{\mu e}}N(e\mu)$ \\
-$N(\mu\mu) = \frac{R_{\mu e}}{2}N(e\mu)$ \\
+$N(ee)     = \frac{1}{2R_{\mu e}}N(e\mu)$ and $N(\mu\mu) = \frac{R_{\mu e}}{2}N(e\mu)$
 \end{center}
 
-where $R_{\mu e} = X \pm Y$ is the ratio of muon to electron selection efficiencies.
+where $R_{\mu e} = 1.12 \pm 0.05$ is the ratio of muon to electron selection efficiencies.
 This quantity has been evaluated by taking the ratio of the number of observed
 $Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events in data, in the mass range 76-106 GeV
-with no jets or \met\ requirements.
+with no jets or \met\ requirements (see Fig.~\ref{fig:Z}). Alternatively, we can quantify
+the excess of SF vs. OF events with the quantity:
+
+\begin{center}
+$\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$,
+\end{center}
+
+which is predicted to be 0 for processes with uncorrelated lepton flavors. In order
+for this technique to work, the kinematic selection applied to events in all dilepton
+flavor channels must be the same, which is not the case for our default selection because the
+$Z$ mass veto is applied only to same-flavor channels. Therefore when applying the OF
+subtraction technique we also apply the $Z$ mass veto to the $e\mu$ channel. The
+method is applied to \ttbar\ MC in Table~\ref{tab:mcof}, where $R_{\mu e} = 1.14 \pm 0.05$ is extracted
+from DY MC.
+{\bf Doing the subtraction in this way isn't exactly right. R here has trigger and selection efficiencies
+muddled together, and is extracted from Z events but applied to ttbar events. I'm not sure if anything
+fancier is needed though. For one, the dependence on R in the quantity $\Delta$ partially cancels.
+The MC closure isn't great though, with 3 of 4 measurements off by 1-1.5$\sigma$}
+
+
+
+\begin{table}[hbt]
+\begin{center}
+\caption{\label{tab:mcof} Expected yields in 1~fb$^{-1}$ \ttbar\ MC for the OF subtraction method,
+and the quantity $\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$ which is predicted
+to be consistent with 0 for \ttbar. The quoted systematic uncertainty refers to that of $R_{\mu e} = 1.14 \pm 0.05$.
+}
+\begin{tabular}{lcccccccc}
+\hline
+region                  &     sample  &       $N(ee)$     &      $N(\mu\mu)$   &     $N(e\mu)$      &         $\Delta$   \\ 
+\hline
+
+\hline
+
+preselection region     &   madgraph  & 431.1 $\pm$ 8.0   &  531.3 $\pm$ 8.9   &  945.8 $\pm$ 11.8  &  11.8 $\pm$ 16.8 (stat) $\pm$ 1.1 (syst)   \\
+                        &   powheg    & 383.1 $\pm$ 2.5   &  492.9 $\pm$ 2.9   &  876.2 $\pm$ 3.8   &  -7.0 $\pm$  5.4 (stat) $\pm$ 0.8 (syst)   \\
+
+\hline
+
+2010 signal region      &   madgraph  &   7.4 $\pm$ 1.0   &   10.7 $\pm$ 1.3   &   14.5 $\pm$ 1.5   &   3.3 $\pm$  2.2 (stat) $\pm$  0.04 (syst) \\
+                        &   powheg    &   7.2 $\pm$ 0.3   &    8.6 $\pm$ 0.4   &   16.8 $\pm$ 0.5   &  -1.1 $\pm$  0.7 (stat) $\pm$  0.03 (syst) \\
+
+\hline
+%high $y$ signal region  & 
+
+\hline
+\end{tabular}
+\end{center}
+\end{table}
 

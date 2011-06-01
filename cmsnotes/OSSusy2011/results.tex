@@ -193,7 +193,40 @@ Our final prediction $N_P$ is given by the following, as summarized in Table~\re
 $ N_P = (N(D')-N(DY)) \times K \times K_C$.
 \end{center}
 
-{\color{red} \bf I will add here the results of victory method applied to the \Ht\ sideband region as a validation of the method }
+{\color{red} \bf I will add here the results of victory method applied to the \Ht\ sideband region as a validation of the method and victory plots.}
+
+\subsection{Background estimate from OF subtraction}
+\label{sec:ofres}
+
+The results of the OF subtraction technique are summarized in Table~\ref{tab:ofres}. 
+We evaluate the quantity $\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$ with $R_{\mu e} = 1.12 \pm 0.05$.
+We perform the OF subtraction first in the preselection region, and find $\Delta$ consistent with 0, as expected.
+We then perform the OF subtraction in all 3 signal regions, and do not observe any excess of same-flavor vs. opposite-flavor events.
+
+\begin{table}[hbt]
+\begin{center}
+\caption{\label{tab:ofres} Summary of results for the OF subtraction technique. 
+The quantity $\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$ is quoted with $R_{\mu e} = 1.12 \pm 0.05$.
+The quoted systematic uncertainty corresponds to that of $R_{\mu e}$. The $e\mu$ yields differ from those previously
+quoted because the $Z$ mass veto is included here.
+}
+\begin{tabular}{l|ccc|c}
+\hline
+region                   &  $N(ee)$ & $N(\mu\mu)$ & $N(e\mu)$  &  $\Delta$   \\ 
+\hline
+preselection region      &      113 &         122 &      258   &  -22.5 $\pm$ 22.3 (stat) $\pm$ 0.8 (syst) \\    
+2010 signal region       &        4 &           3 &        5   &    2.2 $\pm$ 3.5 (stat) $\pm$ 0.1 (syst)  \\
+high $y$ signal region   &        3 &           0 &        2   &    1.4 $\pm$ 2.4 (stat) $\pm$ 0.1 (syst)  \\
+high \Ht\ signal region  &        1 &           0 &        1   &    0.1 $\pm$ 1.5 (stat) $\pm$ 0.0 (syst)  \\
+\hline
+%high $y$ signal region  & 
+
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
 
 % \clearpage
 \subsection{Summary of results}
@@ -201,24 +234,31 @@ $ N_P = (N(D')-N(DY)) \times K \times K_C$.
 
 \begin{table}[hbt]
 \begin{center}
-\caption{\label{tab:victory} 
-Summary of the observed and predicted yields in the 3 signal regions.
-{\color{red} \bf currently just taking ee+mm-em for OF subtraction, need to update with efficiency/trig correction}.
+\caption{\label{tab:results} 
+Summary of the observed and predicted yields in the 3 signal regions. MC errors are statistical only. The systematic uncertainty on the ABCD
+and \ptll\ method is from the scaling factors from MC closure only {\bf need to put additional uncertainties, for example jet/met scale.}
+For the OF subtraction, the quantity $\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$ is quoted; the systematic uncertainty
+here is from the ratio of muon to electron selection efficiencies.
 }
 \begin{tabular}{lccccc}
 \hline
-Signal Region                          &  2010 signal region   &   high $y$ signal region  &  high \Ht\ signal region     \\ 
+Signal Region                          &  2010 signal region                       &   high $y$ signal region               &  high \Ht\ signal region              \\ 
 \hline
-Observed yield                         &         14            &                        6  &                        3     \\
-MC prediction           
-ABCD prediction                        &
-\ptll\ prediction                      &
-OF subtraction ($ee + \mu\mu - e\mu$)  &
+Observed yield                         &         14                                &                        6               &                        3              \\
+\hline
+MC prediction                          &    8.6 $\pm$ 0.8                          &            1.3 $\pm$ 0.2               &            1.2 $\pm$ 0.5              \\
+ABCD prediction                        &    8.8 $\pm$ 2.0 (stat) $\pm$ 1.8 (syst)  & 0.9 $\pm$ 0.4 (stat) $\pm$ 0.2 (syst)  & 0.0 $\pm$ 0.4 (stat) $\pm$ 0.1 (syst) \\
+\ptll\ prediction                      &    5.5 $\pm$ 3.6 (stat) $\pm$ 1.0 (syst)  & 4.8 $\pm$ 3.6 (stat) $\pm$ 0.9 (syst)  & 0.0 $\pm$ 1.7 (stat) $\pm$ 0.3 (syst) \\
+\hline
+OF subtraction ($\Delta$)              &    2.2 $\pm$ 3.5 (stat) $\pm$ 0.1 (syst)  & 1.4 $\pm$ 2.4 (stat) $\pm$ 0.1 (syst)  & 0.1 $\pm$ 1.5 (stat) $\pm$ 0.0 (syst) \\
+\hline
 \end{tabular}
 \end{center}
 \end{table}
 
-In summary, we observe a slight excess of events with respect to MC and data-driven predictions in our loose 2010 signal region.
+A summary of our results is presented in Table~\ref{tab:results}. We observe a slight excess of events with respect to 
+MC and data-driven predictions in our loose 2010 signal region.
 The excess with respect to MC and ABCD predictions is enhanced after tightening the $y$ requirement, but the observed
 yield shows no significant excess with respect to the \ptll\ method prediction. There is also a slight excess of events
-with respect to MC and data-driven predictions for the high \Ht\ signal region. 
+with respect to MC and data-driven predictions for the high \Ht\ signal region. We do not observe any excess of
+same-flavor vs. opposite-flavor events.
