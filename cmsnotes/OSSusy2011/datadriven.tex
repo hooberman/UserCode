@@ -227,9 +227,10 @@ $Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events, in the mass range 76-106 GeV
 with no jets or \met\ requirements (see Fig.~\ref{fig:Z}). Alternatively, we can quantify
 the excess of SF vs. OF events with the quantity:
 
-\begin{center}
-$\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$,
-\end{center}
+\begin{equation}
+\label{eq:ofhighpt}
+\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu),
+\end{equation}
 
 which is predicted to be 0 for processes with uncorrelated lepton flavors. In order
 for this technique to work, the kinematic selection applied to events in all dilepton
@@ -251,11 +252,10 @@ values of $\Delta$ consistent with 0, as expected.
 \begin{table}[hbt]
 \begin{center}
 \caption{\label{tab:mcof} Expected yields in 1~fb$^{-1}$ \ttbar\ MC for the OF subtraction method,
-and the quantity 
-$\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$. 
+and the quantity $\Delta$, defined in Eq.~\ref{eq:ofhighpt}.
 The quoted systematic uncertainty refers to that of $R_{\mu e}$.
 }
-\begin{tabular}{lcccccccc}
+\begin{tabular}{llccc|c}
 \hline
 region                  &     sample  &       $N(ee)$     &      $N(\mu\mu)$   &     $N(e\mu)$      &         $\Delta$   \\ 
 \hline
@@ -279,6 +279,98 @@ preselection region     &   madgraph  & 431.1 $\pm$ 8.0   &  531.3 $\pm$ 8.9   &
 \end{table}
 
 \subsubsection{OF subtraction: Application to low \pt\ lepton sample}
+\label{sec:oflowpt}
 
-{\bf ADD CLOSURE STUDIES OF OF SUBTRACTION WITH TT MC LOW PT LEPTONS }
+In this section, we apply the OF subtraction technique to \ttbar\ MC with
+leptons passing \pt\ $>$ (10,5) GeV but not passing \pt\ $>$ (20,10) GeV
+(in order to remove overlap with the high lepton \pt\ sample).
+The OF subtraction in the low lepton \pt\ regime is complicated by 2 factors:
+
+\begin{itemize}
+\item The ratio of muon to electron selection efficiencies $R_{\mu e}$ increases significantly 
+at low \pt, due to a drop in the electron selection efficiency.
+\item We reconstruct muons down to \pt\ $>$ 5 GeV but electrons only to \pt\ $>$ 10 GeV.
+\end{itemize}
+
+Our strategy is the following:
+
+\begin{itemize}
+\item Evaluate $R_{\mu e}$ from \ttbar\ MC. 
+\item Parameterize $R_{\mu e}$ as a function of lepton \pt. For now we split in 2 bins, $10 < $ \pt\ $ < 20$ GeV
+and \pt\ $>$ 20 GeV.
+\item For data, we will apply to $R_{\mu e}$ a trigger efficiency correction and subtract the 
+expected contribution from fake leptons from the data-driven fake rate method (but neither correction is performed for the
+MC studies in this section).
+\item We first apply the OF subtraction to the preselection region, and then to the signal region. 
+\end{itemize}
+
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=1\linewidth]{plots/r_ttmadgraph.png}
+\caption{\label{fig:rtt}\protect 
+Left: the electron and muon selection efficiencies, as a function of lepton \pt, extracted
+from \ttbar\ MC. Right: the ratio $R_{\mu e}$ of muon to electron selection efficiencies
+as a function of lepton \pt.
+}
+\end{center}
+\end{figure}
+
+We begin by examining the dependence of $R_{\mu e}$ on lepton \pt, as shown in Fig.~\ref{fig:rtt}.
+We find that $R_{\mu e}$ increases in the region \pt\ 10--20 GeV, but is roughly constant for \pt\ $>$ 20 GeV.
+Hence we take $R_{\mu e}^{10-20} = 1.28$ for \pt\ 10--20 GeV and $R_{\mu e}^{>20} = 1.08$ for \pt\ $>$ 20 GeV, and assign
+a 5\% systematic uncertainty.
+
+Next, to take into account the fact the electrons and muons have a different \pt\ range, we split the low \pt\
+sample into events with leptons passing \pt\ $>$ (10,10) GeV, denoted in the following as (10,10), and 
+events with leptons passing \pt\ $>$ (10,5) GeV but not passing \pt\ $>$ (10,10) GeV, denoted in the following
+as (10,5). We find the following relations, expected for backgrounds with uncorrelated lepton flavors:
+
+\begin{itemize}
+\item $N(ee)(10,10)     = 1/(2 R_{\mu e}^{10-20}) N(e\mu)(10,10)$
+\item $N(\mu\mu)(10,10) = (R_{\mu e}^{10-20}/2) N(e\mu)(10,10)$
+\item $N(\mu\mu)(10,5)  = R_{\mu e}^{>20} N(e\mu)(10,5)$
+\end{itemize}
+
+Note that for (10,10) events, both leptons are in the range \pt\ 10--20 GeV, hence the relevant efficiency
+ratio is $R_{\mu e}^{10-20}$. For (10,5) events, both $ee$ and $\mu\mu$ events have a muon with \pt\ 5--10 GeV
+and an additional lepton with \pt\ $>$ 10 GeV. In most cases the leading lepton has \pt\ $>$ 20 GeV,
+hence we use $R_{\mu e}^{>20}$ for these events.
+{\bf TECHNICALLY, ONE SHOULD SPLIT (10,5) EVENTS DEPENDING ON LEADING LEPTON PT 10-20 vs. $>$20, AND USE CORRESPONDING R VALUE.}
+ 
+In this case we find the following expression for $\Delta$, quantifying the excess of SF vs. OF yields:
+
+\begin{equation}
+\label{eq:oflowpt}
+\Delta = R_{\mu e}^{10-20} N(ee)(10,10) + 1/R_{\mu e}^{10-20} N(\mu\mu)(10,10) + 1/R_{\mu e}^{>20} N(\mu\mu)(10,5) - N(e\mu)(10,10) - N(e\mu)(10,5)
+\end{equation}
+
+In Table~\ref{tab:mcoflowpt} we apply this technique to \ttbar\ MC. As expected, we find $\Delta$ consistent with 0.
+ 
+
+\begin{table}[hbt]
+\begin{center}
+\footnotesize
+\caption{\label{tab:mcoflowpt} Expected yields in 1~fb$^{-1}$ \ttbar\ MC for the OF subtraction method in the low lepton \pt\ regime,
+and the quantity $\Delta$, defined in Eq.~\ref{eq:oflowpt}. The quoted systematic uncertainty refers to that of $R_{\mu e}$.
+}
+\begin{tabular}{llccccc|c}
+\hline
+region                  &     sample  & $N(ee)(10,10)$ & $N(\mu\mu)(10,10)$ & $N(e\mu)(10,10)$ & $N(\mu\mu)(10,5)$ & $N(e\mu)(10,5)$ & $\Delta$  \\ 
+\hline
+
+\hline
+
+preselection region     &   madgraph  & 3.4 $\pm$ 0.7  & 4.9 $\pm$ 0.9      & 6.4 $\pm$ 1.0    & 22.9 $\pm$ 1.8    & 18.2 $\pm$ 1.6 &  4.8 $\pm$ 2.8 (stat) $\pm$ 1.0 (syst) \\  
+                        &   powheg    & 2.5 $\pm$ 0.2  & 4.4 $\pm$ 0.3      & 7.0 $\pm$ 0.3    & 19.0 $\pm$ 0.6    & 16.6 $\pm$ 0.5 &  0.6 $\pm$ 0.9 (stat) $\pm$ 0.9 (syst) \\
+
+\hline
+2010 signal region      &   madgraph  & 0.0 $\pm$ 0.0  & 0.4 $\pm$ 0.3      & 0.6 $\pm$ 0.3    & 1.0 $\pm$ 0.4     & 0.7 $\pm$ 0.3  & -0.0 $\pm$ 0.6 (stat) $\pm$ 0.1 (syst) \\
+                        &   powheg    & 0.1 $\pm$ 0.0  & 0.2 $\pm$ 0.1      & 0.4 $\pm$ 0.1    & 1.4 $\pm$ 0.2     & 1.1 $\pm$ 0.1  &  0.1 $\pm$ 0.2 (stat) $\pm$ 0.1 (syst) \\
+
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
 
