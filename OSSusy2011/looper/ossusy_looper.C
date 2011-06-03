@@ -1423,7 +1423,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           pfmetDown_    = pfmetDown.first;
           pfmetTest_    = pfmetTest.first;
           pfmet_        = pfmet;
-          pfmet_        = -999;//evt_pfmetSignificance();
+          pfmetsig_     = -999;//evt_pfmetSignificance();
           pfmetphi_     = pfmetphi;
           mucormet_     = mucormet;
           mucorjesmet_  = mucorjesmet;
