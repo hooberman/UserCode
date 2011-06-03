@@ -274,7 +274,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     cout << "setting json " << g_json << endl;
     set_goodrun_file( g_json );
 
-    set_vtxreweight_rootfile("vtxreweight_Spring11MC_153pb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
 
     initialized = true;
   }
