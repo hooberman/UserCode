@@ -2,9 +2,11 @@
 \section{Results}
 \label{sec:results}
 
-The data and SM prediction are shown in Fig.~\ref{fig:pfmet_eemm}, 
-and split between the $ee$ (Fig.~\ref{fig:pfmet_ee})
-and $\mu\mu$ (Fig.~\ref{fig:pfmet_mm}) final states. 
+The data and SM predictions are shown for all events in 
+Fig.~\ref{fig:pfmet_eemm}, 
+and split between the $ee$
+and $\mu\mu$ final states in 
+Fig.~\ref{fig:pfmet_ee} and \ref{fig:pfmet_mm}. 
 We observe 14 events (7 in each lepton flavor channel) 
 %We observe 7  events (all in the $\mu\mu$ channel) %2010
 in the loose signal region (MET $>$ \signalmetl GeV), 
@@ -13,7 +15,7 @@ compared to a data-driven prediction of
 %$6.0 \pm 0.8$, %2010
 which is dominated by the estimated \ttbar contribution. 
 For the tight signal region defined by MET $>$ \signalmett GeV, 
-we observe 2 events compared to a 
+we observe 2 events (both in the $\mu\mu$ channel) compared to a 
 data-driven prediction of 
 1.34 $\pm$ 0.33.
 %$1.2 \pm 0.4$. %2010
@@ -33,6 +35,28 @@ from the OF subtraction.
 %MET with respect to the data driven prediction in the bulk of the distribution. Systematic effects which may contribute
 %to this excess, including lepton mismeasurement and effects related to pile up, will be assessed in Sec.~\ref{sec:systematics}.
 
+
+\newcommand{\resultcaption}[1]{
+      The observed MET distribution for data in the #1 channels (black points),
+      predicted $t\bar{t}$ MET distribution (red line), the sum of predicted 
+	  $t\bar{t}$ MET distribution and
+      Z  MET  distribution  predicted  from photon  MET  templates
+      (solid blue line),  and MC stacked for dominant backgrounds. 
+	  %Here $VV$  indicates the sum
+      %of  $WW$,  $WZ$  and  $ZZ$, while  additional  backgrounds  from
+      %$W+$jets   and   single  top   are   omitted   since  they   are
+      %negligible.  
+	  Below the  plot is  tabulated the  integral  of the
+      predicted  MET distribution  using the  MET templates  method (Z
+      pred),  the  predicted ttbar  yield  using  the opposite  flavor
+      subtraction  technique (OFOS), the  sum of  these two
+      contributions (Z pred + OFOS), and the observed MET distribution
+      (data), for MET $>$ 30~GeV and $>$ 60~GeV (which are shown as cross
+	  checks), and for the signal regions of MET $>$ 100~GeV and $>$ 200~GeV. 
+	  %TO ADD
+	  %The quantity pull  = (data-Z prediction)/(Z prediction)  is shown on
+      %top of the  plot.  
+}
 
 \begin{figure}[hbtp]
   \begin{center}
@@ -64,24 +88,7 @@ from the OF subtraction.
 \hline
     \end{tabular}
 
-    \caption{
-      The observed MET distribution for data in the $ee$ and $\mu\mu$ channels (black points),
-      predicted $t\bar{t}$ MET distribution (red line), the sum of predicted $t\bar{t}$ MET distribution and
-      Z  MET  distribution  predicted  from photon  MET  templates
-      (solid blue line),  and MC stacked. Here $VV$  indicates the sum
-      of  $WW$,  $WZ$  and  $ZZ$, while  additional  backgrounds  from
-      $W+$jets   and   single  top   are   omitted   since  they   are
-      negligible.  Below the  plot is  tabulated the  integral  of the
-      predicted  MET distribution  using the  MET templates  method (Z
-      pred),  the  predicted ttbar  yield  using  the opposite  flavor
-      subtraction  technique (OFOS), the  sum of  these two
-      contributions (Z pred + OFOS), and the observed MET distribution
-      (data), for  
-	  MET $>$ 30~GeV,  $>$ 60~GeV,  $>$ 100~GeV, and $>$  200~GeV. 
-	  %MET $>$ 30~GeV,  $>$ 60~GeV and $>$  120~GeV. %2010
-	  The quantity pull  = (data-Z prediction)/(Z prediction)  is shown on
-      top of the  plot.  
-    }
+    \caption{ \resultcaption{$ee$ and $\mu\mu$} }
     \label{fig:pfmet_eemm}
   \end{center}
 \end{figure}
@@ -118,22 +125,7 @@ from the OF subtraction.
 \hline
     \end{tabular}
 
-    \caption{
-      The observed MET distribution for data in the $ee$ channel (black points),
-      predicted $t\bar{t}$ MET distribution (red line), the sum of predicted $t\bar{t}$ MET distribution and
-      Z  MET  distribution  predicted  from photon  MET  templates
-      (solid blue line),  and MC stacked. Here $VV$  indicates the sum
-      of  $WW$,  $WZ$  and  $ZZ$, while  additional  backgrounds  from
-      $W+$jets   and   single  top   are   omitted   since  they   are
-      negligible.  Below the  plot is  tabulated the  integral  of the
-      predicted  MET distribution  using the  MET templates  method (Z
-      pred),  the  predicted ttbar  yield  using  the opposite  flavor
-      subtraction  technique (OFOS), the  sum of  these two
-      contributions (Z pred + OFOS), and the observed MET distribution
-      (data), for  MET $>$ 30~GeV,  $>$ 60~GeV and $>$  120~GeV. The
-      quantity pull  = (data-Z prediction)/(Z prediction)  is shown on
-      top  of the  plot.  
-    }
+    \caption{ \resultcaption{$ee$} }
     \label{fig:pfmet_ee}
   \end{center}
 \end{figure}
@@ -169,22 +161,7 @@ from the OF subtraction.
 \hline
     \end{tabular}
 
-    \caption{
-      The observed MET distribution for data in the $\mu\mu$ channel (black points),
-      predicted $t\bar{t}$ MET distribution (red line), the sum of predicted $t\bar{t}$ MET distribution and
-      Z  MET  distribution  predicted  from photon  MET  templates
-      (solid blue line),  and MC stacked. Here $VV$  indicates the sum
-      of  $WW$,  $WZ$  and  $ZZ$, while  additional  backgrounds  from
-      $W+$jets   and   single  top   are   omitted   since  they   are
-      negligible.  Below the  plot is  tabulated the  integral  of the
-      predicted  MET distribution  using the  MET templates  method (Z
-      pred),  the  predicted ttbar  yield  using  the opposite  flavor
-      subtraction  technique (OFOS), the  sum of  these two
-      contributions (Z pred + OFOS), and the observed MET distribution
-      (data), for  MET $>$ 30~GeV,  $>$ 60~GeV and $>$  120~GeV. The
-      quantity pull  = (data-Z prediction)/(Z prediction)  is shown on
-      top  of the  plot.  
-    }
+    \caption{ \resultcaption{$\mu\mu$} }
     \label{fig:pfmet_mm}
   \end{center}
 \end{figure}

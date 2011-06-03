@@ -14,8 +14,9 @@ double muon trigger, while an $e\mu$ event is required to pass at least one %sin
 $e-\mu$ cross trigger. 
 $e\mu$ events are retained in a control sample used to estimate the ttbar contribution as described in Section~\ref{sec:topbkg}.
 
-The detailed list of triggers used for selecting dilepton events can be found in Appendix~\ref{app:trigsel},
-and we evaluate the efficiency using the same trigger model discussed in~\cite{ref:GenericOS}.
+The list of triggers used for selecting dilepton events can be found in Appendix~\ref{app:trigsel}
+for which the approximate efficiencies are 90\% ($\mu\mu$), 95\% ($e\mu$), 100\% ($ee$).
+%and we evaluate the efficiency using the same trigger model discussed in~\cite{ref:GenericOS}.
 
 Triggers used for creation of photon templates are listed in Section~\ref{sec:templates}.
 
@@ -90,8 +91,8 @@ Because Z $\rightarrow l^+l^-$ (where $l$ is an electron or muon) is a final sta
 	\item H/E $<$ 0.1 (0.075), $\sigma_{i\eta i\eta} <$ 0.011 (0.031) in barrel (endcap)
 	\item d$\eta <$ 0.01 (0.01), d$\phi <$ 0.15 (0.1) in barrel (endcap)
 	\end{itemize}
-  \item $|d_0| <0.04$ (with respect to the nearest primary vertex)
-  \item $|d_z| <1.0$ (with respect to the nearest primary vertex)
+  \item $|d_0| <0.04$ (with respect to the first DA primary vertex)
+  \item $|d_z| <1.0$ (with respect to the first DA primary vertex)
   \item Isolation: The sum of the \pt of tracks and the transverse energy in both calorimeters in a cone of $dR =$ 0.3 divided by the \pt of the electron is required to be less than 0.15. In the barrel only, a pedestal of 1 GeV is subtracted from the ECAL energy.
   \item No muon is allowed to be within $dR < $0.1 of the electron
   \item No more than one missing inner tracker hit \cite{ref:sntconv}
@@ -136,7 +137,8 @@ Because Z $\rightarrow l^+l^-$ (where $l$ is an electron or muon) is a final sta
   \item The ECAL energy in the calorimeter tower traversed by the muon cannot exceed 4 GeV
   \item The HCAL energy in the calorimeter tower traversed by the muon cannot exceed 6 GeV
   \item Must have at least one stand-alone hit
-  \item The $d_0$ with respect to the beamspot is $<$ 0.02 cm
+  \item $|d_0| <0.02$ (with respect to the first DA primary vertex)
+  \item $|d_z| <1.0$ (with respect to the first DA primary vertex)
   \item Relative transverse momentum error of silicon track used for muon fit is  $\delta(p_{T})/p_{T} < $ 0.1
   \item The muon is required to be a PF muon whose \pt is no more than 1 GeV different than the reco muon (to ensure consistency with PF MET)
   \item The same isolation requirement is applied as in the electron case (but no pedestal is subtracted from the ECAL energy).

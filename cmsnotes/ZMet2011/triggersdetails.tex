@@ -1,4 +1,6 @@
 \section{Triggers}
+
+\subsection{Dilepton Triggers}
 \label{app:trigsel}
 
 The detailed list of triggers for selecting dilepton events is (with the version number omitted for simplicity):
@@ -20,6 +22,30 @@ The detailed list of triggers for selecting dilepton events is (with the version
   \item \verb=HLT_Mu17_Ele8_CaloIdL_v=
   \item \verb=HLT_Mu8_Ele17_CaloIdL_v=
   \end{itemize}
+\end{itemize}
+
+
+\subsection{Photon Triggers}
+\label{app:photrig}
+
+The photon triggers used are:
+
+\begin{itemize}
+\item \verb=HLT_Photon20_CaloIdVL_IsoL_v*= %(\Z \pt $<$ 33~GeV)
+\item \verb=HLT_Photon30_CaloIdVL_IsoL_v*= %(33 GeV $<$ \Z \pt $<$ 55~GeV)
+\item \verb=HLT_Photon50_CaloIdVL_IsoL_v*= %(55 GeV $<$ \Z \pt $<$ 81~GeV)
+\item \verb=HLT_Photon75_CaloIdVL_IsoL_v*= %(\Z \pt $>$ 81~GeV)
+\end{itemize}
+
+The HLT requirements on the above triggers are \cite{ref:eghlt}:
+
+\begin{itemize}
+\item CaloIdVL: \\
+  H/E $<$ 0.15 (0.1), $\sigma_{i\eta i\eta} <$ 0.024 (0.04) in barrel (endcap)
+\item IsoL: \\
+  Ecal ET $<$ 5.5 + 0.012*ET, %\\
+  Hcal ET $<$ 3.5 + 0.005*ET, %\\
+  Trk PT $<$ 3.5 + 0.002*ET 
 \end{itemize}
 
 
