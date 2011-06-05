@@ -34,7 +34,7 @@ Left: distributions of \Ht\
 in MC $t\bar{t}$ events for different intervals of $y$. 
 h1, h2, and h3 refer to the $y$ intervals 4.5-6.5, 6.5-8.5 and $>$8.5, respectively. Right: 
 Distributions of $y$ vs. 
-\Ht\ for SM Monte Carlo.  Here we also show our choice of ABCD regions. The correlation coefficient
+\Ht\ for \ttbar\ MC.  Here we also show our choice of ABCD regions. The correlation coefficient
 ${\rm corr_{XY}}$ is computed for events falling in the ABCD regions.
 }
 \end{center}
@@ -74,13 +74,12 @@ the signal region.}
 \begin{center}
 \caption{\label{tab:mcabcd} Expected yields from \ttbar\ MC in 1~fb$^{-1}$ in the four
 ABCD regions for the signal regions depicted in Figs.~\ref{fig:abcdData1}-\ref{fig:abcdData3},
-as well as the predicted yield in region D given
-by A $\times$ C / B and the ratio of the observed signal yield to the prediction. The quoted uncertainties are statistical
-only.
+as well as the predicted yield in region D given by $N _A \times N_C / N_B$ and the ratio of 
+the observed signal yield to the prediction. The quoted uncertainties are statistical only.
 }
 \begin{tabular}{llccccc|c}
 \hline
-signal region &           sample  &                A  &                B  &                C  &                D  &   A $\times$ B / C   & obs/pred\\
+signal region &           sample  &                A  &                B  &                C  &                D  & $N _A \times N_C / N_B$   & obs/pred\\
 \hline
 
 \hline
@@ -110,24 +109,28 @@ high \Ht\ signal region &   madgraph  & 251.3  $\pm$  6.1  &951.5  $\pm$  11.9  
 
 \clearpage
 
-\subsection{Dilepton $P_T$ method}
+\subsection{Dilepton $p_T$ method}
 \label{sec:victory}
 This method is based on a suggestion by V. Pavlunin~\cite{ref:victory},
 and was investigated by our group in 2009~\cite{ref:ourvictory} and
 in our 2010 analysis~\cite{ref:ospaper}.
 The idea is that in dilepton $t\bar{t}$ events the lepton and neutrinos
-from $W$ decays have the same $P_T$ spectrum (modulo $W$ polarization 
+from $W$ decays have the same $p_T$ spectrum (modulo $W$ polarization 
 effects).  One can then use the observed 
-$P_T(\ell\ell)$ distribution to model the sum of neutrino $P_T$'s which 
+$p_T(\ell\ell)$ distribution to model the sum of neutrino $p_T$'s which 
 is identified with the \met.
 
 Then, in order to predict the $t\bar{t} \to$ dilepton contribution to a 
-selection with \met$+$X, one applies a cut on $P_T(\ell\ell)+$X instead.
-In practice one has to rescale the result of the $P_T(\ell\ell)+$X selection
+selection with \met$+$X, one applies a cut on $p_T(\ell\ell)+$X instead.
+In practice one has to rescale the result of the $p_T(\ell\ell)+$X selection
 to account for the fact that any dilepton selection must include a 
 moderate \met\ cut in order to reduce Drell Yan backgrounds.  This 
 is discussed in Section 5.3 of Reference~\cite{ref:ourvictory}; for a \met\
 cut of 50 GeV, the rescaling factor is obtained from the MC as
+
+\begin{center}
+$ K = \frac{\int_0^{\infty} {\cal N}(\ptll)~~d\ptll~}{\int_{50}^{\infty} {\cal N}(\ptll)~~d\ptll~} = 1.5$.
+\end{center}
 
 \begin{figure}[hbt]
 \begin{center}
@@ -206,10 +209,6 @@ statistcal precision. The results of the \ptll\ method applied to \ttbar\ MC in 
 corresponding to the 2010 signal region ($y > 8.5$~GeV$^{1/2}$) and the high $y$ region ($y > 13$~GeV$^{1/2}$) are given
 in Table~\ref{tab:mcvictory_control}. Based on these results we will apply a correction factor $K_C = 1.4 \pm 0.1$ ($K_C = 1.2 \pm 0.1$)
 to data for the loose (tight) $y$ requirements in the \Ht\ sideband region.
-
-\begin{center}
-$ K = \frac{\int_0^{\infty} {\cal N}(\ptll)~~d\ptll~}{\int_{50}^{\infty} {\cal N}(\ptll)~~d\ptll~} = 1.5$
-\end{center}
 
 \begin{table}[hbt]
 \begin{center}
