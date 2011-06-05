@@ -28,17 +28,14 @@ number of reconstructed vertices since are not comparing MC to data.
 
 \begin{figure}[hbt]
 \begin{center}
-\includegraphics[width=0.48\linewidth]{uncor.png}
-\includegraphics[width=0.48\linewidth]{ttdil_uncor_38X.png}
+\includegraphics[width=1\linewidth]{plots/abcd_tt.pdf}
 \caption{\label{fig:uncor}\protect 
-Left: distributions of SumJetPt 
-in MC $t\bar{t}$ events for different intervals of 
-MET$/\sqrt{\rm SumJetPt}$. h1, h2, and h3 refer to the MET$/\sqrt{\rm SumJetPt}$
-intervals 4.5-6.5, 6.5-8.5 and $>$8.5, respectively. Right: 
-Distributions of MET$/\sqrt{\rm SumJetPt}$ vs. 
-SumJetPt for SM Monte Carlo.  Here we also show our choice of ABCD regions. The correlation coefficient
+Left: distributions of \Ht\ 
+in MC $t\bar{t}$ events for different intervals of $y$. 
+h1, h2, and h3 refer to the $y$ intervals 4.5-6.5, 6.5-8.5 and $>$8.5, respectively. Right: 
+Distributions of $y$ vs. 
+\Ht\ for SM Monte Carlo.  Here we also show our choice of ABCD regions. The correlation coefficient
 ${\rm corr_{XY}}$ is computed for events falling in the ABCD regions.
-{\bf THESE PLOTS ARE OLD MC, WILL UPDATE}
 }
 \end{center}
 \end{figure}
@@ -115,8 +112,8 @@ high \Ht\ signal region &   madgraph  & 251.3  $\pm$  6.1  &951.5  $\pm$  11.9  
 
 \subsection{Dilepton $P_T$ method}
 \label{sec:victory}
-This method is based on a suggestion by V. Pavlunin\cite{ref:victory},
-and was investigated by our group in 2009\cite{ref:ourvictory} and
+This method is based on a suggestion by V. Pavlunin~\cite{ref:victory},
+and was investigated by our group in 2009~\cite{ref:ourvictory} and
 in our 2010 analysis~\cite{ref:ospaper}.
 The idea is that in dilepton $t\bar{t}$ events the lepton and neutrinos
 from $W$ decays have the same $P_T$ spectrum (modulo $W$ polarization 
@@ -145,15 +142,16 @@ the signal region.}
 We summarize the expected results of the \ptll\ method in 1~fb$^{-1}$ \ttbar\ MC in Table~\ref{tab:mcvictory},
 and we show the dependence of observed/predicted vs. the signal region requirements in Fig.~\ref{fig:victory}.
 Based on these results, we apply the scale factors and uncertainties summarized in Table~\ref{tab:cor} to the
-predicted background from the ABCD method. In~\cite{ref:osnote}, we have studied extensively the origin
+predicted background from the \ptll\ method. In~\cite{ref:osnote}, we have studied extensively the origin
 of the excess of observed vs. predicted events from this method. We found that it is due mostly to 
 the $W$ polarization, which results in a harder \pt\ distribution for the $W$ neutrinos than charged leptons.
 
 \begin{table}[hbt]
 \begin{center}
-\caption{\label{tab:mcvictory} Expected observed and predicted yields in 1~fb$^{-1}$ for \ttbar\ MC for the \ptll\ method, 
+\caption{\label{tab:mcvictory} Expected observed and predicted yields in 1~fb$^{-1}$ for \ttbar\ MC for the \ptll\ method
+applied to the 3 signal regions, 
 and the ratio of the observed signal yield to the prediction. The quoted uncertainties are statistical
-only, assuming Gaussian errors.
+only.
 }
 \begin{tabular}{llcc|c}
 \hline
@@ -175,15 +173,39 @@ high $y$ signal region  &   madgraph  & 2.4 $\pm$ 0.7   &       4.9 $\pm$ 0.9   
 
 high \Ht\ signal region &   madgraph  & 2.9 $\pm$ 0.8   &       3.8 $\pm$ 0.8   &     1.31 $\pm$ 0.43  \\
                         &     powheg  & 2.9 $\pm$ 0.2   &       3.8 $\pm$ 0.3   &     1.33 $\pm$ 0.14  \\
-
-
-\hline
-%high $y$ signal region  & 
-
 \hline
 \end{tabular}
 \end{center}
 \end{table}
+
+\begin{table}[hbt]
+\begin{center}
+\caption{\label{tab:mcvictory_control} Expected observed and predicted yields in 1~fb$^{-1}$ for \ttbar\ MC for the \ptll\ method
+for the control regions in the \Ht\ sideband region 125 $<$ \Ht\ $<$ 300 GeV, and the ratio of the observed signal yield 
+to the prediction. The quoted uncertainties are statistical only, assuming Gaussian errors.
+}
+\begin{tabular}{llcc|c}
+\hline
+control region &               sample  &            predicted  &             observed  &           obs/pred   \\ 
+\hline
+
+\hline
+125 $<$ \Ht\ $<$ 300~GeV, $y >$ 8.5~GeV$^{1/2}$    &   madgraph  &      35.8 $\pm$ 1.3   &      51.3 $\pm$ 1.2   &     1.43 $\pm$ 0.06  \\
+                                                  &   powheg    &      33.4 $\pm$ 0.4   &      47.3 $\pm$ 0.4   &     1.42 $\pm$ 0.02  \\
+\hline
+125 $<$ \Ht\ $<$ 300~GeV,$y >$ 13~GeV$^{1/2}$      &   madgraph  &       3.4 $\pm$ 0.4   &       4.4 $\pm$ 0.4   &     1.29 $\pm$ 0.19  \\
+                                                  &   powheg    &       3.3 $\pm$ 0.1   &       4.1 $\pm$ 0.1   &     1.23 $\pm$ 0.06  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+As a validation of the \ptll\ method, we also apply the background estimate to the \Ht\ sideband region 125--300 GeV, where
+we expect the events to be dominated by background and where the higher event yields allow us to test the method with higher
+statistcal precision. The results of the \ptll\ method applied to \ttbar\ MC in the \Ht\ sideband region with the $y$ requirements 
+corresponding to the 2010 signal region ($y > 8.5$~GeV$^{1/2}$) and the high $y$ region ($y > 13$~GeV$^{1/2}$) are given
+in Table~\ref{tab:mcvictory_control}. Based on these results we will apply a correction factor $K_C = 1.4 \pm 0.1$ ($K_C = 1.2 \pm 0.1$)
+to data for the loose (tight) $y$ requirements in the \Ht\ sideband region.
 
 \begin{center}
 $ K = \frac{\int_0^{\infty} {\cal N}(\ptll)~~d\ptll~}{\int_{50}^{\infty} {\cal N}(\ptll)~~d\ptll~} = 1.5$
@@ -233,9 +255,7 @@ the excess of SF vs. OF events with the quantity:
 \end{equation}
 
 which is predicted to be 0 for processes with uncorrelated lepton flavors. 
-For data, we have verified that the contribution from fake leptons in the high lepton \pt\
-signal regions is small using the data-driven fake rate method, hence we do not need to 
-correct for fake leptons here. In order
+In order
 for this technique to work, the kinematic selection applied to events in all dilepton
 flavor channels must be the same, which is not the case for our default selection because the
 $Z$ mass veto is applied only to same-flavor channels. Therefore when applying the OF
@@ -249,7 +269,11 @@ to \ttbar\ MC with low \pt\ leptons.
 
 We begin by applying the OF subtraction technique to \ttbar\ MC with leptons passing \pt\ $>$ (20,10) GeV.
 Here we extract $R_{e\mu}$ by taking the ratio of $Z \to \mu^+\mu^-$ vs. $Z \to e^+e^-$ events in the
-window 76--106 GeV in DY MC. The results are summarized in Table~\ref{tab:mcof}, where we find
+window 76--106 GeV in DY MC. 
+For data, we have verified that the contribution from fake leptons in the high lepton \pt\
+signal regions is small using the data-driven fake rate method, hence we do not need to 
+correct for fake leptons here. 
+The results are summarized in Table~\ref{tab:mcof}, where we find
 values of $\Delta$ consistent with 0, as expected.
 
 \begin{table}[hbt]
@@ -338,7 +362,6 @@ Note that for (10,10) events, both leptons are in the range \pt\ 10--20 GeV, hen
 ratio is $R_{\mu e}^{10-20}$. For (10,5) events, both $ee$ and $\mu\mu$ events have a muon with \pt\ 5--10 GeV
 and an additional lepton with \pt\ $>$ 10 GeV. In most cases the leading lepton has \pt\ $>$ 20 GeV,
 hence we use $R_{\mu e}^{>20}$ for these events.
-{\bf TECHNICALLY, ONE SHOULD SPLIT (10,5) EVENTS DEPENDING ON LEADING LEPTON PT 10-20 vs. $>$20, AND USE CORRESPONDING R VALUE.}
  
 In this case we find the following expression for $\Delta$, quantifying the excess of SF vs. OF yields:
 

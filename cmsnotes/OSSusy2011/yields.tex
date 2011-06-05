@@ -4,7 +4,7 @@
 The data yields and the MC predictions for the dilepton trigger sample are given in Table~\ref{tab:yields1}.
 We also look for an excess of low lepton \pt\ events using the dilepton-\Ht\ trigger sample, and
 requiring the leptons to pass lepton \pt\ $>$ (10,5) GeV but not pass lepton \pt\ $>$ (20,10) GeV
-(to remove overlap with the dilepton trigger sample). 
+(to remove overlap with the dilepton trigger sample), as summarized in Table~\ref{tab:yields3}. 
 Finally, we verify in Table~\ref{tab:yields4} that the data samples collected with high \pt\ dilepton
 triggers and lepton-\Ht\ cross triggers give consistent yields, after including the requirements
 \Ht\ $>$ 200 GeV and lepton \pt\ $>$ (20,10) GeV.
@@ -16,7 +16,6 @@ reconstructed DA vertices matches that in data. Contributions for \ttfake\ and \
 with 1 lepton not originating from $W/Z$ decay (fake lepton) and the contributions from QCD multijet events 
 with 2 fake leptons (single fakes and double fakes, respectively) are estimated with the data-driven
 fake rate method~\cite{ref:top}. 
-{\bf NO CORRECTION FOR TRUE LEPTON CONTAMINATION APPLIED HERE, TO BE FIXED}.
 The DY contribution is dominated by DY$\rightarrow \tau^+\tau^-$,
 and we have verified with the data-driven $R_{out/in}$ method~\cite{ref:top} that the
 contributions from DY$\to e^{+}e^{-}$ and DY$\to \mu^{+}\mu^{-}$ are negligible.
@@ -32,26 +31,28 @@ We observe a slight excess in data with respect to MC expectations.
 \caption{\label{tab:yields1}
 High \pt\ dilepton trigger data and Monte Carlo yields for the preselection 
 (njets $\geq$ 2, \Ht$>$100 GeV, \met\ $>$ 50 GeV, lepton \pt\ $>$ (20,10) GeV).
-For \ttll\ and \tttau\, $\ell=e,\mu$.
-{\bf NEED TO APPLY SPILLAGE CORRECTION. SUBTRACT 2 X DOUBLE FAKES FROM SINGLE FAKES. PUT 50\% SYST}
+For the \ttll\ and \tttau\ samples, $\ell=e,\mu$. The fake lepton contributions
+have not been corrected for contamination from true leptons.
+{\bf TO BE FIXED}
 }
 \begin{tabular}{l|cccc}
-
 %official json 204/pb, 42X data, Spring11 MC
+\hline
+         Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
           \ttll   & 70.3 $\pm$ 1.7   & 77.8 $\pm$ 1.7   &187.3 $\pm$ 2.7   &335.4 $\pm$ 3.6  \\
          \tttau   & 16.1 $\pm$ 0.8   & 19.5 $\pm$ 0.9   & 42.0 $\pm$ 1.3   & 77.7 $\pm$ 1.8  \\
-   single fakes   &  8.5 $\pm$ 2.2   & 17.0 $\pm$ 3.1   & 22.7 $\pm$ 3.7   & 48.3 $\pm$ 5.3  \\
-   double fakes   &  0.0 $\pm$ 0.0   &  0.4 $\pm$ 0.3   &  1.0 $\pm$ 0.6   &  1.5 $\pm$ 0.6  \\
+   single fakes   &  8.5 $\pm$ 4.2   & 16.1 $\pm$ 8.1   &20.7 $\pm$ 10.4   &45.3 $\pm$ 13.8  \\
+   double fakes   &  0.0 $\pm$ 0.0   &  0.4 $\pm$ 0.2   &  1.0 $\pm$ 0.5   &  1.5 $\pm$ 0.6  \\
              DY   &  3.8 $\pm$ 1.0   &  5.7 $\pm$ 1.3   &  7.9 $\pm$ 1.5   & 17.4 $\pm$ 2.2  \\
             \WW   &  0.8 $\pm$ 0.1   &  0.9 $\pm$ 0.1   &  2.0 $\pm$ 0.1   &  3.7 $\pm$ 0.2  \\
             \WZ   &  0.2 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.4 $\pm$ 0.0   &  0.8 $\pm$ 0.0  \\
             \ZZ   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.2 $\pm$ 0.0  \\
      single top   &  2.6 $\pm$ 0.1   &  2.9 $\pm$ 0.1   &  6.9 $\pm$ 0.2   & 12.5 $\pm$ 0.3  \\
 \hline
-      tot SM MC   &102.5 $\pm$ 3.1   &124.5 $\pm$ 3.9   &270.4 $\pm$ 5.0   &497.3 $\pm$ 7.1  \\
+      tot SM MC   &102.5 $\pm$ 4.8   &123.6 $\pm$ 8.4   &268.3 $\pm$ 10.9   &494.4 $\pm$ 14.6  \\
 \hline
            data   &            113   &            122   &            313   &            548  \\
 \hline
@@ -105,28 +106,27 @@ For \ttll\ and \tttau\, $\ell=e,\mu$.
 \begin{center}
 \caption{\label{tab:yields3} 
 Dilepton-\Ht\ trigger data and Monte Carlo yields for the preselection 
-(njets $\geq$ 2, \Ht\ $>$ 200 GeV, \met\ $>$ 50 GeV, lepton \pt $>$ (10,5) GeV and not 
+(njets $\geq$ 2, \Ht\ $>$ 200 GeV, \met\ $>$ 50 GeV, lepton \pt\ $>$ (10,5) GeV and not 
 lepton \pt\ $>$ (20,10) GeV).
-For \ttll\ and \tttau\, $\ell=e,\mu$.
-{\bf NEED TO APPLY SPILLAGE CORRECTION. SUBTRACT 2 X DOUBLE FAKES FROM SINGLE FAKES. PUT 50\% SYST}
+For the \ttll\ and \tttau\ samples, $\ell=e,\mu$. The fake lepton contributions
+have not been corrected for contamination from true leptons.
+{\bf TO BE FIXED}
 }
 \begin{tabular}{l|cccc}
-
-%official json 204/pb, 42X data, Spring11 MC
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
           \ttll   &  0.3 $\pm$ 0.1   &  2.2 $\pm$ 0.3   &  2.4 $\pm$ 0.3   &  4.9 $\pm$ 0.4  \\
          \tttau   &  0.4 $\pm$ 0.1   &  2.3 $\pm$ 0.3   &  2.1 $\pm$ 0.3   &  4.7 $\pm$ 0.4  \\
-   single fakes   &  0.0 $\pm$ 0.0   &  3.0 $\pm$ 1.2   &  3.0 $\pm$ 1.2   &  6.0 $\pm$ 1.6  \\
-   double fakes   &  0.0 $\pm$ 0.0   &  0.6 $\pm$ 0.4   &  0.0 $\pm$ 0.0   &  0.6 $\pm$ 0.4  \\
+   single fakes   &  0.0 $\pm$ 0.0   &  1.7 $\pm$ 0.9   &  3.0 $\pm$ 1.5   &  4.8 $\pm$ 1.7  \\
+   double fakes   &  0.0 $\pm$ 0.0   &  0.6 $\pm$ 0.3   &  0.0 $\pm$ 0.0   &  0.6 $\pm$ 0.3  \\
              DY   &  0.0 $\pm$ 0.0   &  2.2 $\pm$ 0.8   &  0.4 $\pm$ 0.4   &  2.6 $\pm$ 0.9  \\
             \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
             \WZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
             \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
      single top   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.4 $\pm$ 0.1  \\
 \hline
-      tot SM MC   &  0.7 $\pm$ 0.2   & 10.4 $\pm$ 1.5   &  8.1 $\pm$ 1.3   & 19.3 $\pm$ 2.0  \\
+      tot SM MC   &  0.7 $\pm$ 0.2   &  9.1 $\pm$ 1.3   &  8.1 $\pm$ 1.6   & 18.0 $\pm$ 2.1  \\
 \hline
            data   &              1   &              7   &              5   &             13  \\
 \hline

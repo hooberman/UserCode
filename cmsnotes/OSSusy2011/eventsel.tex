@@ -107,16 +107,17 @@ go negative.
 two~\cite{ref:conv}.
 
 \item Conversion removal via partner track finding: any electron
-where an additional GeneralTrack is found with $Dist < 0.02$ cm 
-and $\Delta \cot \theta < 0.02$ is vetoed~\cite{ref:conv}.
+where an additional GeneralTrack is found with dist $< 0.02$ cm 
+and $\Delta\cot\theta < 0.02$ is vetoed~\cite{ref:conv}.
 
 %\item Cleaning for ECAL spike (aka Swiss-Cross cleaning) has been applied
 %at the reconstruction level (CMSSW 38x).
 
 \end{itemize}
 
-The requirements defining the fakeable objects used to estimate the
-contributions from fake leptons are listed in App.~\ref{sec:appendix_fo}.
+We estimate the contributions from fake leptons using the data-driven
+fake rate (FR) method. The requirements defining the fakeable objects 
+are listed in App.~\ref{sec:appendix_fo}.
 
 
 \subsection{Invariant mass requirement}
@@ -125,7 +126,7 @@ contributions from fake leptons are listed in App.~\ref{sec:appendix_fo}.
 We remove $e^+e^-$ and $\mu^+ \mu^-$ events with invariant 
 mass between 76 and 106 GeV.  We also remove events
 with invariant mass $<$ 12 GeV, since this kinematical region is 
-not well reproduced in CMS Monte Carlo and to remove Upsilons.
+not well reproduced in CMS Monte Carlo and to remove events with Upsilons.
 
 In addition, we remove $Z \to \mu\mu\gamma$
 candidates with the $\gamma$ collinear with one of the muons.  This is

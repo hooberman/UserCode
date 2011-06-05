@@ -5,7 +5,7 @@
 \label{sec:abcdres}
 
 The data yields in the 
-four regions are summarized in Tables~\ref{tab:datayield1}-Table~\ref{tab:datayield3}
+four regions are summarized in Tables~\ref{tab:datayield1}-\ref{tab:datayield3}
 for the 3 signal regions. The ABCD background prediction $N_A \times N_C / N_B$ is scaled
 by the correction factors determined in Sec.~\ref{sec:datadriven}, as summarized in Table~\ref{tab:cor}.
 The results of the ABCD predictions are summarized in Table~\ref{tab:abcd}.
@@ -159,12 +159,12 @@ high \Ht\ signal region &          $0.0 \pm 0.3$    & $1.2 \pm 0.2$             
 \begin{table}[hbt]
 \begin{center}
 \caption{\label{tab:victory} 
-Summary of results of the dilepton $p_{T}$ template method.
+Summary of results of the dilepton $p_{T}$ template method applied to the 3 signal regions.
 The quantities indicated in the table are discussed in the text.
 The quoted statistical uncertainty in the prediction $N_P$ is due to
 that of $N(D')$, the quoted systematic uncertainty includes that of $N(DY)$ and $K_C$.
-{\bf K and KC taken from MC, do we want to take K and/or KC from data? }
-{\bf Need to add jet/met uncertainty here}
+%{\bf K and KC taken from MC, do we want to take K and/or KC from data? }
+%{\bf Need to add jet/met uncertainty here}
 %{\color{red} \bf CURRENTLY USING 30\% UNCERTAINTY ON K_C IN 2010 REGION, WHICH IS WHAT WE HAD LAST YEAR (NEED TO REPEAT JET/MET UNCERTAINTIES?).}
 %{\color{red} \bf FOR HIGH Y/HIGH HT REGION, TAKING SYST UNCERTAINTY ON KC FROM MC STATS, WHICH IS PROBABLY DOMINANT}
 }
@@ -185,13 +185,72 @@ using the same requirements as D but switching the $y$ requirement to a $\ptll/\
 We subtract off the expected DY contribution using the data-driven $R_{out/in}$ technique, using $R_{out/in} = 0.13 \pm 0.07$.
 {\color{red} \bf add plot justifying this value}. We then scale this yield by 2 corrections factors:
 $K$, the \met\ acceptance correction factor, and $K_C$, the correction factor determined in Sec.~\ref{sec:datadriven}.
-Our final prediction $N_P$ is given by the following, as summarized in Table~\ref{tab:victory}:
+Our final prediction $N_P$ is given by:
 
 \begin{center}
-$ N_P = (N(D')-N(DY)) \times K \times K_C$.
+$ N_P = (N(D')-N(DY)) \times K \times K_C$,
 \end{center}
 
-{\color{red} \bf I will add here the results of victory method applied to the \Ht\ sideband region as a validation of the method and victory plots.}
+as summarized in Table~\ref{tab:victory}, and displayed in Figs.~\ref{fig:vic1}-\ref{fig:vic3}.
+Note that we currently extract $K$ from MC, and verify that it is consistent with the value extracted from data.
+We may instead use $K$ extracted from data in the future, as the data sample increases and the statistical uncertainty
+in $K$ decreases.
+We also perform the \ptll\ method in the \Ht\ sideband region 125--300~GeV, as a validation of the technique in a high statistics
+sample which is expected to be dominated by background. The results are summarized in Table~\ref{tab:victorycontrol}.
+For both the loose ($y > 8.5$~GeV$^{1/2}$) and tight ($y > 13$~GeV$^{1/2}$) control regions, the observed yields are consistent
+with the predictions from the \ptll\ method.
+
+
+\begin{table}[hbt]
+\begin{center}
+\caption{\label{tab:victorycontrol} 
+Summary of results of the dilepton $p_{T}$ template method applied to the \Ht\ sideband control region 125--300 GeV.
+The quantities indicated in the table are discussed in the text.
+The quoted statistical uncertainty in the prediction $N_P$ is due to
+that of $N(D')$, the quoted systematic uncertainty includes that of $N(DY)$ and $K_C$.
+The prediction are compare with the observed yield $N_O$
+}
+\begin{tabular}{lcccccc}
+\hline
+Control Region                                   &  $N(D')$   &   $N(DY)$        &  $K$   &   $K_C$          & $N_P$                                  & $N_O$ \\ 
+\hline
+125 $<$ \Ht\ $<$ 300~GeV, $y >$ 8.5~GeV$^{1/2}$  &     32     &   $1.7 \pm 0.9$  &  1.7   &   $1.4 \pm 0.1$  & 71  $\pm$ 13 (stat) $\pm$ 5.5 (syst)   &          72    \\
+125 $<$ \Ht\ $<$ 300~GeV, $y >$  13~GeV$^{1/2}$  &      5     &   $0.5 \pm 0.3$  &  1.7   &   $1.2 \pm 0.1$  & 9.0 $\pm$ 4.5 (stat) $\pm$ 1.0 (syst)  &           6    \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=0.6\linewidth]{plots/victory_204pb_control.pdf}
+\caption{\label{fig:vic1}\protect Distributions of $\ptll/\sqrt{H_T}$ (predicted) and $y$ (observed) for 
+SM MC and data, for the \Ht\ sideband region 125--300~GeV. 
+The vertical dashed lines indicate the loose ($y > 8.5$~GeV$^{1/2}$) and tight ($y > 13$~GeV$^{1/2}$) control regions.
+}
+\end{center}
+\end{figure}
+
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=0.6\linewidth]{plots/victory_204pb_ht300.pdf}
+\caption{\label{fig:v2}\protect Distributions of $\ptll/\sqrt{H_T}$ (predicted) and $y$ (observed) for 
+SM MC and data, for the region \Ht $>$ 300 GeV. 
+The vertical dashed lines indicate the 2010 signal region ($y > 8.5$~GeV$^{1/2}$) and high $y$ signal region ($y > 13$~GeV$^{1/2}$).
+}
+\end{center}
+\end{figure}
+
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=0.6\linewidth]{plots/victory_204pb_ht600.pdf}
+\caption{\label{fig:vic3}\protect Distributions of $\ptll/\sqrt{H_T}$ (predicted) and $y$ (observed) for 
+SM MC and data, for the region \Ht\ $>$ 600 GeV. 
+The vertical dashed line indicates the high \Ht\ signal region.
+}
+\end{center}
+\end{figure}
 
 \subsection{Background estimate from OF subtraction}
 \label{sec:ofres}
@@ -233,7 +292,8 @@ we will perform the OF subtraction technique of Sec.~\ref{sec:oflowpt}.
 \begin{center}
 \caption{\label{tab:results} 
 Summary of the observed and predicted yields in the 3 signal regions. MC errors are statistical only. The systematic uncertainty on the ABCD
-and \ptll\ method is from the scaling factors from MC closure only {\bf need to put additional uncertainties, for example jet/met scale.}
+and \ptll\ method is from the scaling factors from MC closure only. 
+%{\bf need to put additional uncertainties, for example jet/met scale.}
 For the OF subtraction, the quantity $\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$ is quoted; the systematic uncertainty
 here is from the ratio of muon to electron selection efficiencies.
 }
