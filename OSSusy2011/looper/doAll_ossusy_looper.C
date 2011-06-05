@@ -207,13 +207,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   /*
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -259,11 +259,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */  
+  */    
 
-    
+  
   //Flags for files to run over
-  bool rundata     = 0; //REPLACE
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -315,7 +315,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  
+    
   
   char* dir = "";
 
@@ -879,7 +879,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chdata     = new  TChain("Events");
   TChain* chdata41   = new  TChain("Events");
 
-  for( int pt = 0 ; pt < 1 ; ++pt ){
+  for( int pt = 0 ; pt < 2 ; ++pt ){
 
     //set trigger type
     if( pt == 0 ) trig = ossusy_looper::e_highpt;
@@ -956,10 +956,8 @@ pickSkimIfExists(chdata41,"cms2_data/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-
 
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-15/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/merged*root");
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-15/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_3_patch1_V04-02-16/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-16_merged/V04-02-16/merged*root");
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-10/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-10_merged/V04-02-10/merged*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_3_patch1_V04-02-10/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-10_merged/V04-02-10/merged*root");
-
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_3_patch1_V04-02-15/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/merged*root");
 
       }
     }
