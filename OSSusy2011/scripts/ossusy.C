@@ -145,9 +145,9 @@ void initialize(char* path){
   ttotr->Add(Form("%s/ttotr_smallTree.root",path));
   ttdil->Add(Form("%s/ttall_smallTree.root",path));
   ttotr->Add(Form("%s/ttall_smallTree.root",path));
-  ttll->Add(Form("%s/ttall_smallTree.root",path));
-  tttau->Add(Form("%s/ttall_smallTree.root",path));
-  ttfake->Add(Form("%s/ttall_smallTree.root",path));
+  ttll->Add(Form("%s/ttll_smallTree.root",path));
+  tttau->Add(Form("%s/tttau_smallTree.root",path));
+  ttfake->Add(Form("%s/ttfake_smallTree.root",path));
   zjets->Add(Form("%s/Zjets_smallTree.root",path));
   dy->Add(Form("%s/DYtot_smallTree.root",path));
   dytautau->Add(Form("%s/DYtot_smallTree.root",path));
@@ -177,11 +177,12 @@ void initialize(char* path){
   other->Add(Form("%s/tW_smallTree.root",path));
 
 
-  //mc.push_back(ttall);     mclabels.push_back("ttall");
+  mc.push_back(ttall);     mclabels.push_back("ttall");
   //mc.push_back(ttdil);     mclabels.push_back("ttdil");
   //mc.push_back(ttotr);     mclabels.push_back("ttotr");
-  //mc.push_back(ttpowheg);  mclabels.push_back("ttpowheg");
-  //mc.push_back(ttotr);    mclabels.push_back("ttotr");  
+  mc.push_back(ttpowheg);  mclabels.push_back("ttpowheg");
+  // //mc.push_back(ttotr);    mclabels.push_back("ttotr");  
+  /*
   mc.push_back(ttll);     mclabels.push_back("ttll");    mctex.push_back("$t\\bar{b}\\rightarrow\\ell^+\\ell^-$");
   mc.push_back(tttau);    mclabels.push_back("tttau");   mctex.push_back("$t\\bar{b}\\rightarrow\\ell^{\\pm}\\tau^{\\mp}$");
   mc.push_back(ttfake);   mclabels.push_back("ttfake");  mctex.push_back("$t\\bar{b}\\rightarrow$fake");
@@ -189,7 +190,7 @@ void initialize(char* path){
   //mc.push_back(datasf);   mclabels.push_back("single fakes");      mctex.push_back("single fakes");
   //mc.push_back(datadf);   mclabels.push_back("double fakes");      mctex.push_back("double fakes");
   //mc.push_back(zjets);    mclabels.push_back("zjets");     mctex.push_back("$Z^0$+jets");
-  //mc.push_back(dydata);   mclabels.push_back("DYdata");      mctex.push_back("DYdata");
+  //mc.push_back(dydata);   mclabels.push_back("DYdata");      mctex.push_back("DYdata"); 
   mc.push_back(dy);       mclabels.push_back("DY");          mctex.push_back("DY");
   // mc.push_back(dytautau); mclabels.push_back("DYtautau");    mctex.push_back("DYtautau");
   mc.push_back(ww);       mclabels.push_back("WW");          mctex.push_back("W^+W^-");
@@ -197,12 +198,13 @@ void initialize(char* path){
   mc.push_back(zz);       mclabels.push_back("ZZ");          mctex.push_back("Z^0Z^0");
   mc.push_back(t);        mclabels.push_back("t");           mctex.push_back("single top");
   mc.push_back(wjets);    mclabels.push_back("wjets");       mctex.push_back("$W^{\\pm}$+jets");
-  
-  // mc.push_back(other);    mclabels.push_back("other");   mctex.push_back("WW/WZ/ZZ/t");
+  */
+
+  //mc.push_back(other);    mclabels.push_back("other");   mctex.push_back("WW/WZ/ZZ/t");
   //mc.push_back(LM0);      mclabels.push_back("LM0");     mctex.push_back("LM0");
-  mc.push_back(LM1);      mclabels.push_back("LM1");     mctex.push_back("LM1");
+  //mc.push_back(LM1);      mclabels.push_back("LM1");     mctex.push_back("LM1");
   //mc.push_back(LM2);      mclabels.push_back("LM2");     mctex.push_back("LM2");
-  mc.push_back(LM3);      mclabels.push_back("LM3");     mctex.push_back("LM3");
+  //mc.push_back(LM3);      mclabels.push_back("LM3");     mctex.push_back("LM3");
   //mc.push_back(LM4);      mclabels.push_back("LM4");     mctex.push_back("LM4");
   //mc.push_back(LM5);      mclabels.push_back("LM5");     mctex.push_back("LM5");
   //mc.push_back(LM6);      mclabels.push_back("LM6");     mctex.push_back("LM6");
@@ -285,14 +287,14 @@ TCut selection_TCut( bool highpt ){
   TCut trig=trigee||trigmm||trigem;
 
   TCut highptsel = zveto + njets2 + met50 + ht100 + pt2010;
-  TCut lowptsel  = zveto + njets2 + met50 + ht200 + pt105 + !pt2010;
+  TCut lowptsel  = zveto + njets2 + met50 + ht200 + pt105;// + !pt2010;
  
   //lowptsel = ht200 + zpass;
 
   //TCut lowptsel  = zveto + njets2 + met50 + ht200 + pt105 + pt2010;
 
   //lowptsel = lowptsel + "dilmass<76||dilmass>106";
-  //highptsel = highptsel + "dilmass<76 || dilmass>106";// + "y>8.5 && htpf>300";
+  //highptsel = highptsel + "pfmet>250 && htpf>250";
 
   //TCut highptsel = "dilmass>76&&dilmass<106";
   //TCut sig = "y >  8.5 && htpf>300";
@@ -367,10 +369,12 @@ TCut weight_TCut(){
 
 
   //TCut weight("weight * ndavtxweight * (1000./191.)");
-  TCut weight("weight * ndavtxweight * trgeff * 0.336");
+  //TCut weight("weight * ndavtxweight * trgeff * 0.336");
+  //TCut weight("weight * ndavtxweight * trgeff");
+  //TCut weight("weight * ndavtxweight");
   //TCut weight("weight * ndavtxweight * (90./191.)");
   //TCut weight("weight * (90./191.)");
-  //TCut weight("weight*(1000./204.)");
+  TCut weight("weight");
   //TCut weight("1");
   //weight = weight * trig;
 
@@ -390,7 +394,6 @@ void HBHE( char* path ){
 
   TH1F* met_pass   = getHist( data  , "pfmet"  , TCut(sel+hbhe)   , "met_pass"   , 50 , 0 , 100 );
   TH1F* met_fail   = getHist( data  , "pfmet"  , TCut(sel+!hbhe)  , "met_fail"   , 50 , 0 , 100 );
-
 
   cout << "FAIL " << met_fail->GetEntries() << endl;
   cout << "PASS " << met_pass->GetEntries() << endl;
@@ -1326,26 +1329,7 @@ void victory( char* path , bool latex = false ){
   hmet_temp->Sumw2();
   hdilpt_temp->Sumw2();
 
-  TCut dil("(nels+nmus+ntaus)==2");
-  //TCut ll("(w1>0&&w2>0) && ntaus==0");
-  //TCut tau("(w1>0&&w2>0) && ntaus>0");
-  TCut ll ("(w1>0&&w2>0) && (w1<3&&w2<3)");
-  TCut tau("(w1>0&&w2>0) && (w1>2||w2>2)");
-  TCut fake("!(w1>0&&w2>0)");
-  TCut tautau("ntaus==2");
-  TCut hbhe("hbhe==1");
-
-  TCut selclone = sel;
-
   for( unsigned int i = 0 ; i < nsamples ; ++i ){ 
-
-    sel = selclone;
-    if     ( strcmp(mclabels[i],"ttll")     == 0 ) sel = sel + ll;
-    else if( strcmp(mclabels[i],"tttau")    == 0 ) sel = sel + tau;
-    else if( strcmp(mclabels[i],"ttfake")   == 0 ) sel = sel + fake;
-    else if( strcmp(mclabels[i],"ttdil")    == 0 ) sel = sel + dil;
-    else if( strcmp(mclabels[i],"ttotr")    == 0 ) sel = sel + !dil;
-    else if( strcmp(mclabels[i],"DYtautau") == 0 ) sel = sel + tautau;
 
     mc.at(i)->Draw(Form("TMath::Min(pfmet,%f)>>hmet_temp"    , xmax-0.01 ) , (sel+jetcut)*weight );
     mc.at(i)->Draw(Form("TMath::Min(dilpt,%f)>>hdilpt_temp"  , xmax-0.01 ) , (sel+jetcut)*weight );
@@ -1465,7 +1449,57 @@ void victory( char* path , bool latex = false ){
 
 }
 
-void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
+void ABCDprime_closure(){
+
+  pair<float,float> result;
+
+  const unsigned int n = 9;
+  //const unsigned int n = 15;
+
+  float op[n];
+  float operr[n];
+  float met[n];
+  float meterr[n];
+  float ht[n];
+  float hterr[n];
+  
+  for( unsigned int i = 0 ; i < n ; ++i ){
+
+    ht[i]     = 300;
+    hterr[i]  = 0.;
+    met[i]    = 200. + 25. * i;
+    meterr[i] = 0.;
+
+    //ht[i]     = 300 + 50 * i;
+    //hterr[i]  = 0.;
+    //met[i]    = 200;
+    //meterr[i] = 0;
+
+    result = ABCDprime("../output/V00-01-03/highpt","ttpowheg",false,met[i],ht[i]);
+    op[i]    = result.first;
+    operr[i] = result.second;
+  
+    cout << "O/P " << Form("%.2f%s%.2f",op[i],pm,operr[i]) << endl;
+ 
+  }
+
+  TCanvas *can = new TCanvas();
+  can->cd();
+
+  gPad->SetGridx();
+  gPad->SetGridy();
+
+  TGraphErrors *gr = new TGraphErrors(n,met,op,meterr,operr);
+  gr->GetXaxis()->SetTitle("MET cut (GeV)");
+  //TGraphErrors *gr = new TGraphErrors(n,ht,op,hterr,operr);
+  //gr->GetXaxis()->SetTitle("H_{T} cut (GeV)");
+  gr->GetYaxis()->SetTitle("obs / pred");
+
+  gr->Draw("AP");
+
+}
+
+pair<float,float> ABCDprime( char* path , string sample , bool latex , float metcutval , float htcutval ){
 
   //--------------------------------------------------
   // choose signal region plane: y_ht OR met_ht
@@ -1475,17 +1509,21 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   string sigregion = "met_ht";
  
   //--------------------------------------------------
-  // MET cut defining the signal region
+  // MET/HT cuts defining the signal region
   //--------------------------------------------------
 
-  float metcut = 200.;
+  float metcut = 300.;
+  if( metcutval > 0 ) metcut = metcutval;
+
+  float htcut = 300;
+  if( htcutval > 0 )  htcut  = htcutval;
 
   //--------------------------------------------------
   // Define binning for f(y) and g(Ht) functions
   //--------------------------------------------------
 
-  int   nbinsx = 50;
-  int   nbinsy = 50;
+  int   nbinsx = 115;
+  int   nbinsy = 111;
   float xmax   = 3000.;
   float ymax   = 60.;
 
@@ -1509,6 +1547,9 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   TCut sel    = selection_TCut(highpt);
   //TCut weight = weight_TCut();
   TCut weight = "1";
+  bool isData = ( sample == "data" );
+  //if( !isData ) weight = TCut("weight*(1000./204.)");
+  if( !isData ) weight = TCut("weight");
 
   //--------------------------------------------------
   // choose sample
@@ -1529,6 +1570,7 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   // lowx and lowy regions used for extracting f(y), g(HT)
   //--------------------------------------------------------
   
+  
   float x1=125;
   if( !highpt ) x1 = 200;
   float x2=300;
@@ -1536,7 +1578,7 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   float x4=xmax;
   
   float y1 = 4.5;
-  float y2 = 8.5;
+  float y2 = 6.5;//8.5;
   float y3 = 8.5;
   float y4 = ymax;
 
@@ -1556,14 +1598,16 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   TCut control;
 
   if     ( sigregion == "y_ht"   ){
-    //sig     = D;
-    sig     = "y>13. && htpf>300.";
+    sig     = D;
+    //sig     = "y>13. && htpf>300.";
     cout << "Setting signal region " << sig.GetTitle() << endl;
     control = A||B||C;
   }
   else if( sigregion == "met_ht" ){
-    sig = TCut(Form("htpf>%.0f && pfmet>%.0f",x3,metcut));
-    control = A||B||C;
+    sig = TCut(Form("htpf>%.0f && pfmet>%.0f",htcut,metcut));
+    control = (A||B||C)&&!sig;
+    lowy = lowy + !sig;
+    //control = (A||B||C);
   }
 
   //--------------------------------------------------
@@ -1571,11 +1615,11 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   //--------------------------------------------------
 
   cout << endl;
-  cout << "Region ABCD    : " << ABCD.GetTitle()    << endl;
-  cout << "Region A       : " << A.GetTitle()       << endl;
-  cout << "Region B       : " << B.GetTitle()       << endl;
-  cout << "Region C       : " << C.GetTitle()       << endl;
-  cout << "Region D       : " << D.GetTitle()       << endl;
+  //cout << "Region ABCD    : " << ABCD.GetTitle()    << endl;
+  //cout << "Region A       : " << A.GetTitle()       << endl;
+  //cout << "Region B       : " << B.GetTitle()       << endl;
+  //cout << "Region C       : " << C.GetTitle()       << endl;
+  //cout << "Region D       : " << D.GetTitle()       << endl;
   cout << "Low x          : " << lowx.GetTitle()    << endl;
   cout << "Low y          : " << lowy.GetTitle()    << endl;
   cout << "Sig region     : " << sig.GetTitle()     << endl;
@@ -1622,14 +1666,25 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   // get true yields in signal and control regions
   //-------------------------------------------------
 
-  float ncontrol = ch->GetEntries(sel+control);
-  float nsig     = ch->GetEntries(sel+sig);
+  TH1F *htemp = new TH1F("htemp","htemp",1,0,1);
+  htemp->Sumw2();
+
+  ch->Draw("0.5>>htemp",(sel+control)*weight);
+  float ncontrol    = htemp->Integral();
+  float ncontrolerr = htemp->GetBinError(1);
+
+  ch->Draw("0.5>>htemp",(sel+sig)*weight);
+  float nsig    = htemp->Integral();
+  float nsigerr = htemp->GetBinError(1);
+
+  //float ncontrol = ch->GetEntries(sel+control);
+  //float nsig     = ch->GetEntries(sel+sig);
 
   //-----------------------------------------
   // sample from templates, get prediction
   //-----------------------------------------
 
-  const unsigned int npoints = 100000;
+  const unsigned int npoints = 1000000;
 
   Float_t y_;
   Float_t pfmet_;
@@ -1672,9 +1727,9 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   cout << "prediction " << npred << endl;
  
   cout << endl;
-  cout << "observed  : " << nsig         << endl;
-  cout << "predicted : " << npred        << endl;
-  cout << "o/p       : " << nsig / npred << endl;
+  cout << "observed  : " << Form("%.2f%s%.2f",nsig,pm,nsigerr)                  << endl;
+  cout << "predicted : " << Form("%.2f",npred)                                  << endl;
+  cout << "o/p       : " << Form("%.2f%s%.2f", nsig / npred , pm, nsigerr/npred) << endl;
 
 
   //---------------------
@@ -1688,40 +1743,59 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   habcd->GetYaxis()->SetTitleOffset(1);
   habcd->GetXaxis()->SetTitle("H_{T} [ GeV ]");
   
-  habcd->SetMarkerColor(4);
-  habcd->SetMarkerSize(0.8);
-  habcd->Draw();
+  //habcd->SetMarkerColor(4);
+  //habcd->SetMarkerSize(0.2);
+  //habcd->Draw();
   
-  //habcd->Draw("box");
-  //habcd->SetLineColor(4);
-  //habcd->SetMarkerColor(0);
-  //habcd->SetFillColor(0);
+  habcd->Draw("box");
+  habcd->SetLineColor(4);
+  habcd->SetMarkerColor(0);
+  habcd->SetFillColor(0);
 
   TLatex *text=new TLatex();
   text->SetTextSize(0.05);
   text->SetTextColor(1);
     
   drawSquare(x1,y1,x2,y2);
-  drawSquare(x3,y1,x4,y2);
-  drawSquare(x1,y3,x2,y4);
-  drawSquare(x3,y3,x4,y4);
+  drawSquare(x3,y1,1500,y2);
+  drawSquare(x1,y3,x2,30);
+  drawSquare(x3,y3,1500,30);
+
+  /*
+  drawSquare(x1,y1,1500,y2,2);
+  drawSquare(x1,y1,x2,30,8);
   
+  TBox box;
+  box.SetLineColor(2);
+  box.SetLineWidth(3);
+  box.SetFillColor(2);
+  box.SetFillStyle(3004);
+  box.DrawBox(x1,y1,1500,y2);
+  box.SetLineColor(8);
+  box.SetLineWidth(3);
+  box.SetFillColor(8);
+  box.SetFillStyle(3005);
+  box.DrawBox(x1,y1,x2,30);
+  */  
   text->DrawLatex( x1+50 , y1+1.5 , "B" );
   text->DrawLatex( x1+50 , y3+10  , "A" );
   text->DrawLatex( x3+50 , y1+1.5 , "C" );
   text->DrawLatex( x3+50 , y3+10  , "D" );
 
   if( sigregion == "met_ht" ){
-    TF1* fmet = new TF1("fmet","[0]/sqrt(x)",x3,1500);
+    TF1* fmet = new TF1("fmet","[0]/sqrt(x)",htcut,1500);
     fmet->SetParameter(0,metcut);
     fmet->SetLineColor(2);
-    fmet->SetLineWidth(2);
+    fmet->SetLineWidth(4);
     fmet->Draw("same");
 
     TLine line;
     line.SetLineColor(2);
-    line.SetLineWidth(2);
-    line.DrawLine(x3,metcut/sqrt(x3),x3,1500);    
+    line.SetLineWidth(4);
+    line.DrawLine(htcut,metcut/sqrt(htcut),htcut,30);    
+    line.DrawLine(htcut,30,1500,30);    
+    line.DrawLine(1500,metcut/sqrt(1500),1500,30);    
+
   }
 
   TCanvas *projcan = new TCanvas("projcan","",1200,600);
@@ -1756,6 +1830,7 @@ void ABCD_Claudio( char* path , string sample = "data" , bool latex = false ){
   // can2->cd();
   // hx->Draw("hist");
 
+  return make_pair( nsig/npred , nsigerr/npred);
 
 }
 
