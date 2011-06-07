@@ -944,7 +944,7 @@ pickSkimIfExists(chdata41,"cms2_data/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-
 	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleMuTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/MuEG_Run2011A-May10ReReco-v1_AOD/V04-02-15/merged*root");
 	
-	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-16/DoubleElectronTriggerSkim/skim*root")
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-16/DoubleElectronTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-16/DoubleMuTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_3_patch1_V04-02-16/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-16_merged/V04-02-16/merged*root");	
       }
