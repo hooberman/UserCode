@@ -1549,8 +1549,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  }
 
 	  if( !isData ){
-	    w1_          = leptonIsFromW( index1 , id1_ , isLM );
-	    w2_          = leptonIsFromW( index2 , id2_ , isLM );
+	    w1_          = leptonOrTauIsFromW( index1 , id1_ , isLM );
+	    w2_          = leptonOrTauIsFromW( index2 , id2_ , isLM );
 	  }
 
 	  if( abs(id1_) == 11 ){
