@@ -52,8 +52,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-01-03";
-  const char* jsonfile  = "jsons/Cert_160404-165970_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-01-04";
+  const char* jsonfile  = "jsons/2011_350pb_goodruns_json.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -205,7 +205,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-  /*
+
   //Flags for files to run over
   bool rundata     = 1;
   bool rundata41   = 0;
@@ -259,9 +259,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */    
 
-  
+
+  /*  
   //Flags for files to run over
   bool rundata     = 1;
   bool rundata41   = 0;
@@ -315,7 +315,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-    
+  */    
   
   char* dir = "";
 
@@ -940,14 +940,13 @@ pickSkimIfExists(chdata41,"cms2_data/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-
 	
 	cout << "Doing high-pT dilepton trigger data" << endl;
 
-	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleElectronTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-03-00/DoubleMuTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_3_patch1_V04-03-00/MuEG_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-03-00_merged/V04-03-00/merged*root");
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleElectronTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleMuTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/MuEG_Run2011A-May10ReReco-v1_AOD/V04-02-15/merged*root");
 	
-	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-10/DoubleElectronTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-10/DoubleMuTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_3_patch1_V04-02-10/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-10_merged/V04-02-10/merged*root");
-	
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-16/DoubleElectronTriggerSkim/skim*root")
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-16/DoubleMuTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_3_patch1_V04-02-16/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-16_merged/V04-02-16/merged*root");	
       }
       
       else if( trig == ossusy_looper::e_lowpt ){
@@ -956,8 +955,8 @@ pickSkimIfExists(chdata41,"cms2_data/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-
 
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-15/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/merged*root");
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-15/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-16/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-16_merged/V04-02-16/merged*root");
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_3_patch1_V04-02-16/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-16_merged/V04-02-16/merged*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-10/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-10_merged/V04-02-10/merged*root");
 
       }
     }
