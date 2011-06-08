@@ -872,7 +872,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
   char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
   char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
-  bool doFakeApp          = false;
+  bool doFakeApp          = true;
 
   ossusy_looper::TrigEnum trig;
 

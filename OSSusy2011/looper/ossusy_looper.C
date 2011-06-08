@@ -328,14 +328,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
     if(isData) {
       std::cout<<"Using data derived FR files"<<std::endl;
-      mufr = new SimpleFakeRate("fr_os27May2011.root", "fr_mu_OSGV3" );
-      elfr = new SimpleFakeRate("fr_os27May2011.root", "fr_el_OSGV3" );
+      mufr = new SimpleFakeRate("fr_os7June2011.root", "fr_mu_OSGV3" );
+      elfr = new SimpleFakeRate("fr_os7June2011.root", "fr_el_OSGV3" );
     }
     else {
       std::cout<<"Using data derived FR files"<<std::endl;
       std::cout<<"CURRENTLY USING DATA FR FOR MC FIXME!!!!!" <<std::endl;
-      mufr = new SimpleFakeRate("fr_os27May2011.root", "fr_mu_OSGV3" );
-      elfr = new SimpleFakeRate("fr_os27May2011.root", "fr_el_OSGV3" );
+      mufr = new SimpleFakeRate("fr_os7June2011.root", "fr_mu_OSGV3" );
+      elfr = new SimpleFakeRate("fr_os7June2011.root", "fr_el_OSGV3" );
     }
   }
 
