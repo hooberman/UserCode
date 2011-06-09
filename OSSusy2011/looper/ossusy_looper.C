@@ -901,8 +901,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
           LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-          LorentzVector vjetUp    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.1;
-          LorentzVector vjetDown  = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.9;
+          LorentzVector vjetUp    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.05;
+          LorentzVector vjetDown  = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.95;
           LorentzVector vlt       = hyp_lt_p4()[hypIdx];
           LorentzVector vll       = hyp_ll_p4()[hypIdx];
 
@@ -1377,9 +1377,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float pfmet    = p_met.first;
 	float pfmetphi = p_met.second;
 
-        pair<float, float> pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.1 );
-        pair<float, float> pfmetDown = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.9 );
-        pair<float, float> pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.0 );
+        pair<float, float> pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.05 );
+        pair<float, float> pfmetDown = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.95 );
+        pair<float, float> pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.00 );
 
         p_met = getMet( "muCorMET"    , hypIdx);
         float mucormet = p_met.first;
