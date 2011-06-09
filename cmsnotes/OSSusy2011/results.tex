@@ -25,22 +25,23 @@ and the ABCD' background estimate is therefore 0.
 
 In summary, we find the following predicted background yields for our 3 signal regions:
 
-\begin{itemize}
-\item 2010 signal region
-\begin{itemize}
-\item ABCD prediction:  12.7 $\pm$ 2.4
-\item ABCD' prediction: 12.8 $\pm$ 2.9
-\end{itemize}
-\item high \met\ signal region
-\begin{itemize}
-\item ABCD' prediction: 1.0 $\pm$ 0.3
-\end{itemize}
-\item high \Ht\ signal region
-\begin{itemize}
-\item ABCD' prediction: 0.0 $\pm$ {\bf X}
-\end{itemize}
-\end{itemize}
-
+\begin{table}[hbt]
+\begin{center}
+\caption{\label{tab:abcd} 
+Summary of results of the ABCD' method, applied to the 3 signal regions. The correction
+factors are given in Table~\ref{tab:cor}.
+}
+\begin{tabular}{lccccc}
+\hline
+Signal Region             &     ABCD' pred      &  correction factor  &  prediction                                  \\ 
+\hline
+2010 signal region        &  $12.8 \pm 2.9$     & $1.0 \pm 0.2$      & 12.8 $\pm$ 2.9 (stat) $\pm$ 2.6 (syst)        \\
+high \met\ signal region  &  $1.0  \pm 0.3$     & $1.3 \pm 0.2$      & 1.3 $\pm$ 0.4 (stat) $\pm$ 0.2 (syst)         \\
+high \Ht\ signal region   &  $0.0  \pm {\bf X}$ & $1.0 \pm 0.2$      & 0.0 $\pm$ {\bf X} (stat) $\pm$ {\bf X} (syst) \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
 
 \begin{figure}[tbh]
 \begin{center}
@@ -155,7 +156,8 @@ high \Ht\ signal region     &       1    &   0.0 $\pm$ 0.0   & 1.3 $\pm$ 0.2  & 
 \end{table}
 
 For each signal region D, we count the number of events falling in the region D', which is defined
-using the same requirements as D but switching the $y$ requirement to a $\ptll/\sqrt{H_T}$ requirement.
+using the same requirements as D but switching the $y$ requirement to a $\ptll/\sqrt{H_T}$ requirement (2010 signal region)
+or switching the \met\ requirement to a \ptll\ requirement (high \met\ and high \Ht\ signal regions).
 We subtract off the expected DY contribution using the data-driven $R_{out/in}$ technique, using $R_{out/in} = 0.13 \pm 0.07$.
 %{\color{red} \bf add plot justifying this value}. 
 We then scale this yield by 2 corrections factors:
@@ -167,13 +169,12 @@ $ N_P = (N(D')-N(DY)) \times K \times K_C$,
 \end{center}
 
 as summarized in Table~\ref{tab:victory}, and displayed in Figs.~\ref{fig:vic1}-\ref{fig:vic3}.
-Note that we currently extract $K$ from MC, and verify that it is consistent with the value extracted from data.
-We may instead use $K$ extracted from data in the future, as the data sample increases and the statistical uncertainty
-in $K$ decreases.
 We also perform the \ptll\ method in the \Ht\ sideband region 125--300~GeV, as a validation of the technique in a high statistics
-sample which is expected to be dominated by background. The results are summarized in Table~\ref{tab:victorycontrol}.
-For both the loose ($y > 8.5$~GeV$^{1/2}$) and tight ($y > 13$~GeV$^{1/2}$) control regions, the observed yields are consistent
-with the predictions from the \ptll\ method.
+sample which is expected to be dominated by background. The results are summarized in Table~\ref{tab:victorycontrol}
+and displayed in Fig.~\ref{fig:victorycontrol}.
+The prediction is extractedd for the requirement $y > 8.5$~GeV$^{1/2}$ corresponding to the 2010 signal region, as well as
+for \met\ $>$ 200 GeV corresponding to the high \Ht\ signal region. In both cases, we observe good agreement between
+the predicted and observed yields. 
 
 
 \begin{table}[hbt]
@@ -187,42 +188,63 @@ The predictions are compare with the observed yield $N_O$.
 }
 \begin{tabular}{lcccccc}
 \hline
-Control Region                                   &  $N(D')$   &   $N(DY)$        &  $K$   &   $K_C$          & $N_P$                                  & $N_O$ \\ 
-\hline
-125 $<$ \Ht\ $<$ 300~GeV, $y >$ 8.5~GeV$^{1/2}$  &     32     &   $1.7 \pm 0.9$  &  1.7   &   $1.4 \pm 0.1$  & 71  $\pm$ 13 (stat) $\pm$ 5.5 (syst)   &          72    \\
-125 $<$ \Ht\ $<$ 300~GeV, $y >$  13~GeV$^{1/2}$  &      5     &   $0.5 \pm 0.3$  &  1.7   &   $1.2 \pm 0.1$  & 9.0 $\pm$ 4.5 (stat) $\pm$ 1.0 (syst)  &           6    \\
+Control Region                                   &  $N(D')$   &   $N(DY)$        &  $K$          &   $K_C$          & $N_P$                                     & $N_O$ \\ 
+\hline                                           
+125 $<$ \Ht\ $<$ 300~GeV, $y >$ 8.5~GeV$^{1/2}$  &     54      &  2.6 $\pm$ 1.2   & 1.7 $\pm$ 0.1 & 1.4 $\pm$ 0.1    & 120.9 $\pm$ 17.3 (stat) $\pm$ 13.6 (syst) & 110   \\
+125 $<$ \Ht\ $<$ 300~GeV, \met\ $>$ 200 GeV     &      4      &  1.0 $\pm$ 0.5   & 1.7 $\pm$ 0.1 & 1.3 $\pm$ 0.2    &   6.5 $\pm$  4.4 (stat) $\pm$  1.6 (syst) &   6   \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
 
+
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[width=0.48\linewidth]{plots/victory_y_control_349pb.pdf}
+\includegraphics[width=0.48\linewidth]{plots/victory_met200_control_349pb.pdf}
+\caption{\label{fig:victorycontrol}\protect 
+Results of the \ptll\ method in the \Ht\ sideband region 125-300 GeV.
+Left:  distributions of $\ptll/\sqrt{H_T}$ (predicted) and $y$ (observed) for 
+SM MC and data. The vertical dashed lines indicate the requirement $y > 8.5$~GeV$^{1/2}$),
+corresponding to the 2010 signal region.
+Right: distributions of \ptll\ (predicted) and \met\ (observed) for 
+SM MC and data. The vertical dashed lines indicate the requirement \met\ $>$ 200 GeV,
+corresponding to the high \Ht\ signal region.
+}
+\end{center}
+\end{figure}
+
+
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.6\linewidth]{plots/victory_204pb_control.pdf}
-\caption{\label{fig:vic1}\protect Distributions of $\ptll/\sqrt{H_T}$ (predicted) and $y$ (observed) for 
-SM MC and data, for the \Ht\ sideband region 125--300~GeV. 
-The vertical dashed lines indicate the loose ($y > 8.5$~GeV$^{1/2}$) and tight ($y > 13$~GeV$^{1/2}$) control regions.
+\includegraphics[width=0.6\linewidth]{plots/victory_y_ht300_349pb.pdf}
+\caption{\label{fig:vic1}\protect 
+Distributions of $\ptll/\sqrt{H_T}$ (predicted) and $y$ (observed) for 
+SM MC and data, for the \Ht $>$ 300 GeV. 
+The vertical dashed lines indicate the requirement $y > 8.5$~GeV$^{1/2}$ corresponding to the 2010 signal region.
 }
 \end{center}
 \end{figure}
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.6\linewidth]{plots/victory_204pb_ht300.pdf}
-\caption{\label{fig:v2}\protect Distributions of $\ptll/\sqrt{H_T}$ (predicted) and $y$ (observed) for 
+\includegraphics[width=0.6\linewidth]{plots/victory_met275_ht300_349pb.pdf}
+\caption{\label{fig:v2}\protect 
+Distributions of \ptll\ (predicted) and \met\ (observed) for 
 SM MC and data, for the region \Ht $>$ 300 GeV. 
-The vertical dashed lines indicate the 2010 signal region ($y > 8.5$~GeV$^{1/2}$) and high $y$ signal region ($y > 13$~GeV$^{1/2}$).
+The vertical dashed lines indicate the requirement \met\ $>$ 275 GeV, corresponding to the high \met\ signal region.
 }
 \end{center}
 \end{figure}
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.6\linewidth]{plots/victory_204pb_ht600.pdf}
-\caption{\label{fig:vic3}\protect Distributions of $\ptll/\sqrt{H_T}$ (predicted) and $y$ (observed) for 
-SM MC and data, for the region \Ht\ $>$ 600 GeV. 
-The vertical dashed line indicates the high \Ht\ signal region.
+\includegraphics[width=0.6\linewidth]{plots/victory_met200_ht600_349pb.pdf}
+\caption{\label{fig:vic3}\protect 
+Distributions of \ptll\ (predicted) and \met\ (observed) for 
+SM MC and data, for the region \Ht $>$ 600 GeV. 
+The vertical dashed lines indicate the requirement \met\ $>$ 200 GeV, corresponding to the high \Ht\ signal region.
 }
 \end{center}
 \end{figure}
