@@ -10,9 +10,11 @@ double lepton triggers. An event
 in the $ee$ final state is required to pass at least one %single or 
 double electron trigger, a
 $\mu\mu$ event is required to pass at least one %single or 
-double muon trigger, while an $e\mu$ event is required to pass at least one %single muon, single electron, or 
+double muon trigger, while an $e\mu$ event is required to pass at least one 
+%single muon, single electron, or 
 $e-\mu$ cross trigger. 
-$e\mu$ events are retained in a control sample used to estimate the ttbar contribution as described in Section~\ref{sec:topbkg}.
+$e\mu$ events are retained in a control sample used to estimate the 
+ttbar contribution as described in Section~\ref{sec:topbkg}.
 
 The list of triggers used for selecting dilepton events can be found in Appendix~\ref{app:trigsel}
 for which the approximate efficiencies are 90\% ($\mu\mu$), 95\% ($e\mu$), 100\% ($ee$).
@@ -69,14 +71,17 @@ These event selections are implemented following the recommendation of PVT.
 
 \subsection{Lepton Selection}
 
-Because Z $\rightarrow l^+l^-$ (where $l$ is an electron or muon) is a final state with very little background after a Z mass requirement is applied to the leptons,
- we restrict ourselves to events in which the Z boson decays to electrons or muons only.
- Therefore two same flavor, opposite sign leptons passing the ID described below are required in each event. 
-%Z $\rightarrow \tau^+\tau^-$ is not as clean a signature, even if both taus decay leptonically, so we do not include such events in this analysis.
+Because Z $\rightarrow l^+l^-$ (where $l$ is an electron or muon) is a final state with very little 
+background after a Z mass requirement is applied to the leptons,
+we restrict ourselves to events in which the Z boson decays to electrons or muons only.
+Therefore two same flavor, opposite sign leptons passing the ID described below are required in each event.
+%Z $\rightarrow \tau^+\tau^-$ is not as clean a signature, even if both taus decay leptonically, so 
+%we do not include such events in this analysis.
 
 \begin{itemize}
 \item \pt $> 20$~GeV
-\item Opposite sign, same flavor ($e^\pm\mu^\mp$ events are retained in a control sample used to estimate the ttbar contribution)
+\item Opposite sign, same flavor ($e^\pm\mu^\mp$ events are retained in a control 
+  sample used to estimate the ttbar contribution)
 \item Dilepton invariant mass is consistent with the Z mass: between 81 and 101 GeV
 
 %WE REMOVED THIS BUT...
@@ -177,12 +182,22 @@ What is needed are jets that are predominantly electromagnetic, well measured in
 \item \pt $ > 22$ GeV
 \item $|\eta| < 2$
 \item $H/E < 0.1$
-\item There must be a pfjet of \pt $ >$ 10 GeV which passes loose particle flow jet identification requirements matched to the photon within $dR < 0.3$. The matched jet is required to have a neutral electromagnetic energy fraction of at least 
+\item There must be a pfjet of \pt $ >$ 10 GeV 
+%which passes loose particle flow jet identification requirements 
+matched to the photon within $dR < 0.3$. The matched jet is required to have 
+a neutral electromagnetic energy fraction of at least 
 %I'm not sure we've finalized this yet, but I think we've got an indication we want this
-%70\%.
-90\%.
+70\% (see section \ref{sec:mc}).
+%90\%.
 
-\item A jet encompassing a photon has to have energy greater than or equal to that of the photon within its cone. We require that the pfjet \pt matched to the photon satisfy pfjet \pt - photon \pt $>$ -5~GeV. This removes a few cases in which ``overcleaning" of an ECAL recHit generated fake MET.
+\item 
+%A jet encompassing a photon has to have energy greater than or equal to that of the 
+%photon within its cone. 
+  We require that the pfjet \pt matched to the photon satisfy (pfjet \pt - photon \pt) 
+  $>$ -5~GeV. This removes a few rare cases in which ``overcleaning" of an 
+  %ECAL recHit 
+  pf jet
+  generated fake MET.
 
 \end{itemize}
 
