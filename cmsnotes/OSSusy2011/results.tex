@@ -20,14 +20,17 @@ regions used to measure the $f(y)$ and $g(H_T)$ distributions. For the high \met
 signal region, we find a predicted yield of $1.0 \pm 0.3$ (stat), in reasonable
 agreement with the MC prediction. For the high \Ht\ signal region, we do not find
 any events in the control region used to extract $g(H_T)$ with \Ht\ $>$ 600 GeV,
-and the ABCD' background estimate is therefore 0.
-{\bf NEED TO THINK ABOUT HOW TO GET STAT UNCERTAINTY IN THIS CASE}.
-
-In summary, we find the following predicted background yields for our 3 signal regions:
+and the ABCD' background estimate is therefore 0. To assess the statistical uncertainty
+in this prediction, we add a single event ``by hand'' to the $g(H_T)$ distributiion
+at $H_T = 600$ GeV, leading to a predicted yield of 0.6. 
+{\bf NEED TO THINK ABOUT THIS. THE PREDICTION DEPENDS ON WHERE IN HT YOU PUT THIS }
+{\bf SINGLE EVENT. FOR EXAMPLE, PUTTING IT AT 1000 GIVES A PREDICTION OF 1.2      }
+{\bf HOPEFULLY WITH ~3X MORE STATS WE WON'T BE IN THIS SITUATION                  }
+These results are summarized in Table~\ref{tab:abcdprime}.
 
 \begin{table}[hbt]
 \begin{center}
-\caption{\label{tab:abcd} 
+\caption{\label{tab:abcdprime} 
 Summary of results of the ABCD' method, applied to the 3 signal regions. The correction
 factors are given in Table~\ref{tab:cor}.
 }
@@ -36,8 +39,8 @@ factors are given in Table~\ref{tab:cor}.
 Signal Region             &     ABCD' pred      &  correction factor  &  prediction                                  \\ 
 \hline
 2010 signal region        &  $12.8 \pm 2.9$     & $1.0 \pm 0.2$      & 12.8 $\pm$ 2.9 (stat) $\pm$ 2.6 (syst)        \\
-high \met\ signal region  &  $1.0  \pm 0.3$     & $1.3 \pm 0.2$      & 1.3 $\pm$ 0.4 (stat) $\pm$ 0.2 (syst)         \\
-high \Ht\ signal region   &  $0.0  \pm {\bf X}$ & $1.0 \pm 0.2$      & 0.0 $\pm$ {\bf X} (stat) $\pm$ {\bf X} (syst) \\
+high \met\ signal region  &  $1.0  \pm 0.3$     & $1.3 \pm 0.2$      &  1.3 $\pm$ 0.4 (stat) $\pm$ 0.2 (syst)        \\
+high \Ht\ signal region   &  $0.0  \pm 0.6$     & $1.0 \pm 0.2$      &  0.0 $\pm$ 0.6 (stat) $\pm$ 0.1 (syst)        \\
 \hline
 \end{tabular}
 \end{center}
@@ -269,9 +272,9 @@ quoted because the $Z$ mass veto is included here.
 \hline
 region                   &  $N(ee)$ & $N(\mu\mu)$ & $N(e\mu)$  &  $\Delta$   \\ 
 \hline
-preselection region      &      113 &         122 &      258   &  -22.5 $\pm$ 22.3 (stat) $\pm$ 0.8 (syst) \\    
-2010 signal region       &        4 &           3 &        5   &    2.2 $\pm$ 3.5 (stat) $\pm$ 0.1 (syst)  \\
-high $y$ signal region   &        3 &           0 &        2   &    1.4 $\pm$ 2.4 (stat) $\pm$ 0.1 (syst)  \\
+preselection region      &      193 &         201 &      394   &    2.0 $\pm$ 28 (stat) $\pm$ 1.8 (syst) \\    
+2010 signal region       &        4 &           4 &        9   &   -0.9 $\pm$ 4.2 (stat) $\pm$ 0.1 (syst)  \\
+high \met\ signal region &        2 &           0 &        1   &    1.3 $\pm$ 1.9 (stat) $\pm$ 0.1 (syst)  \\
 high \Ht\ signal region  &        1 &           0 &        1   &    0.1 $\pm$ 1.5 (stat) $\pm$ 0.0 (syst)  \\
 \hline
 \end{tabular}
@@ -296,23 +299,22 @@ here is from the ratio of muon to electron selection efficiencies.
 }
 \begin{tabular}{l|c|c|c}
 \hline
-                                       &  2010 signal region                       &   high $y$ signal region               &  high \Ht\ signal region              \\ 
+                                       &  2010 signal region                       &   high \met\ signal region             &  high \Ht\ signal region              \\ 
 \hline
-Observed yield                         &         14                                &                        6               &                        3              \\
+Observed yield                         &         19                                &                        4               &                        3              \\
 \hline
-MC prediction                          &    8.6 $\pm$ 0.8                          &            1.3 $\pm$ 0.2               &            1.2 $\pm$ 0.5              \\
-ABCD prediction                        &    8.8 $\pm$ 2.0 (stat) $\pm$ 1.8 (syst)  & 0.9 $\pm$ 0.4 (stat) $\pm$ 0.2 (syst)  & 0.0 $\pm$ 0.4 (stat) $\pm$ 0.1 (syst) \\
-\ptll\ prediction                      &    5.5 $\pm$ 3.6 (stat) $\pm$ 1.0 (syst)  & 4.8 $\pm$ 3.6 (stat) $\pm$ 0.9 (syst)  & 0.0 $\pm$ 1.7 (stat) $\pm$ 0.3 (syst) \\
+MC prediction                          &    14.5 $\pm$ 1.4                         &            2.6 $\pm$ 0.8               &            2.5 $\pm$ 0.8              \\
+ABCD prediction                        &    12.7 $\pm$ 2.4 (stat) $\pm$ 2.5 (syst) &                                        &                                       \\
+ABCD' prediction                       &    12.8 $\pm$ 2.9 (stat) $\pm$ 2.6 (syst) & 1.3 $\pm$ 0.4 (stat) $\pm$ 0.2 (syst)  & 0.0 $\pm$ 0.6 (stat) $\pm$ 0.1 (syst) \\
+\ptll\ prediction                      &    16.7 $\pm$ 6.1 (stat) $\pm$ 4.2 (syst) & 5.4 $\pm$ 3.8 (stat) $\pm$ 1.7 (syst)  & 1.7 $\pm$ 1.7 (stat) $\pm$ 0.4 (syst) \\
 \hline
-OF subtraction ($\Delta$)              &    2.2 $\pm$ 3.5 (stat) $\pm$ 0.1 (syst)  & 1.4 $\pm$ 2.4 (stat) $\pm$ 0.1 (syst)  & 0.1 $\pm$ 1.5 (stat) $\pm$ 0.0 (syst) \\
+OF subtraction ($\Delta$)              &    -0.9 $\pm$ 4.2 (stat) $\pm$ 0.1 (syst) & 1.3 $\pm$ 1.9 (stat) $\pm$ 0.1 (syst)  & 0.1 $\pm$ 1.5 (stat) $\pm$ 0.0 (syst) \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
-A summary of our results is presented in Table~\ref{tab:results}. We observe a slight excess of events with respect to 
-MC and data-driven predictions in our loose 2010 signal region.
-The excess with respect to MC and ABCD predictions is enhanced after tightening the $y$ requirement, but the observed
-yield shows no significant excess with respect to the \ptll\ method prediction. There is also a slight excess of events
-with respect to MC and data-driven predictions for the high \Ht\ signal region. We do not observe any excess of
-same-flavor vs. opposite-flavor events.
+A summary of our results is presented in Table~\ref{tab:results}. In all 3 signal regions, we observe reasonable agreement
+between the observed yields and the predictions from MC and data-driven background estimates. We therefore do not observe
+evidence for an excess of events above SM expectations. After assessing systematic uncertainties in Sec.~\ref{sec:systematics},
+we proceed to set upper limits on the non-SM contributions to the signal regions in Sec.~\ref{sec:limits}.

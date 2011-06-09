@@ -50,8 +50,12 @@ We generate 1 million pseudo-events, and find the ratio $R_{S/C}$, the ratio of 
 number of pseudo-events falling in the 2010 signal region (ie. region D) to the number of pseudo-events
 falling in a control region, defined as the OR of the A, B and C regions. We then
 multiply this ratio by the number of \ttbar\ MC events which fall in the control region
-to get the predicted yield, ie. $N_{pred} = R_{S/C} \times N({\rm control})$. The results
-are summarized in Table~\ref{tab:abcdprime}, which show that the prediction of the
+to get the predicted yield, ie. $N_{pred} = R_{S/C} \times N({\rm control})$. 
+To estimate the statistical uncertainty in the predicted background, we smear the bin contents
+of $f(y)$ and $g(H_T)$ according to their uncertainties. We repeat the prediction 20 times
+with these smeared distributions, and take the RMS of the deviation from the nominal prediction
+as the statistical uncertainty. The results
+are summarized in Table~\ref{tab:abcdprime2}, which show that the prediction of the
 ABCD' method is consistent with that of the ABCD method within the statistical uncertainty.
 
 We next apply the ABCD' technique to estimate the background in the regions:
@@ -68,7 +72,7 @@ SR2 and region C, hence when estimating the background for this signal region we
 restrict the control region used to measure $g(H_T)$ and to determine  $N({\rm control})$ 
 to $4.5 < y < 6.5$~GeV$^{1/2}$.
 As summarized in Table~\ref{tab:abcdprime}, we find agreement between the observed and
-predicted yields in these signal regions within $(25 \pm 8)$\% and $(3 \pm 5)$\% for SR1 and SR2, respectively. 
+predicted yields in these signal regions within $(30 \pm 10)$\% and $(5 \pm 7)$\% for SR1 and SR2, respectively. 
 
 \begin{figure}[hbt]
 \begin{center}
@@ -85,26 +89,27 @@ functions are measured using events in the green and red shaded areas, respectiv
 
 \begin{table}[hbt]
 \begin{center}
-\caption{\label{tab:abcdprime} 
+\caption{\label{tab:abcdprime2} 
 Summary of results expected results of the ABCD' method for 1 fb$^{-1}$ using \ttbar\ MC.
 The quantities $R_{S/C}$ and $N({\rm control})$ are discussed in the text. The prediction of the 
 ABCD' technique (ABCD' pred) is compared with the observed signal yield (observed) and 
 where applicable, with the prediction of the ABCD technique (ABCD pred). The errors
 in ABCD' pred and observed/ABCD' pred include only the statistical uncertainty in the
-observed yield. {\bf will update after doing stat uncertainty for prediction}
+observed yield. 
 }
 \begin{tabular}{l|ccc}
 \hline
                     &  2010 signal region         &    \met\ $>$ 275 GeV, \Ht\ $>$ 300 GeV & \met\ $>$ 200 GeV, \Ht\ $>$ 600 GeV \\
 \hline                                                                                    
-$R_{S/C}$            &       $3.5 \times 10^{-2}$   &          $2.9 \times 10^{-3}$           &     $5.1 \times 10^{-3}$         \\   
+$R_{S/C}$            &       $3.5 \times 10^{-2}$   &          $2.8 \times 10^{-3}$           &     $4.9 \times 10^{-3}$         \\   
 $N({\rm control})$  &       1239                  &             1239                       &      1187                        \\
-ABCD' pred          &       43.4                  &              3.6                       &      6.0                         \\
+ABCD' pred          &       43.4                  &              3.5 $\pm$ 0.1             &      5.9 $\pm$ 0.3               \\
 observed            &       37.0 $\pm$ 0.8        &              4.5 $\pm$ 0.3             &      6.2 $\pm$ 0.3               \\
-observed/ABCD' pred &       0.85 $\pm$ 0.02       &              1.25 $\pm$ 0.08           &      1.03 $\pm$ 0.05             \\                  
+observed/ABCD' pred &       0.85 $\pm$ 0.02       &              1.30 $\pm$ 0.10           &      1.05 $\pm$ 0.07             \\                  
 ABCD pred           &       43.0 $\pm$ 0.6        &              N/A                       &      N/A                         \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
+{\bf WILL ADD HERE DESCRIPTION OF DEREK'S TOY STUDIES, AND DERIVE SYST UNCERTAINTIES BASED ON THEM}
