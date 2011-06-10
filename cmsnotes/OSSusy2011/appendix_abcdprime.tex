@@ -55,7 +55,7 @@ To estimate the statistical uncertainty in the predicted background, we smear th
 of $f(y)$ and $g(H_T)$ according to their uncertainties. We repeat the prediction 20 times
 with these smeared distributions, and take the RMS of the deviation from the nominal prediction
 as the statistical uncertainty. The results
-are summarized in Table~\ref{tab:abcdprime2}, which show that the prediction of the
+are summarized in Table~\ref{tab:abcdprime}, which show that the prediction of the
 ABCD' method is consistent with that of the ABCD method within the statistical uncertainty.
 
 We next apply the ABCD' technique to estimate the background in the regions:
@@ -71,8 +71,8 @@ regions are shown in Fig.~\ref{fig:abcdprime_met}. There is a sizable overlap be
 SR2 and region C, hence when estimating the background for this signal region we
 restrict the control region used to measure $g(H_T)$ and to determine  $N({\rm control})$ 
 to $4.5 < y < 6.5$~GeV$^{1/2}$.
-As summarized in Table~\ref{tab:abcdprime}, we find agreement between the observed and
-predicted yields in these signal regions within $(30 \pm 10)$\% and $(5 \pm 7)$\% for SR1 and SR2, respectively. 
+As summarized in Table~\ref{tab:abcdprime}, we find values of observed / predicted of 1.30 $\pm$ 0.10
+and 1.05 $\pm$ 0.07 for SR1 and SR2, respectively.
 
 \begin{figure}[hbt]
 \begin{center}
@@ -86,30 +86,72 @@ functions are measured using events in the green and red shaded areas, respectiv
 \end{center}
 \end{figure}
 
-
 \begin{table}[hbt]
 \begin{center}
-\caption{\label{tab:abcdprime2} 
-Summary of results expected results of the ABCD' method for 1 fb$^{-1}$ using \ttbar\ MC.
-The quantities $R_{S/C}$ and $N({\rm control})$ are discussed in the text. The prediction of the 
-ABCD' technique (ABCD' pred) is compared with the observed signal yield (observed) and 
-where applicable, with the prediction of the ABCD technique (ABCD pred). The errors
-in ABCD' pred and observed/ABCD' pred include only the statistical uncertainty in the
-observed yield. 
+\caption{\label{tab:mcabcdprime} Expected results from \ttbar\ MC in 1~fb$^{-1}$ 
+for the ABCD' method. The quoted uncertainties are statistical only.
 }
-\begin{tabular}{l|ccc}
+\begin{tabular}{llcc|c}
 \hline
-                    &  2010 signal region         &    \met\ $>$ 275 GeV, \Ht\ $>$ 300 GeV & \met\ $>$ 200 GeV, \Ht\ $>$ 600 GeV \\
-\hline                                                                                    
-$R_{S/C}$            &       $3.5 \times 10^{-2}$   &          $2.8 \times 10^{-3}$           &     $4.9 \times 10^{-3}$         \\   
-$N({\rm control})$  &       1239                  &             1239                       &      1187                        \\
-ABCD' pred          &       43.4                  &              3.5 $\pm$ 0.1             &      5.9 $\pm$ 0.3               \\
-observed            &       37.0 $\pm$ 0.8        &              4.5 $\pm$ 0.3             &      6.2 $\pm$ 0.3               \\
-observed/ABCD' pred &       0.85 $\pm$ 0.02       &              1.30 $\pm$ 0.10           &      1.05 $\pm$ 0.07             \\                  
-ABCD pred           &       43.0 $\pm$ 0.6        &              N/A                       &      N/A                         \\
+signal region             &     sample  &         predicted  &           observed & obs/pred \\ 
+\hline
+
+2010 signal region        &   madgraph  &   44.0 $\pm$ 1.5   &  38.3  $\pm$  2.4  & 0.87 $\pm$ 0.06 \\
+                          &   powheg    &   43.3 $\pm$ 0.5   &  37.0  $\pm$  0.8  & 0.85 $\pm$ 0.02 \\ 
+\hline
+high \met\ signal region  &   madgraph  &    3.1 $\pm$ 0.4   &    4.6 $\pm$ 0.8   & 1.47 $\pm$ 0.31 \\
+                          &   powheg    &    3.5 $\pm$ 0.1   &    4.5 $\pm$ 0.3   & 1.30 $\pm$ 0.10 \\
+\hline
+high \Ht\ signal region   &   madgraph  &    5.3 $\pm$ 0.8   &    5.5 $\pm$ 0.9   & 1.03 $\pm$ 0.23 \\
+                          &   powheg    &    5.9 $\pm$ 0.3   &    6.2 $\pm$ 0.3   & 1.05 $\pm$ 0.07 \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
-{\bf WILL ADD HERE DESCRIPTION OF DEREK'S TOY STUDIES, AND DERIVE SYST UNCERTAINTIES BASED ON THEM}
+Next, we study the ABCD' technique by applying it to samples with size comparable to the expected 
+number of events in 1 fb$^{-1}$ of data. We take the full powheg data sample, and split it into
+subsamples of $\sim$2500 events each, which corresponds roughly to the number of expected events
+in data passing preselection, for an integrated luminosity of 1 fb$^{-1}$. For each sample, we
+use the ABCD' technique to predict the background in the SR1 and SR2 regions. In Fig.~\ref{fig:abcdtoy},
+we plot the quantity <observed>/predicted for the SR1 and SR2 regions, where <observed> indicates
+the observed yield in the signal yield, average over the number of toy MC subsamples. Based on these
+studies, we apply a correction factor of 1.2 $\pm$ 0.5 and 1.0 $\pm$ 0.5 for the SR1 and SR2 regions.
+
+
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=1\linewidth]{plots/abcdprime_toy.pdf}
+\caption{\label{fig:abcdtoy}\protect 
+Distributions of <observed>/predicted for the toy MC subsamples.
+}
+\end{center}
+\end{figure}
+
+
+%\begin{table}[hbt]
+%\begin{center}
+%\caption{\label{tab:abcdprime2} 
+%Summary of results expected results of the ABCD' method for 1 fb$^{-1}$ using \ttbar\ MC.
+%The quantities $R_{S/C}$ and $N({\rm control})$ are discussed in the text. The prediction of the 
+%ABCD' technique (ABCD' pred) is compared with the observed signal yield (observed) and 
+%where applicable, with the prediction of the ABCD technique (ABCD pred). The errors
+%in ABCD' pred and observed/ABCD' pred include only the statistical uncertainty in the
+%observed yield. 
+%}
+%\begin{tabular}{l|ccc}
+%\hline
+%                    &  2010 signal region         &    \met\ $>$ 275 GeV, \Ht\ $>$ 300 GeV & \met\ $>$ 200 GeV, \Ht\ $>$ 600 GeV \\
+%\hline                                                                                    
+%$R_{S/C}$            &       $3.5 \times 10^{-2}$   &          $2.8 \times 10^{-3}$           &     $4.9 \times 10^{-3}$         \\   
+%$N({\rm control})$  &       1239                  &             1239                       &      1187                        \\
+%ABCD' pred          &       43.4                  &              3.5 $\pm$ 0.1             &      5.9 $\pm$ 0.3               \\
+%observed            &       37.0 $\pm$ 0.8        &              4.5 $\pm$ 0.3             &      6.2 $\pm$ 0.3               \\
+%observed/ABCD' pred &       0.85 $\pm$ 0.02       &              1.30 $\pm$ 0.10           &      1.05 $\pm$ 0.07             \\                  
+%ABCD pred           &       43.0 $\pm$ 0.6        &              N/A                       &      N/A                         \\
+%\hline
+%\end{tabular}
+%\end{center}
+%\end{table}
+
+
