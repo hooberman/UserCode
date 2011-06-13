@@ -23,6 +23,20 @@ to the preselection of Section~\ref{sec:eventSel}.
 \item high \Ht\  signal region: \Ht\ $>$ 600~GeV and \met\ $>$ 200 GeV
 \end{itemize}
 
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[width=0.48\linewidth]{plots/sigregions_met_ht_tt.pdf}
+\includegraphics[width=0.48\linewidth]{plots/sigregions_y_ht_tt.pdf}
+\caption{\label{fig:sigRegion}\protect
+Illustration of signal regions for the 2011 analysis; \ttbar \, MC is plotted. 
+Left: \met\ vs. \Ht. The high \met\ signal region ( \met\ $>$ 275 GeV, \Ht\ $>$ 300 GeV)
+is shown in blue. The high \Ht\ signal region ( \met\ $>$ 200 GeV, \Ht\ $>$ 600 GeV) is
+shown in red. Right: The 2011 signal regions shown on the left are represented in 
+the $y$ vs. \Ht\ plane.  
+}
+\end{center}
+\end{figure}
+
 In our 2010 analysis, we cut on the quantity $y \equiv \met/\sqrt{H_T}$ rather than \met\
 because the variables \Ht\ and $y$ are
 largely uncorrelated for the dominant $t\bar{t}$ background.  
@@ -47,9 +61,26 @@ sample, for which we have prior experience with the 2010 analysis, we apply the
 ABCD, \ptll, and OF subtraction background estimates. For the dilepton-\Ht\ sample
 we currently apply only the OF subtraction background estimate.
 
-We present the data and MC expected yields in the 3 signal regions in 
-Tables~\ref{tab:sigyield1}-\ref{tab:sigyield3} for the high \pt\ dilepton
-trigger sample and in Tables~\ref{tab:lowptsigyield1}-\ref{tab:lowptsigyield3}.
+Data yields are compared against Monte Carlo expectations in the following tables:
+
+\begin{itemize}
+  \item High \pt\ dilepton trigger sample:
+    \begin{itemize}
+      \item Table ~\ref{tab:sigyield1}: 2010 signal region
+      \item Table ~\ref{tab:sigyield2}: 2011 high \met signal region
+      \item Table ~\ref{tab:sigyield3}: 2011 high \Ht signal region
+    \end{itemize}
+  \item Dilepton-\Ht\ cross trigger sample:
+    \begin{itemize}
+         \item Table \ref{tab:lowptsigyield1}: 2010 signal region
+         \item Table \ref{tab:lowptsigyield2}: 2011 high \met signal region
+         \item Table \ref{tab:lowptsigyield3}: 2011 high \Ht signal region
+    \end{itemize}
+\end{itemize}
+
+Yields for the 2010 signal regions are presented in tables ~\ref{tab:sigyield1} and \ref{tab:lowptsigyield1}
+to ensure that results from the 2011 analysis are consistent with the 2010 results.
+
 
 \newpage
 
@@ -57,7 +88,9 @@ trigger sample and in Tables~\ref{tab:lowptsigyield1}-\ref{tab:lowptsigyield3}.
 \begin{center}
 \footnotesize
 \caption{\label{tab:sigyield1} High \pt\ dilepton trigger data and MC yields in the 2010 signal region. 
-MC errors are statistical only.}
+MC errors are statistical only.
+}
+\vspace{.25cm}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
@@ -88,6 +121,7 @@ MC errors are statistical only.}
 \begin{center}
 \footnotesize
 \caption{\label{tab:sigyield2} High \pt\ dilepton trigger data and MC yields in the high \met\ signal region. MC errors are statistical only.}
+\vspace{.25cm}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
@@ -117,6 +151,7 @@ MC errors are statistical only.}
 \begin{center}
 \footnotesize
 \caption{\label{tab:sigyield3} High \pt\ dilepton trigger data and MC yields in the high \Ht\ signal region. MC errors are statistical only.}
+\vspace{.25cm}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
@@ -148,6 +183,7 @@ MC errors are statistical only.}
 \begin{center}
 \footnotesize
 \caption{\label{tab:lowptsigyield1} Dilepton-\Ht trigger data and MC yields in the 2010 signal region. MC errors are statistical only.}
+\vspace{.25cm}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
@@ -179,6 +215,7 @@ MC errors are statistical only.}
 \footnotesize
 \caption{\label{tab:lowptsigyield2} Dilepton-\Ht\ trigger data and MC yields in the high $y$ signal region.
 MC errors are statistical only.}
+\vspace{.25cm}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
@@ -209,6 +246,7 @@ MC errors are statistical only.}
 \footnotesize
 \caption{\label{tab:lowptsigyield3} Dilepton-\Ht\ trigger data and MC yields in the high \Ht\ signal region.
 MC errors are statistical only.}
+\vspace{.25cm}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
@@ -258,7 +296,7 @@ These results are summarized as:
    \end{itemize}  
 \end{itemize}
 
-\item Dilepton-\Ht\ trigger sample
+\item Dilepton-\Ht\ trigger sample ( events with \pt $>$ (20,10) are excluded )
 \begin{itemize}
 \item 2010 signal region ($y >$ 8.5 GeV$^{1/2}$, \Ht\ $>$ 300 GeV)
    \begin{itemize} 
