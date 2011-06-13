@@ -1,0 +1,4 @@
+pdflatex driver.tex
+pdflatex driver.tex
+scp driver.pdf lxplus:.
+

@@ -1,0 +1,104 @@
+\section{Background Estimates from Data}
+\label{sec:datadriven}
+We use three independent methods to estimate from data the background in the signal region.
+The first method is a novel technique based on the ABCD method used in our 2010 analysis~\cite{ref:ospaper}, 
+and exploits the fact that \HT\ and $y$ are nearly uncorrelated for the $t\bar{t}$ background;
+this method is referred to as the ABCD' technique. First, we extract the $y$ and \Ht\ distributions 
+$f(y)$ and $g(H_T)$ from data, using events from control regions which are dominated by background. 
+Because $y$ and \Ht\ are weakly-correlated, we can predict the distribution of events in the $y$ vs. \Ht\ plane as:
+
+\begin{equation}
+\frac{\partial^2 N}{\partial y \partial H_T} = f(y)g(H_T),
+\end{equation}
+
+allowing us to deduce the number of events falling in any region of this plane. In particular,
+we can deduce the number of events falling in our signal regions defined by requirements on \MET\ and \Ht.
+
+We measure the $f(y)$ and $g(H_T)$ distributions using events in the regions indicated in Fig.~\ref{fig:abcdprime}
+Next, we randomly sample values of $y$ and \Ht\ from these distributions; each pair of $y$ and \Ht\ values is a pseudo-event.
+We generate a large ensemble of pseudo-events, and find the ratio $R_{S/C}$, the ratio of the
+number of pseudo-events falling in the signal region to the number of pseudo-events
+falling in a control region defined by the same requirements used to select events
+to measure $f(y)$ and $g(H_T)$. We then
+multiply this ratio by the number of \ttbar\ MC events which fall in the control region
+to get the predicted yield, ie. $N_{pred} = R_{S/C} \times N({\rm control})$. 
+To estimate the statistical uncertainty in the predicted background, we smear the bin contents
+of $f(y)$ and $g(H_T)$ according to their uncertainties. We repeat the prediction 20 times
+with these smeared distributions, and take the RMS of the deviation from the nominal prediction
+as the statistical uncertainty. We have studied this technique using toy MC studies based on
+similar event samples of similar size to the expected yield in data for 1 fb$^{-1}$.
+Based on these studies we correct the predicted backgrounds yields by factors of 1.2 $\pm$ 0.5
+(1.0 $\pm$ 0.5) for the high \MET\ (high \Ht) signal region.
+
+
+The second  background estimate, henceforth referred to as the dilepton transverse momentum ($\pt(\ell\ell)$) method, 
+is  based on the  idea~\cite{ref:victory} that  in dilepton  $t\bar{t}$  events the
+\pt\  distributions of  the charged  leptons and  neutrinos  from $W$
+decays are  related, because of the  common boosts from  the top  and $W$
+decays.  This relation  is governed by the polarization  of the $W$'s,
+which         is         well         understood        in         top
+decays in the SM~\cite{Wpolarization,Wpolarization2}   and   can  therefore   be
+reliably  accounted   for.   We then  use   the  observed
+$\pt(\ell\ell)$ distribution to  model the $\pt(\nu\nu)$ distribution,
+which is  identified with \MET.  Thus,  we use the  number of observed
+events  with $\HT > 300\GeV$ and $\pt(\ell\ell)  > 275\GeV^{1/2}$ 
+($\HT > 600\GeV$ and $\pt(\ell\ell)  > 200\GeV^{1/2}$ )
+to predict the  number of  background events  with 
+$\HT >  300\GeV$ and  $\MET = > 275\GeV^{1/2}$ ($\HT >  600\GeV$ and  $\MET = > 200\GeV^{1/2}$).  
+In  practice, two corrections must be applied to this prediction, as described below.
+
+%
+% Now describe the corrections
+%
+The first correction  accounts for the $\MET >  50\GeV$ requirement in the
+preselection, which is needed to  reduce the DY background.  We
+rescale  the  prediction by  a  factor equal  to  the  inverse of  the
+fraction  of  events  passing  the preselection which  also  satisfy  the
+requirement  $\pt(\ell\ell) >  50\GeVc$.  
+For the \Ht $>$ 300 GeV requirement corresponding to the high \MET\ signal region,
+we determine this correction from data and find  $K_{50}=1.5 \pm 0.3$.   
+For the \Ht $>$ 600 GeV requirement corresponding to the high \Ht\ signal region,
+we do not have enough events in data to determine this correction with statistical
+precisions, so we instead extract it from MC and find $K_{50}=1.3 \pm 0.2$.
+The  second  correction ($K_C$) is  associated with the  known polarization  of the  $W$, which
+introduces a difference  between the $\pt(\ell\ell)$ and $\pt(\nu\nu)$
+distributions. The correction $K_C$ also takes into account detector effects such as the hadronic energy
+scale and  resolution which affect  the \MET\ but  not $\pt(\ell\ell)$.
+The  total correction factor  is $K_{50}  \times K_C  = 2.2  \pm 0.9$ ($1.7 \pm 0.6$) for the
+high \MET (high \Ht) signal regions, where the uncertainty includes the MC statistical uncertainty 
+in the extraction of $K_C$ and the 5\%  uncertainty in  the hadronic energy scale~\cite{ref:jes}.
+
+Our third background estimation method is based on the fact that many models of new physics
+produce an excess of SF with respect to OF lepton pairs. In SUSY, such an excess may produced
+in the decay $\chi_2^0 \to \chi_1^0 \ell^+\ell^-$ or in the decay of $Z$ bosons produced in
+the cascade decays of heavy, colored objects. In contrast, for the \ttbar\ background the
+rates of SF and OF lepton pairs are the same, as is also the case for other SM backgrounds
+such as $W^+W^-$ or DY$\to\tau^+\tau^-$. We quantify the excess of SF vs. OF pairs using the
+quantity
+
+\begin{equation}
+\label{eq:ofhighpt}
+\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu),
+\end{equation}
+
+where $R_{\mu e} = 1.13 \pm 0.05$ is the ratio of muon to electron selection efficiencies.
+This quantity is evaluated by taking the square root of the ratio of the number of observed
+$Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events, in the mass range 76-106 GeV with no jets or 
+\met\ requirements. The quantity $\Delta$ is predicted to be 0 for processes with 
+uncorrelated lepton flavors. In order for this technique to work, the kinematic selection 
+applied to events in all dilepton flavor channels must be the same, which is not the case 
+for our default selection because the $Z$ mass veto is applied only to same-flavor channels.Therefore when applying the OF subtraction technique we also apply the $Z$ mass veto also 
+to the $e\mu$ channel. 
+
+All background estimation methods based on data are in principle subject to signal contamination
+in the control regions, which tends to decrease the significance of a signal
+which may be present in the data by increasing the background prediction.
+In general, it is difficult to quantify these effects because we 
+do not know what signal may be present in the data.  Having two
+independent methods (in addition to expectations from MC)
+adds redundancy because signal contamination can have different effects
+in the different control regions for the two methods.
+For example, in the extreme case of a
+BSM signal with identical distributions of $\pt(\ell \ell)$ and \MET, an excess of events might be seen 
+in the ABCD method but not in the $\pt(\ell \ell)$ method.
+

@@ -1,0 +1,54 @@
+\section{Event Selection}
+\label{sec:eventSel}
+
+Samples of  MC events are used to  guide the  design of  the analysis.
+These      events     are      generated     using      either     the
+\PYTHIA6.4.22~\cite{Pythia}  or  \MADGRAPH4.4.12~\cite{Madgraph} event
+generators.    They   are   then   simulated  using   a   GEANT4-based
+model~\cite{Geant} of the CMS  detector, and finally reconstructed and
+analyzed using the same software as is used to process collision data.
+
+We apply a  preselection   based  on  that of the $t\bar{t}$  cross section
+measurement in  the dilepton channel~\cite{ref:top}.  Events
+with     two     opposite-sign,     isolated    leptons     ($e^+e^-$,
+$e^{\pm}\mu^{\mp}$, or $\mu^+\mu^-$) are selected. At least one of the leptons must
+have  $\pt >  20\GeVc$ and  both must  have $\pt  > 10\GeVc$,  and the
+electrons (muons) must have $|\eta| < 2.5$ ($|\eta| < 2.4$). In events
+with more  than two such leptons,   the two  leptons with the
+highest \pt are selected.  Events with an $e^+e^-$  or $\mu^+\mu^-$ pair
+with  invariant mass  between 76\GeVcc  and  106\GeVcc or  below
+10\GeVcc are removed, in  order      to     suppress     Drell--Yan  (DY)
+$Z/\gamma^{*}\to\ell\ell$  events,  as  well  as   low  mass  dilepton
+resonances.
+
+Events are required to pass  at least one  of a set of $ee$, $e\mu$ or $\mu\mu$
+double-lepton triggers.  The  efficiency for events containing two 
+leptons passing the analysis selection to  pass at  least  one of  these
+triggers  is measured to be approximately 100\%, 95\%, and 90\%
+for $ee$, $e\mu$ or $\mu\mu$ double-lepton triggers, respectively.
+In the following, the MC yields are weighted by these trigger efficiencies.
+
+Because leptons produced in the  decays of low-mass particles, such as
+hadrons containing $b$  and $c$ quarks,  are  nearly  always inside  jets,  they can  be
+suppressed by requiring the leptons to be isolated in space from other
+particles that carry a  substantial amount of transverse momentum. The
+details   of   the  lepton   isolation   measurement   are  given   in
+Ref.~\cite{ref:top}.   In  brief,   a cone is constructed     of  size
+$\Delta{}R\equiv\sqrt{(\Delta\eta)^2+(\Delta\phi)^2}=0.3$  around  the
+lepton  momentum  direction. The  lepton  relative  isolation is  then
+quantified  by  summing the  transverse  energy  (as  measured in  the
+calorimeters) and the transverse  momentum (as measured in the silicon
+tracker) of  all objects  within this cone,  excluding the  lepton, and
+dividing by  the lepton transverse momentum. The resulting quantity
+is required to be  less than 0.15, rejecting
+the large background arising from QCD production of jets.
+
+We require the presence of at least two jets with  $\pt > 30\GeVc$ and  $|\eta| < 3.0$,
+separated  by $\Delta  R  >$  0.4 from  leptons  passing the  analysis
+selection   with   $\pt  >   10\GeVc$.    The  anti-$k_T$   clustering
+algorithm~\cite{antikt}  with  $\Delta{}R  =  0.5$  is  used  for  jet
+clustering. The jets and \MET  are reconstructed with the Particle Flow 
+technique~\cite{CMS-PAS-PFT-10-002}. 
+The event is required to satisfy $\HT > 100\GeV$, where \HT\ is defined as
+the scalar  sum of the transverse  energies of the  selected jets.  In
+addition,  the  \MET\ in  the event is required to exceed  50\GeV.
