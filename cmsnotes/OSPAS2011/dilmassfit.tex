@@ -1,4 +1,7 @@
-Next, we search for a kinematic edge in the dilepton mass distribution. Such a feature is 
+\section{Search for a Kinematic Edge}
+\label{sec:fit}
+
+We search for a kinematic edge in the dilepton mass distribution. Such a feature is 
 predicted to occur in SUSY models in which the opposite-sign leptons are produced by the
 decay $\chi_2^0 \to \chi_1^0 \ell^+\ell^-$. Such models tend to produce an excess of pairs 
 of same-flavor (SF) $ee$ or $\mu\mu$ leptons with respect to opposite-flavor (OF) $e\mu$
@@ -21,14 +24,14 @@ in events containing OF lepton pairs, as shown in Fig.~\ref{fig:dilmasscontrol} 
 The background is described by:
 
 \begin{equation}
-B(M(ll)) = M(ll)^a e^{-b M(ll)}.
+B(\mll) = \mll^a e^{-b \mll}.
 \end{equation}
 
 For a potential signal, we use an edge model for a two-body decay, which comprises a triangular shape convoluted with a gaussian,
 according to:
 
 \begin{equation}
-T(M(ll) = \frac{1}{\sqrt{2\pi}\sigma}\int_0^{M_{cut}} dy y e^{\frac{(-(M(ll)-y)^2}{2\sigma^2}}. 
+T(\mll) = \frac{1}{\sqrt{2\pi}\sigma}\int_0^{M_{cut}} dy~y e^{\frac{(-(\mll-y)^2}{2\sigma^2}}. 
 \end{equation}
 
 
@@ -37,7 +40,7 @@ T(M(ll) = \frac{1}{\sqrt{2\pi}\sigma}\int_0^{M_{cut}} dy y e^{\frac{(-(M(ll)-y)^
 \includegraphics[width=0.75\linewidth]{plots_final/dilmass_control.pdf}
 \caption{\label{fig:dilmasscontrol}\protect 
 Results of the maximum likelihood fit to the dilepton mass distribution for events containing 
-SF $ee$ and $\mu\mu$ lepton pairs (left) OF $e\mu$ lepton pairs (right) in the control
+$ee$ and $\mu\mu$ lepton pairs (left) and $e\mu$ lepton pairs (right) in the control
 region defined as 100 $<$ \Ht\ $<$ 300~GeV, \MET\ $>$ 100 GeV.
 }
 \end{center}
@@ -48,7 +51,7 @@ region defined as 100 $<$ \Ht\ $<$ 300~GeV, \MET\ $>$ 100 GeV.
 \includegraphics[width=0.75\linewidth]{plots_final/dilmass.pdf}
 \caption{\label{fig:dilmass}\protect 
 Results of the maximum likelihood fit to the dilepton mass distribution for events containing 
-SF $ee$ and $\mu\mu$ lepton pairs (left) OF $e\mu$ lepton pairs (right)  in the signal
+$ee$ and $\mu\mu$ lepton pairs (left) and $e\mu$ lepton pairs (right)  in the signal
 region defined as \Ht\ $>$ 300~GeV, \MET\ $>$ 100 GeV.
 }
 \end{center}
@@ -57,12 +60,13 @@ region defined as \Ht\ $>$ 300~GeV, \MET\ $>$ 100 GeV.
 The position of the kinematic edge $M_{cut}$ is fixed based on the generator level
 information for the signal model which is tested; for example, for LM1 
 $M_{cut} = 78$~GeV. Finally, the $Z$ contribution is modelled by a Breit-Wigner 
-convoluted with a Gaussian. We proceed to perform an extended, unbinned maximum 
-likelihood (ML) fit to the distribution of dilepton mass for SF events. The shape of 
-the \ttbar\ background is fixed, and the yield is allowed to vary within the 
-statistical plus systematic uncertainty extracted from the events with $e\mu$ pairs. 
+convoluted with a Gaussian. We perform an extended, unbinned maximum 
+likelihood (ML) fit to the distribution of dilepton mass for events containting SF lepton pairs. 
+The shape of the \ttbar\ background is fixed using the results of the fit to the OF lepton pairs,
+and the yield is allowed to vary within the 
+statistical plus systematic uncertainty. 
 
-We begin by performing the fit in the control region 100 $<$ \Ht\ $<$ 300 GeV, in
+We perform the fit in the control region 100 $<$ \Ht\ $<$ 300 GeV, in
 which the \ttbar\ background, $Z$ background, and LM1 signal yields are allowed to vary in the fit. 
 The extracted signal yield is $n_S = 2.4 \pm 4.7$, consistent with the background only 
 hypothesis, as displayed in Fig.~\ref{fig:dilmasscontrol}. 
@@ -77,9 +81,8 @@ on \MET, which quantifies the fraction of $Z$ events with \Ht\ $>$ 100 GeV which
 satisfy \Ht\ $>$ 300 GeV. Using this procedure we derive an upper limit on the
 $Z$ yield in the signal region of $n_Z < 0.3$, which we use to constrain the
 $Z$ yield in the ML fit. The extracted signal yield is $n_S = 4.6 \pm 3.2$,
-which is consistent with zero yield within 1.4$\sigma$ and gives a 95\% confidence
-level (CL) upper limit (UL) of X events. The results of the fit are displayed in
-Fig.~\ref{fig:dilmass}. The expected LM1 yield is $X \pm X$; hence we exclude LM1 based on these results.
+which is consistent with the background only hypothesis within 1.4$\sigma$. 
+
 
 
 
