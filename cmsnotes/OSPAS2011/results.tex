@@ -7,7 +7,7 @@ with the MC expectations.
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.75\linewidth]{plots_final/met_ht_349pb.pdf}
+\includegraphics[width=0.65\linewidth]{plots_final/met_ht_349pb.pdf}
 \caption{\label{fig:met_ht}\protect Distributions of \MET\ vs.\ \HT\   
 for data. The high \MET\ (high \Ht) signal region is indicated with the
 blue dotted (red striped) region.}
@@ -24,6 +24,20 @@ do not find any events in the control region used to extract $g(H_T)$ with \Ht\ 
 and the ABCD' background estimate is therefore 0. To assess the statistical uncertainty
 in this prediction, we add a single event ``by hand'' to the $g(H_T)$ distributiion
 at $H_T = 600$ GeV, leading to a predicted yield of 0.0 $\pm$ 0.6 (stat) $\pm$ 0.3 (syst).
+
+
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[width=0.48\linewidth]{plots_final/abcdprime_349pb_highmet.pdf}
+\includegraphics[width=0.48\linewidth]{plots_final/abcdprime_349pb_highht.pdf}
+\caption{\label{fig:abcdprimedata}\protect 
+Distributions of $y$ vs. \Ht\ in data. The signal regions \met\ $>$ 275 GeV, \Ht\ $>$ 300 GeV (left)
+and \met\ $>$ 200 GeV, \Ht\ $>$ 600 GeV (right) are indicated with thick black lines. 
+The $f(y)$ and $g(H_T)$ 
+functions are measured using events in the green and red shaded areas, respectively.
+}
+\end{center}
+\end{figure}
 
 Next, we use the \ptll\ template method to predict the background in the 2 signal regions.
 For each signal region D, we count the number of events falling in the region D', which is 
@@ -72,28 +86,3 @@ A summary of our results is presented in Table~\ref{tab:results}. For both signa
 the observed yield is consistent with the predictions from MC and from the background estimates
 based on data. We conclude that no evidence for non-SM contributions to the signal regions
 is observed.
-
-\begin{table}[hbt]
-\begin{center}
-\caption{\label{tab:results} 
-Summary of the observed and predicted yields in the 2 signal regions. MC errors are statistical only. 
-}
-\begin{tabular}{l|c|c|c}
-\hline
-                                       &     high \met\ signal region             &  high \Ht\ signal region              \\ 
-\hline
-Observed yield                         &                          4               &                        3              \\
-\hline
-MC prediction                          &              2.6 $\pm$ 0.8               &            2.5 $\pm$ 0.8              \\
-ABCD' prediction                       &   1.2 $\pm$ 0.4 (stat) $\pm$ 0.5 (syst)  & 0.0 $\pm$ 0.6 (stat) $\pm$ 0.3 (syst) \\
-\ptll\ prediction                      &   5.4 $\pm$ 3.8 (stat) $\pm$ 2.2 (syst)  & 1.7 $\pm$ 1.7 (stat) $\pm$ 0.6 (syst) \\
-\hline
-OF subtraction ($\Delta$)              &   1.3 $\pm$ 1.9 (stat) $\pm$ 0.1 (syst)  & 0.1 $\pm$ 1.5 (stat) $\pm$ 0.0 (syst) \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-
-
