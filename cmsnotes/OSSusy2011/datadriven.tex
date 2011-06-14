@@ -1,13 +1,13 @@
-\section{Data Driven Background Estimation Methods}
+\section{Data Driven Background Estimation Methods for \ttbar}
 \label{sec:datadriven}
 
 For the high \pt\ dilepton trigger sample, we use 3 data-driven methods to 
-estimate the background in the signal regions. The first one exploits the fact that 
+estimate the background in the signal regions. In the first method, ABCD, one exploits the fact that 
 \Ht\ and $y$ are nearly uncorrelated for the $t\bar{t}$ background.
 When predicting the backgrounds in the signal regions defined in the \met\ vs. \Ht\ plane,
 we use a variation of the ABCD method which we refer to as the ABCD' method
 (see Appendix~\ref{app:abcdprime}).
-The second method
+The second method, \ptll, 
 is based on the fact that in $t\bar{t}$ the \pt\ of the dilepton pair is on average 
 nearly the same as the \pt\ of the pair of neutrinos
 from $W$-decays, which is reconstructed as \met\ in the
@@ -29,21 +29,6 @@ number of reconstructed vertices since are not comparing MC to data.
 \subsection{ABCD method}
 \label{sec:abcd}
 
-
-\begin{figure}[hbt]
-\begin{center}
-\includegraphics[width=1\linewidth]{plots/abcd_tt.pdf}
-\caption{\label{fig:uncor}\protect 
-Illustration that $y$ and \Ht\ are not very correlated in MC for the 2010 signal region. 
-Left: distributions of \Ht\ in MC $t\bar{t}$ events for different intervals of $y$. 
-h1, h2, and h3 refer to the $y$ intervals 4.5 - 6.5, 6.5 - 8.5 and $>$ 8.5, respectively. Right: 
-Distributions of $y$ vs. 
-\Ht\ for \ttbar\ MC.  Here we also show our choice of ABCD regions. The correlation coefficient
-${\rm corr_{XY}}$ is computed for events falling in the ABCD regions.
-}
-\end{center}
-\end{figure}
-
 We find that in $t\bar{t}$ events \Ht\ and 
 $y$ are nearly uncorrelated, 
 as demonstrated in Fig.~\ref{fig:uncor} (left).
@@ -62,7 +47,50 @@ requirements used to define the signal region, shown in Fig.~\ref{fig:abcdvar}.
 %scale factors and uncertainties summarized in Table~\ref{tab:cor} to the
 %predicted background from the ABCD method.
 
-\begin{figure}[hbt]
+\clearpage
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=1\linewidth]{plots/abcd_tt.pdf}
+\caption{\label{fig:uncor}\protect
+Illustration that $y$ and \Ht\ are not very correlated in MC for the 2010 signal region.
+Left: distributions of \Ht\ in MC $t\bar{t}$ events for different intervals of $y$.
+h1, h2, and h3 refer to the $y$ intervals 4.5 - 6.5, 6.5 - 8.5 and $>$ 8.5, respectively. Right:
+Distributions of $y$ vs.
+\Ht\ for \ttbar\ MC.  Here we also show our choice of ABCD regions. The correlation coefficient
+${\rm corr_{XY}}$ is computed for events falling in the ABCD regions.
+}
+\end{center}
+\end{figure}
+
+
+
+\begin{table}[h!]
+\begin{center}
+\caption{\label{tab:mcabcd} Expected yields from \ttbar \, MC in 1~fb$^{-1}$ in the four
+ABCD regions for the signal region depicted in Figs.~\ref{fig:abcdData1},
+as well as the predicted yield in region D given by $N _A \times N_C / N_B$ and the ratio of
+the observed signal yield to the prediction. The quoted uncertainties are statistical only.
+}
+\vspace{.25cm}
+\begin{tabular}{llccccc|c}
+\hline
+signal region &           sample  &                A  &                B  &                C  &                D  & $N _A \times N_C / N_B$   & obs/pred\\
+\hline
+\hline
+2010 signal region      &   madgraph  & 251.3  $\pm$  6.1  &951.5  $\pm$  11.9  & 165.2  $\pm$  4.9  & 38.3  $\pm$  2.4  & 43.6  $\pm$  1.8  &0.88  $\pm$  0.07 \\
+                        &   powheg    & 231.7  $\pm$  2.0  &850.6  $\pm$  3.7   & 157.8  $\pm$  1.6  & 37.0  $\pm$  0.8  & 43.0  $\pm$  0.6  &0.86  $\pm$  0.02 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+
+
+
+\begin{figure}[h!]
 \begin{center}
 \includegraphics[width=0.48\linewidth]{plots/abcd_y.pdf}
 \includegraphics[width=0.48\linewidth]{plots/abcd_ht.pdf}
@@ -72,40 +100,7 @@ for the ABCD method as a function of the $y$ ( for \Ht $>$ 300 GeV ) and
 \end{center}
 \end{figure}
 
-
-\begin{table}[hbt]
-\begin{center}
-\caption{\label{tab:mcabcd} Expected yields from \ttbar\ MC in 1~fb$^{-1}$ in the four
-ABCD regions for the signal region depicted in Figs.~\ref{fig:abcdData1},
-as well as the predicted yield in region D given by $N _A \times N_C / N_B$ and the ratio of 
-the observed signal yield to the prediction. The quoted uncertainties are statistical only.
-}
-\begin{tabular}{llccccc|c}
-\hline
-signal region &           sample  &                A  &                B  &                C  &                D  & $N _A \times N_C / N_B$   & obs/pred\\
-\hline
-
-\hline
-
-2010 signal region      &   madgraph  & 251.3  $\pm$  6.1  &951.5  $\pm$  11.9  & 165.2  $\pm$  4.9  & 38.3  $\pm$  2.4  & 43.6  $\pm$  1.8  &0.88  $\pm$  0.07 \\
-                        &   powheg    & 231.7  $\pm$  2.0  &850.6  $\pm$  3.7   & 157.8  $\pm$  1.6  & 37.0  $\pm$  0.8  & 43.0  $\pm$  0.6  &0.86  $\pm$  0.02 \\
-
-%\hline
-%
-%high $y$ signal region  &   madgraph  & 18.4  $\pm$  1.6   &951.5  $\pm$  11.9  & 165.2  $\pm$  4.9  &  4.9  $\pm$  0.9  &  3.2  $\pm$  0.3  &1.53  $\pm$  0.30 \\
-%                        &     powheg  & 17.3  $\pm$  0.5   &850.6  $\pm$  3.7   & 157.8  $\pm$  1.6  &  4.2  $\pm$  0.3  &  3.2  $\pm$  0.1  &1.30  $\pm$  0.09 \\
-%
-%\hline
-%
-%high \Ht\ signal region &   madgraph  & 251.3  $\pm$  6.1  &951.5  $\pm$  11.9  & 11.1  $\pm$  1.3  &  3.8  $\pm$  0.8  &  2.9  $\pm$  0.3  &1.31  $\pm$  0.30 \\
-%                        &     powheg  & 231.7  $\pm$  2.0  &850.6  $\pm$  3.7   & 12.5  $\pm$  0.5  &  3.8  $\pm$  0.3  &  3.4  $\pm$  0.1  &1.13  $\pm$  0.08 \\
-%
-%\hline
-%high $y$ signal region  & 
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+\clearpage
 
 \subsection{ABCD' Method}
 
@@ -114,8 +109,6 @@ a variant of the ABCD method which we refer to as the ABCD' method. This method 
 in App.~\ref{app:abcdprime}. 
 Based on these results, we apply the scale factors and systematic uncertainties
 summarized in Table~\ref{tab:cor} to the background prediction of the ABCD' method.
-
-\clearpage
 
 \subsection{Dilepton $p_T$ method}
 \label{sec:victory}
@@ -164,6 +157,7 @@ applied to the 3 signal regions,
 and the ratio of the observed signal yield to the prediction. The quoted uncertainties are statistical
 only. Based on these results, we will apply the correction factor $K_C$ to the prediction in data.
 }
+\vspace{.25cm}
 \begin{tabular}{llcccc}
 \hline
 signal region &           sample  &                predicted  &                observed  &    obs/pred   & $K_C$\\ 
@@ -189,12 +183,13 @@ high \Ht\ signal region  &   madgraph  & 4.7 $\pm$ 1.0    &       5.5 $\pm$ 0.9 
 \end{center}
 \end{table}
 
-\begin{table}[hbt]
+\begin{table}[h!]
 \begin{center}
 \caption{\label{tab:mcvictory_control} Expected observed and predicted yields in 1~fb$^{-1}$ for \ttbar\ MC for the \ptll\ method
 for the control regions in the \Ht\ sideband region 125 $<$ \Ht\ $<$ 300 GeV, and the ratio of the observed signal yield 
 to the prediction. The quoted uncertainties are statistical only, assuming Gaussian errors.
 }
+\vspace{.25cm}
 \begin{tabular}{llcc|c}
 \hline
 control region                                    &     sample  &            predicted  &             observed  &           obs/pred   \\ 
@@ -221,12 +216,13 @@ corresponding to the 2010 signal region ($y > 8.5$~GeV$^{1/2}$) and the high \me
 in Table~\ref{tab:mcvictory_control}. Based on these results we will apply a correction factor $K_C = 1.4 \pm 0.1$ ($K_C = 1.3 \pm 0.2$)
 to data for the $y >$ 8.5~GeV$^{1/2}$ (\met\ $>$ 200 GeV) requirements in the \Ht\ sideband region.
 
-\begin{table}[hbt]
+\begin{table}[h!]
 \begin{center}
 \caption{\label{tab:vicjetmet} 
 Dependence of the correction factor $K_C$ on the hadronic energy scale. Based on these results, we apply
 the uncertainty in the rightmost column to $K_C$ for the given signal region.
 }
+\vspace{.25cm}
 \begin{tabular}{l|ccccc}
 \hline
 Signal Region             &  sample     &           nominal   &            +5\%   &         -5\%    & uncertainty  \\
@@ -244,13 +240,14 @@ high \Ht\ signal region   &  madgraph   &   1.17 $\pm$ 0.31   & 1.42 $\pm$ 0.36 
 \end{center}
 \end{table}
 
-\begin{table}[hbt]
+\begin{table}[h!]
 \begin{center}
 \caption{\label{tab:cor} Summary of correction factors and systematic uncertainties
 for the ABCD' and \ptll\ methods in the 3 signal regions. For the \ptll\ method, the
 correction factor is from Table~\ref{tab:mcvictory}, with the additional uncertainty
 from hadronic energy scale of Table~\ref{tab:vicjetmet}.
 }
+\vspace{.25cm}
 \begin{tabular}{lcc}
 \hline
 signal region               &           ABCD' &                \ptll  \\
@@ -263,7 +260,7 @@ high \Ht\ signal region     &   $1.0 \pm 0.5$ &        $1.3 \pm 0.4$   \\
 \end{center}
 \end{table}
 
-
+\clearpage
 
 \subsection{Opposite-Flavor Subtraction}
 \label{sec:ofsubtraction}
