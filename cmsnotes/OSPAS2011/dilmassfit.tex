@@ -27,9 +27,7 @@ fit to the dilepton mass distribution assuming an example signal shape from the 
 The residual DY background in the control region is fitted and extrapolated
 to the signal region where it is found to be very small.
 
-
-In addition to the background shapes the yields in the $e\mu$, $ee$ and $\mu\mu$
-channel are connected when correcting for the difference in lepton selection efficiencies
+The relative yields in the $e\mu$, $ee$ and $\mu\mu$ channels are constrained
 using $R_{\mu e} = 1.13 \pm 0.05$ (the ratio of muon to electron selection efficiencies),
 evaluated by taking the square root of the ratio of the number of 
 $Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events in data, in the mass range 76-106 GeV with no jets or 
@@ -38,10 +36,11 @@ $Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events in data, in the mass range 76-106 Ge
 The background as a function of the invariant mass $\mll$ is described by:
 
 \begin{equation}
-B(\mll) = \mll^a e^{-b \mll}.
+B(\mll) = \mll^a e^{-b \mll},
 \end{equation}
-
-Its shape compared to the dilepton mass distribution in the control region
+where $a\approx1.5$ describes the rising edge and $b\approx0.003$
+dominates the long exponential tail on the right hand side of the 
+shape. The extracted shape compared to the dilepton mass distribution in the control region
 for events containing OF lepton pairs is shown in Fig.~\ref{fig:dilmass} (upper-right).
 
 For a potential signal, we use an edge model for a two-body decay, 
@@ -52,7 +51,8 @@ according to:
 T(\mll) = \frac{1}{\sqrt{2\pi}\sigma}\int_0^{M_{cut}} dy~y e^{\frac{(-(\mll-y)^2}{2\sigma^2}},
 \end{equation}
 
-where the resolution $\sigma$ is fixed based on simulation.
+where the resolution parameters $\sigma_{ee}$ and $sigma_{\mu\mu}$ are constrained 
+based on simulation.
 
 \begin{figure}[hbt]
 \begin{center}
@@ -81,11 +81,12 @@ likelihood (ML) fit to the distribution of dilepton mass for events containing $
 and $e\mu$ pairs (background model only). 
 The shape of the \ttbar\ background shape is assumed to be common in all categories
 and the yields of signal $n_S$, Z $n_Z$ and background $n_B$ 
-in the three categories are connected using $R_{\mu e}$. 
+in the three categories are constrained using $R_{\mu e}$. 
 
 We perform the fit in the control region 100 $<$ \Ht\ $<$ 300 GeV, in
 which the \ttbar\ background, $Z$ background, and LM1 signal yields are allowed to vary in the fit. 
-The extracted signal yield is $n_S = 0.0 \pm 7.3$, consistent with the background only 
+The extracted signal yield, constrained to be positive, is $n_S = 0.0 \pm 7.3$, 
+consistent with the background only 
 hypothesis, as displayed in Fig.~\ref{fig:dilmass} (upper-left). 
 The extracted $Z$ yield is $n_Z = 5.2 \pm 4.2$, which is 
 used to constrain the $Z$ yield in the signal region. 
@@ -97,7 +98,7 @@ control region 100 $<$ \Ht\ $<$ 300 GeV. The $Z$ yield in the control region is
 multiplied by a scale factor derived from $Z$ events in data with no requirement
 on \MET, which quantifies the fraction of $Z$ events with \Ht\ $>$ 100 GeV which 
 satisfy \Ht\ $>$ 300 GeV. Using this procedure we derive an upper limit on the
-$Z$ yield in the signal region of $n_Z < 0.3$, which we use to constrain the
+$Z$ yield in the signal region of $n_Z < 0.5$, which we use to constrain the
 $Z$ yield in the ML fit. The extracted signal yield is $n_S = 3.5 \pm 4.9$,
 which is consistent with the background only hypothesis,
 as shown in Fig.~\ref{fig:dilmass} (lower-left). 
