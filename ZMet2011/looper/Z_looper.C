@@ -176,7 +176,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   set_goodrun_file( jsonfilename );
 
-  set_vtxreweight_rootfile("vtxreweight_Spring11MC_23pbPR.root",true);
+  set_vtxreweight_rootfile("vtxreweight_Spring11MC_153pb_Zselection.root",true);
 
   bookHistos();
   
