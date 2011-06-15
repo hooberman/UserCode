@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <set>
 #include <math.h>
 #include <fstream>
 #include "histtools.h"
@@ -13,6 +14,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
+#include "Math/VectorUtil.h"
 #include "TProfile.h"
 #include "TTreeCache.h"
 #include <sstream>
@@ -29,9 +31,9 @@
 #include "../CORE/utilities.h"
 #include "../CORE/ttbarSelections.h"
 #include "../CORE/susySelections.h"
-#include "../CORE/jetSelections.h"
 #include "../CORE/mcSUSYkfactor.h"
 
+//#include "../CORE/jetSelections.cc"
 //#include "../CORE/triggerUtils.cc"
 //#include "../CORE/mcSelections.cc"
 
@@ -50,6 +52,47 @@ const bool  debug                = false;
 const float lumi                 = 0.204; 
 const char* iter                 = "V00-01-00";
 const char* jsonfilename         = "../jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_goodruns.txt";
+
+//--------------------------------------------------------------------
+
+bool passesPFJetID(unsigned int pfJetIdx) {
+
+  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
+  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
+
+  if (pfjet_nef_ >= 0.99)
+	   return false;
+  if (pfjet_nhf_ >= 0.99)
+	   return false;
+  if (pfjet_mult_ < 2)
+	   return false;
+
+  if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) < 2.4)
+  {
+	   if (pfjet_chf_ < 1e-6)
+			return false;
+	   if (pfjet_cm_ < 1)
+			return false;
+	   if (pfjet_cef_ >= 0.99)
+			return false;
+  }
+
+  return true;
+}  
+
+//--------------------------------------------------------------------
+
+double dRbetweenVectors(const LorentzVector &vec1, 
+			const LorentzVector &vec2 ){ 
+
+  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
+  double deta = vec1.Eta() - vec2.Eta();
+  return sqrt(dphi*dphi + deta*deta);
+}
 
 //--------------------------------------------------------------------
 
@@ -87,6 +130,7 @@ bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
 //--------------------------------------------------------------------
 
 std::set<DorkyEventIdentifier> already_seen;
+
 bool is_duplicate (const DorkyEventIdentifier &id) {
   std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
     already_seen.insert(id);
@@ -191,7 +235,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   TFile* currentFile = 0;
   while ((currentFile = (TFile*)fileIter.Next())){
     
-    TFile* f(currentFile->GetTitle());
+    TFile* f = new TFile(currentFile->GetTitle());
     TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
@@ -764,7 +808,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
         if( fabs( vjet.eta() ) > 2.5 )           continue;
         if( vjet.pt()  < 30.         )           continue;
-        if( !passesCaloJetID( vjet ) )           continue;
+        //if( !passesCaloJetID( vjet ) )           continue;
 
         if( generalLeptonVeto ){
           bool rejectJet = false;

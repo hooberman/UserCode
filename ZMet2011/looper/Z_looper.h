@@ -12,6 +12,8 @@
 #include "Math/LorentzVector.h"
 //#include "Math/PxPyPzE4D.h"
 
+using namespace std;
+
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 class TChain;
