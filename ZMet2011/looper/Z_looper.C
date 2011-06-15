@@ -14,6 +14,7 @@
 #include "TH2F.h"
 #include "TMath.h"
 #include "TProfile.h"
+#include "TTreeCache.h"
 #include <sstream>
 
 #include "../CORE/CMS2.h"
@@ -46,9 +47,9 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
-const float lumi                 = 0.153; 
-const char* iter                 = "V00-00-07";
-const char* jsonfilename         = "Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+const float lumi                 = 0.204; 
+const char* iter                 = "V00-01-00";
+const char* jsonfilename         = "../jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -190,13 +191,21 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   TFile* currentFile = 0;
   while ((currentFile = (TFile*)fileIter.Next())){
     
-    TFile f(currentFile->GetTitle());
-    TTree *tree = (TTree*)f.Get("Events");
+    TFile* f(currentFile->GetTitle());
+    TTree *tree = (TTree*)f->Get("Events");
+
+    //Matevz
+    TTreeCache::SetLearnEntries(100);
+    tree->SetCacheSize(128*1024*1024);
+
     cms2.Init(tree);
 
     unsigned int nEvents = tree->GetEntries();
  
     for (unsigned int event = 0 ; event < nEvents; ++event){
+
+      //Matevz
+      tree->LoadTree(event);
       
       cms2.GetEntry(event);
       ++nEventsTotal;

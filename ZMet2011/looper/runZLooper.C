@@ -35,18 +35,9 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   if( strcmp( prefix , "data" ) == 0 ){
 
-    //DoubleElectron re-reco
-    pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-Apr22ReReco-v2_AOD/V04-01-05/DoubleElectronTriggerSkim/skim*root");
-
-    //v1 datasets (merged)
-    pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
-    pickSkimIfExists(ch,"cms2_data/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
-    pickSkimIfExists(ch,"cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
- 
-    //v2 datasets (not merged)
-    pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleElectronTriggerSkim/skimmed*root");
-    pickSkimIfExists(ch,"cms2_data/DoubleMu_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleMuTriggerSkim/skimmed*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
+    pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleElectronTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleMuTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"cms2_data/MuEG_Run2011A-May10ReReco-v1_AOD/V04-02-15/merged*root");
 
   }
   
