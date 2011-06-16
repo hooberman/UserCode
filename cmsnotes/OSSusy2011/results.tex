@@ -23,9 +23,9 @@ any events in the control region used to extract $g(H_T)$ with \Ht\ $>$ 600 GeV,
 and the ABCD' background estimate is therefore 0. To assess the statistical uncertainty
 in this prediction, we add a single event ``by hand'' to the $g(H_T)$ distributiion
 at $H_T = 600$ GeV, leading to a predicted yield of 0.6. 
-{\bf NEED TO THINK ABOUT THIS. THE PREDICTION DEPENDS ON WHERE IN HT YOU PUT THIS }
-{\bf SINGLE EVENT. FOR EXAMPLE, PUTTING IT AT 1000 GIVES A PREDICTION OF 1.2      }
-{\bf HOPEFULLY WITH ~3X MORE STATS WE WON'T BE IN THIS SITUATION                  }
+%{\bf NEED TO THINK ABOUT THIS. THE PREDICTION DEPENDS ON WHERE IN HT YOU PUT THIS }
+%{\bf SINGLE EVENT. FOR EXAMPLE, PUTTING IT AT 1000 GIVES A PREDICTION OF 1.2      }
+%{\bf HOPEFULLY WITH ~3X MORE STATS WE WON'T BE IN THIS SITUATION                  }
 These results are summarized in Table~\ref{tab:abcdprime}.
 
 \begin{table}[hbt]
@@ -268,13 +268,15 @@ We evaluate the quantity $\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu)
 extracted from the ratio of $Z \to \mu^+\mu^-$ vs. $Z \to e^+e^-$ events in data.
 We perform the OF subtraction first in the preselection region, and find $\Delta$ consistent with 0, as expected.
 We then perform the OF subtraction in all 3 signal regions, and do not observe any excess of same-flavor vs. opposite-flavor events.
+We do not correct the value of $\Delta$ for contributions from fake leptons; instead, we assess on uncertainty based on
+the results of Sec.~\ref{sec:dyFR}.
 
 \begin{table}[hbt]
 \begin{center}
 \caption{\label{tab:ofres} Summary of results for the OF subtraction technique. 
 The quantity $\Delta = R_{\mu e}N(ee) + \frac{1}{R_{\mu e}}N(\mu\mu) - N(e\mu)$ is quoted with $R_{\mu e} = 1.12 \pm 0.05$.
-The quoted systematic uncertainty corresponds to that of $R_{\mu e}$. The $e\mu$ yields differ from those previously
-quoted because the $Z$ mass veto is included here.
+The quoted systematic uncertainty corresponds to that of $R_{\mu e}$ and the contribution from fake leptons. 
+The $e\mu$ yields differ from those previously quoted because the $Z$ mass veto is included here.
 }
 \vspace{.25cm}
 \begin{tabular}{l|ccc|c}
@@ -282,9 +284,9 @@ quoted because the $Z$ mass veto is included here.
 region                   &  $N(ee)$ & $N(\mu\mu)$ & $N(e\mu)$  &  $\Delta$   \\ 
 \hline
 preselection region      &      193 &         201 &      394   &    2.0 $\pm$ 28 (stat) $\pm$ 1.8 (syst) \\    
-2010 signal region       &        4 &           4 &        9   &   -0.9 $\pm$ 4.2 (stat) $\pm$ 0.1 (syst)  \\
-high \met\ signal region &        2 &           0 &        1   &    1.3 $\pm$ 1.9 (stat) $\pm$ 0.1 (syst)  \\
-high \Ht\ signal region  &        1 &           0 &        1   &    0.1 $\pm$ 1.5 (stat) $\pm$ 0.0 (syst)  \\
+2010 signal region       &        4 &           4 &        9   &   -0.9 $\pm$ 4.2 (stat) $\pm$ 0.6 (syst)  \\
+high \met\ signal region &        2 &           0 &        1   &    1.3 $\pm$ 1.9 (stat) $\pm$ 0.5 (syst)  \\
+high \Ht\ signal region  &        1 &           0 &        1   &    0.1 $\pm$ 1.5 (stat) $\pm$ 0.5 (syst)  \\
 \hline
 \end{tabular}
 \end{center}
@@ -323,7 +325,7 @@ ABCD prediction                        &    12.7 $\pm$ 2.4 (stat) $\pm$ 2.5 (sys
 ABCD' prediction                       &    12.8 $\pm$ 2.9 (stat) $\pm$ 2.6 (syst) & 1.2 $\pm$ 0.4 (stat) $\pm$ 0.5 (syst)  & 0.0 $\pm$ 0.6 (stat) $\pm$ 0.3 (syst) \\
 \ptll\ prediction                      &    16.7 $\pm$ 6.1 (stat) $\pm$ 5.9 (syst) & 5.4 $\pm$ 3.8 (stat) $\pm$ 2.2 (syst)  & 1.7 $\pm$ 1.7 (stat) $\pm$ 0.6 (syst) \\
 \hline
-OF subtraction ($\Delta$)              &    -0.9 $\pm$ 4.2 (stat) $\pm$ 0.1 (syst) & 1.3 $\pm$ 1.9 (stat) $\pm$ 0.1 (syst)  & 0.1 $\pm$ 1.5 (stat) $\pm$ 0.0 (syst) \\
+OF subtraction ($\Delta$)              &    -0.9 $\pm$ 4.2 (stat) $\pm$ 0.6 (syst) & 1.3 $\pm$ 1.9 (stat) $\pm$ 0.5 (syst)  & 0.1 $\pm$ 1.5 (stat) $\pm$ 0.5 (syst) \\
 \hline
 \end{tabular}
 \end{center}
