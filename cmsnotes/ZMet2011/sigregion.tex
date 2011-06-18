@@ -5,7 +5,7 @@ We define signal regions to look for possible
 new physics contributions by adding the requirement of large MET to the preselection. 
 Our choice of MET requirements to define the signal regions is driven by the 
 MET distributions expected from $Z$ and $t\bar{t}$ MC with the preselection applied, 
-as shown in Fig.~\ref{fig:metdist}. The integrated luminosity of the $Z$ MC is 
+as shown in Fig.~\ref{fig:metdist}. The equivalent luminosity of the $Z$ MC is 
 approximately 834 pb$^{-1}$, and that of the \ttbar sample is approximately 6.8 fb$^{-1}$.
 
 \begin{figure}[tbh]
@@ -49,11 +49,12 @@ The MC and data yields for this signal region are given in Table~\ref{sigyieldta
 
 In the two signal regions above, the dominant background is \ttbar. 
 However, it is still essential to have a data driven estimation of the \Z contribution
-in the signal regions to demonstrate that we understand our background composition.
+in the signal regions to demonstrate that we understand our background composition (see section \ref{sec:templates}).
 This is important both in case when an excess is observed or when placing a limit on new physics.
 
-The data driven technique used to predict the missing transverse energy accompanying 
-a \Z event is described in Section~\ref{sec:templates}.
+%It's right below this, so why bother -- just put the reference in above
+%The data driven technique used to predict the missing transverse energy accompanying 
+%a \Z event is described in Section~\ref{sec:templates}.
 
 To estimate the \ttbar background we will use the opposite flavor subtraction
  described in Section~\ref{sec:topbkg}.
@@ -173,7 +174,45 @@ Backgrounds from single top and $W$+jets are omitted since they are negligible.}
 
 \end{comment}
 
-%The 2010 muons
+
+%2011 event table
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{sig60events} Details of data events for the loose signal region 
+  MET $>$ \signalmetl GeV for \lumi. The SimpleSecondaryVertexTagger high efficiency medium 
+  working point is used for b-tagging.}
+
+  %IS THIS STILL TRUE???
+  %, for which the efficiency is $\sim40$\% and the mistag rate is $\sim1$\%.}
+  \begin{tabular}{rrrrrrrrrrr}
+
+	\hline
+Run & Lumi & Event & Lep & Njet & N B Tag & pfMET & tcMET & Dilep & Sum & Z \pt\\
+ &  Section &  & Type &  &  &  &  & Mass  & jet \pt & \\
+\hline
+161312 & 963 &  366557890 &    $e$ & 4 & 2 & 117.1 & 117.9 &  89.0 & 218.9 &  18.1\\
+163069 & 432 &  236566401 &    $e$ & 2 & 1 & 107.4 &  92.3 &  83.6 & 213.9 &  90.9\\
+163758 &  86 &   64208683 &    $e$ & 2 & 0 & 119.5 & 114.1 &  82.6 & 114.0 &  58.6\\
+163758 &  63 &   46610542 &    $e$ & 4 & 0 & 124.1 &  41.4 &  91.1 & 300.1 & 261.9\\
+163332 & 615 &  415350358 &    $e$ & 4 & 0 & 115.6 & 108.6 & 100.1 & 316.7 & 108.3\\
+163332 & 730 &  489406176 &    $e$ & 2 & 0 & 100.4 &  88.4 &  92.6 &  98.6 &  52.8\\
+163817 & 680 &  633297354 &    $e$ & 4 & 0 & 165.0 & 155.0 &  89.7 & 437.8 &  26.0\\
+163659 & 320 &  243264615 &  $\mu$ & 2 & 0 & 150.0 & 130.2 &  86.1 & 192.7 &  71.1\\
+163663 & 181 &  126212285 &  $\mu$ & 3 & 1 & 102.3 &  79.9 &  85.4 & 210.5 &  49.8\\
+163584 &  54 &   39429230 &  $\mu$ & 3 & 0 & 209.6 & 217.4 &  92.5 & 349.6 &  29.2\\
+160873 & 115 &   30074254 &  $\mu$ & 2 & 1 & 102.8 &  87.8 &  89.1 &  89.9 &  78.5\\
+163255 & 673 &  435619707 &  $\mu$ & 2 & 2 & 169.4 & 160.6 &  96.0 & 140.4 & 108.0\\
+163759 &  80 &   52493009 &  $\mu$ & 2 & 0 & 239.3 & 229.0 &  87.5 & 198.7 & 109.4\\
+163233 &   8 &    3963812 &  $\mu$ & 2 & 0 & 106.2 & 103.3 &  82.9 & 123.0 &  58.0\\
+
+	\hline
+  \end{tabular}
+\end{center}
+\end{table}
+
+
+%The 2010 tables
 
 %\begin{table}[htb]
 %\begin{center}

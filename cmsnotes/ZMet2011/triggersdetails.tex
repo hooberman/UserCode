@@ -1,10 +1,11 @@
 \section{Triggers}
 
+When listing triggers in this section, the version number is omitted for simplicity.
+
 \subsection{Dilepton Triggers}
 \label{app:trigsel}
 
-The detailed list of triggers for selecting dilepton events is (with the version number omitted for simplicity):
-
+The triggers used for selecting dilepton events are:
 
 \begin{itemize}
 \item double-muon triggers
@@ -31,10 +32,10 @@ The detailed list of triggers for selecting dilepton events is (with the version
 The photon triggers used are:
 
 \begin{itemize}
-\item \verb=HLT_Photon20_CaloIdVL_IsoL_v*= %(\Z \pt $<$ 33~GeV)
-\item \verb=HLT_Photon30_CaloIdVL_IsoL_v*= %(33 GeV $<$ \Z \pt $<$ 55~GeV)
-\item \verb=HLT_Photon50_CaloIdVL_IsoL_v*= %(55 GeV $<$ \Z \pt $<$ 81~GeV)
-\item \verb=HLT_Photon75_CaloIdVL_IsoL_v*= %(\Z \pt $>$ 81~GeV)
+\item \verb=HLT_Photon20_CaloIdVL_IsoL_v= (\Z \pt $<$ 33~GeV)
+\item \verb=HLT_Photon30_CaloIdVL_IsoL_v= (33 GeV $<$ \Z \pt $<$ 55~GeV)
+\item \verb=HLT_Photon50_CaloIdVL_IsoL_v= (55 GeV $<$ \Z \pt $<$ 81~GeV)
+\item \verb=HLT_Photon75_CaloIdVL_IsoL_v= (\Z \pt $>$ 81~GeV)
 \end{itemize}
 
 The HLT requirements on the above triggers are \cite{ref:eghlt}:
@@ -46,6 +47,27 @@ The HLT requirements on the above triggers are \cite{ref:eghlt}:
   Ecal ET $<$ 5.5 + 0.012*ET, %\\
   Hcal ET $<$ 3.5 + 0.005*ET, %\\
   Trk PT $<$ 3.5 + 0.002*ET 
+\end{itemize}
+
+
+\subsection{Jet Triggers}
+\label{app:jettrig}
+
+The single jet triggers used to select the QCD sample from which the QCD MET templates are derived are listed below along with the thresholds applied to the lead jet pt for each trigger:
+
+% {0, 70, 90, 130, 180, 220, 270, 340, 400};
+
+\begin{itemize}
+\item \verb=HLT_Jet30_v=  (\pt $>$ 0 )
+\item \verb=HLT_Jet60_v=  (\pt $>$ 70 )
+\item \verb=HLT_Jet80_v=  (\pt $>$ 90 )
+\item \verb=HLT_Jet110_v= (\pt $>$ 130 )
+%we don't use these bc threshold is too high for our sjp binning
+%\item \verb=HLT_Jet150_v= (\pt $>$ 180 )
+%\item \verb=HLT_Jet190_v= (\pt $>$ 220 )
+%\item \verb=HLT_Jet240_v= (\pt $>$ 270 )
+%\item \verb=HLT_Jet300_v= (\pt $>$ 340 )
+%\item \verb=HLT_Jet370_v= (\pt $>$ 400 )
 \end{itemize}
 
 

@@ -24,6 +24,7 @@ Triggers used for creation of photon templates are listed in Section~\ref{sec:te
 
 
 \subsection{Event Selections}
+\label{sec:evtsel}
 
 These event selections are implemented following the recommendation of PVT.
 
@@ -174,6 +175,7 @@ Therefore two same flavor, opposite sign leptons passing the ID described below 
 
 
 \subsection{Photons}
+\label{sec:phosel}
 
 As will be explained later, it is not essential that we select real photons. 
 What is needed are jets that are predominantly electromagnetic, well measured in the ECAL, and hence less likely to contribute to fake MET. We select ``photons'' with:
@@ -193,23 +195,35 @@ a neutral electromagnetic energy fraction of at least
 \item 
 %A jet encompassing a photon has to have energy greater than or equal to that of the 
 %photon within its cone. 
-  We require that the pfjet \pt matched to the photon satisfy (pfjet \pt - photon \pt) 
-  $>$ -5~GeV. This removes a few rare cases in which ``overcleaning" of an 
+  We require that the pfjet \pt matched to the photon satisfy
+  (pfjet \pt - photon \pt) $>$ -5~GeV.
+  This removes a few rare cases in which ``overcleaning" of a
   %ECAL recHit 
-  pf jet
+  pfjet
   generated fake MET.
 
+\item We also match photons to calojets and require (calojet \pt - photon \pt) $>$ -5~GeV
+  (the same requirement used for pfjets). This is to remove other rare cases in which fake
+  energy is added to the photon object but not the calojet.
+
+\item We reject photons which have an electron of at least \pt $>$ 10 GeV in order to reject
+  conversions from electrons from W decays which are accompanied by real MET.
+
 \end{itemize}
+
 
 \subsection{MET}
 
 We use pfMET, henceforth referred to simply as ``MET.''
 
+
 \subsection{Jets}
+\label{sec:jetsel}
 
 \begin{itemize}
 \item PF jets
 \item $|\eta| < 3.0$ % was $2.5$ last year
+\item Passes loose pfjet ID
 \item L2L3 corrected
 \item L1Fastjet corrected to account for pile up
 \item \pt $ > 30$ GeV for Njet counting, \pt $ > 15$ GeV for sum jet \pt counting
