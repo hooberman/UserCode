@@ -9,42 +9,80 @@ as shown in Fig.~\ref{fig:metdist}. The equivalent luminosity of the $Z$ MC is
 approximately 834 pb$^{-1}$, and that of the \ttbar sample is approximately 6.8 fb$^{-1}$.
 
 \begin{figure}[tbh]
-\begin{center}
-\includegraphics[width=0.75\linewidth]{plots/met_ttbar_Z.pdf}
-\caption{\label{fig:metdist}\protect Distributions of MET in $Z$ and $t\bar{t}$ MC normalized to 1~fb$^{-1}$.}
-\end{center}
+  \begin{center}
+	\includegraphics[width=0.75\linewidth]{plots/met_ttbar_Z.pdf}
+	\caption{
+	  \label{fig:metdist}\protect 
+	  Distributions of MET in $Z$ and $t\bar{t}$ MC normalized to 1~fb$^{-1}$.}
+  \end{center}
 \end{figure}
 
+
+In addition to our two signal discussed below regions, 
+we use the regions MET $>$ 30 and MET $>$ 60 
+as very loose signal regions. The mass distributions for these regions are shown in
+figures \ref{fig:dilmass30} and \ref{fig:dilmass60}.
+For all mass plots in this section, backgrounds from single top 
+and $W$+jets are omitted since they are negligible.
+
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet30_ee_allj.pdf}
+	\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet30_mm_allj.pdf}
+	\caption{
+	  \label{fig:dilmass30}\protect 
+	  Dilepton mass distribution for events passing the pre-selection 
+	  and MET $>$ 30 GeV for \lumi\ in the $ee$ (left) and $\mu\mu$ (right) final states. 
+	  %Backgrounds from single top and $W$+jets are omitted since they are negligible.
+	}
+  \end{center}
+\end{figure}
+
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet60_ee_allj.pdf}
+	\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet60_mm_allj.pdf}
+	\caption{
+	  \label{fig:dilmass60}\protect 
+	  Dilepton mass distribution for events passing the pre-selection 
+	  and MET $>$ 60 GeV for \lumi\ in the $ee$ (left) and $\mu\mu$ (right) final states. 
+	  %Backgrounds from single top and $W$+jets are omitted since they are negligible.
+	}
+  \end{center}
+\end{figure}
+
+
 We define two signal regions for our search:
+
 \begin{itemize}
 \item MET $>$ \signalmetl GeV (loose signal region):
+  %In this region of MET there is a contribution from the tail of the MET distribution 
+  In this region of MET there is a small contribution from the tail of the MET distribution 
+  in \Z plus jets events. 
+  %There is also a contribution from \ttbar events where the leptons happen to be in the \Z 
+  The bulk of the events in this region are from \ttbar events where the leptons happen to be in the \Z 
+  mass window.
 
-%In this region of MET there is a contribution from the tail of the MET distribution 
-In this region of MET there is a small contribution from the tail of the MET distribution 
-in \Z plus jets events. 
-%There is also a contribution from \ttbar events where the leptons happen to be in the \Z 
-The bulk of the events in this region are from \ttbar events where the leptons happen to be in the \Z 
-mass window.
+  %We expect the MC simulation to do a good job on the second source, as it is well within the 
+  %bulk of the \ttbar phase space. However, for the first we must rely on data driven procedures. 
 
-%We expect the MC simulation to do a good job on the second source, as it is well within the 
-%bulk of the \ttbar phase space. However, for the first we must rely on data driven procedures. 
+  The MC and data yields for this signal region are given in Table~\ref{sigyieldtableloose} and the dilepton
+  mass distributions are shown in Fig.~\ref{fig:dilmass100}.
 
-The MC and data yields for this signal region are given in Table~\ref{sigyieldtableloose} and the dilepton
-mass distributions are shown in Fig.~\ref{fig:dilmass60}.
+  %until i fix the lumi, don't know what signal events i have
 
-%until i fix the lumi, don't know what signal events i have
-
-%More information on the data events in this signal region is given in Table~\ref{sig60events} and information 
-%on the muons in these events is given in Table~\ref{sig60muons}.
+  %More information on the data events in this signal region is given in Table~\ref{sig60events} and information 
+  %on the muons in these events is given in Table~\ref{sig60muons}.
 
 \item MET $>$ \signalmett GeV (tight signal region):
-%Though this wording worked when we had a fixed lumi, it doesn't work when we don't know how much we'll get by the end of the year. Just reword.
-This signal region was selected by picking a region where the SM 
-% prediction for the dataset we have is  $\approx$ 1 event. 
-expectation is very low.
-At this kinematical region the dominant background contribution is expected to be from \ttbar.
+  %Though this wording worked when we had a fixed lumi, it doesn't work when we don't know how much we'll get by the end of the year. Just reword.
+  This signal region was selected by picking a region where the SM 
+  % prediction for the dataset we have is  $\approx$ 1 event. 
+  expectation is very low.
+  At this kinematical region the dominant background contribution is expected to be from \ttbar.
 
-The MC and data yields for this signal region are given in Table~\ref{sigyieldtabletight}.
+  The MC and data yields for this signal region are given in Table~\ref{sigyieldtabletight}.
+
 \end{itemize}
 
 In the two signal regions above, the dominant background is \ttbar. 
@@ -57,19 +95,22 @@ This is important both in case when an excess is observed or when placing a limi
 %a \Z event is described in Section~\ref{sec:templates}.
 
 To estimate the \ttbar background we will use the opposite flavor subtraction
- described in Section~\ref{sec:topbkg}.
+described in Section~\ref{sec:topbkg}.
 
 
 \begin{figure}[hbt]
-\begin{center}
-%despite the name of the file, it's actually met 100
-\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet60_ee_allj.pdf}
-\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet60_mm_allj.pdf}
-\caption{\label{fig:dilmass60}\protect Dilepton mass distribution for events passing the pre-selection 
-  and MET $>$ \signalmetl~GeV for \lumi\ in the $ee$ (left) and $\mu\mu$ (right) final states. 
-Backgrounds from single top and $W$+jets are omitted since they are negligible.}
-\end{center}
+  \begin{center}
+	\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet100_ee_allj.pdf}
+	\includegraphics[width=0.48\linewidth]{plots/hdilmass_pfmet100_mm_allj.pdf}
+	\caption{
+	  \label{fig:dilmass100}\protect 
+	  Dilepton mass distribution for events passing the pre-selection 
+	  and MET $>$ \signalmetl~GeV for \lumi\ in the $ee$ (left) and $\mu\mu$ (right) final states. 
+	  %Backgrounds from single top and $W$+jets are omitted since they are negligible.
+	}
+  \end{center}
 \end{figure}
+
 
 \begin{table}[htb]
 \begin{center}
@@ -130,8 +171,50 @@ Backgrounds from single top and $W$+jets are omitted since they are negligible.}
 
 
 
+%2011 event table
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{sig60events} Details of data events for the loose signal region 
+  MET $>$ \signalmetl GeV for \lumi. The SimpleSecondaryVertexTagger high efficiency medium 
+  working point is used for b-tagging.}
+
+  %IS THIS STILL TRUE???
+  %, for which the efficiency is $\sim40$\% and the mistag rate is $\sim1$\%.}
+  \begin{tabular}{rrrrrrrrrrr}
+
+	\hline
+Run & Lumi & Event & Lep & Njet & N B Tag & pfMET & tcMET & Dilep & Sum & Z \pt\\
+ &  Section &  & Type &  &  &  &  & Mass  & jet \pt & \\
+\hline
+161312 & 963 &  366557890 &    $e$ & 4 & 2 & 117.1 & 117.9 &  89.0 & 218.9 &  18.1\\
+163069 & 432 &  236566401 &    $e$ & 2 & 1 & 107.4 &  92.3 &  83.6 & 213.9 &  90.9\\
+163758 &  86 &   64208683 &    $e$ & 2 & 0 & 119.5 & 114.1 &  82.6 & 114.0 &  58.6\\
+163758 &  63 &   46610542 &    $e$ & 4 & 0 & 124.1 &  41.4 &  91.1 & 300.1 & 261.9\\
+163332 & 615 &  415350358 &    $e$ & 4 & 0 & 115.6 & 108.6 & 100.1 & 316.7 & 108.3\\
+163332 & 730 &  489406176 &    $e$ & 2 & 0 & 100.4 &  88.4 &  92.6 &  98.6 &  52.8\\
+163817 & 680 &  633297354 &    $e$ & 4 & 0 & 165.0 & 155.0 &  89.7 & 437.8 &  26.0\\
+163659 & 320 &  243264615 &  $\mu$ & 2 & 0 & 150.0 & 130.2 &  86.1 & 192.7 &  71.1\\
+163663 & 181 &  126212285 &  $\mu$ & 3 & 1 & 102.3 &  79.9 &  85.4 & 210.5 &  49.8\\
+163584 &  54 &   39429230 &  $\mu$ & 3 & 0 & 209.6 & 217.4 &  92.5 & 349.6 &  29.2\\
+160873 & 115 &   30074254 &  $\mu$ & 2 & 1 & 102.8 &  87.8 &  89.1 &  89.9 &  78.5\\
+163255 & 673 &  435619707 &  $\mu$ & 2 & 2 & 169.4 & 160.6 &  96.0 & 140.4 & 108.0\\
+163759 &  80 &   52493009 &  $\mu$ & 2 & 0 & 239.3 & 229.0 &  87.5 & 198.7 & 109.4\\
+163233 &   8 &    3963812 &  $\mu$ & 2 & 0 & 106.2 & 103.3 &  82.9 & 123.0 &  58.0\\
+
+	\hline
+  \end{tabular}
+\end{center}
+\end{table}
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %2010
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{comment}
 
@@ -175,43 +258,6 @@ Backgrounds from single top and $W$+jets are omitted since they are negligible.}
                  LM8   &     0.14 $\pm$ 0.01   &     0.16 $\pm$ 0.01   &     0.06 $\pm$ 0.00   &     0.36 $\pm$ 0.01  \\
 
 \end{comment}
-
-
-%2011 event table
-
-\begin{table}[htb]
-\begin{center}
-\caption{\label{sig60events} Details of data events for the loose signal region 
-  MET $>$ \signalmetl GeV for \lumi. The SimpleSecondaryVertexTagger high efficiency medium 
-  working point is used for b-tagging.}
-
-  %IS THIS STILL TRUE???
-  %, for which the efficiency is $\sim40$\% and the mistag rate is $\sim1$\%.}
-  \begin{tabular}{rrrrrrrrrrr}
-
-	\hline
-Run & Lumi & Event & Lep & Njet & N B Tag & pfMET & tcMET & Dilep & Sum & Z \pt\\
- &  Section &  & Type &  &  &  &  & Mass  & jet \pt & \\
-\hline
-161312 & 963 &  366557890 &    $e$ & 4 & 2 & 117.1 & 117.9 &  89.0 & 218.9 &  18.1\\
-163069 & 432 &  236566401 &    $e$ & 2 & 1 & 107.4 &  92.3 &  83.6 & 213.9 &  90.9\\
-163758 &  86 &   64208683 &    $e$ & 2 & 0 & 119.5 & 114.1 &  82.6 & 114.0 &  58.6\\
-163758 &  63 &   46610542 &    $e$ & 4 & 0 & 124.1 &  41.4 &  91.1 & 300.1 & 261.9\\
-163332 & 615 &  415350358 &    $e$ & 4 & 0 & 115.6 & 108.6 & 100.1 & 316.7 & 108.3\\
-163332 & 730 &  489406176 &    $e$ & 2 & 0 & 100.4 &  88.4 &  92.6 &  98.6 &  52.8\\
-163817 & 680 &  633297354 &    $e$ & 4 & 0 & 165.0 & 155.0 &  89.7 & 437.8 &  26.0\\
-163659 & 320 &  243264615 &  $\mu$ & 2 & 0 & 150.0 & 130.2 &  86.1 & 192.7 &  71.1\\
-163663 & 181 &  126212285 &  $\mu$ & 3 & 1 & 102.3 &  79.9 &  85.4 & 210.5 &  49.8\\
-163584 &  54 &   39429230 &  $\mu$ & 3 & 0 & 209.6 & 217.4 &  92.5 & 349.6 &  29.2\\
-160873 & 115 &   30074254 &  $\mu$ & 2 & 1 & 102.8 &  87.8 &  89.1 &  89.9 &  78.5\\
-163255 & 673 &  435619707 &  $\mu$ & 2 & 2 & 169.4 & 160.6 &  96.0 & 140.4 & 108.0\\
-163759 &  80 &   52493009 &  $\mu$ & 2 & 0 & 239.3 & 229.0 &  87.5 & 198.7 & 109.4\\
-163233 &   8 &    3963812 &  $\mu$ & 2 & 0 & 106.2 & 103.3 &  82.9 & 123.0 &  58.0\\
-
-	\hline
-  \end{tabular}
-\end{center}
-\end{table}
 
 
 %The 2010 tables
