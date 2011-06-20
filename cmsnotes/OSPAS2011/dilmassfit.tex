@@ -1,42 +1,36 @@
 \section{Search for a Kinematic Edge}
 \label{sec:fit}
 
-Many models of new physics produce an excess of same flavor (SF) $ee$ and $\mu\mu$ lepton pairs
-with respect to opposite flavor (OF) $e\mu$ pairs. For example, such an excess occurs in SUSY models
-in which the opposite-sign leptons are produced via the decay $\chi_2^0 \to \chi_1^0 \ell^+\ell^-$.
-The kinematics of this decay also lead to a characteristic triangle-shaped feature in the distribution
-of dilepton mass, which would provide unambiguous evidence for new physics.
-In contrast, for the dominant background \ttbar, the flavors of the 2 leptons are uncorrelated,
-as is also the case for other SM background processes such as $W^+W^-$ and DY$\to\tau^+\tau^-$.
-Therefore, for these processes the rates of SF and OF lepton pairs are the same, modulo differences
-between the electron and muon selection efficiencies; 
-furthermore, the kinematic properties of events containing SF and OF lepton pairs are the same. 
-This allows us to determine the SM background in the SF final state using events in the OF
-final state; this technique is referred to as OF subtraction. In Sec.~\ref{sec:datadriven}
-we search for an excess of SF with respect to OF events accompanied by large \MET\ and \Ht. 
-In this section, we perform a fit to search for a kinematic edge in the dilepton mass distribution 
-in SF events, in which we extract the background shape from OF events.
-The contributions from fake leptons are treated as negligible, since they are measured
-to be roughly 1\% of the total background using the data-driven fake rate technique.
-The residual DY contribution in the signal region is extrapolated from a control region at lower \Ht,
-and is found to be negligible.
+Any new physics process which produces leptons via a cascade decay chain will lead to final states
+containing same-flavor (SF) $ee$ or $\mu\mu$ lepton pairs only, provided that lepton flavor
+is conserved. In contrast, for the dominant background \ttbar\ as well as other
+SM processes such as $W^+W^-$ and $\mathrm{DY}\to\tau^+\tau^-$, the 2 lepton flavors are uncorrelated,
+and the rates for SF and opposite-flavor (OF) $e\mu$ lepton pairs are therefore the same.
+Hence we can search for new physics in the SF final state, and model the backgrounds
+using events in the OF final state. 
 
-In order to further suppress DY, we increase the \MET\ requirement to \MET $>$ 100 GeV. 
-We search for the kinematic edge in 2 regions.  The first region is a control region defined
+In Sec.~\ref{sec:datadriven} we search for an excess of
+events with SF with respect to OF lepton pairs, accompanied by large \met\ and \Ht. 
+In this section, we search for a kinematic edge in the dilepton mass distribution for same-flavor
+events. This edge is a characteristic feature of, for example, SUSY scenarios in which
+the opposite-sign leptons are produced via the decay $\chi_2^0 \to \chi_1^0 \ell^+\ell^-$.
+The \ttbar\ background shape is extracted from events with OF lepton pairs, and we perform
+a fit to the dilepton mass distribution in events with SF lepton pairs.
+
+Since we wish to examine the dilepton mass over the full range, in this section only we do not
+veto SF events in the $Z$ mass region. This increases the DY contribution, and the \MET\ requirement 
+is increased to \MET $>$ 100 GeV to compensate.
+We search for the kinematic edge in 2 regions.  The first is a control region defined
 as 100 $<$ \Ht\ $<$ 300 GeV, which is dominated by the \ttbar\ background; we use 
 this region to validate our fit methodology and verify that a signal yield consistent with 0 
 is obtained. We then proceed to search for a kinematic edge in the signal region defined as 
 \Ht\ $>$ 300 GeV. Since we do not observe a kinematic edge in this region, we perform a 
 fit to the dilepton mass distribution assuming an example signal shape from the LM1 scenario.
-%removed following sentence, since previous paragraph ends with an equivalent statement
-%The residual DY background in the control region is fitted and extrapolated
-%to the signal region where it is found to be very small.
 
-The relative yields in the $e\mu$, $ee$ and $\mu\mu$ channels are constrained
-using $R_{\mu e} = 1.13 \pm 0.05$ (the ratio of muon to electron selection efficiencies),
-evaluated by taking the square root of the ratio of the number of 
-$Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events in data, in the mass range 76-106 GeV with no jets or 
-\met\ requirements. 
+The contributions from fake leptons are treated as negligible, since they are measured
+to be roughly 1\% of the total background using the data-driven fake rate technique.
+The residual DY contribution in the signal region is extrapolated from a control region at lower \Ht,
+and is found to be negligible.
  
 The background as a function of the invariant mass $\mll$ is described by:
 
@@ -82,11 +76,15 @@ convoluted with a Gaussian (with fixed Z mass and width).
 
 We perform a simultaneous, extended, unbinned maximum 
 likelihood (ML) fit to the distribution of dilepton mass for events containing $ee$, $\mu\mu$ 
-(signal, Z and background model)
+(signal, $Z$ and background model)
 and $e\mu$ pairs (background model only). 
-The shape of the \ttbar\ background is assumed to be common in all categories
-and the yields of signal $n_S$, Z $n_Z$ and background $n_B$ 
-in the three categories are constrained using $R_{\mu e}$. 
+The shape of the \ttbar\ background is assumed to be common in all categories.
+The fit is performed separately for events with $ee$, $\mu\mu$ and $e\mu$ lepton pairs,
+and the yields of signal $n_S$, $Z$ $n_Z$ and background $n_B$ 
+in these three categories are constrained using the ratio of muon to electron selection efficiencies
+$R_{\mu e} = 1.13 \pm 0.05$. This quantity is evaluated as the square root of the ratio of the number of 
+$Z \to \mu^+\mu^-$ to $Z \to e^+e^-$ events in data, in the mass range 76-106 GeV with no jets or 
+\met\ requirements. 
 
 We perform the fit in the control region 100 $<$ \Ht\ $<$ 300 GeV, in
 which the \ttbar\ background, $Z$ background, and LM1 signal yields are allowed to vary in the fit. 
