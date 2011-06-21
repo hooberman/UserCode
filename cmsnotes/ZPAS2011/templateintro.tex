@@ -1,104 +1,47 @@
-
 \section{MET Templates}
 \label{sec:templates}
 
+The background from SM $Z$ production accompanied by artificial MET from detector mismeasurements
+is estimated using the novel MET templates technique.
 The premise of this data driven technique is that MET in \Z plus jets events
 is produced by the hadronic recoil system and {\it not} by the leptons making up the \Z.
-Therefore, the basic idea of the MET template method is to measure the MET distribution in 
-a control sample which has no true MET and the same general attributes regarding
-fake MET as in \Z plus jets events.
-In our case, we choose a photon-like sample. These are not necessarily photons, but jets with predominantly 
-electromagnetic energy deposition in a good fiducial volume. This ensures that 
-they are well measured and do not contribute to fake MET.
+Therefore, the MET distribution in these events can be modeled using a control sample
+which has no true MET and the same general attributes regarding fake MET as in \Z plus jets events.
+We use two complementary control samples: one consisting of photon plus jets events, and one
+consisting of QCD multijet events. 
 
-Both the control sample and the \Z plus jets background
-consist of a well measured object (either a photon or a leptonically decaying \Z) which recoils 
-against a system of hadronic jets. The MET in these events 
-is then dominated by mismeasurements of the hadronic system. To account for kinematic 
+Photon plus jets events are selected from a set of single photon
+triggers with varying photon \pt\ thresholds, and QCD multijet events are selected from a set
+of single jet triggers with varying jet \pt\ thresholds. 
+In the \Z plus jets events as well as in both control samples, the MET is dominated by mismeasurements
+of the hadronic system. To account for kinematic 
 differences between the hadronic systems in the control vs. signal samples, 
-we measure the MET distributions in the control sample in bins of the number of jets and the 
-scalar sum of jet \pt. 
-
-In order to track conditions which change over the course of data-taking
-(most notably the increased pile-up) and to increase the statistics at large photon \pt, we
-use templates obtained from multiple photon triggers ``stitched'' together. 
-Each photon event enters the template for the
-highest \pt photon trigger which fired in the event. The resulting MET 
-distributions in each bin of njets, sumjetpt and photon trigger are then 
-normalized to unit area, yielding an array of MET templates. 
-
-Each \Z event is then assigned one such 
-unit area template based on its number of jets, the scalar sum of jet \pt and the \Z \pt. 
-The \Z \pt enters only in choosing which bin of photon trigger to use. 
-This is done because the \Z \pt is the analogous variable in the \Z sample 
-to the photon \pt. 
-In order to account for the different prescales of the different photon triggers (which 
-change during running), 
-each template is filled with a weight equal to the prescale of the corresponding trigger.
-After this procedure, the templates are normalized to unity.
-If this is not done, the relative contribution of different parts of the photon
-\pt specturm will not be sampled properly. In other words, this procedure corrects and 
-smoothes the photon \pt distribution.% so that it matches the \Z \pt distribution.
-The ranges of \Z \pt chosen for each photon trigger 
-take into account the turn-on of the photon trigger and are shown below.
-%{\bf Claudio: currently the Z pt is used to determine which trigger template set to use. You argued earlier that instead
-%\bf we should use the pt of the hadronic recoil. I have verified that this makes a negligible difference, but if you prefer,
-%\bf I can switch to using hadronic recoil pt.} 
-
-%Below was commented out, but since I notice this procedure has a large effect due to the large prescale, I think it's important to include this text.
-
-%In order to select a photon sample whose \pt distribution matches the distribution of \Z \pt
-% in our preselection, a combination of photon triggers is used.
-% must be used (see below). 
-%In order to account for varying prescales of the triggers in different runs,
-% separate templates are created for each trigger line. 
-%Each event enters the template for the highest \pt trigger which fires in the event,
-% and the template is filled with a weight equal to the prescale of the corresponding trigger.
-%After this procedure, the templates are normalized to unity.
-
+we measure the MET distributions in the control samples in bins of the number of jets and the 
+scalar sum of the transverse energies of the jets (\Ht), separately for each of the single photon and single jet trigger thresholds.
+Each MET distribution is normalized to unit area, yielding an
+array of MET templates. Each \Z event is then assigned one such unit area template based on its number of jets and \Ht.
+The trigger threshold is chosen based on the \Z \pt\ (leading jet \pt) for the photon plus
+jets (QCD multijets) control sample.
 The sum of the templates for all selected \Z events then forms the 
 prediction of the MET distribution for the \Z sample. Integrating this prediction for our 
 signal regions  thus provides a data driven prediction for the \Z plus jets yields in the 
 signal regions. 
-%The prediction is then formed by selecting the photon trigger based on the \pt of the \Z in the event which is being predicted
 
-While there is in principle a small contribution from \ttbar in the \Z sample from 
-which we predict the MET distribution, it is only $\approx$2.6\% of the total sample used
-(MC expectation),
-as shown in table \ref{preselyieldtable}, and the data driven prediction (see Fig. 
-\ref{fig:pfmet_eemm}) estimates that the \ttbar contribution to the loose signal 
-region is $\approx$0.3\% of the total \Z yield. As the MET measurement in these events 
-does not enter the MET prediction, this small non-Z contribution is negligible.
+We use 2 separate control samples, since each has relative advantages. The photon plus jets events have a topology
+which is more similar to the \Z plus jets events, since both consist of a well-measured
+object recoiling against a system of hadronic jets. Possible contributions of the photon
+to the MET in the event are eliminated in the QCD multijet sample. We have verified that
+the predictions from the 2 control samples are consistent within their uncertainties, and
+choose to use the prediction from the photon plus jets sample.
+By using two independent control samples, we are able to illustrate
+the robustness of the MET templates method and to cross check the data driven background 
+prediction.
 
-%The MET templates are derived from a set of photon triggered samples. 
-The Njet binning used is 2 jets and $\ge$ 3 jets. 
-The sum jet \pt binning is defined by the boundaries {0, 30, 60, 90, 120, 150, 250, 5000}~GeV.
-The photon triggers, and the ranges of \Z \pt for which they are selected, are (where the ``\verb=v*='' stands for a verion number which increments with trigger menu changes):
-
-\begin{itemize}
-\item \verb=HLT_Photon20_CaloIdVL_IsoL_v*= (\Z \pt $<$ 33~GeV)
-\item \verb=HLT_Photon30_CaloIdVL_IsoL_v*= (33 GeV $<$ \Z \pt $<$ 55~GeV)
-\item \verb=HLT_Photon50_CaloIdVL_IsoL_v*= (55 GeV $<$ \Z \pt $<$ 81~GeV)
-\item \verb=HLT_Photon75_CaloIdVL_IsoL_v*= (\Z \pt $>$ 81~GeV)
-\end{itemize}
-
-The HLT requirements (as described in \cite{ref:eghlt}) on the above triggers are listed in appendix~\ref{app:photrig}.
-
-%\begin{itemize}
-%\item CaloIdVL: \\
-%  H/E $<$ 0.15 (0.1), $\sigma_{i\eta i\eta} <$ 0.024 (0.04) in barrel (endcap)
-%\item IsoL: \\
-%  Ecal ET $<$ 5.5 + 0.012*ET, %\\
-%  Hcal ET $<$ 3.5 + 0.005*ET, %\\
-%  Trk PT $<$ 3.5 + 0.002*ET 
-%\end{itemize}
-
-%last year for the thresholds we used trigger value +2. This year I observe a bit slower turn-on:
-
-%  //notes on turn on curves from drawing photon pts from data babies
-%  //the 20 trig is nearly fully efficient at 21, but use 22 to be conservative
-%  //the 30 trig is nearly fully efficient at 32, but use 33 to be conservative
-%  //the 50 trig is nearly fully efficient at 54, but use 55 to be conservative
-%  //the 75 trig is nearly fully efficient at 80, but use 81 to be conservative
-
-We show all the templates used in appendix~\ref{sec:appendix_templates}.
+The systematic uncertainty in the prediction from the photon plus jets MET templates
+originates from 2 sources. Possible contributions to the MET from the photon are assessed
+by varying the photon selection, which leads to a relative difference in the predicted
+background of 15\%. The effect of the difference between the distributions of hadronic recoil \pt\
+in the control vs. signal samples is estimated by reweighting the photon plus jets events such
+that the hadronic recoil \pt distribution matches that in \Z plus jets events, leading to a relative
+difference in the predicted background of 20\%. The total uncertainty in the predicted background
+from the MET templates method is 25\%.
