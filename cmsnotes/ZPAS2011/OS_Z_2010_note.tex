@@ -1,0 +1,117 @@
+\documentclass{cmspaper}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{slashbox}
+\usepackage{epstopdf}  %added for MAC compiler
+\usepackage{pdfpages}
+\usepackage{lineno}
+\usepackage{verbatim}
+\RequirePackage{lineno} 
+%\RequirePackage{lineno} 
+
+\usepackage{wrapfig}
+
+%Note to authors: these definitions are suggested to be used for consistency
+\newcommand{\pt}{$P_T$ }
+\newcommand{\mll}{\ensuremath{M_{\ell\ell}}}
+\newcommand{\z}{$Z$ }
+\newcommand{\Z}{$Z$ } %redundancy can be good
+\newcommand{\ttbar}{\ensuremath{t\bar{t}} }
+\newcommand{\eepm}{\ensuremath{e^+ e^-}}
+\newcommand{\mmpm}{\ensuremath{\mu^+ \mu^-}}
+\newcommand{\empm}{\ensuremath{e^\pm \mu^\mp}}
+\newcommand{\ase}[2]{\ensuremath{_{~- #1}^{~+ #2}}}
+\newcommand{\met}{\mbox{$\raisebox{.3ex}{$\not$}E_T$\hspace*{0.5ex}}} 
+
+%The lumi so that if it changes it's easier to update
+\newcommand{\lumi}{204~pb$^{-1}$}
+
+%loose(tight) signal region met cut
+\newcommand{\signalmetl}{100}
+\newcommand{\signalmett}{200}
+
+
+\begin{document}
+
+\begin{titlepage}
+
+  %\internalnote{2010/000}
+  \cmsnote{2010/000}
+
+  \date{\today}
+ 
+  \title{A Search For New Physics in Z + Jets + MET using MET Templates}
+
+  \begin{Authlist}
+    D.~Barge, C.~Campagnari, P.~Kalavase, D.~Kovalskyi, V.~Krutelyov, J.~Ribnik
+    \Instfoot{ucsb}{University of California, Santa Barbara, USA}
+
+    W.~Andrews, G.~Cerati, D.~Evans, F.~Golf, I.~MacNeill, S.~Padhi, Y.~Tu, F.~W\"urthwein, A.~Yagil, J.~Yoo
+    \Instfoot{ucsd}{University of California, San Diego, USA}
+
+	L.~Bauerdick, I.~Bloch, K.~Burkett, I.~Fisk, Y.~Gao, O.~Gutsche, B.~Hooberman, S.~Jindariani
+    \Instfoot{fnal}{Fermi National Accelerator Laboratory, Batavia, Illinois, USA}
+  \end{Authlist}
+
+  \begin{abstract}
+
+We search for new physics in the dilepton final state of \Z plus two or more jets plus missing transverse 
+energy (MET) in the $\sqrt{s}$ = 7~TeV data in 2011 (\lumi). 
+The \Z boson is reconstructed in its decay to $e^+e^-$ or $\mu^+\mu^-$, and
+the search regions are defined as MET $\ge$ \signalmetl~GeV (loose signal region) and MET $\ge$ \signalmett~GeV (tight signal region). 
+We use data driven techniques to predict the standard model background in these
+search regions. 
+Contributions from Drell-Yan production combined with detector mis-measurements that produce fake MET are modeled via MET templates based on photon plus jets events. 
+Top pair production background, as well as other backgrounds for which the lepton
+flavors are uncorrelated, are modeled via $e^\pm\mu^\mp$ subtraction.
+
+
+  \end{abstract}
+\end{titlepage}
+
+
+\setcounter{page}{2}%JPP
+\newpage
+\tableofcontents
+
+\newpage
+\linenumbers
+\input{introduction.tex}
+\input{datasets.tex}
+\input{eventsel.tex}
+\input{yields.tex}
+\input{sigregion.tex}
+\input{templateintro.tex}
+\input{templatemc.tex}
+\input{topbkg.tex}
+\input{otherBG}
+\input{results.tex}
+
+%syst on bkgnd preds
+\input{systematics.tex}
+
+%UL on non-SM yeild
+\input{upperlimit}
+
+%Additional Information for Model Testing
+\input{outreach}
+
+%model-dependent limits
+\input{models}
+
+\input{conclusion}
+
+\clearpage
+\input{bibliography.tex}
+
+\clearpage
+\appendix
+\input{triggersdetails}
+%\input{triggereff.tex}
+\input{appendix_templates.tex}
+
+\end{document}
+
+
+
