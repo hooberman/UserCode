@@ -2,6 +2,42 @@
 \label{sec:eventSelection}
 
 
+\begin{figure}[hbt]
+\begin{center}
+\includegraphics[width=0.48\linewidth]{plots/hdilmass_ee_allj.pdf}
+\includegraphics[width=0.48\linewidth]{plots/hdilmass_mm_allj.pdf}
+\caption{\label{fig:dilmass}\protect Dilepton mass distribution for events passing the pre-selection
+  in the $ee$ (left) and $\mu\mu$ (right) final states. Backgrounds from single top and $W$+jets are omitted
+  since they are negligible.}
+\end{center}
+\end{figure}
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{preselyieldtable} Data and MC yields passing preselection.
+The NLO yields for the SUSY benchmark processes LM4 and LM8 are also shown.
+{\bf FEWER SIG FIGS}
+}
+\begin{tabular}{lccccc}
+\hline
+              Sample   &                $ee$   &            $\mu\mu$   &              $e\mu$   &                 tot  \\
+\hline
+       \zjets & 1840.566 $\pm$ 21.213  &  2088.019 $\pm$ 22.592  &   1.467 $\pm$  0.599  &  3930.052 $\pm$ 30.996 \\ 
+   $t\bar{t}$ & 24.515 $\pm$  0.860    &  25.965 $\pm$  0.885  &  51.295 $\pm$  1.244  &  101.775 $\pm$  1.753 \\ 
+       \wjets &  0.852 $\pm$  0.603    &   0.000 $\pm$  0.000  &   0.426 $\pm$  0.426  &   1.278 $\pm$  0.738 \\ 
+          \WW &  0.217 $\pm$  0.043    &   0.442 $\pm$  0.061  &   0.593 $\pm$  0.070  &   1.252 $\pm$  0.102 \\ 
+          \WZ & 13.947 $\pm$  0.157    &  16.001 $\pm$  0.168  &   0.111 $\pm$  0.014  &  30.059 $\pm$  0.230 \\ 
+          \ZZ & 10.005 $\pm$  0.076    &  11.364 $\pm$  0.082  &   0.022 $\pm$  0.004  &  21.391 $\pm$  0.112 \\ 
+   single top &  0.725 $\pm$  0.057    &   0.778 $\pm$  0.059  &   1.694 $\pm$  0.088  &   3.196 $\pm$  0.120 \\ 
+\hline
+     Total MC & 1890.827 $\pm$ 21.240  &  2142.569 $\pm$ 22.610  &  55.607 $\pm$  1.450  &  4089.003 $\pm$ 31.056 \\ 
+\hline
+         Data &   2051                 &    2277                 &      66               &    4394 \\ 
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
 Samples of  MC events are used to  guide the  design of  the analysis.
 These      events     are      generated     using      either     the
 \PYTHIA6.4.22~\cite{Pythia}  or  \MADGRAPH4.4.12~\cite{Madgraph} event
@@ -41,55 +77,16 @@ the large background arising from QCD production of jets.
 
 We require the presence of at least two jets with  $\pt > 30\GeVc$ and  $|\eta| < 3.0$,
 separated  by $\Delta  R  >$  0.4 from  leptons  passing the  analysis
-selection   with   $\pt  >   10\GeVc$.    The  anti-$k_T$   clustering
+selection.    The  anti-$k_T$   clustering
 algorithm~\cite{antikt}  with  $\Delta{}R  =  0.5$  is  used  for  jet
 clustering. The jets and MET  are reconstructed with the Particle Flow 
 technique~\cite{CMS-PAS-PFT-10-002}. 
  
 The resulting dilepton mass spectra for the $ee$ and $\mu\mu$ final states for events
-passing the above requirements, with the exception of the $Z$ mass requirement, are shown in Figure~\ref{fig:dilmass}.
+passing the above requirements except for the $Z$ mass requirement are shown in Figure~\ref{fig:dilmass}.
 The data and MC yields passing the full preselection above are displayed in Table~\ref{preselyieldtable}.
 The MC yields are normalized to \lumi\ using the cross-sections
-from Reference~\cite{ref:xsec} assuming 100\% trigger efficiency 
+from Reference~\cite{ref:xsec}, assuming 100\% trigger efficiency. 
 As anticipated, the MC predicts that the preselection is dominated by \zjets\ in the same-flavor 
 case and by \ttbar\ in the opposite-flavor case.  
 The data yield is in reasonable agreement with the predictions for the $ee$, $\mu\mu$ and $e\mu$ channels.
-
-\begin{figure}[hbt]
-\begin{center}
-\includegraphics[width=0.48\linewidth]{plots/hdilmass_ee_allj.pdf}
-\includegraphics[width=0.48\linewidth]{plots/hdilmass_mm_allj.pdf}
-\caption{\label{fig:dilmass}\protect Dilepton mass distribution for events passing the pre-selection
-  in the $ee$ (left) and $\mu\mu$ (right) final states. Backgrounds from single top and $W$+jets are omitted
-  since they are negligible.}
-\end{center}
-\end{figure}
-
-
-\begin{table}[htb]
-\begin{center}
-\caption{\label{preselyieldtable} Data and MC yields passing preselection.
-The NLO yields for the SUSY benchmark processes LM4 and LM8 are also shown.
-{\bf FEWER SIG FIGS}
-}
-\begin{tabular}{lccccc}
-\hline
-              Sample   &                $ee$   &            $\mu\mu$   &              $e\mu$   &                 tot  \\
-\hline
-       \zjets & 1840.566 $\pm$ 21.213  &  2088.019 $\pm$ 22.592  &   1.467 $\pm$  0.599  &  3930.052 $\pm$ 30.996 \\ 
-   $t\bar{t}$ & 24.515 $\pm$  0.860    &  25.965 $\pm$  0.885  &  51.295 $\pm$  1.244  &  101.775 $\pm$  1.753 \\ 
-       \wjets &  0.852 $\pm$  0.603    &   0.000 $\pm$  0.000  &   0.426 $\pm$  0.426  &   1.278 $\pm$  0.738 \\ 
-          \WW &  0.217 $\pm$  0.043    &   0.442 $\pm$  0.061  &   0.593 $\pm$  0.070  &   1.252 $\pm$  0.102 \\ 
-          \WZ & 13.947 $\pm$  0.157    &  16.001 $\pm$  0.168  &   0.111 $\pm$  0.014  &  30.059 $\pm$  0.230 \\ 
-          \ZZ & 10.005 $\pm$  0.076    &  11.364 $\pm$  0.082  &   0.022 $\pm$  0.004  &  21.391 $\pm$  0.112 \\ 
-   single top &  0.725 $\pm$  0.057    &   0.778 $\pm$  0.059  &   1.694 $\pm$  0.088  &   3.196 $\pm$  0.120 \\ 
-\hline
-     Total MC & 1890.827 $\pm$ 21.240  &  2142.569 $\pm$ 22.610  &  55.607 $\pm$  1.450  &  4089.003 $\pm$ 31.056 \\ 
-\hline
-         Data &   2051                 &    2277                 &      66               &    4394 \\ 
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-\clearpage
