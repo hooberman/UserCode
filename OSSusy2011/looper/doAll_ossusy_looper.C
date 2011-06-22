@@ -14,18 +14,6 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
 {
   TChain *dummy = new TChain("Events");
 
-  /*
-    if (skimPrefix != "") {
-    std::string skimName = Form("data/skim_v2/%s_skimmednTuple.root", skimPrefix.c_str());
-    if (dummy->Add(skimName.c_str())) {
-    int nFiles = ch->Add(skimName.c_str());
-    std::cout << "Skim " << skimName.c_str() << " exists: use it. Loaded "<< nFiles << " files" << std::endl;
-    return;
-    } else
-    std::cout << "Skim " << skimName.c_str() << " does not exist: use " << base.c_str() << std::endl;
-    }
-  */
-
   int nFiles = 0;
   if (dummy->Add(base.c_str())) {
     nFiles = ch->Add(base.c_str());
@@ -52,8 +40,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-01-04";
-  const char* jsonfile  = "jsons/2011_350pb_goodruns_json.txt";
+  const char* version   = "V00-01-05";
+  const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_160404-166861_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -207,7 +195,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -239,7 +227,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLM0      = 0;
   bool runLM1      = 0;
   bool runLM2      = 0;
-  bool runLM3      = 0;
+  bool runLM3      = 1;
   bool runLM4      = 0;
   bool runLM5      = 0;
   bool runLM6      = 0;
@@ -872,7 +860,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
   char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
   char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
-  bool doFakeApp          = true;
+  bool doFakeApp          = false;
 
   ossusy_looper::TrigEnum trig;
 
@@ -894,42 +882,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
       cout << "41X data obsolete! quitting" << endl;
       exit(0);
-
-      /*
-      const char* jsonfile41  = "Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
-     
-      cout << "Resetting json file to " << jsonfile41 << endl;
-      looper->set_json( jsonfile41 );
-
-      if( trig == ossusy_looper::e_highpt ){
-	
-	cout << "Doing high-pT dilepton trigger data 41X" << endl;
-	
-	//DoubleElectron re-reco
-	pickSkimIfExists(chdata41,"cms2_data/DoubleElectron_Run2011A-Apr22ReReco-v2_AOD/V04-01-05/DoubleElectronTriggerSkim/skim*root");
-	
-	//v1 datasets (merged)
-	pickSkimIfExists(chdata41,"cms2_data/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/merged*root");
-	pickSkimIfExists(chdata41,"cms2_data/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/merged_160329_161312.root");
-	pickSkimIfExists(chdata41,"cms2_data/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/merged_160329_161312.root");
-	
-	//v2 datasets (not merged)
-	pickSkimIfExists(chdata41,"cms2_data/DoubleElectron_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleElectronTriggerSkim_merged/merged*root");
-	pickSkimIfExists(chdata41,"cms2_data/DoubleMu_Run2011A-PromptReco-v2_AOD/V04-01-03/DoubleMuTriggerSkim_merged/merged*root");
-	pickSkimIfExists(chdata41,"cms2_data/MuEG_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
-	
-      }
-      
-      else if( trig == ossusy_looper::e_lowpt ){
-	
-	cout << "Doing dilepton-HT trigger data 41X" << endl;
-	
-pickSkimIfExists(chdata41,"cms2_data/ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/merged*root");
-	pickSkimIfExists(chdata41,"cms2_data/MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/merged*root");
-	pickSkimIfExists(chdata41,"cms2_data/MuHad_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
-	pickSkimIfExists(chdata41,"cms2_data/ElectronHad_Run2011A-PromptReco-v2_AOD/V04-01-03/merged*root");
-      }
-      */
 
     }
 
