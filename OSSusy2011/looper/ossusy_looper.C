@@ -17,6 +17,7 @@
 #include "histtools.h"
 #include "ossusy_looper.h"
 #include "getMt2.C"
+#include "TTreeCache.h"
 #include "../CORE/CMS2.h"
 #include "../CORE/metSelections.h"
 #include "../CORE/trackSelections.h"
@@ -374,8 +375,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   bool hasJptBtagBranch = true;
 
   while((currentFile = (TChainElement*)fileIter.Next())) {
-    TFile f(currentFile->GetTitle());
-    TTree *tree = (TTree*)f.Get("Events");
+    TFile* f = new TFile(currentFile->GetTitle());
+    TTree *tree = (TTree*)f->Get("Events");
+
+    //Matevz
+    TTreeCache::SetLearnEntries(100);
+    tree->SetCacheSize(128*1024*1024);
+
     cms2.Init(tree);
       
     unsigned int nEntries = tree->GetEntries();
@@ -394,6 +400,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           fflush(stdout);
         }
       }
+
+      //Matevz
+      tree->LoadTree(z);
 
       cms2.GetEntry(z);
 
