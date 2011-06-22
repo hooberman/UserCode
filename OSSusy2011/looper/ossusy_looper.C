@@ -1239,8 +1239,20 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           weight = kFactor * evt_scale1fb() * lumi;
 
           if( TString(prefix).Contains("LM") ){
-            if( strcmp( prefix , "LM0" ) == 0 ) weight *= kfactorSUSY( "lm0" );
-            if( strcmp( prefix , "LM1" ) == 0 ) weight *= kfactorSUSY( "lm1" );
+            if( strcmp( prefix , "LM0" )  == 0 ) weight *= kfactorSUSY( "lm0" );
+            if( strcmp( prefix , "LM1" )  == 0 ) weight *= kfactorSUSY( "lm1" );
+            if( strcmp( prefix , "LM2" )  == 0 ) weight *= kfactorSUSY( "lm2" );
+            if( strcmp( prefix , "LM3" )  == 0 ) weight *= kfactorSUSY( "lm3" );
+            if( strcmp( prefix , "LM4" )  == 0 ) weight *= kfactorSUSY( "lm4" );
+            if( strcmp( prefix , "LM5" )  == 0 ) weight *= kfactorSUSY( "lm5" );
+            if( strcmp( prefix , "LM6" )  == 0 ) weight *= kfactorSUSY( "lm6" );
+            if( strcmp( prefix , "LM7" )  == 0 ) weight *= kfactorSUSY( "lm7" );
+            if( strcmp( prefix , "LM8" )  == 0 ) weight *= kfactorSUSY( "lm8" );
+            if( strcmp( prefix , "LM9" )  == 0 ) weight *= kfactorSUSY( "lm9" );
+            if( strcmp( prefix , "LM10" ) == 0 ) weight *= kfactorSUSY( "lm10");
+            if( strcmp( prefix , "LM11" ) == 0 ) weight *= kfactorSUSY( "lm11");
+            if( strcmp( prefix , "LM12" ) == 0 ) weight *= kfactorSUSY( "lm12");
+            if( strcmp( prefix , "LM13" ) == 0 ) weight *= kfactorSUSY( "lm13");
           }
         }
 
