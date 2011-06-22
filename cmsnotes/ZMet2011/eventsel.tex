@@ -20,7 +20,8 @@ The list of triggers used for selecting dilepton events can be found in Appendix
 for which the approximate efficiencies are 90\% ($\mu\mu$), 95\% ($e\mu$), 100\% ($ee$).
 %and we evaluate the efficiency using the same trigger model discussed in~\cite{ref:GenericOS}.
 
-Triggers used for creation of photon templates are listed in Section~\ref{sec:templates}.
+Triggers used for creation of MET templates are listed in appendix \ref{app:photrig}.
+%Section~\ref{sec:templates}.
 
 
 \subsection{Event Selections}
@@ -99,10 +100,10 @@ Therefore two same flavor, opposite sign leptons passing the ID described below 
 	\end{itemize}
   \item $|d_0| <0.04$ (with respect to the first DA primary vertex)
   \item $|d_z| <1.0$ (with respect to the first DA primary vertex)
-  \item Isolation: The sum of the \pt of tracks and the transverse energy in both calorimeters in a cone of $dR =$ 0.3 divided by the \pt of the electron is required to be less than 0.15. In the barrel only, a pedestal of 1 GeV is subtracted from the ECAL energy.
+  \item Isolation: The sum of the \pt of tracks and the transverse energy in both calorimeters in a cone of $dR =$ 0.3 divided by the \pt of the electron is required to be less than 0.15. In the barrel only, a pedestal of 1 GeV is subtracted from the ECAL energy (to a minimum of zero).
   \item No muon is allowed to be within $dR < $0.1 of the electron
   \item No more than one missing inner tracker hit \cite{ref:sntconv}
-  \item In order to reject electrons from conversions, we veto electrons with a reconstructed conversion vertex \cite{ref:borisconv}
+  \item In order to reject electrons from conversions, we veto electrons with a reconstructed conversion vertex using a constrained vertex fit \cite{ref:borisconv}
 	%Is below included in above (as implemented in electronselections.cc)???
 
 	%\item Conversion distance $<$ 0.02, and $\Delta\cot\theta < $0.02\cite{ref:conv}

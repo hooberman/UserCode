@@ -10,13 +10,13 @@ In this section, we list several sources of systematic uncertainties related to 
 as summarized in table \ref{tab:templatesyst}. We perform several variations in the 
 template prediction
 and check the corresponding relative difference in the predicted yield for the 
-control region of MET $>$ 60.
+control region of MET $>$ 60 GeV.
 %loose signal region. %from last year--60
 We have checked that the variations in the predicted yield do not depend strongly on the MET cut
 within statistical uncertainties. 
 %In particular for the two signal regions of MET $>$ \signalmetl GeV and MET $>$ \signalmett GeV), 
 %then state that the variation for the met > 100 GeV and met > 200 GeV predictions is consistent with these uncertainties within the stat uncertainty.
-Therefore we use MET $>$ 60 because the loose signal region (MET $>$ \signalmetl) has
+Therefore we use MET $>$ 60 GeV because the loose signal region (MET $>$ \signalmetl~GeV) has
 large statistical uncertainty.
 
 \begin{table}[hbt]
@@ -43,7 +43,7 @@ hadronic recoil $P_T$ reweighting     &  15.76  $\pm$   1.08  &  -0.20  \\
 nVtx reweighting                      &  13.02  $\pm$   1.16  &   0.01  \\
 
 %2010 table
-%                                      & N(MET$>60$ GeV)   & Rel Diff    \\%&  N(MET$>120$ GeV)    & Rel Diff      \\  
+%                                      & N(MET$>60$ GeV)   & Rel Diff    \\%&  N(MET$>120$ GeV)    & Rel Diff      \\
 %Nominal                               & 1.81 $\pm$ 0.13   &             \\%&   0.14  $\pm$  0.03  &               \\
 %nVtx reweighting                      & 1.79 $\pm$ 0.13   & -0.01       \\%&   0.14  $\pm$  0.03  &    0.00       \\
 %hadronic recoil $P_T$ reweighting     & 2.27 $\pm$ 0.21   & +0.25       \\%&   0.17  $\pm$  0.04  &   +0.21       \\
@@ -82,14 +82,14 @@ nVtx reweighting                      &  13.02  $\pm$   1.16  &   0.01  \\
   hadronic energy that was lost will artificially increase the MET templates. 
   If this was a significant effect, then  altering the photon selection ought to significantly 
   change the MET prediction. We test for this
-  by by tightening the cuts on neutral EM fraction and h/e. 
+  by by tightening the cuts on neutral EM fraction and h/e, 
   %
   %So, I may have been a bit conservative in the first iteration of this. Combining h/e and nemf in quadrature assumes they are uncorrelated when they are actually positively correleated. It may be reasonable simply to take the maximum of the two. So i'll do that.
   %
   %Based on the combination of the variations shown in table \ref{tab:templatesyst} for photon
   %selection, we assess an uncertainty of
   %19\%. %2011 
-  Based on these studies we assess an uncertainty of 
+  and assess a corresponding uncertainty of 
   %25\%. %2010
   15\%. %2011 
 
@@ -110,8 +110,12 @@ Based on these studies we assess an uncertainty of \systpercentage
 on the MET templates background prediction
 which is dominated by the difference in the \Z vs. photon hadronic recoil \pt distributions.
 The resulting predictions with their statistical and systematic uncertainties for the $ee+\mu\mu$ 
-final states are shown in table \ref{tab:templatesystres}.
+final states are shown in table \ref{tab:modinul} in section \ref{sec:upperlimit}.
+%\ref{tab:templatesystres}.
 
+
+%remove this table in favor of combining into one table in the upperlimit section
+\begin{comment}
 
 \begin{table}[hbt]
   \begin{center}
@@ -132,6 +136,7 @@ Z Pred & 406.20 $\pm$ 7.10 $\pm$ 101.55  &    13.13 $\pm$ 1.23 $\pm$ 3.28  &    
   \end{center}
 \end{table}
 
+\end{comment}
 
 %2010 results
 %loose signal region:  1.81 $\pm$ 0.13 (stat) $\pm$ 0.45 (syst) \\
@@ -171,8 +176,13 @@ Varying the boundaries of the \Z mass window by $\pm2$~GeV results in a relative
 and we assess a corresponding uncertainty. 
 The total systematic undertainty is therefore \ofsystpercentage.
 
-Based on these studies we find the predicted $t\bar{t}$ yields from the OF subtraction technique as shown in table \ref{tab:ofsystres}.
+Based on these studies we find the predicted $t\bar{t}$ yields from the OF subtraction technique 
+as shown in table \ref{tab:modinul} in section \ref{sec:upperlimit}.
+%\ref{tab:ofsystres}.
 
+
+%remove this table in favor of combining into one table in the upperlimit section
+\begin{comment}
 
 \begin{table}[hbt]
   \begin{center}
@@ -193,11 +203,92 @@ OFOS Pred &  54.77 $\pm$ 2.95 $\pm$ 1.97  &    34.73 $\pm$ 2.35 $\pm$ 1.25  &   
   \end{center}
 \end{table}
 
+\end{comment}
+
 %2010 results
 %loose signal region:  4.24 $\pm$ 0.82 (stat) $\pm$ 0.23 (syst)  \\
 %tight signal region:  1.10 $\pm$ 0.42 (stat) $\pm$ 0.06 (syst).
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%copied out of models.tex since we removed that for this iteration
+
+
+\subsection{Signal Efficiency Uncertainties}
+\label{sec:signaleffuncer} 
+
+Here we assess systematic uncertainties in the signal efficiencies for our sample processes from
+jet/MET, lepton identification, and luminosity uncertainties. 
+
+\begin{itemize}
+  
+\item Jets and MET selection efficiency: we assess this uncertainty by varying the hadronic 
+  energy scale by $\pm 5\%$
+  following the procedure used in the ttdilepton cross-section measurement.  
+  %For the loose (tight) signal regions we find uncertainties of 
+  The results for $t\bar{t}$, LM4, and LM8 are shown in table \ref{tab:jmuncert}.
+
+  %JM uncertainties:
+  %    30, 60, 100, 200
+  %ttb: 4,  8,  16,  33
+  %lm4: 2,  3,   3,   8
+  %lm8: 2,  3,   4,   9
+
+  %
+  %2010 results
+  %9\% (23\%), 2\% (4\%), and 2\%(4\%) for  
+
+\begin{table}[hbt]
+  \begin{center}
+	\caption{
+	  \label{tab:jmuncert} 
+	  Jet and MET uncertainties for signal regions.
+	}
+	\begin{tabular}{lcccc}
+	  \hline
+	  \resulttitle
+	  \hline
+	  \ttbar & 4\% &  8\% &  16\% &  33\%  \\
+	  LM4    & 2\% &  3\% &   3\% &   8\%  \\
+	  LM8    & 2\% &  3\% &   4\% &   9\%  \\
+
+	  \hline
+	\end{tabular}
+  \end{center}
+\end{table}
+
+\item Lepton ID and isolation efficiencies: 
+  %we perform a tag-and-probe technique
+  %on Z data and MC and find that the simulation agrees with data within about 2\% as shown 
+  %in Table~\ref{tab:tagandprobe}.
+  We apply a conservative 
+  2\% per lepton
+  %5\% %2010
+  uncertainty on the dilepton selection efficiency.
+
+\item Trigger efficiency: 
+  The trigger efficiency is estimated from tag and probe to be 
+  100\% for di-electron triggers,
+  90\% for di-muon triggers,
+  85\% for electron-muon cross triggers \cite{ref:smurfww}. 
+  The uncertainty on these efficiencies is estimated to be 2\%.
+
+  %the trigger efficiency is very close to 1 since there are 2 leptons with \pt $> 20$ GeV.
+  %We apply the simplified model of the trigger efficiency documented in~\cite{ref:GenericOS} 
+  %and assess the uncertainty
+  %as the relative difference in the yields between assuming 100\% trigger efficiency vs.
+  %using the trigger model. This
+  %procedure gives differences of less than 1\% and the trigger efficiency uncertainty
+  %is therefore regarded as negligible.
+\item Luminosity: we assess an uncertainty of 4\%. 
+  %11\%. %2010
+
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%below old
 
 
 %%%-----------------------------------------------------------------------------------------------------------

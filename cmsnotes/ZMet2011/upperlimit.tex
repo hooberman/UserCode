@@ -2,9 +2,11 @@
 \label{sec:upperlimit}
 
 The results of summing the predicted backgrounds from the MET templates and OF subtraction
-methods are shown in table \ref{tab:systrestot}.
+methods are shown in table \ref{tab:modinul}.
+%\ref{tab:systrestot}.
 
-
+%remove this table in favor of combining into one table in the upperlimit section
+\begin{comment}
 \begin{table}[hbt]
   \begin{center}
 	\caption{
@@ -22,15 +24,23 @@ Prediction & 460.97 $\pm$ 7.69 $\pm$ 101.57  &    47.86 $\pm$ 2.66 $\pm$ 3.51  &
 	\end{tabular}
   \end{center}
 \end{table}
-
+\end{comment}
 
 %loose signal region:  6.04 $\pm$ 0.82 (stat) $\pm$ 0.51 (syst)  \\
 %tight signal region:  1.24 $\pm$ 0.42 (stat) $\pm$ 0.07 (syst).
 
-Using the results of the background predictions shown in table \ref{tab:systrestot},
+Using the results of the background predictions described above,
+%shown in table \ref{tab:modinul},
+%\ref{tab:systrestot},
 we calculate the Bayesian 95\% CL
-upper limits on the non SM event yields (Gaussian nuissance parameter model) shown in 
+upper limits on the non SM event yields 
+%(Gaussian nuissance parameter model) 
+(log-normal nuissance parameter model) 
+shown in 
 table \ref{tab:modinul}.
+For comparison, we also include the yields of the benchmark SUSY model points LM4 and LM8
+including statistical and signal efficiency uncertainties 
+described in section \ref{sec:signaleffuncer}.
 
 \begin{table}[hbt]
   \begin{center}
@@ -42,18 +52,37 @@ table \ref{tab:modinul}.
 	  \hline
 	  \resulttitle
 \hline
+Z Pred & 406.20 $\pm$ 7.10 $\pm$ 101.55  &    13.13 $\pm$ 1.23 $\pm$ 3.28  &     1.40 $\pm$ 0.62 $\pm$ 0.35  &     0.05 $\pm$ 0.02 $\pm$ 0.01 \\
 
-Prediction & 460.97 $\pm$ 101.86  &    47.86 $\pm$ 4.40  &    13.16 $\pm$ 1.60  &     1.18 $\pm$ 0.46 \\
+OFOS Pred &  54.77 $\pm$ 2.95 $\pm$ 1.97  &    34.73 $\pm$ 2.35 $\pm$ 1.25  &    11.76 $\pm$ 1.37 $\pm$ 0.42  &     1.13 $\pm$ 0.46 $\pm$ 0.04 \\
 
-Data      &                488  &                   39  &                   14  &                    2  \\
 \hline
-{\bf UL}        &224.85  &  11.95  &  10.22  &  5.38\\
+Prediction & 460.97 $\pm$ 7.69 $\pm$ 101.57  &    47.86 $\pm$ 2.66 $\pm$ 3.51  &    13.16 $\pm$ 1.50 $\pm$ 0.55  &     1.18 $\pm$ 0.46 $\pm$ 0.04  \\
+
+%no point in showing both of these...
+%Prediction & 460.97 $\pm$ 101.86  &    47.86 $\pm$ 4.40  &    13.16 $\pm$ 1.60  &     1.18 $\pm$ 0.46 \\
+\hline
+\bf Data      &             \bf 488    &                 \bf 39  &                 \bf 14  &              \bf 2  \\
+\hline
+{\bf UL}        &179.1  &  11.5  &  10.1  &  5.3\\
+
+%No nussiance model is wrong (below)
+%{\bf UL}        &224.85           &       11.95     &  10.22  &  5.38\\
+\hline
+%LM here for comparison
+LM4          &      5.6 $\pm$ 0.3  &  5.0 $\pm$ 0.3  &  4.4 $\pm$ 0.3  &  2.7 $\pm$ 0.3   \\
+LM8          &      2.6 $\pm$ 0.2  &  2.4 $\pm$ 0.2  &  1.9 $\pm$ 0.1  &  1.1 $\pm$ 0.1   \\
+
 
 
 \hline
 	\end{tabular}
   \end{center}
 \end{table}
+
+%use these in the outreach and conclusion sections:
+\newcommand{\ulloose}{10.1}
+\newcommand{\ultight}{5.3}
 
 %2010 results
 %loose signal region: $N_{BG} = 6.04 \pm 0.96$, $N_{OBS} = 7 \rightarrow$ {\bf UL = 7.9 events} \\
