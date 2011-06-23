@@ -375,31 +375,27 @@ void MyScanChain::doElectrons(const float &weight, bool applyAlignmentCorrection
     }
 
     if (verbose_) std::cout << "[MyScanChain::doElectrons] Finished looking for triggers" << std::endl;
-
-
-
           
     static const cuts_t electronSelection_probe =
       (1ll<<ELEPT_010)                         | // electron p_T > 10 GeV
       (1ll<<ELEETA_250);                         // |eta| < 2.5
 
     static const cuts_t electronSelection_id =
+      (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL) | // VBTF90, tightened to match CaloIdT+TrkIdVL
       (1ll<<ELEIP_PV_OSV2)                     | // d0(PV) < 0.04 cm, dz(PV) < 1.0 cm
       (1ll<<ELENOMUON_010)                     | // no muon dR < 0.1
       (1ll<<ELENOTCONV_HITPATTERN)             | // <=1 missing hits
-      (1ll<<ELENOTCONV_MIT)                    | // MIT conversion rejection
-      (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL);  // VBTF90, match CaloIdT+TrkIdVL
- 
+      (1ll<<ELENOTCONV_DISTDCOT002)            | // dist/dcot(theta) conversion rejection
+      (1ll<<ELE_NOT_TRANSITION);                 // veto electrons with SC in transition region 
+    
     static const cuts_t electronSelection_iso =       
       (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
-      (1ll<<ELEISO_REL015);                      // reliso < 0.15, truncated, 1 GeV EB PS
+      (1ll<<ELEISO_RELNT015);                    // reliso < 0.15, non-truncated, 1 GeV EB PS
     
     static const cuts_t electronSelection_iso_fastjet =       
       (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
       (1ll<<ELEISO_FASTJET_REL015);              // fastjet reliso < 0.15, truncated, 1 GeV EB PS
     
-
-
     // tag is the probe + all the selection criteria
     // trigger is checked separately
     static const cuts_t electronSelection_tag = 
@@ -675,8 +671,14 @@ void MyScanChain::doMuons(const float &weight) {
         if (evt_run() >= 160325 && evt_run() <= 163261 ) {
 	  trigObjs_HLT_DoubleMu7 = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_DoubleMu7_v1")]; 
         }
-        else if (evt_run() >= 163269 ) {
+        else if (evt_run() >= 163269 && evt_run() <= 164236 ) {
 	  trigObjs_HLT_DoubleMu7 = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_DoubleMu7_v2")]; 
+        }
+        else if (evt_run() >= 165088 && evt_run() <= 167043 ) {
+	  trigObjs_HLT_DoubleMu7 = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu13_Mu8_v2")]; 
+        }
+        else if (evt_run() >= 167078 ) {
+	  trigObjs_HLT_DoubleMu7 = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu13_Mu8_v4")]; 
         }
     }
 
@@ -687,8 +689,8 @@ void MyScanChain::doMuons(const float &weight) {
     vector<unsigned int> v_tags;
     for(unsigned int muIdx = 0; muIdx < mus_p4().size(); muIdx++) {
         if(mus_p4()[muIdx].Pt() < 20.)                 continue;
-        if(!muonId(muIdx, OSGeneric_v2))               continue;
-	if( muonIsoValue(muIdx) > mu_rel_iso_cut )     continue;
+        if(!muonId(muIdx, OSGeneric_v3))               continue;
+	if( muonIsoValue(muIdx,false) > mu_rel_iso_cut )     continue;
         if (isData_) {
             if (!objectPassTrigger(mus_p4()[muIdx], trigObjs_HLT_DoubleMu7)) continue;
         }
@@ -805,8 +807,8 @@ void MyScanChain::doMuons(const float &weight) {
     //
 
     tt_              = probeIsATag;
-    passIso_         = muonIsoValue(idx_probe) < mu_rel_iso_cut ? 1 : 0;
-    passId_          = muonIdNotIsolated( idx_probe, OSGeneric_v2 );
+    passIso_         = muonIsoValue(idx_probe,false) < mu_rel_iso_cut ? 1 : 0;
+    passId_          = muonIdNotIsolated( idx_probe, OSGeneric_v3 );
     passIso_fastjet_ = muonIsoValue_FastJet( idx_probe ) < mu_rel_iso_cut ? 1 : 0;
 
     if (isData_) {
