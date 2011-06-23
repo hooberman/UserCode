@@ -87,6 +87,7 @@ class MyScanChain {
         Float_t hcaliso1_;
         Float_t tkiso1_;
         Float_t reliso1_;
+        Float_t relisont1_;
         Float_t reliso1_fastjet_;
         Int_t smurfv11_;
         Int_t smurfv21_;
@@ -109,6 +110,7 @@ class MyScanChain {
         Float_t hcaliso2_;
         Float_t tkiso2_;
         Float_t reliso2_;
+        Float_t relisont2_;
         Float_t reliso2_fastjet_;
         Int_t smurfv12_;
         Int_t smurfv22_;

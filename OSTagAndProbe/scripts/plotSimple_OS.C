@@ -61,8 +61,15 @@ void plotSimple_OS(TString data, TString mc, TCut var1, TCut var2, Int_t nBinsVa
 		   Float_t minVar, Float_t maxVar, Int_t type = 0, bool iso = false, bool fastjet = false ){
 
   char* leptype = "";
-  if     ( type == 0 ) leptype = "ee";
-  else if( type == 1 ) leptype = "mm";
+  float pt2cut  = -1;
+  if     ( type == 0 ){
+    leptype = "ee";
+    pt2cut = 10.;
+  }
+  else if( type == 1 ){
+    leptype = "mm";
+    pt2cut = 5.;
+  }
   else{
     cout << "Unrecognized leptype " << type << endl;
     exit(0);
@@ -120,7 +127,7 @@ void plotSimple_OS(TString data, TString mc, TCut var1, TCut var2, Int_t nBinsVa
   // di-electron event type
   // probe leg must pass di-lepton trigger
   // - in effect this means the "loose" leg, which is SC8
-  TCut cut_base("cut_base", Form("type == %i && passTrigger &&pt1>20" , type ) );
+  TCut cut_base("cut_base", Form("type == %i && passTrigger && pt1>20" , type ) );
   //TCut cut_mass("cut_mass", "mass > 76 && mass < 106");
   TCut cut_mass("cut_mass", "mass > 86 && mass < 96");
   
@@ -134,12 +141,16 @@ void plotSimple_OS(TString data, TString mc, TCut var1, TCut var2, Int_t nBinsVa
 
   TCut cut_probe;
   TCut cut_pass;
+
+  TCut cut_tightiso("pt2>10 || relisont2 <0.15");
     
   if( iso ){
-    cut_probe = TCut("cut_probe" , "passId  == 1 && pt2>10");
-    cut_pass  = TCut("cut_pass"  , "passIso == 1");
+    cut_probe = TCut("cut_probe" , Form("passId  == 1 && pt2>%.0f",pt2cut));
+    if( fastjet ) cut_pass  = TCut("cut_pass"  , "passIsoF == 1");
+    else          cut_pass  = TCut("cut_pass"  , "passIso == 1")  + cut_tightiso;
   }else{
-    cut_probe = TCut("cut_probe" , "passIso == 1 && pt2>10");
+    if( fastjet ) cut_probe = TCut("cut_probe" , Form("passIsoF == 1 && pt2>%.0f" , pt2cut));
+    else          cut_probe = TCut("cut_probe" , Form("passIso == 1 && pt2>%.0f"  , pt2cut));
     cut_pass  = TCut("cut_pass"  , "passId  == 1");
   }
 
@@ -228,7 +239,7 @@ void plotSimple_OS(TString data, TString mc, TCut var1, TCut var2, Int_t nBinsVa
   // and finally display it
   //
 
-  TLegend *l1 = new TLegend(0.2, 0.2, 0.5, 0.4);
+  TLegend *l1 = new TLegend(0.4, 0.2, 0.7, 0.4);
   l1->SetFillColor(kWhite);
   //l1->SetLineColor(kWhite);
   l1->SetShadowColor(kWhite);
@@ -283,9 +294,10 @@ void plotSimple_OS(TString data, TString mc, TCut var1, TCut var2, Int_t nBinsVa
   TCanvas *c3 = new TCanvas();
   c3->cd();
   gPad->SetGridy();
-  //gr_data_eff->GetYaxis()->SetRangeUser(ymin,1.);
+  gr_data_eff->GetYaxis()->SetRangeUser(0.9,1.);
   if( type == 0 ) gr_data_eff->GetXaxis()->SetTitle("electron p_{T} (GeV)");
   if( type == 1 ) gr_data_eff->GetXaxis()->SetTitle("muon p_{T} (GeV)");
+  //gr_data_eff->GetXaxis()->SetTitle("N_{PV}");
   gr_data_eff->SetTitle("");
   if( iso ) gr_data_eff->GetYaxis()->SetTitle("Iso Eff");
   else      gr_data_eff->GetYaxis()->SetTitle("ID Eff");
@@ -293,13 +305,8 @@ void plotSimple_OS(TString data, TString mc, TCut var1, TCut var2, Int_t nBinsVa
   gr_mc_eff->Draw("P");
   l1->Draw();
   c3->RedrawAxis();
-    
-  //stringstream s;
-  //s << "plots/" << "iso_" << leptype << "_reliso" << 100*relisocut << fastjetchar << ".gif" << endl;
-  //cout << "Writing to " << s.str() << endl;
-  //c3->Print( s.str().c_str() );
 
-  c3->Print(Form("plots/%s_%s_%s",efftype,leptype,fastjetchar));
+  c3->Print(Form("plots/%s_%s%s.gif",efftype,leptype,fastjetchar));
 
 }
 

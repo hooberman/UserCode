@@ -10,16 +10,15 @@
 
     MyScanChain *looper = new MyScanChain();
 
-    TString ntuple_location = "/tas/cms2/";
-    //TString ntuple_location = "/nfs-3/userdata/cms2/";
-
     // DYEE
     TChain *chain_dyee   = new TChain("Events");
-    chain_dyee   ->Add(ntuple_location + "DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*.root");
+    chain_dyee   ->Add("cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*.root");
+    //chain_dyee   ->Add("cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*1.root");
 
     // DYMM
     TChain *chain_dymumu = new TChain("Events");
-    chain_dymumu->Add(ntuple_location + "DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*.root");
+    chain_dymumu->Add("cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*.root");
+    //chain_dymumu->Add("cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*1.root");
     
     cout << "Doing DY->mm" << endl;
     looper->ScanChain(false, "dymm", chain_dymumu, 1.0);
