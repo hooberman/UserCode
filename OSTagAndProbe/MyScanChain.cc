@@ -73,6 +73,7 @@ void MyScanChain::InitBaby()
     hcaliso1_		= -999.; 
     tkiso1_		= -999.;
     reliso1_		= -999.;
+    relisont1_		= -999.;
     reliso1_fastjet_    = -999.;
     smurfv11_		= -1; 
     smurfv21_		= -1; 
@@ -95,6 +96,7 @@ void MyScanChain::InitBaby()
     hcaliso2_		= -999.; 
     tkiso2_		= -999.; 
     reliso2_		= -999.;
+    relisont2_		= -999.;
     reliso2_fastjet_	= -999.;
     smurfv12_		= -1; 
     smurfv22_		= -1; 
@@ -184,6 +186,7 @@ int MyScanChain::ScanChain(bool isData, std::string prefix, TChain* chain, float
     babyTree_->Branch("hcaliso1"	,       &hcaliso1_,     "hcaliso1/F"         );
     babyTree_->Branch("tkiso1"		,       &tkiso1_,     	"tkiso1/F"         );
     babyTree_->Branch("reliso1"		,       &reliso1_,      "reliso1/F"     );
+    babyTree_->Branch("relisont1"	,       &relisont1_,    "relisont1/F"     );
     babyTree_->Branch("reliso1F"	,       &reliso1_fastjet_,      "reliso1F/F"     );
     babyTree_->Branch("smurfv11"	,       &smurfv11_,     "smurfv11/I"         );
     babyTree_->Branch("smurfv21"	,       &smurfv21_,     "smurfv21/I"         );
@@ -206,6 +209,7 @@ int MyScanChain::ScanChain(bool isData, std::string prefix, TChain* chain, float
     babyTree_->Branch("hcaliso2"	,       &hcaliso2_,     "hcaliso2/F"         );
     babyTree_->Branch("tkiso2"		,       &tkiso2_,     	"tkiso2/F"         );
     babyTree_->Branch("reliso2"		,       &reliso2_,      "reliso2/F"     );
+    babyTree_->Branch("relisont2"	,       &relisont2_,    "relisont2/F"     );
     babyTree_->Branch("reliso2F"	,       &reliso2_fastjet_,      "reliso2F/F"     );
     babyTree_->Branch("smurfv12"	,       &smurfv12_,     "smurfv12/I"         );
     babyTree_->Branch("smurfv22"	,       &smurfv22_,     "smurfv22/I"         );
@@ -376,15 +380,15 @@ void MyScanChain::doElectrons(const float &weight, bool applyAlignmentCorrection
 
           
     static const cuts_t electronSelection_probe =
-      (1ll<<ELEIP_PV_OSV2)                     | // d0(PV) < 0.04 cm, dz(PV) < 1.0 cm
-      (1ll<<ELENOMUON_010)                     | // no muon dR < 0.1
-      (1ll<<ELENOTCONV_HITPATTERN)             | // <=1 missing hits
-      (1ll<<ELENOTCONV_MIT)                    | // MIT conversion rejection
       (1ll<<ELEPT_010)                         | // electron p_T > 10 GeV
       (1ll<<ELEETA_250);                         // |eta| < 2.5
 
     static const cuts_t electronSelection_id =
-      (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL); // VBTF90, match CaloIdT+TrkIdVL
+      (1ll<<ELEIP_PV_OSV2)                     | // d0(PV) < 0.04 cm, dz(PV) < 1.0 cm
+      (1ll<<ELENOMUON_010)                     | // no muon dR < 0.1
+      (1ll<<ELENOTCONV_HITPATTERN)             | // <=1 missing hits
+      (1ll<<ELENOTCONV_MIT)                    | // MIT conversion rejection
+      (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL);  // VBTF90, match CaloIdT+TrkIdVL
  
     static const cuts_t electronSelection_iso =       
       (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
@@ -395,54 +399,6 @@ void MyScanChain::doElectrons(const float &weight, bool applyAlignmentCorrection
       (1ll<<ELEISO_FASTJET_REL015);              // fastjet reliso < 0.15, truncated, 1 GeV EB PS
     
 
-
-    //--------------------------------------------
-    // definitions used for output/isoBabies
-    //--------------------------------------------
-    /*  
-    static const cuts_t electronSelection_probe =
-      //(1ll<<ELESCET_010) |
-      //(1ll<<ELEPT_010) |
-      (1ll<<ELEETA_250) |
-      (1ll<<ELENOSPIKE_SWISS005) |
-      (1ll<<ELESEED_ECAL);
-    
-    static const cuts_t electronSelection_id =
-      (1ll<<ELEID_VBTF_35X_80) |
-      (1ll<<ELEIP_400) |
-      (1ll<<ELENOMUON_010) |
-      (1ll<<ELENOTCONV_HITPATTERN) |
-      (1ll<<ELENOTCONV_DISTDCOT002);
-    
-    static const cuts_t electronSelection_iso         = (1ll << ELEISO_REL005);
-    static const cuts_t electronSelection_iso_fastjet = (1ll << ELEISO_FASTJET_REL005);
-    */
-
-
-
-
-/*
-    //
-    // DEFINE TAG AND PROBE SELECTION
-    //
-
-    // probe is the basic fiduciality elements of ttbarV2
-    static const cuts_t electronSelection_probe =
-        //(1ll<<ELESCET_010) |
-        //(1ll<<ELEPT_020) |
-        (1ll<<ELEETA_250) |
-        (1ll<<ELENOSPIKE_SWISS005) |
-        (1ll<<ELESEED_ECAL);
-
-    static const cuts_t electronSelection_id =
-        (1ll<<ELEID_VBTF_35X_70) |
-        (1ll<<ELEIP_400) |
-        (1ll<<ELENOMUON_010) |
-        (1ll<<ELENOTCONV_HITPATTERN) |
-        (1ll<<ELENOTCONV_DISTDCOT002);
-
-    static const cuts_t electronSelection_iso = (1ll << ELEISO_RELNT010);
-*/
 
     // tag is the probe + all the selection criteria
     // trigger is checked separately
@@ -534,7 +490,6 @@ void MyScanChain::doElectrons(const float &weight, bool applyAlignmentCorrection
 
             // prevent double counting
             if ((pp < tt) || idx_probe == idx_tag) continue;
-
 
             // get mass of pair
             LorentzVector  vec_probe = cms2.els_p4()[idx_probe]; 
@@ -659,9 +614,10 @@ void MyScanChain::doElectrons(const float &weight, bool applyAlignmentCorrection
     hcaliso1_	= cms2.els_hcalIso()[idx_tag];
     tkiso1_	= cms2.els_tkIso()[idx_tag];
     reliso1_    = electronIsolation_rel(idx_tag, true);
+    relisont1_  = electronIsolation_rel_v1(idx_tag, true);
     reliso1_fastjet_ = electronIsolation_rel_FastJet(idx_tag, true);
    
-    smurfv11_	= pass_electronSelection(idx_tag, electronSelection_smurfV1_id, applyAlignmentCorrection, removedEtaCutInEndcap);
+    smurfv11_	= -1;//pass_electronSelection(idx_tag, electronSelection_smurfV1_id, applyAlignmentCorrection, removedEtaCutInEndcap);
     smurfv21_	= pass_electronSelection(idx_tag, electronSelection_smurfV2_id, applyAlignmentCorrection, removedEtaCutInEndcap);
 
     //
@@ -685,8 +641,9 @@ void MyScanChain::doElectrons(const float &weight, bool applyAlignmentCorrection
     hcaliso2_		= cms2.els_hcalIso()[idx_probe];
     tkiso2_		= cms2.els_tkIso()[idx_probe];
     reliso2_		= electronIsolation_rel(idx_probe, true);
+    relisont2_          = electronIsolation_rel_v1(idx_probe, true);
     reliso2_fastjet_	= electronIsolation_rel_FastJet(idx_probe, true);
-    smurfv12_		= pass_electronSelection(idx_probe, electronSelection_smurfV1_id, applyAlignmentCorrection, removedEtaCutInEndcap);
+    smurfv12_		= -1;//pass_electronSelection(idx_probe, electronSelection_smurfV1_id, applyAlignmentCorrection, removedEtaCutInEndcap);
     smurfv22_		= pass_electronSelection(idx_probe, electronSelection_smurfV2_id, applyAlignmentCorrection, removedEtaCutInEndcap);
     vtxweight_          = vtxweight();
 
@@ -751,8 +708,8 @@ void MyScanChain::doMuons(const float &weight) {
 
     vector<unsigned int> v_probes;
     for(unsigned int muIdx = 0; muIdx < mus_p4().size(); muIdx++) {
-        if (mus_p4()[muIdx].Pt() < 10.0) continue;
-        if (TMath::Abs(cms2.mus_p4()[muIdx].eta()) > 2.5)   continue; // eta cut
+        if (mus_p4()[muIdx].Pt() < 5.0) continue;
+        if (TMath::Abs(cms2.mus_p4()[muIdx].eta()) > 2.4)   continue; // eta cut
         if (((cms2.mus_type().at(muIdx)) & (1<<1)) == 0)    continue; // global muon
         if (((cms2.mus_type().at(muIdx)) & (1<<2)) == 0)    continue; // tracker muon
 
@@ -873,6 +830,7 @@ void MyScanChain::doMuons(const float &weight) {
     eta1_		= cms2.mus_p4()[idx_tag].Eta();
     phi1_		= cms2.mus_p4()[idx_tag].Phi();
     reliso1_		= muonIsoValue(idx_tag);
+    relisont1_		= muonIsoValue(idx_tag,false);
     reliso1_fastjet_	= muonIsoValue_FastJet(idx_tag);
 
     //
@@ -882,6 +840,7 @@ void MyScanChain::doMuons(const float &weight) {
     eta2_		= cms2.mus_p4()[idx_probe].Eta();
     phi2_		= cms2.mus_p4()[idx_probe].Phi();
     reliso2_		= muonIsoValue(idx_probe);
+    relisont2_		= muonIsoValue(idx_probe,false);
     reliso2_fastjet_	= muonIsoValue_FastJet(idx_probe);
 
     vtxweight_          = vtxweight();
