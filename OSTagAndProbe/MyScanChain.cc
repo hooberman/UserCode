@@ -117,6 +117,7 @@ void MyScanChain::InitBaby()
 
 void MyScanChain::setGoodRunList(std::string fname)
 {
+  cout << "goodrun list " << fname << endl;
     set_goodrun_file(fname.c_str());
 }
 
@@ -143,7 +144,7 @@ int MyScanChain::ScanChain(bool isData, std::string prefix, TChain* chain, float
 
     //initialize
     bool verbose = true;
-    char* vtxfile = "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_153pb_Zselection.root";
+    char* vtxfile = "/nfs-3/userdata/benhoob/vtxreweight/vtxreweight_Spring11MC_336pb_Zselection.root";
     set_vtxreweight_rootfile( vtxfile , verbose );
     
     //
@@ -247,9 +248,21 @@ int MyScanChain::ScanChain(bool isData, std::string prefix, TChain* chain, float
             cms2.GetEntry(event);
             ++nEventsTotal;
 
+            // Progress feedback to the user
+            if(nEventsTotal%10000 == 0) {
+                // xterm magic from L. Vacavant and A. Cerri
+                if (isatty(1)) {
+                    printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+                            "\033[0m\033[32m <---\033[0m\015", (float)nEventsTotal/(nEventsChain*0.01));
+                    fflush(stdout);
+                }
+            }
+
             //do some event cleaning  - false because here we only do MC
-            if (!cleaning_standardAugust2010(isData))
-                continue;
+            //if (!cleaning_standardApril2011())
+            //    continue;
+
+	    if (!cleaning_goodDAVertexApril2011()) continue;
 
             // get event weight and adjust for 1fb
             float weight = 1.0;
@@ -262,7 +275,7 @@ int MyScanChain::ScanChain(bool isData, std::string prefix, TChain* chain, float
             if (isData) {
                 if (!goodrun(cms2.evt_run(), cms2.evt_lumiBlock())) continue;
             }
-	    
+
             //
             // do duplicate check
             //
@@ -288,16 +301,6 @@ int MyScanChain::ScanChain(bool isData, std::string prefix, TChain* chain, float
                 if ((useOdd == 1) && (event % 2 == 0)) continue;
                 // want to use even numbers
                 if ((useOdd == 0) && (event % 2 != 0)) continue;
-            }
-
-            // Progress feedback to the user
-            if(nEventsTotal%10000 == 0) {
-                // xterm magic from L. Vacavant and A. Cerri
-                if (isatty(1)) {
-                    printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-                            "\033[0m\033[32m <---\033[0m\015", (float)nEventsTotal/(nEventsChain*0.01));
-                    fflush(stdout);
-                }
             }
 
             //
