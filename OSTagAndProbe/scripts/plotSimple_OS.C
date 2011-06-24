@@ -306,7 +306,7 @@ void plotSimple_OS(TString data, TString mc, TCut var1, TCut var2, Int_t nBinsVa
   l1->Draw();
   c3->RedrawAxis();
 
-  c3->Print(Form("plots/%s_%s%s.gif",efftype,leptype,fastjetchar));
+  //c3->Print(Form("plots/%s_%s%s.gif",efftype,leptype,fastjetchar));
 
 }
 
