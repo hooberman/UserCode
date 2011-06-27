@@ -214,6 +214,20 @@ OFOS Pred &  54.77 $\pm$ 2.95 $\pm$ 1.97  &    34.73 $\pm$ 2.35 $\pm$ 1.25  &   
 %copied out of models.tex since we removed that for this iteration
 
 
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=0.48\linewidth]{plots/CUT_electron_selection_nm1id.pdf}
+\includegraphics[width=0.48\linewidth]{plots/CUT_electron_selection_nm1iso.pdf}
+\includegraphics[width=0.48\linewidth]{plots/CUT_muon_selection_nm1id.pdf}
+\includegraphics[width=0.48\linewidth]{plots/CUT_muon_selection_nm1iso.pdf}
+\caption{\label{fig:tagandprobe}\protect 
+Identification (left) and isolation (right) efficiencies vs. lepton \pt for electrons (top) 
+and muons (bottom) from $Z$ tag-and-probe studies. 
+}
+\end{center}
+\end{figure}
+
+
 \subsection{Signal Efficiency Uncertainties}
 \label{sec:signaleffuncer} 
 
@@ -258,20 +272,21 @@ jet/MET, lepton identification, and luminosity uncertainties.
 \end{table}
 
 \item Lepton ID and isolation efficiencies: 
-  %we perform a tag-and-probe technique
-  %on Z data and MC and find that the simulation agrees with data within about 2\% as shown 
-  %in Table~\ref{tab:tagandprobe}.
-  We apply a conservative 
-  2\% per lepton
-  %5\% %2010
-  uncertainty on the dilepton selection efficiency.
+  We perform a tag-and-probe technique
+  on Z data and MC and find that the simulation agrees with data within about 2\% as shown 
+  in Fig~\ref{fig:tagandprobe}.
+  %We apply a conservative 
+  %2\% per lepton
+  %%5\% %2010
+  %uncertainty on the dilepton selection efficiency.
 
 \item Trigger efficiency: 
   The trigger efficiency is estimated from tag and probe to be 
   100\% for di-electron triggers,
   90\% for di-muon triggers,
   95\% for electron-muon cross triggers \cite{ref:smurfww}. 
-  The uncertainty on these efficiencies is estimated to be 2\%.
+  The uncertainty on these efficiencies is estimated to be 2\% based on the small variation of the efficiency
+  with respect to lepton \pt.
 
   %the trigger efficiency is very close to 1 since there are 2 leptons with \pt $> 20$ GeV.
   %We apply the simplified model of the trigger efficiency documented in~\cite{ref:GenericOS} 
