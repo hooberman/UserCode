@@ -50,7 +50,15 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zjets" ) == 0 ){
+    
     pickSkimIfExists(ch,"cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
+    pickSkimIfExists(ch,"cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root");
+    pickSkimIfExists(ch,"cms2/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/merged*root");
+    pickSkimIfExists(ch,"cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root");
+    pickSkimIfExists(ch,"cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
+    pickSkimIfExists(ch,"cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root");
+    pickSkimIfExists(ch,"cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
+		  
   }
 
   //----------------------------------------------------------------------------------------
