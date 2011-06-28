@@ -150,16 +150,37 @@ Z Pred & 406.20 $\pm$ 7.10 $\pm$ 101.55  &    13.13 $\pm$ 1.23 $\pm$ 3.28  &    
 \subsection{Systematics of OF Subtraction}
 \label{sec:systematicsof}
 
-\newcommand{\ofsystpercentage}{3.6\% }
+\newcommand{\ofsystpercentage}{20\% }
 
 The uncertainty on the background prediction from the OF subtraction (see section \ref{sec:topbkg}) 
 comes from the uncertainties in 2
-quantities: $\epsilon_{e\mu} = \epsilon(e)/\epsilon(\mu)$, the ratio of muon to electron selection 
+quantities: \effr$ = \epsilon(e)/\epsilon(\mu)$, the ratio of muon to electron selection 
 efficiencies,
 and $K$, the fraction of $t\bar{t}$ events which fall inside the \Z mass window.
-The value of $\epsilon_{e\mu} = \epsilon(e)/\epsilon(\mu)$ is found to be 
-$\approx$1.06, so we take as a 
-systematic half of the difference to unity, or 3\%.
+
+To assess the uncertainty on \effr, we plot this ratio in \ttbar and \Z MC
+as shown in figure \ref{fig:rvspt} 
+(see section \ref{sec:outreach}) and set \effr = 1.07 $\pm$ 0.07, which corresponds to
+an uncertainty of $\approx$7\%.
+
+\begin{figure}[tbh]
+  \begin{center}
+	\includegraphics[width=0.48\linewidth]{plots/reff_vpt_zjm.pdf}
+	\includegraphics[width=0.48\linewidth]{plots/ptcompare_ztt.pdf}
+	\caption{
+	  \label{fig:rvspt}\protect 
+	  \effr~$ = \epsilon(e)/\epsilon(\mu)$ 
+	  (the ratio of muon to electron ID + isolation efficiencies) 
+	  vs. lepton \pt in \Z and \ttbar MC (left),
+	  lepton \pt distributions for the same samples.
+	}
+  \end{center}
+\end{figure}
+
+
+%The value of $\epsilon_{e\mu} = \epsilon(e)/\epsilon(\mu)$ is found to be 
+%$\approx$1.06, so we take as a 
+%systematic half of the difference to unity, or 3\%.
 %
 %FKW argues this is irrelevant because the ratio is taken.
 %
@@ -170,15 +191,36 @@ systematic half of the difference to unity, or 3\%.
 %in $\epsilon_{e\mu}$, which is conservative because the difference in isolation efficiency is due 
 %to an increase in hadronic activity which is modeled in the MC, and also because $\epsilon_{e\mu}$ 
 %is a ratio and the uncertainty partially cancels.
-%
+
 The uncertainty in $K$ is due to the uncertainty in the lepton energy scale and is therefore quite small.
-Varying the boundaries of the \Z mass window by $\pm2$~GeV results in a relative change in $K$ of 2\% 
-and we assess a corresponding uncertainty. 
-The total systematic undertainty is therefore \ofsystpercentage.
+%Varying the boundaries of the \Z mass window by $\pm2$~GeV results in a relative change in $K$ of 2\% 
+%and we assess a corresponding uncertainty.
+We compare this quantity in data and \ttbar MC as a function of the MET cut
+in figure \ref{fig:kmc}
+and set K = 0.16 $\pm$ 0.03, or a relative uncertainty of $\approx$19\%;
+
+The total systematic uncertainty is therefore \ofsystpercentage.
+
+{\bf Temporary note to readers: the above values have not yet been propagated to the tables below. The old value of 3.6\% is still used below. We will update the tables shortly.}
 
 Based on these studies we find the predicted $t\bar{t}$ yields from the OF subtraction technique 
 as shown in table \ref{tab:modinul} in section \ref{sec:upperlimit}.
 %\ref{tab:ofsystres}.
+
+
+
+\begin{figure}[tbh]
+  \begin{center}
+	\includegraphics[width=0.48\linewidth]{plots/kvmet_data_ttbm.pdf}
+	\caption{
+	  \label{fig:kmc}\protect 
+	  K (the ratio of opposite flavor events inside the \Z mass window
+	  to the total number of opposite flavor events)
+	  vs. the MET cut in data and \ttbar MC.
+	}
+  \end{center}
+\end{figure}
+
 
 
 %remove this table in favor of combining into one table in the upperlimit section
@@ -212,20 +254,6 @@ OFOS Pred &  54.77 $\pm$ 2.95 $\pm$ 1.97  &    34.73 $\pm$ 2.35 $\pm$ 1.25  &   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %copied out of models.tex since we removed that for this iteration
-
-
-\begin{figure}[tbh]
-\begin{center}
-\includegraphics[width=0.48\linewidth]{plots/CUT_electron_selection_nm1id.pdf}
-\includegraphics[width=0.48\linewidth]{plots/CUT_electron_selection_nm1iso.pdf}
-\includegraphics[width=0.48\linewidth]{plots/CUT_muon_selection_nm1id.pdf}
-\includegraphics[width=0.48\linewidth]{plots/CUT_muon_selection_nm1iso.pdf}
-\caption{\label{fig:tagandprobe}\protect 
-Identification (left) and isolation (right) efficiencies vs. lepton \pt for electrons (top) 
-and muons (bottom) from $Z$ tag-and-probe studies. 
-}
-\end{center}
-\end{figure}
 
 
 \subsection{Signal Efficiency Uncertainties}
@@ -295,10 +323,24 @@ jet/MET, lepton identification, and luminosity uncertainties.
   %using the trigger model. This
   %procedure gives differences of less than 1\% and the trigger efficiency uncertainty
   %is therefore regarded as negligible.
-\item Luminosity: we assess an uncertainty of 4\%. 
+\item Luminosity: we assess an uncertainty of 4\%. Note that this will be updated to 6\%.
   %11\%. %2010
 
 \end{itemize}
+
+
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=0.48\linewidth]{plots/CUT_electron_selection_nm1id.pdf}
+\includegraphics[width=0.48\linewidth]{plots/CUT_electron_selection_nm1iso.pdf}
+\includegraphics[width=0.48\linewidth]{plots/CUT_muon_selection_nm1id.pdf}
+\includegraphics[width=0.48\linewidth]{plots/CUT_muon_selection_nm1iso.pdf}
+\caption{\label{fig:tagandprobe}\protect 
+Identification (left) and isolation (right) efficiencies vs. lepton \pt for electrons (top) 
+and muons (bottom) from $Z$ tag-and-probe studies. 
+}
+\end{center}
+\end{figure}
 
 
 
