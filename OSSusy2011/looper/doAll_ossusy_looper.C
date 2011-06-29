@@ -40,8 +40,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
 
-  const char* version   = "V00-01-05";
-  const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_160404-166861_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-01-06";
+  const char* jsonfile  = "jsons/Cert_160404-167151_7TeV_May10ReRecoPlusPromptReco_882pb_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -195,7 +195,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -227,7 +227,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLM0      = 0;
   bool runLM1      = 0;
   bool runLM2      = 0;
-  bool runLM3      = 1;
+  bool runLM3      = 0;
   bool runLM4      = 0;
   bool runLM5      = 0;
   bool runLM6      = 0;
