@@ -330,8 +330,104 @@ ossusy_looper::ossusy_looper()
 
 //--------------------------------------------------------------------
 
-bool ossusy_looper::isFakeableMuon (int index) {
-  return muonId(index, muonSelectionFO_mu_ttbar);
+int ossusy_looper::PassGenSelectionOS( bool isData , float metcut , float htcut , float ycut ){
+  
+  if( isData ) return -999.;
+  
+  //---------------------------------------------
+  // get gen leptons
+  //---------------------------------------------
+
+  std::vector<unsigned int> mcLeptonIndices;
+  int nGoodLep = 0;
+
+  for (size_t i = 0; i < cms2.genps_id().size(); ++i){
+    
+    //electron or muon
+    if (!(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13))       continue;
+
+    //pt > 10 GeV, |eta| < 2.5
+    if ( cms2.genps_p4()[i].Pt() < 10.0 || fabs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
+
+    nGoodLep++;
+    mcLeptonIndices.push_back(i);
+  }
+
+  if( nGoodLep < 2 ) return -1;
+
+  //---------------------------------------------
+  // look for OS pt > (20,10) GeV pair, Z-veto
+  //---------------------------------------------
+
+  bool foundPair = false;
+
+  for( unsigned int i = 0 ; i < mcLeptonIndices.size() ; ++i ){
+    unsigned int ilep = mcLeptonIndices.at(i);
+    for( unsigned int j = i + 1 ; j < mcLeptonIndices.size() ; ++j ){
+      unsigned int jlep = mcLeptonIndices.at(j);
+
+      //20,10
+      if( max( cms2.genps_p4()[ilep].Pt() , cms2.genps_p4()[jlep].Pt() ) < 20 ) continue;
+      if( min( cms2.genps_p4()[ilep].Pt() , cms2.genps_p4()[jlep].Pt() ) < 10 ) continue;
+
+      //OS
+      if ( cms2.genps_id()[ilep] * cms2.genps_id()[jlep] > 0 )                            continue;
+
+      //SF?
+      bool SF = ( abs( cms2.genps_id()[ilep] ) == abs( cms2.genps_id()[jlep] ) );
+
+      //Z mass veto SF pairs
+      float dilmass = ( cms2.genps_p4()[ilep] + cms2.genps_p4()[jlep] ).mass();
+      if( SF && dilmass > 76.0 && dilmass < 106. ) continue;
+	
+      //found OS pair!
+      foundPair = true;
+	     
+    }
+  }
+
+  if( !foundPair ) return -2;
+
+  //---------------------------------------------
+  // get MC HT, njets
+  //---------------------------------------------
+    
+  int   njets   = 0;
+  float ht      = 0.;
+
+  for (size_t j = 0; j < cms2.evt_ngenjets(); ++j) {
+
+    if (cms2.genjets_p4()[j].Pt() < 30.0)       continue;
+    if (fabs(cms2.genjets_p4()[j].Eta()) > 3.0) continue;
+    bool clean = true;
+    for ( size_t i = 0; i < mcLeptonIndices.size(); ++i) 
+      {
+	if (ROOT::Math::VectorUtil::DeltaR(cms2.genjets_p4()[j], cms2.genps_p4()[mcLeptonIndices[i]]) < 0.4) {
+	  clean = false;
+	  break;
+	}
+      }
+    if (clean){
+      njets ++;
+      ht += genjets_p4()[j].Pt();
+    }
+  }
+  
+  //-----------------------------------
+  // calculate gen-level MET, y
+  //-----------------------------------
+    
+  float met = gen_met();
+  float y   = ht > 0 ? met/sqrt(ht) : 0;
+      
+  if( njets < 2      ) return -3;
+  if(    ht < htcut  ) return -4;
+  if(   met < metcut ) return -5;
+  if(     y < ycut   ) return -6;
+
+  //pass!!!
+  return 1;
+    
 }
 
 
@@ -439,6 +535,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   float nmmtot = 0.;
   float nemtot = 0.;
 
+  int ngen          = 0;
+  int nacc_2010     = 0;
+  int nacc_highmet  = 0;
+  int nacc_highht   = 0;
+  int nreco_2010    = 0;
+  int nreco_highmet = 0;
+  int nreco_highht  = 0;
+
   if(g_createTree) makeTree(prefix, doFakeApp, frmode);
 
   bool hasJptBtagBranch = true;
@@ -517,7 +621,19 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         nSkip_els_conv_dist++;
         continue;
       }
-  
+
+      //-------------------------------
+      // get acceptance for LM points
+      //-------------------------------
+
+      if( TString(prefix).Contains("LM") ){
+	
+	ngen++;
+	if( PassGenSelectionOS( isData ,   -1 , 300 , 8.5 ) == 1 )  nacc_2010++;
+	if( PassGenSelectionOS( isData ,  275 , 300 ,  -1 ) == 1 )  nacc_highmet++;
+	if( PassGenSelectionOS( isData ,  200 , 600 ,  -1 ) == 1 )  nacc_highht++;
+      }
+
       //goodrun list + event cleaning
       json_ = 1;
 
@@ -558,8 +674,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           goodLeptons.push_back( mus_p4().at(imu) );
           ngoodmu_++;
           ngoodlep_++;
-        }
-  
+        }  
       }
 
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
@@ -1152,8 +1267,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	}
 
-
-     
 	ngenjets_ = 0;
 	htgen_    = 0;
 
@@ -1163,9 +1276,17 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    LorentzVector vgjet = genjets_p4().at(igjet);
 	    LorentzVector vlt   = hyp_lt_p4()[hypIdx];
 	    LorentzVector vll   = hyp_ll_p4()[hypIdx];
+
+	    if( generalLeptonVeto ){
+	      bool rejectJet = false;
+	      for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+		if( dRbetweenVectors( vgjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	      }
+	      if( rejectJet ) continue;
+	    }
 	    
 	    if( vgjet.pt() < 30.                   )  continue;
-	    if( fabs( vgjet.eta() ) > 2.5          )  continue;
+	    if( fabs( vgjet.eta() ) > 3.0          )  continue;
 	    if( dRbetweenVectors(vgjet, vll) < 0.4 )  continue;
 	    if( dRbetweenVectors(vgjet, vlt) < 0.4 )  continue;
 	    
@@ -1509,8 +1630,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         
           mullgen_      = foundMu_ll[hypIdx] ? 1 : 0;
           multgen_      = foundMu_lt[hypIdx] ? 1 : 0;
-          mull_         = (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx] , NominalTTbarV2 ) ) ) ? 0 : 1;
-          mult_         = (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx] , NominalTTbarV2 ) ) ) ? 0 : 1;
+          //mull_         = (abs(hyp_ll_id()[hypIdx]) == 13  && (! muonId(hyp_ll_index()[hypIdx] , NominalTTbarV2 ) ) ) ? 0 : 1;
+          //mult_         = (abs(hyp_lt_id()[hypIdx]) == 13  && (! muonId(hyp_lt_index()[hypIdx] , NominalTTbarV2 ) ) ) ? 0 : 1;
           nlep_         = nels + nmus;
           tcmet_looper_ = tcmet_looper;
           tcmet_35X_    = tcmet_35X;
@@ -1687,6 +1808,23 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
           outTree->Fill();
         }
+
+	if( TString(prefix).Contains("LM") ){
+
+	  if( PassGenSelectionOS( isData ,   -1 , 300 , 8.5 ) == 1 ){
+	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 50. && y_ > 8.5 ) 
+	      nreco_2010++;
+	  }
+	  if( PassGenSelectionOS( isData ,  275 , 300 ,  -1 ) == 1 ){
+	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 275. ) 
+	      nreco_highmet++;
+	  }
+	  if( PassGenSelectionOS( isData ,  200 , 600 ,  -1 ) == 1){
+	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 600. && pfmet_ > 200. ) 
+	      nreco_highht++;
+	  }
+	}
+
 
 
 	if     ( leptype_ == 0 ) neetot += weight;
@@ -2204,6 +2342,24 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   cout << "nem " << nem << endl;
   cout << "tot " << nee+nmm+nem << endl;
   cout << endl;
+
+  if( TString(prefix).Contains("LM") ){
+    cout << endl;
+    cout << "N(gen)           " << ngen << endl;
+    cout << endl;
+    cout << "N(acc)  2010     " << nacc_2010 << endl;
+    cout << "N(reco) 2010     " << nreco_2010 << endl;
+    cout << Form("acceptance %.2f efficiency %.2f",(float)nacc_2010/(float)ngen,(float)nreco_2010/(float)nacc_2010) << endl;
+    cout << endl;
+    cout << "N(acc)  high MET " << nacc_highmet << endl;
+    cout << "N(reco) high MET " << nreco_highmet << endl;
+    cout << Form("acceptance %.2f efficiency %.2f",(float)nacc_highmet/(float)ngen,(float)nreco_highmet/(float)nacc_highmet) << endl;
+    cout << endl;
+    cout << "N(acc)  high HT  " << nacc_highht << endl;
+    cout << "N(reco) high HT  " << nreco_highht << endl;
+    cout << Form("acceptance %.2f efficiency %.2f",(float)nacc_highht/(float)ngen,(float)nreco_highht/(float)nacc_highht) << endl;
+  }
+
 
   if(g_createTree) closeTree();
   
