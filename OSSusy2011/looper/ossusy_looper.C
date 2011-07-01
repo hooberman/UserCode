@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <set>
 #include <sstream>
 #include "TChain.h"
 #include "TChainElement.h"
@@ -33,8 +34,9 @@
 #include "../CORE/susySelections.h"
 #include "../CORE/mcSUSYkfactor.h"
 #include "../CORE/triggerSuperModel.h"
-#include "../CORE/jetSelections.h"
+//#include "../CORE/jetSelections.h"
 #include "../Tools/vtxreweight.cc"
+
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -71,6 +73,73 @@ void fillHistos(TProfile *h2[4][4],float xvalue, float yvalue,  int myType, int 
 float returnSigma(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 
+//--------------------------------------------------------------------
+
+double dRbetweenVectors(const LorentzVector &vec1, 
+			const LorentzVector &vec2 ){ 
+
+  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
+  double deta = vec1.Eta() - vec2.Eta();
+  return sqrt(dphi*dphi + deta*deta);
+}
+
+//--------------------------------------------------------------------
+
+bool passesCaloJetID (const LorentzVector &jetp4)
+{
+     int jet_idx = -1;
+     double minDR = 999;
+
+     for (unsigned int i = 0; i < cms2.jets_p4().size(); i++)
+     {
+	  double deltaR = ROOT::Math::VectorUtil::DeltaR(jetp4, cms2.jets_p4()[i]);
+
+	  if (deltaR < minDR)
+	  {
+	       minDR = deltaR;
+	       jet_idx = i;
+	  }
+     }
+
+     if (jet_idx < 0)
+	  return false;
+
+     if (cms2.jets_emFrac()[jet_idx] < 0.01 || cms2.jets_fHPD()[jet_idx] > 0.98 || cms2.jets_n90Hits()[jet_idx] < 2)
+	  return false;
+
+     return true;
+}
+
+//--------------------------------------------------------------------
+
+bool passesPFJetID(unsigned int pfJetIdx) {
+
+  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
+  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
+
+  if (pfjet_nef_ >= 0.99)
+	   return false;
+  if (pfjet_nhf_ >= 0.99)
+	   return false;
+  if (pfjet_mult_ < 2)
+	   return false;
+
+  if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) < 2.4)
+  {
+	   if (pfjet_chf_ < 1e-6)
+			return false;
+	   if (pfjet_cm_ < 1)
+			return false;
+	   if (pfjet_cef_ >= 0.99)
+			return false;
+  }
+
+  return true;
+}  
 
 //--------------------------------------------------------------------
 
@@ -376,6 +445,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   while((currentFile = (TChainElement*)fileIter.Next())) {
     TFile* f = new TFile(currentFile->GetTitle());
+
+    if( !f || f->IsZombie() ) {
+      cout << "Skipping bad input file: " << currentFile->GetTitle() << endl;
+      continue; //exit(1);                                                                                             
+    }
+
     TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
@@ -407,6 +482,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       cms2.GetEntry(z);
 
       InitBaby();
+
+      if( !cleaning_goodDAVertexApril2011() )                        continue;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
 
       float pthat_cutoff = 30.;
       if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
@@ -442,8 +520,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   
       //goodrun list + event cleaning
       json_ = 1;
-      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      if( !cleaning_goodDAVertexApril2011() )                        continue;
+
+
 
       //find good hyps, store in v_goodHyps
       vector<unsigned int> v_goodHyps;
@@ -2100,6 +2178,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
       }
     } // entries
+
+    delete f;
   } // currentFile
   if( nSkip_els_conv_dist > 0 )
     cout << "Skipped " << nSkip_els_conv_dist << " events due to nan in els_conv_dist" << endl;
