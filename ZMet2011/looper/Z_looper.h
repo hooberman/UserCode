@@ -62,10 +62,11 @@ class Z_looper
   Int_t   nGoodVertex_;
   Int_t   nGoodDAVertex_;
   Float_t weight_;
+  Float_t pthat_;
+  Float_t qscale_;
+  Float_t mllgen_;
   Float_t vtxweight_;
   Float_t davtxweight_;
-  Float_t pthat_;
-  Float_t mllgen_;
   Float_t maxemf_;
   Float_t dpdm_;
   Float_t metError_;
