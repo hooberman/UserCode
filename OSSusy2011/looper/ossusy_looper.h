@@ -81,6 +81,7 @@ class ossusy_looper
         // Baby ntuple methods
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
         void closeTree ();
+	int PassGenSelection( bool isData , float metcut , float htcut , float ycut , VofP4 goodLeptons );
 
 	bool initialized;
 
