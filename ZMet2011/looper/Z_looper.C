@@ -363,6 +363,31 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         genmet_     = cms2.gen_met();
         genmetphi_  = cms2.gen_metPhi();
         gensumet_   = cms2.gen_sumEt();
+
+	qscale_ = genps_qScale();
+
+	//splice together the DY samples - if its madgraph, then we do nothing
+	if(TString(prefix).Contains("DY") && TString(evt_dataset()).Contains("madgraph") == false) {	
+	  bool doNotContinue = false;
+	  for(unsigned int i = 0; i < genps_p4().size(); i++){
+	    if(abs(genps_id()[i]) == 23 && genps_p4()[i].M() > 50.)
+	      doNotContinue = true;
+	  }
+	  if(doNotContinue)
+	    continue;	
+	}
+
+	//extract gen-level dilepton mass
+	if(TString(prefix).Contains("DY")){
+	  int nz = 0;
+	  for(unsigned int i = 0; i < genps_p4().size(); i++){
+	    if(abs(genps_id()[i]) == 23){
+	      mllgen_ = genps_p4()[i].M();
+	      nz++;
+	    }
+	  }
+	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
+	}
       }
       
       vector<unsigned int> v_goodHyps;
@@ -1055,7 +1080,6 @@ void Z_looper::InitBabyNtuple (){
   vtxweight_    = -999999.;
   davtxweight_  = -999999.;
   pthat_        = -999999.;
-  mllgen_       = -999999.;
   nGoodVertex_  = -999999;
   nGoodDAVertex_= -999999;
   leptype_      = -999999;
@@ -1165,6 +1189,8 @@ void Z_looper::InitBabyNtuple (){
   lep1_			= 0;
   lep2_			= 0;
 
+  mllgen_  = -999.;
+  qscale_  = -999.;
 }
 
 //--------------------------------------------------------------------
@@ -1288,6 +1314,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("davtxweight",  &davtxweight_,  "davtxweight/F"  );
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F"        );
   babyTree_->Branch("mllgen",       &mllgen_,       "mllgen/F"       );
+  babyTree_->Branch("qscale",       &qscale_,       "qscale/F"       );
 
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
@@ -1509,7 +1536,7 @@ float Z_looper::PassGenSelection( bool isData ){
     if (!(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13))      continue;
 
     //pt > 20 GeV, |eta| < 2.5
-    if ( cms2.genps_p4()[i].Pt() < 20.0 || abs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
+    if ( cms2.genps_p4()[i].Pt() < 20.0 || fabs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
 
     nGoodLep++;
     mcLeptonIndices.push_back(i);
@@ -1517,7 +1544,7 @@ float Z_looper::PassGenSelection( bool isData ){
 
   if( nGoodLep < 2 ) return -1.;
 
-  //look for OS pt > 20,10 GeV pair Z mass veto
+  //look for OS pt > 20,20 GeV pair Z mass veto
   bool foundPair = false;
 
   for( unsigned int i = 0 ; i < mcLeptonIndices.size() ; ++i ){
@@ -1550,7 +1577,7 @@ float Z_looper::PassGenSelection( bool isData ){
     for (size_t j = 0; j < cms2.evt_ngenjets(); ++j) 
     {
         if (cms2.genjets_p4()[j].Pt() < 30.0)       continue;
-        if (fabs(cms2.genjets_p4()[j].Eta()) > 2.5) continue;
+        if (fabs(cms2.genjets_p4()[j].Eta()) > 3.0) continue;
         bool clean = true;
         for ( size_t i = 0; i < mcLeptonIndices.size(); ++i) 
         {
