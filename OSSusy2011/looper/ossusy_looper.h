@@ -81,7 +81,7 @@ class ossusy_looper
         // Baby ntuple methods
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
         void closeTree ();
-	int PassGenSelection( bool isData , float metcut , float htcut , float ycut , VofP4 goodLeptons );
+	int PassGenSelectionOS( bool isData , float metcut , float htcut , float ycut );
 
 	bool initialized;
 
@@ -239,7 +239,6 @@ class ossusy_looper
 	Float_t ndavtxweight_;
 
         // for fakeRates
-        bool isFakeableMuon (int index);
         double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
 
         // Lots and lots of histograms

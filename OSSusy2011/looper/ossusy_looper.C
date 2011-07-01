@@ -2349,15 +2349,15 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     cout << endl;
     cout << "N(acc)  2010     " << nacc_2010 << endl;
     cout << "N(reco) 2010     " << nreco_2010 << endl;
-    cout << Form("acceptance %.2f efficiency %.2f",(float)nacc_2010/(float)ngen,(float)nreco_2010/(float)nacc_2010) << endl;
+    cout << Form("acceptance %.3f efficiency %.2f",(float)nacc_2010/(float)ngen,(float)nreco_2010/(float)nacc_2010) << endl;
     cout << endl;
     cout << "N(acc)  high MET " << nacc_highmet << endl;
     cout << "N(reco) high MET " << nreco_highmet << endl;
-    cout << Form("acceptance %.2f efficiency %.2f",(float)nacc_highmet/(float)ngen,(float)nreco_highmet/(float)nacc_highmet) << endl;
+    cout << Form("acceptance %.3f efficiency %.2f",(float)nacc_highmet/(float)ngen,(float)nreco_highmet/(float)nacc_highmet) << endl;
     cout << endl;
     cout << "N(acc)  high HT  " << nacc_highht << endl;
     cout << "N(reco) high HT  " << nreco_highht << endl;
-    cout << Form("acceptance %.2f efficiency %.2f",(float)nacc_highht/(float)ngen,(float)nreco_highht/(float)nacc_highht) << endl;
+    cout << Form("acceptance %.3f efficiency %.2f",(float)nacc_highht/(float)ngen,(float)nreco_highht/(float)nacc_highht) << endl;
   }
 
 
