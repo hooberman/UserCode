@@ -16,16 +16,13 @@ with the ABCD prediction.
 Next, we apply the ABCD' method to predict the yields in the high \met\ and high \Ht\
 signal regions. The $y$ vs. \Ht\ distributions for data are displayed in 
 Fig.~\ref{fig:abcdprimedata}. The signal regions are indicated, as well as the control 
-regions used to measure the $f(y)$ and $g(H_T)$ distributions. For the high \met\
-signal region, we find a predicted yield of $1.0 \pm 0.3$ (stat), in reasonable
-agreement with the MC prediction. For the high \Ht\ signal region, we do not find
-any events in the control region used to extract $g(H_T)$ with \Ht\ $>$ 600 GeV,
-and the ABCD' background estimate is therefore 0. To assess the statistical uncertainty
-in this prediction, we add a single event ``by hand'' to the $g(H_T)$ distributiion
-at $H_T = 600$ GeV, leading to a predicted yield of 0.6. 
-%{\bf NEED TO THINK ABOUT THIS. THE PREDICTION DEPENDS ON WHERE IN HT YOU PUT THIS }
-%{\bf SINGLE EVENT. FOR EXAMPLE, PUTTING IT AT 1000 GIVES A PREDICTION OF 1.2      }
-%{\bf HOPEFULLY WITH ~3X MORE STATS WE WON'T BE IN THIS SITUATION                  }
+regions used to measure the $f(y)$ and $g(H_T)$ distributions. 
+For the high \met\ signal region, we find a predicted yield of 
+4.0 $\pm$ 1.0 (stat) $\pm$ 0.8 (syst) (stat), in reasonable
+agreement with the observed yield of 8 events. 
+For the high \met\ signal region, we find a predicted yield of 
+4.5 $\pm$ 1.6 (stat) $\pm$ 0.9 (syst) (stat), in good
+agreement with the observed yield of 4 events. 
 These results are summarized in Table~\ref{tab:abcdprime}.
 
 \begin{table}[hbt]
@@ -39,9 +36,9 @@ factors are given in Table~\ref{tab:cor}.
 \hline
 Signal Region             &     ABCD' pred      &  correction factor  &  prediction                                  \\ 
 \hline
-2010 signal region        &  $12.8 \pm 2.9$     & $1.0 \pm 0.2$      & 12.8 $\pm$ 2.9 (stat) $\pm$ 2.6 (syst)        \\
-high \met\ signal region  &  $1.0  \pm 0.3$     & $1.2 \pm 0.5$      &  1.2 $\pm$ 0.4 (stat) $\pm$ 0.5 (syst)        \\
-high \Ht\ signal region   &  $0.0  \pm 0.6$     & $1.0 \pm 0.5$      &  0.0 $\pm$ 0.6 (stat) $\pm$ 0.3 (syst)        \\
+2010 signal region        &  $40.3 \pm 4.3$     & $1.0 \pm 0.2$      & 40.3 $\pm$ 4.3 (stat) $\pm$ 8.1 (syst)        \\
+high \met\ signal region  &  $3.3  \pm 0.8$     & $1.2 \pm 0.2$      &  4.0 $\pm$ 1.0 (stat) $\pm$ 0.8 (syst)        \\
+high \Ht\ signal region   &  $4.5  \pm 1.6$     & $1.0 \pm 0.2$      &  4.5 $\pm$ 1.6 (stat) $\pm$ 0.9 (syst)        \\
 \hline
 \end{tabular}
 \end{center}
@@ -49,11 +46,11 @@ high \Ht\ signal region   &  $0.0  \pm 0.6$     & $1.0 \pm 0.5$      &  0.0 $\pm
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=0.48\linewidth]{plots/met_ht_349pb.pdf}
-\includegraphics[width=0.48\linewidth]{plots/abcd_349pb.pdf}
+\includegraphics[width=0.48\linewidth]{plots/plotmetht_976pb.pdf}
+\includegraphics[width=0.48\linewidth]{plots/abcd_976pb.pdf}
 \caption{\label{fig:abcdData1}\protect 
-Left: Distribution of \met vs. \Ht\ for SM Monte Carlo and data. The 2011 high \Ht\ signal region is shown
-in red. The 2011 high \met signal region is shown in blue.
+Left: Distribution of \met\ vs. \Ht\ for SM Monte Carlo and data. The 2011 high \Ht\ signal region is shown
+in red. The 2011 high \met\ signal region is shown in blue.
 Right: Distributions of $y$ vs. \Ht\ for SM Monte Carlo and data. The 2010 signal region boundaries are overlayed.}
 \end{center}
 \end{figure}
@@ -73,19 +70,19 @@ We also show the SM Monte Carlo expectations with statistical errors only.
 \hline
            sample  &            $N_A$  &            $N_B$  &            $N_C$  &             $N_D$  &   $N_A \times N_C / N_B$ \\
 \hline
-            \ttll  & 63.9  $\pm$  2.0  &252.3  $\pm$  4.1  & 43.3  $\pm$  1.7  &  8.5  $\pm$  0.7  & 11.0  $\pm$  0.6        \\
-           \tttau  & 18.5  $\pm$  1.1  & 55.9  $\pm$  1.9  & 10.3  $\pm$  0.8  &  3.4  $\pm$  0.5  &  3.4  $\pm$  0.4        \\
-          \ttfake  &  1.0  $\pm$  0.3  &  6.6  $\pm$  0.7  &  1.1  $\pm$  0.3  &  0.4  $\pm$  0.2  &  0.2  $\pm$  0.1        \\
-               DY  &  0.9  $\pm$  0.6  & 13.9  $\pm$  2.6  &  1.3  $\pm$  0.8  &  1.7  $\pm$  1.0  &  0.1  $\pm$  0.1        \\
-              \WW  &  1.1  $\pm$  0.1  &  2.7  $\pm$  0.2  &  0.2  $\pm$  0.1  &  0.3  $\pm$  0.1  &  0.1  $\pm$  0.0        \\
-              \WZ  &  0.1  $\pm$  0.0  &  0.6  $\pm$  0.0  &  0.1  $\pm$  0.0  &  0.0  $\pm$  0.0  &  0.0  $\pm$  0.0        \\
-              \ZZ  &  0.0  $\pm$  0.0  &  0.2  $\pm$  0.0  &  0.0  $\pm$  0.0  &  0.0  $\pm$  0.0  &  0.0  $\pm$  0.0        \\
-       single top  &  3.3  $\pm$  0.2  &  9.6  $\pm$  0.3  &  0.4  $\pm$  0.1  &  0.1  $\pm$  0.0  &  0.1  $\pm$  0.0        \\
-           \wjets  &  1.0  $\pm$  1.0  &  2.2  $\pm$  1.1  &  0.0  $\pm$  0.0  &  0.0  $\pm$  0.0  &  0.0  $\pm$  0.0        \\
+
 \hline
-      Total SM MC  & 89.9  $\pm$  2.6  &344.0  $\pm$  5.3  & 56.6  $\pm$  2.1  & 14.5  $\pm$  1.4  & 14.8  $\pm$  0.7        \\
+           \ttbar  &233.5  $\pm$  6.5  &880.2  $\pm$  12.7 &152.8  $\pm$  5.3  & 34.6  $\pm$  2.5  & 40.5  $\pm$  1.9    \\
+               DY  &  2.6  $\pm$  1.8  & 38.9  $\pm$  7.2  &  3.6  $\pm$  2.2  &  4.8  $\pm$  2.9  &  0.2  $\pm$  0.2    \\
+              \WW  &  2.9  $\pm$  0.4  &  7.6  $\pm$  0.6  &  0.7  $\pm$  0.2  &  0.8  $\pm$  0.2  &  0.3  $\pm$  0.1    \\
+              \WZ  &  0.4  $\pm$  0.1  &  1.6  $\pm$  0.1  &  0.2  $\pm$  0.0  &  0.1  $\pm$  0.0  &  0.1  $\pm$  0.0    \\
+              \ZZ  &  0.1  $\pm$  0.0  &  0.5  $\pm$  0.0  &  0.1  $\pm$  0.0  &  0.1  $\pm$  0.0  &  0.0  $\pm$  0.0    \\
+       single top  &  9.2  $\pm$  0.5  & 26.9  $\pm$  0.9  &  1.0  $\pm$  0.2  &  0.3  $\pm$  0.1  &  0.3  $\pm$  0.1    \\
+           \wjets  &  2.8  $\pm$  2.8  &  6.0  $\pm$  3.2  &  0.0  $\pm$  0.0  &  0.0  $\pm$  0.0  &  0.0  $\pm$  0.0    \\
 \hline
-             data  &              110  &              381  &               44  &               19  & 12.7  $\pm$  2.4        \\
+      Total SM MC  &251.5  $\pm$  7.4  &961.9  $\pm$  15.0  &158.4  $\pm$  5.8  & 40.7  $\pm$  3.8 & 41.4  $\pm$  2.0   \\
+\hline
+             data  &              306  &             1071  &              141  &               45  & 40.3  $\pm$  4.3    \\
 \hline
 \end{tabular}
 \end{center}
@@ -94,8 +91,8 @@ We also show the SM Monte Carlo expectations with statistical errors only.
 
 \begin{figure}[hbt]
 \begin{center}
-\includegraphics[width=0.48\linewidth]{plots/abcdprime_349pb_highmet.pdf}
-\includegraphics[width=0.48\linewidth]{plots/abcdprime_349pb_highht.pdf}
+\includegraphics[width=0.48\linewidth]{plots/abcdprime_highmet_976pb.pdf}
+\includegraphics[width=0.48\linewidth]{plots/abcdprime_highht_976pb.pdf}
 \caption{\label{fig:abcdprimedata}\protect 
 Distributions of $y$ vs. \Ht\ in data. The signal regions \met\ $>$ 275 GeV, \Ht\ $>$ 300 GeV (left)
 and \met\ $>$ 200 GeV, \Ht\ $>$ 600 GeV (right) are indicated with thick black lines. 
