@@ -1103,8 +1103,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
           LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-          LorentzVector vjetUp    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.05;
-          LorentzVector vjetDown  = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.95;
+          LorentzVector vjetUp    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.075;
+          LorentzVector vjetDown  = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.925;
           LorentzVector vlt       = hyp_lt_p4()[hypIdx];
           LorentzVector vll       = hyp_ll_p4()[hypIdx];
 
@@ -1597,9 +1597,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float pfmet    = p_met.first;
 	float pfmetphi = p_met.second;
 
-        pair<float, float> pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.05 );
-        pair<float, float> pfmetDown = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.95 );
-        pair<float, float> pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.00 );
+        pair<float, float> pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.075 );
+        pair<float, float> pfmetDown = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.925 );
+        pair<float, float> pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.000 );
 
         p_met = getMet( "muCorMET"    , hypIdx);
         float mucormet = p_met.first;
@@ -1607,9 +1607,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	pair<float, float> p_tcmet; //met and met phi
         p_tcmet = getMet( "tcMET"    , hypIdx);
           
-        pair<float, float> metUp   = ScaleMET( p_tcmet , hyp_p4().at(hypIdx) , 1.05 );
-        pair<float, float> metDown = ScaleMET( p_tcmet , hyp_p4().at(hypIdx) , 0.95 );
-        pair<float, float> metTest = ScaleMET( p_tcmet , hyp_p4().at(hypIdx) , 1.00 );
+        pair<float, float> metUp   = ScaleMET( p_tcmet , hyp_p4().at(hypIdx) , 1.075 );
+        pair<float, float> metDown = ScaleMET( p_tcmet , hyp_p4().at(hypIdx) , 0.925 );
+        pair<float, float> metTest = ScaleMET( p_tcmet , hyp_p4().at(hypIdx) , 1.000 );
 
         tcmet00_ = smearMet( theMet , theSumJetPt , 1.00 );
         tcmet10_ = smearMet( theMet , theSumJetPt , 1.10 );
