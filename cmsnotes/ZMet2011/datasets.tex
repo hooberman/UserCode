@@ -5,7 +5,7 @@
 \subsection{Datasets}
 
 %We use a combination of rereco and prompt reco for both leptons and photons.
-We use the May 10 ReReco data for both signal and control samples.%leptons and photons.
+We use the May 10 ReReco and prompt reco data for both signal and control samples.%leptons and photons.
 \\
 For selecting the dilepton sample, the following datasets are used (the pythia DY samples are used only for generator level Z mass values less than 50 to avoid overlap with the madgraph DYJets sample), including the benchmark SUSY points LM4 and LM8:
 
@@ -17,10 +17,9 @@ For selecting the dilepton sample, the following datasets are used (the pythia D
 \item \verb=/DoubleMu/Run2011A-May10ReReco-v1/AOD=
 \item \verb=/MuEG/Run2011A-May10ReReco-v1/AOD=
 
-%we do not plan to use these
-%\item \verb=/DoubleElectron/Run2011A-PromptReco-v4/AOD=
-%\item \verb=/DoubleMu/Run2011A-PromptReco-v4/AOD=
-%\item \verb=/MuEG/Run2011A-PromptReco-v4/AOD=
+\item \verb=/DoubleElectron/Run2011A-PromptReco-v4/AOD=
+\item \verb=/DoubleMu/Run2011A-PromptReco-v4/AOD=
+\item \verb=/MuEG/Run2011A-PromptReco-v4/AOD=
 \end{itemize}
 
 \item Monte Carlo
@@ -50,17 +49,17 @@ For the creation of photon templates, we use:
 
 \begin{itemize}
 \item \verb=/Photon/Run2011A-May10ReReco-v1/AOD=
-%we do not plan to use these
-%\item \verb=/Photon/Run2011A-PromptReco-v4/AOD=
+\item \verb=/Photon/Run2011A-PromptReco-v4/AOD=
 %\item \verb==
 \end{itemize}
 
 The integrated luminosity used corresponds to \lumi, and the JSON used is 
-the official May 10 ReReco JSON:
+the official May 10 ReReco 
+and July 1 prompt reco
+JSON:
 \\
 Cert\_160404-163869\_7TeV\_May10ReReco\_Collisions11\_JSON.txt
 %Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt
-
-%last year
-%the official json PVT v3: 
-%Cert\_132440-149442\_7TeV\_StreamExpress\_Collisions10\_JSON\_v3.txt
+\\
+Cert\_160404-167784\_7TeV\_PromptReco\_Collisions11\_JSON.txt
+%Cert_160404-167784_7TeV_PromptReco_Collisions11_JSON.txt

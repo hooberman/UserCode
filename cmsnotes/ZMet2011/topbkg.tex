@@ -27,41 +27,43 @@ The simplest option
  is to take the $e\mu$ yield inside the \Z mass window and scale this
 to predict the $ee$ and $\mu\mu$ yields, based on $e$ and $\mu$ selection efficiencies.
 Only the ratio of muon to electron selection efficiency is needed, which we evaluate
- as $\epsilon_{\mu e} = \sqrt{\frac{N_{Z\mu\mu}}{N_{Zee}}}$. 
+ as $R_{\mu e} = \sqrt{\frac{N_{Z\mu\mu}}{N_{Zee}}}$. 
 Here $N_{Zee}$ ($N_{Z\mu\mu}$) is the total number of events in the $ee$ ($\mu\mu$)
  final state passing the pre-selection in Section~\ref{sec:yields},
 without the requirement of at least 2 jets. We find
- $\epsilon_{\mu e}=1.067 \pm 0.003$ (stat). %2011
-% $\epsilon_{\mu e}=1.11 \pm 0.01$ (stat). %2010
-(Note that in the following $\epsilon_{e\mu} = 1/\epsilon_{\mu e}$.)
+ $R_{\mu e}=1.068 \pm 0.001$ (stat). %2011
+% $R_{\mu e}=1.11 \pm 0.01$ (stat). %2010
+(Note that in the following $R_{e\mu} = 1/R_{\mu e}$.)
 Systematic uncertainties on the prediction are assessed in section~\ref{sec:systematicsof}, 
 and only statistical uncertainties are given in this section.
 
 This procedure yields the following predicted yields $n_{pred}$,
-based on an observed yield of 12 $e\mu$ events %3 events in 2010 (met 60)
+based on an observed yield of 
+49 %976/pb ; %12 %204/pb
+$e\mu$ events %3 events in 2010 (met 60)
 in the loose signal region 
 (the corresponding predictions in the tight 
 signal region are shown in table \ref{tab:ttbpredk}
 and in figures~\ref{fig:pfmet_ee} and \ref{fig:pfmet_mm}): 
 
 \begin{equation}
-n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)\epsilon_{\mu e} = 6.40 \pm 1.85 %2011--met 100
-%n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)\epsilon_{\mu e} = 1.67 \pm 0.96 %2010--met 60
+n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)R_{\mu e} = 26.2 \pm 3.74 %2011--met 100 976/pb
+%n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)R_{\mu e} = 6.40 \pm 1.85 %2011--met 100 204/pb
 \end{equation}
 \begin{equation}
-n_{pred}(ee)     = \frac{1}{2}n(e\mu)\epsilon_{e\mu} = 5.62 \pm 1.62
-%n_{pred}(ee)     = \frac{1}{2}n(e\mu)\epsilon_{e\mu} = 1.35 \pm 0.78
+n_{pred}(ee)     = \frac{1}{2}n(e\mu)R_{e\mu} = 22.9 \pm 3.27 %2011--met 100 976/pb
+%n_{pred}(ee)     = \frac{1}{2}n(e\mu)R_{e\mu} = 5.62 \pm 1.62 %2011--met 100 204/pb
 \end{equation}
 
 The predicted same flavor \ttbar yields 
 can be compared 
 %agree well %well, it's just over 1 sigma for mm, just under for ee
 with the MC expectation of 
-4.3 %2011
-%2.0 %2010
+18.6 %976/pb (w trig eff)
+%4.3 %204/pb (no trig eff)
 ($\mu\mu$) and 
-3.7 %2011
-%1.9 %2010
+17.8 %976/pb (w trig eff)
+%3.7 %204/pb (no trig eff)
 ($ee$) as shown in Table \ref{sigyieldtableloose}.
 Due to the relatively small statistics, the errors on the predicted yields 
 using this procedure are fairly large.
@@ -70,15 +72,17 @@ without requiring the leptons to fall in the \Z mass window.
 This yield is scaled by a factor determined from MC, $K= 0.16$, %same in 2011 as 2010
 which accounts for the fraction of \ttbar events expected to fall in the $Z$ mass
 window. This procedure yields the following
-predicted yields based on 74 observed $e\mu$ events: %27 events in 2010 (met 60)
+predicted yields based on 
+319 %(976/pb) %74 (204/pb)
+observed $e\mu$ events: %27 events in 2010 (met 60)
 
 \begin{equation}
-n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)K\epsilon_{\mu e} = 6.26 \pm 0.73
-%n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)K\epsilon_{\mu e} = 2.34 \pm 0.45 %2010
+n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)KR_{\mu e} = 27.0 \pm 1.5 %2011--met 100 976/pb
+%n_{pred}(\mu\mu) = \frac{1}{2}n(e\mu)KR_{\mu e} = 6.26 \pm 0.73 %2011--met 100 204/pb
 \end{equation}
 \begin{equation}
-n_{pred}(ee)     = \frac{1}{2}n(e\mu)K\epsilon_{e\mu} = 5.50 \pm 0.64
-%n_{pred}(ee)     = \frac{1}{2}n(e\mu)K\epsilon_{e\mu} = 1.90 \pm 0.36 %2010
+n_{pred}(ee)     = \frac{1}{2}n(e\mu)KR_{e\mu} = 23.6 \pm 1.3 %2011--met 100 976/pb
+%n_{pred}(ee)     = \frac{1}{2}n(e\mu)KR_{e\mu} = 5.50 \pm 0.64 %2011--met 100 204/pb
 \end{equation}
 
 Notice that the yields are consistent with those predicted without using $K$, but the relative statistical uncertainty is reduced by a factor of approximately 2. (See table \ref{tab:ttbpredk}.)
@@ -103,8 +107,13 @@ of the \ttbar background.
 	  \hline
 	  \resulttitle
 \hline
-$t\bar{t}$ pred with K    &  54.77  $\pm$  2.95  &  34.73  $\pm$  2.35  &  11.76  $\pm$  1.37  &  1.13  $\pm$  0.46  \\
-$t\bar{t}$ pred without K &  55.12  $\pm$  7.43  &  42.09  $\pm$  6.49  &  12.03  $\pm$  3.47  &  2.00  $\pm$  1.42  \\
+%976/pb
+$t\bar{t}$ pred with K    &  246.61  $\pm$  6.26  &  152.50  $\pm$  4.92  &  50.63  $\pm$  2.83  &  3.17  $\pm$  0.71  \\
+$t\bar{t}$ pred without K &  249.55  $\pm$  15.81  &  165.37  $\pm$  12.87  &  49.11  $\pm$  7.02  &  3.01  $\pm$  1.74  \\
+
+%204/pb
+%$t\bar{t}$ pred with K    &  54.77  $\pm$  2.95  &  34.73  $\pm$  2.35  &  11.76  $\pm$  1.37  &  1.13  $\pm$  0.46  \\
+%$t\bar{t}$ pred without K &  55.12  $\pm$  7.43  &  42.09  $\pm$  6.49  &  12.03  $\pm$  3.47  &  2.00  $\pm$  1.42  \\
 
 \hline
 	\end{tabular}
