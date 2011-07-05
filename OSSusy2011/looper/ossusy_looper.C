@@ -62,6 +62,8 @@ TH1F* hsusydilPt[nm0points][nm12points];
 TH1F* hsusytcmet[nm0points][nm12points]; 
 TH2F* hsusy_met_sumjetpt[nm0points][nm12points]; 
 
+//TH1F* msugra_
+
 //---------------------------------------------------
 
 void fillUnderOverFlow(TH1F *h1, float value, float weight = 1.);
@@ -248,23 +250,27 @@ int getIndexFromM12(float m12){
 
 void ossusy_looper::InitBaby(){
 
-  w1_ = -999;
-  w2_ = -999;
+  w1_		= -999;
+  w2_		= -999;
 
-  dilep_		= 0;
-  jet_			= 0;
-  lep1_			= 0;
-  lep2_			= 0;
+  acc_2010_	= -999;
+  acc_highmet_  = -999;
+  acc_highht_	= -999;
 
-  nels_  = -1;
-  nmus_  = -1;
-  ntaus_ = -1;
+  dilep_	= 0;
+  jet_		= 0;
+  lep1_		= 0;
+  lep2_		= 0;
 
-  ptjetraw_    = -9999.;
-  ptjet23_     = -9999.;
-  ptjetF23_    = -9999.;
-  ptjetO23_    = -9999.;
-  cosphijz_    = -9999.;
+  nels_		= -1;
+  nmus_		= -1;
+  ntaus_	= -1;
+
+  ptjetraw_	= -9999.;
+  ptjet23_	= -9999.;
+  ptjetF23_	= -9999.;
+  ptjetO23_	= -9999.;
+  cosphijz_	= -9999.;
 
 }
 
@@ -379,22 +385,55 @@ int ossusy_looper::PassGenSelectionOS( bool isData , float metcut , float htcut 
   // get gen leptons
   //---------------------------------------------
 
-  std::vector<unsigned int> mcLeptonIndices;
-  int nGoodLep = 0;
+  VofP4 mcLeptons;
+  vector<int> mcId;
 
+  //first, find electrons and muons
   for (size_t i = 0; i < cms2.genps_id().size(); ++i){
     
     //electron or muon
-    if (!(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13))       continue;
+    if (!( abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13))       continue;
 
     //pt > 10 GeV, |eta| < 2.5
-    if ( cms2.genps_p4()[i].Pt() < 10.0 || fabs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
+    if ( cms2.genps_p4()[i].Pt() < 10.0 || fabs(cms2.genps_p4()[i].Eta()) > 2.5)  continue;
 
-    nGoodLep++;
-    mcLeptonIndices.push_back(i);
+    mcId.push_back(      cms2.genps_id()[i] );
+    mcLeptons.push_back( cms2.genps_p4()[i] );
   }
 
-  if( nGoodLep < 2 ) return -1;
+  //second, look for tau->electron/muon
+  for (size_t i = 0; i < cms2.genps_id().size(); ++i){
+   
+    //tau
+    if (!( abs(cms2.genps_id()[i]) == 15 ) ) continue;
+
+    //did this tau decay leptonically?
+    bool lepTauDecay = false;
+
+    for(unsigned int k = 0; k < cms2.genps_lepdaughter_id()[i].size(); k++) {
+      int daughter = abs(cms2.genps_lepdaughter_id()[i][k]);
+
+      if( daughter == 12 || daughter == 16 ) lepTauDecay = true;
+    }
+
+    //if tau decayed leptonically, find daughter electron/muon
+    if( !lepTauDecay ) continue;
+
+    for(unsigned int k = 0; k < cms2.genps_lepdaughter_id()[i].size(); k++) {
+      int daughter = abs(cms2.genps_lepdaughter_id()[i][k]);
+
+      if( ! ( daughter == 11 || daughter == 13) ) continue;
+
+      //pt > 10 GeV, |eta| < 2.5
+      if ( cms2.genps_lepdaughter_p4()[i][k].Pt() < 10.0 || fabs(cms2.genps_lepdaughter_p4()[i][k].Eta()) > 2.5)  continue;
+
+      mcId.push_back( genps_lepdaughter_id()[i][k] );
+      mcLeptons.push_back( genps_lepdaughter_p4()[i][k] );
+    }
+
+  }
+  
+  if( mcLeptons.size() < 2 ) return -1;
 
   //---------------------------------------------
   // look for OS pt > (20,10) GeV pair, Z-veto
@@ -402,23 +441,22 @@ int ossusy_looper::PassGenSelectionOS( bool isData , float metcut , float htcut 
 
   bool foundPair = false;
 
-  for( unsigned int i = 0 ; i < mcLeptonIndices.size() ; ++i ){
-    unsigned int ilep = mcLeptonIndices.at(i);
-    for( unsigned int j = i + 1 ; j < mcLeptonIndices.size() ; ++j ){
-      unsigned int jlep = mcLeptonIndices.at(j);
+  for( unsigned int i = 0 ; i < mcLeptons.size() ; ++i ){
+
+    for( unsigned int j = i + 1 ; j < mcLeptons.size() ; ++j ){
 
       //20,10
-      if( max( cms2.genps_p4()[ilep].Pt() , cms2.genps_p4()[jlep].Pt() ) < 20 ) continue;
-      if( min( cms2.genps_p4()[ilep].Pt() , cms2.genps_p4()[jlep].Pt() ) < 10 ) continue;
+      if( max( mcLeptons[i].pt() , mcLeptons[j].pt() ) < 20 ) continue;
+      if( min( mcLeptons[i].pt() , mcLeptons[j].pt() ) < 10 ) continue;
 
       //OS
-      if ( cms2.genps_id()[ilep] * cms2.genps_id()[jlep] > 0 )                            continue;
+      if ( mcId[i] * mcId[j] > 0 )                            continue;
 
       //SF?
-      bool SF = ( abs( cms2.genps_id()[ilep] ) == abs( cms2.genps_id()[jlep] ) );
+      bool SF = ( abs( mcId[i] ) == abs( mcId[j] ) );
 
       //Z mass veto SF pairs
-      float dilmass = ( cms2.genps_p4()[ilep] + cms2.genps_p4()[jlep] ).mass();
+      float dilmass = ( mcLeptons[i] + mcLeptons[j] ).mass();
       if( SF && dilmass > 76.0 && dilmass < 106. ) continue;
 	
       //found OS pair!
@@ -441,9 +479,9 @@ int ossusy_looper::PassGenSelectionOS( bool isData , float metcut , float htcut 
     if (cms2.genjets_p4()[j].Pt() < 30.0)       continue;
     if (fabs(cms2.genjets_p4()[j].Eta()) > 3.0) continue;
     bool clean = true;
-    for ( size_t i = 0; i < mcLeptonIndices.size(); ++i) 
+    for ( size_t i = 0; i < mcLeptons.size(); ++i) 
       {
-	if (ROOT::Math::VectorUtil::DeltaR(cms2.genjets_p4()[j], cms2.genps_p4()[mcLeptonIndices[i]]) < 0.4) {
+	if (ROOT::Math::VectorUtil::DeltaR(cms2.genjets_p4()[j], mcLeptons[i]) < 0.4) {
 	  clean = false;
 	  break;
 	}
@@ -576,13 +614,27 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   float nmmtot = 0.;
   float nemtot = 0.;
 
-  int ngen          = 0;
+  int ngen          = 1;
+
+  if     ( TString(prefix).Contains("LM1") ) ngen = 219190;
+  else if( TString(prefix).Contains("LM3") ) ngen = 220000;
+  else if( TString(prefix).Contains("LM6") ) ngen = 219190;
+  else if( TString(prefix).Contains("LM")  ){
+    cout << "Setting LM ngen = 220000" << endl;
+    ngen = 220000;
+  }
+
   int nacc_2010     = 0;
   int nacc_highmet  = 0;
   int nacc_highht   = 0;
+
   int nreco_2010    = 0;
   int nreco_highmet = 0;
   int nreco_highht  = 0;
+
+  int nreco_noacc_2010    = 0;
+  int nreco_noacc_highmet = 0;
+  int nreco_noacc_highht  = 0;
 
   if(g_createTree) makeTree(prefix, doFakeApp, frmode);
 
@@ -668,11 +720,30 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       //-------------------------------
 
       if( TString(prefix).Contains("LM") ){
-	
-	ngen++;
-	if( PassGenSelectionOS( isData ,   -1 , 300 , 8.5 ) == 1 )  nacc_2010++;
-	if( PassGenSelectionOS( isData ,  275 , 300 ,  -1 ) == 1 )  nacc_highmet++;
-	if( PassGenSelectionOS( isData ,  200 , 600 ,  -1 ) == 1 )  nacc_highht++;
+
+	acc_2010_    = 0;
+	acc_highmet_ = 0;
+	acc_highht_  = 0;
+
+	acc_2010_    = PassGenSelectionOS( isData ,  -1 , 300 , 8.5 );
+	acc_highmet_ = PassGenSelectionOS( isData , 275 , 300 ,  -1 );
+	acc_highht_  = PassGenSelectionOS( isData , 200 , 600 ,  -1 );
+
+	//2010
+	if( PassGenSelectionOS( isData ,   -1 , 300 , 8.5 ) == 1 ){
+	  nacc_2010++;
+	}
+
+	//high MET
+	if( PassGenSelectionOS( isData ,  275 , 300 ,  -1 ) == 1 ){
+	  nacc_highmet++;
+	}
+
+	//high HT
+	if( PassGenSelectionOS( isData ,  200 , 600 ,  -1 ) == 1 ){
+	  nacc_highht++;
+	}
+
       }
 
       //goodrun list + event cleaning
@@ -1885,27 +1956,42 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	if( TString(prefix).Contains("LM") ){
 
+	  //2010 signal region
 	  if( PassGenSelectionOS( isData ,   -1 , 300 , 8.5 ) == 1 ){
 	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 50. && y_ > 8.5 ) 
 	      nreco_2010++;
+	  }else{
+	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 50. && y_ > 8.5 ) 
+	      nreco_noacc_2010++;
 	  }
+
+	  //high MET signal region
 	  if( PassGenSelectionOS( isData ,  275 , 300 ,  -1 ) == 1 ){
 	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 275. ) 
 	      nreco_highmet++;
+	  }else{
+	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 275. ) 
+	      nreco_noacc_highmet++;
+
+	    // if( PassGenSelectionOS( isData ,  275 , 300 ,  -1 ) == -1 ){
+	    //   dumpDocLines(true);
+	    // }
+
 	  }
+
+	  //high HT signal region
 	  if( PassGenSelectionOS( isData ,  200 , 600 ,  -1 ) == 1){
 	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 600. && pfmet_ > 200. ) 
 	      nreco_highht++;
+	  }else{
+	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 600. && pfmet_ > 200. ) 
+	      nreco_noacc_highht++;
 	  }
 	}
-
-
 
 	if     ( leptype_ == 0 ) neetot += weight;
 	else if( leptype_ == 1 ) nmmtot += weight;
 	else if( leptype_ == 2 ) nemtot += weight;
-
-
 
         //selection (continue statements)-------------------------------
         if(!g_useBitMask){
@@ -2419,18 +2505,21 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   if( TString(prefix).Contains("LM") ){
     cout << endl;
-    cout << "N(gen)           " << ngen << endl;
+    cout << "N(gen)              " << ngen << endl;
     cout << endl;
-    cout << "N(acc)  2010     " << nacc_2010 << endl;
-    cout << "N(reco) 2010     " << nreco_2010 << endl;
+    cout << "N(acc)  2010        " << nacc_2010        << endl;
+    cout << "N(reco) 2010        " << nreco_2010       << endl;
+    cout << "N(reco) 2010 noacc  " << nreco_noacc_2010 << endl;
     cout << Form("acceptance %.3f efficiency %.2f",(float)nacc_2010/(float)ngen,(float)nreco_2010/(float)nacc_2010) << endl;
     cout << endl;
-    cout << "N(acc)  high MET " << nacc_highmet << endl;
-    cout << "N(reco) high MET " << nreco_highmet << endl;
+    cout << "N(acc)  high MET        " << nacc_highmet        << endl;
+    cout << "N(reco) high MET        " << nreco_highmet       << endl;
+    cout << "N(reco) high MET noacc  " << nreco_noacc_highmet << endl;
     cout << Form("acceptance %.3f efficiency %.2f",(float)nacc_highmet/(float)ngen,(float)nreco_highmet/(float)nacc_highmet) << endl;
     cout << endl;
-    cout << "N(acc)  high HT  " << nacc_highht << endl;
-    cout << "N(reco) high HT  " << nreco_highht << endl;
+    cout << "N(acc)  high HT       " << nacc_highht        << endl;
+    cout << "N(reco) high HT       " << nreco_highht       << endl;
+    cout << "N(reco) high HT noacc " << nreco_noacc_highht << endl;
     cout << Form("acceptance %.3f efficiency %.2f",(float)nacc_highht/(float)ngen,(float)nreco_highht/(float)nacc_highht) << endl;
   }
 
@@ -3770,6 +3859,9 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   //Set branch addresses
   //variables must be declared in ossusy_looper.h
+  outTree->Branch("acc_2010",        &acc_2010_,         "acc_2010/I");
+  outTree->Branch("acc_highmet",     &acc_highmet_,      "acc_highmet/I");
+  outTree->Branch("acc_highht",      &acc_highht_,       "acc_highht/I");
   outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
   outTree->Branch("jetid",           &jetid_,            "jetid/I");
   outTree->Branch("jetid30",         &jetid30_,          "jetid30/I");
