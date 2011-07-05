@@ -38,6 +38,8 @@
 #include "../Tools/vtxreweight.cc"
 
 
+bool verbose = false;
+
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
 
@@ -72,6 +74,45 @@ void fillHistos(TH2F *h2[4][4],float xvalue, float yvalue, float weight, int myT
 void fillHistos(TProfile *h2[4][4],float xvalue, float yvalue,  int myType, int nJetsIdx);
 float returnSigma(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType);
+
+//--------------------------------------------------------------------
+
+void checkElectron( int elidx ){
+
+  cout << "Check electron" << endl;
+  cout << "Pass all    " << pass_electronSelection( elidx , electronSelection_el_OSV3			) << endl;
+  cout << "Pass ID     " << pass_electronSelection( elidx , electronSelection_el_OSV3_noiso		) << endl;
+  cout << "Pass iso    " << pass_electronSelection( elidx , electronSelection_el_OSV3_iso		) << endl;
+  cout << "VBTF90      " << pass_electronSelection( elidx , 1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL	) << endl;
+  cout << "PV          " << pass_electronSelection( elidx , 1ll<<ELEIP_PV_OSV2				) << endl;
+  cout << "nomuon      " << pass_electronSelection( elidx , 1ll<<ELENOMUON_010				) << endl;
+  cout << "hitpattern  " << pass_electronSelection( elidx , 1ll<<ELENOTCONV_HITPATTERN			) << endl;
+  cout << "convrej     " << pass_electronSelection( elidx , 1ll<<ELENOTCONV_DISTDCOT002			) << endl;
+  cout << "pt10        " << pass_electronSelection( elidx , 1ll<<ELEPT_010				) << endl;
+  cout << "eta25       " << pass_electronSelection( elidx , 1ll<<ELEETA_250				) << endl;
+  cout << "transition  " << pass_electronSelection( elidx , 1ll<<ELE_NOT_TRANSITION			) << endl;
+  cout << "HLT iso     " << pass_electronSelection( elidx , 1ll<<ELEISO_ECAL_RELNT020_NPS		) << endl;
+  cout << "offline iso " << pass_electronSelection( elidx , 1ll<<ELEISO_RELNT015			) << endl;
+
+}
+
+void checkMuon( int muidx ){
+
+  cout << "Check muon" << endl;
+  cout << "Pass all  " <<  muonId(muidx , OSGeneric_v3)                                            << endl;
+  cout << "Pass ID   " <<  muonIdNotIsolated(muidx , OSGeneric_v3 )                                << endl;
+  cout << "Pass iso  " <<  ( muonIsoValue(muidx,false) < 0.15 )                                    << endl;
+  cout << "eta24     " <<  ( TMath::Abs(cms2.mus_p4()[muidx].eta()) < 2.4)                         << endl;
+  cout << "chi2/ndf  " <<  ( cms2.mus_gfit_chi2().at(muidx)/cms2.mus_gfit_ndof().at(muidx) < 10)   << endl;
+  cout << "global    " <<  ( ((cms2.mus_type().at(muidx)) & (1<<1)) != 0)                          << endl;
+  cout << "tracker   " <<  ( ((cms2.mus_type().at(muidx)) & (1<<2)) != 0)                          << endl;
+  cout << "nhits     " <<  ( cms2.mus_validHits().at(muidx) > 10)                                  << endl;
+  cout << "stahits   " <<  ( cms2.mus_gfit_validSTAHits().at(muidx) != 0)                          << endl;
+  cout << "d0PV      " <<  ( TMath::Abs(mud0PV_smurfV3(muidx)) < 0.02)                             << endl;
+  cout << "dzPV      " <<  ( TMath::Abs(mudzPV_smurfV3(muidx)) < 1  )                              << endl;
+  cout << "dpt/pt    " <<  ( cms2.mus_ptErr().at(muidx)/cms2.mus_p4().at(muidx).pt()<0.1)          << endl;
+
+}
 
 //--------------------------------------------------------------------
 
@@ -679,8 +720,16 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       for(unsigned int i = 0; i < hyp_p4().size(); ++i) {
 
+	if( verbose ){
+	  cout << endl << "--------------------------------" << endl;
+	  cout << "hyp       " << i << endl;
+	  cout << "lep ll ID " << hyp_ll_id()[i] << " pt " << hyp_ll_p4()[i].pt() << endl;
+	  cout << "lep ll ID " << hyp_lt_id()[i] << " pt " << hyp_lt_p4()[i].pt() << endl;
+	  cout << "mass      " << hyp_p4()[i].mass() << endl;
+	}
+
         if( !passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) ) continue;
-           
+
         //OS, pt > (20,10) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )                               continue;
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < maxpt )   continue;
@@ -689,6 +738,26 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         float FRweight = 1;
 
+	if( verbose ){
+	  cout << "pass OS pt > (20,10) GeV, M > 12 GeV" << endl;
+	  
+	  if( abs(hyp_ll_id()[i]) == 11 ){
+	    cout << "Check ll electron" << endl;
+	    checkElectron( hyp_ll_index()[i] );
+	  }else{
+	    cout << "Check ll muon" << endl;
+	    checkMuon( hyp_ll_index()[i] );
+	  }
+
+	  if( abs(hyp_lt_id()[i]) == 11 ){
+	    cout << "Check lt electron" << endl;
+	    checkElectron( hyp_lt_index()[i] );
+	  }else{
+	    cout << "Check lt muon" << endl;
+	    checkMuon( hyp_lt_index()[i] );
+	  }
+
+	}
         if(doFakeApp) {
           FRweight = getFRWeight(i, mufr, elfr, frmode, isData); 
           
@@ -713,7 +782,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	v_goodHyps.push_back( i );
         v_weights.push_back( FRweight ); // this has to be multipiled to the orig weight later on! (FRweight is == 1 for std. run)
-	
+
+	if( verbose ){
+	  cout << "Found good hyp!" << endl;
+	  cout << "--------------------------------" << endl << endl;
+	}
+
         if( hyp_p4()[i].mass() > 76. && hyp_p4()[i].mass() < 106. ){
           v_goodZHyps.push_back(i);
         }        
