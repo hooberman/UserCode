@@ -618,7 +618,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   if     ( TString(prefix).Contains("LM1") ) ngen = 219190;
   else if( TString(prefix).Contains("LM3") ) ngen = 220000;
-  else if( TString(prefix).Contains("LM6") ) ngen = 219190;
+  else if( TString(prefix).Contains("LM6") ) ngen = 220000;
   else if( TString(prefix).Contains("LM")  ){
     cout << "Setting LM ngen = 220000" << endl;
     ngen = 220000;
@@ -2510,17 +2510,17 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     cout << "N(acc)  2010        " << nacc_2010        << endl;
     cout << "N(reco) 2010        " << nreco_2010       << endl;
     cout << "N(reco) 2010 noacc  " << nreco_noacc_2010 << endl;
-    cout << Form("acceptance %.3f efficiency %.2f",(float)nacc_2010/(float)ngen,(float)nreco_2010/(float)nacc_2010) << endl;
+    cout << Form("acceptance %.4f efficiency %.2f",(float)nacc_2010/(float)ngen,(float)nreco_2010/(float)nacc_2010) << endl;
     cout << endl;
     cout << "N(acc)  high MET        " << nacc_highmet        << endl;
     cout << "N(reco) high MET        " << nreco_highmet       << endl;
     cout << "N(reco) high MET noacc  " << nreco_noacc_highmet << endl;
-    cout << Form("acceptance %.3f efficiency %.2f",(float)nacc_highmet/(float)ngen,(float)nreco_highmet/(float)nacc_highmet) << endl;
+    cout << Form("acceptance %.4f efficiency %.2f",(float)nacc_highmet/(float)ngen,(float)nreco_highmet/(float)nacc_highmet) << endl;
     cout << endl;
     cout << "N(acc)  high HT       " << nacc_highht        << endl;
     cout << "N(reco) high HT       " << nreco_highht       << endl;
     cout << "N(reco) high HT noacc " << nreco_noacc_highht << endl;
-    cout << Form("acceptance %.3f efficiency %.2f",(float)nacc_highht/(float)ngen,(float)nreco_highht/(float)nacc_highht) << endl;
+    cout << Form("acceptance %.4f efficiency %.2f",(float)nacc_highht/(float)ngen,(float)nreco_highht/(float)nacc_highht) << endl;
   }
 
 
