@@ -34,6 +34,7 @@
 #include "../CORE/susySelections.h"
 #include "../CORE/mcSUSYkfactor.h"
 #include "../CORE/triggerSuperModel.h"
+#include "../CORE/triggerUtils.h"
 //#include "../CORE/jetSelections.h"
 #include "../Tools/vtxreweight.cc"
 
@@ -51,18 +52,12 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 //mSUGRA scan parameters-----------------------------
 
 const bool  generalLeptonVeto = true;
-const int   nm0points    = 81;
-const float m0min        = 0.;
-const float m0max        = 4050.;
-const int   nm12points   = 26;
-const float m12min       = 100.;
-const float m12max       = 620.;
-
-TH1F* hsusydilPt[nm0points][nm12points]; 
-TH1F* hsusytcmet[nm0points][nm12points]; 
-TH2F* hsusy_met_sumjetpt[nm0points][nm12points]; 
-
-//TH1F* msugra_
+const int   nm0points    = 100;
+const float m0min        = 20.;
+const float m0max        = 2020.;
+const int   nm12points   = 38;
+const float m12min       = 20.;
+const float m12max       = 780.;
 
 //---------------------------------------------------
 
@@ -715,6 +710,15 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         continue;
       }
 
+      /*
+      if( evt_event() == 531908485 || evt_event() == 373310047 || evt_event() == 258720472 || evt_event() == 351881010 || evt_event() == 558986813 || evt_event() == 259641932 ){
+      //if( evt_event() == 425118662 || evt_event() == 24033325 || evt_event() == 66350879 || evt_event() == 450426725 ){
+	cout << endl << "Found event!" << endl;
+	printEventInfo();
+      }
+      else{ continue; }
+      */
+
       //-------------------------------
       // get acceptance for LM points
       //-------------------------------
@@ -797,7 +801,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  cout << "lep ll ID " << hyp_ll_id()[i] << " pt " << hyp_ll_p4()[i].pt() << endl;
 	  cout << "lep ll ID " << hyp_lt_id()[i] << " pt " << hyp_lt_p4()[i].pt() << endl;
 	  cout << "mass      " << hyp_p4()[i].mass() << endl;
+	  cout << "trig?     " << passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) << endl;
+	  //PrintTriggers();
 	}
+
 
         if( !passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) ) continue;
 
@@ -1583,8 +1590,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float weight = -1.;
         if(strcmp(prefix,"LMscan") == 0){
           //weight = kFactor * sparm_xsec() * 100. / 10000.; //xsec * lumi (100/pb) / nevents (10000)
-          weight = 1;
-          cout << "CURRENTLY NOT SET UP TO READ IN SUSY SCAN XSEC, SETTING WEIGHT = 1" << endl;
+	  weight = 1.0;
         }else if( isData ){
           weight = 1;
         }else{
@@ -1645,13 +1651,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if(isGoodDAVertex(v)) ++ndavtx;
         }
              
-        
         if(strcmp(prefix,"LMscan") == 0){
-          //m0  = sparm_m0();
-          //m12 = sparm_m12();
-          m0  = -1;
-          m12 = -1;
-          cout << "CURRENTLY NOT SET UP TO READ IN SUSY PARMS, SETTING M0 = M1/2 = -1" << endl;
+          m0  = sparm_m0();
+          m12 = sparm_m12();
+	  cout << "m0 ,  m1/2 " << m0 << " , " << m12 << endl;
         }
 
         //hyp lepton pt
@@ -1984,6 +1987,22 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  }
 	}
 
+	//---------------------------
+	// fill msugra histos
+	//---------------------------
+
+	if(strcmp(prefix,"LMscan") == 0){
+
+	  int m0bin  = getIndexFromM0(m0)+1;
+	  int m12bin = getIndexFromM12(m12)+1;
+
+	  cout << "Filling " << m0bin << " " << m12bin << " " << weight << endl;
+	  msugra_all->Fill(m0bin,m12bin,weight); 
+	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 275. )  msugra_highmet->Fill(m0bin,m12bin,weight); 
+	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 600. && pfmet_ > 200. )  msugra_highht ->Fill(m0bin,m12bin,weight); 
+	  
+	}
+
 	if     ( leptype_ == 0 ) neetot += weight;
 	else if( leptype_ == 1 ) nmmtot += weight;
 	else if( leptype_ == 2 ) nemtot += weight;
@@ -2045,19 +2064,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           hnBtagJpt[myType]   ->Fill( theNBtags,     weight);
           hnBtagJpt[3]        ->Fill( theNBtags,     weight);
 
-          
-          //Fill susyscan histos
-          if(strcmp(prefix,"LMscan") == 0){
-                    
-            //cout << " m0 "     << sparm_m0()  << " index " << getIndexFromM0(m0) 
-            //     << " m1/2 "   << sparm_m12() << " index " << getIndexFromM12(m12)
-            //     << " weight " << weight << endl;
-                    
-            fillUnderOverFlow( hsusydilPt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , hyp_p4()[hypIdx].pt(), weight);
-            fillUnderOverFlow( hsusytcmet[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , tcmet, weight);
-            hsusy_met_sumjetpt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)]->Fill(sumjetpt_jets_p4 , tcmet/sqrt(tcsumet), weight);
-                    
-          }
         }
 
         //selection (bitmask)-------------------------------------------
@@ -2170,23 +2176,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
             fillHistos(htcsumet_tcmet_prof,           tcsumet ,          tcmet,               myType, nJetsIdx);
             fillHistos(hgensumet_genmet_prof,         gensumet   ,       genmet,              myType, nJetsIdx);
 
-          }
-                  
-          //Fill susyscan histos
-          if(strcmp(prefix,"LMscan") == 0){
-          
-            //cout << " m0 "     << sparm_m0()  << " index " << getIndexFromM0(m0) 
-            //     << " m1/2 "   << sparm_m12() << " index " << getIndexFromM12(m12)
-            //     << " weight " << weight << endl;
-          
-            if(nkcut(cutbit,ncut)){
-              fillUnderOverFlow( hsusydilPt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , hyp_p4()[hypIdx].pt(), weight);
-              fillUnderOverFlow( hsusytcmet[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , tcmet, weight);
-            }
-
-            if(nkcut(cutbit,ncut,2,3)){
-              hsusy_met_sumjetpt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)]->Fill(theSumJetPt , tcmet/sqrt(tcsumet), weight);
-            }
           }
 
           if(nkcut(cutbit,ncut,2)){//met
@@ -2624,24 +2613,9 @@ void ossusy_looper::BookHistos(char *prefix)
   //double binedges2000[11] = {0., 100., 200., 300., 400., 500., 600., 800., 1000., 1500., 2000.};
 
   if(strcmp("LMscan",prefix)==0){
-    for(int im0 = 0 ; im0 < nm0points ; im0++){
-      for(int im12 = 0 ; im12 < nm12points ; im12++){
-          
-        hsusydilPt[im0][im12] = new TH1F(Form("susy_hdilPt_m0_%i_m12_%i",im0,im12),
-                                         Form("susy_hdilPt_m0_%i_m12_%i",im0,im12),60,0.,300.);
-        hsusydilPt[im0][im12] -> GetXaxis()->SetTitle("Pt (GeV)");
-          
-        hsusytcmet[im0][im12] = new TH1F(Form("susy_htcmet_m0_%i_m12_%i",im0,im12),
-                                         Form("susy_htcmet_m0_%i_m12_%i",im0,im12),60,0.,300.);
-        hsusytcmet[im0][im12] -> GetXaxis()->SetTitle("tcmet (GeV)");
-
-        hsusy_met_sumjetpt[im0][im12] = new TH2F(Form("susy_hmet_sumjetpt_m0_%i_m12_%i",im0,im12),
-                                                 Form("susy_hmet_sumjetpt_m0_%i_m12_%i",im0,im12),200,0,2000,500,0,50);
-
-        hsusy_met_sumjetpt[im0][im12] -> GetXaxis()->SetTitle("sumJetPt (GeV)");
-        hsusy_met_sumjetpt[im0][im12] -> GetYaxis()->SetTitle("tcmet / #sqrt{tcsumet} (GeV^{1/2})");
-      }
-    }
+    msugra_highmet = new TH2F("msugra_highmet","msugra high MET yield",nm0points,m0min,m0max,nm12points,m12min,m12max);
+    msugra_highht  = new TH2F("msugra_highht" ,"msugra high HT yield" ,nm0points,m0min,m0max,nm12points,m12min,m12max);
+    msugra_all     = new TH2F("msugra_all"    ,"msugra all yield"     ,nm0points,m0min,m0max,nm12points,m12min,m12max);
   }
 
 
