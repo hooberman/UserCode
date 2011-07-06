@@ -1972,11 +1972,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  }else{
 	    if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 275. ) 
 	      nreco_noacc_highmet++;
-
-	    // if( PassGenSelectionOS( isData ,  275 , 300 ,  -1 ) == -1 ){
-	    //   dumpDocLines(true);
-	    // }
-
 	  }
 
 	  //high HT signal region
