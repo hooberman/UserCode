@@ -801,7 +801,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         if( !passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) ) continue;
 
-        //OS, pt > (20,10) GeV, dilmass > 10 GeV
+        //OS, pt > (20,10) GeV, dilmass > 12 GeV
         if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )                               continue;
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < maxpt )   continue;
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < minpt )   continue;
