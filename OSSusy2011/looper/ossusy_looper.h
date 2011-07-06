@@ -288,6 +288,10 @@ class ossusy_looper
         //TH2F*     hsumJetPt_tcmetpowtcsumet_th2[101];
         //TProfile* hsumJetPt_tcmetpowtcsumet_prof[101];
 
+	TH2F* msugra_highmet;
+	TH2F* msugra_highht;
+	TH2F* msugra_all;
+
         TH2F* hsumJetPt_tcmet[4][4];
         TH2F* hsumJetPt_tcmetsqrtsumet[4][4]; 
         TH2F* hsumJetPt_tcmetsumet[4][4]; 
