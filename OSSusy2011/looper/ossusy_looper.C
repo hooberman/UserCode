@@ -710,14 +710,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         continue;
       }
 
-      /*
-      if( evt_event() == 531908485 || evt_event() == 373310047 || evt_event() == 258720472 || evt_event() == 351881010 || evt_event() == 558986813 || evt_event() == 259641932 ){
-      //if( evt_event() == 425118662 || evt_event() == 24033325 || evt_event() == 66350879 || evt_event() == 450426725 ){
-	cout << endl << "Found event!" << endl;
-	printEventInfo();
-      }
-      else{ continue; }
-      */
+      
+      // if( evt_event() == 600689283 || evt_event() == 669326948 || evt_event() == 672107892 ){
+      
+      // 	cout << endl << "Found event!" << endl;
+      // 	printEventInfo();
+      // }
+      // else{ continue; }
+      
 
       //-------------------------------
       // get acceptance for LM points
@@ -1924,19 +1924,23 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  if( abs(id1_) == 11 ){
 	    iso1_   = electronIsolation_rel   ( index1 , true ); //truncated
 	    isont1_ = electronIsolation_rel_v1( index1 , true ); //non-truncated
+	    etasc1_ = els_etaSC()[index1];
 	  }
 	  else if( abs(id1_) == 13 ){
 	    iso1_   = muonIsoValue( index1 , true  ); //truncated 
 	    isont1_ = muonIsoValue( index1 , false ); //non-truncated
+	    etasc1_ = -999;
 	  }
 	  
 	  if( abs(id2_) == 11 ){
 	    iso2_   = electronIsolation_rel   ( index2 , true ); //truncated
 	    isont2_ = electronIsolation_rel_v1( index2 , true ); //non-truncated
+	    etasc2_ = els_etaSC()[index2];
 	  }
 	  else if( abs(id2_) == 13 ){
 	    iso2_   = muonIsoValue( index2 , true  ); //truncated 
 	    isont2_ = muonIsoValue( index2 , false ); //non-truncated
+	    etasc2_ = -999;
 	  }
 	  
 	  dilep_   = &hyp_p4().at(hypIdx);
@@ -3932,6 +3936,8 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("w2",              &w2_,               "w2/I");
   outTree->Branch("iso1",            &iso1_,             "iso1/F");
   outTree->Branch("isont1",          &isont1_,           "isont1/F");
+  outTree->Branch("etasc1",          &etasc1_,           "etasc1/F");
+  outTree->Branch("etasc2",          &etasc2_,           "etasc2/F");
   outTree->Branch("iso2",            &iso2_,             "iso2/F");
   outTree->Branch("isont2",          &isont2_,           "isont2/F");
   outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");

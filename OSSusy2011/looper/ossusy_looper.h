@@ -240,6 +240,8 @@ class ossusy_looper
 	Int_t   nmus_;
 	Int_t   ntaus_;
 	Float_t ndavtxweight_;
+	Float_t etasc1_;
+	Float_t etasc2_;
 
         // for fakeRates
         double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
