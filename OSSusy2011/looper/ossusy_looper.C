@@ -678,6 +678,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       InitBaby();
 
+      if(strcmp(prefix,"LMscan") == 0){
+	if( sparm_m0()  > 1000 ) continue;
+	if( sparm_m12() > 500  ) continue;	
+      }
+
       if( !cleaning_goodDAVertexApril2011() )                        continue;
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
 
