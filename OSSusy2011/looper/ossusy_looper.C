@@ -517,7 +517,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
     set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
 
-    set_msugra_file("/tas/benhoob/msugra/goodModelNames_tanbeta10.txt");
+    set_msugra_file("goodModelNames_tanbeta10.txt");
 
     initialized = true;
   }
@@ -1612,7 +1612,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  ksusydn_  = kfactorSUSY(m0,m12,"tanbeta10Scale05");
 	  xsecsusy_ = getMsugraCrossSection(m0,m12,10);
 
-	  weight = lumi * ksusy_ * xsecsusy_ / 10000.; // k * xsec / nevents
+	  weight = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
 
         }
 
