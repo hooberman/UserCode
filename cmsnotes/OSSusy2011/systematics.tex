@@ -13,32 +13,43 @@ Nevertheless, we can make general statements about the
 systematic uncertainties, including quantitative
 estimates of the systematic uncertainties associated with
 a few specific processes. 
+% Note that we have used Spring10 
+% MC for the studies of systematic uncertainties described in this section,
+% and we are currently checking if any of the reported values
+% change after switching to Fall10 MC.
 
 The systematic uncertainty on the lepton acceptance consists
 of two parts: the trigger efficiency uncertainty and the 
 ID and isolation uncertainty.  We discuss these in turn.
 
-The trigger efficiency for the high \pt\ dilepton triggers has been studied
-in~\cite{ref:HWW} in detail. The efficiency is found to be approximately
-100\% for $ee$, 95\% for $e\mu$, and 90\% for $\mu\mu$. There is a small
-dependence of the efficiency on the lepton \pt, which we do not attempt
-to parameterize. Instead, we assign an uncertainty of 2\%, based on the
-small variation of the efficiency on the lepton \pt.
+The trigger efficiency 
+for two leptons of $P_T>10$ GeV, with one lepton of 
+$P_T>20$ GeV is very high, except in some corners
+of phase space, see Section~\ref{sec:trgeffsum}. 
+We estimate the efficiency uncertainty to be a few percent,
+mostly in the low $P_T$ region. For $t\bar{t}$, LM0 and LM1
+we find trigger efficiency uncertainties of less than 1\%, evaluated
+by taking the difference in yields in the signal region between
+assuming 100\% trigger efficiency and using the trigger efficiency model.
+% trigger efficiency uncertainties: ttbar 0.3%, LM0 0.6%, LM1 0.6%
 
-To evaluate the uncertainty on the lepton ID and isolation efficiencies,
-we perform a tag and probe technique on $Z$ data and MC. We calculate
-the efficiency for leptons passing isolation criteria to also pass
-the ID criteria, and the efficiency for leptons passing the ID criteria
-to also pass the isolation criteria, as summarized in Table.~\ref{tab:tagandprobe}.
-We observe agreement between data and MC within about 2\%, and assign 
-a corresponding systematic uncertainty.
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics[width=1.0\linewidth]{ttdilD6T_eff_Dec02_38X.png}
+\includegraphics[width=1.0\linewidth]{lm_eff_Dec02_38X.png}
+\caption{\label{fig:effttbar}\protect 
+Identification and isolation efficiencies for leptons from $t \to W \to \ell$ and 
+$t \to W \to \tau \to \ell$ in $t\bar{t}$ events (top). Isolation efficiency
+for $t\bar{t}$, LM0 and LM1 (bottom).}
+\end{center}
+\end{figure}
+
 
 \begin{table}[hbt]
 \begin{center}
 \caption{\label{tab:tagandprobe} Tag and probe results on $Z \to \ell \ell$
 on data and MC.  We quote ID efficiency given isolation and 
-the isolation efficiency given ID. {\bf UPDATE TABLE WITH 2011 DATA/MC}}
-\vspace{.25cm}
+the isolation efficiency given ID. }
 \begin{tabular}{|l||c|c|}
 \hline
                              & Data  T\&P      & MC T\&P             \\  
@@ -52,33 +63,32 @@ $\epsilon(iso|id)$ muons     & $0.987 \pm 0.003$ & $0.982 \pm 0.002$ \\
 \end{center}
 \end{table}
 
+
+The ID efficiencies in MC are shown in 
+Figures~\ref{fig:effttbar}
+for the leptons from $t \to W \to \ell$ and $t \to W \to \tau \to \ell$.
+Tag and probe studies show that these are correct to about 2\%,
+see Table~\ref{tab:tagandprobe}.
+Note that the isolation efficiency depends on the jet activity in
+the final state.  For example, in MC we find that the
+lepton isolation efficiency differs by $\approx 4\%$ 
+{\bf per lepton} between $Z$ events and $t\bar{t}$ events\cite{ref:top}.
+%\noindent {\bf This figure should be cut off at 100 GeV, and 
+%the y-axis should be zero-suppressed}
+
 Another significant source of systematic uncertainty is 
-associated with the jet and \met\ energy scale.  The impact
+associated with the jet and $\met$ energy scale.  The impact
 of this uncertainty is final-state dependent.  Final
-states characterized by lots of hadronic activity and \met\ are 
-less sensitive than final states where the \met\ and \Ht\
+states characterized by lots of hadronic activity and \met are 
+less sensitive than final states where the \met and SumJetPt
 are typically close to the requirement.  To be more quantitative,
 we have used the method of Reference~\cite{ref:top} to evaluate
 the systematic uncertainties on the acceptance for $t\bar{t}$ 
 and two benchmark SUSY points.  The uncertainties are calculated
 assuming a 5\% uncertainty to the hadronic energy scale in CMS.
 
-\begin{table}[hbt]
-\begin{center}
-\caption{\label{tab:jetmet} 
-Summary of efficiency uncertainties due to the 5\% uncertainty in the hadronic energy scale.
-}
-\vspace{.25cm}
-\begin{tabular}{l|ccc}
-\hline
-Signal Region             & \ttbar  &   LM1   &   LM3    \\
-\hline
-2010 signal region        &  0.28   &  0.06   &  0.07    \\
-high \met\ signal region  &  0.35   &  0.14   &  0.18    \\ 
-high \Ht\ signal region   &  0.30   &  0.20   &  0.21    \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+For $t\bar{t}$ we find uncertainties of 8\% (baseline 
+selection) and 27\% (signal region D); for LM0 and LM1 we find
+14\% and 6\% respectively for signal region D.
 
-The uncertainty in the integrated luminosity is 11\%~\cite{ref:lumi}.
+\clearpage

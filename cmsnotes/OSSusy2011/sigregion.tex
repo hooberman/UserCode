@@ -14,29 +14,29 @@ are likely to be produced strongly;  thus, we expect significant
 hadronic activity in conjunction with the two leptons.
 \end{enumerate}
 
-Following these observations, we define the following 3 signal regions ( shown
-in figure ~\ref{fig:sigRegion} ) by adding requirements of large hadronic activity and missing
-transverse energy to the preselection of Section~\ref{sec:eventSel}.
+Following these observations, we define the following 3 signal regions by 
+adding requirements of large hadronic activity and missing transverse energy 
+to the preselection of Section~\ref{sec:eventSel}. 
 \begin{itemize}
-\item 2010 signal region:       \Ht\ $>$ 300~GeV and $y > 8.5$~GeV$^{1/2}$.
-\item high \met\ signal region: \Ht\ $>$ 300~GeV and \met\ $>$ 275 GeV
-\item high \Ht\  signal region: \Ht\ $>$ 600~GeV and \met\ $>$ 200 GeV
+\item 2010 signal region:      \Ht\ $>$ 300~GeV and $y > 8.5$~GeV$^{1/2}$.
+\item high $y$  signal region: \Ht\ $>$ 300~GeV and $y > 13$~GeV$^{1/2}$.
+\item high \Ht\ signal region: \Ht\ $>$ 600~GeV and $y > 8.5$~GeV$^{1/2}$.
 \end{itemize}
 
-In our 2010 analysis, we cut on the quantity $y \equiv \met/\sqrt{H_T}$ rather than \met\
+We cut on the quantity $y \equiv \met/\sqrt{H_T}$ rather than \met\
 because the variables \Ht\ and $y$ are
 largely uncorrelated for the dominant $t\bar{t}$ background.  
 This allows us to use a data-driven ABCD method to estimate the
-background (see Section~\ref{sec:abcd}). Here, we include 2 additional tighter signal
-regions using requirements on on \met\ and \Ht, since we observe that \met\ is a better 
-discriminant between \ttbar\ vs. SUSY. We have developed a novel technique, which is a 
-variation of the ABCD method, to estimate the background in a signal region defined by
+background (see Section~\ref{sec:abcd}). In the future, we plan to cut instead
+on \met\ and \Ht, since we observe that \met\ is a better discriminant between
+\ttbar\ vs. SUSY. We have developed a novel technique, which is a variation of 
+the ABCD method, to estimate the background in a signal region defined by
 \met\ and \Ht\ requirements (see App.~\ref{app:abcdprime}).
 
 The 2010 signal region is the same as the one used in the 2010 analysis, and was
 chosen to preserve about 1\% of the $t\bar{t}$ sample.
-The additional signal regions (high $\met$ and high \Ht) have tightened requirements
-on \met and \Ht, respectively, which reduce the expected background by roughly
+The additional signal regions (high $y$ and high \Ht) have tightened requirements
+on $y$ and \Ht, respectively, which reduce the expected background by roughly
 an order of magnitude.
 
 For each signal region, we search in the high \pt\ dilepton trigger sample
@@ -47,155 +47,117 @@ sample, for which we have prior experience with the 2010 analysis, we apply the
 ABCD, \ptll, and OF subtraction background estimates. For the dilepton-\Ht\ sample
 we currently apply only the OF subtraction background estimate.
 
-\clearpage
+We present the data and MC expected yields in the 3 signal regions in 
+Tables~\ref{tab:sigyield1}-\ref{tab:sigyield3} for the high \pt\ dilepton
+trigger sample and in Tables~\ref{tab:lowptsigyield1}-\ref{tab:lowptsigyield3}.
 
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=0.45\linewidth]{plots/sigregions_met_ht_tt.pdf}
-\includegraphics[width=0.45\linewidth]{plots/sigregions_y_ht_tt.pdf}
-\caption{\label{fig:sigRegion}\protect
-Illustration of signal regions for the 2011 analysis; \ttbar \, MC is plotted.
-Left: \met\ vs. \Ht. The high \met\ signal region ( \met\ $>$ 275 GeV, \Ht\ $>$ 300 GeV)
-is shown in blue. The high \Ht\ signal region ( \met\ $>$ 200 GeV, \Ht\ $>$ 600 GeV) is
-shown in red. Right: The 2011 signal regions shown on the left are represented in
-the $y$ vs. \Ht\ plane.
-}
-\end{center}
-\end{figure}
+\newpage
 
-
-Data yields are compared against Monte Carlo expectations in the following tables:
-
-\begin{itemize}
-  \item High \pt\ dilepton trigger sample:
-    \begin{itemize}
-      \item Table ~\ref{tab:sigyield1}: 2010 signal region
-      \item Table ~\ref{tab:sigyield2}: 2011 high \met signal region
-      \item Table ~\ref{tab:sigyield3}: 2011 high \Ht signal region
-    \end{itemize}
-  \item Dilepton-\Ht\ cross trigger sample ( events with \pt $>$ (20,10) are excluded ):
-    \begin{itemize}
-         \item Table \ref{tab:lowptsigyield1}: 2010 signal region
-         \item Table \ref{tab:lowptsigyield2}: 2011 high \met signal region
-         \item Table \ref{tab:lowptsigyield3}: 2011 high \Ht signal region
-    \end{itemize}
-\end{itemize}
-
-Yields for the 2010 signal regions are presented in tables ~\ref{tab:sigyield1} and \ref{tab:lowptsigyield1}
-to ensure that results from the 2011 analysis are consistent with the 2010 results.
-
-\clearpage
-%\newpage
-
-\begin{table}[h!]
+\begin{table}[hbt]
 \begin{center}
 \footnotesize
 \caption{\label{tab:sigyield1} High \pt\ dilepton trigger data and MC yields in the 2010 signal region. 
-MC errors are statistical only.
-}
-\vspace{.25cm}
+MC errors are statistical only.}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
-          \ttll   &  1.6 $\pm$ 0.3   &  2.5 $\pm$ 0.4   &  4.5 $\pm$ 0.5   &  8.5 $\pm$ 0.7  \\
-         \tttau   &  0.7 $\pm$ 0.2   &  0.7 $\pm$ 0.2   &  2.0 $\pm$ 0.4   &  3.4 $\pm$ 0.5  \\
-        \ttfake   &  0.2 $\pm$ 0.1   &  0.0 $\pm$ 0.0   &  0.3 $\pm$ 0.1   &  0.4 $\pm$ 0.2  \\
-             DY   &  0.3 $\pm$ 0.3   &  0.7 $\pm$ 0.7   &  0.7 $\pm$ 0.7   &  1.7 $\pm$ 1.0  \\
-            \WW   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.3 $\pm$ 0.1  \\
+          \ttll   &  0.9 $\pm$ 0.2   &  1.4 $\pm$ 0.2   &  2.6 $\pm$ 0.3   &  5.0 $\pm$ 0.4  \\
+         \tttau   &  0.4 $\pm$ 0.1   &  0.4 $\pm$ 0.1   &  1.2 $\pm$ 0.2   &  2.0 $\pm$ 0.3  \\
+        \ttfake   &  0.1 $\pm$ 0.1   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.1   &  0.3 $\pm$ 0.1  \\
+             DY   &  0.2 $\pm$ 0.2   &  0.4 $\pm$ 0.4   &  0.4 $\pm$ 0.4   &  1.0 $\pm$ 0.6  \\
+            \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.2 $\pm$ 0.0  \\
             \WZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
             \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-     single top   &  0.1 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
+     single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
          \wjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
 \hline
-      tot SM MC   &  2.9 $\pm$ 0.5   &  4.0 $\pm$ 0.8   &  7.7 $\pm$ 1.0   & 14.5 $\pm$ 1.4  \\
+      tot SM MC   &  1.8 $\pm$ 0.3   &  2.3 $\pm$ 0.5   &  4.5 $\pm$ 0.6   &  8.6 $\pm$ 0.8  \\
 \hline
-           data   &              4   &              4   &             11   &             19  \\
+           data   &              4   &              3   &              7   &             14  \\
 \hline
-            LM1   & 11.0 $\pm$ 0.4   & 13.0 $\pm$ 0.4   &  6.7 $\pm$ 0.3   & 30.7 $\pm$ 0.7  \\
-            LM3   &  2.1 $\pm$ 0.1   &  2.5 $\pm$ 0.1   &  3.5 $\pm$ 0.2   &  8.1 $\pm$ 0.2  \\
+            LM1   &  6.4 $\pm$ 0.2   &  7.6 $\pm$ 0.2   &  3.9 $\pm$ 0.2   & 18.0 $\pm$ 0.4  \\
+            LM3   &  1.3 $\pm$ 0.1   &  1.5 $\pm$ 0.1   &  2.0 $\pm$ 0.1   &  4.8 $\pm$ 0.1  \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
 
-\begin{table}[h!]
+\begin{table}[hbt]
 \begin{center}
 \footnotesize
-\caption{\label{tab:sigyield2} High \pt\ dilepton trigger data and MC yields in the high \met\ signal region. MC errors are statistical only.}
-\vspace{.25cm}
+\caption{\label{tab:sigyield2} High \pt\ dilepton trigger data and MC yields in the high $y$ signal region.
+MC errors are statistical only.}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
-          \ttll   &  0.4 $\pm$ 0.2   &  0.4 $\pm$ 0.1   &  0.8 $\pm$ 0.2   &  1.6 $\pm$ 0.3  \\
-         \tttau   &  0.1 $\pm$ 0.1   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.3 $\pm$ 0.1  \\
+          \ttll   &  0.2 $\pm$ 0.1   &  0.3 $\pm$ 0.1   &  0.5 $\pm$ 0.1   &  0.9 $\pm$ 0.2  \\
+         \tttau   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.2 $\pm$ 0.1  \\
         \ttfake   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-             DY   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.7 $\pm$ 0.7   &  0.7 $\pm$ 0.7  \\
+             DY   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
             \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
             \WZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
             \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
      single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
          \wjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
 \hline
-      tot SM MC   &  0.6 $\pm$ 0.2   &  0.4 $\pm$ 0.1   &  1.6 $\pm$ 0.8   &  2.6 $\pm$ 0.8  \\
+      tot SM MC   &  0.2 $\pm$ 0.1   &  0.4 $\pm$ 0.1   &  0.7 $\pm$ 0.2   &  1.3 $\pm$ 0.2  \\
 \hline
-           data   &              2   &              0   &              2   &              4  \\
+           data   &              3   &              0   &              3   &              6  \\
 \hline
-            LM1   &  6.2 $\pm$ 0.3   &  7.3 $\pm$ 0.3   &  3.9 $\pm$ 0.2   & 17.4 $\pm$ 0.5  \\
-            LM3   &  1.2 $\pm$ 0.1   &  1.4 $\pm$ 0.1   &  1.8 $\pm$ 0.1   &  4.3 $\pm$ 0.2  \\
+            LM1   &  2.7 $\pm$ 0.2   &  3.2 $\pm$ 0.2   &  1.7 $\pm$ 0.1   &  7.6 $\pm$ 0.3  \\
+            LM3   &  0.4 $\pm$ 0.0   &  0.5 $\pm$ 0.0   &  0.7 $\pm$ 0.1   &  1.7 $\pm$ 0.1  \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
-\begin{table}[h!]
+\begin{table}[hbt]
 \begin{center}
 \footnotesize
-\caption{\label{tab:sigyield3} High \pt\ dilepton trigger data and MC yields in the high \Ht\ signal region. MC errors are statistical only.}
-\vspace{.25cm}
+\caption{\label{tab:sigyield3} High \pt\ dilepton trigger data and MC yields in the high \Ht\ signal region.
+MC errors are statistical only.}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
-          \ttll   &  0.2 $\pm$ 0.1   &  0.3 $\pm$ 0.1   &  0.7 $\pm$ 0.2   &  1.1 $\pm$ 0.3  \\
-         \tttau   &  0.1 $\pm$ 0.1   &  0.2 $\pm$ 0.1   &  0.4 $\pm$ 0.2   &  0.7 $\pm$ 0.2  \\
+          \ttll   &  0.1 $\pm$ 0.1   &  0.2 $\pm$ 0.1   &  0.2 $\pm$ 0.1   &  0.5 $\pm$ 0.1  \\
+         \tttau   &  0.1 $\pm$ 0.1   &  0.1 $\pm$ 0.1   &  0.1 $\pm$ 0.1   &  0.2 $\pm$ 0.1  \\
         \ttfake   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-             DY   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.7 $\pm$ 0.7   &  0.7 $\pm$ 0.7  \\
+             DY   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.4 $\pm$ 0.4   &  0.4 $\pm$ 0.4  \\
             \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
             \WZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
             \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
      single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
          \wjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
 \hline
-      tot SM MC   &  0.3 $\pm$ 0.1   &  0.5 $\pm$ 0.2   &  1.8 $\pm$ 0.8   &  2.5 $\pm$ 0.8  \\
+      tot SM MC   &  0.2 $\pm$ 0.1   &  0.3 $\pm$ 0.1   &  0.7 $\pm$ 0.4   &  1.2 $\pm$ 0.5  \\
 \hline
            data   &              1   &              0   &              2   &              3  \\
 \hline
-            LM1   &  5.3 $\pm$ 0.3   &  5.7 $\pm$ 0.3   &  2.5 $\pm$ 0.2   & 13.5 $\pm$ 0.4  \\
-            LM3   &  1.2 $\pm$ 0.1   &  1.4 $\pm$ 0.1   &  1.7 $\pm$ 0.1   &  4.3 $\pm$ 0.2  \\
+            LM1   &  2.3 $\pm$ 0.1   &  2.7 $\pm$ 0.2   &  1.2 $\pm$ 0.1   &  6.2 $\pm$ 0.2  \\
+            LM3   &  0.6 $\pm$ 0.0   &  0.6 $\pm$ 0.0   &  0.7 $\pm$ 0.1   &  1.9 $\pm$ 0.1  \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
+\newpage
 
-\clearpage
-%\newpage
-
-\begin{table}[h!]
+\begin{table}[hbt]
 \begin{center}
 \footnotesize
-\caption{\label{tab:lowptsigyield1} Dilepton-\Ht trigger data and MC yields in the 2010 signal region. MC errors are statistical only.}
-\vspace{.25cm}
+\caption{\label{tab:lowptsigyield1} Dilepton-\Ht trigger data and MC yields in the 2010 signal region. 
+MC errors are statistical only.}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
-          \ttll   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.1   &  0.4 $\pm$ 0.2   &  0.5 $\pm$ 0.2  \\
-         \tttau   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.1   &  0.1 $\pm$ 0.1   &  0.3 $\pm$ 0.1  \\
-        \ttfake   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.1 $\pm$ 0.1  \\
+          \ttll   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.2 $\pm$ 0.1   &  0.3 $\pm$ 0.1  \\
+         \tttau   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.1  \\
+        \ttfake   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
              DY   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
             \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
             \WZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
@@ -203,41 +165,9 @@ MC errors are statistical only.
      single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
          \wjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
 \hline
-      tot SM MC   &  0.0 $\pm$ 0.0   &  0.4 $\pm$ 0.1   &  0.6 $\pm$ 0.2   &  1.0 $\pm$ 0.2  \\
+      tot SM MC   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.1   &  0.3 $\pm$ 0.1   &  0.6 $\pm$ 0.1  \\
 \hline
            data   &              0   &              1   &              0   &              1  \\
-\hline
-            LM1   &  0.3 $\pm$ 0.1   &  2.7 $\pm$ 0.2   &  2.1 $\pm$ 0.2   &  5.1 $\pm$ 0.3  \\
-            LM3   &  0.0 $\pm$ 0.0   &  0.3 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.5 $\pm$ 0.1  \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-\begin{table}[h!]
-\begin{center}
-\footnotesize
-\caption{\label{tab:lowptsigyield2} Dilepton-\Ht\ trigger data and MC yields in the high $y$ signal region.
-MC errors are statistical only.}
-\vspace{.25cm}
-\begin{tabular}{l|cccc}
-\hline
-         Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
-\hline
-          \ttll   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-         \tttau   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.1 $\pm$ 0.1  \\
-        \ttfake   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-             DY   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-            \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-            \WZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-            \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-     single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-         \wjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-\hline
-      tot SM MC   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.1 $\pm$ 0.1  \\
-\hline
-           data   &              0   &              0   &              0   &              0  \\
 \hline
             LM1   &  0.2 $\pm$ 0.0   &  1.6 $\pm$ 0.1   &  1.3 $\pm$ 0.1   &  3.0 $\pm$ 0.2  \\
             LM3   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.3 $\pm$ 0.0  \\
@@ -246,12 +176,12 @@ MC errors are statistical only.}
 \end{center}
 \end{table}
 
-\begin{table}[h!]
+
+\begin{table}[hbt]
 \begin{center}
 \footnotesize
-\caption{\label{tab:lowptsigyield3} Dilepton-\Ht\ trigger data and MC yields in the high \Ht\ signal region.
+\caption{\label{tab:lowptsigyield2} Dilepton-\Ht\ trigger data and MC yields in the high $y$ signal region.
 MC errors are statistical only.}
-\vspace{.25cm}
 \begin{tabular}{l|cccc}
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
@@ -270,15 +200,44 @@ MC errors are statistical only.}
 \hline
            data   &              0   &              0   &              0   &              0  \\
 \hline
-            LM1   &  0.2 $\pm$ 0.1   &  1.3 $\pm$ 0.1   &  0.7 $\pm$ 0.1   &  2.2 $\pm$ 0.2  \\
-            LM3   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.3 $\pm$ 0.0  \\
+            LM1   &  0.1 $\pm$ 0.0   &  0.7 $\pm$ 0.1   &  0.6 $\pm$ 0.1   &  1.3 $\pm$ 0.1  \\
+            LM3   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
-\clearpage
-%\newpage
+\begin{table}[hbt]
+\begin{center}
+\footnotesize
+\caption{\label{tab:lowptsigyield3} Dilepton-\Ht\ trigger data and MC yields in the high \Ht\ signal region.
+MC errors are statistical only.}
+\begin{tabular}{l|cccc}
+\hline
+         Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
+\hline
+          \ttll   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+         \tttau   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+        \ttfake   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+             DY   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+            \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+            \WZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+            \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+     single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+         \wjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+\hline
+      tot SM MC   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+\hline
+           data   &              0   &              0   &              0   &              0  \\
+\hline
+            LM1   &  0.1 $\pm$ 0.0   &  0.6 $\pm$ 0.1   &  0.4 $\pm$ 0.1   &  1.1 $\pm$ 0.1  \\
+            LM3   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\newpage
 
 These results are summarized as:
 
@@ -287,34 +246,34 @@ These results are summarized as:
 \begin{itemize}
 \item 2010 signal region ($y >$ 8.5 GeV$^{1/2}$, \Ht\ $>$ 300 GeV)
    \begin{itemize} 
-   \item observed yield : 19 
-   \item MC prediction  : $14.5 \pm 1.4$
+   \item observed yield : 14 
+   \item MC prediction  : $8.6 \pm 0.8$
    \end{itemize}  
-\item high \met\ signal region (\met\ $>$ 275 GeV, \Ht\ $>$ 300 GeV)
+\item high $y$ signal region ($y >$ 13 GeV$^{1/2}$, \Ht\ $>$ 300 GeV)
    \begin{itemize} 
-   \item observed yield : 4 
-   \item MC prediction  : $2.6 \pm 0.8$
+   \item observed yield : 6 
+   \item MC prediction  : $1.3 \pm 0.2$
    \end{itemize}  
-\item high \Ht\ signal region (\met\ $>$ 200 GeV, \Ht\ $>$ 600 GeV)
+\item high \Ht\ signal region ($y >$ 8.5 GeV$^{1/2}$, \Ht\ $>$ 600 GeV)
    \begin{itemize} 
    \item observed yield : 3 
-   \item MC prediction  : $2.5 \pm 0.8$
+   \item MC prediction  : $1.2 \pm 0.5$
    \end{itemize}  
 \end{itemize}
 
-\item Dilepton-\Ht\ trigger sample ( events with \pt $>$ (20,10) are excluded )
+\item Dilepton-\Ht\ trigger sample
 \begin{itemize}
 \item 2010 signal region ($y >$ 8.5 GeV$^{1/2}$, \Ht\ $>$ 300 GeV)
    \begin{itemize} 
    \item observed yield : 1 
-   \item MC prediction  : $1.0 \pm 0.2$
+   \item MC prediction  : $0.6 \pm 0.1$
    \end{itemize}  
-\item high \met\ signal region (\met\ $>$ 275 GeV, \Ht\ $>$ 300 GeV)
+\item high $y$ signal region ($y >$ 13 GeV$^{1/2}$, \Ht\ $>$ 300 GeV)
    \begin{itemize} 
    \item observed yield : 0 
-   \item MC prediction  : $0.1 \pm 0.1$
+   \item MC prediction  : $0.0 \pm 0.0$
    \end{itemize}  
-\item high \Ht\ signal region (\met\ $>$ 200 GeV, \Ht\ $>$ 600 GeV)
+\item high \Ht\ signal region ($y >$ 8.5 GeV$^{1/2}$, \Ht\ $>$ 600 GeV)
    \begin{itemize} 
    \item observed yield : 0 
    \item MC prediction  : $0.0 \pm 0.0$
@@ -322,7 +281,26 @@ These results are summarized as:
 \end{itemize}
 \end{itemize}
 
-For all signal regions, we observe reasonable agreement between data and MC expectations. 
-A data/MC comparison of the kinematic distributions of the 19 events passing
+For the high \pt\ dilepton trigger sample, in the 2010 signal region we observe 14 events, representing 
+a slight excess with respect to the MC expectation. This excess is enhanced
+after moving to the high $y$ signal region, where we find 6 events. 
+In the high \Ht\ region we observe 3 events, representing a slight excess.
+A data/MC comparison of the kinematic distributions of the 14 events passing
 the 2010 signal region selection is presented in App.~\ref{sec:appendix_datamc_sig}.
+For the dilepton-\Ht\ trigger sample we observe 1 event in the 2010 signal region,
+consistent with MC expectations. We observe no events in either the high $y$ or
+high \Ht\ signal regions.
+
+For all signal regions, we observe 0 events in the $Z$ mass window,
+confirming the expectation from MC that the 
+DY background is negligible. We also confirm the MC expectation that
+the contribution of fake leptons is small, using the data-driven fake
+rate method. For the high \pt\ dilepton trigger sample, We find 1 lepton + fakeable 
+object in the 2010 signal region, giving a predicted contribution from fake 
+leptons of $0.6 \pm 0.6$, consistent with MC expectations. For the high $y$ 
+and high \Ht\ signal regions, we do not observe any lepton + fakeable object 
+events and our data-driven prediction for the fake contributions in these regions is zero.
+For the dilepton-\Ht\ trigger sample we observe 1 lepton + fakeable object
+event, leading to a predicted fake contribution of $0.4 \pm 0.4$, which falls
+in the high $y$ signal region (but not in the high \Ht\ signal region).
 

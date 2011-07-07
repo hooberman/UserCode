@@ -23,7 +23,7 @@ The scalar sum \Ht\ of the
 $p_T$ of all such jets must exceed 100 GeV, for the dilepton-\Ht\ sample
 this requirement is increased to 200 GeV since these triggers have large inefficiency
 below this threshold.
-Finally, we require $\met > 50$ GeV (pfmet). More details are given in the subsections below.
+Finally $\met > 50$ GeV (we use pfmet). More details are given in the subsections below.
 
 \subsection{Event Cleanup}
 \label{sec:cleanup}
@@ -63,7 +63,9 @@ transverse energy/momentum deposits in ecal, hcal, and tracker, in a cone of 0.3
 \item At least one of the hits from the 
 standalone muon must be used in the global fit
 
-\item Tracker $\Delta p_T/p_T < 0.1$
+\item Require tracker $\Delta p_T/p_T < 0.1$. This cut was not in the original top analysis.
+It is motivated by the observation of poorly measured muons in data with large
+relative $p_T$ uncertainty, giving significant contributions to the \met
 
 \end{itemize}
 
@@ -114,7 +116,7 @@ and $\Delta\cot\theta < 0.02$ is vetoed~\cite{ref:conv}.
 \end{itemize}
 
 We estimate the contributions from fake leptons using the data-driven
-fake rate (FR) method \ref{sec:FR}. The requirements defining the fakeable objects 
+fake rate (FR) method. The requirements defining the fakeable objects 
 are listed in App.~\ref{sec:appendix_fo}.
 
 
