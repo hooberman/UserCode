@@ -37,6 +37,7 @@
 #include "../CORE/triggerUtils.h"
 //#include "../CORE/jetSelections.h"
 #include "../Tools/vtxreweight.cc"
+#include "../Tools/msugraCrossSection.cc"
 
 
 bool verbose = false;
@@ -515,6 +516,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     set_goodrun_file( g_json );
 
     set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
+
+    set_msugra_file("/tas/benhoob/msugra/goodModelNames_tanbeta10.txt");
 
     initialized = true;
   }
@@ -1585,15 +1588,39 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         m_events.insert(pair<int,int>(evt_event(), 1));
 
 
-        
-        // The event weight including the kFactor (scaled to 100 pb-1)
+        float m0   = -9999.;
+        float m12  = -9999.;
+
+	ksusy_    = -999;
+	ksusyup_  = -999;
+	ksusydn_  = -999;
+	xsecsusy_ = -999;
+
+	//---------------------------
+	// set event weight
+	//---------------------------
+
         float weight = -1.;
+
         if(strcmp(prefix,"LMscan") == 0){
-          //weight = kFactor * sparm_xsec() * 100. / 10000.; //xsec * lumi (100/pb) / nevents (10000)
-	  weight = 1.0;
-        }else if( isData ){
+
+          m0  = sparm_m0();
+          m12 = sparm_m12();
+
+	  ksusy_    = kfactorSUSY(m0,m12,"tanbeta10");
+	  ksusyup_  = kfactorSUSY(m0,m12,"tanbeta10Scale20");
+	  ksusydn_  = kfactorSUSY(m0,m12,"tanbeta10Scale05");
+	  xsecsusy_ = getMsugraCrossSection(m0,m12,10);
+
+	  weight = lumi * ksusy_ * xsecsusy_ / 10000.; // k * xsec / nevents
+
+        }
+
+	else if( isData ){
           weight = 1;
-        }else{
+        }
+
+	else{
           //weight = kFactor * evt_scale1fb() * lumi * triggerSuperModelEffic( hypIdx );
           weight = kFactor * evt_scale1fb() * lumi;
 
@@ -1636,8 +1663,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         int pass   = ( theSumJetPt > htcut && theNJets >= 2 && theMet > 50. && id_lt * id_ll < 0 ) ? 1 : 0;
         int passz  = (passZSelection ( hypIdx ) || vetoZmumuGamma( hypIdx ) ) ? 1 : 0;
         float etaZ = hyp_p4()[hypIdx].eta();
-        float m0   = -9999.;
-        float m12  = -9999.;
 
         int nvtx = 0;
     
@@ -1649,12 +1674,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     
         for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
           if(isGoodDAVertex(v)) ++ndavtx;
-        }
-             
-        if(strcmp(prefix,"LMscan") == 0){
-          m0  = sparm_m0();
-          m12 = sparm_m12();
-	  cout << "m0 ,  m1/2 " << m0 << " , " << m12 << endl;
         }
 
         //hyp lepton pt
@@ -1997,14 +2016,36 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	if(strcmp(prefix,"LMscan") == 0){
 
-	  int m0bin  = getIndexFromM0(m0)+1;
-	  int m12bin = getIndexFromM12(m12)+1;
+	  msugra_all->Fill(m0,m12,weight); 
 
-	  cout << "Filling " << m0bin << " " << m12bin << " " << weight << endl;
-	  msugra_all->Fill(m0bin,m12bin,weight); 
-	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 275. )  msugra_highmet->Fill(m0bin,m12bin,weight); 
-	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 600. && pfmet_ > 200. )  msugra_highht ->Fill(m0bin,m12bin,weight); 
-	  
+	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 275. ){
+	    msugra_highmet->Fill(m0,m12,weight); 
+	    msugra_highmet_kup->Fill(m0,m12,weight*(ksusyup_/ksusy_)); 
+	    msugra_highmet_kdn->Fill(m0,m12,weight*(ksusydn_/ksusy_)); 
+	  }
+
+	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 600. && pfmet_ > 200. ){
+	    msugra_highht ->Fill(m0,m12,weight); 
+	    msugra_highht_kup ->Fill(m0,m12,weight*(ksusyup_/ksusy_)); 
+	    msugra_highht_kdn ->Fill(m0,m12,weight*(ksusydn_/ksusy_)); 
+	  }
+
+	  if( passz == 0 && njetsUp_ >= 2 && htUp_ > 300. && pfmetUp_ > 275. ){
+	    msugra_highmet_jup->Fill(m0,m12,weight); 
+	  }
+
+	  if( passz == 0 && njetsDown_ >= 2 && htDown_ > 300. && pfmetDown_ > 275. ){
+	    msugra_highmet_jdn->Fill(m0,m12,weight); 
+	  }
+
+	  if( passz == 0 && njetsUp_ >= 2 && htUp_ > 600. && pfmetUp_ > 200. ){
+	    msugra_highht_jup->Fill(m0,m12,weight); 
+	  }
+
+	  if( passz == 0 && njetsDown_ >= 2 && htDown_ > 600. && pfmetDown_ > 200. ){
+	    msugra_highht_jdn->Fill(m0,m12,weight); 
+	  }
+
 	}
 
 	if     ( leptype_ == 0 ) neetot += weight;
@@ -2617,9 +2658,23 @@ void ossusy_looper::BookHistos(char *prefix)
   //double binedges2000[11] = {0., 100., 200., 300., 400., 500., 600., 800., 1000., 1500., 2000.};
 
   if(strcmp("LMscan",prefix)==0){
-    msugra_highmet = new TH2F("msugra_highmet","msugra high MET yield",nm0points,m0min,m0max,nm12points,m12min,m12max);
-    msugra_highht  = new TH2F("msugra_highht" ,"msugra high HT yield" ,nm0points,m0min,m0max,nm12points,m12min,m12max);
-    msugra_all     = new TH2F("msugra_all"    ,"msugra all yield"     ,nm0points,m0min,m0max,nm12points,m12min,m12max);
+
+    msugra_highmet	= new TH2F("msugra_highmet","msugra high MET yield",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+    msugra_highht	= new TH2F("msugra_highht" ,"msugra high HT yield" ,nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+    msugra_highmet_jup	= new TH2F("msugra_highmet_jup","msugra high MET yield J/M up",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+    msugra_highmet_jdn	= new TH2F("msugra_highmet_jdn","msugra high MET yield J/M dn",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+    msugra_highht_jup	= new TH2F("msugra_highht_jup","msugra high HT yield J/M up",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+    msugra_highht_jdn	= new TH2F("msugra_highht_jdn","msugra high HT yield J/M dn",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+    msugra_highmet_kup	= new TH2F("msugra_highmet_kup","msugra high MET yield k up",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+    msugra_highmet_kdn	= new TH2F("msugra_highmet_kdn","msugra high MET yield k dn",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+    msugra_highht_kup	= new TH2F("msugra_highht_kup","msugra high HT yield k up",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+    msugra_highht_kdn	= new TH2F("msugra_highht_kdn","msugra high HT yield k dn",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+    msugra_all		= new TH2F("msugra_all"    ,"msugra all yield"     ,nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
   }
 
 
@@ -3848,6 +3903,10 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("trgeff",          &trgeff_,           "trgeff/F");
   outTree->Branch("pthat",           &pthat_,            "pthat/F");
   outTree->Branch("qscale",          &qscale_,           "qscale/F");
+  outTree->Branch("ksusy",           &ksusy_,            "ksusy/F");
+  outTree->Branch("ksusyup",         &ksusyup_,          "ksusyup/F");
+  outTree->Branch("ksusydn",         &ksusydn_,          "ksusydn/F");
+  outTree->Branch("xsecsusy",        &xsecsusy_,         "xsecsusy/F");
   outTree->Branch("smeff",           &smeff_,            "smeff/F");
   outTree->Branch("k",               &k_,                "k/F");
   outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");

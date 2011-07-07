@@ -243,6 +243,11 @@ class ossusy_looper
 	Float_t etasc1_;
 	Float_t etasc2_;
 
+	Float_t ksusy_;
+	Float_t ksusyup_;
+	Float_t ksusydn_;
+	Float_t xsecsusy_;
+
         // for fakeRates
         double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
 
@@ -293,6 +298,16 @@ class ossusy_looper
 	TH2F* msugra_highmet;
 	TH2F* msugra_highht;
 	TH2F* msugra_all;
+
+	TH2F* msugra_highmet_kup;
+	TH2F* msugra_highmet_kdn;
+	TH2F* msugra_highmet_jup;
+	TH2F* msugra_highmet_jdn;
+
+	TH2F* msugra_highht_kup;
+	TH2F* msugra_highht_kdn;
+	TH2F* msugra_highht_jup;
+	TH2F* msugra_highht_jdn;
 
         TH2F* hsumJetPt_tcmet[4][4];
         TH2F* hsumJetPt_tcmetsqrtsumet[4][4]; 
