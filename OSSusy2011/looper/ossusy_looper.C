@@ -2021,34 +2021,36 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	if(strcmp(prefix,"LMscan") == 0){
 
-	  msugra_all->Fill(m0,m12,weight); 
+	  float lmscanweight = weight * trgeff_ * ndavtxweight_;
+
+	  msugra_all->Fill(m0,m12,lmscanweight); 
 
 	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 275. ){
-	    msugra_highmet->Fill(m0,m12,weight); 
-	    msugra_highmet_kup->Fill(m0,m12,weight*(ksusyup_/ksusy_)); 
-	    msugra_highmet_kdn->Fill(m0,m12,weight*(ksusydn_/ksusy_)); 
+	    msugra_highmet->Fill(m0,m12,lmscanweight); 
+	    msugra_highmet_kup->Fill(m0,m12,lmscanweight*(ksusyup_/ksusy_)); 
+	    msugra_highmet_kdn->Fill(m0,m12,lmscanweight*(ksusydn_/ksusy_)); 
 	  }
 
 	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 600. && pfmet_ > 200. ){
-	    msugra_highht ->Fill(m0,m12,weight); 
-	    msugra_highht_kup ->Fill(m0,m12,weight*(ksusyup_/ksusy_)); 
-	    msugra_highht_kdn ->Fill(m0,m12,weight*(ksusydn_/ksusy_)); 
+	    msugra_highht ->Fill(m0,m12,lmscanweight); 
+	    msugra_highht_kup ->Fill(m0,m12,lmscanweight*(ksusyup_/ksusy_)); 
+	    msugra_highht_kdn ->Fill(m0,m12,lmscanweight*(ksusydn_/ksusy_)); 
 	  }
 
 	  if( passz == 0 && njetsUp_ >= 2 && htUp_ > 300. && pfmetUp_ > 275. ){
-	    msugra_highmet_jup->Fill(m0,m12,weight); 
+	    msugra_highmet_jup->Fill(m0,m12,lmscanweight); 
 	  }
 
 	  if( passz == 0 && njetsDown_ >= 2 && htDown_ > 300. && pfmetDown_ > 275. ){
-	    msugra_highmet_jdn->Fill(m0,m12,weight); 
+	    msugra_highmet_jdn->Fill(m0,m12,lmscanweight); 
 	  }
 
 	  if( passz == 0 && njetsUp_ >= 2 && htUp_ > 600. && pfmetUp_ > 200. ){
-	    msugra_highht_jup->Fill(m0,m12,weight); 
+	    msugra_highht_jup->Fill(m0,m12,lmscanweight); 
 	  }
 
 	  if( passz == 0 && njetsDown_ >= 2 && htDown_ > 600. && pfmetDown_ > 200. ){
-	    msugra_highht_jdn->Fill(m0,m12,weight); 
+	    msugra_highht_jdn->Fill(m0,m12,lmscanweight); 
 	  }
 
 	}
