@@ -41,7 +41,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //---------------------------------------------------------------
   
   const char* version   = "V00-01-11";
-  const char* jsonfile  = "Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
+  const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -196,7 +196,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -247,7 +247,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML6      = 0;
   bool runML7      = 0;
   bool runML8      = 0;
-  bool runLMscan   = 0; 
+  bool runLMscan   = 1; 
 
 
   /*  
@@ -849,7 +849,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chLMscan,
 		     "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple*root",
                      "LMscan");
-    /*    
+
+    /*
     pickSkimIfExists(chLMscan,
 		     "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple_1_15.root",
                      "LMscan");
@@ -865,7 +866,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chLMscan,
 		     "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple_1_42.root",
                      "LMscan");
-
+    
     pickSkimIfExists(chLMscan,
 		     "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple_1_18.root",
                      "LMscan");
