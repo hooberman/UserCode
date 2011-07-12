@@ -1,153 +1,161 @@
+\newcommand{\sta}{$\sigma\times A$} %notation is such that A includes BR
+
 \section{Model-Dependent Limits}
 \label{sec:models}
 
 As an example of how the upper limit presented in Sec.~\ref{sec:upperlimit} can be
-used to test if a specific model is excluded, in this section we consider the benchmark
-SUSY processes LM4 and LM8, which contain
+used to test if a specific model is excluded, we consider the benchmark
+SUSY processes LM4 and LM8 which contain
 $Z$ bosons produced in the cascade decays of SUSY particles. 
-We place upper limits on the quantity $\sigma \times BF \times A$,
+We place upper limits on the quantity \sta,
 assuming efficiencies and uncertainties from these processes, and compare them to 
-the expected values of $\sigma \times BF \times A$.
-Here $\sigma$ is the signal production cross section, $BF$ is the branching fraction
-to the final state Z + jets + MET and $A$ is the signal acceptance.
-%{\bf I am showing ttbar below, in addition to LM4 and LM8, but perhaps this should be removed...}
+the expected values of \sta.
+Here $\sigma$ is the signal production cross section, %$BF$ is the branching fraction
+%to the final state Z + jets + MET and $A$ is the signal acceptance.
+and $A$ is the signal acceptance which includes the branching fraction to the final state Z + $\ge$ 2 jets + MET $\ge$ \signalmett.
 
 The signal event yield $N_{SIG}$ can be expressed as:
 
 \begin{equation}
-N_{SIG} = \sigma \times BF \times A \times \epsilon \times \mathcal{L},
+%N_{SIG} = \sigma \times BF \times A \times \epsilon \times \mathcal{L},
+N_{SIG} = \sigma \times A \times \epsilon \times \mathcal{L},
 \end{equation}
 
 and we therefore have:
 
 \begin{equation}
-N_{SIG}/( \epsilon \times \mathcal{L}) = \sigma \times BF \times A.
+N_{SIG}/( \epsilon \times \mathcal{L}) = \sigma \times A.
 \end{equation}
 
 Here  $\epsilon$ is the signal efficiency and $\mathcal{L}$ is the integrated luminosity. 
-Since we wish to place an upper limit on the quantity $\sigma \times BF \times A$, we must evaluate
+Since we wish to place an upper limit on the quantity %$\sigma \times BF \times A$
+\sta, we must evaluate
 the quantity $N_{SIG}/(\epsilon \times \mathcal{L})$.  Because of the efficiency
 in the denominator, this upper limit cannot be calculated in an entirely model-independent
 way; rather, it must be calculated with respect to a specific model. We therefore evaluate
-the upper limit on $\sigma \times BF \times A$ with respect to $t\bar{t}$, LM4 and LM8.  
-For each process, we must calculate both the efficiency and its uncertainty, as discussed
-in the following subsections.
-
+the upper limit on %$\sigma \times BF \times A$ 
+\sta\
+with respect to LM4 and LM8.  
+For each process, we calculate the efficiency as discussed
+%in the following subsections.
+in the next subsection, and
+its uncertainty as described in section \ref{sec:signaleffuncer}.
 
 
 \subsection{Signal Efficiencies}
 \label{sec:sigeff}
 
-We evaluate the signal efficiencies using MC. To evaluate these efficiencies for our sample processes, 
+We evaluate the signal efficiencies using MC. To evaluate these efficiencies for our 
+sample processes, 
 we take as our denominator the number of generated events which pass the following selection at
 the generator level:
 
 \begin{itemize}
-\item 2 electrons or muons with $p_T>20$~GeV and $|\eta|<2.5$,
-\item Opposite-sign, same-flavor pair with $81 < M(ll) < 101$~GeV,
-\item Count genjets with $p_T > 30$~GeV, $|\eta|<2.5$, $\Delta R > 0.4$ from any selected lepton as defined above,
-\item At least 2 genjets.
+\item Two electrons or muons with $p_T>20$~GeV and $|\eta|<2.5$
+\item Opposite-sign, same-flavor pair with $81 < M(ll) < 101$~GeV
+\item At least two genjets with $p_T > 30$~GeV, $|\eta|<3$, $\Delta R > 0.4$ from any selected lepton as defined above
 \end{itemize}
 
-For the loose (tight) signal region efficiency, we add to this the requirement genmet$>60$ (120)~GeV.
+For the %loose (tight) 
+signal region efficiency,
+we add to this the requirement genmet
+%$>60$ (120)~GeV.
+$>$ \signalmetl (\signalmett) for the loose (tight) signal regions.
 We take as our numerator the number of events passing the above generator-level selection which
 also pass the signal region selection at reco-level. 
+Efficiencies are shown in table \ref{tab:models}.
+
 %{\bf Should I also consider events passing reco-selection which do NOT pass gen-level selection? For ttbar this
 %\bf is a large effect, it is small for LM4 and LM8. }
-For the loose (tight) signal region we find efficiencies of 43\% (42\%), 54\% (55\% )and 45\% (48\%) 
-for $t\bar{t}$, LM4 and LM8, respectively.
-This efficiency is dominated by the dilepton selection efficiency, which varies from $\sim0.6-0.7$ for the chosen 
-processes. 
+%For the loose (tight) signal region we find efficiencies of 43\% (42\%), 54\% (55\% )and 45\% (48\%) 
+%for $t\bar{t}$, LM4 and LM8, respectively.
+%This efficiency is dominated by the dilepton selection efficiency, which varies from $\sim0.6-0.7$ for the chosen 
+%processes. 
 
 %The efficiency for selected dileptons to satisfy the dilepton mass requirement is $\sim0.9$;
 %the efficiency to satisfy the requirements on the jet multiplicity is $\sim0.8-0.9$, for the MET$>60$~GeV requirement
 %this efficiency is $\sim0.9-1$. 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%this section has been copied into systematics.tex
 
-
-\subsection{Signal Efficiency Uncertainties}
-
-Here we assess systematic uncertainties in the signal efficiencies for our sample processes, from
-jet/MET, lepton identification, and luminosity uncertainties. 
-
-\begin{itemize}
-  
-\item Jets and MET selection efficiency: we assess this uncertainty by varying the hadronic energy scale by $\pm 5\%$
-  following the procedure used in the ttdilepton cross-section measurement.  For the loose (tight) signal regions 
-  we find uncertainties of 9\% (23\%), 2\% (4\%), and 2\%(4\%) for  $t\bar{t}$, LM4 and LM8, respectively.
-\item Lepton ID and isolation efficiencies: we perform a tag-and-probe technique
-  on Z data and MC and find that the simulation agrees with data within about 2\% as shown in Table~\ref{tab:tagandprobe}.
-  We apply a conservative 5\% uncertainty on the dilepton selection efficiency.
-\item Trigger efficiency: the trigger efficiency is very close to 1 since there are 2 leptons with \pt $> 20$ GeV.
-  We apply the simplified model of the trigger efficiency documented in~\cite{ref:GenericOS} and assess the uncertainty
-  as the relative difference in the yields between assuming 100\% trigger efficiency vs. using the trigger model. This
-  procedure gives differences of less than 1\% and the trigger efficiency uncertainty is therefore regarded as negligible.
-\item Luminosity: we assess an uncertainty of 11\%.
-
-\end{itemize}
-
-\begin{table}[hbt]
-\begin{center}
-\caption{\label{tab:tagandprobe} Tag and probe results on $Z \to \ell \ell$
-on data and MC.  We quote ID efficiency given isolation and 
-the isolation efficiency given ID. }
-\begin{tabular}{|l||c|c|}
-\hline
-                       & Data  T\&P        & MC T\&P               \\  
-\hline
-$\epsilon(id|iso)$ els & 0.918 $\pm$ 0.003 & 0.936 $\pm$ 0.0038    \\ 
-$\epsilon(iso|id)$ els & 0.986 $\pm$ 0.001 & 0.987 $\pm$ 0.0018    \\
-$\epsilon(id|iso)$ mus & 0.962 $\pm$ 0.002 & 0.964 $\pm$ 0.0027    \\
-$\epsilon(iso|id)$ mus & 0.987 $\pm$ 0.001 & 0.984 $\pm$ 0.0018    \\
-\hline
-
-\end{tabular}
-\end{center}
-\end{table}
-
-\subsection{Upper Limits on $\sigma \times BF \times A$}
+\subsection{Upper Limits on \sta}
 
 Armed with the efficiencies and uncertainties calculated in the previous 2 sections, we proceed
-to calculate upper limits on the quantity $\sigma \times BF \times A$. We calculate Bayesian 95\% CL upper
+to calculate upper limits on the quantity \sta.
+We calculate Bayesian 95\% CL upper
 limits using the cl95cms software, assuming a log-normal model of nuissance parameter integration.
-We also calculate the quantity $\sigma \times BF \times A$ for LM4 and LM8, for which we assume LO
+We also calculate the quantity \sta ~for LM4 and LM8, for which we assume LO
 cross-sections of 1.88~pb and 0.73~pb and calculate k-factors for each event, depending on the sub-process.
-The quantity $BF \times A$ is taken to be the fraction of the total number of generated events which
+The quantity $A$ is taken to be the fraction of the total number of generated events which
 pass the generator-level selection given in Sec.~\ref{sec:sigeff}. The results are summarized in
-Table~\ref{tab:models}. These results show that the LM4 and LM8 benchmark points are beyond the
+Table~\ref{tab:models}. 
+These results show that the benchmark point LM4 is excluded, while
+LM8 remains beyond the
 sensitivity of this search with the current integrated luminosity.
 
 \begin{table}[hbt]
-\begin{center}
-\caption{\label{tab:models} Summary of efficiencies, efficiency uncertainties (quadrature sum
-of jet/MET, dilepton and luminosity uncertainties), and upper limits on $\sigma \times BF \times A$ 
-for the loose (MET$>60$~GeV) and tight (MET$>120$~GeV) signal regions. We also show the quantity
-$\sigma \times BF \times A$ for LM4 and LM8.}
-\begin{tabular}{l|ccc}
+  \begin{center}
+	\caption{
+	  \label{tab:models} 
+	  Summary of efficiencies, efficiency uncertainties (quadrature sum
+	  of jet/MET, dilepton and luminosity uncertainties), 
+	  and upper limits on \sta %$\sigma \times BF \times A$ 
+	  for the tight (MET $>$ \signalmett~GeV, top)
+	  and loose (MET $>$ \signalmetl~GeV, bottom) signal regions.
+	  We also show the quantity
+	  \sta %$\sigma \times BF \times A$ 
+	  for LM4 and LM8.}
 
-\hline
-                                         & $t\bar{t}$    & LM4     & LM8       \\
-\hline
-{\bf Loose signal region}                &               &         &           \\
-Efficiency                               &       0.43    & 0.54    & 0.45      \\
-Efficiency Uncertainty                   &       0.15    & 0.12    & 0.12      \\
-UL($\sigma \times BF \times A$) (pb)     &       0.56    & 0.44    & 0.53      \\
-$\sigma \times BF \times A$ (pb)         &               & 0.045   & 0.025     \\
+	\medskip
+	\begin{tabular}{l|cccc}
+	  \hline
+	  \bf MET $>$ \signalmett~GeV & efficiency (\%) & acceptance (\%) & UL(\sta)(fb) & \sta(fb) \\
+	  \hline
+	  LM4  &  50 $\pm$   6  &  0.84  &  14  &  23  \\
+	  LM8  &  43 $\pm$   5  &  0.98  &  16  &  11  \\
+	  \hline
+	\end{tabular}
 
-\hline
-{\bf Tight signal region}                &               &         &           \\
-Efficiency                               &       0.42    &  0.55   & 0.48      \\
-Efficiency Uncertainty                   &       0.26    &  0.13   & 0.13      \\
-UL($\sigma \times BF \times A$) (pb)     &       0.23    &  0.17   & 0.19      \\
-$\sigma \times BF \times A$ (pb)         &               &  0.035  & 0.018     \\
- 
-\hline
+	\medskip
+	\begin{tabular}{l|cccc}
+	  \hline
+	  \bf MET $>$ \signalmetl~GeV & efficiency (\%) & acceptance (\%) & UL(\sta)(fb) & \sta(fb) \\
+	  \hline
+	  LM4 &  53 $\pm$   3  &  1.4  &   40  &   37  \\
+	  LM8 &  44 $\pm$   3  &  1.7  &   47  &   19  \\
 
-\end{tabular}
-\end{center}
+	  \hline
+	\end{tabular}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%2010 results--35/pb
+	\begin{comment}
+
+	  \begin{tabular}{l|ccc}
+
+		\hline
+		& $t\bar{t}$    & LM4     & LM8       \\
+		\hline
+			{\bf Loose signal region}                &               &         &           \\
+			Efficiency                               &       0.43    & 0.54    & 0.45      \\
+			Efficiency Uncertainty                   &       0.15    & 0.12    & 0.12      \\
+			UL($\sigma \times BF \times A$) (pb)     &       0.56    & 0.44    & 0.53      \\
+			$\sigma \times BF \times A$ (pb)         &               & 0.045   & 0.025     \\
+
+			\hline
+				{\bf Tight signal region}                &               &         &           \\
+				Efficiency                               &       0.42    &  0.55   & 0.48      \\
+				Efficiency Uncertainty                   &       0.26    &  0.13   & 0.13      \\
+				UL($\sigma \times BF \times A$) (pb)     &       0.23    &  0.17   & 0.19      \\
+				$\sigma \times BF \times A$ (pb)         &               &  0.035  & 0.018     \\
+				
+				\hline
+
+	  \end{tabular}
+
+	\end{comment}
+
+  \end{center}
 \end{table}
 
 
