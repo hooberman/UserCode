@@ -22,8 +22,8 @@ void ExclusionPlot(){
 
   // setPlottingStyle(*exclusionPlot,lineStyle);
 
-  Int_t tanBeta = 3;
-  Bool_t plotLO = true;
+  Int_t tanBeta = 10;
+  Bool_t plotLO = false;
    
   /* TH1F* First = getHisto_1d("./","ExclusionLimit","Significance_NLO_expected_tanBeta50.root");
   setPlottingStyle(*First);
@@ -153,9 +153,10 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   } else {
     First  = getNLOobsTanbeta10();
     FirstDummy  = getObserved_NLOunc();
+    Second = getNLOexpTanbeta10();
   }
   Third = getExpected_NLOunc();//getLO_jetMultis();
-  Second  = getLO_signalCont();
+  //Second  = getLO_signalCont();
 
 
 
@@ -169,7 +170,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
 
   double m0min = 0;
   if (tanBeta_ == 50) m0min=200;
-  TH2D* hist = new TH2D("h","h",100,m0min,500,100,80,500);
+  TH2D* hist = new TH2D("h","h",100,m0min,1500,100,120,500);
   hist->Draw();  
   hist->GetXaxis()->SetTitle("m_{0} (GeV/c^{2})");
   hist->GetYaxis()->SetTitle("m_{1/2} (GeV/c^{2})");
@@ -221,8 +222,8 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   
   TLegend* myleg;
 
-  if( plotLO_ ) myleg = new TLegend(0.33,0.75,0.58,0.9,NULL,"brNDC");
-  else          myleg = new TLegend(0.28,0.75,0.58,0.9,NULL,"brNDC");
+  if( plotLO_ ) myleg = new TLegend(0.3,0.75,0.54,0.9,NULL,"brNDC");
+  else          myleg = new TLegend(0.3,0.75,0.54,0.9,NULL,"brNDC");
 
 
 
@@ -236,7 +237,9 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     myleg->AddEntry(sSecond,"LO Observed Limit","L");
     myleg->AddEntry(sFirst,"NLO Observed Limit","L"); 
   } else {
-    myleg->AddEntry(sFirst,"CMS OS Dilepton Limit","L"); 
+    //myleg->AddEntry(sFirst,"CMS OS Dilepton Limit","L"); 
+    myleg->AddEntry(sFirst,"NLO observed limit","L"); 
+    myleg->AddEntry(sSecond,"NLO expected limit","L"); 
   }
 
       
@@ -254,8 +257,9 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //sSecond->Draw("same");   
   //sThird->Draw("same");
   First->Draw("samec");
+  Second->Draw("samec");
   // if (tanBeta_ == 3) Third->Draw("samec");
-  if (tanBeta_ == 3 && plotLO_) Second->Draw("samec");
+  //if (tanBeta_ == 3 && plotLO_) Second->Draw("samec");
 
    
     
@@ -267,6 +271,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   LEP_ch->Draw("fsame");
   if (tanBeta_ != 50) LEP_sl->Draw("fsame");
 
+  //remove CDF/D0 excluded regions
   TEV_sg_cdf->Draw("fsame");
   TEV_sg_d0->Draw("same");  
   TEV_sg_d0->Draw("fsame");
@@ -281,18 +286,21 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   if(tanBeta_ == 50) ypos = -10;
   
   //TLatex* lumilabel = new TLatex(135.+xposi,510.,"L_{int} = 34 pb^{-1}, #sqrt{s} = 7 TeV");
-  TLatex* lumilabel = new TLatex(135.+xposi + 100,510.,"L_{int} = 34 pb^{-1}, #sqrt{s} = 7 TeV");
+  //TLatex* lumilabel = new TLatex(305.+xposi + 100,510.,"L_{int} = 976 pb^{-1}, #sqrt{s} = 7 TeV");
+  TLatex* lumilabel = new TLatex(405.+xposi + 100,510.,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 976 pb^{-1}");
+
   lumilabel->SetTextSize(0.05);
   lumilabel->Draw("same");
 
-  TLatex* cmslabel = new TLatex(10.,510.,"CMS");
+  TLatex* cmslabel = new TLatex(10.,510.,"CMS Preliminary");
   cmslabel->SetTextSize(0.05);
   cmslabel->Draw("same");
 
   TString text_tanBeta;
   //text_tanBeta =  "tan#beta = "+tanb+", A_{0} = 0, sign(#mu) > 0";
   text_tanBeta =  "tan#beta = "+tanb+",  A_{0} = 0,  #mu > 0";
-  TLatex* cmssmpars = new TLatex(70.+xpos,340.+ypos,text_tanBeta);
+  //TLatex* cmssmpars = new TLatex(70.+xpos,340.+ypos,text_tanBeta);
+  TLatex* cmssmpars = new TLatex(250.+xpos,170.+ypos,text_tanBeta);
   cmssmpars->SetTextSize(0.04);
 
   cmssmpars->Draw("same");
@@ -300,15 +308,24 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //LM points
   TMarker* LM0 = new TMarker(200.,160.,20);
   TMarker* LM1 = new TMarker(60.,250.,20);
+  TMarker* LM3 = new TMarker(330.,240.,20);
+  TMarker* LM6 = new TMarker(80.,400.,20);
     
   LM0->SetMarkerSize(1.2);
   LM1->SetMarkerSize(1.2);
     
-  TLatex* tLM0 = new TLatex(205.,160.,"LM0");
+  TLatex* tLM0 = new TLatex(205.,160.," LM0");
   tLM0->SetTextSize(0.035);
     
-  TLatex* tLM1 = new TLatex(65.,243.,"LM1");
+  TLatex* tLM1 = new TLatex(80.,245.,"LM1");
   tLM1->SetTextSize(0.035);
+  
+  //TLatex* tLM3 = new TLatex(350.,235.,"LM3 (tan#beta=20)");
+  TLatex* tLM3 = new TLatex(350.,235.,"LM3");
+  tLM3->SetTextSize(0.035);
+  
+  TLatex* tLM6 = new TLatex(100.,395.,"LM6");
+  tLM6->SetTextSize(0.035);
   
   //  if (tanBeta_ != 50){
   //  LM0->Draw("same");   
@@ -316,9 +333,14 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //  LM1->Draw("same");   
   //  tLM1->Draw("same");
   // }
-  if (tanBeta_ == 10) LM1->Draw("same");
-  if (tanBeta_ == 10) tLM1->Draw("same");
-
+  if (tanBeta_ == 10){ 
+    LM1->Draw("same");
+    tLM1->Draw("same");
+    LM3->Draw("same");
+    tLM3->Draw("same");
+    LM6->Draw("same");
+    tLM6->Draw("same");
+  }
   
     /*
    Int_t n = 0;
@@ -363,13 +385,14 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.pdf");
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.png");
   }else{
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
   }
   
   output->Write();
-  output->Close();
-  delete output; 
+  //output->Close();
+  //delete output; 
   
 }
 
@@ -433,7 +456,7 @@ TGraph* set_lep_ch_tanBeta10(){
 
   double ch_m0[11];
   double ch_m12[11];
-
+  /*
   ch_m0[0] = 0;
   ch_m0[1] = 100;
   ch_m0[2] = 200;
@@ -457,6 +480,38 @@ TGraph* set_lep_ch_tanBeta10(){
   ch_m12[8] = 155.4;
   ch_m12[9] = 0;
   ch_m12[10] = 0;
+  */
+
+  // extended to m0 1 TeV
+  ch_m0[0] = 0;
+  ch_m0[1] = 100;
+  ch_m0[2] = 200;
+  ch_m0[3] = 300;
+  ch_m0[4] = 400;
+  ch_m0[5] = 500;
+  ch_m0[6] = 600;
+  ch_m0[7] = 700;
+  ch_m0[8] = 800; 
+
+  ch_m0[9] = 1000; 
+
+  ch_m0[10] = 1000;
+  ch_m0[11] = 0;
+
+  ch_m12[0] = 163;
+  ch_m12[1] = 162;
+  ch_m12[2] = 161;
+  ch_m12[3] = 160;
+  ch_m12[4] = 159;
+  ch_m12[5] = 158;
+  ch_m12[6] = 157;
+  ch_m12[7] = 156;
+  ch_m12[8] = 155.4;
+
+  ch_m12[9] = 153.5;
+
+  ch_m12[10] = 0;
+  ch_m12[11] = 0;
   
   
   TGraph* ch_gr = new TGraph(11,ch_m0,ch_m12);
@@ -817,8 +872,8 @@ TLatex* constant_gluino_text(Int_t it,TF1& lngl){
 
 
 TLegend* makeStauLegend(Double_t txtsz,Int_t tanBeta_){
-  Double_t ypos_1 = 0.86;
-  Double_t ypos_2 = 0.88;
+  Double_t ypos_1 = 0.78;
+  Double_t ypos_2 = 0.80;
   Double_t xpos_1 = 0.16;
   Double_t xpos_2 = 0.17;
   if(tanBeta_ == 50){
@@ -833,6 +888,7 @@ TLegend* makeStauLegend(Double_t txtsz,Int_t tanBeta_){
   legst->SetFillStyle(0);
   legst->SetBorderSize(0);
   legst->SetTextSize(0.03);
+  legst->SetTextAngle(80);
 
   return legst;
 }
