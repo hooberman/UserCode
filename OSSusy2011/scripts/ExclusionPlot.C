@@ -170,7 +170,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
 
   double m0min = 0;
   if (tanBeta_ == 50) m0min=200;
-  TH2D* hist = new TH2D("h","h",100,m0min,1500,100,120,500);
+  TH2D* hist = new TH2D("h","h",100,m0min,1200,100,120,500);
   hist->Draw();  
   hist->GetXaxis()->SetTitle("m_{0} (GeV/c^{2})");
   hist->GetYaxis()->SetTitle("m_{1/2} (GeV/c^{2})");
@@ -287,7 +287,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   
   //TLatex* lumilabel = new TLatex(135.+xposi,510.,"L_{int} = 34 pb^{-1}, #sqrt{s} = 7 TeV");
   //TLatex* lumilabel = new TLatex(305.+xposi + 100,510.,"L_{int} = 976 pb^{-1}, #sqrt{s} = 7 TeV");
-  TLatex* lumilabel = new TLatex(405.+xposi + 100,510.,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 976 pb^{-1}");
+  TLatex* lumilabel = new TLatex(505.+xposi + 100,510.,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
 
   lumilabel->SetTextSize(0.05);
   lumilabel->Draw("same");
@@ -300,8 +300,8 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //text_tanBeta =  "tan#beta = "+tanb+", A_{0} = 0, sign(#mu) > 0";
   text_tanBeta =  "tan#beta = "+tanb+",  A_{0} = 0,  #mu > 0";
   //TLatex* cmssmpars = new TLatex(70.+xpos,340.+ypos,text_tanBeta);
-  TLatex* cmssmpars = new TLatex(250.+xpos,170.+ypos,text_tanBeta);
-  cmssmpars->SetTextSize(0.04);
+  TLatex* cmssmpars = new TLatex(680.+xpos,330.+ypos,text_tanBeta);
+  cmssmpars->SetTextSize(0.045);
 
   cmssmpars->Draw("same");
  
@@ -493,9 +493,9 @@ TGraph* set_lep_ch_tanBeta10(){
   ch_m0[7] = 700;
   ch_m0[8] = 800; 
 
-  ch_m0[9] = 1000; 
+  ch_m0[9] = 1200; 
 
-  ch_m0[10] = 1000;
+  ch_m0[10] = 1200;
   ch_m0[11] = 0;
 
   ch_m12[0] = 163;
@@ -508,7 +508,7 @@ TGraph* set_lep_ch_tanBeta10(){
   ch_m12[7] = 156;
   ch_m12[8] = 155.4;
 
-  ch_m12[9] = 153.5;
+  ch_m12[9] = 151.6;
 
   ch_m12[10] = 0;
   ch_m12[11] = 0;
@@ -804,7 +804,7 @@ TF1* constant_squark(int tanBeta,int i){
   sprintf(hname,"lnsq_%i",i); 
 
   
-  TF1* lnsq = new TF1(hname,"sqrt([0]-x*x*[1]-[2])",0,1000);
+  TF1* lnsq = new TF1(hname,"sqrt([0]-x*x*[1]-[2])",0,1200);
   lnsq->SetParameter(0,(500+150*(i-1))*(500+150*(i-1))/coef2[i]);
   lnsq->SetParameter(1,1./coef2[i]);
   lnsq->SetParameter(2,-coef1*91*91*(2*TMath::Cos(TMath::ATan(tanBeta)))/coef2[i]);//--tanbeta=10 --> cos2beta = -99/101
@@ -826,7 +826,7 @@ TF1* constant_gluino(int tanBeta,int i){
 
   sprintf(hname,"lngl_%i",i); 
     
-  TF1* lngl = new TF1(hname,"[0]+x*[1]",0,1000);
+  TF1* lngl = new TF1(hname,"[0]+x*[1]",0,1200);
   lngl->SetParameter(0,(500+150.*(i-1))/2.4);
   lngl->SetParameter(1,-40./1400);
   lngl->SetLineWidth(1);
