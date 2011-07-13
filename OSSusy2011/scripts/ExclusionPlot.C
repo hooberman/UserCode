@@ -7,7 +7,7 @@
 #include "TH2.h"
 #include "TFile.h"
 #include "TStyle.h"
-#include "TLatex.h"
+#include "TLine.h"
 #include "TCanvas.h"
 #include "TMarker.h"
 #include <vector>
@@ -341,7 +341,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     LM6->Draw("same");
     tLM6->Draw("same");
   }
-  
+
     /*
    Int_t n = 0;
     for(vector<TH1F*>::iterator at = exclusionPlots.begin();at != exclusionPlots.end();++at){

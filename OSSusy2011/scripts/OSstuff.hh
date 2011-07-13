@@ -689,16 +689,13 @@ TGraphErrors* getNLOobsTanbeta10( ){
   xNLO[++i]=80;
   yNLO[i]=410.;
 
-  xNLO[++i]=120;
-  yNLO[i]=360.;
-
   xNLO[++i]=160;
   yNLO[i]=330.;
 
-  xNLO[++i]=220;
-  yNLO[i]=310.;
+  xNLO[++i]=200;
+  yNLO[i]=300.;
 
-  xNLO[++i]=300;
+  xNLO[++i]=350;
   yNLO[i]=310.;
 
   xNLO[++i]=450;
@@ -723,7 +720,7 @@ TGraphErrors* getNLOobsTanbeta10( ){
   yNLO[i]=220.;
 
   xNLO[++i]=1000;
-  yNLO[i]=210.;
+  yNLO[i]=200.;
 
   xNLO[++i]=1200;
   yNLO[i]=140.;
@@ -941,16 +938,13 @@ TGraphErrors* getNLOexpTanbeta10( ){
   xNLO[++i]=80;
   yNLO[i]=410.;
 
-  xNLO[++i]=120;
-  yNLO[i]=360.;
-
   xNLO[++i]=160;
   yNLO[i]=330.;
 
-  xNLO[++i]=220;
-  yNLO[i]=310.;
+  xNLO[++i]=200;
+  yNLO[i]=300.;
 
-  xNLO[++i]=300;
+  xNLO[++i]=350;
   yNLO[i]=310.;
 
   xNLO[++i]=450;
@@ -975,13 +969,14 @@ TGraphErrors* getNLOexpTanbeta10( ){
   yNLO[i]=220.;
 
   xNLO[++i]=1000;
-  yNLO[i]=210.;
+  yNLO[i]=200.;
 
   xNLO[++i]=1200;
   yNLO[i]=140.;
 
   xNLO[++i]=1400;
   yNLO[i]=100.;
+
 
 
   for( unsigned int ierr = 0 ; ierr < nNLO ; ++ierr ){
