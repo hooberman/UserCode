@@ -186,16 +186,16 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   int col[]={2,3,4};
 
   /*
-  //TFile *f = TFile::Open("exclusion_Spring11.root"); // new scan
+  TFile *f = TFile::Open("exclusion_Spring11.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_tcmet_JPT.root"); // new scan
-  TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); // new scan
+  //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); // new scan
   
   TH2F* hobs = (TH2F*) f->Get("hexcl_NLO_obs");
   TH2F* hexp = (TH2F*) f->Get("hexcl_NLO_exp");
-  //hobs->SetMaximum(3);
-  //hobs->Draw("samecolz");
-  hexp->SetMaximum(3);
-  hexp->Draw("samecolz");
+  hobs->SetMaximum(3);
+  hobs->Draw("samecolz");
+  //hexp->SetMaximum(3);
+  //hexp->Draw("samecolz");
   */
 
   TSpline3 *sFirst = new TSpline3("sFirst",First);
