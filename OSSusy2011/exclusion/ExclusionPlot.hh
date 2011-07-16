@@ -14,21 +14,9 @@
 
 #include <vector>
 
-
-
-
-
 void ExclusionPlot();
-  
-
 void CommandMSUGRA(TString plotName,Int_t tanBeta, Bool_t plotLO);
-
- 
-
-
-
 void setPlottingStyle(TH1F& hsig);
-
  
 //a little plotting routine to calculate the NLO cross-section
 TH2F* sysPlot(TString mSuGraFile){
@@ -40,7 +28,7 @@ TH2F* sysPlot(TString mSuGraFile){
   TH2F* gg = (TH2F*)dir2->Get("m0_m12_gg_0");
   TH2F* gg_noweight = (TH2F*)dir->Get("m0_m12_gg_5");
   TH2F* sb = (TH2F*)dir2->Get("m0_m12_sb_0");
-  TH2F* sb_noweight = (TH2F*)dir->Get("m0_m12_sb_5");
+  //TH2F* sb_noweight = (TH2F*)dir->Get("m0_m12_sb_5");
   TH2F* ss = (TH2F*)dir2->Get("m0_m12_ss_0");
   TH2F* ss_noweight = (TH2F*)dir->Get("m0_m12_ss_5");
   TH2F* sg = (TH2F*)dir2->Get("m0_m12_sg_0");
@@ -51,8 +39,8 @@ TH2F* sysPlot(TString mSuGraFile){
   TH2F* nn_noweight = (TH2F*)dir->Get("m0_m12_nn_5");
   TH2F* ns = (TH2F*)dir2->Get("m0_m12_ns_0");
   TH2F* ns_noweight = (TH2F*)dir->Get("m0_m12_ns_5");
-  TH2F* ng = (TH2F*)dir2->Get("m0_mg12_ng_0");                                                               
-  TH2F* ng_noweight = (TH2F*)dir->Get("m0_m12_ng_5");
+  //TH2F* ng = (TH2F*)dir2->Get("m0_mg12_ng_0");                        
+  //TH2F* ng_noweight = (TH2F*)dir->Get("m0_m12_ng_5");
   TH2F* bb = (TH2F*)dir->Get("m0_m12_bb_0");
   TH2F* bb_noweight = (TH2F*)dir->Get("m0_m12_bb_5");
   TH2F* tb = (TH2F*)dir->Get("m0_m12_tb_0");
@@ -100,6 +88,7 @@ TGraph* set_tev_sg_d0(Int_t tanBeta);//squark gluino d0
 //TGraph* set_tev_tlp_cdf(Int_t tanBeta);//trilepton cdf
 //TGraph* set_tev_tlp_d0(Int_t tanBeta);//trilepton d0
 TGraph* set_tev_stau(Int_t tanBeta);//stau 
+TGraph* set_NoEWSB(Int_t tanBeta);
 
 TGraph* set_sneutrino_d0_1(Int_t tanBeta);
 TGraph* set_sneutrino_d0_2(Int_t tanBeta);
@@ -118,7 +107,7 @@ TLegend* makeExpLegend(TGraph& sg_gr, TGraph& sgd_gr,TGraph& ch_gr,TGraph& sl_gr
 
   
   
-  TString plotName_;
+//TString plotName_;
 
   vector<TH1F*> exclusionPlots;
 

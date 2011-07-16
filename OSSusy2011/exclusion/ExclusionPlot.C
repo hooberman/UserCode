@@ -13,46 +13,18 @@
 #include <vector>
 #include "TMath.h"
 
+const float m0max  = 1000;
+const float m12max =  500;
+
 void ExclusionPlot(){
   gStyle->SetPalette(1);
 
-  //get yield plot
-  //  hev = yieldPlot(mSuGraFile,mSuGraDir, mSuGraHist);
-  //setPlottingStyle(*hev);
-
-  // setPlottingStyle(*exclusionPlot,lineStyle);
-
   Int_t tanBeta = 10;
   Bool_t plotLO = false;
-   
-  /* TH1F* First = getHisto_1d("./","ExclusionLimit","Significance_NLO_expected_tanBeta50.root");
-  setPlottingStyle(*First);
-  First->SetLineStyle(1);
-  First->SetLineWidth(1);
 
-  TH1F* Second = getHisto_1d("./","ExclusionLimit","Significance_NLO_observed_tanBeta50.root"); 
-  Second->SetLineStyle(2);
-  Second->SetLineWidth(1);
-  Second->SetLineColor(kRed);
- 
-  
-  TH1F* Third = getHisto_1d("./","ExclusionLimit","Significance_LO_observed_tanBeta50.root");
-  Third->SetLineStyle(1);
-  Third->SetLineWidth(3);
-  Third->SetLineColor(kGreen+2);
- 
-  
-  exclusionPlots.push_back(First);
-  exclusionPlots.push_back(Second);
-  exclusionPlots.push_back(Third);*/
-  
-  
-  CommandMSUGRA("35pb_expected_11.root",tanBeta, plotLO);
-
+  CommandMSUGRA("ExclusionPlot.root",tanBeta, plotLO);
 
 }
-
-
 
 void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   
@@ -66,58 +38,69 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   tmp << tanBeta_;
   TString tanb( tmp.str() );
   
-  
   // Output file
   cout << " create " << plotName_ << endl;
   TFile* output = new TFile( plotName_, "RECREATE" );
   if ( !output || output->IsZombie() ) { std::cout << " zombie alarm output is a zombie " << std::endl; }
   
-
+  //-----------------------------------
   //set old exclusion Limits
+  //-----------------------------------
+
   TGraph* LEP_ch = set_lep_ch(tanBeta_);
-  TGraph* LEP_sl = set_lep_sl(tanBeta_);//slepton curve
-  TGraph* TEV_sg_cdf = set_tev_sg_cdf(tanBeta_);//squark gluino cdf
-  TGraph* TEV_sg_d0 = set_tev_sg_d0(tanBeta_);//squark gluino d0
-  //  TGraph* TEV_tlp_cdf = set_tev_tlp_cdf(tanBeta_);//trilepton cdf
-  //  TGraph* TEV_tlp_d0 = set_tev_tlp_d0(tanBeta_);//trilepton d0
-  TGraph* stau = set_tev_stau(tanBeta_);//stau 
+  TGraph* LEP_sl = set_lep_sl(tanBeta_);             //slepton curve
+  TGraph* TEV_sg_cdf = set_tev_sg_cdf(tanBeta_);     //squark gluino cdf
+  TGraph* TEV_sg_d0 = set_tev_sg_d0(tanBeta_);       //squark gluino d0
+  //TGraph* TEV_tlp_cdf = set_tev_tlp_cdf(tanBeta_); //trilepton cdf
+  //TGraph* TEV_tlp_d0 = set_tev_tlp_d0(tanBeta_);   //trilepton d0
+  TGraph* stau = set_tev_stau(tanBeta_);             //stau 
+  TGraph* NoEWSB = set_NoEWSB(tanBeta_); 
 
   TGraph* TEV_sn_d0_1 = set_sneutrino_d0_1(tanBeta_);
   TGraph* TEV_sn_d0_2 = set_sneutrino_d0_2(tanBeta_);
 
-  //constant ssqquark and gluino lines
-  TF1* lnsq[4];
-  TF1* lngl[4];
-  
-  TLatex* sq_text[4];
-  TLatex* gl_text[4];
+  //-----------------------------------
+  // constant sqquark and gluino lines
+  //-----------------------------------
 
-  for(int i = 0; i < 4; i++){
-    lnsq[i] = constant_squark(tanBeta_,i);
+  const unsigned int nlines = 4;
+
+  TF1* lnsq[nlines];
+  TF1* lngl[nlines];
+  
+  TLatex* sq_text[nlines];
+  TLatex* gl_text[nlines];
+
+  for(unsigned int i = 0; i < nlines; i++){
+    lnsq[i]    = constant_squark(tanBeta_,i);
     sq_text[i] = constant_squark_text(i,*lnsq[i],tanBeta_);
-    lngl[i] = constant_gluino(tanBeta_,i);
+    lngl[i]    = constant_gluino(tanBeta_,i);
     gl_text[i] = constant_gluino_text(i,*lngl[i]);
   }
-  
-  //Legends
-  TLegend* legst = makeStauLegend(0.05,tanBeta_);
+
+  //-----------------------------------
+  // Legends
+  //-----------------------------------
+
+  TLegend* legst  = makeStauLegend(0.05,tanBeta_);
   TLegend* legexp = makeExpLegend( *TEV_sg_cdf,*TEV_sg_d0,*LEP_ch,*LEP_sl,*TEV_sn_d0_1,0.035,tanBeta_);
   
- 
-  //make Canvas
+  //-----------------------------------
+  // make Canvas
+  //-----------------------------------
+
   TCanvas* cvsSys = new TCanvas("cvsnm","cvsnm",0,0,800,600);
   gStyle->SetOptTitle(0);
   cvsSys->SetFillColor(0);
   cvsSys->GetPad(0)->SetRightMargin(0.07);
   cvsSys->Range(-120.5298,26.16437,736.0927,500);
-  //  cvsSys->Range(-50.5298,26.16437,736.0927,500);
+  //cvsSys->Range(-50.5298,26.16437,736.0927,500);
   cvsSys->SetFillColor(0);
   cvsSys->SetBorderMode(0);
   cvsSys->GetPad(0)->SetBorderSize(2);
   cvsSys->GetPad(0)->SetLeftMargin(0.1407035);
   cvsSys->GetPad(0)->SetTopMargin(0.08);
   cvsSys->GetPad(0)->SetBottomMargin(0.13);
-
   cvsSys->SetTitle("tan#beta="+tanb);
  
   output->cd();
@@ -129,24 +112,6 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   TGraphErrors* Second;
   TGraphErrors* Third;
 
-  
-  /*
-  if(tanBeta_ == 3){
-    First = getObserved_NLO_tanBeta3();
-    Second = getExpected_NLO_tanBeta3();
-    Third = getLO_tanBeta3();
-  }
-  if(tanBeta_ == 10){
-    First = getObserved_NLO_tanBeta10();
-    Second = getExpected_NLO_tanBeta10();
-    Third = getLO_tanBeta10();
-  }
-  if(tanBeta_ == 50){
-    First = getObserved_NLO_tanBeta50();
-    Second = getExpected_NLO_tanBeta50();
-    Third = getLO_tanBeta50();
-  }
-  */
   if (tanBeta_ == 3) {
     First  = getObserved_NLOunc();
     FirstDummy  = getObserved_NLOunc();
@@ -154,10 +119,10 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     //First  = getNLOobsTanbeta10();
     //First  = getNLOobsTanbeta10_smooth();
     //First  = getNLOobsTanbeta10_funky();
-    First  = getNLOobsTanbeta10_intermediate();
+    First  = getNLOobsTanbeta10();
     FirstDummy  = getObserved_NLOunc();
     //Second = getNLOexpTanbeta10();
-    Second = getNLOexpTanbeta10_intermediate();
+    Second = getNLOexpTanbeta10();
   }
   Third = getExpected_NLOunc();//getLO_jetMultis();
   //Second  = getLO_signalCont();
@@ -174,7 +139,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
 
   double m0min = 0;
   if (tanBeta_ == 50) m0min=200;
-  TH2D* hist = new TH2D("h","h",100,m0min,1200,100,120,500);
+  TH2D* hist = new TH2D("h","h",100,m0min,m0max,100,120,500);
   hist->Draw();  
   hist->GetXaxis()->SetTitle("m_{0} (GeV/c^{2})");
   hist->GetYaxis()->SetTitle("m_{1/2} (GeV/c^{2})");
@@ -183,12 +148,13 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //  if (tanBeta_ == 50)  hist->GetXaxis()->SetNdivisions(504);
   hist->GetYaxis()->SetNdivisions(506);
 
-  int col[]={2,3,4};
+  //int col[]={2,3,4};
 
-  /*
-  TFile *f = TFile::Open("exclusion_Spring11.root"); // new scan
+  
+  //TFile *f = TFile::Open("exclusion_Spring11.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_tcmet_JPT.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); // new scan
+  TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
   
   TH2F* hobs = (TH2F*) f->Get("hexcl_NLO_obs");
   TH2F* hexp = (TH2F*) f->Get("hexcl_NLO_exp");
@@ -196,7 +162,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   hobs->Draw("samecolz");
   //hexp->SetMaximum(3);
   //hexp->Draw("samecolz");
-  */
+  
 
   TSpline3 *sFirst = new TSpline3("sFirst",First);
   sFirst->SetLineColor(kRed);
@@ -262,7 +228,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
       
  
   //constant squark and gluino mass contours
-  for (int it=1;it<4;it++) {   
+  for (unsigned int it=1;it<nlines;it++) {   
     lngl[it]->Draw("same");   
     lnsq[it]->Draw("same");
     sq_text[it]->Draw();
@@ -307,7 +273,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   
   //TLatex* lumilabel = new TLatex(135.+xposi,510.,"L_{int} = 34 pb^{-1}, #sqrt{s} = 7 TeV");
   //TLatex* lumilabel = new TLatex(305.+xposi + 100,510.,"L_{int} = 976 pb^{-1}, #sqrt{s} = 7 TeV");
-  TLatex* lumilabel = new TLatex(505.+xposi + 100,510.,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
+  TLatex* lumilabel = new TLatex(m0max-900+xposi,510.,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
 
   lumilabel->SetTextSize(0.05);
   lumilabel->Draw("same");
@@ -320,7 +286,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //text_tanBeta =  "tan#beta = "+tanb+", A_{0} = 0, sign(#mu) > 0";
   text_tanBeta =  "tan#beta = "+tanb+",  A_{0} = 0,  #mu > 0";
   //TLatex* cmssmpars = new TLatex(70.+xpos,340.+ypos,text_tanBeta);
-  TLatex* cmssmpars = new TLatex(680.+xpos,330.+ypos,text_tanBeta);
+  TLatex* cmssmpars = new TLatex(750.+xpos,330.+ypos,text_tanBeta);
   cmssmpars->SetTextSize(0.045);
 
   cmssmpars->Draw("same");
@@ -381,12 +347,10 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
 
 
 
-
-  
-
   //stau=LSP contour
   stau->Draw("fsame");
-  
+  NoEWSB->Draw("fsame");
+
   //legends
   legexp->Draw();
   legst->Draw();
@@ -405,9 +369,9 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.pdf");
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.png");
   }else{
-    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
-    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
-    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
+    //cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
+    //cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
+    //cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
   }
   
   output->Write();
@@ -443,6 +407,9 @@ void setPlottingStyle(TH1F& hsig){
 
 
 TGraph* set_sneutrino_d0_1(Int_t tanBeta){
+
+  tanBeta = tanBeta;
+
   double sn_m0[14]= {0,  0, 48, 55, 80, 90,100,105,109,105,100, 72, 55,0};
   double sn_m12[14]={0,140,210,220,237,241,242,241,230,220,210,170,150,0};
 
@@ -455,6 +422,9 @@ TGraph* set_sneutrino_d0_1(Int_t tanBeta){
 }
 
 TGraph* set_sneutrino_d0_2(Int_t tanBeta){
+
+  tanBeta = tanBeta;
+
   double sn_m0[9]= {0, 45, 75,115,130,150,163,185,0};
   double sn_m12[9]={0,140,170,213,202,183,168,140,0};
 
@@ -467,15 +437,73 @@ TGraph* set_sneutrino_d0_2(Int_t tanBeta){
 }
 
 TGraph* set_lep_ch(Int_t tanBeta){
-  if(tanBeta == 3) return set_lep_ch_tanBeta3();
+  if(tanBeta ==  3) return set_lep_ch_tanBeta3();
   if(tanBeta == 10) return set_lep_ch_tanBeta10();
   if(tanBeta == 50) return set_lep_ch_tanBeta50();
+
+  return 0;
 }
 
 TGraph* set_lep_ch_tanBeta10(){
 
-  double ch_m0[11];
-  double ch_m12[11];
+  const unsigned int npoints = 50;
+
+  double ch_m0[npoints];
+  double ch_m12[npoints];
+
+  //----------------------------
+  // updated, from Frederic
+  //----------------------------
+  int i = -1;
+
+  ch_m0[++i] =   0.   ; ch_m12[i] = 163.0;
+  ch_m0[++i] = 100.   ; ch_m12[i] = 162.0;
+  ch_m0[++i] = 150.   ; ch_m12[i] = 161.3;  
+  ch_m0[++i] = 200.   ; ch_m12[i] = 160.7;
+  ch_m0[++i] = 250.   ; ch_m12[i] = 160.0;
+  ch_m0[++i] = 300.   ; ch_m12[i] = 159.2;
+  ch_m0[++i] = 350.   ; ch_m12[i] = 158.4;
+  ch_m0[++i] = 400.   ; ch_m12[i] = 157.6;
+  ch_m0[++i] = 450.   ; ch_m12[i] = 156.7;
+  ch_m0[++i] = 500.   ; ch_m12[i] = 155.8;
+  ch_m0[++i] = 550.   ; ch_m12[i] = 154.9;
+  ch_m0[++i] = 600.   ; ch_m12[i] = 154.0;
+  ch_m0[++i] = 650.   ; ch_m12[i] = 153.1;
+  ch_m0[++i] = 700.   ; ch_m12[i] = 152.3;
+  ch_m0[++i] = 750.   ; ch_m12[i] = 151.5;
+  ch_m0[++i] = 800.   ; ch_m12[i] = 150.7;
+  ch_m0[++i] = 850.   ; ch_m12[i] = 150.0;
+  ch_m0[++i] = 900.   ; ch_m12[i] = 149.3;
+  ch_m0[++i] = 950.   ; ch_m12[i] = 148.7;
+  ch_m0[++i] = 1000.  ; ch_m12[i] = 148.2;
+  ch_m0[++i] = 1050.  ; ch_m12[i] = 147.7;
+  ch_m0[++i] = 1100.  ; ch_m12[i] = 147.3;
+  ch_m0[++i] = 1150.  ; ch_m12[i] = 147.1;
+  ch_m0[++i] = 1200.  ; ch_m12[i] = 146.8;
+  ch_m0[++i] = 1250.  ; ch_m12[i] = 146.7;
+  ch_m0[++i] = 1300.  ; ch_m12[i] = 146.6;
+  ch_m0[++i] = 1350.  ; ch_m12[i] = 146.6;
+  ch_m0[++i] = 1400.  ; ch_m12[i] = 146.7;
+  ch_m0[++i] = 1450.  ; ch_m12[i] = 146.9;
+  ch_m0[++i] = 1500.  ; ch_m12[i] = 147.1;
+  ch_m0[++i] = 1550.  ; ch_m12[i] = 147.5;
+  ch_m0[++i] = 1600.  ; ch_m12[i] = 148.1;
+  ch_m0[++i] = 1650.  ; ch_m12[i] = 148.7;
+  ch_m0[++i] = 1700.  ; ch_m12[i] = 149.5;
+  ch_m0[++i] = 1750.  ; ch_m12[i] = 150.5;
+  ch_m0[++i] = 1800.  ; ch_m12[i] = 151.7;
+  ch_m0[++i] = 1850.  ; ch_m12[i] = 153.1;
+  ch_m0[++i] = 1900.  ; ch_m12[i] = 154.7;
+  ch_m0[++i] = 1950.  ; ch_m12[i] = 156.6;
+  ch_m0[++i] = 2000.  ; ch_m12[i] = 159.1;
+  ch_m0[++i] = 2050.  ; ch_m12[i] = 161.5;
+  ch_m0[++i] = 2050.  ; ch_m12[i] = 0;
+  ch_m0[++i] = 0.     ; ch_m12[i] = 0;
+
+
+  //---------------------------------------------
+  // old region, extended linearly to m0 1 TeV
+  //---------------------------------------------
   /*
   ch_m0[0] = 0;
   ch_m0[1] = 100;
@@ -486,35 +514,7 @@ TGraph* set_lep_ch_tanBeta10(){
   ch_m0[6] = 600;
   ch_m0[7] = 700;
   ch_m0[8] = 800; 
-  ch_m0[9] = 800;
-  ch_m0[10] = 0;
-
-  ch_m12[0] = 163;
-  ch_m12[1] = 162;
-  ch_m12[2] = 161;
-  ch_m12[3] = 160;
-  ch_m12[4] = 159;
-  ch_m12[5] = 158;
-  ch_m12[6] = 157;
-  ch_m12[7] = 156;
-  ch_m12[8] = 155.4;
-  ch_m12[9] = 0;
-  ch_m12[10] = 0;
-  */
-
-  // extended to m0 1 TeV
-  ch_m0[0] = 0;
-  ch_m0[1] = 100;
-  ch_m0[2] = 200;
-  ch_m0[3] = 300;
-  ch_m0[4] = 400;
-  ch_m0[5] = 500;
-  ch_m0[6] = 600;
-  ch_m0[7] = 700;
-  ch_m0[8] = 800; 
-
   ch_m0[9] = 1200; 
-
   ch_m0[10] = 1200;
   ch_m0[11] = 0;
 
@@ -527,14 +527,12 @@ TGraph* set_lep_ch_tanBeta10(){
   ch_m12[6] = 157;
   ch_m12[7] = 156;
   ch_m12[8] = 155.4;
-
   ch_m12[9] = 151.6;
-
   ch_m12[10] = 0;
   ch_m12[11] = 0;
+  */
   
-  
-  TGraph* ch_gr = new TGraph(11,ch_m0,ch_m12);
+  TGraph* ch_gr = new TGraph(npoints,ch_m0,ch_m12);
 
   ch_gr->SetFillColor(3);
   ch_gr->SetLineColor(3);
@@ -708,6 +706,8 @@ TGraph* set_lep_sl(Int_t tanBeta){
 
 TGraph* set_tev_sg_cdf(Int_t tanBeta){
 
+  tanBeta = tanBeta;
+
   //  double sg_m0[] =  {0,  0, 20, 50,100,150,200,250,300,350,400,450,500,550,600,600};
   //  double sg_m12[] = {0,160,169,170,160,155,150,122,116,112,110,106,105,100, 98,  0};
   //  int np=16;
@@ -730,6 +730,8 @@ TGraph* set_tev_sg_cdf(Int_t tanBeta){
 }
 
 TGraph* set_tev_sg_d0(Int_t tanBeta){
+
+  tanBeta = tanBeta;
 
   //  double sgd_m0[] = {0, 0,  50, 100,150,200,250,300,350,400,450,500,550,600,600};
   //  double sgd_m12[] = {0,168,167,162,157,145,125,120,110,108,95, 94 ,94 ,93,0};
@@ -805,18 +807,20 @@ TGraph* set_tev_stau(Int_t tanBeta){
     st_gr_tanBeta10->SetFillStyle(1001);
 
 
-    if(tanBeta == 3)return st_gr_tanBeta3;
-    if(tanBeta == 10)return st_gr_tanBeta10;
-    if(tanBeta == 50)return st_gr_tanBeta50;
-
+    if     (tanBeta == 3)  return st_gr_tanBeta3;
+    else if(tanBeta == 10) return st_gr_tanBeta10;
+    else if(tanBeta == 50) return st_gr_tanBeta50;
+    else return 0;
 }
 
 
 
 
 TF1* constant_squark(int tanBeta,int i){
-//---lines of constant gluino/squark
-  double coef1 = 0.35;
+
+  //---lines of constant gluino/squark
+  
+  double coef1   = 0.35;
   double coef2[] = {5,5,4.6,4.1};
 
   char hname[200];
@@ -824,29 +828,57 @@ TF1* constant_squark(int tanBeta,int i){
   sprintf(hname,"lnsq_%i",i); 
 
   
-  TF1* lnsq = new TF1(hname,"sqrt([0]-x*x*[1]-[2])",0,1200);
+  TF1* lnsq = new TF1(hname,"sqrt([0]-x*x*[1]-[2])",0,m0max);
   lnsq->SetParameter(0,(500+150*(i-1))*(500+150*(i-1))/coef2[i]);
   lnsq->SetParameter(1,1./coef2[i]);
-  lnsq->SetParameter(2,-coef1*91*91*(2*TMath::Cos(TMath::ATan(tanBeta)))/coef2[i]);//--tanbeta=10 --> cos2beta = -99/101
+  //--tanbeta=10 --> cos2beta = -99/101
+  lnsq->SetParameter(2,-coef1*91*91*(2*TMath::Cos(TMath::ATan(tanBeta)))/coef2[i]);
+  //lnsq->SetParameter(2,-coef1*91*91*(TMath::Cos(2*TMath::ATan(tanBeta)))/coef2[i]);
   lnsq->SetLineWidth(1);
-
-
   lnsq->SetLineColor(kGray);
 
   return lnsq;
 }
 
+TGraph* set_NoEWSB(Int_t tanBeta){
+
+    double st_m0_tanBeta10[]  = { 0, 70, 90,  80,  60, 1000, 1090, 1170, 1240, 1320, 1370, 1440, 1500, 1550, 1610, 1660, 1720, 1780, 1830, 1860, 1920, 1970 , 2000, 2000, 0};
+    double st_m12_tanBeta10[] = {10.,10.,20., 30., 40., 50.,  60.,  70.,  80.,  90.,  100., 110., 120., 130., 140., 150., 160., 170., 180., 190., 200., 210., 220,   0,   0}; 
+
+//// Needs to be modified
+    double st_m0_tanBeta40[] = { 0, 70, 90,  80,  60, 1000, 1090, 1170, 1240, 1320, 1370, 1440, 1500, 1550, 1610, 1660, 1720, 1780, 1830, 1860, 1920, 1970 , 2000, 2000, 0};
+    double st_m12_tanBeta40[]= {10.,10.,20., 30., 40., 50.,  60.,  70.,  80.,  90.,  100., 110., 120., 130., 140., 150., 160., 170., 180., 190., 200., 210., 220,   0,   0};
+
+    TGraph* st_gr_tanBeta10 = new TGraph(25,st_m0_tanBeta10,st_m12_tanBeta10);
+    TGraph* st_gr_tanBeta40 = new TGraph(25,st_m0_tanBeta40,st_m12_tanBeta40);
+
+    
+    st_gr_tanBeta40->SetFillColor(40);
+    st_gr_tanBeta40->SetFillStyle(1001);
+    
+    st_gr_tanBeta10->SetFillColor(40);
+    st_gr_tanBeta10->SetFillStyle(1001);
+
+    if(tanBeta == 10)return st_gr_tanBeta10;
+    if(tanBeta == 40)return st_gr_tanBeta40;
+
+    return 0;
+}
 
 TF1* constant_gluino(int tanBeta,int i){
-//---lines of constant gluino/squark
-  double coef1 = 0.35;
-  double coef2[] = {5,5,4.6,4.1};
+
+  tanBeta = tanBeta;
+
+  //---lines of constant gluino/squark
+  
+  //double coef1 = 0.35;
+  //double coef2[] = {5,5,4.6,4.1};
 
   char hname[200];
 
   sprintf(hname,"lngl_%i",i); 
     
-  TF1* lngl = new TF1(hname,"[0]+x*[1]",0,1200);
+  TF1* lngl = new TF1(hname,"[0]+x*[1]",0,m0max);
   lngl->SetParameter(0,(500+150.*(i-1))/2.4);
   lngl->SetParameter(1,-40./1400);
   lngl->SetLineWidth(1);
@@ -892,6 +924,9 @@ TLatex* constant_gluino_text(Int_t it,TF1& lngl){
 
 
 TLegend* makeStauLegend(Double_t txtsz,Int_t tanBeta_){
+
+  txtsz = txtsz;
+
   Double_t ypos_1 = 0.78;
   Double_t ypos_2 = 0.80;
   Double_t xpos_1 = 0.16;
