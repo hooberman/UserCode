@@ -299,84 +299,17 @@ void msugra( char* filename ){
   TH2F* hyield_C; 
   TH2F* hyield_D; 
 
-  // if( doABCD ){
-  //   hyield_A = (TH2F*) f->Get(Form("%slmgridyield_A",prefix));
-  //   hyield_B = (TH2F*) f->Get(Form("%slmgridyield_B",prefix));
-  //   hyield_C = (TH2F*) f->Get(Form("%slmgridyield_C",prefix));
-  //   hyield_D = (TH2F*) f->Get(Form("%slmgridyield_D",prefix));
-  // }
-
-  TH2F* hUL_NLO     = (TH2F*) hyield_k->Clone("hUL_NLO");
-  TH2F* hUL_NLO_exp = (TH2F*) hyield_k->Clone("hUL_NLO_exp");
-  TH2F* hUL_LO      = (TH2F*) hyield_k->Clone("hUL_LO");
+  TH2F* hUL_NLO       = (TH2F*) hyield_k->Clone("hUL_NLO");
+  TH2F* hUL_NLO_exp   = (TH2F*) hyield_k->Clone("hUL_NLO_exp");
+  TH2F* hUL_NLO_expp1 = (TH2F*) hyield_k->Clone("hUL_NLO_expp1");
+  TH2F* hUL_NLO_expm1 = (TH2F*) hyield_k->Clone("hUL_NLO_expm1");
+  TH2F* hUL_LO        = (TH2F*) hyield_k->Clone("hUL_LO");
 
   TH1F* htotuncertainty = new TH1F("htotuncertainty","",200,0,2);
 
   hUL_NLO->Reset();
   hUL_LO->Reset();
   hUL_NLO_exp->Reset();
-
-  //---------------------------------
-  // rebin TH2 yield histos
-  //---------------------------------
-
-  /*
-    if( rebin > 1 ){
-   
-    hyield->RebinX(rebin);
-    hyield->RebinY(rebin);
-    hyield->Scale( 1./(rebin*rebin) );
-
-    hyield_k->RebinX(rebin);
-    hyield_k->RebinY(rebin);
-    hyield_k->Scale( 1./(rebin*rebin) );
-
-    hUL_NLO->RebinX(rebin);
-    hUL_NLO->RebinY(rebin);
-    hUL_NLO->Scale( 1./(rebin*rebin) );
-
-    hUL_NLO_exp->RebinX(rebin);
-    hUL_NLO_exp->RebinY(rebin);
-    hUL_NLO_exp->Scale( 1./(rebin*rebin) );
-
-    hUL_LO->RebinX(rebin);
-    hUL_LO->RebinY(rebin);
-    hUL_LO->Scale( 1./(rebin*rebin) );
-
-    hyield_kup->RebinX(rebin);
-    hyield_kup->RebinY(rebin);
-    hyield_kup->Scale( 1./(rebin*rebin) );
-
-    hyield_kdn->RebinX(rebin);
-    hyield_kdn->RebinY(rebin);
-    hyield_kdn->Scale( 1./(rebin*rebin) );
-
-    hyield_jup->RebinX(rebin);
-    hyield_jup->RebinY(rebin);
-    hyield_jup->Scale( 1./(rebin*rebin) );
-
-    hyield_jdn->RebinX(rebin);
-    hyield_jdn->RebinY(rebin);
-    hyield_jdn->Scale( 1./(rebin*rebin) );
-
-    hyield_A->RebinX(rebin);
-    hyield_A->RebinY(rebin);
-    hyield_A->Scale( 1./(rebin*rebin) );
-
-    hyield_B->RebinX(rebin);
-    hyield_B->RebinY(rebin);
-    hyield_B->Scale( 1./(rebin*rebin) );
-
-    hyield_C->RebinX(rebin);
-    hyield_C->RebinY(rebin);
-    hyield_C->Scale( 1./(rebin*rebin) );
-
-    hyield_D->RebinX(rebin);
-    hyield_D->RebinY(rebin);
-    hyield_D->Scale( 1./(rebin*rebin) );
-
-    }
-  */
 
   const unsigned int nm0bins  = hyield_k->GetXaxis()->GetNbins();
   const unsigned int nm12bins = hyield_k->GetYaxis()->GetNbins();
@@ -385,24 +318,28 @@ void msugra( char* filename ){
   //calculate acceptance error and UL at each scan point
   //---------------------------------------------------------
 
-  float accerr_NLO[nm0bins][nm12bins];
+  float    accerr_NLO[nm0bins][nm12bins];
   Double_t ul_NLO[nm0bins][nm12bins];
   Double_t ul_NLO_SC[nm0bins][nm12bins];
   Double_t ul_NLO_nobkg[nm0bins][nm12bins];
   Double_t ul_NLO_exp[nm0bins][nm12bins];
+  Double_t ul_NLO_expp1[nm0bins][nm12bins];
+  Double_t ul_NLO_expm1[nm0bins][nm12bins];
 
   float accerr_LO[nm0bins][nm12bins];
   Double_t ul_LO[nm0bins][nm12bins];
 
   for( unsigned int m0bin = 1 ; m0bin <= nm0bins ; ++m0bin ){
     for( unsigned int m12bin = 1 ; m12bin <= nm12bins ; ++m12bin ){
-      accerr_NLO[m0bin-1][m12bin-1]    = 0.;
-      accerr_LO[m0bin-1][m12bin-1]     = 0.;
-      ul_NLO[m0bin-1][m12bin-1]        = 9999.;
-      ul_NLO_SC[m0bin-1][m12bin-1]     = 9999.;
-      ul_NLO_nobkg[m0bin-1][m12bin-1]  = 9999.;
-      ul_NLO_exp[m0bin-1][m12bin-1]    = 9999.;
-      ul_LO[m0bin-1][m12bin-1]         = 9999.;
+      accerr_NLO[m0bin-1][m12bin-1]	= 0.;
+      accerr_LO[m0bin-1][m12bin-1]	= 0.;
+      ul_NLO[m0bin-1][m12bin-1]		= 9999.;
+      ul_NLO_SC[m0bin-1][m12bin-1]	= 9999.;
+      ul_NLO_nobkg[m0bin-1][m12bin-1]	= 9999.;
+      ul_NLO_exp[m0bin-1][m12bin-1]	= 9999.;
+      ul_NLO_expp1[m0bin-1][m12bin-1]   = 9999.;
+      ul_NLO_expm1[m0bin-1][m12bin-1]   = 9999.;
+      ul_LO[m0bin-1][m12bin-1]		= 9999.;
     }
   }
 
@@ -424,7 +361,7 @@ void msugra( char* filename ){
       float yield_jup = hyield_jup->GetBinContent( m0bin , m12bin );
       float yield_jdn = hyield_jdn->GetBinContent( m0bin , m12bin );
 
-      int ngen = 1;
+      int   ngen  = 1;
       float scale = 1.0;
 
       if( doCorrection ){
@@ -434,17 +371,6 @@ void msugra( char* filename ){
 	  cout << "Skipping point with " << ngen << " entries" << endl;
 	  continue;
 	}
-
-	// if( ngen != 0 && ngen != 10000 ){
-	// 	 scale = 10000/(float) ngen;
-	 
-	// 	 yield_k   *= scale;
-	// 	 yield_kup *= scale;
-	// 	 yield_kdn *= scale;
-	// 	 yield_jup *= scale;
-	// 	 yield_jdn *= scale;
-	// }
-
       }
 
       //---------------------------
@@ -553,45 +479,10 @@ void msugra( char* filename ){
 	htotuncertainty->Fill( accerr_NLO[m0bin-1][m12bin-1] );
 
       //ul_NLO[m0bin-1][m12bin-1] = ilum * CL95( ilum, slum, eff, accerr_NLO[m0bin-1][m12bin-1], bck, sbck, n, false, nuissanceModel );
-      ul_NLO[m0bin-1][m12bin-1]     = getUpperLimit( accerr_NLO[m0bin-1][m12bin-1] );
-      ul_NLO_exp[m0bin-1][m12bin-1] = getExpectedUpperLimit( accerr_NLO[m0bin-1][m12bin-1] );
-
-      /*
-      //-----------------------------------------------------------
-      //calculate observed NLO UL (including k-factor uncertainty)
-      //-----------------------------------------------------------
-
-      cout << "NLO UL: CL95( " << ilum << " , " << slum << " , " << eff << " , " << accerr_NLO[m0bin-1][m12bin-1] << " , " 
-      << bck << " , " << sbck << " , " << n << " , " << "false" << " , " << nuissanceModel << " )" << endl;
-      ul_NLO[m0bin-1][m12bin-1] = ilum * CL95( ilum, slum, eff, accerr_NLO[m0bin-1][m12bin-1], bck, sbck, n, false, nuissanceModel );
-
-      //-----------------------------------------------------------
-      //calculate observed NLO UL (assume 0 bkg)
-      //-----------------------------------------------------------
-     
-      cout << "NLO UL (no bkg): CL95( " << ilum << " , " << slum << " , " << eff << " , " << accerr_NLO[m0bin-1][m12bin-1] << " , " 
-      << 0.01 << " , " << 0.01 << " , " << n << " , " << "false" << " , " << nuissanceModel << " )" << endl;
-      ul_NLO_nobkg[m0bin-1][m12bin-1] = ilum * CL95( ilum, slum, eff, accerr_NLO[m0bin-1][m12bin-1], 0.01, 0.01, n, false, nuissanceModel );
-
-      //----------------------------------------------------------------
-      //calculate expected NLO UL (including k-factor uncertainty)
-      //----------------------------------------------------------------
-     
-      if( calculateExpectedUL ){
-      if( accerr_NLO[m0bin-1][m12bin-1] > 0.5 ){
-      cout << "Large acceptance error! " << accerr_NLO[m0bin-1][m12bin-1] << endl;
-      cout << "Setting UL to 100!" << endl;
-      ul_NLO_exp[m0bin-1][m12bin-1] = 100.;
-      }else{
-      cout << "Expected UL: CLA( " << ilum << " , " << slum << " , " << eff << " , " << accerr_NLO[m0bin-1][m12bin-1] 
-      << " , " << bck << " , " << sbck << " , " << nuissanceModel << " )" << endl;
-      ul_NLO_exp[m0bin-1][m12bin-1] = ilum * CLA(ilum, slum, eff, accerr_NLO[m0bin-1][m12bin-1], bck, sbck, nuissanceModel );
-      }
-      }
-      else{
-      ul_NLO_exp[m0bin-1][m12bin-1] = 100.;
-      }
-      */
+      ul_NLO[m0bin-1][m12bin-1]       = getUpperLimit          ( accerr_NLO[m0bin-1][m12bin-1] );
+      ul_NLO_exp[m0bin-1][m12bin-1]   = getExpectedUpperLimit  ( accerr_NLO[m0bin-1][m12bin-1] );
+      ul_NLO_expp1[m0bin-1][m12bin-1] = getExpectedP1UpperLimit( accerr_NLO[m0bin-1][m12bin-1] );
+      ul_NLO_expm1[m0bin-1][m12bin-1] = getExpectedM1UpperLimit( accerr_NLO[m0bin-1][m12bin-1] );
 
       //----------------------------------------------------------------
       //add up LO uncertainties (NOT including k-factor uncertainty)
@@ -603,13 +494,6 @@ void msugra( char* filename ){
       err2_LO += leperr * leperr;                                           //lep efficiency
       err2_LO += pdferr * pdferr;                                           //PDF uncertainty
       accerr_LO[m0bin-1][m12bin-1] = err2_LO > 0 ? sqrt( err2_LO ) : 0.;    //total
-
-      /*
-      //calculate observed LO UL (NOT including k-factor uncertainty)
-      cout << "LO UL CL95( " << ilum << " , " << slum << " , " << eff << " , " << accerr_LO[m0bin-1][m12bin-1] << " , " 
-      << bck << " , " << sbck << " , " << n << " , " << "false" << " , " << nuissanceModel << " )" << endl;
-      ul_LO[m0bin-1][m12bin-1] = ilum * CL95( ilum, slum, eff, accerr_LO[m0bin-1][m12bin-1], bck, sbck, n, false, nuissanceModel );
-      */
 
       //--------------------------
       //printout errors and UL
@@ -633,6 +517,8 @@ void msugra( char* filename ){
      
       hUL_NLO->SetBinContent( m0bin , m12bin , ul_NLO[m0bin-1][m12bin-1] );
       hUL_NLO_exp->SetBinContent( m0bin , m12bin , ul_NLO_exp[m0bin-1][m12bin-1] );
+      hUL_NLO_expp1->SetBinContent( m0bin , m12bin , ul_NLO_expp1[m0bin-1][m12bin-1] );
+      hUL_NLO_expm1->SetBinContent( m0bin , m12bin , ul_NLO_expm1[m0bin-1][m12bin-1] );
       hUL_LO->SetBinContent( m0bin , m12bin , ul_LO[m0bin-1][m12bin-1] );
     }
   }
@@ -654,6 +540,8 @@ void msugra( char* filename ){
   TH2I* hexcl_NLO_obs_nobkg = new TH2I("hexcl_NLO_obs_nobkg", "Observed NLO Exclusion (No Bkg)",nx,xmin,xmax,ny,ymin,ymax);
   TH2I* hexcl_LO_obs        = new TH2I("hexcl_LO_obs",        "Observed LO Exclusion", nx,xmin,xmax,ny,ymin,ymax);
   TH2I* hexcl_NLO_exp       = new TH2I("hexcl_NLO_exp",       "Expected NLO Exclusion",nx,xmin,xmax,ny,ymin,ymax);
+  TH2I* hexcl_NLO_expp1     = new TH2I("hexcl_NLO_expp1",     "Expected(+1) NLO Exclusion",nx,xmin,xmax,ny,ymin,ymax);
+  TH2I* hexcl_NLO_expm1     = new TH2I("hexcl_NLO_expm1",     "Expected(-1) NLO Exclusion",nx,xmin,xmax,ny,ymin,ymax);
 
   for( unsigned int m0bin  = 1 ; m0bin  <= nm0bins  ; ++m0bin  ){
     for( unsigned int m12bin = 1 ; m12bin <= nm12bins ; ++m12bin ){
@@ -663,6 +551,8 @@ void msugra( char* filename ){
       hexcl_NLO_obs_nobkg->SetBinContent( m0bin , m12bin , 0 );
       hexcl_LO_obs->SetBinContent( m0bin , m12bin , 0 );
       hexcl_NLO_exp->SetBinContent( m0bin , m12bin , 0 );
+      hexcl_NLO_expp1->SetBinContent( m0bin , m12bin , 0 );
+      hexcl_NLO_expm1->SetBinContent( m0bin , m12bin , 0 );
 
       if( doCorrection ){
 
@@ -711,12 +601,20 @@ void msugra( char* filename ){
       hexcl_NLO_exp->SetBinContent( m0bin , m12bin , excluded_NLO_exp );
 
       //---------------------------
-      //LO observed
+      //NLO expected(+1)
       //---------------------------
 
-      // int excluded_LO_obs = 0;
-      // if( hyield->GetBinContent( m0bin , m12bin ) > ul_LO[m0bin-1][m12bin-1] ) excluded_LO_obs = 1;
-      // hexcl_LO_obs->SetBinContent( m0bin , m12bin , excluded_LO_obs );     
+      int excluded_NLO_expp1 = 0;
+      if( hyield_k->GetBinContent( m0bin , m12bin ) > ul_NLO_expp1[m0bin-1][m12bin-1] ) excluded_NLO_expp1 = 1;
+      hexcl_NLO_expp1->SetBinContent( m0bin , m12bin , excluded_NLO_expp1 );
+
+      //---------------------------
+      //NLO expected(-1)
+      //---------------------------
+
+      int excluded_NLO_expm1 = 0;
+      if( hyield_k->GetBinContent( m0bin , m12bin ) > ul_NLO_expm1[m0bin-1][m12bin-1] ) excluded_NLO_expm1 = 1;
+      hexcl_NLO_expm1->SetBinContent( m0bin , m12bin , excluded_NLO_expm1 );
 
       //---------------------------
       //print out stuff
@@ -751,30 +649,34 @@ void msugra( char* filename ){
   // these objects specify the exclusion contours, they are built from the hexcl_* histos
   //----------------------------------------------------------------------------------------
 
-  TH1F*         limit_NLO_obs      = getCurve(        hexcl_NLO_obs , "limit_NLO_obs");
-  TGraphErrors* limitgraph_NLO_obs = getCurve_TGraph( hexcl_NLO_obs , "limitgraph_NLO_obs");
+  TH1F*         limit_NLO_obs			= getCurve(        hexcl_NLO_obs	, "limit_NLO_obs");
+  TGraphErrors* limitgraph_NLO_obs		= getCurve_TGraph( hexcl_NLO_obs	, "limitgraph_NLO_obs");
 
-  TH1F*         limit_NLO_obs_SC      = getCurve(        hexcl_NLO_obs_SC , "limit_NLO_obs_SC");
-  TGraphErrors* limitgraph_NLO_obs_SC = getCurve_TGraph( hexcl_NLO_obs_SC , "limitgraph_NLO_obs_SC");
+  TH1F*         limit_NLO_obs_SC		= getCurve(        hexcl_NLO_obs_SC	, "limit_NLO_obs_SC");
+  TGraphErrors* limitgraph_NLO_obs_SC		= getCurve_TGraph( hexcl_NLO_obs_SC	, "limitgraph_NLO_obs_SC");
 
-  TH1F*         limit_NLO_obs_nobkg      = getCurve(        hexcl_NLO_obs_nobkg , "limit_NLO_obs_nobkg");
-  TGraphErrors* limitgraph_NLO_obs_nobkg = getCurve_TGraph( hexcl_NLO_obs_nobkg , "limitgraph_NLO_obs_nobkg");
+  TH1F*         limit_NLO_obs_nobkg		= getCurve(        hexcl_NLO_obs_nobkg	, "limit_NLO_obs_nobkg");
+  TGraphErrors* limitgraph_NLO_obs_nobkg	= getCurve_TGraph( hexcl_NLO_obs_nobkg	, "limitgraph_NLO_obs_nobkg");
 
-  TH1F*         limit_NLO_exp      = getCurve(        hexcl_NLO_exp , "limit_NLO_exp");
-  TGraphErrors* limitgraph_NLO_exp = getCurve_TGraph( hexcl_NLO_exp , "limitgraph_NLO_exp");
+  TH1F*         limit_NLO_exp			= getCurve(        hexcl_NLO_exp	, "limit_NLO_exp");
+  TGraphErrors* limitgraph_NLO_exp		= getCurve_TGraph( hexcl_NLO_exp	, "limitgraph_NLO_exp");
 
-  TH1F*         limit_LO_obs       = getCurve(        hexcl_LO_obs , "limit_LO_obs");
-  TGraphErrors* limitgraph_LO_obs  = getCurve_TGraph( hexcl_LO_obs , "limitgraph_LO_obs");
+  TH1F*         limit_NLO_expp1			= getCurve(        hexcl_NLO_expp1	, "limit_NLO_expp1");
+  TGraphErrors* limitgraph_NLO_expp1		= getCurve_TGraph( hexcl_NLO_expp1	, "limitgraph_NLO_expp1");
 
+  TH1F*         limit_NLO_expm1			= getCurve(        hexcl_NLO_expm1	, "limit_NLO_expm1");
+  TGraphErrors* limitgraph_NLO_expm1		= getCurve_TGraph( hexcl_NLO_expm1	, "limitgraph_NLO_expm1");
+
+  TH1F*         limit_LO_obs			= getCurve(        hexcl_LO_obs		, "limit_LO_obs");
+  TGraphErrors* limitgraph_LO_obs		= getCurve_TGraph( hexcl_LO_obs		, "limitgraph_LO_obs");
 
   //----------------------------------
   // now draw a bunch of plots
   //----------------------------------
 
-
   //excluded points
-  TCanvas *c1 = new TCanvas("c1","",1200,400);
-  c1->Divide(3,1);
+  TCanvas *c1 = new TCanvas("c1","",1000,800);
+  c1->Divide(2,2);
 
   TLatex *t = new TLatex();
   t->SetNDC();
@@ -784,15 +686,20 @@ void msugra( char* filename ){
   t->DrawLatex(0.5,0.8,"observed NLO");
 
   c1->cd(2);
-  hexcl_LO_obs->Draw("colz");
-  t->DrawLatex(0.5,0.8,"observed LO");
-
-  c1->cd(3);
   hexcl_NLO_exp->Draw("colz");
   t->DrawLatex(0.5,0.8,"expected NLO");
  
+  c1->cd(3);
+  hexcl_NLO_expp1->Draw("colz");
+  t->DrawLatex(0.5,0.8,"expected(+1) NLO");
+
+  c1->cd(4);
+  hexcl_NLO_expm1->Draw("colz");
+  t->DrawLatex(0.5,0.8,"expected(-1) NLO");
+ 
   c1->Print("exclusion/exclusion.png");
 
+  /*
   //exclusion TH1
   TCanvas *c2 = new TCanvas("c2","",800,600);
   c2->cd();
@@ -833,6 +740,7 @@ void msugra( char* filename ){
   leg->Draw();
 
   c3->Print("exclusion/limit_graph.png");
+  */
 
   outfile->cd();
 
