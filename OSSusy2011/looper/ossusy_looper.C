@@ -679,8 +679,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       InitBaby();
 
       if(strcmp(prefix,"LMscan") == 0){
-	if( sparm_m0()  > 1000 ) continue;
-	if( sparm_m12() > 500  ) continue;	
+	if( sparm_m12() > 500  )                        continue;	
+	if( sparm_m0()  > 1000.0 && sparm_m12() > 300 ) continue;
       }
 
       if( !cleaning_goodDAVertexApril2011() )                        continue;
@@ -1596,10 +1596,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         float m0   = -9999.;
         float m12  = -9999.;
 
-	ksusy_    = -999;
-	ksusyup_  = -999;
-	ksusydn_  = -999;
-	xsecsusy_ = -999;
+	ksusy_     = -999;
+	ksusyup_   = -999;
+	ksusydn_   = -999;
+	xsecsusy_  = -999;
+	xsecsusy2_ = -999;
 
 	//---------------------------
 	// set event weight
@@ -1612,10 +1613,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           m0  = sparm_m0();
           m12 = sparm_m12();
 
-	  ksusy_    = kfactorSUSY(m0,m12,"tanbeta10");
-	  ksusyup_  = kfactorSUSY(m0,m12,"tanbeta10Scale20");
-	  ksusydn_  = kfactorSUSY(m0,m12,"tanbeta10Scale05");
-	  xsecsusy_ = getMsugraCrossSection(m0,m12,10);
+	  ksusy_     = kfactorSUSY(m0,m12,"tanbeta10");
+	  ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Scale20");
+	  ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Scale05");
+	  xsecsusy_  = cmssm_loxsec(m0,m12);
+	  xsecsusy2_ = getMsugraCrossSection(m0,m12,10);
 
 	  weight = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
 
@@ -1863,20 +1865,21 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  ndavtxweight_ = vtxweight(isData,true);
 	  hbhe_         = evt_hbheFilter();
 
-          k_				= 1;
-          if( strcmp( prefix , "LM0"  )  == 0 ) k_ = kfactorSUSY( "lm0"  );
-          if( strcmp( prefix , "LM1"  )  == 0 ) k_ = kfactorSUSY( "lm1"  );
-          if( strcmp( prefix , "LM2"  )  == 0 ) k_ = kfactorSUSY( "lm2"  );
-          if( strcmp( prefix , "LM3"  )  == 0 ) k_ = kfactorSUSY( "lm3"  );
-          if( strcmp( prefix , "LM4"  )  == 0 ) k_ = kfactorSUSY( "lm4"  );
-          if( strcmp( prefix , "LM5"  )  == 0 ) k_ = kfactorSUSY( "lm5"  );
-          if( strcmp( prefix , "LM6"  )  == 0 ) k_ = kfactorSUSY( "lm6"  );
-          if( strcmp( prefix , "LM7"  )  == 0 ) k_ = kfactorSUSY( "lm7"  );
-          if( strcmp( prefix , "LM8"  )  == 0 ) k_ = kfactorSUSY( "lm8"  );
-          if( strcmp( prefix , "LM9"  )  == 0 ) k_ = kfactorSUSY( "lm9"  );
-          if( strcmp( prefix , "LM10" )  == 0 ) k_ = kfactorSUSY( "lm10" );
-          if( strcmp( prefix , "LM11" )  == 0 ) k_ = kfactorSUSY( "lm11" );
-          if( strcmp( prefix , "LM12" )  == 0 ) k_ = kfactorSUSY( "lm12" );
+          k_ = 1;
+          if     ( strcmp( prefix , "LM0"  )    == 0 ) k_ = kfactorSUSY( "lm0"  );
+          else if( strcmp( prefix , "LM1"  )    == 0 ) k_ = kfactorSUSY( "lm1"  );
+          else if( strcmp( prefix , "LM2"  )    == 0 ) k_ = kfactorSUSY( "lm2"  );
+          else if( strcmp( prefix , "LM3"  )    == 0 ) k_ = kfactorSUSY( "lm3"  );
+          else if( strcmp( prefix , "LM4"  )    == 0 ) k_ = kfactorSUSY( "lm4"  );
+          else if( strcmp( prefix , "LM5"  )    == 0 ) k_ = kfactorSUSY( "lm5"  );
+          else if( strcmp( prefix , "LM6"  )    == 0 ) k_ = kfactorSUSY( "lm6"  );
+          else if( strcmp( prefix , "LM7"  )    == 0 ) k_ = kfactorSUSY( "lm7"  );
+          else if( strcmp( prefix , "LM8"  )    == 0 ) k_ = kfactorSUSY( "lm8"  );
+          else if( strcmp( prefix , "LM9"  )    == 0 ) k_ = kfactorSUSY( "lm9"  );
+          else if( strcmp( prefix , "LM10" )    == 0 ) k_ = kfactorSUSY( "lm10" );
+          else if( strcmp( prefix , "LM11" )    == 0 ) k_ = kfactorSUSY( "lm11" );
+          else if( strcmp( prefix , "LM12" )    == 0 ) k_ = kfactorSUSY( "lm12" );
+	  else if( strcmp( prefix , "LMscan" )  == 0 ) k_ = kfactorSUSY(m0,m12,"tanbeta10");
 
           float dzcut  = 0.1; // dz(trk,vtx) requirement
           float etacut = 3.0; // neutral PFCandidate eta requirement
@@ -3914,6 +3917,7 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ksusyup",         &ksusyup_,          "ksusyup/F");
   outTree->Branch("ksusydn",         &ksusydn_,          "ksusydn/F");
   outTree->Branch("xsecsusy",        &xsecsusy_,         "xsecsusy/F");
+  outTree->Branch("xsecsusy2",       &xsecsusy2_,        "xsecsusy2/F");
   outTree->Branch("smeff",           &smeff_,            "smeff/F");
   outTree->Branch("k",               &k_,                "k/F");
   outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
