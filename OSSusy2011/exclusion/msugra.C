@@ -29,8 +29,8 @@ using namespace std;
 //-------------------------------------------
 
 const Double_t mylumi        = 0.976;
-const bool     doCorrection  = true;
-const bool     addHighm0     = true;
+const bool     doCorrection  = false;
+const bool     addHighm0     = false;
 
 /*
 const Double_t ilum            = 976.0; // lumi
@@ -76,43 +76,24 @@ float getUpperLimit( float seff ){
 
   float ul = 1e10;
 
-  //seff = 0  --> ul = 5.59
-  if(seff > 0.0 && seff < 0.1) ul = 5.66;
-  if(seff > 0.1 && seff < 0.2) ul = 5.97;
-  if(seff > 0.2 && seff < 0.3) ul = 1.66;
-  if(seff > 0.3 && seff < 0.4) ul = 6.70;
-  if(seff > 0.4 && seff < 0.5) ul = 5.93;
-  if(seff > 0.5 && seff < 0.6) ul = ;
-  if(seff > 0.6 && seff < 0.7) ul = ;
-  if(seff > 0.7 && seff < 0.8) ul = ;
-  if(seff > 0.8 && seff < 0.9) ul = ;
+  //-----------
+  // CLs
+  //----------
 
-
-
-  if(seff > 0.00 && seff < 0.05) ul = 5.67;
-  if(seff > 0.05 && seff < 0.10) ul = 5.66;
-  if(seff > 0.10 && seff < 0.15) ul = ;
-  if(seff > 0.15 && seff < 0.20) ul = 5.97;
-  if(seff > 0.20 && seff < 0.25) ul = ;
-  if(seff > 0.25 && seff < 0.30) ul = ;
-  if(seff > 0.30 && seff < 0.35) ul = ;
-  if(seff > 0.35 && seff < 0.40) ul = ;
-  if(seff > 0.40 && seff < 0.45) ul = ;
-  if(seff > 0.45 && seff < 0.50) ul = 5.93;
-  if(seff > 0.50 && seff < 0.55) ul = ;
-  if(seff > 0.55 && seff < 0.60) ul = ;
-  if(seff > 0.60 && seff < 0.65) ul = ;
-  if(seff > 0.65 && seff < 0.70) ul = ;
-  if(seff > 0.70 && seff < 0.75) ul = ;
-  if(seff > 0.75 && seff < 0.80) ul = ;
-  if(seff > 0.80 && seff < 0.85) ul = ;
-  if(seff > 0.85 && seff < 0.90) ul = ;
-
+  if(seff > 0.0 && seff < 0.1) ul = 5.35;
+  if(seff > 0.1 && seff < 0.2) ul = 5.83;
+  if(seff > 0.2 && seff < 0.3) ul = 6.09;
+  if(seff > 0.3 && seff < 0.4) ul = 6.57;
+  if(seff > 0.4 && seff < 0.5) ul = 7.04;
+  if(seff > 0.5 && seff < 0.6) ul = 7.57;
+  if(seff > 0.6 && seff < 0.7) ul = 8.23;
+  if(seff > 0.7 && seff < 0.8) ul = 8.56;
+  if(seff > 0.8 && seff < 0.9) ul = 9.17;
   
   //-----------
   // bayesian
   //----------
-  /*
+  /*  
   if(seff > 0.00 && seff < 0.05) ul = 5.79;
   if(seff > 0.05 && seff < 0.10) ul = 5.87;
   if(seff > 0.10 && seff < 0.15) ul = 6.01;
@@ -141,6 +122,24 @@ float getExpectedUpperLimit( float seff ){
 
   float ul = 1e10;
 
+  //-----------
+  // expected
+  //----------
+
+  if(seff > 0.0 && seff < 0.1) ul = 6.09;
+  if(seff > 0.1 && seff < 0.2) ul = 6.38;
+  if(seff > 0.2 && seff < 0.3) ul = 6.77;
+  if(seff > 0.3 && seff < 0.4) ul = 7.60;
+  if(seff > 0.4 && seff < 0.5) ul = 7.93;
+  if(seff > 0.5 && seff < 0.6) ul = 8.37;
+  if(seff > 0.6 && seff < 0.7) ul = 9.07;
+  if(seff > 0.7 && seff < 0.8) ul = 9.64;
+  if(seff > 0.8 && seff < 0.9) ul = 10.11;
+
+  //-----------
+  // bayesian
+  //----------
+  /*  
   if(seff > 0.00 && seff < 0.05) ul = 6.99;
   if(seff > 0.05 && seff < 0.10) ul = 7.11;
   if(seff > 0.10 && seff < 0.15) ul = 7.29;
@@ -159,12 +158,59 @@ float getExpectedUpperLimit( float seff ){
   if(seff > 0.75 && seff < 0.80) ul = 14.54;
   if(seff > 0.80 && seff < 0.85) ul = 15.54;
   if(seff > 0.85 && seff < 0.90) ul = 16.61;
+  */
 
   if( seff > 0.9 ) cout << "Error, signal efficiency uncertainty too large! " << seff << endl;
 
   return ul;
 }
 
+float getExpectedP1UpperLimit( float seff ){
+
+  float ul = 1e10;
+
+  //-----------
+  // expected
+  //----------
+
+  if(seff > 0.0 && seff < 0.1) ul = 8.70;
+  if(seff > 0.1 && seff < 0.2) ul = 9.17;
+  if(seff > 0.2 && seff < 0.3) ul = 9.81;
+  if(seff > 0.3 && seff < 0.4) ul = 11.30;
+  if(seff > 0.4 && seff < 0.5) ul = 12.70;
+  if(seff > 0.5 && seff < 0.6) ul = 14.02;
+  if(seff > 0.6 && seff < 0.7) ul = 15.08;
+  if(seff > 0.7 && seff < 0.8) ul = 16.32;
+  if(seff > 0.8 && seff < 0.9) ul = 17.26;
+
+  if( seff > 0.9 ) cout << "Error, signal efficiency uncertainty too large! " << seff << endl;
+
+  return ul;
+}
+
+float getExpectedM1UpperLimit( float seff ){
+
+  float ul = 1e10;
+
+  //-----------
+  // expected
+  //----------
+
+  if(seff > 0.0 && seff < 0.1) ul = 4.23;
+  if(seff > 0.1 && seff < 0.2) ul = 4.38;
+  if(seff > 0.2 && seff < 0.3) ul = 4.93;
+  if(seff > 0.3 && seff < 0.4) ul = 5.29;
+  if(seff > 0.4 && seff < 0.5) ul = 5.54;
+  if(seff > 0.5 && seff < 0.6) ul = 6.02;
+  if(seff > 0.6 && seff < 0.7) ul = 6.07;
+  if(seff > 0.7 && seff < 0.8) ul = 6.64;
+  if(seff > 0.8 && seff < 0.9) ul = 6.84;
+  
+  if( seff > 0.9 ) cout << "Error, signal efficiency uncertainty too large! " << seff << endl;
+
+  return ul;
+
+}
 
 TH1F* getCurve               ( TH2I *hist , char* name );
 TGraphErrors* getCurve_TGraph( TH2I *hist , char* name );
@@ -193,6 +239,7 @@ void msugra( char* filename ){
   //-----------------------------------
   TFile *f = TFile::Open( filename );
 
+  /*
   //TH2F* hyield     = (TH2F*) f->Get("msugra",prefix));
   TH2F* hyield_k   = (TH2F*) f->Get("msugra_highht");
   TH2F* hyield_kup = (TH2F*) f->Get("msugra_highht_kup");
@@ -225,14 +272,22 @@ void msugra( char* filename ){
     hyield_jup->Add( hyield_jup_m0 );
     hyield_jdn->Add( hyield_jdn_m0 );
   }
-  
-  /*
+  */
+
+
+
   TH2F* hyield_k   = (TH2F*) f->Get("LMscan10_lmgridyield_k");
   TH2F* hyield_kup = (TH2F*) f->Get("LMscan10_lmgridyield_kup");
   TH2F* hyield_kdn = (TH2F*) f->Get("LMscan10_lmgridyield_kdn");
   TH2F* hyield_jup = (TH2F*) f->Get("LMscan10_lmgridyield_jup");
   TH2F* hyield_jdn = (TH2F*) f->Get("LMscan10_lmgridyield_jdn");
-  */
+
+
+
+
+
+
+
   hyield_k->Scale(mylumi);
   hyield_kup->Scale(mylumi);
   hyield_kdn->Scale(mylumi);
