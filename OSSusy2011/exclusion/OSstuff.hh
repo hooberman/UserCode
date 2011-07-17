@@ -695,23 +695,23 @@ TGraphErrors* getNLOobsTanbeta10( ){
   xNLO[++i]=150;
   yNLO[i]=355.;
 
-  xNLO[++i]=170;
-  yNLO[i]=330.;
-
-  xNLO[++i]=170;
-  yNLO[i]=275.;
-
   xNLO[++i]=180;
-  yNLO[i]=270.;
+  yNLO[i]=325.;
 
-  xNLO[++i]=250;
+  xNLO[++i]=200;
+  yNLO[i]=290.;
+
+  xNLO[++i]=210;
+  yNLO[i]=285.;
+
+  xNLO[++i]=270;
   yNLO[i]=300.;
 
   xNLO[++i]=350;
   yNLO[i]=310.;
 
   xNLO[++i]=450;
-  yNLO[i]=300.;
+  yNLO[i]=310.;
 
   xNLO[++i]=520;
   yNLO[i]=320.;
@@ -720,25 +720,31 @@ TGraphErrors* getNLOobsTanbeta10( ){
   yNLO[i]=280.;
 
   xNLO[++i]=600;
-  yNLO[i]=270.;
+  yNLO[i]=265.;
 
   xNLO[++i]=700;
   yNLO[i]=250.;
 
-  xNLO[++i]=850;
-  yNLO[i]=230.;
+  //xNLO[++i]=850;
+  //yNLO[i]=240.;
 
   xNLO[++i]=900;
-  yNLO[i]=220.;
+  yNLO[i]=230.;
 
   xNLO[++i]=1000;
-  yNLO[i]=200.;
-
-  xNLO[++i]=1200;
-  yNLO[i]=140.;
+  yNLO[i]=220.;
 
   xNLO[++i]=1400;
-  yNLO[i]=100.;
+  yNLO[i]=180.;
+
+  xNLO[++i]=1900;
+  yNLO[i]=150.;
+
+  // xNLO[++i]=1200;
+  // yNLO[i]=140.;
+
+  // xNLO[++i]=1400;
+  // yNLO[i]=100.;
 
 
   TGraphErrors* grtb10  = new TGraphErrors(nNLO,xNLO, yNLO,xerr,yerr);
@@ -748,6 +754,266 @@ TGraphErrors* getNLOobsTanbeta10( ){
 
 }
 
+TGraphErrors* getNLOexpTanbeta10( ){
+  
+  const unsigned int nNLO=50;
+
+  Double_t xNLO[nNLO],yNLO[nNLO],xerr[nNLO],yerr[nNLO];
+  for( unsigned int ierr = 0 ; ierr < nNLO ; ++ierr ){
+    xerr[ierr] = 0.;
+    yerr[ierr] = 0.;
+    xNLO[ierr] = 0.;
+    yNLO[ierr] = 0.;
+  }
+
+  Int_t i = -1;
+
+
+  xNLO[++i]=0.;
+  yNLO[i]=460.;
+
+  xNLO[++i]=80;
+  yNLO[i]=410.;
+
+  xNLO[++i]=100;
+  yNLO[i]=365.;
+
+  xNLO[++i]=120;
+  yNLO[i]=360.;
+
+  xNLO[++i]=150;
+  yNLO[i]=355.;
+
+  xNLO[++i]=180;
+  yNLO[i]=325.;
+
+  xNLO[++i]=200;
+  yNLO[i]=290.;
+
+  xNLO[++i]=210;
+  yNLO[i]=285.;
+
+  xNLO[++i]=270;
+  yNLO[i]=300.;
+
+  xNLO[++i]=350;
+  yNLO[i]=310.;
+
+  xNLO[++i]=450;
+  yNLO[i]=310.;
+
+  xNLO[++i]=520;
+  yNLO[i]=320.;
+
+  xNLO[++i]=550;
+  yNLO[i]=280.;
+
+  xNLO[++i]=600;
+  yNLO[i]=265.;
+
+  xNLO[++i]=700;
+  yNLO[i]=250.;
+
+  //xNLO[++i]=850;
+  //yNLO[i]=240.;
+
+  xNLO[++i]=900;
+  yNLO[i]=230.;
+
+  xNLO[++i]=1000;
+  yNLO[i]=220.;
+
+  xNLO[++i]=1200;
+  yNLO[i]=140.;
+
+  xNLO[++i]=1400;
+  yNLO[i]=100.;
+
+  for( int j = 0 ; j <= i ; ++j ){
+    yNLO[j] -= 10;
+  }
+
+  TGraphErrors* grtb10  = new TGraphErrors(nNLO,xNLO, yNLO,xerr,yerr);
+  grtb10->SetMarkerColor(kWhite);
+  //grtb10->SetMarkerStyle(21);
+  return grtb10;
+
+}
+
+
+TGraphErrors* getNLOexpP1Tanbeta10(){
+  
+  const unsigned int nNLO=50;
+
+  Double_t xNLO[nNLO],yNLO[nNLO],xerr[nNLO],yerr[nNLO];
+  for( unsigned int ierr = 0 ; ierr < nNLO ; ++ierr ){
+    xerr[ierr] = 0.;
+    yerr[ierr] = 0.;
+    xNLO[ierr] = 0.;
+    yNLO[ierr] = 0.;
+  }
+
+  Int_t i = -1;
+
+
+  xNLO[++i]=0.;
+  yNLO[i]=460.;
+
+  xNLO[++i]=80;
+  yNLO[i]=410.;
+
+  xNLO[++i]=100;
+  yNLO[i]=365.;
+
+  xNLO[++i]=120;
+  yNLO[i]=360.;
+
+  xNLO[++i]=150;
+  yNLO[i]=355.;
+
+  xNLO[++i]=180;
+  yNLO[i]=325.;
+
+  xNLO[++i]=200;
+  yNLO[i]=290.;
+
+  xNLO[++i]=210;
+  yNLO[i]=285.;
+
+  xNLO[++i]=270;
+  yNLO[i]=300.;
+
+  xNLO[++i]=350;
+  yNLO[i]=310.;
+
+  xNLO[++i]=450;
+  yNLO[i]=310.;
+
+  xNLO[++i]=520;
+  yNLO[i]=320.;
+
+  xNLO[++i]=550;
+  yNLO[i]=280.;
+
+  xNLO[++i]=600;
+  yNLO[i]=265.;
+
+  xNLO[++i]=700;
+  yNLO[i]=250.;
+
+  //xNLO[++i]=850;
+  //yNLO[i]=240.;
+
+  xNLO[++i]=900;
+  yNLO[i]=230.;
+
+  xNLO[++i]=1000;
+  yNLO[i]=220.;
+
+  xNLO[++i]=1200;
+  yNLO[i]=140.;
+
+  xNLO[++i]=1400;
+  yNLO[i]=100.;
+
+  for( int j = 0 ; j <= i ; ++j ){
+    yNLO[j] += 20;
+  }
+
+  TGraphErrors* grtb10  = new TGraphErrors(nNLO,xNLO, yNLO,xerr,yerr);
+  grtb10->SetMarkerColor(kWhite);
+  //grtb10->SetMarkerStyle(21);
+  return grtb10;
+
+}
+
+TGraphErrors* getNLOexpM1Tanbeta10(){
+  
+  const unsigned int nNLO=50;
+
+  Double_t xNLO[nNLO],yNLO[nNLO],xerr[nNLO],yerr[nNLO];
+  for( unsigned int ierr = 0 ; ierr < nNLO ; ++ierr ){
+    xerr[ierr] = 0.;
+    yerr[ierr] = 0.;
+    xNLO[ierr] = 0.;
+    yNLO[ierr] = 0.;
+  }
+
+  Int_t i = -1;
+
+
+  xNLO[++i]=0.;
+  yNLO[i]=460.;
+
+  xNLO[++i]=80;
+  yNLO[i]=410.;
+
+  xNLO[++i]=100;
+  yNLO[i]=365.;
+
+  xNLO[++i]=120;
+  yNLO[i]=360.;
+
+  xNLO[++i]=150;
+  yNLO[i]=355.;
+
+  xNLO[++i]=180;
+  yNLO[i]=325.;
+
+  xNLO[++i]=200;
+  yNLO[i]=290.;
+
+  xNLO[++i]=210;
+  yNLO[i]=285.;
+
+  xNLO[++i]=270;
+  yNLO[i]=300.;
+
+  xNLO[++i]=350;
+  yNLO[i]=310.;
+
+  xNLO[++i]=450;
+  yNLO[i]=310.;
+
+  xNLO[++i]=520;
+  yNLO[i]=320.;
+
+  xNLO[++i]=550;
+  yNLO[i]=280.;
+
+  xNLO[++i]=600;
+  yNLO[i]=265.;
+
+  xNLO[++i]=700;
+  yNLO[i]=250.;
+
+  //xNLO[++i]=850;
+  //yNLO[i]=240.;
+
+  xNLO[++i]=900;
+  yNLO[i]=230.;
+
+  xNLO[++i]=1000;
+  yNLO[i]=220.;
+
+  xNLO[++i]=1200;
+  yNLO[i]=140.;
+
+  xNLO[++i]=1400;
+  yNLO[i]=100.;
+
+  for( int j = 0 ; j <= i ; ++j ){
+    yNLO[j] -= 20;
+  }
+
+  TGraphErrors* grtb10  = new TGraphErrors(nNLO,xNLO, yNLO,xerr,yerr);
+  grtb10->SetMarkerColor(kWhite);
+  //grtb10->SetMarkerStyle(21);
+  return grtb10;
+
+}
+
+/*
 TGraphErrors* getNLOexpTanbeta10( ){
   
   const unsigned int nNLO=50;
@@ -835,3 +1101,4 @@ TGraphErrors* getNLOexpTanbeta10( ){
 
 }
 
+*/
