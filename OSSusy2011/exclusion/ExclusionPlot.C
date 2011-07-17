@@ -13,7 +13,7 @@
 #include <vector>
 #include "TMath.h"
 
-const float m0max  = 1000;
+const float m0max  = 2000;
 const float m12max =  500;
 
 void ExclusionPlot(){
@@ -111,20 +111,28 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   TGraphErrors* FirstDummy ;
   TGraphErrors* Second;
   TGraphErrors* Third;
+  TGraphErrors* Second_up;
+  TGraphErrors* Second_low;
+
 
   if (tanBeta_ == 3) {
-    First  = getObserved_NLOunc();
-    FirstDummy  = getObserved_NLOunc();
+    //First  = getObserved_NLOunc();
+    //FirstDummy  = getObserved_NLOunc();
   } else {
     //First  = getNLOobsTanbeta10();
     //First  = getNLOobsTanbeta10_smooth();
     //First  = getNLOobsTanbeta10_funky();
     First  = getNLOobsTanbeta10();
-    FirstDummy  = getObserved_NLOunc();
+    //FirstDummy  = getObserved_NLOunc();
     //Second = getNLOexpTanbeta10();
     Second = getNLOexpTanbeta10();
+    Second_up = getNLOexpUpTanbeta10();
+    Second_low = getNLOexpDownTanbeta10();
+    Third = getNLOexpTanbeta10();
+    //Second_up = getExpected_NLO_tanBeta3_up();
+    //Second_low = getExpected_NLO_tanBeta3_low();
   }
-  Third = getExpected_NLOunc();//getLO_jetMultis();
+  //Third = getExpected_NLOunc();//getLO_jetMultis();
   //Second  = getLO_signalCont();
 
 
@@ -156,14 +164,13 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); // new scan
   TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
   
-  TH2F* hobs = (TH2F*) f->Get("hexcl_NLO_obs");
-  TH2F* hexp = (TH2F*) f->Get("hexcl_NLO_exp");
-  hobs->SetMaximum(3);
-  hobs->Draw("samecolz");
-  //hexp->SetMaximum(3);
-  //hexp->Draw("samecolz");
+  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_obs");
+  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_exp");
+  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expp1");
+  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expm1");
+  //h->SetMaximum(3);
+  //h->Draw("samecolz");
   
-
   TSpline3 *sFirst = new TSpline3("sFirst",First);
   sFirst->SetLineColor(kRed);
   sFirst->SetLineWidth(3);
@@ -177,14 +184,34 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   Second->SetLineColor(kBlue);
   Second->SetLineStyle(2);
   Second->SetLineWidth(3);
+
+  TSpline3 *sSecond_up = new TSpline3("sSecond_up",Second_up);
+  sSecond_up->SetLineColor(kCyan);
+  sSecond_up->SetLineStyle(1);
+  sSecond_up->SetLineWidth(3);
+  Second_up->SetLineColor(kCyan);
+  //Second_up->SetLineColor(1);
+  Second_up->SetLineWidth(3);
+
+  TSpline3 *sSecond_low = new TSpline3("sSecond_low",Second_low);
+  sSecond_low->SetLineColor(kCyan);
+  sSecond_low->SetLineStyle(1);
+  sSecond_low->SetLineWidth(3);
+  Second_low->SetLineColor(kCyan);
+  //Second_low->SetLineColor(1);
+  Second_low->SetLineWidth(3);
+
+  Third->SetLineColor(kCyan);
+  Third->SetLineWidth(30);
+
   
-  TSpline3 *sThird = new TSpline3("sThird",Third);
-  sThird->SetLineColor(kGreen+2);
-  sThird->SetLineStyle(4);
-  sThird->SetLineWidth(3);
-  Third->SetLineColor(kGreen+2);
-  Third->SetLineStyle(4);
-  Third->SetLineWidth(3);
+  // TSpline3 *sThird = new TSpline3("sThird",Third);
+  // sThird->SetLineColor(kGreen+2);
+  // sThird->SetLineStyle(4);
+  // sThird->SetLineWidth(3);
+  // Third->SetLineColor(kGreen+2);
+  // Third->SetLineStyle(4);
+  // Third->SetLineWidth(3);
 
   //  First->Draw("AP");
   
@@ -206,7 +233,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   TLegend* myleg;
 
   if( plotLO_ ) myleg = new TLegend(0.3,0.75,0.54,0.9,NULL,"brNDC");
-  else          myleg = new TLegend(0.3,0.75,0.54,0.9,NULL,"brNDC");
+  else          myleg = new TLegend(0.25,0.75,0.54,0.9,NULL,"brNDC");
 
 
 
@@ -223,8 +250,11 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     //myleg->AddEntry(sFirst,"CMS OS Dilepton Limit","L"); 
     myleg->AddEntry(sFirst,"NLO observed limit","L"); 
     myleg->AddEntry(sSecond,"NLO expected limit","L"); 
+    myleg->AddEntry(sSecond_up,"NLO expected limit (+/-1#sigma)","L"); 
   }
-
+  
+  //sSecond_up->Draw("h same");
+  //sSecond_low->Draw("h same");
       
  
   //constant squark and gluino mass contours
@@ -235,15 +265,25 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     gl_text[it]->Draw();
   }
 
+  sSecond_up->SetFillStyle(4010);
+  sSecond_up->SetFillColor(kCyan-10);
+
+  sSecond_low->SetFillStyle(1001);
+  sSecond_low->SetFillColor(10);
+
   //expected and observed (LO & NLO) contours
   //sFirst->Draw("same");    
   //sSecond->Draw("same");   
   //sThird->Draw("same");
+  //Third->Draw("samec");
   First->Draw("samec");
   
   //First->SetMarkerColor(1);
   //First->Draw("samep");
   Second->Draw("samec");
+
+  Second_up->Draw("samec");
+  Second_low->Draw("samec");
   // if (tanBeta_ == 3) Third->Draw("samec");
   //if (tanBeta_ == 3 && plotLO_) Second->Draw("samec");
 
@@ -273,7 +313,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   
   //TLatex* lumilabel = new TLatex(135.+xposi,510.,"L_{int} = 34 pb^{-1}, #sqrt{s} = 7 TeV");
   //TLatex* lumilabel = new TLatex(305.+xposi + 100,510.,"L_{int} = 976 pb^{-1}, #sqrt{s} = 7 TeV");
-  TLatex* lumilabel = new TLatex(m0max-900+xposi,510.,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
+  TLatex* lumilabel = new TLatex(m0max-1000+xposi,510.,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
 
   lumilabel->SetTextSize(0.05);
   lumilabel->Draw("same");
@@ -286,7 +326,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //text_tanBeta =  "tan#beta = "+tanb+", A_{0} = 0, sign(#mu) > 0";
   text_tanBeta =  "tan#beta = "+tanb+",  A_{0} = 0,  #mu > 0";
   //TLatex* cmssmpars = new TLatex(70.+xpos,340.+ypos,text_tanBeta);
-  TLatex* cmssmpars = new TLatex(750.+xpos,330.+ypos,text_tanBeta);
+  TLatex* cmssmpars = new TLatex(1000.+xpos,330.+ypos,text_tanBeta);
   cmssmpars->SetTextSize(0.045);
 
   cmssmpars->Draw("same");
