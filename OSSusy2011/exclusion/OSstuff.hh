@@ -170,7 +170,7 @@ TGraphErrors* getNLOobsTanbeta10_2010( ){
   
   Int_t n=47;
   Double_t x[n],y[n],xerr2[n],yerr2[n];
-  for( unsigned int ierr = 0 ; ierr < n ; ++ierr ){
+  for( int ierr = 0 ; ierr < n ; ++ierr ){
     xerr2[ierr] = 0.;
     yerr2[ierr] = 0.;
     x[ierr] = 0.;
@@ -194,8 +194,8 @@ TGraphErrors* getNLOobsTanbeta10_2010( ){
   x[++i]=50.;
   y[i]=235.;
 
-  x[++i]=60.;
-  y[i]=225.;
+  //x[++i]=60.;
+  //y[i]=225.;
 
   x[++i]=70.;
   y[i]=235.;
@@ -215,8 +215,8 @@ TGraphErrors* getNLOobsTanbeta10_2010( ){
   x[++i]=110.;
   y[i]=235.;
 
-  x[++i]=105.;
-  y[i]=230.;
+  //x[++i]=105.;
+  //y[i]=230.;
 
   x[++i]=105.;
   y[i]=213.;

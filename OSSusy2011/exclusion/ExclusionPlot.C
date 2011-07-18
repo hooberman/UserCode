@@ -13,8 +13,9 @@
 #include <vector>
 #include "TMath.h"
 
-const float m0max  = 2000;
-const float m12max =  500;
+const float m0max   =  500;
+const float m12max  = 2000;
+const float spacing =  150; //spacing between constant squark/gluino lines
 
 void ExclusionPlot(){
   gStyle->SetPalette(1);
@@ -295,7 +296,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //First->SetMarkerColor(1);
   //First->Draw("samep");
   Second->Draw("samec");
-  obs2010->Draw("samec");
+  //obs2010->Draw("samec");
   //Second_up->Draw("samec");
   //Second_low->Draw("samec");
 
@@ -885,7 +886,7 @@ TF1* constant_squark(int tanBeta,int i){
 
   
   TF1* lnsq = new TF1(hname,"sqrt([0]-x*x*[1]-[2])",0,m0max);
-  lnsq->SetParameter(0,(500+150*(i-1))*(500+150*(i-1))/coef2[i]);
+  lnsq->SetParameter(0,(500+spacing*(i-1))*(500+spacing*(i-1))/coef2[i]);
   lnsq->SetParameter(1,1./coef2[i]);
   //--tanbeta=10 --> cos2beta = -99/101
   lnsq->SetParameter(2,-coef1*91*91*(2*TMath::Cos(TMath::ATan(tanBeta)))/coef2[i]);
@@ -935,7 +936,7 @@ TF1* constant_gluino(int tanBeta,int i){
   sprintf(hname,"lngl_%i",i); 
     
   TF1* lngl = new TF1(hname,"[0]+x*[1]",0,m0max);
-  lngl->SetParameter(0,(500+150.*(i-1))/2.4);
+  lngl->SetParameter(0,(500+spacing*(i-1))/2.4);
   lngl->SetParameter(1,-40./1400);
   lngl->SetLineWidth(1);
   lngl->SetLineColor(kGray);
@@ -948,7 +949,7 @@ TLatex* constant_squark_text(Int_t it,TF1& lnsq,Int_t tanBeta_){
   char legnm[200];
 
   //sprintf(legnm,"#font[92]{#tilde{q}(%i)GeV/c^{2}}",500+150*(it-1));
-  sprintf(legnm,"#font[92]{#tilde{q}(%i)}",500+150*(it-1));
+  sprintf(legnm,"#font[92]{#tilde{q}(%i)}",500+(int)spacing*(it-1));
   Double_t place_x = 160;
   Double_t angle   = -8.;
   if(tanBeta_ == 50)            place_x = 290;
@@ -989,7 +990,7 @@ TLatex* constant_gluino_text(Int_t it,TF1& lngl){
   char legnm[200];
 
   //sprintf(legnm,"#font[12]{#tilde{g}}#font[92]{(%i)GeV/c^{2}}",500+150*(it-1));
-  sprintf(legnm,"#font[12]{#tilde{g}}#font[92]{(%i)}",500+150*(it-1));
+  sprintf(legnm,"#font[12]{#tilde{g}}#font[92]{(%i)}",500+(int)spacing*(it-1));
   //TLatex* t4 = new TLatex(400,18+lngl.Eval(480),legnm);
 
   double x = 1000;
