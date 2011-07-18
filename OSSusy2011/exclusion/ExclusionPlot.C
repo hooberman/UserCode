@@ -82,9 +82,10 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   // Legends
   //-----------------------------------
 
-  TLegend* legst  = makeStauLegend(0.05,tanBeta_);
-  TLegend* legexp = makeExpLegend( *TEV_sg_cdf,*TEV_sg_d0,*LEP_ch,*LEP_sl,*TEV_sn_d0_1,0.035,tanBeta_);
-  
+  TLegend* legst     = makeStauLegend(0.05,tanBeta_);
+  TLegend* legexp    = makeExpLegend( *TEV_sg_cdf,*TEV_sg_d0,*LEP_ch,*LEP_sl,*TEV_sn_d0_1,0.035,tanBeta_);
+  TLegend* legNoEWSB = makeNoEWSBLegend(0.05,tanBeta_);
+
   //-----------------------------------
   // make Canvas
   //-----------------------------------
@@ -108,12 +109,12 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //and now
   //the exclusion limits
   TGraphErrors* First ;
-  TGraphErrors* FirstDummy ;
+  //TGraphErrors* FirstDummy ;
   TGraphErrors* Second;
   TGraphErrors* Third;
   TGraphErrors* Second_up;
   TGraphErrors* Second_low;
-
+  TGraphErrors* expband;
 
   if (tanBeta_ == 3) {
     //First  = getObserved_NLOunc();
@@ -129,6 +130,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     Second_up = getNLOexpUpTanbeta10();
     Second_low = getNLOexpDownTanbeta10();
     Third = getNLOexpTanbeta10();
+    expband = getNLOexpTanbeta10_band();
     //Second_up = getExpected_NLO_tanBeta3_up();
     //Second_low = getExpected_NLO_tanBeta3_low();
   }
@@ -147,7 +149,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
 
   double m0min = 0;
   if (tanBeta_ == 50) m0min=200;
-  TH2D* hist = new TH2D("h","h",100,m0min,m0max,100,120,500);
+  TH2D* hist = new TH2D("h","h",100,m0min,m0max,100,120,m12max);
   hist->Draw();  
   hist->GetXaxis()->SetTitle("m_{0} (GeV/c^{2})");
   hist->GetYaxis()->SetTitle("m_{1/2} (GeV/c^{2})");
@@ -159,16 +161,16 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //int col[]={2,3,4};
 
   
-  //TFile *f = TFile::Open("exclusion_Spring11.root"); // new scan
+  TFile *f = TFile::Open("exclusion_Spring11_CLs.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_tcmet_JPT.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); // new scan
-  TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
+  //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
   
-  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_obs");
+  TH2F* h = (TH2F*) f->Get("hexcl_NLO_obs");
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_exp");
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expp1");
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expm1");
-  //h->SetMaximum(3);
+  h->SetMaximum(3);
   //h->Draw("samecolz");
   
   TSpline3 *sFirst = new TSpline3("sFirst",First);
@@ -189,17 +191,17 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   sSecond_up->SetLineColor(kCyan);
   sSecond_up->SetLineStyle(1);
   sSecond_up->SetLineWidth(3);
-  Second_up->SetLineColor(kCyan);
+  Second_up->SetLineColor(kBlue);
   //Second_up->SetLineColor(1);
-  Second_up->SetLineWidth(3);
+  Second_up->SetLineWidth(2);
 
   TSpline3 *sSecond_low = new TSpline3("sSecond_low",Second_low);
   sSecond_low->SetLineColor(kCyan);
   sSecond_low->SetLineStyle(1);
   sSecond_low->SetLineWidth(3);
-  Second_low->SetLineColor(kCyan);
+  Second_low->SetLineColor(kBlue);
   //Second_low->SetLineColor(1);
-  Second_low->SetLineWidth(3);
+  Second_low->SetLineWidth(2);
 
   Third->SetLineColor(kCyan);
   Third->SetLineWidth(30);
@@ -276,14 +278,17 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //sSecond->Draw("same");   
   //sThird->Draw("same");
   //Third->Draw("samec");
+
+  expband->Draw("samecf");
   First->Draw("samec");
   
   //First->SetMarkerColor(1);
   //First->Draw("samep");
   Second->Draw("samec");
 
-  Second_up->Draw("samec");
-  Second_low->Draw("samec");
+  //Second_up->Draw("samec");
+  //Second_low->Draw("samec");
+
   // if (tanBeta_ == 3) Third->Draw("samec");
   //if (tanBeta_ == 3 && plotLO_) Second->Draw("samec");
 
@@ -313,12 +318,12 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   
   //TLatex* lumilabel = new TLatex(135.+xposi,510.,"L_{int} = 34 pb^{-1}, #sqrt{s} = 7 TeV");
   //TLatex* lumilabel = new TLatex(305.+xposi + 100,510.,"L_{int} = 976 pb^{-1}, #sqrt{s} = 7 TeV");
-  TLatex* lumilabel = new TLatex(m0max-1000+xposi,510.,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
+  TLatex* lumilabel = new TLatex(m0max-1000+xposi,m12max+15,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
 
   lumilabel->SetTextSize(0.05);
   lumilabel->Draw("same");
 
-  TLatex* cmslabel = new TLatex(10.,510.,"CMS Preliminary");
+  TLatex* cmslabel = new TLatex(10.,m12max+15,"CMS Preliminary");
   cmslabel->SetTextSize(0.05);
   cmslabel->Draw("same");
 
@@ -326,7 +331,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //text_tanBeta =  "tan#beta = "+tanb+", A_{0} = 0, sign(#mu) > 0";
   text_tanBeta =  "tan#beta = "+tanb+",  A_{0} = 0,  #mu > 0";
   //TLatex* cmssmpars = new TLatex(70.+xpos,340.+ypos,text_tanBeta);
-  TLatex* cmssmpars = new TLatex(1000.+xpos,330.+ypos,text_tanBeta);
+  TLatex* cmssmpars = new TLatex(1000.+xpos,345.+ypos,text_tanBeta);
   cmssmpars->SetTextSize(0.045);
 
   cmssmpars->Draw("same");
@@ -395,6 +400,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   legexp->Draw();
   legst->Draw();
   myleg->Draw();
+  legNoEWSB->Draw();
 
   //First->Draw("samec");
   // if (tanBeta_ == 3) Third->Draw("samec");
@@ -574,8 +580,8 @@ TGraph* set_lep_ch_tanBeta10(){
   
   TGraph* ch_gr = new TGraph(npoints,ch_m0,ch_m12);
 
-  ch_gr->SetFillColor(3);
-  ch_gr->SetLineColor(3);
+  ch_gr->SetFillColor(8);
+  ch_gr->SetLineColor(8);
   //  ch_gr->SetLineWidth(3);
   ch_gr->SetFillStyle(1001);
 
@@ -931,7 +937,8 @@ TF1* constant_gluino(int tanBeta,int i){
 TLatex* constant_squark_text(Int_t it,TF1& lnsq,Int_t tanBeta_){
   char legnm[200];
 
-  sprintf(legnm,"#font[92]{#tilde{q}(%i)GeV/c^{2}}",500+150*(it-1));
+  //sprintf(legnm,"#font[92]{#tilde{q}(%i)GeV/c^{2}}",500+150*(it-1));
+  sprintf(legnm,"#font[92]{#tilde{q}(%i)}",500+150*(it-1));
   Double_t place_x = 160;
   Double_t angle   = -8.;
   if(tanBeta_ == 50)            place_x = 290;
@@ -940,7 +947,26 @@ TLatex* constant_squark_text(Int_t it,TF1& lnsq,Int_t tanBeta_){
     angle = -15.;
   }
 
-  TLatex* t3 = new TLatex(place_x+10*(it-1),lnsq.Eval(place_x+10*(it-1))+5,legnm);
+  double x = place_x+10*(it-1);
+  double y = lnsq.Eval(place_x+10*(it-1))+5;
+
+  if( it == 1 ){
+    x     = 300;
+    y     = 200;
+    angle = -60;
+  }
+  else if( it == 2 ){
+    x     = 480;
+    y     = 220;
+    angle = -60;
+  }
+  else if( it == 3 ){
+    x     = 250;
+    y     = 390;
+    angle = -40;
+  }
+
+  TLatex* t3 = new TLatex(x,y,legnm);
   t3->SetTextSize(0.03);
   t3->SetTextAngle(angle);
   t3->SetTextColor(kGray+2);
@@ -952,8 +978,19 @@ TLatex* constant_squark_text(Int_t it,TF1& lnsq,Int_t tanBeta_){
 TLatex* constant_gluino_text(Int_t it,TF1& lngl){
   char legnm[200];
 
-  sprintf(legnm,"#font[12]{#tilde{g}}#font[92]{(%i)GeV/c^{2}}",500+150*(it-1));
-  TLatex* t4 = new TLatex(400,18+lngl.Eval(480),legnm);
+  //sprintf(legnm,"#font[12]{#tilde{g}}#font[92]{(%i)GeV/c^{2}}",500+150*(it-1));
+  sprintf(legnm,"#font[12]{#tilde{g}}#font[92]{(%i)}",500+150*(it-1));
+  //TLatex* t4 = new TLatex(400,18+lngl.Eval(480),legnm);
+
+  double x = 1000;
+  double y = 18+lngl.Eval(1080);
+
+  if( it == 1 ){
+    x  = 800;
+    y -= 20.;
+  }
+
+  TLatex* t4 = new TLatex(x,y,legnm);
   t4->SetTextSize(0.03);
   t4->SetTextAlign(13);
   t4->SetTextColor(kGray+2);
@@ -969,8 +1006,8 @@ TLegend* makeStauLegend(Double_t txtsz,Int_t tanBeta_){
 
   Double_t ypos_1 = 0.78;
   Double_t ypos_2 = 0.80;
-  Double_t xpos_1 = 0.16;
-  Double_t xpos_2 = 0.17;
+  Double_t xpos_1 = 0.155;
+  Double_t xpos_2 = 0.175;
   if(tanBeta_ == 50){
     xpos_1 = 0.17;
     xpos_2 = 0.18;
@@ -983,7 +1020,33 @@ TLegend* makeStauLegend(Double_t txtsz,Int_t tanBeta_){
   legst->SetFillStyle(0);
   legst->SetBorderSize(0);
   legst->SetTextSize(0.03);
-  legst->SetTextAngle(80);
+  legst->SetTextAngle(85);
+
+  return legst;
+}
+
+TLegend* makeNoEWSBLegend(Double_t txtsz,Int_t tanBeta_){
+
+  txtsz = txtsz;
+
+  Double_t ypos_1 = 0.12;
+  Double_t ypos_2 = 0.22;
+  Double_t xpos_1 = 0.82;
+  Double_t xpos_2 = 0.92;
+  if(tanBeta_ == 40){
+    xpos_1 = 0.10;
+    xpos_2 = 0.20;
+    ypos_1 = 0.85;
+    ypos_2 = 0.95;
+
+  }
+
+  TLegend* legst = new TLegend(xpos_1,ypos_1,xpos_2,ypos_2);
+  legst->SetHeader("No EWSB");
+  legst->SetFillStyle(0);
+  legst->SetBorderSize(0);
+  legst->SetTextSize(0.03);
+  legst->SetTextAngle(30);
 
   return legst;
 }

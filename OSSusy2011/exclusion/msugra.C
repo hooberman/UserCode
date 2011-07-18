@@ -29,18 +29,7 @@ using namespace std;
 //-------------------------------------------
 
 const Double_t mylumi        = 0.976;
-const bool     doCorrection  = false;
-const bool     addHighm0     = false;
-
-/*
-const Double_t ilum            = 976.0; // lumi
-const Double_t slum            = 0.;    // lumi uncertainty (=0 b/c uncertainty is included in sig acceptance)
-const Double_t eff             = 1.;    // sig efficiency
-const Double_t bck             = 5.1;   // expected background
-const Double_t sbck            = 1.7;   // background error
-const int      n               = 4;     // observed yield
-const int      nuissanceModel  = 1;     // nuissance model (0 - Gaussian, 1 - lognormal, 2 - gamma)
-*/
+const bool     doCorrection  = true;
 
 //-------------------------------------------
 // uncertainties
@@ -239,7 +228,7 @@ void msugra( char* filename ){
   //-----------------------------------
   TFile *f = TFile::Open( filename );
 
-  /*
+  
   //TH2F* hyield     = (TH2F*) f->Get("msugra",prefix));
   TH2F* hyield_k   = (TH2F*) f->Get("msugra_highht");
   TH2F* hyield_kup = (TH2F*) f->Get("msugra_highht_kup");
@@ -247,45 +236,35 @@ void msugra( char* filename ){
   TH2F* hyield_jup = (TH2F*) f->Get("msugra_highht_jup");
   TH2F* hyield_jdn = (TH2F*) f->Get("msugra_highht_jdn");
 
-  if( addHighm0 ){
+  /*
+  hyield_k->RebinX(4);
+  hyield_k->RebinY(2);
+  hyield_k->Scale(1./8.);
 
-    TFile *fm0 = TFile::Open( "../output/V00-01-07/highpt/ossusy_pfjet_pfmet_LMscan_m0_1000.root" );
+  hyield_kup->RebinX(4);
+  hyield_kup->RebinY(2);
+  hyield_kup->Scale(1./8.);
 
-    //TH2F* hyield     = (TH2F*) f->Get("msugra",prefix));
-    TH2F* hyield_k_m0   = (TH2F*) fm0->Get("msugra_highht");
-    TH2F* hyield_kup_m0 = (TH2F*) fm0->Get("msugra_highht_kup");
-    TH2F* hyield_kdn_m0 = (TH2F*) fm0->Get("msugra_highht_kdn");
-    TH2F* hyield_jup_m0 = (TH2F*) fm0->Get("msugra_highht_jup");
-    TH2F* hyield_jdn_m0 = (TH2F*) fm0->Get("msugra_highht_jdn");
+  hyield_kdn->RebinX(4);
+  hyield_kdn->RebinY(2);
+  hyield_kdn->Scale(1./8.);
 
-    float kfactor = 1.5;
+  hyield_jup->RebinX(4);
+  hyield_jup->RebinY(2);
+  hyield_jup->Scale(1./8.);
 
-    hyield_k_m0->Scale(kfactor);
-    hyield_kup_m0->Scale(kfactor);
-    hyield_kdn_m0->Scale(kfactor);
-    hyield_jup_m0->Scale(kfactor);
-    hyield_jdn_m0->Scale(kfactor);
-
-    hyield_k  ->Add( hyield_k_m0   );
-    hyield_kup->Add( hyield_kup_m0 );
-    hyield_kdn->Add( hyield_kdn_m0 );
-    hyield_jup->Add( hyield_jup_m0 );
-    hyield_jdn->Add( hyield_jdn_m0 );
-  }
+  hyield_jdn->RebinX(4);
+  hyield_jdn->RebinY(2);
+  hyield_jdn->Scale(1./8.);
   */
 
-
-
+  /*
   TH2F* hyield_k   = (TH2F*) f->Get("LMscan10_lmgridyield_k");
   TH2F* hyield_kup = (TH2F*) f->Get("LMscan10_lmgridyield_kup");
   TH2F* hyield_kdn = (TH2F*) f->Get("LMscan10_lmgridyield_kdn");
   TH2F* hyield_jup = (TH2F*) f->Get("LMscan10_lmgridyield_jup");
   TH2F* hyield_jdn = (TH2F*) f->Get("LMscan10_lmgridyield_jdn");
-
-
-
-
-
+  */
 
 
   hyield_k->Scale(mylumi);
@@ -761,11 +740,15 @@ void msugra( char* filename ){
   limitgraph_LO_obs->Write();
 
   hexcl_NLO_exp->Write();
+  hexcl_NLO_expp1->Write();
+  hexcl_NLO_expm1->Write();
   limit_NLO_exp->Write();
   limitgraph_NLO_exp->Write();
 
   hUL_NLO->Write();
   hUL_NLO_exp->Write();
+  hUL_NLO_expp1->Write();
+  hUL_NLO_expm1->Write();
   hUL_LO->Write();
   hyield_k->Write();
 

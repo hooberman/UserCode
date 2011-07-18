@@ -102,7 +102,7 @@ TLatex* constant_gluino_text(Int_t it,TF1& lngl);
 
 TLegend* makeStauLegend(Double_t txtsz,Int_t tanBeta_);
 TLegend* makeExpLegend(TGraph& sg_gr, TGraph& sgd_gr,TGraph& ch_gr,TGraph& sl_gr,TGraph&,Double_t txtsz,Int_t tanbeta);
-
+TLegend* makeNoEWSBLegend(Double_t txtsz,Int_t tanBeta_);
 
 
   

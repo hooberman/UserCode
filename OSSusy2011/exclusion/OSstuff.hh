@@ -1,4 +1,4 @@
-const unsigned int nNLO=19;
+const unsigned int nNLO=20;
 Double_t xNLO[100],yNLO[100],xerr[100],yerr[100];
   
 void initialize(){
@@ -66,6 +66,9 @@ void initialize(){
   xNLO[++i]=1400;
   yNLO[i]=180.;
 
+  xNLO[++i]=1800;
+  yNLO[i]=156.;
+
   xNLO[++i]=1900;
   yNLO[i]=150.;
 }
@@ -117,15 +120,28 @@ TGraphErrors* getNLOexpTanbeta10_band( ){
   initialize();
   
   Double_t x[100],y[100],ex[100],ey[100];
-
-  for( int j = 0 ; j <= 100 ; ++j ){
-    xNLO[j] += 10;
-    yNLO[j] += 10;
+  
+  for( unsigned int j = 0 ; j < nNLO ; ++j ){
+    x[j]  = xNLO[j] + 10;
+    y[j]  = yNLO[j] + 10;
+    ex[j] = 0;
+    ey[j] = 0;
   }
-
-  TGraphErrors* gr  = new TGraphErrors(nNLO,xNLO, yNLO,xerr,yerr);
-  gr->SetMarkerColor(kBlue);
+  
+  for( unsigned int j = 0 ; j < nNLO ; ++j ){
+    x[j+nNLO]  = xNLO[nNLO-j-1] - 30;
+    y[j+nNLO]  = yNLO[nNLO-j-1] - 30;
+    ex[j+nNLO] = 0;
+    ey[j+nNLO] = 0;
+  }
+  
+  TGraphErrors* gr  = new TGraphErrors(2*nNLO,x, y,ex,ey);
+  gr->SetMarkerColor(4);
+  gr->SetFillColor(4);
   gr->SetMarkerStyle(21);
+  gr->SetFillStyle(3002);
+  gr->SetLineColor(4);
+  gr->SetLineWidth(2);
 
   return gr;
 
