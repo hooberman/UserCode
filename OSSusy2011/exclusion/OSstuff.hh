@@ -12,65 +12,26 @@ void initialize(){
 
   Int_t i = -1;
 
-  xNLO[++i]=0.;
-  yNLO[i]=460.;
-
-  xNLO[++i]=80;
-  yNLO[i]=410.;
-
-  xNLO[++i]=100;
-  yNLO[i]=365.;
-
-  xNLO[++i]=120;
-  yNLO[i]=360.;
-
-  xNLO[++i]=150;
-  yNLO[i]=355.;
-
-  xNLO[++i]=180;
-  yNLO[i]=325.;
-
-  xNLO[++i]=200;
-  yNLO[i]=290.;
-
-  xNLO[++i]=210;
-  yNLO[i]=285.;
-
-  xNLO[++i]=270;
-  yNLO[i]=300.;
-
-  xNLO[++i]=350;
-  yNLO[i]=310.;
-
-  xNLO[++i]=450;
-  yNLO[i]=310.;
-
-  xNLO[++i]=520;
-  yNLO[i]=320.;
-
-  xNLO[++i]=550;
-  yNLO[i]=280.;
-
-  xNLO[++i]=600;
-  yNLO[i]=265.;
-
-  xNLO[++i]=700;
-  yNLO[i]=250.;
-
-  xNLO[++i]=900;
-  yNLO[i]=230.;
-
-  xNLO[++i]=1000;
-  yNLO[i]=220.;
-
-  xNLO[++i]=1400;
-  yNLO[i]=180.;
-
-  xNLO[++i]=1800;
-  yNLO[i]=156.;
-
-  xNLO[++i]=1900;
-  yNLO[i]=150.;
+  xNLO[++i]=0.;    yNLO[i]=460.; //0
+  xNLO[++i]=80;    yNLO[i]=410.; //1
+  xNLO[++i]=100;   yNLO[i]=365.; //2
+  xNLO[++i]=120;   yNLO[i]=360.; //3
+  xNLO[++i]=150;   yNLO[i]=355.; //4
+  xNLO[++i]=180;   yNLO[i]=325.; //5
+  xNLO[++i]=200;   yNLO[i]=290.; //6
+  xNLO[++i]=210;   yNLO[i]=285.; //7
+  xNLO[++i]=270;   yNLO[i]=300.; //8
+  xNLO[++i]=350;   yNLO[i]=310.; //9
+  xNLO[++i]=450;   yNLO[i]=310.; //10
+  xNLO[++i]=520;   yNLO[i]=320.; //11
+  xNLO[++i]=550;   yNLO[i]=280.; //12
+  xNLO[++i]=600;   yNLO[i]=265.; //13
+  xNLO[++i]=700;   yNLO[i]=250.; //14
+  xNLO[++i]=900;   yNLO[i]=230.; //15
+  xNLO[++i]=1000;  yNLO[i]=220.; //16
+  xNLO[++i]=1400;  yNLO[i]=180.; //17
+  xNLO[++i]=1800;  yNLO[i]=156.; //18
+  xNLO[++i]=1900;  yNLO[i]=150.; //19
 }
 
 TGraphErrors* getNLOobsTanbeta10( ){

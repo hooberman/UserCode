@@ -13,8 +13,8 @@
 #include <vector>
 #include "TMath.h"
 
-const float m0max   =  500;
-const float m12max  = 2000;
+const float m0max   = 2000;
+const float m12max  =  500;
 const float spacing =  150; //spacing between constant squark/gluino lines
 
 void ExclusionPlot(){
@@ -164,10 +164,10 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //int col[]={2,3,4};
 
   
-  //TFile *f = TFile::Open("exclusion_Spring11_CLs.root"); // new scan
+  TFile *f = TFile::Open("exclusion_Spring11_CLs.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_tcmet_JPT.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); // new scan
-  TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
+  //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
   
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_obs");
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_exp");
