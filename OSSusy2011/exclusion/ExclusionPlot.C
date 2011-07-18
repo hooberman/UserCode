@@ -115,27 +115,29 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   TGraphErrors* Second_up;
   TGraphErrors* Second_low;
   TGraphErrors* expband;
+  TGraphErrors* obs2010;
 
-  if (tanBeta_ == 3) {
-    //First  = getObserved_NLOunc();
-    //FirstDummy  = getObserved_NLOunc();
+  if (tanBeta_		== 3) {
+    //First		= getObserved_NLOunc();
+    //FirstDummy	= getObserved_NLOunc();
   } else {
-    //First  = getNLOobsTanbeta10();
-    //First  = getNLOobsTanbeta10_smooth();
-    //First  = getNLOobsTanbeta10_funky();
-    First  = getNLOobsTanbeta10();
-    //FirstDummy  = getObserved_NLOunc();
-    //Second = getNLOexpTanbeta10();
-    Second = getNLOexpTanbeta10();
-    Second_up = getNLOexpUpTanbeta10();
-    Second_low = getNLOexpDownTanbeta10();
-    Third = getNLOexpTanbeta10();
-    expband = getNLOexpTanbeta10_band();
-    //Second_up = getExpected_NLO_tanBeta3_up();
-    //Second_low = getExpected_NLO_tanBeta3_low();
+    //First		= getNLOobsTanbeta10();
+    //First		= getNLOobsTanbeta10_smooth();
+    //First		= getNLOobsTanbeta10_funky();
+    First		= getNLOobsTanbeta10();
+    //FirstDummy	= getObserved_NLOunc();
+    //Second		= getNLOexpTanbeta10();
+    Second		= getNLOexpTanbeta10();
+    Second_up		= getNLOexpUpTanbeta10();
+    Second_low		= getNLOexpDownTanbeta10();
+    Third		= getNLOexpTanbeta10();
+    expband		= getNLOexpTanbeta10_band();
+    obs2010		= getNLOobsTanbeta10_2010();
+    //Second_up		= getExpected_NLO_tanBeta3_up();
+    //Second_low	= getExpected_NLO_tanBeta3_low();
   }
-  //Third = getExpected_NLOunc();//getLO_jetMultis();
-  //Second  = getLO_signalCont();
+  //Third		= getExpected_NLOunc();//getLO_jetMultis();
+  //Second		= getLO_signalCont();
 
 
 
@@ -161,15 +163,15 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //int col[]={2,3,4};
 
   
-  TFile *f = TFile::Open("exclusion_Spring11_CLs.root"); // new scan
+  //TFile *f = TFile::Open("exclusion_Spring11_CLs.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_tcmet_JPT.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); // new scan
-  //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
+  TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
   
-  TH2F* h = (TH2F*) f->Get("hexcl_NLO_obs");
+  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_obs");
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_exp");
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expp1");
-  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expm1");
+  TH2F* h = (TH2F*) f->Get("hexcl_NLO_expm1");
   h->SetMaximum(3);
   //h->Draw("samecolz");
   
@@ -244,6 +246,13 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   myleg->SetTextSize(0.03);
   myleg->SetBorderSize(0);
   
+  TH1F* hdummy = new TH1F();
+  hdummy->SetLineColor(4);
+  hdummy->SetFillColor(4);
+  hdummy->SetFillStyle(3002);
+  hdummy->SetLineWidth(2);
+  hdummy->SetLineStyle(2);
+
   //  myleg->AddEntry(sSecond,"NLO Expected Limit","L");
   if (tanBeta_ == 3 && plotLO_) {
     myleg->AddEntry(sSecond,"LO Observed Limit","L");
@@ -251,8 +260,9 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   } else {
     //myleg->AddEntry(sFirst,"CMS OS Dilepton Limit","L"); 
     myleg->AddEntry(sFirst,"NLO observed limit","L"); 
-    myleg->AddEntry(sSecond,"NLO expected limit","L"); 
-    myleg->AddEntry(sSecond_up,"NLO expected limit (+/-1#sigma)","L"); 
+    myleg->AddEntry(hdummy,"NLO expected limit","LF"); 
+    //myleg->AddEntry(sSecond,"NLO expected limit","L"); 
+    //myleg->AddEntry(sSecond_up,"NLO expected limit (+/-1#sigma)","L"); 
   }
   
   //sSecond_up->Draw("h same");
@@ -285,7 +295,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //First->SetMarkerColor(1);
   //First->Draw("samep");
   Second->Draw("samec");
-
+  obs2010->Draw("samec");
   //Second_up->Draw("samec");
   //Second_low->Draw("samec");
 
@@ -415,9 +425,9 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.pdf");
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.png");
   }else{
-    //cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
-    //cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
-    //cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
   }
   
   output->Write();

@@ -122,8 +122,8 @@ TGraphErrors* getNLOexpTanbeta10_band( ){
   Double_t x[100],y[100],ex[100],ey[100];
   
   for( unsigned int j = 0 ; j < nNLO ; ++j ){
-    x[j]  = xNLO[j] + 10;
-    y[j]  = yNLO[j] + 10;
+    x[j]  = xNLO[j] + 15;
+    y[j]  = yNLO[j] + 15;
     ex[j] = 0;
     ey[j] = 0;
   }
@@ -164,3 +164,172 @@ TGraphErrors* getNLOexpDownTanbeta10( ){
   return gr;
 
 }
+
+
+TGraphErrors* getNLOobsTanbeta10_2010( ){
+  
+  Int_t n=47;
+  Double_t x[n],y[n],xerr2[n],yerr2[n];
+  for( unsigned int ierr = 0 ; ierr < n ; ++ierr ){
+    xerr2[ierr] = 0.;
+    yerr2[ierr] = 0.;
+    x[ierr] = 0.;
+    y[ierr] = 0.;
+  }
+
+  Int_t i = -1;
+
+  x[++i]=0;
+  y[i]=225.;
+
+  x[++i]=20;
+  y[i]=225.;
+
+  x[++i]=30.;
+  y[i]=235.;
+
+  x[++i]=40.;
+  y[i]=235.;
+
+  x[++i]=50.;
+  y[i]=235.;
+
+  x[++i]=60.;
+  y[i]=225.;
+
+  x[++i]=70.;
+  y[i]=235.;
+  
+  x[++i]=80.;
+  y[i]=245.;
+
+  x[++i]=90.;
+  y[i]=245.;
+
+  x[++i]=100.;
+  y[i]=245.;
+
+  x[++i]=115.;
+  y[i]=240.;
+
+  x[++i]=110.;
+  y[i]=235.;
+
+  x[++i]=105.;
+  y[i]=230.;
+
+  x[++i]=105.;
+  y[i]=213.;
+
+  x[++i]=105.;
+  y[i]=205.;
+
+  x[++i]=95.;
+  y[i]=200.;
+
+  x[++i]=90.;
+  y[i]=185.;
+
+  x[++i]=70.;
+  y[i]=155.;
+
+  x[++i]=65.;
+  y[i]=145.;
+
+  x[++i]=75.;
+  y[i]=155.;
+
+  x[++i]=90.;
+  y[i]=170.;
+
+  x[++i]=100.;
+  y[i]=185.;
+
+  x[++i]=110.;
+  y[i]=195.;
+
+  x[++i]=120.;
+  y[i]=205.;
+
+  x[++i]=130.;
+  y[i]=215.;
+
+  x[++i]=140.;
+  y[i]=215.;
+
+  x[++i]=150.;
+  y[i]=215.;
+
+  x[++i]=160.;
+  y[i]=185.;
+
+  x[++i]=170.;
+  y[i]=175.;
+
+  x[++i]=170.;
+  y[i]=155.;
+
+  x[++i]=160.;
+  y[i]=140.;
+
+  x[++i]=170.;
+  y[i]=135.;
+
+  x[++i]=180.;
+  y[i]=125.;
+
+  x[++i]=190.;
+  y[i]=135.;
+  
+  x[++i]=200.;
+  y[i]=145.;
+
+  x[++i]=210.;
+  y[i]=155.;
+
+  x[++i]=220.;
+  y[i]=165.;
+
+  x[++i]=230.;
+  y[i]=160.;
+
+  x[++i]=240.;
+  y[i]=145.;
+
+  x[++i]=250.;
+  y[i]=155.;
+  
+  x[++i]=260.;
+  y[i]=170.;
+
+  x[++i]=270.;
+  y[i]=170.;
+
+  x[++i]=280.;
+  y[i]=170.;
+
+  x[++i]=280.;
+  y[i]=160.;
+
+  x[++i]=270.;
+  y[i]=150.;
+
+  x[++i]=260.;
+  y[i]=145.;
+
+  x[++i]=230.;
+  y[i]=125.;
+  
+
+
+  TGraphErrors* grtb10  = new TGraphErrors(n,x, y,xerr2,yerr2);
+  grtb10->SetMarkerColor(kWhite);
+  //grtb10->SetMarkerStyle(21);
+  grtb10->SetLineColor(6);
+  grtb10->SetLineWidth(3);
+  return grtb10;
+
+}
+
+
+
