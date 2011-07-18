@@ -47,8 +47,8 @@ the lepton selection uncertainty (2\%/lepton) and the hadronic energy scale unce
 
 Armed with the efficiencies and uncertainties calculated in the previous 2 sections, we proceed
 to calculate upper limits on the quantity $\sigma \times A$ for the 3 benchmark SUSY 
-scenarios. We calculate Bayesian 95\% CL upper
-limits using the cl95cms software, assuming a log-normal model of nuissance parameter integration.
+scenarios. We calculate  95\% CL upper
+limits using the CLs technique.
 We quote here the upper limits from the high \Ht\ signal region.
 The results are summarized in
 Table~\ref{tab:models}. These results show that the LM1, LM3 and LM6 scenarios are excluded.
@@ -57,7 +57,7 @@ Table~\ref{tab:models}. These results show that the LM1, LM3 and LM6 scenarios a
 \begin{center}
 \caption{\label{tab:models} Summary of model-dependent limits. The efficiency and acceptance are
 defined in the text; the efficiency uncertainty is dominated by the uncertainty in the hadronic
-energy scale. The 95\% CL Bayesian UL on the quantity $\sigma\times A$ is indicated, as well as
+energy scale. The 95\% CL CLs UL on the quantity $\sigma\times A$ is indicated, as well as
 the value of this quantity for the LM1, LM3 and LM6 scenarios.}
 \begin{tabular}{l|ccc}
 
@@ -95,7 +95,7 @@ $\sigma \times A$ (fb)                   &  83              & 46              & 
 
 
 We also quote the result more generally in the context of the CMSSM.
-The Bayesian 95\% CL limit  in the  $(m_0,m_{1/2})$ plane,  for $\tan\beta=10$,
+The CLs 95\% CL limit  in the  $(m_0,m_{1/2})$ plane,  for $\tan\beta=10$,
 $A_0 = 0$ and $\mu > 0$ is shown in Figure~\ref{fig:msugra}. 
 The high \met\ and high \Ht signal regions have similar sensitivity to the CMSSM; 
 here we choose to show results based on the high-\Ht signal regions. The
@@ -113,7 +113,7 @@ evaluated using the prescription from the PDF4LHC recommendation~\cite{PDF4LHC}.
 The luminosity, trigger efficiency, and lepton selection efficiency uncertainties are also 
 included, giving a total relative acceptance uncertainty which varies in the range $\sim$0.3--0.4.
 A point is considered to be excluded if the NLO yield exceeds the 95\% CL
-Bayesian upper limit calculated with this acceptance uncertainty, using
+CLs upper limit calculated with this acceptance uncertainty, using
 a log-normal model for the nuisance parameter integration.
 
 
@@ -149,13 +149,11 @@ Figure~\ref{fig:msugra},  the results of our search and of the  trilepton search
 the choice  of $\tan\beta$ and  they reach the  highest sensitivity  in the
 CMSSM for $\tan\beta$ values below 10.
 
-
-
 \begin{figure}[hbt]
 \begin{center}
-\includegraphics[width=0.48\linewidth]{plots/exclusion_old.pdf}
+\includegraphics[width=0.48\linewidth]{plots/exclusion_old_obs.pdf}
 \includegraphics[width=0.48\linewidth]{plots/exclusion_old_exp.pdf}
-\includegraphics[width=0.48\linewidth]{plots/exclusion_new.pdf}
+\includegraphics[width=0.48\linewidth]{plots/exclusion_new_obs.pdf}
 \includegraphics[width=0.48\linewidth]{plots/exclusion_new_exp.pdf}
 \caption{\label{fig:dilmass}\protect 
 CMSSM exclusion contour, overlaid with the excluded points (blue) from the 38X CMSSM scan (top)
