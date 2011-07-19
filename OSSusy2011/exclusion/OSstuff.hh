@@ -100,9 +100,16 @@ TGraphErrors* getNLOexpTanbeta10_band( ){
   gr->SetMarkerColor(4);
   gr->SetFillColor(4);
   gr->SetMarkerStyle(21);
-  gr->SetFillStyle(3002);
+  gr->SetFillStyle(3002); //med dots
+  //gr->SetFillStyle(3006); //vert stripe
+  //gr->SetFillStyle(3004); //diag stripe
+  //gr->SetFillStyle(3144); //diag stripe
   gr->SetLineColor(4);
   gr->SetLineWidth(2);
+
+  //gr->SetMarkerColor(kCyan);
+  //gr->SetFillColor(kCyan);
+  //gr->SetLineColor(kCyan);
 
   return gr;
 
@@ -155,8 +162,8 @@ TGraphErrors* getNLOobsTanbeta10_2010( ){
   x[++i]=50.;
   y[i]=235.;
 
-  //x[++i]=60.;
-  //y[i]=225.;
+  x[++i]=60.;
+  y[i]=225.;
 
   x[++i]=70.;
   y[i]=235.;
@@ -176,8 +183,8 @@ TGraphErrors* getNLOobsTanbeta10_2010( ){
   x[++i]=110.;
   y[i]=235.;
 
-  //x[++i]=105.;
-  //y[i]=230.;
+  x[++i]=105.;
+  y[i]=230.;
 
   x[++i]=105.;
   y[i]=213.;
@@ -238,7 +245,7 @@ TGraphErrors* getNLOobsTanbeta10_2010( ){
 
   x[++i]=180.;
   y[i]=125.;
-
+  /*
   x[++i]=190.;
   y[i]=135.;
   
@@ -280,9 +287,8 @@ TGraphErrors* getNLOobsTanbeta10_2010( ){
 
   x[++i]=230.;
   y[i]=125.;
+  */
   
-
-
   TGraphErrors* grtb10  = new TGraphErrors(n,x, y,xerr2,yerr2);
   grtb10->SetMarkerColor(kWhite);
   //grtb10->SetMarkerStyle(21);

@@ -29,7 +29,7 @@ using namespace std;
 //-------------------------------------------
 
 const Double_t mylumi        = 0.976;
-const bool     doCorrection  = true;
+const bool     doCorrection  = false;
 
 //-------------------------------------------
 // uncertainties
@@ -236,7 +236,7 @@ void msugra( char* filename ){
   TH2F* hyield_jup = (TH2F*) f->Get("msugra_highht_jup");
   TH2F* hyield_jdn = (TH2F*) f->Get("msugra_highht_jdn");
 
-  /*
+  
   hyield_k->RebinX(4);
   hyield_k->RebinY(2);
   hyield_k->Scale(1./8.);
@@ -256,7 +256,7 @@ void msugra( char* filename ){
   hyield_jdn->RebinX(4);
   hyield_jdn->RebinY(2);
   hyield_jdn->Scale(1./8.);
-  */
+  
 
   /*
   TH2F* hyield_k   = (TH2F*) f->Get("LMscan10_lmgridyield_k");

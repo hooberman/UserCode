@@ -13,7 +13,7 @@
 #include <vector>
 #include "TMath.h"
 
-const float m0max   = 2000;
+const float m0max   = 1000;
 const float m12max  =  500;
 const float spacing =  150; //spacing between constant squark/gluino lines
 
@@ -164,15 +164,15 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //int col[]={2,3,4};
 
   
-  TFile *f = TFile::Open("exclusion_Spring11_CLs.root"); // new scan
+  //TFile *f = TFile::Open("exclusion_Spring11_CLs.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_tcmet_JPT.root"); // new scan
   //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); // new scan
-  //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
+  TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
   
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_obs");
-  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_exp");
+  TH2F* h = (TH2F*) f->Get("hexcl_NLO_exp");
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expp1");
-  TH2F* h = (TH2F*) f->Get("hexcl_NLO_expm1");
+  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expm1");
   h->SetMaximum(3);
   //h->Draw("samecolz");
   
@@ -264,6 +264,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     myleg->AddEntry(hdummy,"NLO expected limit","LF"); 
     //myleg->AddEntry(sSecond,"NLO expected limit","L"); 
     //myleg->AddEntry(sSecond_up,"NLO expected limit (+/-1#sigma)","L"); 
+    myleg->AddEntry(obs2010,"2010 NLO observed limit","L"); 
   }
   
   //sSecond_up->Draw("h same");
@@ -296,7 +297,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //First->SetMarkerColor(1);
   //First->Draw("samep");
   Second->Draw("samec");
-  //obs2010->Draw("samec");
+  obs2010->Draw("samec");
   //Second_up->Draw("samec");
   //Second_low->Draw("samec");
 
@@ -329,7 +330,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   
   //TLatex* lumilabel = new TLatex(135.+xposi,510.,"L_{int} = 34 pb^{-1}, #sqrt{s} = 7 TeV");
   //TLatex* lumilabel = new TLatex(305.+xposi + 100,510.,"L_{int} = 976 pb^{-1}, #sqrt{s} = 7 TeV");
-  TLatex* lumilabel = new TLatex(m0max-1000+xposi,m12max+15,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
+  TLatex* lumilabel = new TLatex(490,m12max+15,"#sqrt{s} = 7 TeV, #scale[0.6]{#int} L dt = 0.98 fb^{-1}");
 
   lumilabel->SetTextSize(0.05);
   lumilabel->Draw("same");
@@ -342,7 +343,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //text_tanBeta =  "tan#beta = "+tanb+", A_{0} = 0, sign(#mu) > 0";
   text_tanBeta =  "tan#beta = "+tanb+",  A_{0} = 0,  #mu > 0";
   //TLatex* cmssmpars = new TLatex(70.+xpos,340.+ypos,text_tanBeta);
-  TLatex* cmssmpars = new TLatex(1000.+xpos,345.+ypos,text_tanBeta);
+  TLatex* cmssmpars = new TLatex(550,345.+ypos,text_tanBeta);
   cmssmpars->SetTextSize(0.045);
 
   cmssmpars->Draw("same");
@@ -405,13 +406,13 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
 
   //stau=LSP contour
   stau->Draw("fsame");
-  NoEWSB->Draw("fsame");
+  //NoEWSB->Draw("fsame");
 
   //legends
   legexp->Draw();
   legst->Draw();
   myleg->Draw();
-  legNoEWSB->Draw();
+  //legNoEWSB->Draw();
 
   //First->Draw("samec");
   // if (tanBeta_ == 3) Third->Draw("samec");
@@ -426,9 +427,9 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.pdf");
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.png");
   }else{
-    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
-    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
-    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
+    // cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
+    // cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
+    // cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
   }
   
   output->Write();
@@ -879,6 +880,7 @@ TF1* constant_squark(int tanBeta,int i){
   
   double coef1   = 0.35;
   double coef2[] = {5,5,4.6,4.1};
+  //double coef2[] = {5,5,5,5};
 
   char hname[200];
 
@@ -964,17 +966,17 @@ TLatex* constant_squark_text(Int_t it,TF1& lnsq,Int_t tanBeta_){
   if( it == 1 ){
     x     = 300;
     y     = 200;
-    angle = -60;
+    angle = -40;
   }
   else if( it == 2 ){
     x     = 480;
     y     = 220;
-    angle = -60;
+    angle = -40;
   }
   else if( it == 3 ){
     x     = 250;
     y     = 390;
-    angle = -40;
+    angle = -20;
   }
 
   TLatex* t3 = new TLatex(x,y,legnm);
@@ -993,12 +995,12 @@ TLatex* constant_gluino_text(Int_t it,TF1& lngl){
   sprintf(legnm,"#font[12]{#tilde{g}}#font[92]{(%i)}",500+(int)spacing*(it-1));
   //TLatex* t4 = new TLatex(400,18+lngl.Eval(480),legnm);
 
-  double x = 1000;
-  double y = 18+lngl.Eval(1080);
+  double x = 875;
+  double y = 25+lngl.Eval(x+80);
 
   if( it == 1 ){
-    x  = 800;
-    y -= 20.;
+    x  = 875;
+    y -= 35.;
   }
 
   TLatex* t4 = new TLatex(x,y,legnm);
@@ -1017,8 +1019,8 @@ TLegend* makeStauLegend(Double_t txtsz,Int_t tanBeta_){
 
   Double_t ypos_1 = 0.78;
   Double_t ypos_2 = 0.80;
-  Double_t xpos_1 = 0.155;
-  Double_t xpos_2 = 0.175;
+  Double_t xpos_1 = 0.17;
+  Double_t xpos_2 = 0.19;
   if(tanBeta_ == 50){
     xpos_1 = 0.17;
     xpos_2 = 0.18;
