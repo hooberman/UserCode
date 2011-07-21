@@ -14,8 +14,8 @@
 #include "TMath.h"
 
 const float m0max   = 1000;
-const float m12max  =  500;
-const float spacing =  150; //spacing between constant squark/gluino lines
+const float m12max  =  700;
+const float spacing =  250; //spacing between constant squark/gluino lines
 
 void ExclusionPlot(){
   gStyle->SetPalette(1);
@@ -55,7 +55,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //TGraph* TEV_tlp_cdf = set_tev_tlp_cdf(tanBeta_); //trilepton cdf
   //TGraph* TEV_tlp_d0 = set_tev_tlp_d0(tanBeta_);   //trilepton d0
   TGraph* stau = set_tev_stau(tanBeta_);             //stau 
-  TGraph* NoEWSB = set_NoEWSB(tanBeta_); 
+  //TGraph* NoEWSB = set_NoEWSB(tanBeta_); 
 
   TGraph* TEV_sn_d0_1 = set_sneutrino_d0_1(tanBeta_);
   TGraph* TEV_sn_d0_2 = set_sneutrino_d0_2(tanBeta_);
@@ -85,7 +85,7 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
 
   TLegend* legst     = makeStauLegend(0.05,tanBeta_);
   TLegend* legexp    = makeExpLegend( *TEV_sg_cdf,*TEV_sg_d0,*LEP_ch,*LEP_sl,*TEV_sn_d0_1,0.035,tanBeta_);
-  TLegend* legNoEWSB = makeNoEWSBLegend(0.05,tanBeta_);
+  //TLegend* legNoEWSB = makeNoEWSBLegend(0.05,tanBeta_);
 
   //-----------------------------------
   // make Canvas
@@ -164,16 +164,17 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //int col[]={2,3,4};
 
   
-  //TFile *f = TFile::Open("exclusion_Spring11_CLs.root"); // new scan
-  //TFile *f = TFile::Open("exclusion_Fall10_tcmet_JPT.root"); // new scan
-  //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); // new scan
-  TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets_CLs.root"); // new scan
+  //TFile *f = TFile::Open("exclusion_Spring11_CLs.root");        
+  //TFile *f = TFile::Open("exclusion_Fall10_tcmet_JPT.root"); 
+  //TFile *f = TFile::Open("exclusion_Fall10_pfmet_pfjets.root"); 
+  //TFile *f = new TFile("exclusion_Fall10_pfmet_pfjets_CLs.root");
   
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_obs");
-  TH2F* h = (TH2F*) f->Get("hexcl_NLO_exp");
+  //TH2F* h = (TH2F*) f->Get("hexcl_NLO_exp");
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expp1");
   //TH2F* h = (TH2F*) f->Get("hexcl_NLO_expm1");
-  h->SetMaximum(3);
+
+  //h->SetMaximum(3);
   //h->Draw("samecolz");
   
   TSpline3 *sFirst = new TSpline3("sFirst",First);
@@ -343,11 +344,13 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
   //text_tanBeta =  "tan#beta = "+tanb+", A_{0} = 0, sign(#mu) > 0";
   text_tanBeta =  "tan#beta = "+tanb+",  A_{0} = 0,  #mu > 0";
   //TLatex* cmssmpars = new TLatex(70.+xpos,340.+ypos,text_tanBeta);
-  TLatex* cmssmpars = new TLatex(550,345.+ypos,text_tanBeta);
+ 
+  TLatex* cmssmpars = new TLatex(120,540,text_tanBeta);
+  //TLatex* cmssmpars = new TLatex(200,370,text_tanBeta);
   cmssmpars->SetTextSize(0.045);
 
   cmssmpars->Draw("same");
- 
+
   //LM points
   TMarker* LM0 = new TMarker(200.,160.,20);
   TMarker* LM1 = new TMarker(60.,250.,20);
@@ -427,9 +430,9 @@ void CommandMSUGRA(TString plotName_,Int_t tanBeta_, Bool_t plotLO_){
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.pdf");
     cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+"_LO.png");
   }else{
-    // cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
-    // cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
-    // cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
+    cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
   }
   
   output->Write();
@@ -835,10 +838,40 @@ TGraph* set_tev_sg_d0(Int_t tanBeta){
 
 // }
 
+//------------------------------
+// new (Frederic)
+//------------------------------
+
+TGraph* set_tev_stau(Int_t tanBeta){
+
+    double st_m0_tanBeta10[] =  {0,   10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110 , 130,  147, 0, 170, 190, 210, 230, 250, 270, 290, 310, 330, 350, 370, 390, 410, 430, 450, 470, 490, 510, 530, 550, 570, 590, 610, 630, 6500};
+    double st_m12_tanBeta10[] = {213,220,240,275,312,351,393,435,476,518, 559, 600., 682., 750.,750, 842., 921., 999., 1076, 1152, 1228, 1304, 1378, 1453, 1527, 1600, 1673, 1746, 1818, 1890, 1962, 2034, 2105, 2175, 2246, 2316, 2386, 2456, 2526, 2595}; 
 
 
+    double st_m0_tanBeta40[] = {240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700, 720, 740, 760, 780, 800, 820, 840, 860, 880};
+    double st_m12_tanBeta40[] = {186, 256, 329, 400, 470, 537, 603, 666, 727, 787, 845, 902, 958, 1013, 1067, 1121, 1174, 1226, 1278, 1330, 1381, 1431, 1481, 1531, 1581, 1630, 1679, 1728, 1779, 1825, 1874, 1920, 1971};
+
+    TGraph* st_gr_tanBeta10 = new TGraph(15,st_m0_tanBeta10,st_m12_tanBeta10);
+    TGraph* st_gr_tanBeta40 = new TGraph(10,st_m0_tanBeta40,st_m12_tanBeta40);
+
+    
+    st_gr_tanBeta40->SetFillColor(40);
+    st_gr_tanBeta40->SetFillStyle(1001);
+    
+    st_gr_tanBeta10->SetFillColor(40);
+    st_gr_tanBeta10->SetFillStyle(1001);
 
 
+    if(tanBeta == 10)return st_gr_tanBeta10;
+    if(tanBeta == 40)return st_gr_tanBeta40;
+
+    return 0;
+}
+
+//--------------------
+// old (2010)
+//--------------------
+/*
 TGraph* set_tev_stau(Int_t tanBeta){
 
     double st_m0_tanBeta3[] = {0,10,20,30,40,50,60,70,80,90,100,0};
@@ -870,9 +903,39 @@ TGraph* set_tev_stau(Int_t tanBeta){
     else if(tanBeta == 50) return st_gr_tanBeta50;
     else return 0;
 }
+*/
+
+//-----------------------
+// new (Sanjay)
+//-----------------------
+
+TF1* constant_squark(int tanBeta,int i){
+//---lines of constant gluino/squark. 
+// Min squark mass from 1st and 2nd generations using fit for tanbeta = 10.
 
 
+  double coef1[] = {2.67058e+04, 6.39642e+04, 1.16565e+05, 1.95737e+05, 2.86190e+05};
+  double coef2[] = {1.98772e-01, 2.11242e-01, 2.17734e-01, 2.39535e-01, 2.39768e-01};
+  double coef3[] = {2.67058e+04, 6.39641e+04, 1.16565e+05, 1.95736e+05, 2.86189e+05};
 
+  
+  char hname[200];
+
+  sprintf(hname,"lnsq_%i",i); 
+  TF1* lnsq = new TF1(hname,"sqrt([0]-x*x*[1]+[2])",0,1000);
+  lnsq->SetParameter(0,coef1[i-1]);
+  lnsq->SetParameter(1,coef2[i-1]);
+  lnsq->SetParameter(2,coef3[i-1]);
+  lnsq->SetLineWidth(1);
+  lnsq->SetLineColor(kGray);
+
+  return lnsq;
+}
+
+/*
+//-----------------------
+// old (2010 results)
+//-----------------------
 
 TF1* constant_squark(int tanBeta,int i){
 
@@ -898,6 +961,7 @@ TF1* constant_squark(int tanBeta,int i){
 
   return lnsq;
 }
+*/
 
 TGraph* set_NoEWSB(Int_t tanBeta){
 
@@ -924,6 +988,31 @@ TGraph* set_NoEWSB(Int_t tanBeta){
     return 0;
 }
 
+//-------------------
+// new (Sanjay)
+//-------------------
+
+TF1* constant_gluino(int tanBeta,int i){
+//---lines of constant gluino/squark
+  char hname[200];
+  sprintf(hname,"lngl_%i",i); 
+
+  double coef1[] = {201.77, 311.027, 431.582, 553.895, 676.137};
+  double coef2[] = {-0.0146608, -0.01677, -0.022244, -0.0271851, -0.0292212};
+    
+  TF1* lngl = new TF1(hname,"[0]+x*[1]",0,1000);
+  lngl->SetParameter(0,coef1[i-1]);
+  lngl->SetParameter(1,coef2[i-1]);
+  lngl->SetLineWidth(1);
+  lngl->SetLineColor(kGray);
+
+  return lngl;
+}
+
+//-------------------
+// old (2010)
+//-------------------
+/*
 TF1* constant_gluino(int tanBeta,int i){
 
   tanBeta = tanBeta;
@@ -945,7 +1034,7 @@ TF1* constant_gluino(int tanBeta,int i){
 
   return lngl;
 }
-
+*/
 
 TLatex* constant_squark_text(Int_t it,TF1& lnsq,Int_t tanBeta_){
   char legnm[200];
@@ -964,19 +1053,19 @@ TLatex* constant_squark_text(Int_t it,TF1& lnsq,Int_t tanBeta_){
   double y = lnsq.Eval(place_x+10*(it-1))+5;
 
   if( it == 1 ){
-    x     = 300;
-    y     = 200;
-    angle = -40;
+    x     = 200;
+    y     = 230;
+    angle = -25;
   }
   else if( it == 2 ){
-    x     = 480;
-    y     = 220;
-    angle = -40;
+    x     = 225;
+    y     = 355;
+    angle = -17.5;
   }
   else if( it == 3 ){
     x     = 250;
-    y     = 390;
-    angle = -20;
+    y     = 480;
+    angle = -10;
   }
 
   TLatex* t3 = new TLatex(x,y,legnm);
