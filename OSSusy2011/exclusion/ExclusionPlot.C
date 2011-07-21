@@ -1055,12 +1055,12 @@ TLatex* constant_squark_text(Int_t it,TF1& lnsq,Int_t tanBeta_){
   if( it == 1 ){
     x     = 200;
     y     = 230;
-    angle = -25;
+    angle = -20;
   }
   else if( it == 2 ){
     x     = 225;
     y     = 355;
-    angle = -17.5;
+    angle = -15;
   }
   else if( it == 3 ){
     x     = 250;
@@ -1084,11 +1084,11 @@ TLatex* constant_gluino_text(Int_t it,TF1& lngl){
   sprintf(legnm,"#font[12]{#tilde{g}}#font[92]{(%i)}",500+(int)spacing*(it-1));
   //TLatex* t4 = new TLatex(400,18+lngl.Eval(480),legnm);
 
-  double x = 875;
+  double x = 855;
   double y = 25+lngl.Eval(x+80);
 
   if( it == 1 ){
-    x  = 875;
+    x  = 855;
     y -= 35.;
   }
 
