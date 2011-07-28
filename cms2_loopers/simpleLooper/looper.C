@@ -42,6 +42,37 @@ float lumi          = 1.;
 
 //--------------------------------------------------------------------
 
+bool passesPFJetID(unsigned int pfJetIdx) {
+
+  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
+  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
+
+  if (pfjet_nef_ >= 0.99)
+	   return false;
+  if (pfjet_nhf_ >= 0.99)
+	   return false;
+  if (pfjet_mult_ < 2)
+	   return false;
+
+  if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) < 2.4)
+  {
+	   if (pfjet_chf_ < 1e-6)
+			return false;
+	   if (pfjet_cm_ < 1)
+			return false;
+	   if (pfjet_cef_ >= 0.99)
+			return false;
+  }
+
+  return true;
+}  
+
+//--------------------------------------------------------------------
+
 double dRbetweenVectors(const LorentzVector &vec1, 
 			const LorentzVector &vec2 ){ 
 
