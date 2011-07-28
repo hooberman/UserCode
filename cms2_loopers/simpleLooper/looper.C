@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <set>
 #include <math.h>
 #include <fstream>
 
@@ -38,6 +39,16 @@ bool makebaby       = true;
 bool debug          = false;
 bool calculateTCMET = false;
 float lumi          = 1.;
+
+//--------------------------------------------------------------------
+
+double dRbetweenVectors(const LorentzVector &vec1, 
+			const LorentzVector &vec2 ){ 
+
+  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
+  double deta = vec1.Eta() - vec2.Eta();
+  return sqrt(dphi*dphi + deta*deta);
+}
 
 //--------------------------------------------------------------------
 
