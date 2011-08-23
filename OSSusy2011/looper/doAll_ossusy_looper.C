@@ -40,8 +40,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-01-11";
-  const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
+  const char* version   = "V00-02-00";
+  const char* jsonfile  = "jsons/Cert_160404-173244_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -196,7 +196,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -247,7 +247,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML6      = 0;
   bool runML7      = 0;
   bool runML8      = 0;
-  bool runLMscan   = 1; 
+  bool runLMscan   = 0; 
 
 
   /*  
@@ -920,13 +920,15 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	// trigger skim
 	//---------------------------
 
-	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/DoubleElectronTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-20/DoubleMuTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/MuEG_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged_ntuple_172868_0.root");
+	
+	// pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/DoubleElectronTriggerSkim/skim*root");
+	// pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-20/DoubleMuTriggerSkim/skim*root");
+	// pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/MuEG_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
 
-	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleMuTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+	// pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skim*root");
+	// pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleMuTriggerSkim/skim*root");
+	// pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
 
       }
       
