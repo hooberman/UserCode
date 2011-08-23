@@ -1948,6 +1948,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    w2_          = leptonOrTauIsFromW( index2 , id2_ , isLM );
 	  }
 
+	  ecalveto1_ = -1;
+	  ecalveto2_ = -1;
+	  hcalveto1_ = -1;
+	  hcalveto2_ = -1;
+
 	  if( abs(id1_) == 11 ){
 	    iso1_   = electronIsolation_rel   ( index1 , true ); //truncated
 	    isont1_ = electronIsolation_rel_v1( index1 , true ); //non-truncated
@@ -1957,6 +1962,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    iso1_   = muonIsoValue( index1 , true  ); //truncated 
 	    isont1_ = muonIsoValue( index1 , false ); //non-truncated
 	    etasc1_ = -999;
+
+	    ecalveto1_ = mus_iso_ecalvetoDep().at(index1) < 4 ? 1 : 0;
+	    hcalveto1_ = mus_iso_hcalvetoDep().at(index1) < 6 ? 1 : 0;
 	  }
 	  
 	  if( abs(id2_) == 11 ){
@@ -1968,6 +1976,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    iso2_   = muonIsoValue( index2 , true  ); //truncated 
 	    isont2_ = muonIsoValue( index2 , false ); //non-truncated
 	    etasc2_ = -999;
+
+	    ecalveto2_ = mus_iso_ecalvetoDep().at(index2) < 4 ? 1 : 0;
+	    hcalveto2_ = mus_iso_hcalvetoDep().at(index2) < 6 ? 1 : 0;
 	  }
 	  
 	  dilep_   = &hyp_p4().at(hypIdx);
@@ -4009,6 +4020,10 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("etasc1",          &etasc1_,           "etasc1/F");
   outTree->Branch("etasc2",          &etasc2_,           "etasc2/F");
   outTree->Branch("iso2",            &iso2_,             "iso2/F");
+  outTree->Branch("ecalveto1",       &ecalveto1_,        "ecalveto1/I");
+  outTree->Branch("ecalveto2",       &ecalveto2_,        "ecalveto2/I");
+  outTree->Branch("hcalveto1",       &hcalveto1_,        "hcalveto1/I");
+  outTree->Branch("hcalveto2",       &hcalveto2_,        "hcalveto2/I");
   outTree->Branch("isont2",          &isont2_,           "isont2/F");
   outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
   outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");

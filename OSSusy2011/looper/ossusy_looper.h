@@ -102,6 +102,10 @@ class ossusy_looper
         LorentzVector*  jet_; 
  
         // Baby ntuple variables
+	Int_t   ecalveto1_;
+	Int_t   ecalveto2_;
+	Int_t   hcalveto1_;
+	Int_t   hcalveto2_;
         TFile  *outFile;
         TTree  *outTree;
 	Int_t   acc_2010_;
