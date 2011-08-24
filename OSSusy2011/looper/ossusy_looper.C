@@ -1608,6 +1608,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         float weight = -1.;
 
+	mG_ = -9999;
+	mL_ = -9999;
+
+        if(strcmp(prefix,"T1lh") == 0){
+	  mG_ = sparm_mG();
+	  mL_ = sparm_mL();
+	}
+
         if(strcmp(prefix,"LMscan") == 0){
 
           m0  = sparm_m0();
@@ -4010,6 +4018,8 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pass",            &pass_,             "pass/I");
   outTree->Branch("passz",           &passz_,            "passz/I");
   outTree->Branch("m0",              &m0_,               "m0/F");
+  outTree->Branch("mg",              &mG_,               "mg/F");
+  outTree->Branch("ml",              &mL_,               "ml/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");
   outTree->Branch("id2",             &id2_,              "id2/I");
