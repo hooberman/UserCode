@@ -197,7 +197,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -249,7 +249,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-
+  bool runT1lh     = 1;
 
   /*  
   //Flags for files to run over
@@ -875,6 +875,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     */
   }
 
+  // LMscan
+  TChain *chT1lh = new TChain("Events");
+  if (runT1lh) {
+    
+    pickSkimIfExists(chT1lh,
+		     "/tas/benhoob/home/tempfiles/ntuple*root",
+                     "T1lh");  
+  }
 
   //--------------------------------
   //set luminosity to scale to
@@ -1278,6 +1286,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      cout << "Processing LMscan" << endl;
 		      looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing LMscan" << endl;
+		      hist::color("LMscan", kOrange-7);
+		    }
+		    if (runT1lh) {
+		      cout << "Processing T1lh" << endl;
+		      looper->ScanChain(chT1lh, "T1lh", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing T1lh" << endl;
 		      hist::color("LMscan", kOrange-7);
 		    }
 
