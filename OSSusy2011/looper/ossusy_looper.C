@@ -1803,6 +1803,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //        p_met = getMet( "muCorJESMET"    , hypIdx);
         float mucorjesmet = 1234. ;//p_met.first;
 
+	// pfmet, corrected for muon veto cone energies
+	metStruct vetoMetStruct = vetoCorMet( hypIdx );
+	pfmetveto_ = vetoMetStruct.met;
+
         //fill tree for baby ntuple 
         if(g_createTree){
 
@@ -3975,6 +3979,7 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("tcmet50",         &tcmet50_,          "tcmet50/F");
   outTree->Branch("genmet",          &genmet_,           "genmet/F");
   outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
+  outTree->Branch("pfmetveto",       &pfmetveto_,        "pfmetveto/F");
   outTree->Branch("pfmetsig",        &pfmetsig_,         "pfmetsig/F");
   outTree->Branch("pfmetphi",        &pfmetphi_,         "pfmetphi/F");
   outTree->Branch("mucormet",        &mucormet_,         "mucormet/F");

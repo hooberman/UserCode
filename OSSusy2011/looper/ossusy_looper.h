@@ -178,6 +178,7 @@ class ossusy_looper
         Float_t mucormet_;
         Float_t mucorjesmet_;
         Float_t pfmet_;
+        Float_t pfmetveto_;
         Float_t pfmetphi_;
         Float_t tcmet_35X_;
         Float_t tcmet_event_;
