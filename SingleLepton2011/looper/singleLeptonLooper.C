@@ -1770,9 +1770,9 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   rootdir->cd();
 
 
-  char* dir = "";
-  if     ( g_trig == e_lowpt  ) dir = "lowpt";
-  else if( g_trig == e_highpt ) dir = "highpt";
+  //char* dir = "";
+  //if     ( g_trig == e_lowpt  ) dir = "lowpt";
+  //else if( g_trig == e_highpt ) dir = "highpt";
 
   //Super compressed ntuple here
   char* frsuffix = "";
@@ -1781,7 +1781,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
     if ( frmode == e_wjets ) frsuffix = "_singleFake";
   }
 
-  outFile   = new TFile(Form("../output/%s/%s/%s_smallTree%s.root",g_version,dir,prefix,frsuffix), "RECREATE");
+  outFile   = new TFile(Form("../output/%s/%s_smallTree%s.root",g_version,prefix,frsuffix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");

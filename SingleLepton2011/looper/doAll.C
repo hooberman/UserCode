@@ -249,7 +249,8 @@ void doAll(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  bool runT1lh     = 1;
+  bool runT1lh     = 0;
+  bool runT2tt     = 1;
 
   /*  
   //Flags for files to run over
@@ -875,7 +876,6 @@ void doAll(bool skipFWLite = true)
     */
   }
 
-  // LMscan
   TChain *chT1lh = new TChain("Events");
   if (runT1lh) {
     
@@ -884,6 +884,16 @@ void doAll(bool skipFWLite = true)
                      "T1lh");  
   }
 
+  TChain *chT2tt = new TChain("Events");
+  if (runT2tt) {
+    
+    string t2ttpath="/hadoop/cms/store/user/benhoob/CMS2_V04-02-20-04/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/";
+
+    pickSkimIfExists(chT2tt,
+		     t2ttpath + "ntuple_12_*root",
+                     "T2tt");
+  }
+  
   //--------------------------------
   //set luminosity to scale to
   //--------------------------------
@@ -901,13 +911,13 @@ void doAll(bool skipFWLite = true)
   TChain* chdata     = new  TChain("Events");
   TChain* chdata41   = new  TChain("Events");
 
-  for( int pt = 0 ; pt < 1 ; ++pt ){
+  //for( int pt = 0 ; pt < 1 ; ++pt ){
 
     //set trigger type
-    if( pt == 0 ) trig = singleLeptonLooper::e_highpt;
-    if( pt == 1 ) trig = singleLeptonLooper::e_lowpt;
+    //if( pt == 0 ) trig = singleLeptonLooper::e_highpt;
+    //if( pt == 1 ) trig = singleLeptonLooper::e_lowpt;
   
-    looper->set_trigger( trig );
+    //looper->set_trigger( trig );
 
     chdata->Reset();
     chdata41->Reset();
@@ -921,8 +931,6 @@ void doAll(bool skipFWLite = true)
 
     if(rundata){
       
-      if( trig == singleLeptonLooper::e_highpt ){
-	
 	cout << "Doing high-pT dilepton trigger data" << endl;
 
 	//---------------------------
@@ -933,35 +941,6 @@ void doAll(bool skipFWLite = true)
 	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleMuTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
 
-	//---------------------------
-	// august rereco
-	//---------------------------
-
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleElectron_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/MuEG_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged*root");
-
-	//---------------------------
-	// prompt reco v6
-	//---------------------------
-	
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleElectron_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged*root");
-
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/MuEG_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged*root");
-
-      }
-      
-      else if( trig == singleLeptonLooper::e_lowpt ){
-	
-	cout << "Doing dilepton-HT trigger data" << endl;
-
-	pickSkimIfExists(chdata,"cms2_data/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed*root");
-	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed*root");
-	pickSkimIfExists(chdata,"cms2_data/ElectronHad_Run2011A-PromptReco-v4_AOD/V04-02-20/SSignSkim/skimmed*root");
-	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-PromptReco-v4_AOD/V04-02-20/SSignSkim/skimmed*root");
-
-      }
     }
 
     for (int jetTypeIdx = 2; jetTypeIdx < 3; ++jetTypeIdx)
@@ -1292,20 +1271,26 @@ void doAll(bool skipFWLite = true)
 		      cout << "Processing T1lh" << endl;
 		      looper->ScanChain(chT1lh, "T1lh", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing T1lh" << endl;
-		      hist::color("LMscan", kOrange-7);
+		      hist::color("T1lh", kOrange-7);
+		    }
+		    if (runT2tt) {
+		      cout << "Processing T2tt" << endl;
+		      looper->ScanChain(chT2tt, "T2tt", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing T2tt" << endl;
+		      hist::color("T2tt", kOrange-7);
 		    }
 
-		    char* dir = "";
-		    if( trig == singleLeptonLooper::e_lowpt  ) dir = "lowpt"  ;
-		    if( trig == singleLeptonLooper::e_highpt ) dir = "highpt" ;
+		    //char* dir = "";
+		    //if( trig == singleLeptonLooper::e_lowpt  ) dir = "lowpt"  ;
+		    //if( trig == singleLeptonLooper::e_highpt ) dir = "highpt" ;
                   
 		    // save all the histograms
 		    if(doFakeApp) {
-		      const char* outFile = Form("../output/%s/%s/singleLepton_%s_%s%s_%s_FakeApp.root", version,dir,
+		      const char* outFile = Form("../output/%s/singleLepton_%s_%s%s_%s_FakeApp.root", version,
 						 jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
 		    }
 		    else {
-		      const char* outFile = Form("../output/%s/%s/singleLepton_%s_%s%s.root", version,dir,
+		      const char* outFile = Form("../output/%s/singleLepton_%s_%s%s.root", version,
 						 jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
 		    }
                   
@@ -1320,7 +1305,7 @@ void doAll(bool skipFWLite = true)
 	      }//zvetoIdx
 	  } // metTypeIdx
       } // jetTypeIdx
-  }
+    //}
 
   gSystem->Exit(0);
   
