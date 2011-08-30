@@ -110,6 +110,18 @@ void checkMuon( int muidx ){
 
 }
 
+
+//--------------------------------------------------------------------
+
+singleLeptonLooper::singleLeptonLooper()
+{
+  g_susybaseline = false;
+  g_createTree   = false;
+  g_useBitMask   = false;
+  random3_ = new TRandom3(1);
+  initialized = false;
+}
+
 //--------------------------------------------------------------------
 
 double dRbetweenVectors(const LorentzVector &vec1, 
