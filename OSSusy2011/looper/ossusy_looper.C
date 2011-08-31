@@ -531,7 +531,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   if( g_trig == e_lowpt ){
     cout << "Doing 10,5 selection" << endl;
     minpt = 5.;
-    maxpt = 10.;
+    maxpt = 5.;
     htcut = 200.;
     dir   = "lowpt";
   }
@@ -2016,6 +2016,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
           outTree->Fill();
         }
+
 
 	if( TString(prefix).Contains("LM") ){
 
