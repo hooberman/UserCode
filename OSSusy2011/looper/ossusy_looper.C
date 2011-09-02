@@ -39,8 +39,8 @@
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 
-
-bool verbose = false;
+bool verbose            = false;
+bool genLeptonSelection = false;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -855,15 +855,29 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           // v_weights.push_back(FRweight); 
         }
         else{
+
+	  if( genLeptonSelection ){
+
+	    //muon ID
+	    if (abs(hyp_ll_id()[i]) == 13  && !( leptonOrTauIsFromW( hyp_ll_index()[i] , hyp_ll_id()[i] , isLM ) > 0 ) )   continue;
+	    if (abs(hyp_lt_id()[i]) == 13  && !( leptonOrTauIsFromW( hyp_lt_index()[i] , hyp_lt_id()[i] , isLM ) > 0 ) )   continue;
+	    
+	    //OSV3
+	    if (abs(hyp_ll_id()[i]) == 11  && !( leptonOrTauIsFromW( hyp_ll_index()[i] , hyp_ll_id()[i] , isLM ) > 0 ) )   continue;
+	    if (abs(hyp_lt_id()[i]) == 11  && !( leptonOrTauIsFromW( hyp_lt_index()[i] , hyp_lt_id()[i] , isLM ) > 0 ) )   continue;
           
-          //muon ID
-          if (abs(hyp_ll_id()[i]) == 13  && !( muonId(hyp_ll_index()[i] , OSGeneric_v3 ) ) )   continue;
-          if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , OSGeneric_v3 ) ) )   continue;
-          
-          //OSV3
-          if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV3  ))) continue;
-          if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV3  ))) continue;
-          
+	  }else{
+	    
+	    //muon ID
+	    if (abs(hyp_ll_id()[i]) == 13  && !( muonId(hyp_ll_index()[i] , OSGeneric_v3 ) ) )   continue;
+	    if (abs(hyp_lt_id()[i]) == 13  && !( muonId(hyp_lt_index()[i] , OSGeneric_v3 ) ) )   continue;
+	    
+	    //OSV3
+	    if (abs(hyp_ll_id()[i]) == 11  && !( pass_electronSelection( hyp_ll_index()[i] , electronSelection_el_OSV3  ))) continue;
+	    if (abs(hyp_lt_id()[i]) == 11  && !( pass_electronSelection( hyp_lt_index()[i] , electronSelection_el_OSV3  ))) continue;
+
+	  }
+
         }
 
 	v_goodHyps.push_back( i );
@@ -1972,13 +1986,17 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  hcalveto2_ = -1.;
 
 	  if( abs(id1_) == 11 ){
+	    lepid1_ = pass_electronSelection( index1 , electronSelection_el_OSV3_noiso ) ? 1 : 0;
 	    iso1_   = electronIsolation_rel   ( index1 , true ); //truncated
 	    isont1_ = electronIsolation_rel_v1( index1 , true ); //non-truncated
+	    isopf1_ = electronIsoValuePF(index1,0,0.3);
 	    etasc1_ = els_etaSC()[index1];
 	  }
 	  else if( abs(id1_) == 13 ){
+	    lepid1_ = muonIdNotIsolated(index1 , OSGeneric_v3 ) ? 1 : 0;
 	    iso1_   = muonIsoValue( index1 , true  ); //truncated 
 	    isont1_ = muonIsoValue( index1 , false ); //non-truncated
+	    isopf1_ = muonIsoValuePF(index1,0,0.3);
 	    etasc1_ = -999;
 
 	    ecalveto1_ = mus_iso_ecalvetoDep().at(index1);
@@ -1986,13 +2004,17 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  }
 	  
 	  if( abs(id2_) == 11 ){
+	    lepid2_ = pass_electronSelection( index2 , electronSelection_el_OSV3_noiso ) ? 1 : 0;
 	    iso2_   = electronIsolation_rel   ( index2 , true ); //truncated
 	    isont2_ = electronIsolation_rel_v1( index2 , true ); //non-truncated
+	    isopf2_ = electronIsoValuePF(index2,0,0.3);
 	    etasc2_ = els_etaSC()[index2];
 	  }
 	  else if( abs(id2_) == 13 ){
+	    lepid2_ = muonIdNotIsolated(index2 , OSGeneric_v3 ) ? 1 : 0;
 	    iso2_   = muonIsoValue( index2 , true  ); //truncated 
 	    isont2_ = muonIsoValue( index2 , false ); //non-truncated
+	    isopf2_ = muonIsoValuePF(index2,0,0.3);
 	    etasc2_ = -999;
 
 	    ecalveto2_ = mus_iso_ecalvetoDep().at(index2);
@@ -3920,7 +3942,10 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
     if ( frmode == e_wjets ) frsuffix = "_singleFake";
   }
 
-  outFile   = new TFile(Form("../output/%s/%s/%s_smallTree%s.root",g_version,dir,prefix,frsuffix), "RECREATE");
+  char* isgen = "";
+  if     ( genLeptonSelection  ) isgen = "_gen";
+
+  outFile   = new TFile(Form("../output/%s/%s/%s_smallTree%s%s.root",g_version,dir,prefix,frsuffix,isgen), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -4039,16 +4064,20 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("id2",             &id2_,              "id2/I");
   outTree->Branch("w1",              &w1_,               "w1/I");
   outTree->Branch("w2",              &w2_,               "w2/I");
+  outTree->Branch("lepid1",          &lepid1_,           "lepid1/I");
   outTree->Branch("iso1",            &iso1_,             "iso1/F");
   outTree->Branch("isont1",          &isont1_,           "isont1/F");
+  outTree->Branch("isopf1",          &isopf1_,           "isopf1/F");
   outTree->Branch("etasc1",          &etasc1_,           "etasc1/F");
   outTree->Branch("etasc2",          &etasc2_,           "etasc2/F");
+  outTree->Branch("lepid2",          &lepid2_,           "lepid2/I");
   outTree->Branch("iso2",            &iso2_,             "iso2/F");
   outTree->Branch("ecalveto1",       &ecalveto1_,        "ecalveto1/F");
   outTree->Branch("ecalveto2",       &ecalveto2_,        "ecalveto2/F");
   outTree->Branch("hcalveto1",       &hcalveto1_,        "hcalveto1/F");
   outTree->Branch("hcalveto2",       &hcalveto2_,        "hcalveto2/F");
   outTree->Branch("isont2",          &isont2_,           "isont2/F");
+  outTree->Branch("isopf2",          &isopf2_,           "isopf2/F");
   outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
   outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
   outTree->Branch("ptj1",            &ptj1_,             "ptj1/F");
