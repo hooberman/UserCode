@@ -140,6 +140,8 @@ class ossusy_looper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
+        Int_t   lepid1_;
+        Int_t   lepid2_;
         Int_t   ngenjets_;
         Int_t   npfjets_;
         Int_t   npfjets40_;
@@ -212,8 +214,10 @@ class ossusy_looper
 	Int_t   w2_;
 	Float_t iso1_;
 	Float_t isont1_;
+	Float_t isopf1_;
 	Float_t iso2_;
 	Float_t isont2_;
+	Float_t isopf2_;
         Float_t ptl2_;
         Float_t ptj1_;
         Float_t ptj2_;
