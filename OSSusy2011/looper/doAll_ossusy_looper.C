@@ -199,7 +199,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -948,7 +948,15 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       if( trig == ossusy_looper::e_highpt ){
 
 	cout << "Doing high-pT dilepton trigger data" << endl;
+
+	//---------------------------
+	// May10 rereco
+	//---------------------------
 	
+	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+	pickSkimIfExists(chdata,"cms2_data/MuEG_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+
 	//---------------------------
 	// prompt reco v4
 	//---------------------------
