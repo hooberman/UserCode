@@ -240,6 +240,7 @@ class singleLeptonLooper
 	Int_t   nels_;
 	Int_t   nmus_;
 	Int_t   ntaus_;
+	Int_t   nleps_;
 	Float_t ndavtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;

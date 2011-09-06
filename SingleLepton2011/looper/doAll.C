@@ -41,8 +41,8 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-00";
-  const char* jsonfile  = "jsons/Cert_160404-173244_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-00-01";
+  const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -197,13 +197,13 @@ void doAll(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -214,7 +214,7 @@ void doAll(bool skipFWLite = true)
   bool runWW       = 0;
   bool runWZ       = 0;
   bool runZZ       = 0;
-  bool runWjets    = 0;
+  bool runWjets    = 1;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
@@ -373,7 +373,7 @@ void doAll(bool skipFWLite = true)
   TChain* chtopall = new TChain("Events");
   if (runttall) {
     pickSkimIfExists(chtopall, 
-		     "cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
 		     "TTJets");
   }
 
@@ -451,14 +451,8 @@ void doAll(bool skipFWLite = true)
 
   TChain* chWjets = new  TChain("Events");
   if(runWjets){
-    pickSkimIfExists(chWjets, 
-                     "cms2/WToENu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-		     "WJets");
-    pickSkimIfExists(chWjets, 
-                     "cms2/WToMuNu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-		     "WJets");
-    pickSkimIfExists(chWjets, 
-		     "cms2/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+    pickSkimIfExists(chWjetsMG, 
+		     "/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
 		     "WJets");
   }
 
@@ -890,8 +884,94 @@ void doAll(bool skipFWLite = true)
     string t2ttpath="/hadoop/cms/store/user/benhoob/CMS2_V04-02-20-04/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/";
 
     pickSkimIfExists(chT2tt,
+		     t2ttpath + "ntuple*root",
+                     "T2tt");
+    /*
+    pickSkimIfExists(chT2tt,
 		     t2ttpath + "ntuple_12_*root",
                      "T2tt");
+    pickSkimIfExists(chT2tt,
+		     t2ttpath + "ntuple_13_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_425_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_501_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_504_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_528_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_529_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_840_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_880_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_881_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_970_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1104_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1252_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1456_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1518_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1601_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1602_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1603_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1604_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1664_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1665_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1674_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1675_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1682_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_1683_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_2001_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_2002_*root",
+                     "T2tt");
+    pickSkimIfExists(chT2tt,
+    		     t2ttpath + "ntuple_2048_*root",
+                     "T2tt");
+    */
   }
   
   //--------------------------------
@@ -934,12 +1014,17 @@ void doAll(bool skipFWLite = true)
 	cout << "Doing high-pT dilepton trigger data" << endl;
 
 	//---------------------------
+	// May10 rereco
+	//---------------------------
+
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-15/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-15/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/merged*root");
+	//---------------------------
 	// prompt reco v4
 	//---------------------------
 
-	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleMuTriggerSkim/skim*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-16/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-16_merged/V04-02-16/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_3_patch1_V04-02-16/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-16_merged/V04-02-16/merged*root");
 
     }
 

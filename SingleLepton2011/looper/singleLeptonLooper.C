@@ -279,6 +279,7 @@ void singleLeptonLooper::InitBaby(){
   nels_		= -1;
   nmus_		= -1;
   ntaus_	= -1;
+  nleps_	= -1;
   ptjetraw_	= -9999.;
   ptjet23_	= -9999.;
   ptjetF23_	= -9999.;
@@ -570,9 +571,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       if( !isData ){
 	w1_          = leptonOrTauIsFromW( index1 , id1_ , isLM );
       }
-
-      // require trigger
-      //if( !passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) ) continue;
             
       //store dilepton type in myType
       leptype_ = 99;
@@ -582,6 +580,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	cout << "Skipping unknown lepton type = " << id1_ << endl;
 	continue;
       }
+
+      // require trigger
+      if( !passSingleLeptonSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
       
       int nels = 0;
       int nmus  = 0;
@@ -602,7 +603,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	nels_  = nels;
 	nmus_  = nmus;
 	ntaus_ = ntaus;
-	
+	nleps_ = nleps;
+
 	if( strcmp(prefix,"ttem")  == 0 && ( nels + nmus ) != 2 ) continue;
 	if( strcmp(prefix,"ttdil") == 0 && nleps != 2           ) continue;
 	if( strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
@@ -891,14 +893,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       weight_ = -1.;
 
-      if(strcmp(prefix,"SMS_T2tt") == 0){
+      if(strcmp(prefix,"T2tt") == 0){
 	mG_ = sparm_mG();
 	mL_ = sparm_mL();
 
 	//ADD WEIGHT HERE!!!!!!
       }
 
-      if(strcmp(prefix,"LMscan") == 0){
+      else if(strcmp(prefix,"LMscan") == 0){
 
 	m0_  = sparm_m0();
 	m12_ = sparm_m12();
@@ -1911,6 +1913,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nels",            &nels_,             "nels/I");  
   outTree->Branch("nmus",            &nmus_,             "nmus/I");  
   outTree->Branch("ntaus",           &ntaus_,            "ntaus/I");  
+  outTree->Branch("nleps",           &nleps_,            "nleps/I");  
   outTree->Branch("dphijm",          &dphijm_,           "dphijm/F");  
   outTree->Branch("ptjetraw",        &ptjetraw_,         "ptjetraw/F");  
   outTree->Branch("ptjet23",         &ptjet23_,          "ptjet23/F");  
