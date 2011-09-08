@@ -203,7 +203,7 @@ void doAll(bool skipFWLite = true)
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -214,7 +214,7 @@ void doAll(bool skipFWLite = true)
   bool runWW       = 0;
   bool runWZ       = 0;
   bool runZZ       = 0;
-  bool runWjets    = 1;
+  bool runWjets    = 0;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
@@ -250,7 +250,7 @@ void doAll(bool skipFWLite = true)
   bool runML8      = 0;
   bool runLMscan   = 0; 
   bool runT1lh     = 0;
-  bool runT2tt     = 1;
+  bool runT2tt     = 0;
 
   /*  
   //Flags for files to run over
@@ -451,7 +451,7 @@ void doAll(bool skipFWLite = true)
 
   TChain* chWjets = new  TChain("Events");
   if(runWjets){
-    pickSkimIfExists(chWjetsMG, 
+    pickSkimIfExists(chWjets, 
 		     "/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
 		     "WJets");
   }
@@ -1017,14 +1017,16 @@ void doAll(bool skipFWLite = true)
 	// May10 rereco
 	//---------------------------
 
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-15/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/merged*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-15/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/merged*root");
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+	pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+
 	//---------------------------
 	// prompt reco v4
 	//---------------------------
 
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_3_patch1_V04-02-16/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-16_merged/V04-02-16/merged*root");
-	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_3_patch1_V04-02-16/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-16_merged/V04-02-16/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+
 
     }
 
