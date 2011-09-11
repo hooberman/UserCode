@@ -21,9 +21,8 @@ char* pm;
 char* delim;      
 char* delimstart; 
 char* delimend;   
-char* ee;         
-char* mm;         
-char* em;         
+char* e;         
+char* m;         
 
 int   width1;
 int   width2;

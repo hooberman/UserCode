@@ -51,9 +51,8 @@ void printLine( bool latex ){
 void printHeader(){
 
   cout << delimstart << setw(width1) << "Sample"    << setw(width2)
-       << delim      << setw(width1) << ee          << setw(width2)
-       << delim      << setw(width1) << mm          << setw(width2)
-       << delim      << setw(width1) << em          << setw(width2)
+       << delim      << setw(width1) << e           << setw(width2)
+       << delim      << setw(width1) << m           << setw(width2)
        << delim      << setw(width1) << "tot"       << setw(width2) 
        << delimend   << endl;
 
@@ -62,37 +61,32 @@ void printHeader(){
 
 void print( TH1F* h , string label , bool correlatedError = false ){
 
-  stringstream see;
-  stringstream smm;
-  stringstream sem;
+  stringstream se;
+  stringstream sm;
   stringstream stot;
 
   if( label == "data" ){
-    see  << Form( "%.0f" , h->GetBinContent(1) );
-    smm  << Form( "%.0f" , h->GetBinContent(2) );
-    sem  << Form( "%.0f" , h->GetBinContent(3) );
+    se   << Form( "%.0f" , h->GetBinContent(1) );
+    sm   << Form( "%.0f" , h->GetBinContent(2) );
     stot << Form( "%.0f" , h->Integral()       );
   }else{
     //see  << Form( "%.1f" , h->GetBinContent(1) );
     //smm  << Form( "%.1f" , h->GetBinContent(2) );
-    //sem  << Form( "%.1f" , h->GetBinContent(3) );
     //stot << Form( "%.1f" , h->Integral()       );
 
-    see  << Form( "%.1f" , h->GetBinContent(1) ) << pm << Form( "%.1f" , h->GetBinError(1) );
-    smm  << Form( "%.1f" , h->GetBinContent(2) ) << pm << Form( "%.1f" , h->GetBinError(2) );
-    sem  << Form( "%.1f" , h->GetBinContent(3) ) << pm << Form( "%.1f" , h->GetBinError(3) );
+    se   << Form( "%.1f" , h->GetBinContent(1) ) << pm << Form( "%.1f" , h->GetBinError(1) );
+    sm   << Form( "%.1f" , h->GetBinContent(2) ) << pm << Form( "%.1f" , h->GetBinError(2) );
 
     float error = 0;
-    if( correlatedError ) error = h->GetBinError(1) + h->GetBinError(2) + h->GetBinError(3);
+    if( correlatedError ) error = h->GetBinError(1) + h->GetBinError(2);
     else                  error = histError(h,1,4);
     
     stot << Form( "%.1f" , h->Integral()       ) << pm << Form( "%.1f" , error  );
   }
 
   cout << delimstart << setw(width1) << label      << setw(width2)
-       << delim      << setw(width1) << see.str()  << setw(width2)
-       << delim      << setw(width1) << smm.str()  << setw(width2)
-       << delim      << setw(width1) << sem.str()  << setw(width2)
+       << delim      << setw(width1) << se.str()   << setw(width2)
+       << delim      << setw(width1) << sm.str()   << setw(width2)
        << delim      << setw(width1) << stot.str() << setw(width2)
        << delimend   << endl;
   
@@ -120,9 +114,9 @@ void initSymbols( bool latex ){
   // table format
   //-------------------------------------------------------
 
-  width1      = 15;
+  width1      = 20;
   width2      = 4;
-  linelength  = (width1+width2)*5+1;
+  linelength  = (width1+width2)*4+1;
 
   //-------------------------------------------------------
   // symbols
@@ -133,17 +127,15 @@ void initSymbols( bool latex ){
     delim      = "&";
     delimstart = "";
     delimend   = "\\\\";
-    ee         = "$ee$";
-    mm         = "$\\mu\\mu$";
-    em         = "$e\\mu$";
+    e          = "$e$";
+    m          = "$\\mu$";
   }else{
     pm         = " +/- ";
     delim      = "|";
     delimstart = "|";
     delimend   = "|";
-    ee         = "ee";
-    mm         = "mm";
-    em         = "em";
+    e          = "e";
+    m          = "m";
   }
 
 }
@@ -289,7 +281,6 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 
       hyield->SetBinError(1,0.5*hyield->GetBinContent(1));
       hyield->SetBinError(2,0.5*hyield->GetBinContent(2));
-      hyield->SetBinError(3,0.5*hyield->GetBinContent(3));
       
     }
 
@@ -557,10 +548,9 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   //text->DrawLatex(0.2,0.83,"0.98 fb^{-1} at #sqrt{s} = 7 TeV");
   text->DrawLatex(0.2,0.83,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
 
-  if     ( TString(flavor).Contains("ee")  ) text->DrawLatex(0.2,0.78,"Events with ee");
-  else if( TString(flavor).Contains("mm")  ) text->DrawLatex(0.2,0.78,"Events with #mu#mu");
-  else if( TString(flavor).Contains("em")  ) text->DrawLatex(0.2,0.78,"Events with e#mu");
-  else if( TString(flavor).Contains("all") ) text->DrawLatex(0.2,0.78,"Events with ee/#mu#mu/e#mu");
+  if     ( TString(flavor).Contains("e")  )  text->DrawLatex(0.2,0.78,"e-channel");
+  else if( TString(flavor).Contains("m")  )  text->DrawLatex(0.2,0.78,"#mu-channel");
+  else if( TString(flavor).Contains("all") ) text->DrawLatex(0.2,0.78,"e/#mu-channel");
 
   if( residual ){
     fullpad->cd();
