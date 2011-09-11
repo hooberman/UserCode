@@ -478,24 +478,28 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       InitBaby();
 
+      //---------------------------------------------
       // event cleaning and good run list
+      //---------------------------------------------
+
       if( !cleaning_goodDAVertexApril2011() )                        continue;
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
 
-      float pthat_cutoff = 30.;
-      if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
-        continue;
-      }
-
+      //---------------------
       // skip duplicates
+      //---------------------
+
       if( isData ) {
         DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
         if (is_duplicate(id) ){
           continue;
         }
       }
-   
-      //skip events with bad els_conv_dist 
+
+      //-------------------------------------
+      // skip events with bad els_conv_dist
+      //-------------------------------------
+ 
       bool skipEvent = false;
       for( unsigned int iEl = 0 ; iEl < els_conv_dist().size() ; ++iEl ){
         if( els_conv_dist().at(iEl) != els_conv_dist().at(iEl) ){
@@ -513,23 +517,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
         nSkip_els_conv_dist++;
         continue;
       }
-
-      //goodrun list + event cleaning
-      json_ = 1;
-
-      //find good hyps, store in v_goodHyps
-      vector<unsigned int> v_goodHyps;
-      v_goodHyps.clear();
-      vector<unsigned int> v_goodZHyps;
-      vector<float> v_weights;
-      v_weights.clear();
-      v_goodZHyps.clear();
-
-      bool foundMu_ll[20];
-      bool foundMu_lt[20];
-      bool foundEl_ll[20];
-      bool foundEl_lt[20];
    
+      //---------------------------------------------
+      // find leptons passing analysis selection
+      //---------------------------------------------
+
       VofP4 goodLeptons;
       vector<int> lepId;
       vector<int> lepIndex;
@@ -537,42 +529,90 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ngoodlep_ = 0;
       ngoodel_  = 0;
       ngoodmu_  = 0;
-  
-      if( generalLeptonVeto ){
-          
-        for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-          if( els_p4().at(iel).pt() < 20 )                                                 continue;
-          if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
-          goodLeptons.push_back( els_p4().at(iel) );
-          lepId.push_back( els_charge().at(iel) * 11 );
-          lepIndex.push_back(iel);
-	  ngoodel_++;
-          ngoodlep_++;
-        }
-          
-        for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-          if( mus_p4().at(imu).pt() < 20 )           continue;
-          if( !muonId( imu , OSGeneric_v3 ))         continue;
-          goodLeptons.push_back( mus_p4().at(imu) );
-          lepId.push_back( mus_charge().at(imu) * 13 );
-          lepIndex.push_back(imu);
-          ngoodmu_++;
-          ngoodlep_++;
-        }  
-      }
-
-      // REQUIRE EXACTLY 1 GOOD LEPTON!!!
-      if( goodLeptons.size() != 1 ) continue;
-
-      id1_  = lepId.at(0);
-      lep1_ = &goodLeptons.at(0);
-      int index1 = lepIndex.at(0);
-
-      if( !isData ){
-	w1_          = leptonOrTauIsFromW( index1 , id1_ , isLM );
-      }
             
-      //store dilepton type in myType
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 20 )                                                 continue;
+	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+	goodLeptons.push_back( els_p4().at(iel) );
+	lepId.push_back( els_charge().at(iel) * 11 );
+	lepIndex.push_back(iel);
+	ngoodel_++;
+	ngoodlep_++;
+
+	//cout << "Found electron " << ngoodlep_ << " pt " << els_p4().at(iel).pt() << endl;
+      }
+          
+      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+	if( mus_p4().at(imu).pt() < 20 )           continue;
+	if( !muonId( imu , OSGeneric_v3 ))         continue;
+	goodLeptons.push_back( mus_p4().at(imu) );
+	lepId.push_back( mus_charge().at(imu) * 13 );
+	lepIndex.push_back(imu);
+	ngoodmu_++;
+	ngoodlep_++;
+
+	//cout << "Found muon " << ngoodlep_ << " pt " << mus_p4().at(imu).pt() << endl;
+      }  
+      
+      // REQUIRE AT LEAST 1 GOOD LEPTON!!!
+      if( goodLeptons.size() < 1 ) continue;
+
+      //---------------------------------------------
+      // find leading lepton
+      //---------------------------------------------
+
+      float maxpt   = -1;
+      int   imaxpt  = -1;
+      int   imaxpt2 = -1;
+
+      for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	if( goodLeptons.at(ilep).pt() > maxpt ){
+	  maxpt  = goodLeptons.at(ilep).pt();
+	  imaxpt = ilep;
+	}
+      }
+
+      id1_       = lepId.at(imaxpt);
+      lep1_      = &goodLeptons.at(imaxpt);
+      int index1 = lepIndex.at(imaxpt);
+
+      //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
+
+      //---------------------------------------------
+      // find 2nd leading lepton (if >=2 leptons)
+      //---------------------------------------------
+
+      id2_       = -999;
+      lep2_      = 0;
+      int index2 = -1;
+      dilmass_   = -999;
+
+      if( ngoodlep_ > 1 ){
+
+	maxpt = -1;
+
+	for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+
+	  if( ilep == imaxpt ) continue;
+
+	  if( goodLeptons.at(ilep).pt() > maxpt ){
+	    maxpt   = goodLeptons.at(ilep).pt();
+	    imaxpt2 = ilep;
+	  }
+	}
+
+	id2_       = lepId.at(imaxpt2);
+	lep2_      = &goodLeptons.at(imaxpt2);
+	index2     = lepIndex.at(imaxpt2);
+	dilmass_   = (goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass();
+
+	//cout << "2nd deading lepton: pt " << lep2_->pt() << " id " << id2_ << " mass " << dilmass_ << endl;
+      }
+
+      //--------------------------------
+      // store dilepton type in myType
+      //--------------------------------
+
       leptype_ = 99;
       if      ( abs(id1_) == 11 )                   leptype_ = 0; // e
       else if ( abs(id1_) == 13 )                   leptype_ = 1; // m
@@ -581,18 +621,25 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	continue;
       }
 
+      //--------------------------------
       // require trigger
+      //--------------------------------
+
       if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
+
+      //--------------------------------
+      // get MC quantities
+      //--------------------------------
       
-      int nels = 0;
-      int nmus  = 0;
-      int ntaus = 0;
-      int nleps = 0;
-        
+      int nels       =  0;
+      int nmus       =  0;
+      int ntaus      =  0;
+      int nleps      =  0;
       float dilptgen = -1;
       
       if( !isData ){
 
+	w1_     = leptonOrTauIsFromW( index1 , id1_ , isLM );
 	pthat_  = genps_pthat();
 	qscale_ = genps_qScale();
 	
