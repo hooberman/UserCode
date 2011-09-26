@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-02";
+  const char* version   = "V00-02-03";
   const char* jsonfile  = "jsons/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -199,7 +199,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -220,7 +220,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 0;
+  bool runDYtot    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -519,31 +519,31 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     else{
 
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root",
+		       "/nfs-7/userdata/cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-                       "cms2/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/merged*root",
+		       "/nfs-3/userdata/cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-29/merged*root",
                        "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root",
+		       "/nfs-7/userdata/cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "/nfs-3/userdata/cms2/DYToEE_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root",
+		       "/nfs-3/userdata/cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "/nfs-3/userdata/cms2/DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot"); 
     }
   }
@@ -949,6 +949,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 	cout << "Doing high-pT dilepton trigger data" << endl;
 
+	//pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed_ntuple_999999_36.root");
+	
+	
 	//---------------------------
 	// May10 rereco
 	//---------------------------
