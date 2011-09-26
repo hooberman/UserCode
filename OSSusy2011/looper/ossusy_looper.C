@@ -1266,6 +1266,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	htDown_    = 0.;
 
 	int   imaxjet   = -1;
+	int   imaxjet2  = -1;
 	float maxjetpt  = -1.;
 
 	vector<int> goodjets;
@@ -1357,6 +1358,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  }
         }
 
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > pfjets_p4_sorted(vpfjets_p4);
+	sort(pfjets_p4_sorted.begin(), pfjets_p4_sorted.end(), sortByPt);
+
 	if( imaxjet > -1 ){ 
 	  jet_ = &(pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet));
 
@@ -1370,6 +1374,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  
           LorentzVector vjet = pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet);
 	  dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
+	}
+
+	jet2_  =    0;
+	mlljj_ = -999;
+
+	if( pfjets_p4_sorted.size() >= 2 ){
+	  jet2_  = &(pfjets_p4_sorted.at(1));
+	  mlljj_ = (*jet_+*jet2_+hyp_p4()[hypIdx]).mass();
 	}
 
 	//---------------------------------
@@ -4109,12 +4121,14 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ptjetF23",        &ptjetF23_,         "ptjetF23/F");  
   outTree->Branch("ptjetO23",        &ptjetO23_,         "ptjetO23/F");  
   outTree->Branch("cosphijz",        &cosphijz_,         "cosphijz/F");  
+  outTree->Branch("mlljj",           &mlljj_,            "mlljj/F");  
   outTree->Branch("njets15",         &njets15_,          "njets15/I");  
  
   outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
   outTree->Branch("jet"	    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	        );
+  outTree->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
 
 
 }
