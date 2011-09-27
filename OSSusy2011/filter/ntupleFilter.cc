@@ -37,10 +37,10 @@ using namespace tas;
 bool select (bool isData)
 {
 
-  for( unsigned int hypIdx = 0 ; hypIdx < hyp_p4().size() ; ++hypIdx ){
-    float tcmet = getMet( "tcMET" , hypIdx).first;
-    if( tcmet > 50 ) return true;
-  }
+  // for( unsigned int hypIdx = 0 ; hypIdx < hyp_p4().size() ; ++hypIdx ){
+  //   float tcmet = getMet( "tcMET" , hypIdx).first;
+  //   if( tcmet > 50 ) return true;
+  // }
 
   if( cms2.evt_tcmet() > 50. ) return true;
   if( cms2.evt_pfmet() > 50. ) return true;
@@ -146,3 +146,5 @@ void ntupleFilter(const std::string &infile, const std::string &outfile, bool pr
     newtree->Write();
     delete output;
 }
+
+
