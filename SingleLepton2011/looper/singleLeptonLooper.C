@@ -438,12 +438,19 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
   bool hasJptBtagBranch = true;
 
+  char* thisFile = "blah";
+
   while((currentFile = (TChainElement*)fileIter.Next())) {
     TFile* f = new TFile(currentFile->GetTitle());
 
     if( !f || f->IsZombie() ) {
       cout << "Skipping bad input file: " << currentFile->GetTitle() << endl;
       continue; //exit(1);                                                                                             
+    }
+
+    if( strcmp(thisFile,currentFile->GetTitle()) != 0 ){
+      thisFile = (char*) currentFile->GetTitle();
+      cout << thisFile << endl;
     }
 
     TTree *tree = (TTree*)f->Get("Events");
@@ -477,6 +484,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       cms2.GetEntry(z);
 
       InitBaby();
+
+      if( verbose ){
+	cout << "-------------------------------------------------------"   << endl;
+	cout << "Event " << z                                               << endl;
+	cout << "File  " << currentFile->GetTitle()                         << endl;
+	cout << evt_dataset() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+	cout << "-------------------------------------------------------"   << endl;
+      }
 
       //---------------------------------------------
       // event cleaning and good run list
@@ -572,6 +587,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
       }
 
+      if( imaxpt < 0 ){
+	cout << "ERROR! QUITTING imaxpt " << imaxpt << endl;
+	exit(2);
+      }
+
       id1_       = lepId.at(imaxpt);
       lep1_      = &goodLeptons.at(imaxpt);
       int index1 = lepIndex.at(imaxpt);
@@ -599,6 +619,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    maxpt   = goodLeptons.at(ilep).pt();
 	    imaxpt2 = ilep;
 	  }
+	}
+
+	if( imaxpt2 < 0 ){
+	  cout << "ERROR! QUITTING imaxpt2 " << imaxpt2 << endl;
+	  exit(3);
 	}
 
 	id2_       = lepId.at(imaxpt2);
