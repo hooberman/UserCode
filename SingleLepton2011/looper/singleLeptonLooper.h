@@ -71,9 +71,12 @@ class singleLeptonLooper
 
         // Baby ntuple methods
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
+	float stopPairCrossSection( float stopmass );
         void closeTree ();
 
 	bool initialized;
+	TH1D*   stop_xsec_hist;
+	TFile*  stop_xsec_file;
 
     private:
 
@@ -90,7 +93,7 @@ class singleLeptonLooper
         LorentzVector*  lep2_;
         LorentzVector*  dilep_;
         LorentzVector*  jet_; 
- 
+
         // Baby ntuple variables
 	Float_t dphilm_;
 	Float_t mG_;

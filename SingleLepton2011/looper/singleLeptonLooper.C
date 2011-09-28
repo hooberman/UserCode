@@ -358,18 +358,58 @@ void singleLeptonLooper::closeTree()
 
 //--------------------------------------------------------------------
 
+float singleLeptonLooper::stopPairCrossSection( float stopmass ){
+
+  // stop mass divisible by 10
+  if( ((int)stopmass%10)<1 ){
+    int   bin  = stop_xsec_hist->FindBin(stopmass);
+    float xsec = stop_xsec_hist->GetBinContent(bin);
+    return xsec;
+  }
+
+  // stop mass not divisible by 10
+  else{
+    int   bin   = stop_xsec_hist->FindBin(stopmass);
+    float xsec1 = stop_xsec_hist->GetBinContent(bin);
+    float xsec2 = stop_xsec_hist->GetBinContent(bin+1);
+    float xsec  = 0.5 * ( xsec1 + xsec2 );
+    return xsec;
+  }
+}
+
+//--------------------------------------------------------------------
+
 int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, float lumi,
 				  JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 
 {
 
   if( !initialized ){
+
+    //set json
     cout << "setting json " << g_json << endl;
     set_goodrun_file( g_json );
 
+    //set vtx reweighting hist
     set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
 
+    //set msugra cross section file
     set_msugra_file("goodModelNames_tanbeta10.txt");
+
+    //set stop cross section file
+    stop_xsec_file = TFile::Open("../data/reference_xSec_stop.root");
+
+    if( !stop_xsec_file->IsOpen() ){
+      cout << "Error, could not open stop cross section TFile, quitting" << endl;
+      exit(0);
+    }
+
+    stop_xsec_hist        = (TH1D*) stop_xsec_file->Get("stop");
+    
+    if( stop_xsec_hist == 0 ){
+      cout << "Error, could not retrieve stop cross section hist, quitting" << endl;
+      exit(0);
+    }
 
     initialized = true;
   }
@@ -969,7 +1009,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	mG_ = sparm_mG();
 	mL_ = sparm_mL();
 
-	//ADD WEIGHT HERE!!!!!!
+	weight_ = lumi * stopPairCrossSection(mG_) * (1000./10000.);
       }
 
       else if(strcmp(prefix,"LMscan") == 0){
@@ -1155,6 +1195,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
+
+  stop_xsec_file->Close();
 
   //delete d_llsol; //REPLACETOPMASS
 
