@@ -41,8 +41,9 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-01";
-  const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
+  const char* version   = "V00-00-03";
+  //const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
+  const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -197,14 +198,14 @@ void doAll(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata_SingleMu = 1;
-  bool rundata     = 0;
+  bool rundata_SingleMu = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -215,7 +216,7 @@ void doAll(bool skipFWLite = true)
   bool runWW       = 0;
   bool runWZ       = 0;
   bool runZZ       = 0;
-  bool runWjets    = 0;
+  bool runWjets    = 1;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
@@ -349,16 +350,29 @@ void doAll(bool skipFWLite = true)
 
   TChain* chQCD = new  TChain("Events");
   if(runQCD){
+
     pickSkimIfExists(chQCD, 
-		     "cms2/QCD_Pt_15to30_TuneZ2_7TeV_pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-03/merged*root",
+		     "/nfs-7/userdata/cms2/QCD_Pt-15to30_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
 		     "QCD");
 
     pickSkimIfExists(chQCD, 
-		     "cms2/QCD_Pt_30to50_TuneZ2_7TeV_pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-03/merged*root",
+		     "/nfs-7/userdata/cms2/QCD_Pt-30to50_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
 		     "QCD");
 
     pickSkimIfExists(chQCD, 
-		     "cms2/QCD_Pt_50to80_TuneZ2_7TeV_pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-03/merged*root",
+		     "/nfs-7/userdata/cms2/QCD_Pt-50to80_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
+		     "QCD");
+
+    pickSkimIfExists(chQCD, 
+		     "/nfs-7/userdata/cms2/QCD_Pt-80to120_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
+		     "QCD");
+
+    pickSkimIfExists(chQCD, 
+		     "/nfs-7/userdata/cms2/QCD_Pt-120to170_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
+		     "QCD");
+
+    pickSkimIfExists(chQCD, 
+		     "/nfs-7/userdata/cms2/QCD_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
 		     "QCD");
 
 
@@ -998,16 +1012,23 @@ void doAll(bool skipFWLite = true)
     //---------------------------
     // May10 rereco
     //---------------------------
-    
-    pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
-    pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+   
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root"); 
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+
+    //pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+    //pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
     
     //---------------------------
     // prompt reco v4
     //---------------------------
     
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+    //these are the unfiltered ntuples
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-31/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-31_merged/V04-02-31/merged*root");
+    //pickSkimIfExists(chdata," /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-31/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-31_merged/V04-02-31/merged*root);
+
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
   
   }
 
@@ -1017,9 +1038,12 @@ void doAll(bool skipFWLite = true)
 
     looper->set_json( "jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3_goodruns.txt" );
 
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
-    
-    pickSkimIfExists(chdata_SingleMu,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged_ntuple_999999_72.root");
+    cout << __FILE__ << " " << __LINE__ << " not set up for single-mu data, exiting!" << endl;
+    exit(0);
+
+    //pickSkimIfExists(chdata_SingleMu,"singleMuData/merged*root");
+    //pickSkimIfExists(chdata_SingleMu,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+    //pickSkimIfExists(chdata_SingleMu,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged_ntuple_999999_72.root");
 
   }
 
