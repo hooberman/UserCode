@@ -199,13 +199,13 @@ void doAll(bool skipFWLite = true)
 
   //Flags for files to run over
   bool rundata_SingleMu = 0;
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runQCD      = 1;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -216,7 +216,7 @@ void doAll(bool skipFWLite = true)
   bool runWW       = 0;
   bool runWZ       = 0;
   bool runZZ       = 0;
-  bool runWjets    = 1;
+  bool runWjets    = 0;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
@@ -252,7 +252,7 @@ void doAll(bool skipFWLite = true)
   bool runML8      = 0;
   bool runLMscan   = 0; 
   bool runT1lh     = 0;
-  bool runT2tt     = 0;
+  bool runT2tt     = 1;
 
   /*  
   //Flags for files to run over
@@ -899,8 +899,9 @@ void doAll(bool skipFWLite = true)
     string t2ttpath="/hadoop/cms/store/user/benhoob/CMS2_V04-02-20-04/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/";
 
     pickSkimIfExists(chT2tt,
-		     t2ttpath + "ntuple*root",
+    		     t2ttpath + "ntuple*root",
                      "T2tt");
+    
     /*
       pickSkimIfExists(chT2tt,
       t2ttpath + "ntuple_12_*root",
