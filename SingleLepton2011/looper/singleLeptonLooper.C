@@ -533,6 +533,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	cout << "-------------------------------------------------------"   << endl;
       }
 
+      // skip stop-pair events with m(stop) > 850 GeV
+      if(strcmp(prefix,"T2tt") == 0){
+	if( sparm_mG() > 850.0 ) continue;
+      }
+
       //---------------------------------------------
       // event cleaning and good run list
       //---------------------------------------------
@@ -586,7 +591,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ngoodmu_  = 0;
             
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 20 )                                                 continue;
+	if( els_p4().at(iel).pt() < 10 )                                                 continue;
 	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepId.push_back( els_charge().at(iel) * 11 );
@@ -598,7 +603,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       }
           
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 20 )           continue;
+	if( mus_p4().at(imu).pt() < 10 )           continue;
 	if( !muonId( imu , OSGeneric_v3 ))         continue;
 	goodLeptons.push_back( mus_p4().at(imu) );
 	lepId.push_back( mus_charge().at(imu) * 13 );
@@ -631,6 +636,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	cout << "ERROR! QUITTING imaxpt " << imaxpt << endl;
 	exit(2);
       }
+
+      // REQUIRE LEADING LEPTON PT > 20 GEV
+      if( maxpt < 20 ) continue;
 
       id1_       = lepId.at(imaxpt);
       lep1_      = &goodLeptons.at(imaxpt);
@@ -756,6 +764,191 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  }
 	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
 	}
+            
+	//-----------------------------------------------------
+	// track gen lepton information here
+	//-----------------------------------------------------
+	
+	mcid1_    = -1;
+	mcid2_    = -1;
+	mclep1_   =  0;
+	mclep2_   =  0;
+	mcdecay1_ = -1;
+	mcdecay2_ = -1;
+	mcdr1_    = -1;
+	mcdr2_    = -1;
+
+	//-----------------------------------------------------
+	// store single gen lepton info
+	//-----------------------------------------------------
+
+	if( nleps_ == 1 ){
+
+	  int nfoundleps = 0;
+
+	  for ( int igen = 0 ; igen < cms2.genps_id().size() ; igen++ ) { 
+
+	    int id = genps_id().at(igen);
+
+	    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
+
+	    nfoundleps++;
+	    mcid1_   = id;
+	    mclep1_  = &genps_p4().at(igen);
+	    mcdr1_   = dRbetweenVectors( *lep1_ , *mclep1_ );
+
+	    if( abs(id)==15 ){
+	      mcdecay1_ = 1;
+
+	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
+		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
+		if( daughter == 12 || daughter == 14) mcdecay1_ = 2; 
+	      } 
+	    } 
+	  } 
+
+	  if( nfoundleps != 1 ) cout << "ERROR! expected 1 lepton, found " << nfoundleps << endl;
+	}
+
+	//-----------------------------------------------------	
+	// store both gen lepton info
+	//-----------------------------------------------------
+	
+	else if( nleps_ == 2 ){
+	  
+	  float drmin      = 9999;
+	  int   igenmin    =   -1;
+	  int   nfoundleps =    0;
+	  
+	  //-----------------------------------------------------
+	  // find gen lepton closest to reco lepton
+	  //-----------------------------------------------------
+	  
+	  for ( int igen = 0 ; igen < cms2.genps_id().size() ; igen++ ) { 
+
+	    int id = genps_id().at(igen);
+
+	    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
+
+	    nfoundleps++;
+
+	    if( dRbetweenVectors( *lep1_ , genps_p4().at(igen) ) < drmin ){
+	      drmin   = dRbetweenVectors( *lep1_ , genps_p4().at(igen) );
+	      igenmin = igen;
+	    }
+	  }
+
+	  if( nfoundleps != 2 ) cout << "ERROR! expected 2 leptons, found " << nfoundleps << endl;
+
+	  //-----------------------------------------------------
+	  // store info for closest gen lepton
+	  //-----------------------------------------------------
+
+	  mcid1_   = genps_id().at(igenmin);
+	  mclep1_  = &genps_p4().at(igenmin);
+	  mcdr1_   = dRbetweenVectors( *lep1_ , *mclep1_ );
+
+	  if( abs(mcid1_)==15 ){
+	    mcdecay1_ = 1;
+	    
+	    for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igenmin).size(); kk++) {
+	      int daughter = abs(cms2.genps_lepdaughter_id()[igenmin][kk]);
+	      if( daughter == 12 || daughter == 14) mcdecay1_ = 2; 
+	    } 
+	  }
+
+	  //-----------------------------------------------------
+	  // find 2nd lepton
+	  //-----------------------------------------------------
+
+	  int igenmin2 = -1;
+
+	  for ( int igen = 0 ; igen < cms2.genps_id().size() ; igen++ ) { 
+
+	    if( igen == igenmin ) continue; //skip closest lepton
+
+	    igenmin2 = igen;
+
+	    int id = genps_id().at(igen);
+
+	    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
+
+	    mcid2_   = id;
+	    mclep2_  = &genps_p4().at(igen);
+	    if( ngoodlep_ > 1 ) mcdr2_   = dRbetweenVectors( *lep2_ , *mclep2_ );
+
+	    if( abs(id)==15 ){
+	      mcdecay2_ = 1;
+
+	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
+		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
+		if( daughter == 12 || daughter == 14) mcdecay2_ = 2; 
+	      } 
+	    } 
+	  } 
+
+	  if( igenmin2 < 0 ) cout << __FILE__ << " " << __LINE__ << " Error! unable to find 2nd gen lepton" << endl;
+
+	  //-----------------------------------------------------
+	  // find reco lepton corresponding to 2nd gen lepton
+	  // check if found, if pass ID and/or iso
+	  //-----------------------------------------------------
+
+	  int nMatchLeptons =  0;
+	  int elmatch       = -1;
+	  int mumatch       = -1;
+
+	  for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	    int mc3idx = els_mc3idx().at(iel);
+	    if( mc3idx != igenmin2 ) continue;
+	    elmatch = iel;
+	    nMatchLeptons++;
+	  }
+          
+	  for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+	    int mc3idx = mus_mc3idx().at(imu);
+	    if( mc3idx != igenmin2 ) continue;
+	    mumatch = imu;
+	    nMatchLeptons++;
+	  }
+
+	  mlepid_       = -1;
+	  mlep_         =  0;
+	  mleppassid_   = -1;
+	  mleppassiso_  = -1;
+	  mlepiso_      = -1.0;
+
+	  if( nMatchLeptons == 1 ){
+
+	    // found matched electron
+	    if( elmatch > -1 && mumatch < 0 ){
+	      mlepid_       = 11 * els_charge().at(elmatch);
+	      mlep_         = &els_p4().at(elmatch);
+	      mleppassid_   = pass_electronSelection( elmatch , electronSelection_el_OSV3_noiso ) ? 1 : 0;
+	      mleppassiso_  = pass_electronSelection( elmatch , electronSelection_el_OSV3_iso   ) ? 1 : 0;
+	      mlepiso_      = electronIsolation_rel_v1(elmatch, true );
+	    }
+
+	    // found matched muon
+	    else if( elmatch < 0 && mumatch > -1 ){
+	      mlepid_       = 13 * mus_charge().at(mumatch);
+	      mlep_         = &mus_p4().at(mumatch);
+	      mleppassid_   = muonIdNotIsolated( mumatch , OSGeneric_v3 ) ? 1 : 0;
+	      mleppassiso_  = muonIsoValue(mumatch,false) < 0.15 ? 1 : 0;
+	      mlepiso_      = muonIsoValue(mumatch,false);
+	    }
+	  }
+	  
+	  else if( nMatchLeptons > 1 ){
+	    cout << __FILE__ << " " << __LINE__ << " Error! found " << nMatchLeptons << " matched to 2nd gen lepton" << endl;
+	  }
+ 
+	}
+
+	else if( nleps_ < 0 || nleps_ > 2 ){
+	  cout << "ERROR nleptons = " << nleps_ << endl;
+	}
+
       }
       
     
@@ -1009,7 +1202,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	mG_ = sparm_mG();
 	mL_ = sparm_mL();
 
-	weight_ = lumi * stopPairCrossSection(mG_) * (1000./10000.);
+	weight_ = lumi * stopPairCrossSection(mG_) * (1000./50000.);
       }
 
       else if(strcmp(prefix,"LMscan") == 0){
@@ -2035,9 +2228,24 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ptjetO23",        &ptjetO23_,         "ptjetO23/F");  
   //outTree->Branch("cosphijz",        &cosphijz_,         "cosphijz/F");  
   outTree->Branch("njets15",         &njets15_,          "njets15/I");  
+
+  outTree->Branch("mcid1",           &mcid1_,            "mcid1/I");  
+  outTree->Branch("mcdr1",           &mcdr1_,            "mcdr1/F");  
+  outTree->Branch("mcdecay1",        &mcdecay1_,         "mcdecay1/I");  
+  outTree->Branch("mcid2",           &mcid2_,            "mcid2/I");  
+  outTree->Branch("mcdr2",           &mcdr2_,            "mcdr2/F");  
+  outTree->Branch("mcdecay2",        &mcdecay2_,         "mcdecay2/I");  
  
+  outTree->Branch("mlepid",          &mlepid_,           "mlepid/I");  
+  outTree->Branch("mleppassid",      &mleppassid_,       "mleppassid/I");  
+  outTree->Branch("mleppassiso",     &mleppassiso_,      "mleppassiso/I");  
+  outTree->Branch("mlepiso",         &mlepiso_,          "mlepiso/F");  
+
+  outTree->Branch("mlep"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
+  outTree->Branch("mclep1"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep1_	);
+  outTree->Branch("mclep2"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep2_	);
   outTree->Branch("jet"	    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	        );
 
 

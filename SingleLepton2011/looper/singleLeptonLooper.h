@@ -89,6 +89,21 @@ class singleLeptonLooper
 	TrigEnum g_trig;
         TRandom3 *random3_;
 
+	Int_t   mcid1_;    
+	Int_t   mcid2_;    
+	Int_t	mcdecay1_; 
+	Int_t   mcdecay2_; 
+	Float_t mcdr1_;    
+	Float_t mcdr2_;    
+
+	Int_t   mlepid_;
+	Int_t   mleppassid_;
+	Int_t   mleppassiso_;
+	Float_t mlepiso_;
+
+	LorentzVector*  mlep_;   
+	LorentzVector*  mclep1_;   
+	LorentzVector*  mclep2_;   
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
         LorentzVector*  dilep_;
