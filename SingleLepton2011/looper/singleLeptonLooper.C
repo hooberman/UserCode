@@ -256,6 +256,22 @@ int getIndexFromM12(float m12){
 
 void singleLeptonLooper::InitBaby(){
 
+	
+  mcid1_    = -1;
+  mcid2_    = -1;
+  mclep1_   =  0;
+  mclep2_   =  0;
+  mcdecay1_ = -1;
+  mcdecay2_ = -1;
+  mcdr1_    = -1;
+  mcdr2_    = -1;
+  
+  mlepid_       = -1;
+  mlep_         =  0;
+  mleppassid_   = -1;
+  mleppassiso_  = -1;
+  mlepiso_      = -1.0;
+
   mllgen_	= -1;
   pthat_	= -1;
   qscale_	= -1;
@@ -867,11 +883,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	    if( igen == igenmin ) continue; //skip closest lepton
 
-	    igenmin2 = igen;
-
 	    int id = genps_id().at(igen);
 
 	    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
+
+	    igenmin2 = igen;
 
 	    mcid2_   = id;
 	    mclep2_  = &genps_p4().at(igen);
@@ -894,22 +910,41 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  // check if found, if pass ID and/or iso
 	  //-----------------------------------------------------
 
-	  int nMatchLeptons =  0;
-	  int elmatch       = -1;
-	  int mumatch       = -1;
+	  int  nMatchLeptons =  0;
+	  int  imatch        = -1;
+	  int  ID            = -1;
+
+	  float drminlep = 999;
 
 	  for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 	    int mc3idx = els_mc3idx().at(iel);
+
 	    if( mc3idx != igenmin2 ) continue;
-	    elmatch = iel;
 	    nMatchLeptons++;
+
+	    float dr = els_mc3dr().at(iel);
+
+	    if( dr < drminlep ){
+	      drminlep   = dr;
+	      imatch     = iel;
+	      ID         = 1;
+	    }
 	  }
           
 	  for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	    int mc3idx = mus_mc3idx().at(imu);
+
 	    if( mc3idx != igenmin2 ) continue;
-	    mumatch = imu;
 	    nMatchLeptons++;
+
+	    float dr = mus_mc3dr().at(imu);
+
+	    if( dr < drminlep ){
+	      drminlep   = dr;
+	      imatch     = imu;
+	      ID         = 2;
+	    }
+
 	  }
 
 	  mlepid_       = -1;
@@ -917,32 +952,31 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  mleppassid_   = -1;
 	  mleppassiso_  = -1;
 	  mlepiso_      = -1.0;
+	  mlepdr_       = -1.0;
 
-	  if( nMatchLeptons == 1 ){
+	  if( nMatchLeptons > 0 ){
 
 	    // found matched electron
-	    if( elmatch > -1 && mumatch < 0 ){
-	      mlepid_       = 11 * els_charge().at(elmatch);
-	      mlep_         = &els_p4().at(elmatch);
-	      mleppassid_   = pass_electronSelection( elmatch , electronSelection_el_OSV3_noiso ) ? 1 : 0;
-	      mleppassiso_  = pass_electronSelection( elmatch , electronSelection_el_OSV3_iso   ) ? 1 : 0;
-	      mlepiso_      = electronIsolation_rel_v1(elmatch, true );
+	    if( ID == 1 ){
+	      mlepid_       = 11 * els_charge().at(imatch);
+	      mlep_         = &els_p4().at(imatch);
+	      mleppassid_   = pass_electronSelection( imatch , electronSelection_el_OSV3_noiso ) ? 1 : 0;
+	      mleppassiso_  = pass_electronSelection( imatch , electronSelection_el_OSV3_iso   ) ? 1 : 0;
+	      mlepiso_      = electronIsolation_rel_v1(imatch, true );
 	    }
 
 	    // found matched muon
-	    else if( elmatch < 0 && mumatch > -1 ){
-	      mlepid_       = 13 * mus_charge().at(mumatch);
-	      mlep_         = &mus_p4().at(mumatch);
-	      mleppassid_   = muonIdNotIsolated( mumatch , OSGeneric_v3 ) ? 1 : 0;
-	      mleppassiso_  = muonIsoValue(mumatch,false) < 0.15 ? 1 : 0;
-	      mlepiso_      = muonIsoValue(mumatch,false);
+	    else if( ID == 2 ){
+	      mlepid_       = 13 * mus_charge().at(imatch);
+	      mlep_         = &mus_p4().at(imatch);
+	      mleppassid_   = muonIdNotIsolated( imatch , OSGeneric_v3 ) ? 1 : 0;
+	      mleppassiso_  = muonIsoValue(imatch,false) < 0.15 ? 1 : 0;
+	      mlepiso_      = muonIsoValue(imatch,false);
 	    }
+
+	    mlepdr_ = dRbetweenVectors( *mlep_ , *mclep2_ );
 	  }
 	  
-	  else if( nMatchLeptons > 1 ){
-	    cout << __FILE__ << " " << __LINE__ << " Error! found " << nMatchLeptons << " matched to 2nd gen lepton" << endl;
-	  }
- 
 	}
 
 	else if( nleps_ < 0 || nleps_ > 2 ){
@@ -950,7 +984,35 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 
       }
-      
+
+      //--------------------------------------------------
+      // store pt and iso for most isolated track
+      //--------------------------------------------------
+
+      trkpt_      = -1.0;
+      trkreliso_  = -1.0;
+
+      float miniso = 999;
+
+      for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+
+	if( pfcands_p4().at(ipf).pt() < 10 ) continue;
+	if( pfcands_charge().at(ipf) == 0  ) continue;
+
+	bool isGoodLepton = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
+	}
+	if( isGoodLepton ) continue;
+
+	float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
+
+	if( iso < miniso ){
+	  trkpt_     = pfcands_p4().at(ipf).pt();
+	  trkreliso_ = iso;
+	}
+      }
+
     
       //pfjets
       VofP4 vpfjets_p4;
@@ -2240,6 +2302,10 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mleppassid",      &mleppassid_,       "mleppassid/I");  
   outTree->Branch("mleppassiso",     &mleppassiso_,      "mleppassiso/I");  
   outTree->Branch("mlepiso",         &mlepiso_,          "mlepiso/F");  
+  outTree->Branch("mlepdr",          &mlepdr_,           "mlepdr/F");  
+
+  outTree->Branch("trkpt",           &trkpt_,            "trkpt/F");  
+  outTree->Branch("trkreliso",       &trkreliso_,        "trkreliso/F");  
 
   outTree->Branch("mlep"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
@@ -2267,3 +2333,64 @@ vector<int> goodDAVertices(){
 }
 
 //--------------------------------------------------------------------
+
+float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx = 0 ){
+  
+  return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
+  
+}
+
+float singleLeptonLooper::trackIso( int thisPf , float dz_thresh ){
+
+  float iso = 0.0;
+
+  for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+
+    if( ipf == thisPf                      ) continue; // skip this PFCandidate
+    if( cms2.pfcands_charge().at(ipf) == 0 ) continue; // skip neutrals
+
+    if( dRbetweenVectors( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) ) > 0.3 ) continue;
+
+    int itrk = cms2.pfcands_trkidx().at(ipf);
+    
+    if( itrk >= trks_trk_p4().size() || itrk < 0 ){
+      //note: this should only happen for electrons which do not have a matched track
+      //currently we are just ignoring these guys
+      continue;
+    }
+    
+    //----------------------------------------
+    // find closest PV and dz w.r.t. that PV
+    //----------------------------------------
+    
+    float mindz = 999.;
+    int vtxi    = -1;
+      
+    for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
+	
+      float mydz = dz_trk_vtx(itrk,ivtx);
+      
+      if (fabs(mydz) < fabs(mindz)) {
+	mindz = mydz;
+	vtxi = ivtx;
+      }
+         
+    }
+    
+    //----------------------------------------------------------------------------
+    // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
+    //----------------------------------------------------------------------------
+    
+    if ( vtxi != 0               )     continue;
+    if ( fabs(mindz) > dz_thresh )     continue;
+
+    //---------------------------------------
+    // passes cuts, add up isolation value
+    //---------------------------------------
+
+    iso += cms2.pfcands_p4().at(ipf).pt();
+
+  }
+
+  return iso;
+}

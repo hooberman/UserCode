@@ -73,6 +73,7 @@ class singleLeptonLooper
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
 	float stopPairCrossSection( float stopmass );
         void closeTree ();
+	float trackIso( int thisPf , float dz_thresh = 0.2 );
 
 	bool initialized;
 	TH1D*   stop_xsec_hist;
@@ -96,10 +97,14 @@ class singleLeptonLooper
 	Float_t mcdr1_;    
 	Float_t mcdr2_;    
 
+	Float_t trkpt_;
+	Float_t trkreliso_;
+
 	Int_t   mlepid_;
 	Int_t   mleppassid_;
 	Int_t   mleppassiso_;
 	Float_t mlepiso_;
+	Float_t mlepdr_;
 
 	LorentzVector*  mlep_;   
 	LorentzVector*  mclep1_;   
