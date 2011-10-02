@@ -41,9 +41,10 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-03";
-  //const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
-  const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3_goodruns.txt";
+  const char* version   = "V00-00-04";
+  //const char* version   = "temp";
+  const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
+  //const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -199,13 +200,13 @@ void doAll(bool skipFWLite = true)
 
   //Flags for files to run over
   bool rundata_SingleMu = 0;
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 1;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -216,7 +217,7 @@ void doAll(bool skipFWLite = true)
   bool runWW       = 0;
   bool runWZ       = 0;
   bool runZZ       = 0;
-  bool runWjets    = 0;
+  bool runWjets    = 1;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
@@ -387,8 +388,13 @@ void doAll(bool skipFWLite = true)
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
+
+    // pickSkimIfExists(chtopall, 
+    // 		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
+    // 		     "TTJets");
+
     pickSkimIfExists(chtopall, 
-		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
+		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple.root",
 		     "TTJets");
   }
 
@@ -896,13 +902,16 @@ void doAll(bool skipFWLite = true)
   TChain *chT2tt = new TChain("Events");
   if (runT2tt) {
     
+    pickSkimIfExists(chT2tt,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged*root");
+
+      /*
     string t2ttpath="/hadoop/cms/store/user/benhoob/CMS2_V04-02-20-04/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/";
 
     pickSkimIfExists(chT2tt,
     		     t2ttpath + "ntuple*root",
                      "T2tt");
-    
-    /*
+      */
+      /*
       pickSkimIfExists(chT2tt,
       t2ttpath + "ntuple_12_*root",
       "T2tt");
@@ -1024,6 +1033,9 @@ void doAll(bool skipFWLite = true)
     // prompt reco v4
     //---------------------------
     
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+
     //these are the unfiltered ntuples
     //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-31/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-31_merged/V04-02-31/merged*root");
     //pickSkimIfExists(chdata," /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-31/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-31_merged/V04-02-31/merged*root);
