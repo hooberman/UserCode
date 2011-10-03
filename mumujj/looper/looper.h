@@ -1,5 +1,5 @@
-#ifndef singleLeptonLooper_h
-#define singleLeptonLooper_h
+#ifndef looper_h
+#define looper_h
 
 #include <vector>
 #include <map>
@@ -20,11 +20,11 @@ class  TRandom3;
 class  TTree;
 struct metStruct;
 
-class singleLeptonLooper
+class looper
 {
     public: 
-        singleLeptonLooper();
-        ~singleLeptonLooper() {}
+        looper();
+        ~looper() {}
 
         enum TrigEnum { e_highpt = 0, e_lowpt };  
         // e_highpt  :   high pt dilepton triggers, 20,10  
@@ -57,8 +57,7 @@ class singleLeptonLooper
                        bool calculateTCMET = false
                        );
         void BookHistos (char *prefix);
-        float getCosThetaStarWeight();
-        float smearMet( float met , float sumjetpt , float metscale );
+
 	void InitBaby();
 	
         // Set globals
@@ -71,13 +70,10 @@ class singleLeptonLooper
 
         // Baby ntuple methods
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
-	float stopPairCrossSection( float stopmass );
         void closeTree ();
-	float trackIso( int thisPf , float dz_thresh = 0.2 );
+	bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector> &trigObjs, float pt);
 
 	bool initialized;
-	TH1D*   stop_xsec_hist;
-	TFile*  stop_xsec_file;
 
     private:
 
@@ -106,27 +102,26 @@ class singleLeptonLooper
 	Float_t mlepiso_;
 	Float_t mlepdr_;
 
-	LorentzVector*  mlep_;   
-	LorentzVector*  mclep1_;   
-	LorentzVector*  mclep2_;   
+	Float_t iso1_;
+	Float_t iso2_;
+	Int_t   passid1_;
+	Int_t   passid2_;
+
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
         LorentzVector*  dilep_;
-        LorentzVector*  jet_; 
+        LorentzVector*  jet1_; 
+        LorentzVector*  jet2_; 
+        LorentzVector*  jet3_; 
+        LorentzVector*  jet4_; 
 
         // Baby ntuple variables
-	Float_t dphilm_;
-	Float_t mG_;
-	Float_t mL_;
-	Float_t ecalveto1_;
-	Float_t ecalveto2_;
-	Float_t hcalveto1_;
-	Float_t hcalveto2_;
         TFile  *outFile;
         TTree  *outTree;
 	Int_t   acc_2010_;
 	Int_t   acc_highmet_;
 	Int_t   acc_highht_;
+	Float_t mmjj_;
 	Float_t pthat_;
 	Float_t qscale_;
         Float_t weight_;
@@ -161,33 +156,13 @@ class singleLeptonLooper
         Int_t   njetsUp_;
         Int_t   npfjets25_;
         Int_t   njetsDown_;
-	Float_t trkmet_;
-	Float_t trkmetphi_;
-	Float_t trkmetproj_;
-	Float_t trkmet4_;
-	Float_t trkmet4phi_;
-	Float_t trkmet4proj_;
-	Float_t trkmet8_;
-	Float_t trkmet8phi_;
-	Float_t trkmet8proj_;
-	Float_t trkjetmet_;
-	Float_t trkjetmetphi_;
-	Float_t trkjetmetproj_;
-        Float_t htUp_;
-        Float_t htDown_;
         Int_t   nvtx_;
-        Int_t   nbtags_;
-        Int_t   nbtagstcl_;
-        Int_t   nbtagstcm_;
+        Int_t   nbtags17_;
+        Int_t   nbtags20_;
+        Int_t   nbtags33_;
         Float_t dilmass_;
         Float_t topmass_;
         Float_t tcmet_;
-        Float_t tcmet00_;
-        Float_t tcmet10_;
-        Float_t tcmet20_;
-        Float_t tcmet30_;
-        Float_t tcmet40_;
-        Float_t tcmet50_;
         Float_t genmet_;
         Float_t gensumet_;
         Float_t genmetphi_;
@@ -225,10 +200,6 @@ class singleLeptonLooper
 	Int_t   id2_;
 	Int_t   w1_;
 	Int_t   w2_;
-	Float_t iso1_;
-	Float_t isont1_;
-	Float_t iso2_;
-	Float_t isont2_;
         Float_t ptl2_;
         Float_t ptj1_;
         Float_t ptj2_;
@@ -239,9 +210,9 @@ class singleLeptonLooper
         Float_t meff_;
         Float_t mt_;
         char    dataset_[200];
-        Int_t   run_;
-        Int_t   lumi_;
-        Int_t   event_;
+        UInt_t  run_;
+        UInt_t  lumi_;
+        UInt_t  event_;
 	Float_t y_;
 	Float_t ht_;
 	Float_t htoffset_;

@@ -16,7 +16,7 @@
 #include "TRandom3.h"
 #include "Math/LorentzVector.h"
 #include "histtools.h"
-#include "singleLeptonLooper.h"
+#include "looper.h"
 #include "TTreeCache.h"
 #include "../CORE/CMS2.h"
 #include "../CORE/metSelections.h"
@@ -68,52 +68,10 @@ void fillOverFlow(TH2F *h2, float xvalue, float yvalue, float weight = 1.);
 void fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsIdx);
 void fillHistos(TH2F *h2[4][4],float xvalue, float yvalue, float weight, int myType, int nJetsIdx);
 void fillHistos(TProfile *h2[4][4],float xvalue, float yvalue,  int myType, int nJetsIdx);
-float returnSigma(float sumJetPt, singleLeptonLooper::MetTypeEnum metType);
-float returnBias(float sumJetPt, singleLeptonLooper::MetTypeEnum metType);
 
 //--------------------------------------------------------------------
 
-void checkElectron( int elidx ){
-
-  cout << "Check electron" << endl;
-  cout << "Pass all    " << pass_electronSelection( elidx , electronSelection_el_OSV3			) << endl;
-  cout << "Pass ID     " << pass_electronSelection( elidx , electronSelection_el_OSV3_noiso		) << endl;
-  cout << "Pass iso    " << pass_electronSelection( elidx , electronSelection_el_OSV3_iso		) << endl;
-  cout << "VBTF90      " << pass_electronSelection( elidx , 1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL	) << endl;
-  cout << "PV          " << pass_electronSelection( elidx , 1ll<<ELEIP_PV_OSV2				) << endl;
-  cout << "nomuon      " << pass_electronSelection( elidx , 1ll<<ELENOMUON_010				) << endl;
-  cout << "hitpattern  " << pass_electronSelection( elidx , 1ll<<ELENOTCONV_HITPATTERN			) << endl;
-  cout << "convrej     " << pass_electronSelection( elidx , 1ll<<ELENOTCONV_DISTDCOT002			) << endl;
-  cout << "pt10        " << pass_electronSelection( elidx , 1ll<<ELEPT_010				) << endl;
-  cout << "eta25       " << pass_electronSelection( elidx , 1ll<<ELEETA_250				) << endl;
-  cout << "transition  " << pass_electronSelection( elidx , 1ll<<ELE_NOT_TRANSITION			) << endl;
-  cout << "HLT iso     " << pass_electronSelection( elidx , 1ll<<ELEISO_ECAL_RELNT020_NPS		) << endl;
-  cout << "offline iso " << pass_electronSelection( elidx , 1ll<<ELEISO_RELNT015			) << endl;
-
-}
-
-void checkMuon( int muidx ){
-
-  cout << "Check muon" << endl;
-  cout << "Pass all  " <<  muonId(muidx , OSGeneric_v3)                                            << endl;
-  cout << "Pass ID   " <<  muonIdNotIsolated(muidx , OSGeneric_v3 )                                << endl;
-  cout << "Pass iso  " <<  ( muonIsoValue(muidx,false) < 0.15 )                                    << endl;
-  cout << "eta24     " <<  ( TMath::Abs(cms2.mus_p4()[muidx].eta()) < 2.4)                         << endl;
-  cout << "chi2/ndf  " <<  ( cms2.mus_gfit_chi2().at(muidx)/cms2.mus_gfit_ndof().at(muidx) < 10)   << endl;
-  cout << "global    " <<  ( ((cms2.mus_type().at(muidx)) & (1<<1)) != 0)                          << endl;
-  cout << "tracker   " <<  ( ((cms2.mus_type().at(muidx)) & (1<<2)) != 0)                          << endl;
-  cout << "nhits     " <<  ( cms2.mus_validHits().at(muidx) > 10)                                  << endl;
-  cout << "stahits   " <<  ( cms2.mus_gfit_validSTAHits().at(muidx) != 0)                          << endl;
-  cout << "d0PV      " <<  ( TMath::Abs(mud0PV_smurfV3(muidx)) < 0.02)                             << endl;
-  cout << "dzPV      " <<  ( TMath::Abs(mudzPV_smurfV3(muidx)) < 1  )                              << endl;
-  cout << "dpt/pt    " <<  ( cms2.mus_ptErr().at(muidx)/cms2.mus_p4().at(muidx).pt()<0.1)          << endl;
-
-}
-
-
-//--------------------------------------------------------------------
-
-singleLeptonLooper::singleLeptonLooper()
+looper::looper()
 {
   g_susybaseline = false;
   g_createTree   = false;
@@ -130,33 +88,6 @@ double dRbetweenVectors(const LorentzVector &vec1,
   double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
   double deta = vec1.Eta() - vec2.Eta();
   return sqrt(dphi*dphi + deta*deta);
-}
-
-//--------------------------------------------------------------------
-
-bool passesCaloJetID (const LorentzVector &jetp4)
-{
-  int jet_idx = -1;
-  double minDR = 999;
-
-  for (unsigned int i = 0; i < cms2.jets_p4().size(); i++)
-    {
-      double deltaR = ROOT::Math::VectorUtil::DeltaR(jetp4, cms2.jets_p4()[i]);
-
-      if (deltaR < minDR)
-	{
-	  minDR = deltaR;
-	  jet_idx = i;
-	}
-    }
-
-  if (jet_idx < 0)
-    return false;
-
-  if (cms2.jets_emFrac()[jet_idx] < 0.01 || cms2.jets_fHPD()[jet_idx] > 0.98 || cms2.jets_n90Hits()[jet_idx] < 2)
-    return false;
-
-  return true;
 }
 
 //--------------------------------------------------------------------
@@ -254,23 +185,8 @@ int getIndexFromM12(float m12){
 
 //--------------------------------------------------------------------
 
-void singleLeptonLooper::InitBaby(){
-
-	
-  mcid1_    = -1;
-  mcid2_    = -1;
-  mclep1_   =  0;
-  mclep2_   =  0;
-  mcdecay1_ = -1;
-  mcdecay2_ = -1;
-  mcdr1_    = -1;
-  mcdr2_    = -1;
+void looper::InitBaby(){
   
-  mlepid_       = -1;
-  mlep_         =  0;
-  mleppassid_   = -1;
-  mleppassiso_  = -1;
-  mlepiso_      = -1.0;
 
   mllgen_	= -1;
   pthat_	= -1;
@@ -280,13 +196,6 @@ void singleLeptonLooper::InitBaby(){
   genmetphi_    = -9999;   
   m0_		= -9999;
   m12_		= -9999;
-  mG_		= -9999;
-  mL_		= -9999;
-  ksusy_	= -999;
-  ksusyup_	= -999;
-  ksusydn_	= -999;
-  xsecsusy_	= -999;
-  xsecsusy2_	= -999;
   w1_		= -999;
   w2_		= -999;
   acc_2010_	= -999;
@@ -302,10 +211,14 @@ void singleLeptonLooper::InitBaby(){
   ptjetO23_	= -9999.;
   cosphijz_	= -9999.;
   dilep_	= 0;
-  jet_		= 0;
+
   lep1_		= 0;
   lep2_		= 0;
 
+  jet1_		= 0;
+  jet2_		= 0;
+  jet3_		= 0;
+  jet4_		= 0;
 }
 
 //--------------------------------------------------------------------
@@ -342,29 +255,7 @@ int getProcessType(char *prefix)
 
 //--------------------------------------------------------------------
 
-pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, double rescale = 1.0 ){
-  float met = p_met.first;
-  float metPhi = p_met.second;
-  float metx = met*cos(metPhi);
-  float mety = met*sin(metPhi);
-
-  float lepx = p4_dilep.Px();
-  float lepy = p4_dilep.Py();
-      
-  //hadronic component of MET (well, mostly), scaled
-  float metHx = (metx + lepx)*rescale;
-  float metHy = (mety + lepy)*rescale;
-  float metNewx = metHx - lepx;
-  float metNewy = metHy - lepy;
-  float metNewPhi = atan2(metNewy, metNewx);
-      
-  pair<float, float> p_met2 = make_pair(sqrt(metNewx*metNewx + metNewy*metNewy), metNewPhi);
-  return p_met2;
-}
-
-//--------------------------------------------------------------------
-
-void singleLeptonLooper::closeTree()
+void looper::closeTree()
 {
   outFile->cd();
   outTree->Write();
@@ -374,29 +265,37 @@ void singleLeptonLooper::closeTree()
 
 //--------------------------------------------------------------------
 
-float singleLeptonLooper::stopPairCrossSection( float stopmass ){
-
-  // stop mass divisible by 10
-  if( ((int)stopmass%10)<1 ){
-    int   bin  = stop_xsec_hist->FindBin(stopmass);
-    float xsec = stop_xsec_hist->GetBinContent(bin);
-    return xsec;
-  }
-
-  // stop mass not divisible by 10
-  else{
-    int   bin   = stop_xsec_hist->FindBin(stopmass);
-    float xsec1 = stop_xsec_hist->GetBinContent(bin);
-    float xsec2 = stop_xsec_hist->GetBinContent(bin+1);
-    float xsec  = 0.5 * ( xsec1 + xsec2 );
-    return xsec;
-  }
+int findTriggerIndex(TString trigName)
+{
+    vector<TString>::const_iterator begin_it = hlt_trigNames().begin();
+    vector<TString>::const_iterator end_it = hlt_trigNames().end();
+    vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);
+    if(found_it != end_it) return found_it - begin_it;
+    return -1;
 }
 
 //--------------------------------------------------------------------
 
-int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, float lumi,
-				  JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
+bool looper::objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector> &trigObjs, float pt) 
+{
+
+  float drMin = 999.99;
+  for (size_t i = 0; i < trigObjs.size(); ++i)
+    {
+      if (trigObjs[i].Pt() < pt) continue;
+      float dr = dRbetweenVectors(trigObjs[i], obj);
+      if (dr < drMin) drMin = dr;
+    }
+
+  if (drMin < 0.1) return true;
+  return false;
+
+}
+
+//--------------------------------------------------------------------
+
+int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, float lumi,
+		      JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 
 {
 
@@ -409,62 +308,13 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     //set vtx reweighting hist
     set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
 
-    //set msugra cross section file
-    set_msugra_file("goodModelNames_tanbeta10.txt");
-
-    //set stop cross section file
-    stop_xsec_file = TFile::Open("../data/reference_xSec_stop.root");
-
-    if( !stop_xsec_file->IsOpen() ){
-      cout << "Error, could not open stop cross section TFile, quitting" << endl;
-      exit(0);
-    }
-
-    stop_xsec_hist        = (TH1D*) stop_xsec_file->Get("stop");
-    
-    if( stop_xsec_hist == 0 ){
-      cout << "Error, could not retrieve stop cross section hist, quitting" << endl;
-      exit(0);
-    }
-
     initialized = true;
   }
   
-  bool isLM = TString(prefix).Contains("LM");
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
     cout << "DATA!!!" << endl;
     isData = true;
-  }
-
-  // instanciate topmass solver REPLACETOPMASS
-  //ttdilepsolve * d_llsol = new ttdilepsolve;
-
-  //instantiate SimpleFakeRate class for electrons and muons
-  //this is the default, can change it below if needed
-  SimpleFakeRate* mufr = 0;
-  SimpleFakeRate* elfr = 0;
-
-  if(doFakeApp) {
-
-    cout << "NOT CURRENTLY SET UP FOR FAKES!!!!! QUITTING!" << endl;
-    exit(0);
-
-    std::cout<<"**************************"<<std::endl;
-    std::cout<<"Running FR application job"<<std::endl;
-    std::cout<<"**************************"<<std::endl;
-
-    if(isData) {
-      std::cout<<"Using data derived FR files"<<std::endl;
-      mufr = new SimpleFakeRate("fr_os7June2011.root", "fr_mu_OSGV3" );
-      elfr = new SimpleFakeRate("fr_os7June2011.root", "fr_el_OSGV3" );
-    }
-    else {
-      std::cout<<"Using data derived FR files"<<std::endl;
-      std::cout<<"CURRENTLY USING DATA FR FOR MC FIXME!!!!!" <<std::endl;
-      mufr = new SimpleFakeRate("fr_os7June2011.root", "fr_mu_OSGV3" );
-      elfr = new SimpleFakeRate("fr_os7June2011.root", "fr_el_OSGV3" );
-    }
   }
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
@@ -483,16 +333,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   TIter fileIter(listOfFiles);
   TChainElement* currentFile = 0;
 
-  int nSkip_els_conv_dist = 0;
-
-  float netot  = 0.;
-  float nmtot  = 0.;
-  float nepass = 0.;
-  float nmpass = 0.;
+  int   nSkip_els_conv_dist = 0;
+  float nevents             = 0.0;
 
   if(g_createTree) makeTree(prefix, doFakeApp, frmode);
 
-  bool hasJptBtagBranch = true;
 
   char* thisFile = "blah";
 
@@ -549,11 +394,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	cout << "-------------------------------------------------------"   << endl;
       }
 
-      // skip stop-pair events with m(stop) > 850 GeV
-      if(strcmp(prefix,"T2tt") == 0){
-	if( sparm_mG() > 850.0 ) continue;
-      }
-
       //---------------------------------------------
       // event cleaning and good run list
       //---------------------------------------------
@@ -605,8 +445,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ngoodlep_ = 0;
       ngoodel_  = 0;
       ngoodmu_  = 0;
-            
-      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+
+      /*
+	for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 	if( els_p4().at(iel).pt() < 10 )                                                 continue;
 	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
 	goodLeptons.push_back( els_p4().at(iel) );
@@ -614,13 +455,15 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	lepIndex.push_back(iel);
 	ngoodel_++;
 	ngoodlep_++;
-
+	
 	//cout << "Found electron " << ngoodlep_ << " pt " << els_p4().at(iel).pt() << endl;
-      }
-          
+	}
+      */
+  
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 10 )           continue;
-	if( !muonId( imu , OSGeneric_v3 ))         continue;
+	if( mus_p4().at(imu).pt() < 20 )                         continue;
+	if( !muonIdNotIsolated( imu , muonSelection_mumujj ))    continue;
+
 	goodLeptons.push_back( mus_p4().at(imu) );
 	lepId.push_back( mus_charge().at(imu) * 13 );
 	lepIndex.push_back(imu);
@@ -630,35 +473,79 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	//cout << "Found muon " << ngoodlep_ << " pt " << mus_p4().at(imu).pt() << endl;
       }  
       
-      // REQUIRE AT LEAST 1 GOOD LEPTON!!!
-      if( goodLeptons.size() < 1 ) continue;
+      // REQUIRE AT LEAST 2 GOOD LEPTONS!!!
+      if( goodLeptons.size() < 2 ) continue;
 
-      //---------------------------------------------
-      // find leading lepton
-      //---------------------------------------------
+      //--------------------------------
+      // require trigger
+      //--------------------------------
+
+      if( !passMuMuJJTrigger_v1( isData ) ) continue;
+
+      std::vector<LorentzVector> trigObjs;
+
+      //-----------------------------------------------------------------------------
+      if (evt_run() >= 160329 && evt_run() <= 163261){
+	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu15_v5")];
+      }
+      //-----------------------------------------------------------------------------
+      else if (evt_run() >= 163269 && evt_run() <= 164236){
+	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v2")];
+      }
+      //-----------------------------------------------------------------------------
+      else if (evt_run() >= 165088 && evt_run() <= 165887){
+	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v4")];
+      }
+      //-----------------------------------------------------------------------------
+      else if (evt_run() >= 165922 && evt_run() <= 167043){
+	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v5")];
+      }
+      //-----------------------------------------------------------------------------
+      else if (evt_run() >= 167078 && evt_run() <= 170053){
+	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v7")];
+      }
+      //-----------------------------------------------------------------------------
+      else if (evt_run() >= 170071 && evt_run() <= 173198){
+	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v8")];
+      }
+      //-----------------------------------------------------------------------------
+
+      if( trigObjs.size() == 0 ){
+	cout << __LINE__ << " ERROR! didn't find matching trigger objects" << endl;
+	continue;
+      }
+
+
+      //-----------------------------------------------------------------------
+      // find leading lepton, require pt > 25 GeV and match to trigger object
+      //-----------------------------------------------------------------------
 
       float maxpt   = -1;
       int   imaxpt  = -1;
       int   imaxpt2 = -1;
-
+      
       for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+
+	if( goodLeptons.at(ilep).pt() < 25 )                             continue;
+	if( !objectPassTrigger( goodLeptons.at(ilep) , trigObjs ,25 ) )  continue;
+
 	if( goodLeptons.at(ilep).pt() > maxpt ){
 	  maxpt  = goodLeptons.at(ilep).pt();
 	  imaxpt = ilep;
 	}
       }
 
-      if( imaxpt < 0 ){
-	cout << "ERROR! QUITTING imaxpt " << imaxpt << endl;
-	exit(2);
-      }
+      //---------------------------------------------------------
+      // require pt > 25 GeV lepton matched to trigger object
+      //---------------------------------------------------------
 
-      // REQUIRE LEADING LEPTON PT > 20 GEV
-      if( maxpt < 20 ) continue;
-
+      if( imaxpt < 0 )  continue;
+      
       id1_       = lepId.at(imaxpt);
       lep1_      = &goodLeptons.at(imaxpt);
       int index1 = lepIndex.at(imaxpt);
+      iso1_      = muonIsoValue(imaxpt,false);
+      passid1_   = muonIdNotIsolated( imaxpt, OSGeneric_v3 ) ? 1 : 0;
 
       //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
 
@@ -671,51 +558,32 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       int index2 = -1;
       dilmass_   = -999;
 
-      if( ngoodlep_ > 1 ){
+      maxpt = -1;
 
-	maxpt = -1;
-
-	for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-
-	  if( ilep == imaxpt ) continue;
-
-	  if( goodLeptons.at(ilep).pt() > maxpt ){
-	    maxpt   = goodLeptons.at(ilep).pt();
-	    imaxpt2 = ilep;
-	  }
+      for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	
+	if( ilep == imaxpt ) continue;
+	
+	if( goodLeptons.at(ilep).pt() > maxpt ){
+	  maxpt   = goodLeptons.at(ilep).pt();
+	  imaxpt2 = ilep;
 	}
-
-	if( imaxpt2 < 0 ){
-	  cout << "ERROR! QUITTING imaxpt2 " << imaxpt2 << endl;
-	  exit(3);
-	}
-
-	id2_       = lepId.at(imaxpt2);
-	lep2_      = &goodLeptons.at(imaxpt2);
-	index2     = lepIndex.at(imaxpt2);
-	dilmass_   = (goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass();
-
-	//cout << "2nd deading lepton: pt " << lep2_->pt() << " id " << id2_ << " mass " << dilmass_ << endl;
       }
-
-      //--------------------------------
-      // store dilepton type in myType
-      //--------------------------------
-
-      leptype_ = 99;
-      if      ( abs(id1_) == 11 )                   leptype_ = 0; // e
-      else if ( abs(id1_) == 13 )                   leptype_ = 1; // m
-      else{
-	cout << "Skipping unknown lepton type = " << id1_ << endl;
-	continue;
+      
+      if( imaxpt2 < 0 ){
+	cout << "ERROR! QUITTING imaxpt2 " << imaxpt2 << endl;
+	exit(3);
       }
+      
+      id2_       = lepId.at(imaxpt2);
+      lep2_      = &goodLeptons.at(imaxpt2);
+      index2     = lepIndex.at(imaxpt2);
+      dilmass_   = (goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass();
+      iso2_      = muonIsoValue(imaxpt2,false);
+      passid2_   = muonIdNotIsolated( imaxpt2, OSGeneric_v3 ) ? 1 : 0;
 
-      //--------------------------------
-      // require trigger
-      //--------------------------------
-
-      if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
-
+      //cout << "2nd deading lepton: pt " << lep2_->pt() << " id " << id2_ << " mass " << dilmass_ << endl;
+	  
       //--------------------------------
       // get MC quantities
       //--------------------------------
@@ -728,7 +596,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       
       if( !isData ){
 
-	w1_     = leptonOrTauIsFromW( index1 , id1_ , isLM );
+	w1_     = leptonOrTauIsFromW( index1 , id1_ , true );
 	pthat_  = genps_pthat();
 	qscale_ = genps_qScale();
 	
@@ -780,320 +648,34 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  }
 	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
 	}
-            
-	//-----------------------------------------------------
-	// track gen lepton information here
-	//-----------------------------------------------------
-	
-	mcid1_    = -1;
-	mcid2_    = -1;
-	mclep1_   =  0;
-	mclep2_   =  0;
-	mcdecay1_ = -1;
-	mcdecay2_ = -1;
-	mcdr1_    = -1;
-	mcdr2_    = -1;
-
-	//-----------------------------------------------------
-	// store single gen lepton info
-	//-----------------------------------------------------
-
-	if( nleps_ == 1 ){
-
-	  int nfoundleps = 0;
-
-	  for ( int igen = 0 ; igen < cms2.genps_id().size() ; igen++ ) { 
-
-	    int id = genps_id().at(igen);
-
-	    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
-
-	    nfoundleps++;
-	    mcid1_   = id;
-	    mclep1_  = &genps_p4().at(igen);
-	    mcdr1_   = dRbetweenVectors( *lep1_ , *mclep1_ );
-
-	    if( abs(id)==15 ){
-	      mcdecay1_ = 1;
-
-	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
-		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
-		if( daughter == 12 || daughter == 14) mcdecay1_ = 2; 
-	      } 
-	    } 
-	  } 
-
-	  if( nfoundleps != 1 ) cout << "ERROR! expected 1 lepton, found " << nfoundleps << endl;
-	}
-
-	//-----------------------------------------------------	
-	// store both gen lepton info
-	//-----------------------------------------------------
-	
-	else if( nleps_ == 2 ){
-	  
-	  float drmin      = 9999;
-	  int   igenmin    =   -1;
-	  int   nfoundleps =    0;
-	  
-	  //-----------------------------------------------------
-	  // find gen lepton closest to reco lepton
-	  //-----------------------------------------------------
-	  
-	  for ( int igen = 0 ; igen < cms2.genps_id().size() ; igen++ ) { 
-
-	    int id = genps_id().at(igen);
-
-	    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
-
-	    nfoundleps++;
-
-	    if( dRbetweenVectors( *lep1_ , genps_p4().at(igen) ) < drmin ){
-	      drmin   = dRbetweenVectors( *lep1_ , genps_p4().at(igen) );
-	      igenmin = igen;
-	    }
-	  }
-
-	  if( nfoundleps != 2 ) cout << "ERROR! expected 2 leptons, found " << nfoundleps << endl;
-
-	  //-----------------------------------------------------
-	  // store info for closest gen lepton
-	  //-----------------------------------------------------
-
-	  mcid1_   = genps_id().at(igenmin);
-	  mclep1_  = &genps_p4().at(igenmin);
-	  mcdr1_   = dRbetweenVectors( *lep1_ , *mclep1_ );
-
-	  if( abs(mcid1_)==15 ){
-	    mcdecay1_ = 1;
-	    
-	    for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igenmin).size(); kk++) {
-	      int daughter = abs(cms2.genps_lepdaughter_id()[igenmin][kk]);
-	      if( daughter == 12 || daughter == 14) mcdecay1_ = 2; 
-	    } 
-	  }
-
-	  //-----------------------------------------------------
-	  // find 2nd lepton
-	  //-----------------------------------------------------
-
-	  int igenmin2 = -1;
-
-	  for ( int igen = 0 ; igen < cms2.genps_id().size() ; igen++ ) { 
-
-	    if( igen == igenmin ) continue; //skip closest lepton
-
-	    int id = genps_id().at(igen);
-
-	    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
-
-	    igenmin2 = igen;
-
-	    mcid2_   = id;
-	    mclep2_  = &genps_p4().at(igen);
-	    if( ngoodlep_ > 1 ) mcdr2_   = dRbetweenVectors( *lep2_ , *mclep2_ );
-
-	    if( abs(id)==15 ){
-	      mcdecay2_ = 1;
-
-	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
-		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
-		if( daughter == 12 || daughter == 14) mcdecay2_ = 2; 
-	      } 
-	    } 
-	  } 
-
-	  if( igenmin2 < 0 ) cout << __FILE__ << " " << __LINE__ << " Error! unable to find 2nd gen lepton" << endl;
-
-	  //-----------------------------------------------------
-	  // find reco lepton corresponding to 2nd gen lepton
-	  // check if found, if pass ID and/or iso
-	  //-----------------------------------------------------
-
-	  int  nMatchLeptons =  0;
-	  int  imatch        = -1;
-	  int  ID            = -1;
-
-	  float drminlep = 999;
-
-	  for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	    int mc3idx = els_mc3idx().at(iel);
-
-	    if( mc3idx != igenmin2 ) continue;
-	    nMatchLeptons++;
-
-	    float dr = els_mc3dr().at(iel);
-
-	    if( dr < drminlep ){
-	      drminlep   = dr;
-	      imatch     = iel;
-	      ID         = 1;
-	    }
-	  }
-          
-	  for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	    int mc3idx = mus_mc3idx().at(imu);
-
-	    if( mc3idx != igenmin2 ) continue;
-	    nMatchLeptons++;
-
-	    float dr = mus_mc3dr().at(imu);
-
-	    if( dr < drminlep ){
-	      drminlep   = dr;
-	      imatch     = imu;
-	      ID         = 2;
-	    }
-
-	  }
-
-	  mlepid_       = -1;
-	  mlep_         =  0;
-	  mleppassid_   = -1;
-	  mleppassiso_  = -1;
-	  mlepiso_      = -1.0;
-	  mlepdr_       = -1.0;
-
-	  if( nMatchLeptons > 0 ){
-
-	    // found matched electron
-	    if( ID == 1 ){
-	      mlepid_       = 11 * els_charge().at(imatch);
-	      mlep_         = &els_p4().at(imatch);
-	      mleppassid_   = pass_electronSelection( imatch , electronSelection_el_OSV3_noiso ) ? 1 : 0;
-	      mleppassiso_  = pass_electronSelection( imatch , electronSelection_el_OSV3_iso   ) ? 1 : 0;
-	      mlepiso_      = electronIsolation_rel_v1(imatch, true );
-	    }
-
-	    // found matched muon
-	    else if( ID == 2 ){
-	      mlepid_       = 13 * mus_charge().at(imatch);
-	      mlep_         = &mus_p4().at(imatch);
-	      mleppassid_   = muonIdNotIsolated( imatch , OSGeneric_v3 ) ? 1 : 0;
-	      mleppassiso_  = muonIsoValue(imatch,false) < 0.15 ? 1 : 0;
-	      mlepiso_      = muonIsoValue(imatch,false);
-	    }
-
-	    mlepdr_ = dRbetweenVectors( *mlep_ , *mclep2_ );
-	  }
-	  
-	}
-
-	else if( nleps_ < 0 || nleps_ > 2 ){
-	  cout << "ERROR nleptons = " << nleps_ << endl;
-	}
-
       }
-
-      //--------------------------------------------------
-      // store pt and iso for most isolated track
-      //--------------------------------------------------
-
-      trkpt_      = -1.0;
-      trkreliso_  = -1.0;
-
-      float miniso = 999;
-
-      for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
-
-	if( pfcands_p4().at(ipf).pt() < 10 ) continue;
-	if( pfcands_charge().at(ipf) == 0  ) continue;
-
-	bool isGoodLepton = false;
-	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
-	}
-	if( isGoodLepton ) continue;
-
-	float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
-
-	if( iso < miniso ){
-	  trkpt_     = pfcands_p4().at(ipf).pt();
-	  trkreliso_ = iso;
-	}
-      }
-
     
       //pfjets
       VofP4 vpfjets_p4;
 
-      njets_ = 0.;
-      ht_    = 0.;
-      nbtags_  = 0;
-
-      nbtagstcl_  = 0;
-      nbtagstcm_  = 0;
-
-      npfjets40_  = 0;
-      htpf40_     = 0.;
-
-      npfjetspv_  = 0;
-      htpfpv_     = 0.;
-
-      htpf25_     = 0.;
-      npfjets25_  = 0;
-      njets15_    = 0;
-
-      njetsUp_   = 0;
-      njetsDown_ = 0;
-      htUp_      = 0.;
-      htDown_    = 0.;
-
-      int   imaxjet   = -1;
-      float maxjetpt  = -1.;
+      njets_     = 0;
+      ht_        = 0.;
+      nbtags17_  = 0;
+      nbtags20_  = 0;
+      nbtags33_  = 0;
 
       vector<int> goodjets;
       goodjets.clear();
 
-      jetid_   = 1;
-      jetid30_ = 1;
-
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-	LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-	LorentzVector vjetUp    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.075;
-	LorentzVector vjetDown  = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.925;
+	LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
 
 	if( generalLeptonVeto ){
 	  bool rejectJet = false;
 	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.5 ) rejectJet = true;  
 	  }
 	  if( rejectJet ) continue;
 	}
-          
-	if( !passesPFJetID(ijet) ){
-	  jetid_ = 0;
-	  if( vjet.pt() > 30 && fabs( vjet.eta() ) < 3.0 ) jetid30_ = 0;
-	  continue;
-	}
 
-	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 3.0 ){ 
-	  njets15_++;
-	}
-
-	if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 3.0 ){
-	  njetsUp_++;
-	  htUp_ += vjetUp.pt();
-	}
-
-	if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 3.0 ){
-	  njetsDown_++;
-	  htDown_ += vjetDown.pt();
-	}
-
-	if( vjet.pt() < 30. )                    continue;
-	if( fabs( vjet.eta() ) > 3.0 )           continue;
-
-	if( fabs( vjet.eta() ) < 2.5 ){
-	  npfjets25_ ++;
-	  htpf25_  += vjet.pt();
-	}
-
-	if( vjet.pt() > 40. ){
-	  npfjets40_ ++;
-	  htpf40_    += vjet.pt();
-	}
+	if( vjet.pt() < 25         ) continue;
+	if( fabs(vjet.eta()) > 3.0 ) continue;
 
 	njets_++;
 	ht_ += vjet.pt();
@@ -1101,188 +683,45 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	vpfjets_p4.push_back( vjet );
 	goodjets.push_back(ijet);
 
-	if( pfjets_simpleSecondaryVertexHighEffBJetTag().at(ijet) > 1.74 ){
-	  nbtags_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
+	  nbtags17_++;
 	}
 
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
-	  nbtagstcl_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 2.0 ){
+	  nbtags20_++;
 	}
 
 	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
-	  nbtagstcm_++;
-	}
-
-	if( vjet.pt() > maxjetpt ){
-	  maxjetpt = vjet.pt();
-	  imaxjet  = ijet;
+	  nbtags33_++;
 	}
       }
+	  
+      //------------------------------------
+      // require >=2 jets!!!!!!
+      //------------------------------------
 
-      if( imaxjet > -1 ){ 
-	jet_ = &(pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet));
-
-	LorentzVector vjetraw = pfjets_p4().at(imaxjet);
-
-	ptjetraw_     = vjetraw.pt();
-	ptjet23_      = pfjets_cor().at(imaxjet)           * vjetraw.pt();
-	ptjetF23_     = pfjets_corL1FastL2L3().at(imaxjet) * vjetraw.pt();
-	ptjetO23_     = pfjets_corL1L2L3().at(imaxjet)     * vjetraw.pt();
-	//cosphijz_     = -1 * cos( vjetraw.phi() - hyp_p4()[hypIdx].phi() );
-	
-	LorentzVector vjet = pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet);
-	dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
-      }
+      if( njets_ < 2 ) continue;
       
-      //---------------------------------
-      // L1offset jets
-      //---------------------------------
-      
-      htoffset_    = 0.;
-      njetsoffset_ = 0;
+      vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_p4_sorted(vpfjets_p4);
+      sort(vpfjets_p4_sorted.begin(), vpfjets_p4_sorted.end(), sortByPt);
 
-      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
-	LorentzVector vjet = pfjets_corL1L2L3().at(ijet) * pfjets_p4().at(ijet);
+      jet1_  = 0;
+      jet2_  = 0;
+      jet3_  = 0;
+      jet4_  = 0;
 
-	if( generalLeptonVeto ){
-	  bool rejectJet = false;
-	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	  }
-	  if( rejectJet ) continue;
-	}
-          
-	if( fabs( vjet.eta() ) > 3.0 )           continue;
-	if( !passesPFJetID(ijet) )               continue;
-	if( vjet.pt() < 30. )                    continue;
+      jet1_  = &vpfjets_p4_sorted.at(0);
+      jet2_  = &vpfjets_p4_sorted.at(1);
+      if( njets_ > 2 ) jet3_  = &vpfjets_p4_sorted.at(2);
+      if( njets_ > 3 ) jet4_  = &vpfjets_p4_sorted.at(3);
 
-	njetsoffset_++;
-	htoffset_ += vjet.pt();
-
-      }
-
-      //---------------------------------
-      // uncorrected jets
-      //---------------------------------
-
-      htuncor_    = 0.;
-      njetsuncor_ = 0;
-
-      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
-	LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
-
-	if( generalLeptonVeto ){
-	  bool rejectJet = false;
-	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	  }
-	  if( rejectJet ) continue;
-	}
-          
-	if( fabs( vjet.eta() ) > 3.0 )           continue;
-	if( !passesPFJetID(ijet) )               continue;
-	if( vjet.pt() < 15. )                    continue;
-
-	if( vjet.pt() < 30. )                    continue;
-
-	njetsuncor_++;
-	htuncor_ += vjet.pt();
-
-      }
-
-      ngenjets_ = 0;
-      htgen_    = 0;
-
-      if( !isData ){
-	for (unsigned int igjet = 0 ; igjet < genjets_p4().size() ; igjet++) {
-	    
-	  LorentzVector vgjet = genjets_p4().at(igjet);
-
-	  if( generalLeptonVeto ){
-	    bool rejectJet = false;
-	    for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	      if( dRbetweenVectors( vgjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	    }
-	    if( rejectJet ) continue;
-	  }
-	    
-	  if( vgjet.pt() < 30.                   )  continue;
-	  if( fabs( vgjet.eta() ) > 3.0          )  continue;
-	    
-	  ngenjets_++;
-	  htgen_ += vgjet.pt();
-	}
-      }
+      mmjj_ = (*lep1_+*lep2_+*jet1_+*jet2_).mass();
      
-      if( !isData ){
-	genmet_     = gen_met();
-	gensumet_   = gen_sumEt();
-	genmetphi_  = gen_metPhi();
-
-      }
-
-      //----------------------------
-      // MET flavors
-      //----------------------------
-
-      pair<float, float> p_met; //met and met phi
-      //p_met = getMet( "tcMET"    , hypIdx);
-      p_met = make_pair( evt_tcmet() , evt_tcmetPhi() );
-
-      tcmet_    = p_met.first;
-      tcmetphi_ = p_met.second;
-      tcsumet_  = evt_tcsumet();
-
       pfmet_    = evt_pfmet();
       pfmetphi_ = evt_pfmetPhi();
       pfsumet_  = evt_pfsumet();
 
-      //p_met = getMet( "pfMET"    , hypIdx);
-      p_met = make_pair( evt_pfmet() , evt_pfmetPhi() );      
-
-      // pair<float, float> pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.075 );
-      // pair<float, float> pfmetDown = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.925 );
-      // pair<float, float> pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.000 );
-
-      // pfmetUp_      = pfmetUp.first;
-      // pfmetDown_    = pfmetDown.first;
-      // pfmetTest_    = pfmetTest.first;
-
-      meff_ = ht_ + pfmet_ + lep1_->pt();
-
-      m_events.insert(pair<int,int>(evt_event(), 1));
-
-      //---------------------------
-      // set event weight
-      //---------------------------
-
-      weight_ = -1.;
-
-      if(strcmp(prefix,"T2tt") == 0){
-	mG_ = sparm_mG();
-	mL_ = sparm_mL();
-
-	weight_ = lumi * stopPairCrossSection(mG_) * (1000./50000.);
-      }
-
-      else if(strcmp(prefix,"LMscan") == 0){
-
-	m0_  = sparm_m0();
-	m12_ = sparm_m12();
-
-	ksusy_     = kfactorSUSY(m0_,m12_,"tanbeta10");
-	ksusyup_   = kfactorSUSY(m0_,m12_,"tanbeta10Scale20");
-	ksusydn_   = kfactorSUSY(m0_,m12_,"tanbeta10Scale05");
-	xsecsusy_  = cmssm_loxsec(m0_,m12_);
-	xsecsusy2_ = getMsugraCrossSection(m0_,m12_,10);
-
-	weight_ = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
-
-      }
-
-      else if( isData ){
+      if( isData ){
 	weight_ = 1;
       }
 
@@ -1324,96 +763,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if(isGoodDAVertex(v)) ++ndavtx_;
       }
 
-      //tranverse mass leading lepton & met
-      dphilm_ = fabs( lep1_->phi() - pfmetphi_ );
-      if( dphilm_ > TMath::Pi() ) dphilm_ = TMath::TwoPi() - dphilm_;
-
-      mt_ = sqrt( 2 * ( lep1_->pt() * pfmet_ * (1 - cos( dphilm_ ) ) ) );
-
-      /*
-      //REPLACETOPMASS
-      // calculate the top mass
-      float topMass = getTopMassEstimate(d_llsol, hypIdx, vpfjets_p4, evt_pfmet(), evt_pfmetPhi());
-      if(topMass != -999 && 42 != 42) std::cout<<"And top mass from exteral: "<<topMass<<std::endl;
-
-      vector<float> topMassAllComb;
-      VofP4 vjpts_p4_Comb;
-      int topMassCounter = 0;
-      for(int jet1 =  0; jet1 < vjpts_p4.size(); ++jet1) {
-      for(int jet2 =  jet1+1; jet2 < vjpts_p4.size(); ++jet2) {
-      vjpts_p4_Comb.clear();
-      vjpts_p4_Comb.push_back(vjpts_p4.at(jet1));
-      vjpts_p4_Comb.push_back(vjpts_p4.at(jet2));
-      topMassAllComb.push_back( getTopMassEstimate(d_llsol, hypIdx, vjpts_p4_Comb, tcmet, tcmetphi) );
-      //             std::cout<<
-      //               "We have "<<vjpts_p4.size()<<
-      //               " jets. This is combination: "<<jet1<<
-      //               " with "<<jet2<<
-      //               "  and topmass "<<topMassAllComb.at(topMassCounter)<<
-      //               std::endl;
-      ++topMassCounter;
-      }
-      }
-      */
-
-      //other vars for baby
-
-      pass_         = ( njets_ >= 3 && pfmet_ > 25. ) ? 1 : 0;
-      proc_         = getProcessType(prefix);       //integer specifying sample
-      topmass_      = -999;//topMass;                      //topepton mass //REPLACE TOPMASS
-      y_	    = pfmet_ / sqrt( ht_ ); //y=MET/sqrt(HT)
-
       strcpy(dataset_, cms2.evt_dataset().Data());  //dataset name
       run_          = evt_run();                    //run
       lumi_         = evt_lumiBlock();              //lumi
       event_        = evt_event();                  //event
       ndavtxweight_ = vtxweight(isData,true);
-
       hbhe_         = evt_hbheFilter();
-
-      k_ = 1;
-      if     ( strcmp( prefix , "LM0"  )    == 0 ) k_ = kfactorSUSY( "lm0"  );
-      else if( strcmp( prefix , "LM1"  )    == 0 ) k_ = kfactorSUSY( "lm1"  );
-      else if( strcmp( prefix , "LM2"  )    == 0 ) k_ = kfactorSUSY( "lm2"  );
-      else if( strcmp( prefix , "LM3"  )    == 0 ) k_ = kfactorSUSY( "lm3"  );
-      else if( strcmp( prefix , "LM4"  )    == 0 ) k_ = kfactorSUSY( "lm4"  );
-      else if( strcmp( prefix , "LM5"  )    == 0 ) k_ = kfactorSUSY( "lm5"  );
-      else if( strcmp( prefix , "LM6"  )    == 0 ) k_ = kfactorSUSY( "lm6"  );
-      else if( strcmp( prefix , "LM7"  )    == 0 ) k_ = kfactorSUSY( "lm7"  );
-      else if( strcmp( prefix , "LM8"  )    == 0 ) k_ = kfactorSUSY( "lm8"  );
-      else if( strcmp( prefix , "LM9"  )    == 0 ) k_ = kfactorSUSY( "lm9"  );
-      else if( strcmp( prefix , "LM10" )    == 0 ) k_ = kfactorSUSY( "lm10" );
-      else if( strcmp( prefix , "LM11" )    == 0 ) k_ = kfactorSUSY( "lm11" );
-      else if( strcmp( prefix , "LM12" )    == 0 ) k_ = kfactorSUSY( "lm12" );
-      else if( strcmp( prefix , "LMscan" )  == 0 ) k_ = kfactorSUSY(m0_,m12_,"tanbeta10");
       
-
-      ecalveto1_ = -1.;
-      ecalveto2_ = -1.;
-      hcalveto1_ = -1.;
-      hcalveto2_ = -1.;
-      
-      if( leptype_ == 0 ){
-	iso1_   = electronIsolation_rel   ( index1 , true ); //truncated
-	isont1_ = electronIsolation_rel_v1( index1 , true ); //non-truncated
-	etasc1_ = els_etaSC()[index1];
-      }
-      else if( leptype_ == 1 ){
-	iso1_   = muonIsoValue( index1 , true  ); //truncated 
-	isont1_ = muonIsoValue( index1 , false ); //non-truncated
-	etasc1_ = -999;
-	
-	ecalveto1_ = mus_iso_ecalvetoDep().at(index1);
-	hcalveto1_ = mus_iso_hcalvetoDep().at(index1);
-      }
-            
-      if     ( leptype_ == 0 ) netot += weight_;
-      else if( leptype_ == 1 ) nmtot += weight_;
-
-      if( pass_ == 1 ){
-	if     ( leptype_ == 0 ) nepass += weight_;
-	else if( leptype_ == 1 ) nmpass += weight_;
-      }
+      nevents += weight_;
 
       outTree->Fill();
     
@@ -1427,31 +784,15 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
   cout << endl;
   cout << "Sample: " << prefix << endl;
-  cout << endl;
-  cout << "-----------------------" << endl;
-  cout << "| Lepton yields       |" << endl;
-  cout << "-----------------------" << endl;
-  cout << "ne  " << netot       << endl;
-  cout << "nm  " << nmtot       << endl;
-  cout << "tot " << netot+nmtot << endl;
-
-  cout << endl;
-  cout << "-----------------------" << endl;
-  cout << "| Preselection yields |" << endl;
-  cout << "-----------------------" << endl;
-  cout << "ne  " << nepass        << endl;
-  cout << "nm  " << nmpass        << endl;
-  cout << "tot " << nepass+nmpass << endl;
+  cout << "nevents " << nevents << endl;
   cout << endl;
 
   if(g_createTree) closeTree();
   
   already_seen.clear();
-
+  
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
-
-  stop_xsec_file->Close();
 
   //delete d_llsol; //REPLACETOPMASS
 
@@ -1461,7 +802,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 //--------------------------------------------------------------------
  
-void singleLeptonLooper::BookHistos(char *prefix)
+void looper::BookHistos(char *prefix)
 {
   // Prefix comes from the sample and it is passed to the scanning function
   // Suffix is "ee" "em" "em" "all" which depends on the final state
@@ -1577,566 +918,9 @@ void fillHistos(TProfile *h2[4][4],float xvalue, float yvalue, int myType, int n
 
 //--------------------------------------------------------------------
 
-//function to add additional smearing to met. metscale = 1.5 --> additional 50% smearing
-float singleLeptonLooper::smearMet( float met , float sumjetpt , float metscale ){
-
-  if( metscale < 1. ){
-    cout << "metscale must be >1!, quitting..." << endl;
-    exit(0);
-  }
-  
-  float res       = returnSigma( sumjetpt , e_tcmet );
-  float addmetres = sqrt( metscale * metscale - 1 ) * res;
-  float smear     = random3_->Gaus( 0 , addmetres );
-  
-  return met + smear;
-
-}
-
 //--------------------------------------------------------------------
 
-float returnSigma (float sumJetPt, singleLeptonLooper::MetTypeEnum metType)
-{
-  const float xbins[]         = { 100   , 200   , 400   , 800           };
-  const float tcmet_sigma[]   = { 13.02 , 13.44 , 14.64 , 17.19 , 21.95 };
-  const float muonjes_sigma[] = { 21.13 , 20.3  , 21.08 , 24.06 , 29.08 };
-
-  if (metType == singleLeptonLooper::e_tcmet) {
-    for( int j = 0; j < 4; j++ ) {
-      if( sumJetPt < xbins[j] )
-        return tcmet_sigma[j];
-    }
-
-    return tcmet_sigma[4];
-  }
-  else if (metType == singleLeptonLooper::e_muonjes) {
-    for( int j = 0; j < 4; j++ ) {
-      if( sumJetPt < xbins[j] )
-        return muonjes_sigma[j];
-    }
-
-    return muonjes_sigma[4];
-  }
-}
-
-//--------------------------------------------------------------------
-
-float returnBias(float sumJetPt, singleLeptonLooper::MetTypeEnum metType)
-{
-  const float xbins[]         = { 100  , 200  , 400  , 800         };
-  const float tcmet_bias[]    = { 0.87 , 0.88 , 0.91 , 0.95 , 0.99 };
-  const float muonjes_bias[]  = { 0.94 , 1.   , 1.03 , 1.03 , 1.07 };
-
-  if (metType == singleLeptonLooper::e_tcmet) {
-    for( int j = 0; j < 4; j++ ) {
-      if( sumJetPt < xbins[j] )
-        return tcmet_bias[j];
-    }
-
-    return tcmet_bias[4];
-  }
-  else if (metType == singleLeptonLooper::e_muonjes) {
-    for( int j = 0; j < 4; j++ ) {
-      if( sumJetPt < xbins[j] )
-        return muonjes_bias[j];
-    }
-
-    return muonjes_bias[4];
-  }
-}
-
-//--------------------------------------------------------------------
-                                                                     
-                                             
-float singleLeptonLooper::getCosThetaStarWeight(){
-
-
-  int nels = 0;
-  int nmus  = 0;
-  int ntaus = 0;
-  int nleps = 0;
-    
-  nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
-    
-  ///////////////////////////
-  // Generator Information //
-  ///////////////////////////
-  //
-  int ntplus  = 0;
-  int ntminus = 0;
-  int nWplus  = 0;
-  int nWminus = 0;
-  int nbplus  = 0;
-  int nbminus = 0;
-  int nlplus  = 0;
-  int nlminus = 0;
-  int nnu     = 0;
-  int nnubar  = 0;
-
-  LorentzVector genp4_tplus_;
-  LorentzVector genp4_tminus_;
-  LorentzVector genp4_Wplus_;
-  LorentzVector genp4_Wminus_;
-  LorentzVector genp4_lplus_;
-  LorentzVector genp4_lminus_;
-  LorentzVector genp4_bplus_;
-  LorentzVector genp4_bminus_;
-  LorentzVector genp4_nu_;
-  LorentzVector genp4_nubar_;
-  LorentzVector genp4_Wplus_bminus_;
-  LorentzVector genp4_Wminus_bplus_;
-  LorentzVector genp4_lminus_nubar_;
-  LorentzVector genp4_lplus_nu_;
-  LorentzVector genp4_lminus_lplus_;
-  LorentzVector genp4_nu_nubar_;
-  LorentzVector genp4_Wminus_tCM_;
-  LorentzVector genp4_Wplus_tCM_;
-  LorentzVector genp4_lminus_tCM_;
-  LorentzVector genp4_nubar_tCM_;
-  LorentzVector genp4_lplus_tCM_;
-  LorentzVector genp4_nu_tCM_;
-  LorentzVector genp4_lminus_WCM_;
-  LorentzVector genp4_nubar_WCM_;
-  LorentzVector genp4_lplus_WCM_;
-  LorentzVector genp4_nu_WCM_;
-  LorentzVector genp4_lminus_nubar_WCM_;
-  LorentzVector genp4_lplus_nu_WCM_;
-  
-  float theta_lminus_nubar_WCM_;
-  float theta_lplus_nu_WCM_;
-  int   genid_lplus_;
-  int   genid_lminus_;
-
-  // loop on generator particles
-  for( unsigned int i=0; i < genps_id().size(); i++ ){
-
-    // top
-    if( genps_id().at(i) == 6 ){
-      genp4_tplus_ = genps_p4().at(i);
-      ntplus++;
-    }
-    if( genps_id().at(i) == -6 ){
-      genp4_tminus_ = genps_p4().at(i);
-      ntminus++;
-    }
-
-    // W's from top
-    if( genps_id().at(i) == 24 && genps_id_mother().at(i) == 6 ){
-      genp4_Wplus_ = genps_p4().at(i);
-      nWplus++;
-    }
-    if( genps_id().at(i) == -24 && genps_id_mother().at(i) == -6 ){
-      genp4_Wminus_ = genps_p4().at(i);
-      nWminus++;
-    }
-
-    // leptons from W+
-    if( genps_id_mother().at(i) == 24 ){
-      if( genps_id().at(i) == -11 || genps_id().at(i) == -13 ){
-        genp4_lplus_ = genps_p4().at(i);
-        nlplus++;
-        if( genps_id().at(i) == -11 ){
-          genid_lplus_ = -11;
-        } 
-        else if( genps_id().at(i) == -13 ){
-          genid_lplus_ = -13;
-        }
-      }
-      if( genps_id().at(i) == 12 || genps_id().at(i) == 14 ){
-        genp4_nu_ = genps_p4().at(i);
-        nnu++;
-      }
-    }
-
-    // leptons from W-
-    if( genps_id_mother().at(i) == -24 ){
-      if( genps_id().at(i) == 11 || genps_id().at(i) == 13 ){
-        genp4_lminus_ = genps_p4().at(i);
-        nlminus++;
-        if( genps_id().at(i) == 11 ){
-          genid_lminus_ = 11;;
-        } 
-        else if( genps_id().at(i) == 13 ){
-          genid_lminus_ = 13;
-        }
-      }
-      if( genps_id().at(i) == -12 || genps_id().at(i) == -14 ){
-        genp4_nubar_ = genps_p4().at(i);
-        nnubar++;
-      }
-    }
-
-    // b's
-    if( genps_id().at(i) == 5 && genps_id_mother().at(i) == 6){
-      nbminus++;
-      genp4_bminus_ = genps_p4().at(i);
-    }
-    if( genps_id().at(i) == -5 && genps_id_mother().at(i) == -6){
-      nbplus++;
-      genp4_bplus_ = genps_p4().at(i);
-    }
-
-  } // end loop on generator particles
-
-  // Construct some composite 4-vectors
-  genp4_Wplus_bminus_ = genp4_Wplus_  + genp4_bminus_;
-  genp4_Wminus_bplus_ = genp4_Wminus_ + genp4_bplus_;
-  genp4_lminus_nubar_ = genp4_lminus_ + genp4_nubar_;
-  genp4_lplus_nu_     = genp4_lplus_  + genp4_nu_;
-  genp4_lminus_lplus_ = genp4_lminus_ + genp4_lplus_;
-  genp4_nu_nubar_     = genp4_nu_     + genp4_nubar_;
-
-  // Sanity
-  if( ntplus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 t" << endl;
-    exit(1);
-  }
-  if( ntminus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 tbar" << endl;
-    exit(1);
-  }
-  if( nWplus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 W+" << endl;
-    exit(1);
-  }
-  if( nWminus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 W-" << endl;
-    exit(1);
-  }
-  if( nbplus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 b+ from top" << endl;
-    //exit(1);
-  }
-  if( nbminus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 b- from top" << endl;
-    //exit(1);
-  }
-  // 
-  if( ntaus == 0 ){
-    if( nlplus != 1 ){ 
-      cout << "ERROR: did not find exactly 1 e+ or mu+" << endl;
-      exit(1);
-    }
-    if( nlminus != 1 ){ 
-      cout << "ERROR: did not find exactly 1 e- or mu-" << endl;
-      exit(1);
-    }
-    if( nnu != 1 ){
-      cout << "ERROR: did not find exactly 1 nu" << endl;
-      exit(1);
-    }
-    if( nnubar != 1 ){
-      cout << "ERROR: did not find exactly 1 nubar" << endl;
-      exit(1);
-    }
-  } 
-  else {
-    //cout << "Unhandled Case: N Taus = " << ntaus << endl << endl;
-    return -2;
-  }
-
-
-
-      
-
-  // Boost from the LAB to the top CM
-  ROOT::Math::Boost boost_tplus_CM( genp4_tplus_.BoostToCM().x(), genp4_tplus_.BoostToCM().y(), genp4_tplus_.BoostToCM().z() );
-  ROOT::Math::Boost boost_tminus_CM( genp4_tminus_.BoostToCM().x(), genp4_tminus_.BoostToCM().y(), genp4_tminus_.BoostToCM().z() );
-  
-  // Boost from the LAB to the W CM
-  ROOT::Math::Boost boost_Wplus_CM( genp4_Wplus_.BoostToCM().x(), genp4_Wplus_.BoostToCM().y(), genp4_Wplus_.BoostToCM().z() );
-  ROOT::Math::Boost boost_Wminus_CM( genp4_Wminus_.BoostToCM().x(), genp4_Wminus_.BoostToCM().y(), genp4_Wminus_.BoostToCM().z() );
-  
-  // Get the W, lepton, and neutrino 4-vectors in the top rest frame
-  genp4_Wminus_tCM_       = boost_tminus_CM * genp4_Wminus_;
-  genp4_Wplus_tCM_        = boost_tplus_CM  * genp4_Wplus_;
-  genp4_lminus_tCM_       = boost_tminus_CM * genp4_lminus_;
-  genp4_nubar_tCM_        = boost_tminus_CM * genp4_nubar_;
-  genp4_lplus_tCM_        = boost_tplus_CM  * genp4_lplus_;
-  genp4_nu_tCM_           = boost_tplus_CM  * genp4_nu_;
-
-  // Boost from the top CM to the W CM ( tW notation )
-  ROOT::Math::Boost boost_Wplus_tWCM( genp4_Wplus_tCM_.BoostToCM().x(), genp4_Wplus_tCM_.BoostToCM().y(), genp4_Wplus_tCM_.BoostToCM().z() );
-  ROOT::Math::Boost boost_Wminus_tWCM( genp4_Wminus_tCM_.BoostToCM().x(), genp4_Wminus_tCM_.BoostToCM().y(), genp4_Wminus_tCM_.BoostToCM().z() );
-
-  // Boost from the W CM to the top CM ( Wt notation )
-  ROOT::Math::Boost boost_Wplus_WtCM  = boost_Wplus_tWCM.Inverse();
-  ROOT::Math::Boost boost_Wminus_WtCM = boost_Wminus_tWCM.Inverse();
-        
-  // Get the lepton and neutrino 4-vectors in the W rest frame
-
-  //--- LAB -> top CM -> W CM ---//
-  genp4_lminus_WCM_       = boost_Wminus_tWCM * genp4_lminus_tCM_;
-  genp4_nubar_WCM_        = boost_Wminus_tWCM * genp4_nubar_tCM_;
-  genp4_lplus_WCM_        = boost_Wplus_tWCM  * genp4_lplus_tCM_;
-  genp4_nu_WCM_           = boost_Wplus_tWCM  * genp4_nu_tCM_;
-
-  /*
-  //--- LAB -> W -> top ---//
-  genp4_lminus_WCM_       = boost_Wminus_CM * genp4_lminus_;
-  genp4_nubar_WCM_        = boost_Wminus_CM * genp4_nubar_;
-  genp4_lplus_WCM_        = boost_Wplus_CM  * genp4_lplus_;
-  genp4_nu_WCM_           = boost_Wplus_CM  * genp4_nu_;
-
-  genp4_lminus_WCM_       = boost_Wminus_WtCM * genp4_lminus_WCM_;
-  genp4_nubar_WCM_        = boost_Wminus_WtCM * genp4_nubar_WCM_;
-  genp4_lplus_WCM_        = boost_Wplus_WtCM  * genp4_lplus_WCM_;
-  genp4_nu_WCM_           = boost_Wplus_WtCM  * genp4_nu_WCM_;
-  */
-
-  // Composite 4-vectors
-  genp4_lminus_nubar_WCM_ = genp4_lminus_WCM_ + genp4_nubar_WCM_;
-  genp4_lplus_nu_WCM_     = genp4_lplus_WCM_  + genp4_nu_WCM_;
-
-  // W +/- in the lab frame here
-  // want W direction in the top rest frame
-  // NB: this says theta, but it is real cosTheta
-
-  theta_lminus_nubar_WCM_ = genp4_lminus_WCM_.Px()*genp4_Wminus_tCM_.Px() +
-    genp4_lminus_WCM_.Py()*genp4_Wminus_tCM_.Py() +
-    genp4_lminus_WCM_.Pz()*genp4_Wminus_tCM_.Pz();
-
-  theta_lplus_nu_WCM_     = genp4_lplus_WCM_.Px()*genp4_Wplus_tCM_.Px() +
-    genp4_lplus_WCM_.Py()*genp4_Wplus_tCM_.Py() +
-    genp4_lplus_WCM_.Pz()*genp4_Wplus_tCM_.Pz();
-
-  theta_lminus_nubar_WCM_ /= genp4_lminus_WCM_.P()*genp4_Wminus_tCM_.P();
-  theta_lplus_nu_WCM_     /= genp4_lplus_WCM_.P()*genp4_Wplus_tCM_.P();
-
-  float x1 = theta_lminus_nubar_WCM_;
-  float x2 = theta_lplus_nu_WCM_;
-
-  float f1 = 0.703 * (1 - x1 * x1 ) + 0.5 * 0.297 * ( 1 - x1 ) * ( 1 - x1 );
-  float f2 = 0.703 * (1 - x2 * x2 ) + 0.5 * 0.297 * ( 1 - x2 ) * ( 1 - x2 );
-
-  
-  float weight = -1;
-
-  if( f1 > 0 && f2 > 0 ) weight = 1. / ( f1 * f2 );
-
-  return weight;
-
-}
-
-
-
-//*****************************************************************
-// get the FR weight
-//*****************************************************************
-
-double singleLeptonLooper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, SimpleFakeRate * elfr, FREnum frmode, bool isData) {
-
-  //std::cout<<"Called singleLeptonLooper::getFRWeight"<<std::endl;
-
-  bool  estimateQCD   = false;
-  bool  estimateWJets = false;
-
-  if ( frmode == e_qcd ) {
-    estimateQCD   = true;
-    estimateWJets = false;
-  } 
-  else if( frmode == e_wjets ) {
-    estimateQCD   = false;
-    estimateWJets = true;
-  }
-  else {
-    std::cout<<"singleLeptonLooper::getFRWeight: bad FR mode given, fix this!"<<std::endl;
-    return -9999.;
-  }
-
-  if(hyp_type()[hypIdx] == 0) {
-
-    bool isGoodMut = false;
-    bool isGoodMul = false;
-    bool isFOMut   = false;
-    bool isFOMul   = false;
-    
-    unsigned int iMut = hyp_lt_index()[hypIdx];
-    unsigned int iMul = hyp_ll_index()[hypIdx];
-    
-    if( muonId( iMut , OSGeneric_v3 ) ) {
-      isGoodMut = true;
-    }
-    if( muonId( iMul , OSGeneric_v3 ) ) {
-      isGoodMul = true;
-    }
-    if( muonId( iMut , OSGeneric_v3_FO ) ) {
-      isFOMut = true;
-    }
-    if( muonId( iMul , OSGeneric_v3_FO ) ) {
-      isFOMul = true;
-    }
-
-    //for both WJets and QCD, we need both to be FOs at least
-    if(!isFOMut || !isFOMul)
-      return -9999.;
-
-    //if we want to estimate the fakes for QCD, then we ask that 
-    //both are not num objects, and that both are FO
-    if(estimateQCD) {
-      
-      //if at least one is a Numerator lepton, we return
-      if( isGoodMut || isGoodMul) 
-        return -9999.;
-      
-      double FRMut = mufr->getFR(mus_p4()[iMut].pt(), mus_p4()[iMut].eta());
-      double FRMul = mufr->getFR(mus_p4()[iMul].pt(), mus_p4()[iMul].eta());
-      return (FRMut/(1-FRMut))*(FRMul/(1-FRMul));
-    } 
-    else if(estimateWJets) {
-      
-      //need one to be a Numerator lepton, and the other to be FO but not num
-      if( isGoodMut && !isGoodMul && isFOMul) {
-        double FR = mufr->getFR(mus_p4()[iMul].pt(), mus_p4()[iMul].eta());
-        //cout << "mm, FR and FR/(1-FR) " << FR << ", " << FR/(1-FR) << endl;
-        return FR/(1-FR);
-      }
-      
-      //check the other muon
-      if( isGoodMul && !isGoodMut && isFOMut) {
-        double FR = mufr->getFR(mus_p4()[iMut].pt(), mus_p4()[iMut].eta());
-        //cout << "mm, FR and FR/(1-FR) " << FR << ", " << FR/(1-FR) << endl;
-        return FR/(1-FR);
-      }
-    }//estimate WJets
-    return -9999.;
-  }//mumu case
-  
-
-  //now we do the ee case
-  if(hyp_type()[hypIdx] == 3) {
-	  
-    unsigned int iElt = hyp_lt_index()[hypIdx];
-    unsigned int iEll = hyp_ll_index()[hypIdx];
-	  
-    bool isGoodElt = false;
-    bool isGoodEll = false;
-    bool isFOElt   = false;
-    bool isFOEll   = false;
-
-    if( pass_electronSelection( iElt , electronSelection_el_OSV3 ) ) {
-      isGoodElt = true;
-    }
-    if( pass_electronSelection( iEll , electronSelection_el_OSV3 ) ) {
-      isGoodEll = true;
-    }
-    if( pass_electronSelection( iElt , electronSelection_el_OSV3_FO ) ) {
-      isFOElt   = true;
-    }
-    if( pass_electronSelection( iEll , electronSelection_el_OSV3_FO ) ) {
-      isFOEll   = true;
-    }
-    
-    //for both WJets and QCD, we need both to be FOs at least
-    //if both are good, we continue
-    if( !isFOElt || !isFOEll)
-      return -9999.;
-
-    if(estimateQCD) {
-      
-      //if at least one is a Numerator object, then we return -9999.
-      if( isGoodElt || isGoodEll) 
-        return -9999.;
-      
-      double FRElt = elfr->getFR(els_p4()[iElt].pt(), els_p4()[iElt].eta());
-      double FREll = elfr->getFR(els_p4()[iEll].pt(), els_p4()[iEll].eta());
-      //cout << "ee, FRlt, FRll, FR " << FRElt << " " << FREll << " " << (FRElt/(1-FRElt))*(FREll/(1-FREll)) << endl;
-      return (FRElt/(1-FRElt))*(FREll/(1-FREll));
-    } 
-    else if(estimateWJets) {
-      
-      if(isGoodElt && !isGoodEll && isFOEll) {
-        double FR = elfr->getFR(els_p4()[iEll].pt(), els_p4()[iEll].eta());
-        //cout << "ee, FR and FR/(1-FR) " << FR << ", " << FR/(1-FR) << endl;
-        return FR/(1-FR);
-      }
-      //check the other electron 
-      if(isGoodEll && !isGoodElt && isFOElt) {
-        double FR = elfr->getFR(els_p4()[iElt].pt(), els_p4()[iElt].eta());
-        //cout << "ee, FR and FR/(1-FR) " << FR << ", " << FR/(1-FR) << endl;
-        return FR/(1-FR);
-      }
-      return -9999.;
-    }//estimateWJets
-    
-  }//ee case
-
-  if(hyp_type()[hypIdx] == 1 || hyp_type()[hypIdx] == 2) {
-
-    int iEl = 0;
-    int iMu = 0;
-    
-    if     ( abs(hyp_ll_id()[hypIdx])==11 && abs(hyp_lt_id()[hypIdx])==13 ){
-      iEl = hyp_ll_index()[hypIdx];
-      iMu = hyp_lt_index()[hypIdx];
-    }
-    else if( abs(hyp_ll_id()[hypIdx])==13 && abs(hyp_lt_id()[hypIdx])==11 ){
-      iEl = hyp_lt_index()[hypIdx];
-      iMu = hyp_ll_index()[hypIdx];
-    }
-    else{
-      cout << "ID ll " << hyp_ll_id()[hypIdx] << endl;
-      cout << "ID lt " << hyp_lt_id()[hypIdx] << endl;
-      cout << "Error in getFRWeight, quitting!" << endl;
-      exit(0); 
-    }
-
-    bool isGoodEl = false;
-    bool isFOEl   = false;
-    bool isGoodMu = false;
-    bool isFOMu   = false;
-
-    if( pass_electronSelection( iEl , electronSelection_el_OSV3 ) ){
-      isGoodEl = true;
-    }
-    if( muonId( iMu , OSGeneric_v3 ) ) { 
-      isGoodMu = true;
-    }
-    if( pass_electronSelection( iEl , electronSelection_el_OSV3_FO ) ){
-      isFOEl = true;
-    }
-    if( muonId( iMu , OSGeneric_v3_FO ) ) { 
-      isFOMu = true;
-    }
-    
-    //if either fail FO, return!!!
-    if(!isFOMu || !isFOEl)
-      return -9999.;
-    
-    if(estimateQCD ) {
-      
-      //if at least one is a numerator, then we fail
-      if(isGoodMu || isGoodEl)
-        return -9999.;
-      
-      double FRMu = mufr->getFR(mus_p4()[iMu].pt(), mus_p4()[iMu].eta());
-      double FREl = elfr->getFR(els_p4()[iEl].pt(), els_p4()[iEl].eta());
-      return FRMu*FREl/(1-FRMu)/(1-FREl);
-    } 
-    else if(estimateWJets) {
-      
-      //need one to be a numerator lepton and the other to be a FO
-      if(isGoodMu && !isGoodEl && isFOEl) {
-        double FR = elfr->getFR(els_p4()[iEl].pt(), els_p4()[iEl].eta());
-        //cout << "emu, el FR, FR/(1-FR): " << FR << ", " << FR/(1-FR) << endl;
-        return FR/(1-FR);
-      }
-      
-      if(isGoodEl && !isGoodMu && isFOMu) {
-        double FR = mufr->getFR(mus_p4()[iMu].pt(), mus_p4()[iMu].eta());
-        //cout << "emu, mu FR, FR/(1-FR): " << FR << ", " << FR/(1-FR) << endl;
-        return FR/(1-FR);
-      }
-      return -9999.;
-    }
-  } //emu case
-
-  return -9999.;
-}
-
-//--------------------------------------------------------------------
-
-void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
+void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
@@ -2158,44 +942,17 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree = new TTree("t","Tree");
 
   //Set branch addresses
-  //variables must be declared in singleLeptonLooper.h
-  outTree->Branch("acc_2010",        &acc_2010_,         "acc_2010/I");
-  outTree->Branch("acc_highmet",     &acc_highmet_,      "acc_highmet/I");
-  outTree->Branch("acc_highht",      &acc_highht_,       "acc_highht/I");
+  //variables must be declared in looper.h
   outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
-  outTree->Branch("jetid",           &jetid_,            "jetid/I");
-  outTree->Branch("jetid30",         &jetid30_,          "jetid30/I");
   outTree->Branch("json",            &json_,             "json/I");
-  outTree->Branch("htoffset",        &htoffset_,         "htoffset/F");
-  outTree->Branch("htuncor",         &htuncor_,          "htuncor/F");
-  outTree->Branch("njetsoffset",     &njetsoffset_,      "njetsoffset/I");
-  outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
-  outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
-  outTree->Branch("trgeff",          &trgeff_,           "trgeff/F");
   outTree->Branch("pthat",           &pthat_,            "pthat/F");
   outTree->Branch("qscale",          &qscale_,           "qscale/F");
-  outTree->Branch("ksusy",           &ksusy_,            "ksusy/F");
-  outTree->Branch("ksusyup",         &ksusyup_,          "ksusyup/F");
-  outTree->Branch("ksusydn",         &ksusydn_,          "ksusydn/F");
-  outTree->Branch("xsecsusy",        &xsecsusy_,         "xsecsusy/F");
-  outTree->Branch("xsecsusy2",       &xsecsusy2_,        "xsecsusy2/F");
-  outTree->Branch("smeff",           &smeff_,            "smeff/F");
-  outTree->Branch("k",               &k_,                "k/F");
   outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
-  outTree->Branch("nlep",            &nlep_,             "nlep/I");
   outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
   outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
   outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
-  outTree->Branch("mull",            &mull_,             "mull/I");
-  outTree->Branch("mult",            &mult_,             "mult/I");
-  outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
-  outTree->Branch("multgen",         &multgen_,          "multgen/I");
-  outTree->Branch("proc",            &proc_,             "proc/I");
-  outTree->Branch("leptype",         &leptype_,          "leptype/I");
-  outTree->Branch("topmass",         &topmass_,          "topmass/F");
   outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
-  outTree->Branch("tcmet",           &tcmet_,            "tcmet/F");
   outTree->Branch("genmet",          &genmet_,           "genmet/F");
   outTree->Branch("genmet",          &genmet_,           "genmet/F");
   outTree->Branch("genmet",          &genmet_,           "genmet/F");
@@ -2229,52 +986,26 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("npfjetspv",       &npfjetspv_,        "npfjetspv/I");
   outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
   outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
-  outTree->Branch("htUp",            &htUp_,             "htUp/F");
-  outTree->Branch("htDown",          &htDown_,           "htDown/F");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
   outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
-  outTree->Branch("nbtags",          &nbtags_,           "nbtags/I");
-  outTree->Branch("nbtagstcl",       &nbtagstcl_,        "nbtagstcl/I");
-  outTree->Branch("nbtagstcm",       &nbtagstcm_,        "nbtagstcm/I");
-  outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
-  outTree->Branch("pass",            &pass_,             "pass/I");
-  outTree->Branch("passz",           &passz_,            "passz/I");
+  outTree->Branch("nbtags17",        &nbtags17_,         "nbtags17/I");
+  outTree->Branch("nbtags20",        &nbtags20_,         "nbtags20/I");
+  outTree->Branch("nbtags33",        &nbtags33_,         "nbtags33/I");
   outTree->Branch("m0",              &m0_,               "m0/F");
-  outTree->Branch("mg",              &mG_,               "mg/F");
-  outTree->Branch("ml",              &mL_,               "ml/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");
   outTree->Branch("id2",             &id2_,              "id2/I");
   outTree->Branch("w1",              &w1_,               "w1/I");
   outTree->Branch("w2",              &w2_,               "w2/I");
   outTree->Branch("iso1",            &iso1_,             "iso1/F");
-  outTree->Branch("isont1",          &isont1_,           "isont1/F");
-  outTree->Branch("etasc1",          &etasc1_,           "etasc1/F");
-  outTree->Branch("etasc2",          &etasc2_,           "etasc2/F");
   outTree->Branch("iso2",            &iso2_,             "iso2/F");
-  outTree->Branch("ecalveto1",       &ecalveto1_,        "ecalveto1/F");
-  outTree->Branch("ecalveto2",       &ecalveto2_,        "ecalveto2/F");
-  outTree->Branch("hcalveto1",       &hcalveto1_,        "hcalveto1/F");
-  outTree->Branch("hcalveto2",       &hcalveto2_,        "hcalveto2/F");
-  outTree->Branch("isont2",          &isont2_,           "isont2/F");
-  outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
-  outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
-  outTree->Branch("ptj1",            &ptj1_,             "ptj1/F");
-  outTree->Branch("ptj2",            &ptj2_,             "ptj2/F");
-  outTree->Branch("etal1",           &etal1_,            "etal1/F");
-  outTree->Branch("etal2",           &etal2_,            "etal2/F");
-  outTree->Branch("phil1",           &phil1_,            "phil1/F");
-  outTree->Branch("phil2",           &phil2_,            "phil2/F");
-  outTree->Branch("meff",            &meff_,             "meff/F");
   outTree->Branch("mt",              &mt_,               "mt/F");
   outTree->Branch("dataset",         &dataset_,          "dataset[200]/C");
   outTree->Branch("run",             &run_,              "run/I");
   outTree->Branch("lumi",            &lumi_,             "lumi/I");
   outTree->Branch("event",           &event_,            "event/I");
-  outTree->Branch("y",               &y_,                "y/F");  
   outTree->Branch("ht",              &ht_,               "ht/F");  
-  outTree->Branch("htgen",           &htgen_,            "htgen/F");  
   outTree->Branch("htjpt",           &htjpt_,            "htjpt/F");  
   outTree->Branch("htpf25",          &htpf25_,           "htpf25/F");  
   outTree->Branch("htpf40",          &htpf40_,           "htpf40/F");  
@@ -2285,34 +1016,12 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nleps",           &nleps_,            "nleps/I");  
   outTree->Branch("dphijm",          &dphijm_,           "dphijm/F");  
   outTree->Branch("ptjetraw",        &ptjetraw_,         "ptjetraw/F");  
-  outTree->Branch("ptjet23",         &ptjet23_,          "ptjet23/F");  
-  outTree->Branch("ptjetF23",        &ptjetF23_,         "ptjetF23/F");  
-  outTree->Branch("ptjetO23",        &ptjetO23_,         "ptjetO23/F");  
-  //outTree->Branch("cosphijz",        &cosphijz_,         "cosphijz/F");  
-  outTree->Branch("njets15",         &njets15_,          "njets15/I");  
+  outTree->Branch("mmjj",            &mmjj_,             "mmjj/F");  
 
-  outTree->Branch("mcid1",           &mcid1_,            "mcid1/I");  
-  outTree->Branch("mcdr1",           &mcdr1_,            "mcdr1/F");  
-  outTree->Branch("mcdecay1",        &mcdecay1_,         "mcdecay1/I");  
-  outTree->Branch("mcid2",           &mcid2_,            "mcid2/I");  
-  outTree->Branch("mcdr2",           &mcdr2_,            "mcdr2/F");  
-  outTree->Branch("mcdecay2",        &mcdecay2_,         "mcdecay2/I");  
- 
-  outTree->Branch("mlepid",          &mlepid_,           "mlepid/I");  
-  outTree->Branch("mleppassid",      &mleppassid_,       "mleppassid/I");  
-  outTree->Branch("mleppassiso",     &mleppassiso_,      "mleppassiso/I");  
-  outTree->Branch("mlepiso",         &mlepiso_,          "mlepiso/F");  
-  outTree->Branch("mlepdr",          &mlepdr_,           "mlepdr/F");  
-
-  outTree->Branch("trkpt",           &trkpt_,            "trkpt/F");  
-  outTree->Branch("trkreliso",       &trkreliso_,        "trkreliso/F");  
-
-  outTree->Branch("mlep"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
-  outTree->Branch("mclep1"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep1_	);
-  outTree->Branch("mclep2"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep2_	);
-  outTree->Branch("jet"	    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	        );
+  outTree->Branch("jet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet1_	);
+  outTree->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
 
 
 }
@@ -2333,64 +1042,3 @@ vector<int> goodDAVertices(){
 }
 
 //--------------------------------------------------------------------
-
-float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx = 0 ){
-  
-  return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
-  
-}
-
-float singleLeptonLooper::trackIso( int thisPf , float dz_thresh ){
-
-  float iso = 0.0;
-
-  for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
-
-    if( ipf == thisPf                      ) continue; // skip this PFCandidate
-    if( cms2.pfcands_charge().at(ipf) == 0 ) continue; // skip neutrals
-
-    if( dRbetweenVectors( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) ) > 0.3 ) continue;
-
-    int itrk = cms2.pfcands_trkidx().at(ipf);
-    
-    if( itrk >= trks_trk_p4().size() || itrk < 0 ){
-      //note: this should only happen for electrons which do not have a matched track
-      //currently we are just ignoring these guys
-      continue;
-    }
-    
-    //----------------------------------------
-    // find closest PV and dz w.r.t. that PV
-    //----------------------------------------
-    
-    float mindz = 999.;
-    int vtxi    = -1;
-      
-    for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
-	
-      float mydz = dz_trk_vtx(itrk,ivtx);
-      
-      if (fabs(mydz) < fabs(mindz)) {
-	mindz = mydz;
-	vtxi = ivtx;
-      }
-         
-    }
-    
-    //----------------------------------------------------------------------------
-    // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
-    //----------------------------------------------------------------------------
-    
-    if ( vtxi != 0               )     continue;
-    if ( fabs(mindz) > dz_thresh )     continue;
-
-    //---------------------------------------
-    // passes cuts, add up isolation value
-    //---------------------------------------
-
-    iso += cms2.pfcands_p4().at(ipf).pt();
-
-  }
-
-  return iso;
-}

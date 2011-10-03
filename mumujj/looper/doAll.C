@@ -6,7 +6,7 @@
 #include "TSystem.h"
 
 #include "histtools.h"
-#include "singleLeptonLooper.h"
+#include "looper.h"
 
 #include <iostream>
 #endif
@@ -41,8 +41,8 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-04";
-  //const char* version   = "temp";
+  //const char* version   = "V00-00-04";
+  const char* version   = "temp";
   const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
   //const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3_goodruns.txt";
 
@@ -78,9 +78,9 @@ void doAll(bool skipFWLite = true)
   gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
 
   // Load and compile the looping code
-  gSystem->CompileMacro("singleLeptonLooper.C","++k", "libsingleLeptonLooper");
+  gSystem->CompileMacro("looper.C","++k", "liblooper");
   
-  singleLeptonLooper* looper = new singleLeptonLooper();
+  looper* looper = new looper();
 
   //set looper parameters
   looper->set_susybaseline(0);
@@ -205,8 +205,8 @@ void doAll(bool skipFWLite = true)
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runQCD      = 1;
-  bool runttall    = 1;
+  bool runQCD      = 0;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -217,7 +217,7 @@ void doAll(bool skipFWLite = true)
   bool runWW       = 0;
   bool runWZ       = 0;
   bool runZZ       = 0;
-  bool runWjets    = 1;
+  bool runWjets    = 0;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
@@ -253,7 +253,7 @@ void doAll(bool skipFWLite = true)
   bool runML8      = 0;
   bool runLMscan   = 0; 
   bool runT1lh     = 0;
-  bool runT2tt     = 1;
+  bool runT2tt     = 0;
 
   /*  
   //Flags for files to run over
@@ -1011,7 +1011,7 @@ void doAll(bool skipFWLite = true)
   char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
   bool doFakeApp          = false;
 
-  singleLeptonLooper::TrigEnum trig;
+  looper::TrigEnum trig;
 
   TChain* chdata     = new  TChain("Events");
 
@@ -1019,29 +1019,11 @@ void doAll(bool skipFWLite = true)
     
     cout << "adding ElectronHad and MuHad data" << endl;
     
-    //---------------------------
-    // May10 rereco
-    //---------------------------
-   
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root"); 
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_167898_3.root");
 
-    //pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
-    //pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
-    
-    //---------------------------
-    // prompt reco v4
-    //---------------------------
-    
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
 
-    //these are the unfiltered ntuples
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-31/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-31_merged/V04-02-31/merged*root");
-    //pickSkimIfExists(chdata," /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-31/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-31_merged/V04-02-31/merged*root);
-
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
   
   }
 
@@ -1070,10 +1052,10 @@ void doAll(bool skipFWLite = true)
 		//for (int frmodeIdx = 0; frmodeIdx < 1; ++frmodeIdx)
 		{
                   
-		  singleLeptonLooper::JetTypeEnum  jetType(jetTypeIdx);
-		  singleLeptonLooper::MetTypeEnum  metType(metTypeIdx);
-		  singleLeptonLooper::ZVetoEnum    zveto(zvetoIdx);
-		  singleLeptonLooper::FREnum       frmode(frmodeIdx);
+		  looper::JetTypeEnum  jetType(jetTypeIdx);
+		  looper::MetTypeEnum  metType(metTypeIdx);
+		  looper::ZVetoEnum    zveto(zvetoIdx);
+		  looper::FREnum       frmode(frmodeIdx);
 
 		  if( doFakeApp ){
 		    if( frmodeIdx == 0 ) cout << "Doing double fake estimate" << endl;
@@ -1403,8 +1385,8 @@ void doAll(bool skipFWLite = true)
 		  }
 
 		  //char* dir = "";
-		  //if( trig == singleLeptonLooper::e_lowpt  ) dir = "lowpt"  ;
-		  //if( trig == singleLeptonLooper::e_highpt ) dir = "highpt" ;
+		  //if( trig == looper::e_lowpt  ) dir = "lowpt"  ;
+		  //if( trig == looper::e_highpt ) dir = "highpt" ;
                   
 		  // save all the histograms
 		  if(doFakeApp) {
