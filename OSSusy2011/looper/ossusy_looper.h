@@ -230,9 +230,9 @@ class ossusy_looper
         Float_t meff_;
         Float_t mt_;
         char    dataset_[200];
-        Int_t   run_;
-        Int_t   lumi_;
-        Int_t   event_;
+        UInt_t  run_;
+        UInt_t  lumi_;
+        UInt_t  event_;
 	Float_t y_;
 	Float_t ht_;
 	Float_t htoffset_;
