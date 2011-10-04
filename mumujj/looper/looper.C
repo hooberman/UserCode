@@ -318,26 +318,29 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
   }
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+
   rootdir->cd();
 
   BookHistos(prefix);
-  
+
   unsigned int nEventsChain = chain->GetEntries();
   unsigned int nEventsTotal = 0;
+
   // map isn't needed for this purpose, vector is sufficient
   // better would be to use a struct with run, lb, event
   map<int,int> m_events;
 
   // loop over files
   TObjArray *listOfFiles = chain->GetListOfFiles();
+
   TIter fileIter(listOfFiles);
+
   TChainElement* currentFile = 0;
 
   int   nSkip_els_conv_dist = 0;
   float nevents             = 0.0;
 
   if(g_createTree) makeTree(prefix, doFakeApp, frmode);
-
 
   char* thisFile = "blah";
 
@@ -357,8 +360,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
     TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
-    TTreeCache::SetLearnEntries(100);
-    tree->SetCacheSize(128*1024*1024);
+    //TTreeCache::SetLearnEntries(100);
+    //tree->SetCacheSize(128*1024*1024);
 
     cms2.Init(tree);
       
@@ -366,7 +369,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
     for(unsigned int z = 0; z < nEntries; ++z) {
       ++nEventsTotal;
-
+      
       // progress feedback to user
       if (nEventsTotal % 1000 == 0){
         
@@ -380,7 +383,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       }
 
       //Matevz
-      tree->LoadTree(z);
+      //tree->LoadTree(z);
 
       cms2.GetEntry(z);
 
@@ -393,6 +396,12 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	cout << evt_dataset() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 	cout << "-------------------------------------------------------"   << endl;
       }
+      
+      //--------------------------------
+      // require trigger
+      //--------------------------------
+
+      if( !passMuMuJJTrigger_v1( isData ) ) continue;
 
       //---------------------------------------------
       // event cleaning and good run list
@@ -415,7 +424,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       //-------------------------------------
       // skip events with bad els_conv_dist
       //-------------------------------------
- 
+
       bool skipEvent = false;
       for( unsigned int iEl = 0 ; iEl < els_conv_dist().size() ; ++iEl ){
         if( els_conv_dist().at(iEl) != els_conv_dist().at(iEl) ){
@@ -459,7 +468,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	//cout << "Found electron " << ngoodlep_ << " pt " << els_p4().at(iel).pt() << endl;
 	}
       */
-  
+
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 20 )                         continue;
 	if( !muonIdNotIsolated( imu , muonSelection_mumujj ))    continue;
@@ -473,14 +482,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	//cout << "Found muon " << ngoodlep_ << " pt " << mus_p4().at(imu).pt() << endl;
       }  
       
-      // REQUIRE AT LEAST 2 GOOD LEPTONS!!!
-      if( goodLeptons.size() < 2 ) continue;
-
-      //--------------------------------
-      // require trigger
-      //--------------------------------
-
-      if( !passMuMuJJTrigger_v1( isData ) ) continue;
+      // REQUIRE AT LEAST 1 GOOD LEPTON!!!
+      if( goodLeptons.size() < 1 ) continue;
 
       std::vector<LorentzVector> trigObjs;
 
@@ -544,8 +547,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       id1_       = lepId.at(imaxpt);
       lep1_      = &goodLeptons.at(imaxpt);
       int index1 = lepIndex.at(imaxpt);
-      iso1_      = muonIsoValue(imaxpt,false);
-      passid1_   = muonIdNotIsolated( imaxpt, OSGeneric_v3 ) ? 1 : 0;
+      iso1_      = muonIsoValue(index1,false);
+      passid1_   = muonIdNotIsolated( index1 , OSGeneric_v3 ) ? 1 : 0;
 
       //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
 
@@ -557,30 +560,35 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       lep2_      = 0;
       int index2 = -1;
       dilmass_   = -999;
+      iso2_      = -1.;
+      passid2_   = -1;
 
-      maxpt = -1;
+      if( ngoodlep_ > 1 ){
 
-      for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	maxpt = -1;
 	
-	if( ilep == imaxpt ) continue;
-	
-	if( goodLeptons.at(ilep).pt() > maxpt ){
-	  maxpt   = goodLeptons.at(ilep).pt();
-	  imaxpt2 = ilep;
+	for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  
+	  if( ilep == imaxpt ) continue;
+	  
+	  if( goodLeptons.at(ilep).pt() > maxpt ){
+	    maxpt   = goodLeptons.at(ilep).pt();
+	    imaxpt2 = ilep;
+	  }
 	}
+	
+	if( imaxpt2 < 0 ){
+	  cout << "ERROR! QUITTING imaxpt2 " << imaxpt2 << endl;
+	  exit(3);
+	}
+	
+	id2_       = lepId.at(imaxpt2);
+	lep2_      = &goodLeptons.at(imaxpt2);
+	index2     = lepIndex.at(imaxpt2);
+	dilmass_   = (goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass();
+	iso2_      = muonIsoValue(index2,false);
+	passid2_   = muonIdNotIsolated( index2, OSGeneric_v3 ) ? 1 : 0;
       }
-      
-      if( imaxpt2 < 0 ){
-	cout << "ERROR! QUITTING imaxpt2 " << imaxpt2 << endl;
-	exit(3);
-      }
-      
-      id2_       = lepId.at(imaxpt2);
-      lep2_      = &goodLeptons.at(imaxpt2);
-      index2     = lepIndex.at(imaxpt2);
-      dilmass_   = (goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass();
-      iso2_      = muonIsoValue(imaxpt2,false);
-      passid2_   = muonIdNotIsolated( imaxpt2, OSGeneric_v3 ) ? 1 : 0;
 
       //cout << "2nd deading lepton: pt " << lep2_->pt() << " id " << id2_ << " mass " << dilmass_ << endl;
 	  
@@ -715,7 +723,11 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       if( njets_ > 2 ) jet3_  = &vpfjets_p4_sorted.at(2);
       if( njets_ > 3 ) jet4_  = &vpfjets_p4_sorted.at(3);
 
-      mmjj_ = (*lep1_+*lep2_+*jet1_+*jet2_).mass();
+      mmjj_ = -1;
+      if( ngoodlep_ > 1 ) mmjj_ = (*lep1_+*lep2_+*jet1_+*jet2_).mass();
+
+      mjjj_ = -1;
+      if( njets_ > 2    ) mjjj_ = (*lep1_+*jet1_+*jet2_+*jet3_).mass();
      
       pfmet_    = evt_pfmet();
       pfmetphi_ = evt_pfmetPhi();
@@ -1017,11 +1029,14 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("dphijm",          &dphijm_,           "dphijm/F");  
   outTree->Branch("ptjetraw",        &ptjetraw_,         "ptjetraw/F");  
   outTree->Branch("mmjj",            &mmjj_,             "mmjj/F");  
+  outTree->Branch("mjjj",            &mjjj_,             "mjjj/F");  
 
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
   outTree->Branch("jet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet1_	);
   outTree->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
+  outTree->Branch("jet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet3_	);
+  outTree->Branch("jet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet4_	);
 
 
 }
