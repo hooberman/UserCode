@@ -106,7 +106,12 @@ class singleLeptonLooper
 	Float_t mlepiso_;
 	Float_t mlepdr_;
 
+	Int_t   ncalojets_;
+	Float_t htcalo_;
+	Int_t   nbctcm_;
+
 	LorentzVector*  mlep_;   
+	LorentzVector*  trgjet_;   
 	LorentzVector*  mclep1_;   
 	LorentzVector*  mclep2_;   
         LorentzVector*  lep1_;
@@ -115,6 +120,7 @@ class singleLeptonLooper
         LorentzVector*  jet_; 
 
         // Baby ntuple variables
+	Int_t   passtrg_;
 	Float_t dphilm_;
 	Float_t mG_;
 	Float_t mL_;

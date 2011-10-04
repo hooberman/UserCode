@@ -37,8 +37,8 @@
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 
-
-bool verbose = false;
+bool doTriggerStudy = false;
+bool verbose        = false;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -76,9 +76,9 @@ float returnBias(float sumJetPt, singleLeptonLooper::MetTypeEnum metType);
 void checkElectron( int elidx ){
 
   cout << "Check electron" << endl;
-  cout << "Pass all    " << pass_electronSelection( elidx , electronSelection_ssv5			) << endl;
-  cout << "Pass ID     " << pass_electronSelection( elidx , electronSelection_ssv5_noiso		) << endl;
-  cout << "Pass iso    " << pass_electronSelection( elidx , electronSelection_ssv5_iso	        	) << endl;
+  cout << "Pass all    " << pass_electronSelection( elidx , electronSelection_ssV5			) << endl;
+  cout << "Pass ID     " << pass_electronSelection( elidx , electronSelection_ssV5_noIso		) << endl;
+  cout << "Pass iso    " << pass_electronSelection( elidx , electronSelection_ssV5_iso	        	) << endl;
   cout << "VBTF90      " << pass_electronSelection( elidx , 1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL	) << endl;
   cout << "PV          " << pass_electronSelection( elidx , 1ll<<ELEIP_PV_OSV2				) << endl;
   cout << "nomuon      " << pass_electronSelection( elidx , 1ll<<ELENOMUON_010				) << endl;
@@ -110,6 +110,44 @@ void checkMuon( int muidx ){
 
 }
 
+//--------------------------------------------------------------------
+
+double dRbetweenVectors(const LorentzVector &vec1, 
+			const LorentzVector &vec2 ){ 
+
+  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
+  double deta = vec1.Eta() - vec2.Eta();
+  return sqrt(dphi*dphi + deta*deta);
+}
+
+//--------------------------------------------------------------------
+
+int findTriggerIndex(TString trigName)
+{
+    vector<TString>::const_iterator begin_it = hlt_trigNames().begin();
+    vector<TString>::const_iterator end_it = hlt_trigNames().end();
+    vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);
+    if(found_it != end_it) return found_it - begin_it;
+    return -1;
+}
+
+//--------------------------------------------------------------------
+
+bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector> &trigObjs, float pt) 
+{
+
+  float drMin = 999.99;
+  for (size_t i = 0; i < trigObjs.size(); ++i)
+    {
+      if (trigObjs[i].Pt() < pt) continue;
+      float dr = dRbetweenVectors(trigObjs[i], obj);
+      if (dr < drMin) drMin = dr;
+    }
+
+  if (drMin < 0.1) return true;
+  return false;
+
+}
 
 //--------------------------------------------------------------------
 
@@ -120,16 +158,6 @@ singleLeptonLooper::singleLeptonLooper()
   g_useBitMask   = false;
   random3_ = new TRandom3(1);
   initialized = false;
-}
-
-//--------------------------------------------------------------------
-
-double dRbetweenVectors(const LorentzVector &vec1, 
-			const LorentzVector &vec2 ){ 
-
-  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
-  double deta = vec1.Eta() - vec2.Eta();
-  return sqrt(dphi*dphi + deta*deta);
 }
 
 //--------------------------------------------------------------------
@@ -541,6 +569,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       InitBaby();
 
+      if( doTriggerStudy ){
+      	// run range for which HLT_Mu17_CentralJet30 is un-prescaled
+      	if( evt_run() < 160329 || evt_run() > 163261 ) continue;
+
+      	// require event passes HLT_Mu20_v1
+      	if( !passUnprescaledHLTTrigger("HLT_Mu20_v1") )   continue;
+      }
+
       if( verbose ){
 	cout << "-------------------------------------------------------"   << endl;
 	cout << "Event " << z                                               << endl;
@@ -608,7 +644,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
             
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 	if( els_p4().at(iel).pt() < 10 )                                              continue;
-	if( !pass_electronSelection( iel , electronSelection_ssv5 , false , false ) ) continue;
+	if( !pass_electronSelection( iel , electronSelection_ssV5 , false , false ) ) continue;
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepId.push_back( els_charge().at(iel) * 11 );
 	lepIndex.push_back(iel);
@@ -661,6 +697,119 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       int index1 = lepIndex.at(imaxpt);
 
       //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
+
+      //------------------------------------------------
+      // trigger study: turn-on curve for jet triggers
+      //------------------------------------------------
+
+      trgjet_  = 0;
+      passtrg_ = -1;
+
+      if( doTriggerStudy ){
+
+	// only consider muon events
+	if( abs(id1_) == 11 ) continue;
+
+	// run range for which HLT_Mu17_CentralJet30 is un-prescaled
+	if( evt_run() < 160329 || evt_run() > 163261 ) continue;
+
+	// require event passes HLT_Mu20_v1
+	if( !passUnprescaledHLTTrigger("HLT_Mu20_v1") ) continue;
+ 
+	// require found trigger object
+	std::vector<LorentzVector> muonObj;
+	muonObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu20_v1")];
+
+	if( muonObj.size() == 0 ) continue;
+
+	// require offline muon matched to muon trigger object (dR < 0.1)
+	if( dRbetweenVectors( *lep1_ , muonObj.at(0) ) > 0.1 ) continue;
+
+	// now get trigger objects for HLT_Mu20_CentralJet30
+	std::vector<LorentzVector> muonJetObj;
+	if( evt_run() >= 160329 && evt_run() <= 161176 )
+	  muonJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu17_CentralJet30_v1")];
+	else if( evt_run() >= 161210 && evt_run() <= 163261 )
+	  muonJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu17_CentralJet30_v2")];
+
+	// did event pass HLT_Mu17_CentralJet30?
+	passtrg_ = 0;
+	if( evt_run() >= 160329 && evt_run() <= 161176 )
+	  passtrg_ = passUnprescaledHLTTrigger("HLT_Mu17_CentralJet30_v1") ? 1 : 0;
+	else if( evt_run() >= 161210 && evt_run() <= 163261 )
+	  passtrg_ = passUnprescaledHLTTrigger("HLT_Mu17_CentralJet30_v2") ? 1 : 0;
+
+	// now find highest pt offline jet matched to HLT jet
+	int offlinejet = -1;
+	int njets      =  0;
+	float maxpt    = -1;
+
+        for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
+          
+          LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
+
+	  if( dRbetweenVectors( vjet , *lep1_ ) < 0.4 ) continue;
+	  //if( vjet.pt() < 20. )                                          continue;
+
+	  // if event passed trigger, require jet is matched to HLT object
+	  if( passtrg_ == 1 ){
+	    
+	    bool HLTmatch = false;
+
+	    for( unsigned int ihlt = 0 ; ihlt < muonJetObj.size() ; ++ihlt ){
+	      
+	      // exclude HLT muon object
+	      if( dRbetweenVectors( vjet , muonObj.at(0) ) < 0.1 )       continue;
+	    
+	      // dr match to HLT jet object
+	      if( dRbetweenVectors( vjet , muonJetObj.at(ihlt) ) > 0.4 ) continue;
+
+	      HLTmatch = true;
+	    }
+
+	    if( !HLTmatch ) continue;
+	  }
+
+	  njets++;
+
+	  if( vjet.pt() > maxpt ){
+	    maxpt      = vjet.pt();
+	    offlinejet = ijet;
+	  }
+
+        }
+
+	//if( passtrg_ == 0 ) cout << "FAIL TRIGGER" << endl;
+	if( offlinejet < 0 ) continue;
+	//if( njets > 1      ) continue;
+
+	// now store offline jet p4 and whether muon-jet trigger passed
+	trgjet_  = &(jets_p4().at(offlinejet) * jets_corL1FastL2L3().at(offlinejet));
+
+	outTree->Fill();
+	continue;
+
+	// cout << "muonJetObj.size() " << muonJetObj.size() << endl;
+	// cout << "muon trigger       : pt, eta, phi    " << muonObj.at(0).pt() << ", " << muonObj.at(0).eta() << ", " << muonObj.at(0).phi() << endl;
+
+	// if( muonJetObj.size() > 1 ){
+	//   cout << "muon-jet trigger 1 : pt, eta, phi    " << muonJetObj.at(0).pt() << ", " << muonJetObj.at(0).eta() << ", " << muonJetObj.at(0).phi() << endl;
+	//   cout << "muon-jet trigger 2 : pt, eta, phi    " << muonJetObj.at(1).pt() << ", " << muonJetObj.at(1).eta() << ", " << muonJetObj.at(1).phi() << endl;
+
+	//
+	//   float dr2 = dRbetweenVectors( muonObj.at(0) , muonJetObj.at(1) );
+
+	//   cout << "dr1 " << dr1 << " dr2 " << dr2 << endl;
+	// }
+
+
+
+	//cout << endl << endl;
+	//cout << "trigger objects " << muonObj.size() << endl;
+	//if( muonObj.size() > 0 ) cout << "pt, eta, phi    " << muonObj.at(0).pt() << ", " << muonObj.at(0).eta() << ", " << muonObj.at(0).phi() << endl;
+	//cout << "muon " << lep1_->pt() << ", " << lep1_->eta() << ", " << lep1_->phi() << endl;
+
+      }
 
       //---------------------------------------------
       // find 2nd leading lepton (if >=2 leptons)
@@ -960,8 +1109,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    if( ID == 1 ){
 	      mlepid_       = 11 * els_charge().at(imatch);
 	      mlep_         = &els_p4().at(imatch);
-	      mleppassid_   = pass_electronSelection( imatch , electronSelection_ssv5_noiso ) ? 1 : 0;
-	      mleppassiso_  = pass_electronSelection( imatch , electronSelection_ssv5_iso   ) ? 1 : 0;
+	      mleppassid_   = pass_electronSelection( imatch , electronSelection_ssV5_noIso ) ? 1 : 0;
+	      mleppassiso_  = pass_electronSelection( imatch , electronSelection_ssV5_iso   ) ? 1 : 0;
 	      mlepiso_      = electronIsolation_rel_v1(imatch, true );
 	    }
 
@@ -1013,8 +1162,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
       }
 
-    
-      //pfjets
+      //-------------------------------------
+      // jet counting
+      //-------------------------------------
+
       VofP4 vpfjets_p4;
 
       njets_ = 0.;
@@ -1133,7 +1284,38 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	LorentzVector vjet = pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet);
 	dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
       }
-      
+
+      nbctcm_    = 0;
+      ncalojets_ = 0;
+      htcalo_    = 0;
+
+      //------------------------------------------
+      // count calojets
+      //------------------------------------------
+
+      for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
+	
+	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
+
+	if( !passesCaloJetID( vjet ) )         continue;	
+	if( vjet.pt() < 35.          )         continue;
+	if( fabs( vjet.eta() ) > 2.5 )         continue;
+
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+
+
+	ncalojets_ ++;
+	htcalo_  += vjet.pt();
+
+	if( jets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
+	  nbctcm_++;
+	}
+      }
+
       //---------------------------------
       // L1offset jets
       //---------------------------------
@@ -2014,16 +2196,16 @@ double singleLeptonLooper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, S
     bool isFOElt   = false;
     bool isFOEll   = false;
 
-    if( pass_electronSelection( iElt , electronSelection_ssv5 ) ) {
+    if( pass_electronSelection( iElt , electronSelection_ssV5 ) ) {
       isGoodElt = true;
     }
-    if( pass_electronSelection( iEll , electronSelection_ssv5 ) ) {
+    if( pass_electronSelection( iEll , electronSelection_ssV5 ) ) {
       isGoodEll = true;
     }
-    if( pass_electronSelection( iElt , electronSelection_ssv5_FO ) ) {
+    if( pass_electronSelection( iElt , electronSelectionFOV5_ssVBTF80_v1 ) ) {
       isFOElt   = true;
     }
-    if( pass_electronSelection( iEll , electronSelection_ssv5_FO ) ) {
+    if( pass_electronSelection( iEll , electronSelectionFOV5_ssVBTF80_v1 ) ) {
       isFOEll   = true;
     }
     
@@ -2086,13 +2268,13 @@ double singleLeptonLooper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, S
     bool isGoodMu = false;
     bool isFOMu   = false;
 
-    if( pass_electronSelection( iEl , electronSelection_ssv5 ) ){
+    if( pass_electronSelection( iEl , electronSelection_ssV5 ) ){
       isGoodEl = true;
     }
     if( muonId( iMu , OSGeneric_v3 ) ) { 
       isGoodMu = true;
     }
-    if( pass_electronSelection( iEl , electronSelection_ssv5_FO ) ){
+    if( pass_electronSelection( iEl , electronSelectionFOV5_ssVBTF80_v1 ) ){
       isFOEl = true;
     }
     if( muonId( iMu , OSGeneric_v3_FO ) ) { 
@@ -2306,7 +2488,13 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   outTree->Branch("trkpt",           &trkpt_,            "trkpt/F");  
   outTree->Branch("trkreliso",       &trkreliso_,        "trkreliso/F");  
+  outTree->Branch("passtrg",         &passtrg_,          "passtrg/I");  
 
+  outTree->Branch("ncalojets",       &ncalojets_,        "ncalojets/I");  
+  outTree->Branch("nbctcm",          &nbctcm_,           "nbctcm/I");  
+  outTree->Branch("htcalo",          &htcalo_,           "htcalo/F");  
+
+  outTree->Branch("trgjet"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trgjet_	);
   outTree->Branch("mlep"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
