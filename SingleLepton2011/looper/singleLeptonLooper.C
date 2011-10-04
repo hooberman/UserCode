@@ -76,9 +76,9 @@ float returnBias(float sumJetPt, singleLeptonLooper::MetTypeEnum metType);
 void checkElectron( int elidx ){
 
   cout << "Check electron" << endl;
-  cout << "Pass all    " << pass_electronSelection( elidx , electronSelection_el_OSV3			) << endl;
-  cout << "Pass ID     " << pass_electronSelection( elidx , electronSelection_el_OSV3_noiso		) << endl;
-  cout << "Pass iso    " << pass_electronSelection( elidx , electronSelection_el_OSV3_iso		) << endl;
+  cout << "Pass all    " << pass_electronSelection( elidx , electronSelection_ssv5			) << endl;
+  cout << "Pass ID     " << pass_electronSelection( elidx , electronSelection_ssv5_noiso		) << endl;
+  cout << "Pass iso    " << pass_electronSelection( elidx , electronSelection_ssv5_iso	        	) << endl;
   cout << "VBTF90      " << pass_electronSelection( elidx , 1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL	) << endl;
   cout << "PV          " << pass_electronSelection( elidx , 1ll<<ELEIP_PV_OSV2				) << endl;
   cout << "nomuon      " << pass_electronSelection( elidx , 1ll<<ELENOMUON_010				) << endl;
@@ -607,8 +607,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ngoodmu_  = 0;
             
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 10 )                                                 continue;
-	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+	if( els_p4().at(iel).pt() < 10 )                                              continue;
+	if( !pass_electronSelection( iel , electronSelection_ssv5 , false , false ) ) continue;
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepId.push_back( els_charge().at(iel) * 11 );
 	lepIndex.push_back(iel);
@@ -960,8 +960,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    if( ID == 1 ){
 	      mlepid_       = 11 * els_charge().at(imatch);
 	      mlep_         = &els_p4().at(imatch);
-	      mleppassid_   = pass_electronSelection( imatch , electronSelection_el_OSV3_noiso ) ? 1 : 0;
-	      mleppassiso_  = pass_electronSelection( imatch , electronSelection_el_OSV3_iso   ) ? 1 : 0;
+	      mleppassid_   = pass_electronSelection( imatch , electronSelection_ssv5_noiso ) ? 1 : 0;
+	      mleppassiso_  = pass_electronSelection( imatch , electronSelection_ssv5_iso   ) ? 1 : 0;
 	      mlepiso_      = electronIsolation_rel_v1(imatch, true );
 	    }
 
@@ -2014,16 +2014,16 @@ double singleLeptonLooper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, S
     bool isFOElt   = false;
     bool isFOEll   = false;
 
-    if( pass_electronSelection( iElt , electronSelection_el_OSV3 ) ) {
+    if( pass_electronSelection( iElt , electronSelection_ssv5 ) ) {
       isGoodElt = true;
     }
-    if( pass_electronSelection( iEll , electronSelection_el_OSV3 ) ) {
+    if( pass_electronSelection( iEll , electronSelection_ssv5 ) ) {
       isGoodEll = true;
     }
-    if( pass_electronSelection( iElt , electronSelection_el_OSV3_FO ) ) {
+    if( pass_electronSelection( iElt , electronSelection_ssv5_FO ) ) {
       isFOElt   = true;
     }
-    if( pass_electronSelection( iEll , electronSelection_el_OSV3_FO ) ) {
+    if( pass_electronSelection( iEll , electronSelection_ssv5_FO ) ) {
       isFOEll   = true;
     }
     
@@ -2086,13 +2086,13 @@ double singleLeptonLooper::getFRWeight(const int hypIdx, SimpleFakeRate* mufr, S
     bool isGoodMu = false;
     bool isFOMu   = false;
 
-    if( pass_electronSelection( iEl , electronSelection_el_OSV3 ) ){
+    if( pass_electronSelection( iEl , electronSelection_ssv5 ) ){
       isGoodEl = true;
     }
     if( muonId( iMu , OSGeneric_v3 ) ) { 
       isGoodMu = true;
     }
-    if( pass_electronSelection( iEl , electronSelection_el_OSV3_FO ) ){
+    if( pass_electronSelection( iEl , electronSelection_ssv5_FO ) ){
       isFOEl = true;
     }
     if( muonId( iMu , OSGeneric_v3_FO ) ) { 
