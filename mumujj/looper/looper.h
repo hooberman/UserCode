@@ -122,6 +122,7 @@ class looper
 	Int_t   acc_highmet_;
 	Int_t   acc_highht_;
 	Float_t mmjj_;
+	Float_t mjjj_;
 	Float_t pthat_;
 	Float_t qscale_;
         Float_t weight_;
