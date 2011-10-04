@@ -41,8 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-04";
-  //const char* version   = "temp";
+  const char* version   = "V00-01-00";
   const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
   //const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3_goodruns.txt";
 
@@ -205,7 +204,7 @@ void doAll(bool skipFWLite = true)
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runQCD      = 1;
+  bool runQCD      = 0;
   bool runttall    = 1;
   bool runtt42     = 0;
   bool runttpowheg = 0;
@@ -333,21 +332,6 @@ void doAll(bool skipFWLite = true)
                      "/tas/cms2/dilepSkim35pb/mus.root",
                      "dataskim");
   }
-  
-  // TChain* chQCDpt15 = new  TChain("Events");
-  // if(runQCDpt15){
-  //   pickSkimIfExists(chQCDpt15, 
-  //                    "/tas/cms2/QCD_Pt15_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*root",
-  //                    "QCDpt15");
-
-  // }
-  
-  // TChain* chQCDpt30 = new  TChain("Events");
-  // if(runQCDpt30){
-  //   pickSkimIfExists(chQCDpt30, 
-  //                    "/tas/cms2/QCD_Pt30_Spring10-START3X_V26_S09-v1/V03-04-13-07/diLepPt2010Skim/*root",
-  //                    "QCDpt30");
-  // }
 
   TChain* chQCD = new  TChain("Events");
   if(runQCD){
@@ -389,13 +373,10 @@ void doAll(bool skipFWLite = true)
   TChain* chtopall = new TChain("Events");
   if (runttall) {
 
-    // pickSkimIfExists(chtopall, 
-    // 		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
-    // 		     "TTJets");
-
     pickSkimIfExists(chtopall, 
-		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple.root",
-		     "TTJets");
+     		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
+     		     "TTJets");
+    
   }
 
   TChain* chtop42 = new TChain("Events");
@@ -1019,29 +1000,20 @@ void doAll(bool skipFWLite = true)
     
     cout << "adding ElectronHad and MuHad data" << endl;
     
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_999999_0.root"); 
+
     //---------------------------
     // May10 rereco
     //---------------------------
    
     pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root"); 
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-
-    //pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
-    //pickSkimIfExists(chdata,"/nfs-4/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
-    
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");    
     //---------------------------
     // prompt reco v4
     //---------------------------
     
     pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
     pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-
-    //these are the unfiltered ntuples
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-31/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-31_merged/V04-02-31/merged*root");
-    //pickSkimIfExists(chdata," /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-31/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-31_merged/V04-02-31/merged*root);
-
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
   
   }
 
@@ -1080,6 +1052,12 @@ void doAll(bool skipFWLite = true)
 		    if( frmodeIdx == 1 ) cout << "Doing single fake estimate" << endl;
 		  }
 
+		  if (runttall) {
+		    cout << "Processing ttbar all.. " << endl;
+		    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing ttbar all.. " << endl;
+		    hist::color("ttall", kYellow);
+		  }
 		  if (rundataskim) {
 		    cout << "Processing data skim" << endl;
 		    looper->ScanChain(chdataskim,"dataskim", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1150,12 +1128,6 @@ void doAll(bool skipFWLite = true)
 		    looper->ScanChain(chQCDpt30,"qcdpt30", kqcdpt30, preqcdpt30, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing  QCDpt30.. " << endl;
 		    hist::color("qcdpt30", kOrange);
-		  }
-		  if (runttall) {
-		    cout << "Processing ttbar all.. " << endl;
-		    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ttbar all.. " << endl;
-		    hist::color("ttall", kYellow);
 		  }
 		  if (runtt42) {
 		    cout << "Processing ttbar 42.. " << endl;
