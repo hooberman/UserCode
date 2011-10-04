@@ -500,6 +500,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v4")];
       }
       //-----------------------------------------------------------------------------
+      else if (evt_run() == 166346 ){
+	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v6")];
+      }
+      //-----------------------------------------------------------------------------
       else if (evt_run() >= 165922 && evt_run() <= 167043){
 	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v5")];
       }
