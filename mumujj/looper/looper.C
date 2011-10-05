@@ -1016,6 +1016,8 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("w2",              &w2_,               "w2/I");
   outTree->Branch("iso1",            &iso1_,             "iso1/F");
   outTree->Branch("iso2",            &iso2_,             "iso2/F");
+  outTree->Branch("passid1",         &passid1_,          "passid1/I");
+  outTree->Branch("passid2",         &passid2_,          "passid2/I");
   outTree->Branch("mt",              &mt_,               "mt/F");
   outTree->Branch("dataset",         &dataset_,          "dataset[200]/C");
   outTree->Branch("run",             &run_,              "run/I");
