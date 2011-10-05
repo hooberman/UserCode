@@ -200,7 +200,11 @@ void doAll(bool skipFWLite = true)
 
   //Flags for files to run over
   bool rundata_SingleMu = 0;
-  bool rundata     = 1;
+  bool rundata     = 0;
+  bool rundata165  = 1;
+  bool rundata166  = 1;
+  bool rundata167  = 1;
+  bool rundata168  = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -1015,15 +1019,40 @@ void doAll(bool skipFWLite = true)
 
   TChain* chdata     = new  TChain("Events");
 
+  TChain* chdata165  = new  TChain("Events");
+  TChain* chdata166  = new  TChain("Events");
+  TChain* chdata167  = new  TChain("Events");
+  TChain* chdata168  = new  TChain("Events");
+
+  if(rundata165){
+    cout << "adding data 165" << endl;
+    pickSkimIfExists(chdata165,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_165*root");
+  }
+
+  if(rundata166){
+    cout << "adding data 166" << endl;
+    pickSkimIfExists(chdata166,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_166*root");
+  }
+
+  if(rundata167){
+    cout << "adding data 167" << endl;
+    pickSkimIfExists(chdata167,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_167*root");
+  }
+
+  if(rundata168){
+    cout << "adding data 168" << endl;
+    pickSkimIfExists(chdata168,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_168*root");
+  }
+
   if(rundata){
     
     cout << "adding SingleMu data" << endl;
     
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_165364_0.root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_165*root");
 
     pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
 
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
   }
 
   TChain* chdata_SingleMu = new TChain("Events");
@@ -1067,9 +1096,28 @@ void doAll(bool skipFWLite = true)
 		    cout << "Done processing data skim" << endl;
 		    hist::color("dataskim", kBlack);
 		  }            
+		  if (rundata165) {
+		    cout << "Processing data 165" << endl;
+		    looper->ScanChain(chdata165,"data165", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data165" << endl;
+		  }
+		  if (rundata166) {
+		    cout << "Processing data 166" << endl;
+		    looper->ScanChain(chdata166,"data166", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data166" << endl;
+		  }
+		  if (rundata167) {
+		    cout << "Processing data 167" << endl;
+		    looper->ScanChain(chdata167,"data167", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data167" << endl;
+		  }
+		  if (rundata168) {
+		    cout << "Processing data 168" << endl;
+		    looper->ScanChain(chdata168,"data168", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data168" << endl;
+		  }
 		  if (rundata) {
 		    cout << "Processing data" << endl;
-		    cout << __FILE__ << " " << __LINE__ << " entries " << chdata->GetEntries() << endl;
 		    looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing data" << endl;
 		    hist::color("data", kBlack);
