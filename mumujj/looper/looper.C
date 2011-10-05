@@ -38,7 +38,8 @@
 #include "../Tools/msugraCrossSection.cc"
 
 
-bool verbose = false;
+bool verbose      = false;
+bool doTenPercent = true;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -294,6 +295,27 @@ bool looper::objectPassTrigger(const LorentzVector &obj, const std::vector<Loren
 
 //--------------------------------------------------------------------
 
+TString triggerName(TString triggerPattern){
+
+  bool    foundTrigger  = false;
+  TString exact_hltname = "";
+
+  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
+    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
+      foundTrigger  = true;
+      exact_hltname = hlt_trigNames().at(itrig);
+      break;
+    }
+  }
+
+  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
+
+  return exact_hltname;
+
+}
+
+//--------------------------------------------------------------------
+
 int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, float lumi,
 		      JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 
@@ -314,8 +336,11 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
     cout << "DATA!!!" << endl;
+    doTenPercent = false;
     isData = true;
   }
+
+  cout << "Doing ten percent only? " << doTenPercent << endl;
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
 
@@ -370,6 +395,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
     for(unsigned int z = 0; z < nEntries; ++z) {
       ++nEventsTotal;
       
+      if( doTenPercent ){
+	if( !(nEventsTotal%10==0) ) continue;
+      }
+
       // progress feedback to user
       if (nEventsTotal % 1000 == 0){
         
@@ -388,6 +417,22 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       cms2.GetEntry(z);
 
       InitBaby();
+
+      //------------------------------------------------------------------------
+      // idiot check: make sure that HLT_IsoMu24 is present for all MC events
+      //------------------------------------------------------------------------
+
+      if( !isData ){
+	TString trigname = triggerName("HLT_IsoMu24");
+
+	if( trigname.Contains("TRIGGER_NOT_FOUND") ){
+	  cout << "Didn't find trigger HLT_IsoMu24!!!" << endl;
+	  cout << "Event " << z                                               << endl;
+	  cout << "File  " << currentFile->GetTitle()                         << endl;
+	  cout << evt_dataset() << " " 
+	       << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+	}
+      }
 
       if( verbose ){
 	cout << "-------------------------------------------------------"   << endl;
@@ -487,41 +532,54 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       std::vector<LorentzVector> trigObjs;
 
-      //-----------------------------------------------------------------------------
-      if (evt_run() >= 160329 && evt_run() <= 163261){
-	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu15_v5")];
-      }
-      //-----------------------------------------------------------------------------
-      else if (evt_run() >= 163269 && evt_run() <= 164236){
-	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v2")];
-      }
-      //-----------------------------------------------------------------------------
-      else if (evt_run() >= 165088 && evt_run() <= 165887){
-	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v4")];
-      }
-      //-----------------------------------------------------------------------------
-      else if (evt_run() == 166346 ){
-	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v6")];
-      }
-      //-----------------------------------------------------------------------------
-      else if (evt_run() >= 165922 && evt_run() <= 167043){
-	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v5")];
-      }
-      //-----------------------------------------------------------------------------
-      else if (evt_run() >= 167078 && evt_run() <= 170053){
-	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v7")];
-      }
-      //-----------------------------------------------------------------------------
-      else if (evt_run() >= 170071 && evt_run() <= 173198){
-	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v8")];
-      }
-      //-----------------------------------------------------------------------------
+      if( isData ){
 
-      if( trigObjs.size() == 0 ){
-	cout << __LINE__ << " ERROR! didn't find matching trigger objects" << endl;
-	continue;
+	//-----------------------------------------------------------------------------
+	if (evt_run() >= 160329 && evt_run() <= 163261){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu15_v5")];
+	}
+	//-----------------------------------------------------------------------------
+	else if (evt_run() >= 163269 && evt_run() <= 164236){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v2")];
+	}
+	//-----------------------------------------------------------------------------
+	else if (evt_run() >= 165088 && evt_run() <= 165887){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v4")];
+	}
+	//-----------------------------------------------------------------------------
+	else if (evt_run() == 166346 ){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v6")];
+	}
+	//-----------------------------------------------------------------------------
+	else if (evt_run() >= 165922 && evt_run() <= 167043){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v5")];
+	}
+	//-----------------------------------------------------------------------------
+	else if (evt_run() >= 167078 && evt_run() <= 170053){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v7")];
+	}
+	//-----------------------------------------------------------------------------
+	else if (evt_run() >= 170071 && evt_run() <= 173198){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v8")];
+	}
+	//-----------------------------------------------------------------------------
+	if( trigObjs.size() == 0 ){
+	  cout << __LINE__ << " ERROR! didn't find matching trigger objects" << endl;
+	  continue;
+	}
+	//-----------------------------------------------------------------------------
       }
 
+      else{
+
+	TString trigname = triggerName("HLT_IsoMu24");
+	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
+
+	if( trigObjs.size() == 0 ){
+	  cout << __LINE__ << " ERROR! didn't find matching trigger objects" << endl;
+	  continue;
+	}
+      }
 
       //-----------------------------------------------------------------------
       // find leading lepton, require pt > 25 GeV and match to trigger object
@@ -761,6 +819,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	  if( strcmp( prefix , "LM12" ) == 0 ) weight_ *= kfactorSUSY( "lm12");
 	  if( strcmp( prefix , "LM13" ) == 0 ) weight_ *= kfactorSUSY( "lm13");
 	}
+
+	if( doTenPercent )	  weight_ *= 10;
       }
 
       //----------------------------------------
@@ -952,7 +1012,10 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
     if ( frmode == e_wjets ) frsuffix = "_singleFake";
   }
 
-  outFile   = new TFile(Form("../output/%s/%s_smallTree%s.root",g_version,prefix,frsuffix), "RECREATE");
+  char* tpsuffix = "";
+  if( doTenPercent ) tpsuffix = "_tenPercent";
+
+  outFile   = new TFile(Form("../output/%s/%s_smallTree%s%s.root",g_version,prefix,frsuffix,tpsuffix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");

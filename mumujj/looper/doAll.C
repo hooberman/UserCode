@@ -41,8 +41,8 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  //const char* version   = "V00-00-04";
-  const char* version   = "temp";
+  const char* version   = "V00-00-00";
+  //const char* version   = "temp";
   const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
   //const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3_goodruns.txt";
 
@@ -201,10 +201,10 @@ void doAll(bool skipFWLite = true)
   //Flags for files to run over
   bool rundata_SingleMu = 0;
   bool rundata     = 0;
-  bool rundata165  = 1;
-  bool rundata166  = 1;
-  bool rundata167  = 1;
-  bool rundata168  = 1;
+  bool rundata165  = 0;
+  bool rundata166  = 0;
+  bool rundata167  = 0;
+  bool rundata168  = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -225,7 +225,7 @@ void doAll(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 0;
+  bool runDYtot    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -392,16 +392,13 @@ void doAll(bool skipFWLite = true)
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
-
-    // pickSkimIfExists(chtopall, 
-    // 		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
-    // 		     "TTJets");
-
+    
     pickSkimIfExists(chtopall, 
-		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple.root",
-		     "TTJets");
+     		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
+     		     "TTJets");
+    
   }
-
+  
   TChain* chtop42 = new TChain("Events");
   if (runtt42) {
     pickSkimIfExists(chtop42,
@@ -537,32 +534,38 @@ void doAll(bool skipFWLite = true)
     else{
 
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root",
+		       "/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
+		       "DYtot"); 
+      /*
+      pickSkimIfExists(chDYtot, 
+		       "/nfs-7/userdata/cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-                       "cms2/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/merged*root",
+		       "/nfs-3/userdata/cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-29/merged*root",
                        "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root",
+		       "/nfs-7/userdata/cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "/nfs-3/userdata/cms2/DYToEE_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root",
+		       "/nfs-3/userdata/cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "/nfs-3/userdata/cms2/DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		       "/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot"); 
+      */
+
     }
   }
   
@@ -1090,6 +1093,12 @@ void doAll(bool skipFWLite = true)
 		    if( frmodeIdx == 1 ) cout << "Doing single fake estimate" << endl;
 		  }
 
+		  if (runttall) {
+		    cout << "Processing ttbar all.. " << endl;
+		    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing ttbar all.. " << endl;
+		    hist::color("ttall", kYellow);
+		  }
 		  if (rundataskim) {
 		    cout << "Processing data skim" << endl;
 		    looper->ScanChain(chdataskim,"dataskim", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1180,12 +1189,6 @@ void doAll(bool skipFWLite = true)
 		    looper->ScanChain(chQCDpt30,"qcdpt30", kqcdpt30, preqcdpt30, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing  QCDpt30.. " << endl;
 		    hist::color("qcdpt30", kOrange);
-		  }
-		  if (runttall) {
-		    cout << "Processing ttbar all.. " << endl;
-		    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ttbar all.. " << endl;
-		    hist::color("ttall", kYellow);
 		  }
 		  if (runtt42) {
 		    cout << "Processing ttbar 42.. " << endl;
