@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-03";
+  const char* version   = "V00-02-04";
   const char* jsonfile  = "jsons/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -205,7 +205,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -220,7 +220,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 1;
+  bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -252,6 +252,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML8      = 0;
   bool runLMscan   = 0; 
   bool runT1lh     = 0;
+  bool runT2tt     = 1;
 
   /*  
   //Flags for files to run over
@@ -374,8 +375,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chtopall = new TChain("Events");
   if (runttall) {
     pickSkimIfExists(chtopall, 	
-		     "/nfs-4/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-20/merged*root",
+		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
 		     "TTJets");
+
+    // pickSkimIfExists(chtopall, 	
+    // 		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
+    // 		     "TTJets");
   }
 
   TChain* chtop42 = new TChain("Events");
@@ -519,6 +524,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     else{
 
       pickSkimIfExists(chDYtot, 
+		       "/nfs-7/userdata/cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
+		       "DYtot");
+
+      /*
+      pickSkimIfExists(chDYtot, 
 		       "/nfs-7/userdata/cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot");
       
@@ -545,6 +555,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       pickSkimIfExists(chDYtot, 
 		       "/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot"); 
+
+      */
     }
   }
   
@@ -877,6 +889,19 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     */
   }
 
+  TChain *chT2tt = new TChain("Events");
+  if (runT2tt) {
+    
+    pickSkimIfExists(chT2tt,
+		     "/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple.root",
+                     "T2tt");  
+
+    // pickSkimIfExists(chT2tt,
+    // 		     "/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged*root",
+    //                  "T2tt");  
+
+  }
+
   // LMscan
   TChain *chT1lh = new TChain("Events");
   if (runT1lh) {
@@ -948,10 +973,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       if( trig == ossusy_looper::e_highpt ){
 
 	cout << "Doing high-pT dilepton trigger data" << endl;
-
-	//pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed_ntuple_999999_36.root");
 	
+	//pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged_ntuple_173663_0.root");
+	pickSkimIfExists(chdata,"/home/users/benhoob/OSSusy2011/filter/output/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/OSSkim/merged_ntuple.root");
 	
+	/*
 	//---------------------------
 	// May10 rereco
 	//---------------------------
@@ -983,7 +1009,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011A-PromptReco-v6_AOD/V04-02-30/SSignSkim/skim*root");
-	
+	*/
+
       }
       
       else if( trig == ossusy_looper::e_lowpt ){
@@ -1328,6 +1355,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chT1lh, "T1lh", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing T1lh" << endl;
 		      hist::color("LMscan", kOrange-7);
+		    }
+		    if (runT2tt) {
+		      cout << "Processing T2tt" << endl;
+		      looper->ScanChain(chT2tt, "T2tt", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing T2tt" << endl;
 		    }
 
 		    char* dir = "";

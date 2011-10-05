@@ -151,6 +151,27 @@ bool passesCaloJetID (const LorentzVector &jetp4)
 
 //--------------------------------------------------------------------
 
+float ossusy_looper::stopPairCrossSection( float stopmass ){
+
+  // stop mass divisible by 10
+  if( ((int)stopmass%10)<1 ){
+    int   bin  = stop_xsec_hist->FindBin(stopmass);
+    float xsec = stop_xsec_hist->GetBinContent(bin);
+    return xsec;
+  }
+
+  // stop mass not divisible by 10
+  else{
+    int   bin   = stop_xsec_hist->FindBin(stopmass);
+    float xsec1 = stop_xsec_hist->GetBinContent(bin);
+    float xsec2 = stop_xsec_hist->GetBinContent(bin+1);
+    float xsec  = 0.5 * ( xsec1 + xsec2 );
+    return xsec;
+  }
+}
+
+//--------------------------------------------------------------------
+
 bool passesPFJetID(unsigned int pfJetIdx) {
 
   float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
@@ -519,6 +540,21 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
     set_msugra_file("goodModelNames_tanbeta10.txt");
 
+    //set stop cross section file
+    stop_xsec_file = TFile::Open("../data/reference_xSec_stop.root");
+
+    if( !stop_xsec_file->IsOpen() ){
+      cout << "Error, could not open stop cross section TFile, quitting" << endl;
+      exit(0);
+    }
+
+    stop_xsec_hist        = (TH1D*) stop_xsec_file->Get("stop");
+    
+    if( stop_xsec_hist == 0 ){
+      cout << "Error, could not retrieve stop cross section hist, quitting" << endl;
+      exit(0);
+    }
+
     initialized = true;
   }
 
@@ -681,6 +717,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       if(strcmp(prefix,"LMscan") == 0){
 	if( sparm_m12() > 500  )                        continue;	
 	if( sparm_m0()  > 1000.0 && sparm_m12() > 300 ) continue;
+      }
+
+      if(strcmp(prefix,"T2tt") == 0){
+	if( sparm_mG() > 850 ) continue;
       }
 
       if( !cleaning_goodDAVertexApril2011() )                        continue;
@@ -1642,7 +1682,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  mL_ = sparm_mL();
 	}
 
-        if(strcmp(prefix,"LMscan") == 0){
+        else if(strcmp(prefix,"LMscan") == 0){
 
           m0  = sparm_m0();
           m12 = sparm_m12();
@@ -1660,6 +1700,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	else if( isData ){
           weight = 1;
         }
+
+	else if(strcmp(prefix,"T2tt") == 0){
+	  mG_ = sparm_mG();
+	  mL_ = sparm_mL();
+	  
+	  weight = lumi * stopPairCrossSection(mG_) * (1000./50000.);
+	}
 
 	else{
           //weight = kFactor * evt_scale1fb() * lumi * triggerSuperModelEffic( hypIdx );

@@ -83,6 +83,10 @@ class ossusy_looper
         void closeTree ();
 	int PassGenSelectionOS( bool isData , float metcut , float htcut , float ycut );
 
+	float stopPairCrossSection( float stopmass );
+	TH1D*   stop_xsec_hist;
+	TFile*  stop_xsec_file;
+
 	bool initialized;
 
     private:
