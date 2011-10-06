@@ -199,13 +199,13 @@ void doAll(bool skipFWLite = true)
 
   //Flags for files to run over
   bool rundata_SingleMu = 0;
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runQCD      = 1;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -216,7 +216,7 @@ void doAll(bool skipFWLite = true)
   bool runWW       = 0;
   bool runWZ       = 0;
   bool runZZ       = 0;
-  bool runWjets    = 1;
+  bool runWjets    = 0;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
@@ -252,7 +252,8 @@ void doAll(bool skipFWLite = true)
   bool runML8      = 0;
   bool runLMscan   = 0; 
   bool runT1lh     = 0;
-  bool runT2tt     = 1;
+  bool runT2tt     = 0;
+  bool runT2tt_few = 0;
 
   /*  
   //Flags for files to run over
@@ -337,27 +338,27 @@ void doAll(bool skipFWLite = true)
   if(runQCD){
 
     pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-15to30_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
+		     "/nfs-7/userdata/cms2/QCD_Pt-15to30_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
 		     "QCD");
 
     pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-30to50_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
+		     "/nfs-7/userdata/cms2/QCD_Pt-30to50_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
 		     "QCD");
 
     pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-50to80_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
+		     "/nfs-7/userdata/cms2/QCD_Pt-50to80_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
 		     "QCD");
 
     pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-80to120_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
+		     "/nfs-7/userdata/cms2/QCD_Pt-80to120_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
 		     "QCD");
 
     pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-120to170_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
+		     "/nfs-7/userdata/cms2/QCD_Pt-120to170_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
 		     "QCD");
 
     pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root",
+		     "/nfs-7/userdata/cms2/QCD_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
 		     "QCD");
 
 
@@ -847,29 +848,6 @@ void doAll(bool skipFWLite = true)
     pickSkimIfExists(chLMscan,
 		     "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple*root",
                      "LMscan");
-
-    /*
-      pickSkimIfExists(chLMscan,
-      "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple_1_15.root",
-      "LMscan");
-
-      pickSkimIfExists(chLMscan,
-      "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple_1_19.root",
-      "LMscan");
-
-      pickSkimIfExists(chLMscan,
-      "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple_1_39.root",
-      "LMscan");
-
-      pickSkimIfExists(chLMscan,
-      "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple_1_42.root",
-      "LMscan");
-    
-      pickSkimIfExists(chLMscan,
-      "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple_1_18.root",
-      "LMscan");
-
-    */
   }
 
   TChain *chT1lh = new TChain("Events");
@@ -880,104 +858,31 @@ void doAll(bool skipFWLite = true)
                      "T1lh");  
   }
 
+  TChain *chT2tt_few = new TChain("Events");
+  if (runT2tt_few) {
+    
+    // these are the T2tt files with m(top),m(LSP) = 400,100 OR 500,100 OR 500,400
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_37.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_46.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_66.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_88.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_147.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_149.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_151.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_212.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_213.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_222.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_232.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_268.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_328.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_395.root");
+
+  }
+
   TChain *chT2tt = new TChain("Events");
   if (runT2tt) {
     
     pickSkimIfExists(chT2tt,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged*root");
-
-      /*
-    string t2ttpath="/hadoop/cms/store/user/benhoob/CMS2_V04-02-20-04/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/";
-
-    pickSkimIfExists(chT2tt,
-    		     t2ttpath + "ntuple*root",
-                     "T2tt");
-      */
-      /*
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_12_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_13_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_425_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_501_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_504_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_528_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_529_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_840_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_880_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_881_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_970_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1104_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1252_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1456_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1518_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1601_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1602_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1603_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1604_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1664_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1665_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1674_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1675_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1682_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_1683_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_2001_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_2002_*root",
-      "T2tt");
-      pickSkimIfExists(chT2tt,
-      t2ttpath + "ntuple_2048_*root",
-      "T2tt");
-    */
   }
   
   //--------------------------------
@@ -1371,7 +1276,11 @@ void doAll(bool skipFWLite = true)
 		    cout << "Processing T2tt" << endl;
 		    looper->ScanChain(chT2tt, "T2tt", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing T2tt" << endl;
-		    hist::color("T2tt", kOrange-7);
+		  }
+		  if (runT2tt_few) {
+		    cout << "Processing T2tt_few" << endl;
+		    looper->ScanChain(chT2tt_few, "T2tt_few", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing T2tt_few" << endl;
 		  }
 
 		  //char* dir = "";
