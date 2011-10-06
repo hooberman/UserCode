@@ -37,7 +37,7 @@
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 
-bool doTriggerStudy = true;
+bool doTriggerStudy = false;
 bool verbose        = false;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
@@ -1285,10 +1285,37 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
       }
 
+      nbctcm_    = 0;
+      ncalojets_ = 0;
+      htcalo_    = 0;
+
+      //------------------------------------------
+      // count calojets
+      //------------------------------------------
+
+      for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
+	
+	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
+
+	if( !passesCaloJetID( vjet ) )         continue;	
+	if( vjet.pt() < 35.          )         continue;
+	if( fabs( vjet.eta() ) > 2.5 )         continue;
+
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
 
 
+	ncalojets_ ++;
+	htcalo_  += vjet.pt();
 
-      
+	if( jets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
+	  nbctcm_++;
+	}
+      }
+
       //---------------------------------
       // L1offset jets
       //---------------------------------
@@ -2462,6 +2489,10 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("trkpt",           &trkpt_,            "trkpt/F");  
   outTree->Branch("trkreliso",       &trkreliso_,        "trkreliso/F");  
   outTree->Branch("passtrg",         &passtrg_,          "passtrg/I");  
+
+  outTree->Branch("ncalojets",       &ncalojets_,        "ncalojets/I");  
+  outTree->Branch("nbctcm",          &nbctcm_,           "nbctcm/I");  
+  outTree->Branch("htcalo",          &htcalo_,           "htcalo/F");  
 
   outTree->Branch("trgjet"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trgjet_	);
   outTree->Branch("mlep"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
