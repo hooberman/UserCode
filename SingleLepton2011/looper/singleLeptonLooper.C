@@ -39,6 +39,7 @@
 
 bool doTriggerStudy = false;
 bool verbose        = false;
+bool doTenPercent   = true;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -462,8 +463,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
     cout << "DATA!!!" << endl;
-    isData = true;
+    isData       = true;
+    doTenPercent = false;
   }
+  if( doTenPercent ) cout << "Processing 10% of MC" << endl;
 
   // instanciate topmass solver REPLACETOPMASS
   //ttdilepsolve * d_llsol = new ttdilepsolve;
@@ -549,6 +552,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
     for(unsigned int z = 0; z < nEntries; ++z) {
       ++nEventsTotal;
+
+      if( doTenPercent ){
+	if( !(nEventsTotal%10==0) ) continue;
+      }
 
       // progress feedback to user
       if (nEventsTotal % 1000 == 0){
@@ -1448,6 +1455,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	mL_ = sparm_mL();
 
 	weight_ = lumi * stopPairCrossSection(mG_) * (1000./50000.);
+
+	if( doTenPercent )	  weight_ *= 10;
       }
 
       else if(strcmp(prefix,"LMscan") == 0){
@@ -1463,6 +1472,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	weight_ = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
 
+	if( doTenPercent )	  weight_ *= 10;
       }
 
       else if( isData ){
@@ -1472,6 +1482,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       else{
 
 	weight_ = kFactor * evt_scale1fb() * lumi;
+
+	if( doTenPercent )	  weight_ *= 10;
 
 	if( TString(prefix).Contains("LM") ){
 	  if( strcmp( prefix , "LM0" )  == 0 ) weight_ *= kfactorSUSY( "lm0" );
@@ -2335,7 +2347,10 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
     if ( frmode == e_wjets ) frsuffix = "_singleFake";
   }
 
-  outFile   = new TFile(Form("../output/%s/%s_smallTree%s.root",g_version,prefix,frsuffix), "RECREATE");
+  char* tpsuffix = "";
+  if( doTenPercent ) tpsuffix = "_tenPercent";
+
+  outFile   = new TFile(Form("../output/%s/%s_smallTree%s%s.root",g_version,prefix,frsuffix,tpsuffix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
