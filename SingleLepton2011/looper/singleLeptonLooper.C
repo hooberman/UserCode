@@ -1157,6 +1157,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
 
 	if( iso < miniso ){
+	  miniso     = iso;
 	  trkpt_     = pfcands_p4().at(ipf).pt();
 	  trkreliso_ = iso;
 	}
@@ -2554,8 +2555,10 @@ float singleLeptonLooper::trackIso( int thisPf , float dz_thresh ){
     float mindz = 999.;
     int vtxi    = -1;
       
-    for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
+    for (unsigned int ivtx = 0; ivtx < cms2.davtxs_position().size(); ivtx++) {
 	
+      if(!isGoodDAVertex(ivtx)) continue;
+
       float mydz = dz_trk_vtx(itrk,ivtx);
       
       if (fabs(mydz) < fabs(mindz)) {
