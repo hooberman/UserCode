@@ -39,7 +39,7 @@
 
 bool doTriggerStudy = false;
 bool verbose        = false;
-bool doTenPercent   = true;
+bool doTenPercent   = false;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -1141,19 +1141,46 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       }
 
-      //--------------------------------------------------
-      // store pt and iso for most isolated track
-      //--------------------------------------------------
+      //------------------------------------------------------
+      // store pt and iso for most isolated track (pt>10 GeV)
+      //------------------------------------------------------
 
-      trkpt_      = -1.0;
-      trkreliso_  = -1.0;
-
-      float miniso = 999;
+      trkpt10_         = -1.0;
+      trkreliso10_     = -1.0;
+      float miniso10   = 999;
 
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
 
-	if( pfcands_p4().at(ipf).pt() < 10 ) continue;
-	if( pfcands_charge().at(ipf) == 0  ) continue;
+	if( pfcands_p4().at(ipf).pt() < 10  ) continue;
+	if( pfcands_charge().at(ipf) == 0   ) continue;
+
+	bool isGoodLepton = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
+	}
+	if( isGoodLepton ) continue;
+
+	float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
+
+	if( iso < miniso10 ){
+	  miniso10       = iso;
+	  trkpt10_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10_   = iso;
+	}
+      }
+
+      //------------------------------------------------------
+      // store pt and iso for most isolated track (pt>5 GeV)
+      //------------------------------------------------------
+
+      trkpt5_          = -1.0;
+      trkreliso5_      = -1.0;
+      float miniso5    = 999;
+
+      for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+
+	if( pfcands_p4().at(ipf).pt() < 5   ) continue;
+	if( pfcands_charge().at(ipf) == 0   ) continue;
 
 	bool isGoodLepton = false;
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
@@ -1164,11 +1191,28 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
 
 	if( iso < miniso ){
-	  miniso     = iso;
-	  trkpt_     = pfcands_p4().at(ipf).pt();
-	  trkreliso_ = iso;
+	  miniso      = iso;
+	  trkpt5_     = pfcands_p4().at(ipf).pt();
+	  trkreliso5_ = iso;
+	  //itrk       = ipf;
 	}
       }
+
+      /*
+      if( (w1_==1||w1_==2) && nleps_==2 && ntaus_==1 && ngoodlep_ == 1){
+
+	if( trkpt_ * trkreliso_ > 50 ){
+
+	  cout << endl << endl;
+	  cout << "-------------------------------------------------------------------" << endl;
+	  dumpDocLines();
+	  cout << endl;
+	  cout << "track iso, reliso " << trkpt_ << ", " << trkpt_*trkreliso_ << ", " << trkreliso_ << endl;
+	  cout << "track pt eta phi  " << Form("%.1f",trkpt_) << " " << Form("%.1f",pfcands_p4().at(itrk).phi()) << ", " << Form("%.1f",pfcands_p4().at(itrk).eta()) << endl;
+
+	}
+      }
+      */
 
       //-------------------------------------
       // jet counting
@@ -2502,8 +2546,10 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mlepiso",         &mlepiso_,          "mlepiso/F");  
   outTree->Branch("mlepdr",          &mlepdr_,           "mlepdr/F");  
 
-  outTree->Branch("trkpt",           &trkpt_,            "trkpt/F");  
-  outTree->Branch("trkreliso",       &trkreliso_,        "trkreliso/F");  
+  outTree->Branch("trkpt5",          &trkpt5_,           "trkpt5/F");  
+  outTree->Branch("trkreliso5",      &trkreliso5_,       "trkreliso5/F");  
+  outTree->Branch("trkpt10",         &trkpt10_,          "trkpt10/F");  
+  outTree->Branch("trkreliso10",     &trkreliso10_,      "trkreliso10/F");  
   outTree->Branch("passtrg",         &passtrg_,          "passtrg/I");  
 
   outTree->Branch("ncalojets",       &ncalojets_,        "ncalojets/I");  
