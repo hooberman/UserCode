@@ -226,7 +226,7 @@ void doAll(bool skipFWLite = true)
   bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
-  bool runtW       = 0;
+  bool runtW       = 1;
   bool runVQQ      = 0;
   bool runLM0      = 0;
   bool runLM1      = 0;
@@ -640,17 +640,14 @@ void doAll(bool skipFWLite = true)
   // tW
   TChain* chtW = new  TChain("Events");
   if (runtW) {
-    pickSkimIfExists(chtW, 
-		     "cms2/TToBLNu_TuneZ2_tW-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-                     "SingleTop_tWChannel"); 
 
-    pickSkimIfExists(chtW, 
-                     "cms2/TToBLNu_TuneZ2_t-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-                     "SingleTop_tChannel"); 
 
-    pickSkimIfExists(chtW, 
-		     "cms2/TToBLNu_TuneZ2_s-channel_7TeV-madgraph_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-                     "SingleTop_sChannel"); 
+    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/T_TuneZ2_s-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/Tbar_TuneZ2_s-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/T_TuneZ2_t-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/Tbar_TuneZ2_t-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
 
   }
 
