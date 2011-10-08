@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-01-00";
+  const char* version   = "V00-01-01";
   const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
   //const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3_goodruns.txt";
 
@@ -196,15 +196,15 @@ void doAll(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-
+  /*
   //Flags for files to run over
   bool rundata_SingleMu = 0;
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runQCD      = 1;
+  bool runQCD      = 0;
   bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
@@ -226,7 +226,7 @@ void doAll(bool skipFWLite = true)
   bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
-  bool runtW       = 1;
+  bool runtW       = 0;
   bool runVQQ      = 0;
   bool runLM0      = 0;
   bool runLM1      = 0;
@@ -254,52 +254,56 @@ void doAll(bool skipFWLite = true)
   bool runT1lh     = 0;
   bool runT2tt     = 0;
   bool runT2tt_few = 0;
-
-  /*  
+  */
+ 
   //Flags for files to run over
   bool rundata     = 1;
+  bool runttall    = 0;
+  bool runWjets    = 0;
+  bool runQCD      = 0;
+  bool runtW       = 0;
+  bool runDYtot    = 0;
+  bool runT2tt     = 0;
+  bool runT2tt_few = 0;
+
+
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runQCD      = 1;
-  bool runttall    = 1;
-  bool runttpowheg = 1;
-  bool runtt42     = 1;
+  bool runttpowheg = 0;
+  bool runtt42     = 0;
   bool runttdil    = 0;
   bool runttrelval = 0;
   bool runttem     = 0;
   bool runttotr    = 0;
   bool runVV       = 0;
-  bool runWW       = 1;
-  bool runWZ       = 1;
-  bool runZZ       = 1;
-  bool runWjets    = 1;
-  bool runWjetsMG  = 1;
+  bool runWW       = 0;
+  bool runWZ       = 0;
+  bool runZZ       = 0;
+  bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
-  bool runtW       = 1;
   bool runVQQ      = 0;
-  bool runLM0      = 1;
-  bool runLM1      = 1;
-  bool runLM2      = 1;
-  bool runLM3      = 1;
-  bool runLM4      = 1;
-  bool runLM5      = 1;
-  bool runLM6      = 1;
-  bool runLM7      = 1;
-  bool runLM8      = 1;
-  bool runLM9      = 1;
+  bool runLM0      = 0;
+  bool runLM1      = 0;
+  bool runLM2      = 0;
+  bool runLM3      = 0;
+  bool runLM4      = 0;
+  bool runLM5      = 0;
+  bool runLM6      = 0;
+  bool runLM7      = 0;
+  bool runLM8      = 0;
+  bool runLM9      = 0;
   bool runLM10     = 0;
-  bool runLM11     = 1;
-  bool runLM12     = 1;
-  bool runLM13     = 1;
+  bool runLM11     = 0;
+  bool runLM12     = 0;
+  bool runLM13     = 0;
   bool runML1      = 0;
   bool runML2      = 0;
   bool runML3      = 0;
@@ -309,7 +313,8 @@ void doAll(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  */    
+  bool rundata_SingleMu = 0;
+
   
   char* dir = "";
 
@@ -337,30 +342,12 @@ void doAll(bool skipFWLite = true)
   TChain* chQCD = new  TChain("Events");
   if(runQCD){
 
-    pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-15to30_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
-		     "QCD");
-
-    pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-30to50_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
-		     "QCD");
-
-    pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-50to80_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
-		     "QCD");
-
-    pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-80to120_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
-		     "QCD");
-
-    pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-120to170_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
-		     "QCD");
-
-    pickSkimIfExists(chQCD, 
-		     "/nfs-7/userdata/cms2/QCD_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root",
-		     "QCD");
-
+    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-15to30_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-30to50_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-50to80_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-80to120_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-120to170_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
 
   }
 
@@ -377,6 +364,10 @@ void doAll(bool skipFWLite = true)
     pickSkimIfExists(chtopall, 
      		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
      		     "TTJets");
+
+    // pickSkimIfExists(chtopall, 
+    //  		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple.root",
+    //  		     "TTJets");
     
   }
 
@@ -454,9 +445,11 @@ void doAll(bool skipFWLite = true)
 
   TChain* chWjets = new  TChain("Events");
   if(runWjets){
-    pickSkimIfExists(chWjets, 
-		     "/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
-		     "WJets");
+    
+    pickSkimIfExists(chWjets,"/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root");
+    //pickSkimIfExists(chWjets,"/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple.root");
+    //pickSkimIfExists(chWjets,"/home/users/benhoob/filters/output/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/SingleLeptonSkim/merged*root");
+
   }
 
   TChain* chWjetsMG = new  TChain("Events");
@@ -845,14 +838,6 @@ void doAll(bool skipFWLite = true)
     pickSkimIfExists(chLMscan,
 		     "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_4_V04-02-20-01/mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_S4_START42_V11_FastSim-v1_AODSIM/CMSSW_4_2_4_V04-02-20-01_merged/V04-02-20-01/merged_ntuple*root",
                      "LMscan");
-  }
-
-  TChain *chT1lh = new TChain("Events");
-  if (runT1lh) {
-    
-    pickSkimIfExists(chT1lh,
-		     "/tas/benhoob/home/tempfiles/ntuple*root",
-                     "T1lh");  
   }
 
   TChain *chT2tt_few = new TChain("Events");
@@ -1262,12 +1247,6 @@ void doAll(bool skipFWLite = true)
 		    looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing LMscan" << endl;
 		    hist::color("LMscan", kOrange-7);
-		  }
-		  if (runT1lh) {
-		    cout << "Processing T1lh" << endl;
-		    looper->ScanChain(chT1lh, "T1lh", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing T1lh" << endl;
-		    hist::color("T1lh", kOrange-7);
 		  }
 		  if (runT2tt) {
 		    cout << "Processing T2tt" << endl;
