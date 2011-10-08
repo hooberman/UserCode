@@ -1190,8 +1190,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
 
-	if( iso < miniso ){
-	  miniso      = iso;
+	if( iso < miniso5 ){
+	  miniso5     = iso;
 	  trkpt5_     = pfcands_p4().at(ipf).pt();
 	  trkreliso5_ = iso;
 	  //itrk       = ipf;
