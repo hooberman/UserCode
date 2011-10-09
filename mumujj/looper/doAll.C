@@ -41,10 +41,8 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-00";
-  //const char* version   = "temp";
-  const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
-  //const char* jsonfile  = "jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3_goodruns.txt";
+  const char* version   = "V00-00-02";
+  const char* jsonfile  = "jsons/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -201,10 +199,15 @@ void doAll(bool skipFWLite = true)
   //Flags for files to run over
   bool rundata_SingleMu = 0;
   bool rundata     = 0;
-  bool rundata165  = 0;
-  bool rundata166  = 0;
-  bool rundata167  = 0;
-  bool rundata168  = 0;
+
+  bool rundatamay10  = 1;
+  bool rundata165    = 1;
+  bool rundata166    = 1;
+  bool rundata167    = 1;
+  bool rundata168    = 1;
+  bool rundataaug05  = 1;
+  bool rundataPRv6   = 1;
+
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -225,7 +228,7 @@ void doAll(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 1;
+  bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -533,38 +536,37 @@ void doAll(bool skipFWLite = true)
 
     else{
 
+      // pickSkimIfExists(chDYtot, 
+      // 		       "/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
+      // "DYtot"); 
+
       pickSkimIfExists(chDYtot, 
-		       "/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
-		       "DYtot"); 
-      /*
-      pickSkimIfExists(chDYtot, 
-		       "/nfs-7/userdata/cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
-		       "DYtot");
+      		       "/nfs-7/userdata/cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
+      		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "/nfs-3/userdata/cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-29/merged*root",
+      		       "/nfs-3/userdata/cms2/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-29/merged*root",
                        "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "/nfs-7/userdata/cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
-		       "DYtot");
+      		       "/nfs-7/userdata/cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
+      		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "/nfs-3/userdata/cms2/DYToEE_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
-		       "DYtot");
+      		       "/nfs-3/userdata/cms2/DYToEE_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
+      		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "/nfs-3/userdata/cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
-		       "DYtot");
+      		       "/nfs-3/userdata/cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
+      		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
-		       "/nfs-3/userdata/cms2/DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
-		       "DYtot");
+      		       "/nfs-3/userdata/cms2/DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
+      		       "DYtot");
       
       pickSkimIfExists(chDYtot, 
 		       "/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
 		       "DYtot"); 
-      */
 
     }
   }
@@ -1022,10 +1024,26 @@ void doAll(bool skipFWLite = true)
 
   TChain* chdata     = new  TChain("Events");
 
-  TChain* chdata165  = new  TChain("Events");
-  TChain* chdata166  = new  TChain("Events");
-  TChain* chdata167  = new  TChain("Events");
-  TChain* chdata168  = new  TChain("Events");
+  TChain* chdatamay10  = new  TChain("Events");
+  TChain* chdata165    = new  TChain("Events");
+  TChain* chdata166    = new  TChain("Events");
+  TChain* chdata167    = new  TChain("Events");
+  TChain* chdata168    = new  TChain("Events");
+  TChain* chdataaug05  = new  TChain("Events");
+  TChain* chdataPRv6   = new  TChain("Events");
+
+  //-------------------------------------------
+  // May10 rereco
+  //-------------------------------------------
+
+  if(rundatamay10){
+    cout << "adding data May10" << endl;
+    pickSkimIfExists(chdatamay10,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+  }
+
+  //-------------------------------------------
+  // prompt reco v4
+  //-------------------------------------------
 
   if(rundata165){
     cout << "adding data 165" << endl;
@@ -1045,6 +1063,24 @@ void doAll(bool skipFWLite = true)
   if(rundata168){
     cout << "adding data 168" << endl;
     pickSkimIfExists(chdata168,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_168*root");
+  }
+
+  //-------------------------------------------
+  // Aug05 rereco
+  //-------------------------------------------
+
+  if(rundataaug05){
+    cout << "adding data aug05" << endl;
+    pickSkimIfExists(chdataaug05,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+  }
+
+  //-------------------------------------------
+  // prompt reco v6
+  //-------------------------------------------
+
+  if(rundataPRv6){
+    cout << "adding data PRv6" << endl;
+    pickSkimIfExists(chdataPRv6,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
   }
 
   if(rundata){
@@ -1105,6 +1141,11 @@ void doAll(bool skipFWLite = true)
 		    cout << "Done processing data skim" << endl;
 		    hist::color("dataskim", kBlack);
 		  }            
+		  if (rundatamay10) {
+		    cout << "Processing data may10" << endl;
+		    looper->ScanChain(chdatamay10,"datamay10", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data may10" << endl;
+		  }
 		  if (rundata165) {
 		    cout << "Processing data 165" << endl;
 		    looper->ScanChain(chdata165,"data165", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1125,6 +1166,18 @@ void doAll(bool skipFWLite = true)
 		    looper->ScanChain(chdata168,"data168", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing data168" << endl;
 		  }
+		  if (rundataaug05) {
+		    cout << "Processing data aug05 rereco" << endl;
+		    looper->ScanChain(chdataaug05,"dataaug05", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data aug05" << endl;
+		  }
+		  if (rundataPRv6) {
+		    cout << "Processing data PRv6" << endl;
+		    looper->ScanChain(chdataPRv6,"dataPRv6", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing dataPRv6" << endl;
+		  }
+
+
 		  if (rundata) {
 		    cout << "Processing data" << endl;
 		    looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);

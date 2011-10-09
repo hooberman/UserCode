@@ -39,7 +39,7 @@
 
 
 bool verbose      = false;
-bool doTenPercent = true;
+bool doTenPercent = false;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -563,6 +563,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v8")];
 	}
 	//-----------------------------------------------------------------------------
+	else if (evt_run() >= 173212 && evt_run() <= 177878){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu30_eta2p1_v3")];
+	}
+	//-----------------------------------------------------------------------------
 	if( trigObjs.size() == 0 ){
 	  cout << __LINE__ << " ERROR! didn't find matching trigger objects" << endl;
 	  continue;
@@ -612,6 +616,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       iso1_      = muonIsoValue(index1,false);
       passid1_   = muonIdNotIsolated( index1 , OSGeneric_v3 ) ? 1 : 0;
 
+      lep1trk_   = &(mus_trk_p4().at(imaxpt));
+      lep1glb_   = &(mus_gfit_p4().at(imaxpt));
+      lep1sta_   = &(mus_sta_p4().at(imaxpt));
+
       //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
 
       //---------------------------------------------
@@ -624,6 +632,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       dilmass_   = -999;
       iso2_      = -1.;
       passid2_   = -1;
+      
+      lep2trk_   = 0;
+      lep2glb_   = 0;
+      lep2sta_   = 0;
 
       if( ngoodlep_ > 1 ){
 
@@ -650,6 +662,11 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	dilmass_   = (goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass();
 	iso2_      = muonIsoValue(index2,false);
 	passid2_   = muonIdNotIsolated( index2, OSGeneric_v3 ) ? 1 : 0;
+
+	lep2trk_   = &(mus_trk_p4().at(imaxpt2));
+	lep2glb_   = &(mus_gfit_p4().at(imaxpt2));
+	lep2sta_   = &(mus_sta_p4().at(imaxpt2));
+
       }
 
       //cout << "2nd deading lepton: pt " << lep2_->pt() << " id " << id2_ << " mass " << dilmass_ << endl;
@@ -786,7 +803,12 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       if( njets_ > 3 ) jet4_  = &vpfjets_p4_sorted.at(3);
 
       mmjj_ = -1;
-      if( ngoodlep_ > 1 ) mmjj_ = (*lep1_+*lep2_+*jet1_+*jet2_).mass();
+      if( ngoodlep_ > 1 ){
+	mmjj_    = (*lep1_    + *lep2_    + *jet1_ + *jet2_).mass();
+	mmjjtrk_ = (*lep1trk_ + *lep2trk_ + *jet1_ + *jet2_).mass();
+	mmjjglb_ = (*lep1glb_ + *lep2glb_ + *jet1_ + *jet2_).mass();
+	mmjjsta_ = (*lep1sta_ + *lep2sta_ + *jet1_ + *jet2_).mass();
+      }
 
       mjjj_ = -1;
       if( njets_ > 2    ) mjjj_ = (*lep1_+*jet1_+*jet2_+*jet3_).mass();
@@ -865,7 +887,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
   if(g_createTree) closeTree();
   
-  already_seen.clear();
+  //already_seen.clear();
   
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
@@ -1098,7 +1120,17 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("dphijm",          &dphijm_,           "dphijm/F");  
   outTree->Branch("ptjetraw",        &ptjetraw_,         "ptjetraw/F");  
   outTree->Branch("mmjj",            &mmjj_,             "mmjj/F");  
+  outTree->Branch("mmjjtrk",         &mmjjtrk_,          "mmjjtrk/F");  
+  outTree->Branch("mmjjglb",         &mmjjglb_,          "mmjjglb/F");  
+  outTree->Branch("mmjjsta",         &mmjjsta_,          "mmjjsta/F");  
   outTree->Branch("mjjj",            &mjjj_,             "mjjj/F");  
+
+  outTree->Branch("lep1trk" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1trk_	);
+  outTree->Branch("lep1glb" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1glb_	);
+  outTree->Branch("lep1sta" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1sta_	);
+  outTree->Branch("lep2trk" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2trk_	);
+  outTree->Branch("lep2glb" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2glb_	);
+  outTree->Branch("lep2sta" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2sta_	);
 
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);

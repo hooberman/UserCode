@@ -107,6 +107,13 @@ class looper
 	Int_t   passid1_;
 	Int_t   passid2_;
 
+        LorentzVector*  lep1trk_;
+        LorentzVector*  lep1glb_;
+        LorentzVector*  lep1sta_;
+        LorentzVector*  lep2trk_;
+        LorentzVector*  lep2glb_;
+        LorentzVector*  lep2sta_;
+
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
         LorentzVector*  dilep_;
@@ -122,6 +129,9 @@ class looper
 	Int_t   acc_highmet_;
 	Int_t   acc_highht_;
 	Float_t mmjj_;
+	Float_t mmjjtrk_;
+	Float_t mmjjglb_;
+	Float_t mmjjsta_;
 	Float_t mjjj_;
 	Float_t pthat_;
 	Float_t qscale_;
