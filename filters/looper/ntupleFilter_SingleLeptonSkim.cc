@@ -46,7 +46,7 @@ bool select (bool isData)
   //check for good electron
   for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 
-    bool pass = pass_electronSelection( iel , electronSelection_el_VBTF90 );
+    bool pass = pass_electronSelection( iel , electronSelection_el_VBTF95_NOHOEEND );
 
     if( !pass                                      ) continue;
     if( els_p4().at(iel).pt() < 20                 ) continue;
@@ -55,6 +55,7 @@ bool select (bool isData)
     foundLepton = true;
     break;
   }
+
 
   //check for good muon (only needed if no good electron was found)
   if( !foundLepton ){
