@@ -41,8 +41,9 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-01-01";
-  const char* jsonfile  = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
+  const char* version    = "V00-01-01";
+  const char* jsonfile   = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
+  const bool  useMCSkims = true;
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -106,39 +107,47 @@ void doAll(bool skipFWLite = true)
   int pretW       = 1;
  
   // flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool runttall    = 0;
   bool runWjets    = 0;
   bool runQCD      = 0;
   bool runtW       = 0;
   bool runDYtot    = 0;
   bool runT2tt     = 0;
-  bool runT2tt_few = 0;
+  bool runT2tt_few = 1;
   
-  char* dir = "";
-
-  bool useMCSkims = false;
-  if( useMCSkims ){
-    cout << "Using MC skims" << endl;
-    dir = "met50/";
-  }
-  else{
-    cout << "Using full MC samples" << endl;
-  }
-
+  if( useMCSkims )  cout << "Using MC skims" << endl;
+  else              cout << "Using full MC samples" << endl;
 
   //----------------------------------------
   // QCD
   //----------------------------------------
 
   TChain* chQCD = new  TChain("Events");
+
   if(runQCD){
-    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-15to30_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
-    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-30to50_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
-    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-50to80_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
-    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-80to120_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
-    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-120to170_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
-    pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+
+    string skimdir = "/home/users/benhoob/filters/output/";
+
+    //SingleLeptonSkim ntuples
+    if( useMCSkims ){
+      pickSkimIfExists(chQCD, skimdir+"QCD_Pt-15to30_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/SingleLeptonSkim/merged*root");
+      pickSkimIfExists(chQCD, skimdir+"QCD_Pt-30to50_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/SingleLeptonSkim/merged*root");
+      pickSkimIfExists(chQCD, skimdir+"QCD_Pt-50to80_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/SingleLeptonSkim/merged*root");
+      pickSkimIfExists(chQCD, skimdir+"QCD_Pt-80to120_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/SingleLeptonSkim/merged*root");
+      pickSkimIfExists(chQCD, skimdir+"QCD_Pt-120to170_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/SingleLeptonSkim/merged*root");
+      pickSkimIfExists(chQCD, skimdir+"QCD_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/SingleLeptonSkim/merged*root");
+    }
+
+    //full cms2 ntuples
+    else{
+      pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-15to30_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+      pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-30to50_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+      pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-50to80_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+      pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-80to120_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+      pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-120to170_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+      pickSkimIfExists(chQCD, "/nfs-7/userdata/cms2/QCD_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-31/merged*root");
+    }
   }
 
   //----------------------------------------
@@ -164,13 +173,16 @@ void doAll(bool skipFWLite = true)
 
   TChain* chWjets = new  TChain("Events");
   if(runWjets){
-    
-    pickSkimIfExists(chWjets,
-		     "/tas/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/SingleLeptonSkim/merged*root");
-  
-    //pickSkimIfExists(chWjets,"/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root");
-    //pickSkimIfExists(chWjets,"/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple.root");
-    //pickSkimIfExists(chWjets,"/home/users/benhoob/filters/output/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/SingleLeptonSkim/merged*root");
+
+    //SingleLeptonSkim ntuples
+    if( useMCSkims ){
+      pickSkimIfExists(chWjets,"/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/SingleLeptonSkim/merged*root");
+    }
+
+    //full cms2 ntuples
+    else{
+      pickSkimIfExists(chWjets,"/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root");
+    }
 
   }
 
@@ -271,22 +283,30 @@ void doAll(bool skipFWLite = true)
   TChain *chT2tt_few = new TChain("Events");
   if (runT2tt_few) {
     
-    // these are the T2tt files with m(top),m(LSP) = 400,100 OR 500,100 OR 500,400
+    // these are the T2tt files with m(top),m(LSP) = 400,100 OR 500,100 OR 500,300
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_37.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_46.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_66.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_71.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_84.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_85.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_88.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_147.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_149.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_151.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_191.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_193.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_212.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_213.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_222.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_225.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_232.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_268.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_328.root");
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_390.root");
     pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_395.root");
-
+    pickSkimIfExists(chT2tt_few,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged_ntuple_396.root");
+    
   }
 
   //----------------------------------------
