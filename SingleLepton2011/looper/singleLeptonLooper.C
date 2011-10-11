@@ -593,7 +593,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       }
 
       // skip stop-pair events with m(stop) > 850 GeV
-      if(strcmp(prefix,"T2tt") == 0){
+      if( TString(prefix).Contains("T2tt") ){
 	if( sparm_mG() > 850.0 ) continue;
       }
 
@@ -1494,7 +1494,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       weight_ = -1.;
 
-      if(strcmp(prefix,"T2tt") == 0){
+      if( TString(prefix).Contains("T2tt") ){
 	mG_ = sparm_mG();
 	mL_ = sparm_mL();
 
