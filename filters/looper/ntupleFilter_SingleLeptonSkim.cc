@@ -4,15 +4,15 @@
 #include "TFile.h"
 #include "TObjArray.h"
 #include "TTree.h"
-//#include "../Tools/goodrun.cc"
 
-#include "../CORE/CMS2.h"
-#include "../CORE/electronSelections.h"
-#include "../CORE/electronSelectionsParameters.h"
-#include "../CORE/muonSelections.h"
-
-#include "../CORE/metSelections.h"
-#include "../CORE/ttbarSelections.h"
+#include "../CORE/CMS2.cc"
+#include "../CORE/utilities.cc"
+#include "../CORE/trackSelections.cc"
+#include "../CORE/eventSelections.cc"
+#include "../CORE/MITConversionUtilities.cc"
+#include "../CORE/muonSelections.cc"
+#include "../CORE/electronSelectionsParameters.cc"
+#include "../CORE/electronSelections.cc"
 
 #include "Rtypes.h"
 typedef ULong64_t uint64;
@@ -115,7 +115,7 @@ bool select (bool isData)
   return false;
 }
 
-void ntupleFilter(const std::string &infile, const std::string &outfile, bool printPass=false, bool isData = true, std::string runlist = "")  
+void ntupleFilter_SingleLeptonSkim(const std::string &infile, const std::string &outfile, bool printPass=false, bool isData = true, std::string runlist = "")  
 {
     // set good run list
     //if (runlist != "") set_goodrun_file(runlist.c_str());
