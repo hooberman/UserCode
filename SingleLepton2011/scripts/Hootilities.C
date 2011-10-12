@@ -251,7 +251,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 
     bool correlatedError = false;
 
-    if( TString(labels[imc]).Contains("LM") ) continue;
+    if( TString(labels[imc]).Contains("T2tt") ) continue;
 
     // data-driven DY estimate
     if( strcmp(labels[imc],"DYdata")   == 0 ){
@@ -321,12 +321,12 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
   printLine(latex);
 
   //----------------------
-  // print SUSY MC samples
+  // print T2tt MC samples
   //----------------------
 
   for(unsigned int imc = 0 ; imc < chmc.size() ; imc++){
 
-    if( !TString(labels[imc]).Contains("LM") ) continue;
+    if( !TString(labels[imc]).Contains("T2tt") ) continue;
 
     chmc[imc]->Draw("leptype>>hyield",sel*weight);
 
@@ -351,7 +351,9 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayData, float x1, float y1, float x2, float y2){
 
   int colors[]={6,2,7,4,5,8,9,15,12};
-  
+  int sigcolors[]={2,4,7,4,5,8,9,15,12};
+  int isigmc = 0;
+
   TLegend *leg = new TLegend(x1,y1,x2,y2);
 
   TH1F*    datahist = new TH1F("datahist","datahist",1,0,1);
@@ -371,21 +373,28 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
 
     char* t = labels.at(imc);
 
-    if( TString(t).Contains("LM") ) continue;
+    if( TString(t).Contains("T2tt") ) continue;
 
     mchist[imc] = new TH1F(Form("mc_%i",imc),Form("mc_%i",imc),1,0,1);
 
-    if( TString( labels.at(imc) ).Contains("LM") ){
+    if( TString( labels.at(imc) ).Contains("T2tt") ){
       mchist[imc]->SetFillColor( 0 );
       mchist[imc]->SetLineStyle(2);
+      mchist[imc]->SetLineColor( sigcolors[imc] );
     }else{
       mchist[imc]->SetFillColor( colors[imc] );
     }
 
-    if( strcmp("ttall",t)   == 0 ) t = "t#bar{t}";
-    if( strcmp("ttll",t)    == 0 ) t = "t#bar{t} #rightarrow ll";
-    if( strcmp("tttau",t)   == 0 ) t = "t#bar{t} #rightarrow l#tau/#tau#tau";
-    if( strcmp("ttfake",t)  == 0 ) t = "t#bar{t} #rightarrow fake";
+
+    if( strcmp("ttall",t)    == 0 ) t = "t#bar{t}";
+    if( strcmp("ttl",t)      == 0 ) t = "t#bar{t} #rightarrow #font[12]{l}+jets";
+    if( strcmp("ttll",t)     == 0 ) t = "t#bar{t} #rightarrow #font[12]{l}#font[12]{l}";
+    if( strcmp("ttltau",t)   == 0 ) t = "t#bar{t} #rightarrow #font[1]{l}#font[12]{#tau}";
+    if( strcmp("tttau",t)    == 0 ) t = "t#bar{t} #rightarrow #font[12]{#tau}+jets";
+    if( strcmp("tttautau",t) == 0 ) t = "t#bar{t} #rightarrow #font[12]{#tau}#font[12]{#tau}";
+
+    if( strcmp("ttotr",t)   == 0 ) t = "t#bar{t} #rightarrow other";
+
     if( strcmp("t",t)       == 0 ) t = "single top";
     if( strcmp("wjets",t)   == 0 ) t = "W+jets";
     if( strcmp("WW",t)      == 0 ) t = "W^{+}W^{-}";
@@ -398,7 +407,7 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
   }
 
   //-----------------
-  // LM samples
+  // T2tt samples
   //-----------------
 
   //for( unsigned int imc = 0 ; imc < nmc ; imc++ ){
@@ -406,13 +415,15 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
 
     char* t = labels.at(imc);
 
-    if( !TString(t).Contains("LM") ) continue;
+    if( !TString(t).Contains("T2tt") ) continue;
 
     mchist[imc] = new TH1F(Form("mc_%i",imc),Form("mc_%i",imc),1,0,1);
 
-    if( TString( labels.at(imc) ).Contains("LM") ){
+    if( TString( labels.at(imc) ).Contains("T2tt") ){
       mchist[imc]->SetFillColor( 0 );
       mchist[imc]->SetLineStyle(2);
+      mchist[imc]->SetLineWidth(2);
+      mchist[imc]->SetLineColor( sigcolors[isigmc++] );
     }else{
       mchist[imc]->SetFillColor( colors[imc] );
     }
@@ -466,6 +477,8 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   cout << "Plotting var " << myvar << " flavor " << flavor << endl;
 
   int colors[]={6,2,7,4,5,8,9,15,12};
+  int sigcolors[]={2,4,7,4,5,8,9,15,12};
+  int isigmc = 0;
 
   assert( chmc.size() == labels.size() );
   const unsigned int nmc = chmc.size();
@@ -491,11 +504,19 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
     chmc.at(imc)->Draw(Form("TMath::Min(%s,%f)>>%s_mc_%i_%s",var,xmax-0.01,myvar,imc,flavor),sel*weight*trigweight);
 
-    if( TString( labels.at(imc) ).Contains("LM") ){
+    if( TString( labels.at(imc) ).Contains("T2tt") ){
       mchist[imc]->SetFillColor( 0 );
       mchist[imc]->SetLineStyle(2);
+      mchist[imc]->SetLineWidth(2);
+      mchist[imc]->SetLineColor( sigcolors[isigmc++] );
+      if( TString( labels.at(imc) ).Contains("X6") ){
+	mchist[imc]->Scale(6);
+	cout << "Scaling T2tt MC by 6" << endl;
+      }
     }else{
+      mchist[imc]->SetLineWidth(1);
       mchist[imc]->SetFillColor( colors[imc] );
+      mchist[imc]->SetLineColor( 1 );
     }
 
     // if( strcmp(labels[imc],"ttfake")  == 0 || strcmp(labels[imc],"wjets")  == 0 ){
@@ -546,7 +567,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   text->SetTextSize(0.05);
   text->DrawLatex(0.2,0.88,"CMS Preliminary");
   //text->DrawLatex(0.2,0.83,"0.98 fb^{-1} at #sqrt{s} = 7 TeV");
-  text->DrawLatex(0.2,0.83,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 0.98 fb^{-1}");
+  text->DrawLatex(0.2,0.83,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 1.0 fb^{-1}");
 
   if     ( TString(flavor).Contains("e")  )  text->DrawLatex(0.2,0.78,"e-channel");
   else if( TString(flavor).Contains("m")  )  text->DrawLatex(0.2,0.78,"#mu-channel");

@@ -26,7 +26,8 @@
 #include "TMath.h"
 #include "TRandom.h"
 #include <sstream>
-#include "Hootilities.h"
+//#include "Hootilities.h"
+#include "Hootilities.C"
 #include "singleLepSusy.h"
 //#include "histtools.h"
 
@@ -81,6 +82,9 @@ void initialize(char* path){
 
     data->Reset();
     ttall->Reset();
+    tt0l->Reset();
+    tt1l->Reset();
+    tt2l->Reset();
     ttl->Reset();
     ttll->Reset();
     ttltau->Reset();
@@ -89,7 +93,11 @@ void initialize(char* path){
     ttotr->Reset();
     wjets->Reset();
     t2tt->Reset();
+    t2ttA->Reset();
+    t2ttB->Reset();
+    t2ttC->Reset();
     qcd->Reset();
+    tW->Reset();
 
     mc.clear();
     mctex.clear();
@@ -97,9 +105,11 @@ void initialize(char* path){
   }
 
   else{
-
     data	= new TChain("t");
     ttall	= new TChain("t");
+    tt0l	= new TChain("t");
+    tt1l	= new TChain("t");
+    tt2l	= new TChain("t");
     ttl  	= new TChain("t");
     ttll	= new TChain("t");
     ttltau	= new TChain("t");
@@ -108,7 +118,11 @@ void initialize(char* path){
     ttotr	= new TChain("t");
     wjets	= new TChain("t");
     t2tt	= new TChain("t");
-    qcd	= new TChain("t");
+    t2ttA	= new TChain("t");
+    t2ttB	= new TChain("t");
+    t2ttC	= new TChain("t");
+    qcd	        = new TChain("t");
+    tW	        = new TChain("t");
   }
 
   cout << endl;
@@ -116,10 +130,10 @@ void initialize(char* path){
   
   data->Add(Form("%s/data_smallTree.root",path));
   ttall->Add(Form("%s/ttall_smallTree.root",path));
-
+  tt0l->Add(Form("%s/tt0l_smallTree.root",path));
+  tt1l->Add(Form("%s/tt1l_smallTree.root",path));
+  tt2l->Add(Form("%s/tt2l_smallTree.root",path));
   ttl->Add(Form("%s/ttl_smallTree.root",path));
-  //ttl->Add(Form("%s/tttau_smallTree.root",path));
-
   ttll->Add(Form("%s/ttll_smallTree.root",path));
   ttltau->Add(Form("%s/ttltau_smallTree.root",path));
   tttau->Add(Form("%s/tttau_smallTree.root",path));
@@ -127,18 +141,29 @@ void initialize(char* path){
   ttotr->Add(Form("%s/ttotr_smallTree.root",path));
   wjets->Add(Form("%s/wjets_smallTree.root",path));
   qcd->Add(Form("%s/qcd_smallTree.root",path));
-  t2tt->Add(Form("%s/T2tt_smallTree.root",path));
+  tW->Add(Form("%s/tW_smallTree.root",path));
+  //t2tt->Add(Form("%s/T2tt_few_smallTree.root",path));
+  t2ttA->Add(Form("%s/T2tt_350_100_smallTree.root",path));
+  t2ttB->Add(Form("%s/T2tt_450_100_smallTree.root",path));
+  t2ttC->Add(Form("%s/T2tt_200_50_smallTree.root",path));
   
   //mc.push_back(ttall);       mclabels.push_back("ttall");    
-  mc.push_back(ttl);         mclabels.push_back("ttl");    
-  mc.push_back(ttll);        mclabels.push_back("ttll");    
-  mc.push_back(ttltau);      mclabels.push_back("ttltau");   
-  mc.push_back(tttau);       mclabels.push_back("tttau");   
-  mc.push_back(tttautau);    mclabels.push_back("tttautau");   
-  mc.push_back(ttotr);       mclabels.push_back("ttotr");   
+  mc.push_back(tt1l);        mclabels.push_back("tt1l");    
+  mc.push_back(tt2l);        mclabels.push_back("tt2l");    
+  mc.push_back(tt0l);        mclabels.push_back("ttfake");    
+  // mc.push_back(ttl);         mclabels.push_back("ttl");    
+  // mc.push_back(ttll);        mclabels.push_back("ttll");    
+  // mc.push_back(ttltau);      mclabels.push_back("ttltau");   
+  // mc.push_back(tttau);       mclabels.push_back("tttau");   
+  // mc.push_back(tttautau);    mclabels.push_back("tttautau");   
+  // mc.push_back(ttotr);       mclabels.push_back("ttotr");   
   mc.push_back(wjets);       mclabels.push_back("wjets");   
   mc.push_back(qcd);         mclabels.push_back("qcd");   
-  //mc.push_back(t2tt);        mclabels.push_back("t2tt");   
+  mc.push_back(tW);          mclabels.push_back("single top");   
+  //mc.push_back(t2tt);        mclabels.push_back("T2tt");   
+  mc.push_back(t2ttA);       mclabels.push_back("T2tt 350/100 X6");   
+  mc.push_back(t2ttB);       mclabels.push_back("T2tt 450/100 X6");   
+  //mc.push_back(t2ttC);       mclabels.push_back("T2tt 4.0");   
   
   alreadyInitialized_ = true;
 }
@@ -150,34 +175,50 @@ void initialize(char* path){
 TCut selection_TCut(){
 
   TCut nlep1("ngoodlep == 1");
-  TCut njets1("njets >= 1");
-  TCut njets2("njets >= 2");
-  TCut njets3("njets >= 3");
-  TCut njets4("njets >= 4");
+  TCut leppt("(leptype==0 && lep1.pt()>25)||(leptype==1 && lep1.pt()>20)");
+  // TCut njets1("njets >= 1");
+  // TCut njets2("njets >= 2");
+  // TCut njets3("njets >= 3");
+  // TCut njets4("njets >= 4");
+  TCut njets1("ncalojets >= 1");
+  TCut njets2("ncalojets >= 2");
+  TCut njets3("ncalojets >= 3");
+  TCut njets4("ncalojets >= 4");
   TCut met60("pfmet > 60");
+  TCut met50("pfmet > 50");
   TCut met100("pfmet > 100");
+  TCut metpresel("(leptype==0&&pfmet>30)||(leptype==1&&pfmet>20)");
   TCut ht300("ht > 300");
   TCut ht500("ht > 500");
   TCut dphi05("dphijm > 0.5");
   TCut btags0("nbtags==0");
-  TCut btags2("nbtagstcm>=2");
+  TCut btags2("nbctcm>=2");
+  TCut btags1("nbctcm>=1");
   TCut mt100("mt>100");
   TCut mt150("mt>150");
   TCut mt200("mt>200");
+  TCut trkreliso02("trkreliso10>0.2");
+  TCut trkreliso01("trkreliso5>0.1");
 
   TCut sel;
   sel    += nlep1;
+  sel    += leppt;
   sel    += njets3;
-  sel    += met60;
-  sel    += dphi05;
+  sel    += met50;
+  sel    += met100;
+  //sel    += met60;
+  //sel    += dphi05;
   //sel    += met100;
-  sel    += ht300;
+  //sel    += ht300;
   //sel    += ht500;
   //sel    += btags0;
+  //sel    += btags1;
   sel    += btags2;
-  //sel    += mt100;
-  sel    += mt150;
-  sel    += mt200;
+  //sel    += mt150;
+  //sel    += mt150;
+  //sel    += mt200;
+  sel    += trkreliso01;
+  //sel    += trkreliso02;
 
   cout << "Using selection         : " << sel.GetTitle() << endl;
  
@@ -187,7 +228,9 @@ TCut selection_TCut(){
 TCut weight_TCut(){
 
   //TCut weight("weight*ndavtxweight");
-  TCut weight("weight * 0.204 * ndavtxweight");
+  //TCut weight("weight * 0.204 * ndavtxweight");
+  TCut weight("weight * 0.98 * ndavtxweight * 1.13");
+  //TCut weight("weight * 5 * ndavtxweight");
 
   cout << "Using weight            : " << weight.GetTitle() << endl;
   return weight; 
@@ -318,7 +361,10 @@ void printYieldTable( char* path , bool latex = false ){
 
 void makePlots( char* path , bool printgif = false ){
 
-  bool combine4 = false;
+  bool combine6 = false;
+  bool residual = false;
+  bool log      = false;
+
 
   initialize(path);
 
@@ -331,33 +377,46 @@ void makePlots( char* path , bool printgif = false ){
   vector<float> xi;
   vector<float> xf;
 
-  vars.push_back("pfmet");     xt.push_back("pfmet (GeV)");      n.push_back(5); xi.push_back(0.); xf.push_back(250.);
-  vars.push_back("ht");        xt.push_back("H_{T} (GeV)");      n.push_back(7); xi.push_back(0.); xf.push_back(700.);
-  vars.push_back("dilmass");   xt.push_back("m(ll) (GeV)");      n.push_back(5); xi.push_back(0.); xf.push_back(100.);
-  vars.push_back("dilpt");     xt.push_back("p_{T}(ll) (GeV)");  n.push_back(5); xi.push_back(0.); xf.push_back(100.);
-    
+  // vars.push_back("pfmet");        xt.push_back("pfmet (GeV)");      n.push_back(30);  xi.push_back(0.); xf.push_back(300.);
+  // vars.push_back("htcalo");       xt.push_back("H_{T} (GeV)");      n.push_back(30);  xi.push_back(0.); xf.push_back(700.);
+  // vars.push_back("ncalojets");    xt.push_back("H_{T} (GeV)");      n.push_back(10);  xi.push_back(0.); xf.push_back(10.);
+  // vars.push_back("lep1.pt()");    xt.push_back("pfmet (GeV)");      n.push_back(5);   xi.push_back(0.); xf.push_back(250.);
+  // vars.push_back("mt");           xt.push_back("H_{T} (GeV)");      n.push_back(7);   xi.push_back(0.); xf.push_back(700.);
+  // vars.push_back("nbctcm");       xt.push_back("H_{T} (GeV)");      n.push_back(4);   xi.push_back(0.); xf.push_back(4.);
+
+  // vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  // vars.push_back("htcalo");       xt.push_back("H_{T} (GeV)");		            n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
+  // vars.push_back("ncalojets");    xt.push_back("jet multiplicity");	            n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
+  // vars.push_back("lep1.pt()");    xt.push_back("lepton p_{T} (GeV)");	            n.push_back(20); xi.push_back(0.);   xf.push_back(200.);
+  // vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  // vars.push_back("nbctcm");       xt.push_back("b-jet multiplicity");	            n.push_back(5);  xi.push_back(0.);   xf.push_back(5.);
+  
+
+  //vars.push_back("trkreliso5");    xt.push_back("track reliso");		            n.push_back(50); xi.push_back(0.);     xf.push_back(1.);
+  //vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(16); xi.push_back(0.);     xf.push_back(400.);
+  vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(11); xi.push_back(125.);   xf.push_back(400.);
+  //vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(11); xi.push_back(70.);    xf.push_back(400.);
+
   const unsigned int nvars = vars.size();
   
   TCanvas *can[nvars];
   TPad* legpad[nvars];
   TPad* plotpad[nvars];
 
-  bool residual = false;
 
   int canCounter = -1;
-  bool log = false;
 
   for( unsigned int ivar = 0 ; ivar < nvars ; ++ivar ){     
+    
+    //if( ivar < 2 ) log = true;
+    //else           log = false;
 
-    if( ivar < 2 ) log = true;
-    else           log = false;
-
-    if( combine4 ){
-      if( ivar % 4 == 0 ){
+    if( combine6 ){
+      if( ivar % 6 == 0 ){
 	canCounter++;
-	can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1400,1200);
-
-	legpad[canCounter] = new TPad("legpad","legpad",12./14.,0,1,1);
+	can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),2000,1200);
+	
+	legpad[canCounter] = new TPad("legpad","legpad",18./20.,0,1,1);
 	legpad[canCounter]->Draw();
 	legpad[canCounter]->cd();
 
@@ -368,24 +427,36 @@ void makePlots( char* path , bool printgif = false ){
 
 	can[canCounter]->cd();
 
-	plotpad[canCounter] = new TPad("plotpad","plotpad",0,0,12./14.,1);
+	plotpad[canCounter] = new TPad("plotpad","plotpad",0,0,18./20.,1);
 	plotpad[canCounter]->Draw();
 	plotpad[canCounter]->cd();
 
-	plotpad[canCounter]->Divide(2,2);
+	plotpad[canCounter]->Divide(3,2);
 	plotpad[canCounter]->cd(1);
 
       }else{
-	plotpad[canCounter]->cd(1+ivar%4);
+	plotpad[canCounter]->cd(1+ivar%6);
       }
     }else{
       can[ivar] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),600,600);
     }
 
-    compareDataMC( mc , mclabels , data , vars[ivar] , sel , weight , n[ivar] , xi[ivar] , xf[ivar] , xt[ivar] , true , residual , !combine4 , log );
+    compareDataMC( mc , mclabels , data , vars[ivar] , sel , weight , n[ivar] , xi[ivar] , xf[ivar] , xt[ivar] , true , residual , !combine6 , log );
 
-    if( printgif ) can[ivar]->Print(Form("../plots/%s.pdf",vars[ivar]));
+    if( printgif && !combine6 ){
+      can[ivar]->Print(Form("../plots/%s.pdf",vars[ivar]));
+      can[ivar]->Print(Form("../plots/%s.eps",vars[ivar]));
+      can[ivar]->Print(Form("../plots/%s.png",vars[ivar]));
+    }
   } 
+
+  if( printgif && combine6 ){
+    can[0]->Print("../plots/makePlots.pdf");
+    can[0]->Print("../plots/makePlots.eps");
+    can[0]->Print("../plots/makePlots.png");
+  }
+
+
 }
 
 void makeStandardPlots( char* path , bool sigregion = false ){
@@ -421,28 +492,34 @@ void makeStandardPlots( char* path , bool sigregion = false ){
   vector<float> xi;
   vector<float> xf;
 
-  // vars.push_back("lep1.pt()");  xt.push_back("lepton p_{T} (GeV)");	    n.push_back(20); xi.push_back(0.);   xf.push_back(200.);
-  // vars.push_back("lep1.eta()"); xt.push_back("lepton #eta")       ;	    n.push_back(20); xi.push_back(-3.);  xf.push_back(3.);
-  // vars.push_back("jet.pt()");   xt.push_back("max jet p_{T} (GeV)");        n.push_back(20); xi.push_back(0.);   xf.push_back(400.);
-  // vars.push_back("jet.eta()");  xt.push_back("max jet #eta");	            n.push_back(20); xi.push_back(-3);   xf.push_back( 3);
-  // vars.push_back("dphijm");     xt.push_back("#Delta#phi(max jet,pfmet)");  n.push_back(20); xi.push_back(0);    xf.push_back(3.2);
-  // vars.push_back("tcmet");      xt.push_back("tcmet (GeV)");    	    n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  // vars.push_back("pfmet");      xt.push_back("E_{T}^{miss} (GeV)");	    n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  // vars.push_back("y");          xt.push_back("y (GeV^{1/2})");  	    n.push_back(20); xi.push_back(0.);   xf.push_back(20.);
-  // vars.push_back("ht");         xt.push_back("H_{T} (GeV)");		    n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
-  // vars.push_back("njets");      xt.push_back("jet multiplicity");	    n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
-  // vars.push_back("nbtagstcm");  xt.push_back("b-jet multiplicity");	    n.push_back(5);  xi.push_back(0.);   xf.push_back(5.);
-  // vars.push_back("ndavtx");     xt.push_back("nDAVertices");		    n.push_back(20); xi.push_back(0.);   xf.push_back(20.);
-  vars.push_back("mt");         xt.push_back("M_{T} (GeV)");		    n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  // vars.push_back("meff");       xt.push_back("effective mass (GeV)");	    n.push_back(20); xi.push_back(0.);   xf.push_back(2000.);
+  vars.push_back("lep1.pt()");    xt.push_back("lepton p_{T} (GeV)");	            n.push_back(20); xi.push_back(0.);   xf.push_back(200.);
+  vars.push_back("lep1.eta()");   xt.push_back("lepton #eta")       ;	            n.push_back(20); xi.push_back(-3.);  xf.push_back(3.);
+  vars.push_back("jet.pt()");     xt.push_back("max jet p_{T} (GeV)");              n.push_back(20); xi.push_back(0.);   xf.push_back(400.);
+  vars.push_back("jet.eta()");    xt.push_back("max jet #eta");	                    n.push_back(20); xi.push_back(-3);   xf.push_back( 3);
+  vars.push_back("dphijm");       xt.push_back("#Delta#phi(max jet,pfmet)");        n.push_back(20); xi.push_back(0);    xf.push_back(3.2);
+  vars.push_back("tcmet");        xt.push_back("tcmet (GeV)");    	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  vars.push_back("y");            xt.push_back("y (GeV^{1/2})");                    n.push_back(20); xi.push_back(0.);   xf.push_back(20.);
+  vars.push_back("htcalo");       xt.push_back("H_{T} (GeV)");		            n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
+  vars.push_back("ncalojets");    xt.push_back("jet multiplicity");	            n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
+  vars.push_back("nbctcm");       xt.push_back("b-jet multiplicity");	            n.push_back(5);  xi.push_back(0.);   xf.push_back(5.);
+  vars.push_back("ndavtx");       xt.push_back("nDAVertices");		            n.push_back(20); xi.push_back(0.);   xf.push_back(20.);
+  vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(20); xi.push_back(100.);   xf.push_back(300.);
+  vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(15); xi.push_back(150.);   xf.push_back(300.);
+  vars.push_back("meff");         xt.push_back("effective mass (GeV)");	            n.push_back(20); xi.push_back(0.);   xf.push_back(2000.);
+  vars.push_back("trkreliso5");   xt.push_back("track rel iso (p_{T} > 5 GeV)");    n.push_back(20); xi.push_back(0.);   xf.push_back(1.);
+  vars.push_back("trkreliso10");  xt.push_back("track rel iso (p_{T} > 10 GeV)");   n.push_back(20); xi.push_back(0.);   xf.push_back(1.);
+
+  //vars.push_back("ht");         xt.push_back("H_{T} (GeV)");		              n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
+  //vars.push_back("njets");      xt.push_back("jet multiplicity");	              n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
+  //vars.push_back("npfjets40");  xt.push_back("jet multiplicity (p_{T} > 40 GeV)");  n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
+
    
   const unsigned int nvars = vars.size();
   
-  //TCanvas *can[nvars];
   TPad* legpad[nvars];
   TPad* plotpad[nvars];
-
-  //int canCounter = -1;
 
   TCanvas* canvas = new TCanvas("canvas","canvas",1100,750);
   gStyle->SetPaperSize(22,28);
@@ -455,18 +532,8 @@ void makeStandardPlots( char* path , bool sigregion = false ){
   for( unsigned int ivar = 0 ; ivar < nvars ; ++ivar ){     
 
     log = false;
-    if( strcmp(vars.at(ivar),"mt")==0) log = true;
+    //if( strcmp(vars.at(ivar),"mt")==0) log = true;
 
-    //can[ivar] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1000,800);
-    canvas->cd();
-
-    //legpad[ivar] = new TPad("legpad","legpad",0.8,0,1,1);
-    //legpad[ivar]->Draw();
-    //legpad[ivar]->cd();
-
-    //leg->Draw();
-
-    //can[ivar]->cd();
     canvas->cd();
 
     plotpad[ivar] = new TPad("plotpad","plotpad",0,0,0.8,1);
@@ -477,19 +544,20 @@ void makeStandardPlots( char* path , bool sigregion = false ){
 
     plotpad[ivar]->cd(1);
     compareDataMC( mc , mclabels , data , vars[ivar] , TCut(sel+"leptype==0") , weight , n[ivar] , xi[ivar] , xf[ivar] , xt[ivar] , true , residual , false , log , "e"   );
+
     plotpad[ivar]->cd(2);
     compareDataMC( mc , mclabels , data , vars[ivar] , TCut(sel+"leptype==1") , weight , n[ivar] , xi[ivar] , xf[ivar] , xt[ivar] , true , residual , false , log , "m"   );
+
     plotpad[ivar]->cd(3);
     leg->SetTextSize(0.05);
     leg->Draw();
-    //compareDataMC( mc , mclabels , data , vars[ivar] , TCut(sel+"leptype==2") , weight , n[ivar] , xi[ivar] , xf[ivar] , xt[ivar] , true , residual , false , log , "em"  );
+
     plotpad[ivar]->cd(4);
     compareDataMC( mc , mclabels , data , vars[ivar] , TCut(sel)              , weight , n[ivar] , xi[ivar] , xf[ivar] , xt[ivar] , true , residual , false , log , "all" );
 
     canvas->Print(Form("../plots/%s.ps",filename));
     canvas->Clear();
 
-    //if( printgif ) can[ivar]->Print(Form("../plots/%s.png",vars[ivar]));
   } 
 
   canvas->Print(Form("../plots/%s.ps]",filename));
