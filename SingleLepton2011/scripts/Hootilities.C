@@ -388,18 +388,20 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
 
     if( strcmp("ttall",t)    == 0 ) t = "t#bar{t}";
     if( strcmp("ttl",t)      == 0 ) t = "t#bar{t} #rightarrow #font[12]{l}+jets";
+    if( strcmp("tt1l",t)     == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{#pm}} + jets";
+    if( strcmp("tt2l",t)     == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{+}l^{-}}";
+    if( strcmp("ttfake",t)   == 0 ) t = "t#bar{t} #rightarrow hadrons";
     if( strcmp("ttll",t)     == 0 ) t = "t#bar{t} #rightarrow #font[12]{l}#font[12]{l}";
     if( strcmp("ttltau",t)   == 0 ) t = "t#bar{t} #rightarrow #font[1]{l}#font[12]{#tau}";
     if( strcmp("tttau",t)    == 0 ) t = "t#bar{t} #rightarrow #font[12]{#tau}+jets";
     if( strcmp("tttautau",t) == 0 ) t = "t#bar{t} #rightarrow #font[12]{#tau}#font[12]{#tau}";
-
-    if( strcmp("ttotr",t)   == 0 ) t = "t#bar{t} #rightarrow other";
-
-    if( strcmp("t",t)       == 0 ) t = "single top";
-    if( strcmp("wjets",t)   == 0 ) t = "W+jets";
-    if( strcmp("WW",t)      == 0 ) t = "W^{+}W^{-}";
-    if( strcmp("WZ",t)      == 0 ) t = "W^{#pm}Z^{0}";
-    if( strcmp("ZZ",t)      == 0 ) t = "Z^{0}Z^{0}";
+    if( strcmp("ttotr",t)    == 0 ) t = "t#bar{t} #rightarrow other";
+    if( strcmp("t",t)        == 0 ) t = "single top";
+    if( strcmp("qcd",t)      == 0 ) t = "QCD";
+    if( strcmp("wjets",t)    == 0 ) t = "W+jets";
+    if( strcmp("WW",t)       == 0 ) t = "W^{+}W^{-}";
+    if( strcmp("WZ",t)       == 0 ) t = "W^{#pm}Z^{0}";
+    if( strcmp("ZZ",t)       == 0 ) t = "Z^{0}Z^{0}";
 
     //leg->AddEntry(mchist[imc],labels.at(imc),"f");
     leg->AddEntry(mchist[imc],t,"f");
@@ -485,6 +487,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
   THStack* mcstack = new THStack("mcstack","mcstack");
   TH1F*    mctothist = new TH1F();
+  TH1F*    smtothist = new TH1F();
   TH1F*    mchist[nmc];
   TH1F*    datahist = new TH1F(Form("%s_datahist_%s",myvar,flavor),Form("%s_datahist_%s",myvar,flavor),nbins,xmin,xmax);
 
@@ -499,12 +502,14 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   for( unsigned int imc = 0 ; imc < nmc ; imc++ ){
   //for( int imc = nmc-1 ; imc > -1 ; imc-- ){
 
+    bool isSignal = TString( labels.at(imc) ).Contains("T2tt");
+
     mchist[imc] = new TH1F(Form("%s_mc_%i_%s",myvar,imc,flavor),Form("%s_mc_%i_%s",myvar,imc,flavor),nbins,xmin,xmax);
     mchist[imc]->Sumw2();
 
     chmc.at(imc)->Draw(Form("TMath::Min(%s,%f)>>%s_mc_%i_%s",var,xmax-0.01,myvar,imc,flavor),sel*weight*trigweight);
 
-    if( TString( labels.at(imc) ).Contains("T2tt") ){
+    if( isSignal ){
       mchist[imc]->SetFillColor( 0 );
       mchist[imc]->SetLineStyle(2);
       mchist[imc]->SetLineWidth(2);
@@ -519,15 +524,21 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
       mchist[imc]->SetLineColor( 1 );
     }
 
-    // if( strcmp(labels[imc],"ttfake")  == 0 || strcmp(labels[imc],"wjets")  == 0 ){
-    //   cout << "Scaling " << labels[imc] << " by 3.8" << endl;
-    //   mchist[imc]->Scale(3.8);
-    // }
-
     mcstack->Add( mchist[imc] );
 
-    if( imc == 0 ) mctothist = (TH1F*) mchist[imc]->Clone();
-    else           mctothist->Add(mchist[imc]);
+    if( !isSignal ){
+      if( imc == 0 ){
+	mctothist = (TH1F*) mchist[imc]->Clone();
+	smtothist = (TH1F*) mchist[imc]->Clone();
+      }
+      else{
+	mctothist->Add(mchist[imc]);
+	smtothist->Add(mchist[imc]);
+      }
+    }
+    else{
+      mctothist->Add(mchist[imc]);
+    }
 
     cout << "MC yield " << labels[imc] << " " << Form("%.2f",mchist[imc]->Integral()) << endl;
   }
@@ -583,14 +594,14 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     gPad->SetGridy();
 
     TH1F* ratio = (TH1F*) datahist->Clone(Form("%s_ratio",datahist->GetName()));
-    ratio->Divide(mctothist);
+    ratio->Divide(smtothist);
 
     ratio->GetYaxis()->SetTitleOffset(0.3);
     ratio->GetYaxis()->SetTitleSize(0.2);
     ratio->GetYaxis()->SetNdivisions(5);
     ratio->GetYaxis()->SetLabelSize(0.2);
     ratio->GetYaxis()->SetRangeUser(0.5,1.5);
-    ratio->GetYaxis()->SetTitle("data/MC  ");
+    ratio->GetYaxis()->SetTitle("data/SM  ");
     ratio->GetXaxis()->SetLabelSize(0);
     ratio->GetXaxis()->SetTitleSize(0);
     ratio->SetMarkerSize(0.7);
