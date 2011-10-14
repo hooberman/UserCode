@@ -330,6 +330,8 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 
     chmc[imc]->Draw("leptype>>hyield",sel*weight);
 
+    if( TString(labels[imc]).Contains("X6") ) hyield->Scale(6);
+
     //do efficiency correction
     //hyield->SetBinContent  ( 2 , hyield->GetBinContent(2) * 0.90);
     //hyield->SetBinContent  ( 3 , hyield->GetBinContent(3) * 0.95);
@@ -491,6 +493,8 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   TH1F*    mchist[nmc];
   TH1F*    datahist = new TH1F(Form("%s_datahist_%s",myvar,flavor),Form("%s_datahist_%s",myvar,flavor),nbins,xmin,xmax);
 
+  vector<TH1F*> sighist;
+
   float trigeff = 1.0;
   //if     ( TString(flavor).Contains("ee")  ) trigeff = 1.00;
   //else if( TString(flavor).Contains("mm")  ) trigeff = 0.90;
@@ -538,6 +542,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     }
     else{
       mctothist->Add(mchist[imc]);
+      
     }
 
     cout << "MC yield " << labels[imc] << " " << Form("%.2f",mchist[imc]->Integral()) << endl;
@@ -575,7 +580,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
   TLatex *text = new TLatex();
   text->SetNDC();
-  text->SetTextSize(0.05);
+  text->SetTextSize(0.04);
   text->DrawLatex(0.2,0.88,"CMS Preliminary");
   //text->DrawLatex(0.2,0.83,"0.98 fb^{-1} at #sqrt{s} = 7 TeV");
   text->DrawLatex(0.2,0.83,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 1.0 fb^{-1}");
@@ -591,7 +596,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     respad->Draw();
     respad->cd();
 
-    gPad->SetGridy();
+    //gPad->SetGridy();
 
     TH1F* ratio = (TH1F*) datahist->Clone(Form("%s_ratio",datahist->GetName()));
     ratio->Divide(smtothist);
@@ -604,7 +609,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     ratio->GetYaxis()->SetTitle("data/SM  ");
     ratio->GetXaxis()->SetLabelSize(0);
     ratio->GetXaxis()->SetTitleSize(0);
-    ratio->SetMarkerSize(0.7);
+    ratio->SetMarkerSize(1);
     ratio->Draw();
 
     TLine line;
