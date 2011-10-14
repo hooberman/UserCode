@@ -49,8 +49,8 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
-const float lumi                 = 0.204; 
-const char* iter                 = "V00-01-00";
+const float lumi                 = 1.0; 
+const char* iter                 = "V00-01-01";
 const char* jsonfilename         = "../jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -388,6 +388,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  }
 	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
 	}
+      }
+
+      mg_ = -1.;
+      ml_ = -1.; 
+
+      if(TString(prefix).Contains("T5zz")){
+	mg_ = sparm_mG();
+	ml_ = sparm_mL();
       }
       
       vector<unsigned int> v_goodHyps;
@@ -1315,6 +1323,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F"        );
   babyTree_->Branch("mllgen",       &mllgen_,       "mllgen/F"       );
   babyTree_->Branch("qscale",       &qscale_,       "qscale/F"       );
+  babyTree_->Branch("mg",           &mg_,           "mg/F"           );
+  babyTree_->Branch("ml",           &ml_,           "ml/F"           );
 
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );

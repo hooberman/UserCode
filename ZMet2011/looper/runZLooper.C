@@ -72,7 +72,14 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   else if( strcmp( prefix , "LM8" ) == 0 ){
     pickSkimIfExists(ch,"cms2/LM8_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*root");
   }
-  
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "T5zz" ) == 0 ){
+    //pickSkimIfExists(ch,"/nfs-7/userdata/warren/SMS-T5zz_x-05_Mgluino-150to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/postprocessing/ntuple_93_1_foH.root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/warren/SMS-T5zz_x-05_Mgluino-150to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/postprocessing/ntuple*root");
+  }
+
   //----------------------------------------------------------------------------------------
 
   else{

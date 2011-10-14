@@ -74,6 +74,9 @@ class Z_looper
   Int_t   id1_;
   Int_t   id2_;
 
+  Float_t ml_;
+  Float_t mg_;
+
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
   LorentzVector*  dilep_;
