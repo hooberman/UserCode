@@ -674,12 +674,19 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   bool hasJptBtagBranch = true;
 
+  char* thisFile = "blah";
+
   while((currentFile = (TChainElement*)fileIter.Next())) {
     TFile* f = new TFile(currentFile->GetTitle());
 
     if( !f || f->IsZombie() ) {
       cout << "Skipping bad input file: " << currentFile->GetTitle() << endl;
       continue; //exit(1);                                                                                             
+    }
+
+    if( strcmp(thisFile,currentFile->GetTitle()) != 0 ){
+      thisFile = (char*) currentFile->GetTitle();
+      cout << thisFile << endl;
     }
 
     TTree *tree = (TTree*)f->Get("Events");
