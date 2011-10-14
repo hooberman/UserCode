@@ -594,7 +594,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       // skip stop-pair events with m(stop) > 850 GeV
       if( TString(prefix).Contains("T2tt") ){
-	if( sparm_mG() > 850.0 ) continue;
+	if( sparm_mG() > 650.0 ) continue;
       }
 
       //---------------------------------------------
@@ -1146,7 +1146,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //------------------------------------------------------
 
       trkpt10_         = -1.0;
-      trkreliso10_     = -1.0;
+      trkreliso10_     = 1000.;
       float miniso10   = 999;
 
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
@@ -1174,7 +1174,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //------------------------------------------------------
 
       trkpt5_          = -1.0;
-      trkreliso5_      = -1.0;
+      trkreliso5_      = 1000.;
       float miniso5    = 999;
 
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
@@ -1337,9 +1337,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
       }
 
-      nbctcm_    = 0;
-      ncalojets_ = 0;
-      htcalo_    = 0;
+      nbctce_      = 0;
+      nbctcm_      = 0;
+      ncalojets_   = 0;
+      ncalojets15_ = 0;
+      ncalojets20_ = 0;
+      ncalojets25_ = 0;
+      ncalojets30_ = 0;
+      htcalo_      = 0;
 
       //------------------------------------------
       // count calojets
@@ -1350,7 +1355,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
 
 	if( !passesCaloJetID( vjet ) )         continue;	
-	if( vjet.pt() < 35.          )         continue;
 	if( fabs( vjet.eta() ) > 2.5 )         continue;
 
 	bool rejectJet = false;
@@ -1359,10 +1363,19 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 	if( rejectJet ) continue;
 
+	if( vjet.pt() > 15.  ) ncalojets15_++;
+	if( vjet.pt() > 20.  ) ncalojets20_++;
+	if( vjet.pt() > 25.  ) ncalojets25_++;
+	if( vjet.pt() > 30.  ) ncalojets30_++;
+
+	if( vjet.pt() < 35.  ) continue;
 
 	ncalojets_ ++;
 	htcalo_  += vjet.pt();
 
+	if( jets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
+	  nbctce_++;
+	}
 	if( jets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
 	  nbctcm_++;
 	}
@@ -2551,11 +2564,14 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("trkpt10",         &trkpt10_,          "trkpt10/F");  
   outTree->Branch("trkreliso10",     &trkreliso10_,      "trkreliso10/F");  
   outTree->Branch("passtrg",         &passtrg_,          "passtrg/I");  
-
   outTree->Branch("ncalojets",       &ncalojets_,        "ncalojets/I");  
+  outTree->Branch("ncalojets15",     &ncalojets15_,      "ncalojets15/I");  
+  outTree->Branch("ncalojets20",     &ncalojets20_,      "ncalojets20/I");  
+  outTree->Branch("ncalojets25",     &ncalojets25_,      "ncalojets25/I");  
+  outTree->Branch("ncalojets30",     &ncalojets30_,      "ncalojets30/I");  
+  outTree->Branch("nbctce",          &nbctce_,           "nbctce/I");  
   outTree->Branch("nbctcm",          &nbctcm_,           "nbctcm/I");  
   outTree->Branch("htcalo",          &htcalo_,           "htcalo/F");  
-
   outTree->Branch("trgjet"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trgjet_	);
   outTree->Branch("mlep"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
@@ -2584,7 +2600,7 @@ vector<int> goodDAVertices(){
 
 //--------------------------------------------------------------------
 
-float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx = 0 ){
+float singleLeptonLooper::dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx ){
   
   return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
   

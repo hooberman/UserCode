@@ -60,6 +60,7 @@ class singleLeptonLooper
         float getCosThetaStarWeight();
         float smearMet( float met , float sumjetpt , float metscale );
 	void InitBaby();
+	float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx = 0 );
 	
         // Set globals
         void set_susybaseline (bool  b)    { g_susybaseline = b; }
@@ -109,8 +110,13 @@ class singleLeptonLooper
 	Float_t mlepdr_;
 
 	Int_t   ncalojets_;
+	Int_t   ncalojets15_;
+	Int_t   ncalojets20_;
+	Int_t   ncalojets25_;
+	Int_t   ncalojets30_;
 	Float_t htcalo_;
 	Int_t   nbctcm_;
+	Int_t   nbctce_;
 
 	LorentzVector*  mlep_;   
 	LorentzVector*  trgjet_;   
