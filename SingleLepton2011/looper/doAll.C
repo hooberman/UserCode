@@ -168,7 +168,7 @@ void doAll(bool skipFWLite = true)
 
     //SingleLeptonSkim ntuples
     if( useMCSkims ){
-      pickSkimIfExists(chWjets,"/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/SingleLeptonSkim/merged*root");
+      pickSkimIfExists(chWjets,"/nfs-7/userdata/cms2/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndJets/merged*root");
       //pickSkimIfExists(chWjets,"/hadoop/cms/store/user/imacneill/Summer11MC/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndJets/merged*root");
     }
 
@@ -347,7 +347,6 @@ void doAll(bool skipFWLite = true)
 
   TChain *chT2tt = new TChain("Events");
   if (runT2tt) {
-    
     pickSkimIfExists(chT2tt,"/nfs-7/userdata/cms2/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v1/V04-02-20-04/merged*root");
   }
 
@@ -361,13 +360,6 @@ void doAll(bool skipFWLite = true)
     
     cout << "adding ElectronHad and MuHad data" << endl;
     
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_999999_0.root"); 
-
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_999999_0.root"); 
-
-    //pickSkimIfExists(chdata,"/home/users/benhoob/filters/Tools/skimData/SingleLeptonSkim/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_999999_0.root"); 
-
-
     //---------------------------
     // May10 rereco
     //---------------------------
