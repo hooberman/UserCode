@@ -1141,6 +1141,19 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       }
 
+      for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+
+	if( pfcands_charge().at(ipf) == 0   ) continue;
+
+ 	int itrk = cms2.pfcands_trkidx().at(ipf);
+	
+ 	if( itrk < trks_trk_p4().size() && itrk >= 0 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > 0.2 ){
+ 	    fillOverFlow( h_PU_trkpt , pfcands_p4().at(ipf).pt() );
+ 	  }
+ 	}
+      }
+
       //------------------------------------------------------
       // store pt and iso for most isolated track (pt>10 GeV)
       //------------------------------------------------------
@@ -1153,6 +1166,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	if( pfcands_p4().at(ipf).pt() < 10  ) continue;
 	if( pfcands_charge().at(ipf) == 0   ) continue;
+
+ 	int itrk = cms2.pfcands_trkidx().at(ipf);
+	
+ 	if( itrk < trks_trk_p4().size() && itrk >= 0 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > 0.2 ) continue;
+ 	}
 
 	bool isGoodLepton = false;
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
@@ -1181,6 +1200,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	if( pfcands_p4().at(ipf).pt() < 5   ) continue;
 	if( pfcands_charge().at(ipf) == 0   ) continue;
+
+ 	int itrk = cms2.pfcands_trkidx().at(ipf);
+	
+ 	if( itrk < trks_trk_p4().size() && itrk >= 0 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > 0.2 ) continue;
+ 	}
 
 	bool isGoodLepton = false;
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
@@ -1724,6 +1749,8 @@ void singleLeptonLooper::BookHistos(char *prefix)
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
+
+  h_PU_trkpt = new TH1F("h_PU_trkpt","track pt from PU interactions",100,0,100);
 
   cout << "End book histos..." << endl;
 }// CMS2::BookHistos()

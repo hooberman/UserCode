@@ -301,6 +301,7 @@ class singleLeptonLooper
         TH1F* hmucormet_Z[4][4];
         TH1F* hmucorjesmet_Z[4][4];
 
+        TH1F* h_PU_trkpt;
         TH1F* hyield;
         TH1F* hyield_weight;
         TH1F* hyieldsig;
