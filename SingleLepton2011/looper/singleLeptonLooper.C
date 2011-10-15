@@ -1362,7 +1362,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
       }
 
-      nbctce_      = 0;
+      nbctcl_      = 0;
       nbctcm_      = 0;
       ncalojets_   = 0;
       ncalojets15_ = 0;
@@ -1370,8 +1370,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ncalojets25_ = 0;
       ncalojets30_ = 0;
       htcalo_      = 0;
-      emjet10_     = 999;
-      emjet20_     = 999;
+      emjet10_     = -1;
+      emjet20_     = -1;
 
       //-------------------------------------------------------------
       // find jet with max EM fraction outside tracker acceptance
@@ -1393,11 +1393,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	if( vjet.pt() < 10. ) continue;
 
-	if( emfrac < emjet10_ ) emjet10_ = emfrac;
+	if( emfrac > emjet10_ ) emjet10_ = emfrac;
 
 	if( vjet.pt() < 20. ) continue;
 
-	if( emfrac < emjet20_ ) emjet20_ = emfrac;
+	if( emfrac > emjet20_ ) emjet20_ = emfrac;
 
       }
 
@@ -1429,7 +1429,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	htcalo_  += vjet.pt();
 
 	if( jets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
-	  nbctce_++;
+	  nbctcl_++;
 	}
 	if( jets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
 	  nbctcm_++;
@@ -2618,6 +2618,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   outTree->Branch("emjet10",         &emjet10_,          "emjet10/F");  
   outTree->Branch("emjet20",         &emjet20_,          "emjet20/F");  
+  outTree->Branch("trkpt5",          &trkpt5_,           "trkpt5/F");  
   outTree->Branch("trkreliso5",      &trkreliso5_,       "trkreliso5/F");  
   outTree->Branch("trkpt10",         &trkpt10_,          "trkpt10/F");  
   outTree->Branch("trkreliso10",     &trkreliso10_,      "trkreliso10/F");  
@@ -2627,7 +2628,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ncalojets20",     &ncalojets20_,      "ncalojets20/I");  
   outTree->Branch("ncalojets25",     &ncalojets25_,      "ncalojets25/I");  
   outTree->Branch("ncalojets30",     &ncalojets30_,      "ncalojets30/I");  
-  outTree->Branch("nbctce",          &nbctce_,           "nbctce/I");  
+  outTree->Branch("nbctcl",          &nbctcl_,           "nbctcl/I");  
   outTree->Branch("nbctcm",          &nbctcm_,           "nbctcm/I");  
   outTree->Branch("htcalo",          &htcalo_,           "htcalo/F");  
   outTree->Branch("trgjet"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trgjet_	);
