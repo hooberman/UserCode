@@ -115,8 +115,9 @@ class singleLeptonLooper
 	Int_t   ncalojets25_;
 	Int_t   ncalojets30_;
 	Float_t htcalo_;
+	Float_t mjj_;
 	Int_t   nbctcl_;
-	Int_t   nbctce_;
+	Int_t   nbctcm_;
 
 	LorentzVector*  mlep_;   
 	LorentzVector*  trgjet_;   

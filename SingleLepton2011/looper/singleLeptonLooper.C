@@ -594,7 +594,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       // skip stop-pair events with m(stop) > 850 GeV
       if( TString(prefix).Contains("T2tt") ){
-	if( sparm_mG() > 650.0 ) continue;
+	if( sparm_mG() > 500.0 ) continue;
       }
 
       //---------------------------------------------
@@ -1405,6 +1405,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // count calojets
       //------------------------------------------
 
+      vector<int> goodCaloJetIndices;
+      VofP4 goodCaloJets;
+    
       for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
 	
 	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
@@ -1425,6 +1428,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	if( vjet.pt() < 35.  ) continue;
 
+	goodCaloJetIndices.push_back(ijet);
 	ncalojets_ ++;
 	htcalo_  += vjet.pt();
 
@@ -1434,6 +1438,22 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( jets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
 	  nbctcm_++;
 	}
+	else{
+	  goodCaloJets.push_back(vjet);
+	}
+
+
+      }
+
+      //---------------------------------
+      // jet mass variables
+      //---------------------------------
+
+      mjj_ = -1;
+
+      if( nbctcm_ >= 2 && goodCaloJets.size() >= 2 ){
+	sort( goodCaloJets.begin(), goodCaloJets.end(), sortByPt);
+	mjj_ = ( goodCaloJets.at(0) + goodCaloJets.at(1) ).mass();
       }
 
       //---------------------------------
@@ -2617,6 +2637,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mlepdr",          &mlepdr_,           "mlepdr/F");  
 
   outTree->Branch("emjet10",         &emjet10_,          "emjet10/F");  
+  outTree->Branch("mjj",             &mjj_,              "mjj/F");  
   outTree->Branch("emjet20",         &emjet20_,          "emjet20/F");  
   outTree->Branch("trkpt5",          &trkpt5_,           "trkpt5/F");  
   outTree->Branch("trkreliso5",      &trkreliso5_,       "trkreliso5/F");  
