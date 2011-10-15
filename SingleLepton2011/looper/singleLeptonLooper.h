@@ -281,6 +281,8 @@ class singleLeptonLooper
 	Float_t ndavtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
+	Float_t emjet10_;
+	Float_t emjet20_;
 
 	Float_t ksusy_;
 	Float_t ksusyup_;

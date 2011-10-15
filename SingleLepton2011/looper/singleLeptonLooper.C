@@ -1370,6 +1370,36 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ncalojets25_ = 0;
       ncalojets30_ = 0;
       htcalo_      = 0;
+      emjet10_     = 999;
+      emjet20_     = 999;
+
+      //-------------------------------------------------------------
+      // find jet with max EM fraction outside tracker acceptance
+      //-------------------------------------------------------------
+
+      for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
+	
+	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
+
+	if( fabs( vjet.eta() ) < 2.5 )         continue;
+
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+
+	float emfrac = jets_emFrac().at(ijet);
+
+	if( vjet.pt() < 10. ) continue;
+
+	if( emfrac < emjet10_ ) emjet10_ = emfrac;
+
+	if( vjet.pt() < 20. ) continue;
+
+	if( emfrac < emjet20_ ) emjet20_ = emfrac;
+
+      }
 
       //------------------------------------------
       // count calojets
@@ -2586,7 +2616,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mlepiso",         &mlepiso_,          "mlepiso/F");  
   outTree->Branch("mlepdr",          &mlepdr_,           "mlepdr/F");  
 
-  outTree->Branch("trkpt5",          &trkpt5_,           "trkpt5/F");  
+  outTree->Branch("emjet10",         &emjet10_,          "emjet10/F");  
+  outTree->Branch("emjet20",         &emjet20_,          "emjet20/F");  
   outTree->Branch("trkreliso5",      &trkreliso5_,       "trkreliso5/F");  
   outTree->Branch("trkpt10",         &trkpt10_,          "trkpt10/F");  
   outTree->Branch("trkreliso10",     &trkreliso10_,      "trkreliso10/F");  
