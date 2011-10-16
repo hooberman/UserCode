@@ -1800,7 +1800,7 @@ void singleLeptonLooper::BookHistos(char *prefix)
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
-  h_PU_trkpt = new TH1F("h_PU_trkpt","track pt from PU interactions",100,0,100);
+  h_PU_trkpt = new TH1F(Form("%s_PU_trkpt",prefix),"track pt from PU interactions",100,0,100);
 
   cout << "End book histos..." << endl;
 }// CMS2::BookHistos()
