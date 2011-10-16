@@ -199,7 +199,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
 
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -219,7 +219,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runWjets    = 0;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
-  bool runZjets    = 0;
+  bool runZjets    = 1;
   bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
@@ -367,9 +367,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chZjets = new  TChain("Events");
   if(runZjets){
-    pickSkimIfExists(chZjets,
-		     "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root", 
-                     "Zjets");
+
+    //pickSkimIfExists(chDYtot,"/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chZjets,"/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple*root");
   }
 
   TChain* chtopall = new TChain("Events");
@@ -988,7 +988,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011A-PromptReco-v6_AOD/V04-02-30/SSignSkim/skim*root");
 	
 	//---------------------------
-	// prompt reco v6
+	// Run2011B prompt reco v1
 	//---------------------------
 
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");

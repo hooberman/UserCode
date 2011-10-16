@@ -41,6 +41,7 @@
 
 bool verbose            = false;
 bool genLeptonSelection = false;
+bool doTenPercent       = true;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -590,6 +591,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     cout << "DATA!!!" << endl;
     isData = true;
   }
+  if( TString(prefix).Contains("data")  ){
+    cout << "DATA!!!" << endl;
+    isData       = true;
+    doTenPercent = false;
+  }
+  if( doTenPercent ) cout << "Processing 10% of MC" << endl;
+
   // instanciate topmass solver REPLACETOPMASS
   //ttdilepsolve * d_llsol = new ttdilepsolve;
 
@@ -701,6 +709,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
     for(unsigned int z = 0; z < nEntries; ++z) {
       ++nEventsTotal;
+
+      if( doTenPercent ){
+	if( !(nEventsTotal%10==0) ) continue;
+      }
 
       // progress feedback to user
       if (nEventsTotal % 1000 == 0){
@@ -1701,7 +1713,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  xsecsusy2_ = getMsugraCrossSection(m0,m12,10);
 
 	  weight = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
-
+	  if( doTenPercent )	  weight *= 10;
         }
 
 	else if( isData ){
@@ -1713,11 +1725,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  mL_ = sparm_mL();
 	  
 	  weight = lumi * stopPairCrossSection(mG_) * (1000./50000.);
+	  if( doTenPercent )	  weight *= 10;
 	}
 
 	else{
           //weight = kFactor * evt_scale1fb() * lumi * triggerSuperModelEffic( hypIdx );
           weight = kFactor * evt_scale1fb() * lumi;
+	  if( doTenPercent )	  weight *= 10;
 
           if( TString(prefix).Contains("LM") ){
             if( strcmp( prefix , "LM0" )  == 0 ) weight *= kfactorSUSY( "lm0" );
@@ -4011,7 +4025,10 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   char* isgen = "";
   if     ( genLeptonSelection  ) isgen = "_gen";
 
-  outFile   = new TFile(Form("../output/%s/%s/%s_smallTree%s%s.root",g_version,dir,prefix,frsuffix,isgen), "RECREATE");
+  char* tpsuffix = "";
+  if( doTenPercent ) tpsuffix = "_tenPercent";
+
+  outFile   = new TFile(Form("../output/%s/%s/%s_smallTree%s%s%s.root",g_version,dir,prefix,frsuffix,isgen,tpsuffix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
