@@ -101,8 +101,10 @@ class singleLeptonLooper
 	Float_t mcdr2_;    
 
 	Float_t trkpt5_;
+	Float_t mleptrk5_;
 	Float_t trkreliso5_;
 	Float_t trkpt10_;
+	Float_t mleptrk10_;
 	Float_t trkreliso10_;
 
 	Int_t   mlepid_;

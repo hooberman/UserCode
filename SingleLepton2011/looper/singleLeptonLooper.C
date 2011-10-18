@@ -1165,6 +1165,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       trkpt10_         = -1.0;
       trkreliso10_     = 1000.;
+      mleptrk10_       = -1.0;
       float miniso10   = 999;
 
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
@@ -1189,6 +1190,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( iso < miniso10 ){
 	  miniso10       = iso;
 	  trkpt10_       = pfcands_p4().at(ipf).pt();
+	  mleptrk10_     = (*lep1_+pfcands_p4().at(ipf)).pt();
 	  trkreliso10_   = iso;
 	}
       }
@@ -1199,6 +1201,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       trkpt5_          = -1.0;
       trkreliso5_      = 1000.;
+      mleptrk5_        = -1.0;
       float miniso5    = 999;
 
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
@@ -1223,6 +1226,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( iso < miniso5 ){
 	  miniso5     = iso;
 	  trkpt5_     = pfcands_p4().at(ipf).pt();
+	  mleptrk5_   = (*lep1_+pfcands_p4().at(ipf)).pt();
 	  trkreliso5_ = iso;
 	  //itrk       = ipf;
 	}
@@ -2647,6 +2651,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mjj",             &mjj_,              "mjj/F");  
   outTree->Branch("emjet20",         &emjet20_,          "emjet20/F");  
   outTree->Branch("trkpt5",          &trkpt5_,           "trkpt5/F");  
+  outTree->Branch("mleptrk5",        &mleptrk5_,         "mleptrk5/F");  
+  outTree->Branch("mleptrk10",       &mleptrk10_,        "mleptrk10/F");  
   outTree->Branch("trkreliso5",      &trkreliso5_,       "trkreliso5/F");  
   outTree->Branch("trkpt10",         &trkpt10_,          "trkpt10/F");  
   outTree->Branch("trkreliso10",     &trkreliso10_,      "trkreliso10/F");  
