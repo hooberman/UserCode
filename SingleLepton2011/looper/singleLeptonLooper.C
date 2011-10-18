@@ -949,6 +949,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	mcdecay2_ = -1;
 	mcdr1_    = -1;
 	mcdr2_    = -1;
+	mcndec1_  =  0;
+	mcndec2_  =  0;
 
 	//-----------------------------------------------------
 	// store single gen lepton info
@@ -974,7 +976,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
 		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
-		if( daughter == 12 || daughter == 14) mcdecay1_ = 2; 
+		if( daughter == 211 || daughter == 321 ) mcndec1_  ++;  // count charged hadrons
+		if( daughter ==  12 || daughter ==  14 ) mcdecay1_ = 2; // check for nu_e or nu_mu 
 	      } 
 	    } 
 	  } 
@@ -1025,7 +1028,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    
 	    for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igenmin).size(); kk++) {
 	      int daughter = abs(cms2.genps_lepdaughter_id()[igenmin][kk]);
-	      if( daughter == 12 || daughter == 14) mcdecay1_ = 2; 
+	      if( daughter == 211 || daughter == 321 ) mcndec1_  ++;  // count charged hadrons
+	      if( daughter ==  12 || daughter ==  14 ) mcdecay1_ = 2; // check for nu_e or nu_mu 
 	    } 
 	  }
 
@@ -1054,7 +1058,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
 		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
-		if( daughter == 12 || daughter == 14) mcdecay2_ = 2; 
+		if( daughter == 211 || daughter == 321 ) mcndec2_  ++;  // count charged hadrons
+		if( daughter == 12  || daughter == 14  ) mcdecay2_ = 2; // check for nu_e or nu_mu
 	      } 
 	    } 
 	  } 
@@ -2626,6 +2631,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mcid1",           &mcid1_,            "mcid1/I");  
   outTree->Branch("mcdr1",           &mcdr1_,            "mcdr1/F");  
   outTree->Branch("mcdecay1",        &mcdecay1_,         "mcdecay1/I");  
+  outTree->Branch("mcndec1",         &mcndec1_,          "mcndec1/I");  
+  outTree->Branch("mcndec2",         &mcndec2_,          "mcndec2/I");  
   outTree->Branch("mcid2",           &mcid2_,            "mcid2/I");  
   outTree->Branch("mcdr2",           &mcdr2_,            "mcdr2/F");  
   outTree->Branch("mcdecay2",        &mcdecay2_,         "mcdecay2/I");  
