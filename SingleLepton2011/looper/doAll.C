@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-01-02";
+  const char* version    = "V00-01-03";
   const char* jsonfile   = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
@@ -111,7 +111,7 @@ void doAll(bool skipFWLite = true)
   bool runttall    = 1;
   bool runWjets    = 1;
   bool runQCD      = 1;
-  bool runtW       = 1;
+  bool runtW       = 0;
   bool runDYtot    = 0;
   bool runT2tt     = 1;
   bool runT2tt_few = 0;
@@ -157,6 +157,7 @@ void doAll(bool skipFWLite = true)
   TChain* chtopall = new TChain("Events");
   if (runttall) {
     pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root");
+    //pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple.root");
   }
 
   //----------------------------------------
@@ -185,71 +186,8 @@ void doAll(bool skipFWLite = true)
 
   TChain* chDYtot = new  TChain("Events");
   if(runDYtot){
-
-    if( useMCSkims ){
-
-      char* dypath = "/tas03/home/benhoob/OSSusy2011/filter/output";
-
-      pickSkimIfExists(chDYtot, 
-		       Form("%s/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
-		       "DYtot");
-
-      pickSkimIfExists(chDYtot, 
-		       Form("%s/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
-		       "DYtot");
-
-      pickSkimIfExists(chDYtot, 
-		       Form("%s/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
-		       "DYtot");
-
-      pickSkimIfExists(chDYtot, 
-		       Form("%s/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
-		       "DYtot");
-
-      pickSkimIfExists(chDYtot, 
-		       Form("%s/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/met50skim/merged_ntuple.root",dypath),
-		       "DYtot");
-
-      pickSkimIfExists(chDYtot, 
-		       Form("%s/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
-		       "DYtot");
-
-      pickSkimIfExists(chDYtot, 
-		       Form("%s/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/met50skim/merged_ntuple.root",dypath),
-		       "DYtot");
-
-    }
-
-    else{
-
-      pickSkimIfExists(chDYtot, 
-		       "cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root",
-		       "DYtot");
-      
-      pickSkimIfExists(chDYtot, 
-                       "cms2/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/merged*root",
-                       "DYtot");
-      
-      pickSkimIfExists(chDYtot, 
-		       "cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root",
-		       "DYtot");
-      
-      pickSkimIfExists(chDYtot, 
-		       "cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-		       "DYtot");
-      
-      pickSkimIfExists(chDYtot, 
-		       "cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root",
-		       "DYtot");
-      
-      pickSkimIfExists(chDYtot, 
-		       "cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-		       "DYtot");
-      
-      pickSkimIfExists(chDYtot, 
-		       "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-		       "DYtot"); 
-    }
+    cout << "ERROR! NEED TO ADD SINGLE LEPTON SKIM OF DY SAMPLES!!!" << endl;
+    exit(0);
   }
 
   //----------------------------------------
@@ -258,15 +196,8 @@ void doAll(bool skipFWLite = true)
   
   TChain* chtW = new  TChain("Events");
   if (runtW) {
-
-
-    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/T_TuneZ2_s-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/Tbar_TuneZ2_s-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/T_TuneZ2_t-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/Tbar_TuneZ2_t-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    pickSkimIfExists(chtW,"/nfs-7/userdata/cms2/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-
+    cout << "ERROR! NEED TO ADD SINGLE LEPTON SKIM OF SINGLE-TOP SAMPLES!!!" << endl;
+    exit(0);
   }
 
   //----------------------------------------
@@ -374,8 +305,11 @@ void doAll(bool skipFWLite = true)
     // prompt reco v4
     //---------------------------
     
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     
   }
 
