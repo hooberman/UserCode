@@ -593,7 +593,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       }
 
       // skip stop-pair events with m(stop) > 850 GeV
-      if( TString(prefix).Contains("T2tt") ){
+      if( TString(prefix).Contains("T2tt") || TString(prefix).Contains("T2bw") ){
 	if( sparm_mG() > 500.0 ) continue;
       }
 
@@ -1613,11 +1613,16 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       weight_ = -1.;
 
-      if( TString(prefix).Contains("T2tt") ){
+      if( TString(prefix).Contains("T2tt") || TString(prefix).Contains("T2bw") ){
 	mG_ = sparm_mG();
 	mL_ = sparm_mL();
+	x_  = sparm_mf();
 
 	weight_ = lumi * stopPairCrossSection(mG_) * (1000./50000.);
+
+	if( TString(prefix).Contains("T2bw") ){
+	  if( fabs(x_-0.75) < 0.01 ) weight_ *= 5./4.;
+	}
 
 	if( doTenPercent )	  weight_ *= 10;
       }
@@ -2605,6 +2610,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("passz",           &passz_,            "passz/I");
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("mg",              &mG_,               "mg/F");
+  outTree->Branch("x",               &x_,                "x/F");
   outTree->Branch("ml",              &mL_,               "ml/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");

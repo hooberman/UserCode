@@ -138,6 +138,7 @@ class singleLeptonLooper
 	Int_t   passtrg_;
 	Float_t dphilm_;
 	Float_t mG_;
+	Float_t x_;
 	Float_t mL_;
 	Float_t ecalveto1_;
 	Float_t ecalveto2_;
