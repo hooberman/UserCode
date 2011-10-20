@@ -41,7 +41,7 @@
 
 bool verbose            = false;
 bool genLeptonSelection = false;
-bool doTenPercent       = true;
+bool doTenPercent       = false;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -1092,9 +1092,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         int nleps = 0;
         
         float dilptgen = -1;
-        mllgen_ = -1;
-	pthat_  = -1;
-	qscale_ = -1;
+        mllgen_  = -1;
+	pthat_   = -1;
+	qscale_  = -1;
+	ptttbar_ = -1;
+	ptt_     = -1;
+	pttbar_  = -1;
+
         if( !isData ){
 
 	  pthat_  = genps_pthat();
@@ -1113,11 +1117,25 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
 
           LorentzVector vdilepton(0,0,0,0);
+          LorentzVector vttbar(0,0,0,0);
           
           for ( int igen = 0 ; igen < genps_id().size() ; igen++ ) { 
             if ( abs( cms2.genps_id().at(igen) ) == 11) vdilepton += genps_p4().at(igen); 
             if ( abs( cms2.genps_id().at(igen) ) == 13) vdilepton += genps_p4().at(igen); 
-          }
+
+	    int id = cms2.genps_id().at(igen);
+
+	    if( id == 6 ){
+	      ptt_       = genps_p4().at(igen).pt();
+	      vttbar    += genps_p4().at(igen);
+	    }
+	    if( id == -6 ){
+	      pttbar_    = genps_p4().at(igen).pt();
+	      vttbar    += genps_p4().at(igen);
+	    }
+	  }
+
+	  ptttbar_ = vttbar.pt();
           
           if( nels + nmus == 2) dilptgen = vdilepton.pt();
           
@@ -4050,6 +4068,9 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("weight",          &weight_,           "weight/F");
   outTree->Branch("trgeff",          &trgeff_,           "trgeff/F");
   outTree->Branch("pthat",           &pthat_,            "pthat/F");
+  outTree->Branch("ptt",             &ptt_,              "ptt/F");
+  outTree->Branch("pttbar",          &pttbar_,           "pttbar/F");
+  outTree->Branch("ptttbar",         &ptttbar_,          "ptttbar/F");
   outTree->Branch("qscale",          &qscale_,           "qscale/F");
   outTree->Branch("ksusy",           &ksusy_,            "ksusy/F");
   outTree->Branch("ksusyup",         &ksusyup_,          "ksusyup/F");

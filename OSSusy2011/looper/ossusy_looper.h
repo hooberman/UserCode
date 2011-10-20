@@ -261,7 +261,9 @@ class ossusy_looper
 	Float_t ndavtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
-
+	Float_t ptt_;
+	Float_t pttbar_;
+	Float_t ptttbar_;
 	Float_t ksusy_;
 	Float_t ksusyup_;
 	Float_t ksusydn_;
