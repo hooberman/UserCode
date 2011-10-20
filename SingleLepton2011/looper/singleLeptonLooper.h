@@ -97,6 +97,8 @@ class singleLeptonLooper
 	Int_t   mcdecay2_; 
 	Int_t	mcndec1_; 
 	Int_t   mcndec2_; 
+	Float_t mctaudpt1_;
+	Float_t mctaudpt2_;
 	Float_t mcdr1_;    
 	Float_t mcdr2_;    
 

@@ -941,22 +941,25 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	// track gen lepton information here
 	//-----------------------------------------------------
 	
-	mcid1_    = -1;
-	mcid2_    = -1;
-	mclep1_   =  0;
-	mclep2_   =  0;
-	mcdecay1_ = -1;
-	mcdecay2_ = -1;
-	mcdr1_    = -1;
-	mcdr2_    = -1;
-	mcndec1_  =  0;
-	mcndec2_  =  0;
+	mcid1_     = -1;
+	mcid2_     = -1;
+	mclep1_    =  0;
+	mclep2_    =  0;
+	mcdecay1_  = -1;
+	mcdecay2_  = -1;
+	mcdr1_     = -1;
+	mcdr2_     = -1;
+	mcndec1_   =  0;
+	mcndec2_   =  0;
+	mctaudpt1_ = -1;
+	mctaudpt2_ = -1;
 
 	//-----------------------------------------------------
 	// store single gen lepton info
 	//-----------------------------------------------------
 
 	if( nleps_ == 1 ){
+
 
 	  int nfoundleps = 0;
 
@@ -976,11 +979,18 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
 		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
+
+		// get tau daughter pt
+		if( daughter == 11 || daughter == 13 || daughter == 211 || daughter == 321 ){
+		  if( genps_lepdaughter_p4()[igen][kk].pt() > mctaudpt1_ ) mctaudpt1_ = genps_lepdaughter_p4()[igen][kk].pt();
+		}
+
 		if( daughter == 211 || daughter == 321 ) mcndec1_  ++;  // count charged hadrons
 		if( daughter ==  12 || daughter ==  14 ) mcdecay1_ = 2; // check for nu_e or nu_mu 
 	      } 
 	    } 
 	  } 
+
 
 	  if( nfoundleps != 1 ) cout << "ERROR! expected 1 lepton, found " << nfoundleps << endl;
 	}
@@ -1028,6 +1038,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    
 	    for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igenmin).size(); kk++) {
 	      int daughter = abs(cms2.genps_lepdaughter_id()[igenmin][kk]);
+
+	      // get tau daughter pt
+	      if( daughter == 11 || daughter == 13 || daughter == 211 || daughter == 321 ){
+		if( genps_lepdaughter_p4()[igenmin][kk].pt() > mctaudpt1_ ) mctaudpt1_ = genps_lepdaughter_p4()[igenmin][kk].pt();
+	      }
+
 	      if( daughter == 211 || daughter == 321 ) mcndec1_  ++;  // count charged hadrons
 	      if( daughter ==  12 || daughter ==  14 ) mcdecay1_ = 2; // check for nu_e or nu_mu 
 	    } 
@@ -1058,6 +1074,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
 		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
+		
+		// get tau daughter pt
+		if( daughter == 11 || daughter == 13 || daughter == 211 || daughter == 321 ){
+		  if( genps_lepdaughter_p4()[igen][kk].pt() > mctaudpt1_ ) mctaudpt2_ = genps_lepdaughter_p4()[igen][kk].pt();
+		}
+
 		if( daughter == 211 || daughter == 321 ) mcndec2_  ++;  // count charged hadrons
 		if( daughter == 12  || daughter == 14  ) mcdecay2_ = 2; // check for nu_e or nu_mu
 	      } 
@@ -2631,7 +2653,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ptjetO23",        &ptjetO23_,         "ptjetO23/F");  
   //outTree->Branch("cosphijz",        &cosphijz_,         "cosphijz/F");  
   outTree->Branch("njets15",         &njets15_,          "njets15/I");  
-
   outTree->Branch("mcid1",           &mcid1_,            "mcid1/I");  
   outTree->Branch("mcdr1",           &mcdr1_,            "mcdr1/F");  
   outTree->Branch("mcdecay1",        &mcdecay1_,         "mcdecay1/I");  
@@ -2640,13 +2661,13 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mcid2",           &mcid2_,            "mcid2/I");  
   outTree->Branch("mcdr2",           &mcdr2_,            "mcdr2/F");  
   outTree->Branch("mcdecay2",        &mcdecay2_,         "mcdecay2/I");  
- 
+  outTree->Branch("mctaudpt1",       &mctaudpt1_,        "mctaudpt1/F");  
+  outTree->Branch("mctaudpt2",       &mctaudpt2_,        "mctaudpt2/F");  
   outTree->Branch("mlepid",          &mlepid_,           "mlepid/I");  
   outTree->Branch("mleppassid",      &mleppassid_,       "mleppassid/I");  
   outTree->Branch("mleppassiso",     &mleppassiso_,      "mleppassiso/I");  
   outTree->Branch("mlepiso",         &mlepiso_,          "mlepiso/F");  
   outTree->Branch("mlepdr",          &mlepdr_,           "mlepdr/F");  
-
   outTree->Branch("emjet10",         &emjet10_,          "emjet10/F");  
   outTree->Branch("mjj",             &mjj_,              "mjj/F");  
   outTree->Branch("emjet20",         &emjet20_,          "emjet20/F");  
