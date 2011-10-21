@@ -1,5 +1,6 @@
 The following recipe will perform a shape analysis using the results from SUS-11-017 and assuming LM4 signal.
-
+This assumes that you have set up Lands, information can be found here:
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideLandS
 
 
 
