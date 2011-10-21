@@ -41,26 +41,22 @@ void makeRootFile_LM4(){
   // number of bins for shape analysis
   const unsigned int nbins                  = 4; 
 
-  // yields: NOTE- all yields defined in EXCLUSIVE bins
-  
-  // MET bins                                30-60         60-100              100-200          >200
-  int   data_yield[nbins]          = {    2287-206 ,       206-57 ,               57-4 ,           4 };
+  //------------------------------------------------------------------------------------------------------
+  // MET bins                                    30-60            60-100          100-200          >200  
+  //------------------------------------------------------------------------------------------------------
 
-  float LM4_yield[nbins]           = {   25.4-22.9 ,    22.9-20.1 ,         20.1-12.3  ,         12.3 };
-  float LM4_yield_JESup[nbins]     = {   25.4-22.9 ,    22.9-20.1 , 1.04 * (20.1-12.3) ,  1.12 * 12.3 }; // assume 0% uncertainty for MET30 & MET60 (needs to be updated)
-  float LM4_yield_JESdown[nbins]   = {   25.4-22.9 ,    22.9-20.1 , 0.96 * (20.1-12.3) ,  0.88 * 12.3 }; // 4% and 12% for MET100 and MET200
+  // yields: NOTE- ALL YIELD DEFINED IN EXCLUSIVE BINS!!!!!
+  int   data_yield[nbins]          = {        2287-206  ,         206-57  ,          57-4  ,          4 };
+  float LM4_yield[nbins]           = {       25.4-22.9  ,      22.9-20.1  ,     20.1-12.3  ,       12.3 };
+  float OF_yield[nbins]            = {     246.6-152.5  ,   152.5 - 50.6  ,    50.6 - 3.2  ,        3.2 };
+  float Z_yield[nbins]             = {   2060.3 - 60.8  ,     60.8 - 5.1  ,    5.1 - 0.09  ,       0.09 };
 
-  float OF_yield[nbins]            = {            246.6-152.5  ,            152.5 - 50.6  ,            50.6 - 3.2  ,          3.2 };
-  float OF_yield_statup[nbins]     = { (1+0.026)*(246.6-152.5) , (1+0.032)*(152.5 - 50.6) , (1+0.055)*(50.6 - 3.2) , (1+0.22)*3.2 }; // OF histo stat up
-  float OF_yield_statdown[nbins]   = { (1-0.026)*(246.6-152.5) , (1-0.032)*(152.5 - 50.6) , (1-0.055)*(50.6 - 3.2) , (1-0.22)*3.2 }; // OF histo stat down
-  float OF_yield_systup[nbins]     = { (1+0.090)*(246.6-152.5) , (1+0.090)*(152.5 - 50.6) , (1+0.090)*(50.6 - 3.2) , (1+0.09)*3.2 }; // OF histo syst up
-  float OF_yield_systdown[nbins]   = { (1-0.090)*(246.6-152.5) , (1-0.090)*(152.5 - 50.6) , (1-0.090)*(50.6 - 3.2) , (1-0.09)*3.2 }; // OF histo syst down
-  
-  float Z_yield[nbins]             = {            2060.3 - 60.8  ,            60.8 - 5.1  ,           5.1 - 0.09  ,          0.09 };
-  float Z_yield_statup[nbins]      = { (1+0.014)*(2060.3 - 60.8) , (1+0.067)*(60.8 - 5.1) , (1+0.20)*(5.1 - 0.09) , (1+0.44)*0.09 };
-  float Z_yield_statdown[nbins]    = { (1-0.014)*(2060.3 - 60.8) , (1-0.067)*(60.8 - 5.1) , (1-0.20)*(5.1 - 0.09) , (1-0.44)*0.09 };
-  float Z_yield_systup[nbins]      = {  (1+0.15)*(2060.3 - 60.8) ,  (1+0.15)*(60.8 - 5.1) , (1+0.15)*(5.1 - 0.09) , (1+0.15)*0.09 };
-  float Z_yield_systdown[nbins]    = {  (1-0.15)*(2060.3 - 60.8) ,  (1-0.15)*(60.8 - 5.1) , (1-0.15)*(5.1 - 0.09) , (1-0.15)*0.09 };
+  // uncertainties
+  float LM4_JES[nbins]             = {           0.000  ,          0.000  ,         0.040  ,      0.120 };
+  float OF_stat[nbins]             = {           0.026  ,          0.032  ,         0.055  ,      0.220 };
+  float OF_syst[nbins]             = {           0.090  ,          0.090  ,         0.090  ,      0.090 };
+  float  Z_stat[nbins]             = {           0.014  ,          0.067  ,         0.200  ,      0.440 };
+  float  Z_syst[nbins]             = {           0.150  ,          0.150  ,         0.150  ,      0.150 };
 
   //---------------------------------------------------------------------------------------------
   // EVERYTHING BELOW HERE IS JUST MAKING HISTOGRAMS FROM THE ABOVE YIELDS
@@ -87,8 +83,8 @@ void makeRootFile_LM4(){
 
   for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
     histo_LM4               -> SetBinContent(ibin+1,LM4_yield[ibin]);
-    histo_LM4_JES_shapeUp   -> SetBinContent(ibin+1,LM4_yield_JESup[ibin]);
-    histo_LM4_JES_shapeDown -> SetBinContent(ibin+1,LM4_yield_JESdown[ibin]);
+    histo_LM4_JES_shapeUp   -> SetBinContent(ibin+1,(1 + LM4_JES[ibin]) * LM4_yield[ibin]);
+    histo_LM4_JES_shapeDown -> SetBinContent(ibin+1,(1 - LM4_JES[ibin]) * LM4_yield[ibin]);
   }
 
   //-------------------------------------------------------------------------
@@ -103,10 +99,10 @@ void makeRootFile_LM4(){
 
   for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
     histo_OF               -> SetBinContent(ibin+1,OF_yield[ibin]);
-    histo_OF_statUp        -> SetBinContent(ibin+1,OF_yield_statup[ibin]);
-    histo_OF_statDown      -> SetBinContent(ibin+1,OF_yield_statdown[ibin]);
-    histo_OF_systUp        -> SetBinContent(ibin+1,OF_yield_systup[ibin]);
-    histo_OF_systDown      -> SetBinContent(ibin+1,OF_yield_systdown[ibin]);
+    histo_OF_statUp        -> SetBinContent(ibin+1, (1 + OF_stat[ibin]) * OF_yield[ibin] );
+    histo_OF_statDown      -> SetBinContent(ibin+1, (1 - OF_stat[ibin]) * OF_yield[ibin] );
+    histo_OF_systUp        -> SetBinContent(ibin+1, (1 + OF_syst[ibin]) * OF_yield[ibin] );
+    histo_OF_systDown      -> SetBinContent(ibin+1, (1 - OF_syst[ibin]) * OF_yield[ibin] );
   }
 
   //-------------------------------------------------------------------------
@@ -121,10 +117,10 @@ void makeRootFile_LM4(){
 
   for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
     histo_Z               -> SetBinContent(ibin+1,Z_yield[ibin]);
-    histo_Z_statUp        -> SetBinContent(ibin+1,Z_yield_statup[ibin]);
-    histo_Z_statDown      -> SetBinContent(ibin+1,Z_yield_statdown[ibin]);
-    histo_Z_systUp        -> SetBinContent(ibin+1,Z_yield_systup[ibin]);
-    histo_Z_systDown      -> SetBinContent(ibin+1,Z_yield_systdown[ibin]);
+    histo_Z_statUp        -> SetBinContent(ibin+1, (1 + Z_stat[ibin]) * Z_yield[ibin] );
+    histo_Z_statDown      -> SetBinContent(ibin+1, (1 - Z_stat[ibin]) * Z_yield[ibin] );
+    histo_Z_systUp        -> SetBinContent(ibin+1, (1 + Z_syst[ibin]) * Z_yield[ibin] );
+    histo_Z_systDown      -> SetBinContent(ibin+1, (1 - Z_syst[ibin]) * Z_yield[ibin] );
   }
 
   //---------------------------------------------
