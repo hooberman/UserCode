@@ -50,3 +50,23 @@ UL(xsec) = UL(yield) / (efficiency X luminosity)
 
 The efficiency calculation would be the same as the one you did previously, just remember that this is now the
 efficiency for MET > 30 GeV.
+
+
+CLS USAGE:
+To get the CLS limit (instead of Bayesian, as above) is a 3-step process:
+
+1) Run lands using the data card: 
+../test/lands.exe -d Z_shape_LM4.txt -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n Z_shape_LM4
+This time however, the output will be another root file: Z_shape_LM4_m2lnQ.root
+
+2) wait ~2 minutes
+
+3) Now, read in the root file produced in 1) above and get R
+
+root -b ../test/fitRvsCLs.C+
+run("Z_shape_LM4_m2lnQ.root","plot")
+
+OUTPUT:
+Limit: r < 0.48131 +/- 0.0048994 @ 95% CL
+
+The R value is 0.48, which is ~10% better than the Bayesian limit (this is what we generally see comparing Bayesian vs. CLs)
