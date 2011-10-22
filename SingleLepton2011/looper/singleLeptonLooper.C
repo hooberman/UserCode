@@ -593,7 +593,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       }
 
       // skip stop-pair events with m(stop) > 850 GeV
-      if( TString(prefix).Contains("T2tt") || TString(prefix).Contains("T2bw") ){
+      if( TString(prefix).Contains("T2") ){
 	if( sparm_mG() > 500.0 ) continue;
       }
 
@@ -871,6 +871,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //--------------------------------
 
       if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
+
 
       //--------------------------------
       // get MC quantities
@@ -1438,7 +1439,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       vector<int> goodCaloJetIndices;
       VofP4 goodCaloJets;
-    
+      VofP4 mediumBJets;
+
       for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
 	
 	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
@@ -1468,6 +1470,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 	if( jets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
 	  nbctcm_++;
+	  mediumBJets.push_back(vjet);
 	}
 	else{
 	  goodCaloJets.push_back(vjet);
@@ -1475,6 +1478,73 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 
       }
+
+      //--------------------------------
+      // get non-isolated leptons
+      //--------------------------------
+
+      nonisoel_ = 0;
+      nonisomu_ = 0;
+
+      float maxelpt  = -1.;
+      int   imaxelpt = -1;
+
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+
+	if( els_p4().at(iel).pt() < 10 )                                                    continue;
+	if( !pass_electronSelection( iel , electronSelection_ssV5_noIso , false , false ) ) continue;
+
+	// don't count the leptons that we already counted as good
+	bool isGoodLepton = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( els_p4().at(iel) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
+	}
+	if( isGoodLepton ) continue;
+
+	// don't count leptons near b-jets (TCHEM)
+	bool nearBJet = false;
+	for( int ijet = 0 ; ijet < mediumBJets.size() ; ijet++ ){
+	  if( dRbetweenVectors( els_p4().at(iel) , mediumBJets.at(ijet) ) < 0.4 ) nearBJet = true;
+	}
+	if( nearBJet ) continue;
+	
+	if( els_p4().at(iel).pt() > maxelpt ){
+	  maxelpt  = els_p4().at(iel).pt();
+	  imaxelpt = iel;
+	}
+      }
+
+      if( imaxelpt >= 0 ) nonisoel_ = &(els_p4().at(imaxelpt));
+
+      float maxmupt  = -1.;
+      int   imaxmupt = -1;
+
+      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+
+	if( mus_p4().at(imu).pt() < 10 )                   continue;
+	if( !muonIdNotIsolated(imu , OSGeneric_v3 ) )      continue;
+
+	// don't count the leptons that we already counted as good
+	bool isGoodLepton = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( mus_p4().at(imu) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
+	}
+	if( isGoodLepton ) continue;
+
+	// don't count leptons near b-jets (TCHEM)
+	bool nearBJet = false;
+	for( int ijet = 0 ; ijet < mediumBJets.size() ; ijet++ ){
+	  if( dRbetweenVectors( mus_p4().at(imu) , mediumBJets.at(ijet) ) < 0.4 ) nearBJet = true;
+	}
+	if( nearBJet ) continue;
+	
+	if( mus_p4().at(imu).pt() > maxmupt ){
+	  maxmupt  = mus_p4().at(imu).pt();
+	  imaxmupt = imu;
+	}
+      }
+
+      if( imaxmupt >= 0 ) nonisomu_ = &(mus_p4().at(imaxmupt));
 
       //---------------------------------
       // jet mass variables
@@ -1613,18 +1683,18 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       weight_ = -1.;
 
-      if( TString(prefix).Contains("T2tt") || TString(prefix).Contains("T2bw") ){
+      if( TString(prefix).Contains("T2") ){
 	mG_ = sparm_mG();
 	mL_ = sparm_mL();
 	x_  = sparm_mf();
 
 	weight_ = lumi * stopPairCrossSection(mG_) * (1000./50000.);
 
-	if( TString(prefix).Contains("T2bw") ){
-	  if( fabs(x_-0.75) < 0.01 ) weight_ *= 5./4.;
-	}
-
 	if( doTenPercent )	  weight_ *= 10;
+
+ 	if( TString(prefix).Contains("T2bw") ){
+ 	  if( fabs(x_-0.75) < 0.01 ) weight_ *= 5./4.;
+ 	}
       }
 
       else if(strcmp(prefix,"LMscan") == 0){
@@ -2610,7 +2680,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("passz",           &passz_,            "passz/I");
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("mg",              &mG_,               "mg/F");
-  outTree->Branch("x",               &x_,                "x/F");
   outTree->Branch("ml",              &mL_,               "ml/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");
@@ -2692,13 +2761,15 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nbctcl",          &nbctcl_,           "nbctcl/I");  
   outTree->Branch("nbctcm",          &nbctcm_,           "nbctcm/I");  
   outTree->Branch("htcalo",          &htcalo_,           "htcalo/F");  
-  outTree->Branch("trgjet"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trgjet_	);
-  outTree->Branch("mlep"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
-  outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
-  outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
-  outTree->Branch("mclep1"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep1_	);
-  outTree->Branch("mclep2"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep2_	);
-  outTree->Branch("jet"	    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	        );
+  outTree->Branch("trgjet"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trgjet_	);
+  outTree->Branch("mlep"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
+  outTree->Branch("lep1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
+  outTree->Branch("lep2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
+  outTree->Branch("mclep1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep1_	);
+  outTree->Branch("mclep2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep2_	);
+  outTree->Branch("jet"	     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
+  outTree->Branch("nonisoel" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisoel_	);
+  outTree->Branch("nonisomu" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisomu_	);
 
 
 }
