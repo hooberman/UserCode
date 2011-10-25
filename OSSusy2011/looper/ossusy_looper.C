@@ -700,8 +700,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
-    TTreeCache::SetLearnEntries(100);
-    tree->SetCacheSize(128*1024*1024);
+    //TTreeCache::SetLearnEntries(100);
+    //tree->SetCacheSize(128*1024*1024);
 
     cms2.Init(tree);
       
@@ -727,11 +727,20 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       }
 
       //Matevz
-      tree->LoadTree(z);
+      //tree->LoadTree(z);
 
       cms2.GetEntry(z);
 
       InitBaby();
+
+      for( unsigned int i = 0; i < cms2.hlt_trigNames().size(); i++ ){
+
+	if( !TString(cms2.hlt_trigNames().at(i).Data()).Contains("SingleEG") ) continue;
+	cout << cms2.passHLTTrigger(cms2.hlt_trigNames().at(i).Data()) << "\t"
+	     << cms2.hlt_prescales().at(i) << "\t" 
+	     << cms2.hlt_trigNames().at(i).Data() << endl;
+	
+      } 
 
       if(strcmp(prefix,"LMscan") == 0){
 	if( sparm_m12() > 500  )                        continue;	
