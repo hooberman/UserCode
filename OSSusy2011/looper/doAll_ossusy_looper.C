@@ -197,7 +197,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   int preML8      = 1;
   int preLMscan   = 1;
 
-
+  /*
   //Flags for files to run over
   bool rundata     = 0;
   bool rundata41   = 0;
@@ -205,7 +205,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 1;
   bool runttdil    = 0;
@@ -253,52 +253,52 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLMscan   = 0; 
   bool runT1lh     = 0;
   bool runT2tt     = 0;
-
-  /*  
+  */
+    
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
-  bool runQCD      = 1;
-  bool runttall    = 1;
-  bool runttpowheg = 1;
-  bool runtt42     = 1;
+  bool runQCD      = 0;
+  bool runttall    = 0;
+  bool runttpowheg = 0;
+  bool runtt42     = 0;
   bool runttdil    = 0;
   bool runttrelval = 0;
   bool runttem     = 0;
   bool runttotr    = 0;
   bool runVV       = 0;
-  bool runWW       = 1;
+  bool runWW       = 0;
   bool runWZ       = 1;
-  bool runZZ       = 1;
-  bool runWjets    = 1;
-  bool runWjetsMG  = 1;
+  bool runZZ       = 0;
+  bool runWjets    = 0;
+  bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 1;
+  bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
   bool runppMuX    = 0;
   bool runEM       = 0;
-  bool runtW       = 1;
+  bool runtW       = 0;
   bool runVQQ      = 0;
-  bool runLM0      = 1;
-  bool runLM1      = 1;
-  bool runLM2      = 1;
-  bool runLM3      = 1;
-  bool runLM4      = 1;
-  bool runLM5      = 1;
-  bool runLM6      = 1;
-  bool runLM7      = 1;
-  bool runLM8      = 1;
-  bool runLM9      = 1;
+  bool runLM0      = 0;
+  bool runLM1      = 0;
+  bool runLM2      = 0;
+  bool runLM3      = 0;
+  bool runLM4      = 0;
+  bool runLM5      = 0;
+  bool runLM6      = 0;
+  bool runLM7      = 0;
+  bool runLM8      = 0;
+  bool runLM9      = 0;
   bool runLM10     = 0;
-  bool runLM11     = 1;
-  bool runLM12     = 1;
-  bool runLM13     = 1;
+  bool runLM11     = 0;
+  bool runLM12     = 0;
+  bool runLM13     = 0;
   bool runML1      = 0;
   bool runML2      = 0;
   bool runML3      = 0;
@@ -441,8 +441,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chWZ = new TChain("Events");
   if(runWZ){
-    pickSkimIfExists(chWZ,"/nfs-7/userdata/cms2/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1_2/merged*root");
-    pickSkimIfExists(chWZ,"/nfs-7/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1_2/merged*root");
+    pickSkimIfExists(chWZ,"/nfs-7/userdata/cms2/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chWZ,"/nfs-7/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   TChain* chZZ = new TChain("Events");
@@ -894,7 +894,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	
 	//pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged_ntuple_173663_0.root");
 	//pickSkimIfExists(chdata,"/home/users/benhoob/OSSusy2011/filter/output/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/OSSkim/merged_ntuple.root");
-	
+	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_178110_2.root");
+	   /*
 	//---------------------------
 	// May10 rereco
 	//---------------------------
@@ -934,7 +935,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-30/SSignSkim/skim*root");
-
+	   */
       }
       
       else if( trig == ossusy_looper::e_lowpt ){
