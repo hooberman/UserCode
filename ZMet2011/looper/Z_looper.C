@@ -50,8 +50,8 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-01-01";
-const char* jsonfilename         = "../jsons/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_goodruns.txt";
+const char* iter                 = "V00-02-00";
+const char* jsonfilename         = "../jsons/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -819,6 +819,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       nJets40_      = 0;
       sumJetPt10_   = 0.;
       nbtags_       = 0;
+      nbm_          = 0;
+      nbl_          = 0;
 
       LorentzVector jetSystem(0.,0.,0.,0.);        
       float maxcosdphi  = -99;
@@ -915,6 +917,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           if( dphijetmet_ > TMath::Pi() ) dphijetmet_ = TMath::TwoPi() - dphijetmet_;
         }
 
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 )  nbl_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 )  nbm_++;
+
+	/*
         //find closest calojet to use btagging info
         float dRmin    = 100;
         int   iCaloJet = -1;
@@ -935,6 +941,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           if( jets_simpleSecondaryVertexHighEffBJetTag().at(iCaloJet) > 1.74 ) ++nbtags_;
           //if( jets_trackCountingHighEffBJetTag().at(iCaloJet) > 1.7 ) ++nbtags_;
         }
+	*/
 
         if ( vjet.pt() > 30. ) nJets_++;
         if ( vjet.pt() > 40. ) nJets40_++;
@@ -1146,6 +1153,8 @@ void Z_looper::InitBabyNtuple (){
   sumJetPt10_   = -999999;
 
   nbtags_       = -999999;
+  nbl_          = -999999;
+  nbm_          = -999999;
   dphijetmet_   = -999999;
 
   //leading jet stuff
@@ -1374,6 +1383,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("sumjetpt10",     &sumJetPt10_,       "sumjetpt10/F"    );
   babyTree_->Branch("vecjetpt",       &vecJetPt_,         "vecjetpt/F"    );
   babyTree_->Branch("nbtags",         &nbtags_,           "nbtags/I");
+  babyTree_->Branch("nbl",            &nbl_,              "nbl/I");
+  babyTree_->Branch("nbm",            &nbm_,              "nbm/I");
   babyTree_->Branch("ndphijetmet",    &dphijetmet_,       "dphijetmet/F");
   babyTree_->Branch("maxjetpt",       &jetmax_pt_,        "maxjetpt/F");
   babyTree_->Branch("maxjetdphimet",  &jetmax_dphimet_,   "maxjetdphimet/F");
