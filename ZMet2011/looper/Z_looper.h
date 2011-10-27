@@ -145,6 +145,8 @@ class Z_looper
   Float_t sumJetPt10_;
   Float_t vecJetPt_;
   Int_t   nbtags_;
+  Int_t   nbl_;
+  Int_t   nbm_;
 
   //electron-matched jet stuff
   Float_t drjet_ll_;

@@ -34,7 +34,7 @@
 #include "../CORE/mcSUSYkfactor.h"
 
 //#include "../CORE/jetSelections.cc"
-//#include "../CORE/triggerUtils.cc"
+#include "../CORE/triggerUtils.h"
 //#include "../CORE/mcSelections.cc"
 
 using namespace tas;
@@ -433,9 +433,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  }
         }
       }
-
+      
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
-	
+
         if( !passSUSYTrigger2011_v1( isData , hyp_type()[hypIdx] , true ) ) continue;
 
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
