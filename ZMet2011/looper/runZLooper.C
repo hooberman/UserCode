@@ -35,14 +35,53 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   if( strcmp( prefix , "data" ) == 0 ){
 
-    pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleElectronTriggerSkim/skim*root");
-    pickSkimIfExists(ch,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleMuTriggerSkim/skim*root");
-    pickSkimIfExists(ch,"cms2_data/MuEG_Run2011A-May10ReReco-v1_AOD/V04-02-15/merged*root");
+    pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed_ntuple_999999_35.root");
 
+    /*
+    //---------------------------
+    // May10 rereco
+    //---------------------------
+    
+    pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+    pickSkimIfExists(ch,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+    pickSkimIfExists(ch,"cms2_data/MuEG_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+    
+    //---------------------------
+    // prompt reco v4
+    //---------------------------
+    
+    pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"cms2_data/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleMuTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+    
+    //---------------------------
+    // august rereco
+    //---------------------------
+    
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/MuEG_Run2011A-05Aug2011-v1_AOD/V04-02-30/SSignSkim/skim*root");
+    
+    //---------------------------
+    // prompt reco v6
+    //---------------------------
+    
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/MuEG_Run2011A-PromptReco-v6_AOD/V04-02-30/SSignSkim/skim*root");
+    
+    //---------------------------
+    // Run2011B prompt reco v1
+    //---------------------------
+    
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-30/SSignSkim/skim*root");
+    */    
   }
   
   //----------------------------------------------------------------------------------------
-
+  
   else if( strcmp( prefix , "ttbar" ) == 0 ){
     pickSkimIfExists(ch,"cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
   }
