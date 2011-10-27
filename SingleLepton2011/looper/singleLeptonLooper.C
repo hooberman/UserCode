@@ -882,7 +882,16 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       int ntaus      =  0;
       int nleps      =  0;
       float dilptgen = -1;
-      
+
+      ptttbar_  = -1;
+      ptt_      = -1;
+      pttbar_   = -1;
+      mttbar_   = -1;
+      etattbar_ = -999;
+      t_        = 0;
+      tbar_     = 0;
+      ttbar_    = 0;
+
       if( !isData ){
 
 	w1_     = leptonOrTauIsFromW( index1 , id1_ , isLM );
@@ -903,12 +912,32 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
 	
 	LorentzVector vdilepton(0,0,0,0);
-        
+	LorentzVector vttbar(0,0,0,0);
+
 	for ( int igen = 0 ; igen < genps_id().size() ; igen++ ) { 
 	  if ( abs( cms2.genps_id().at(igen) ) == 11) vdilepton += genps_p4().at(igen); 
 	  if ( abs( cms2.genps_id().at(igen) ) == 13) vdilepton += genps_p4().at(igen); 
+
+	  int id = cms2.genps_id().at(igen);
+
+	  if( id == 6 ){
+	    t_         = &(genps_p4().at(igen));
+	    ptt_       = genps_p4().at(igen).pt();
+	    vttbar    += genps_p4().at(igen);
+	  }
+	  if( id == -6 ){
+	    tbar_      = &(genps_p4().at(igen));
+	    pttbar_    = genps_p4().at(igen).pt();
+	    vttbar    += genps_p4().at(igen);
+	  }
 	}
-        
+
+	//ttbar_    = &(vttbar);
+	ttbar_    = &(*t_ + *tbar_);
+	ptttbar_  = ttbar_->pt();
+	mttbar_   = ttbar_->mass();
+	etattbar_ = ttbar_->eta();
+
 	if( nels + nmus == 2) dilptgen = vdilepton.pt();
         
 	if ( strcmp(prefix , "DYee"     ) == 0 &&  nels  != 2  ) continue;
@@ -2606,6 +2635,11 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("json",            &json_,             "json/I");
   outTree->Branch("htoffset",        &htoffset_,         "htoffset/F");
   outTree->Branch("htuncor",         &htuncor_,          "htuncor/F");
+  outTree->Branch("ptt",             &ptt_,              "ptt/F");
+  outTree->Branch("pttbar",          &pttbar_,           "pttbar/F");
+  outTree->Branch("ptttbar",         &ptttbar_,          "ptttbar/F");
+  outTree->Branch("mttbar",          &mttbar_,           "mttbar/F");
+  outTree->Branch("etattbar",        &etattbar_,         "etatbar/F");
   outTree->Branch("njetsoffset",     &njetsoffset_,      "njetsoffset/I");
   outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
@@ -2770,6 +2804,9 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("jet"	     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
   outTree->Branch("nonisoel" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisoel_	);
   outTree->Branch("nonisomu" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisomu_	);
+  outTree->Branch("t"        , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &t_   	);
+  outTree->Branch("tbar"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &tbar_   	);
+  outTree->Branch("ttbar"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &ttbar_   	);
 
 
 }

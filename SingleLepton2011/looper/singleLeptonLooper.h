@@ -124,7 +124,14 @@ class singleLeptonLooper
 	Float_t mjj_;
 	Int_t   nbctcl_;
 	Int_t   nbctcm_;
-
+	Float_t ptt_;
+	Float_t pttbar_;
+	Float_t ptttbar_;
+	Float_t mttbar_;
+	Float_t etattbar_;
+	LorentzVector*  t_;   
+	LorentzVector*  tbar_;   
+	LorentzVector*  ttbar_;   
 	LorentzVector*  mlep_;   
 	LorentzVector*  trgjet_;   
 	LorentzVector*  mclep1_;   
