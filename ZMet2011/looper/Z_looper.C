@@ -252,8 +252,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
-    TTreeCache::SetLearnEntries(100);
-    tree->SetCacheSize(128*1024*1024);
+    //TTreeCache::SetLearnEntries(100);
+    //tree->SetCacheSize(128*1024*1024);
 
     cms2.Init(tree);
 
@@ -262,7 +262,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     for (unsigned int event = 0 ; event < nEvents; ++event){
 
       //Matevz
-      tree->LoadTree(event);
+      //tree->LoadTree(event);
       
       cms2.GetEntry(event);
       ++nEventsTotal;
@@ -343,7 +343,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       weight_ = 1.;
       pthat_  = -1;
-
+      
       if( !isData ){
 
 	weight_ = cms2.evt_scale1fb() * kFactor * lumi;
@@ -362,7 +362,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
         pthat_  = cms2.genps_pthat();
       }
-
+      
       // calomet, pfmet, genmet
       met_       = cms2.evt_met();
       metphi_    = cms2.evt_metPhi();
@@ -371,7 +371,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       pfmet_    = cms2.evt_pfmet();
       pfmetphi_ = cms2.evt_pfmetPhi();
       pfsumet_  = cms2.evt_pfsumet();
-
+      
       if (!isData){
         genmet_     = cms2.gen_met();
         genmetphi_  = cms2.gen_metPhi();
@@ -402,7 +402,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
 	}
       }
-
+      
       mg_ = -1.;
       ml_ = -1.; 
 
@@ -424,16 +424,16 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       killedJet.clear();
       goodMuonIndices.clear();
       goodPFMuonIndices.clear();
-
+      
       if( generalLeptonVeto ){
-        
+              
         for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-          if( els_p4().at(iel).pt() < 20 )                                                 continue;
+          if( els_p4().at(iel).pt() < 20 ) continue;
           if( !pass_electronSelection( iel , electronSelection_el_OSV2 , false , false ) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
           killedJet.push_back( false );
         }
-        
+              
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
           if( mus_p4().at(imu).pt() < 20 )           continue;
           if( !muonId( imu , OSZ_v2 ))               continue;
@@ -445,22 +445,23 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	    goodPFMuonIndices.push_back( imu );
 	  }
         }
+      
       }
       
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
-
+      
         if( !passSUSYTrigger2011_v1( isData , hyp_type()[hypIdx] , true ) ) continue;
-
+      
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
-
+      
         //muon ID
         if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , OSZ_v2 )))   continue;
         if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , OSZ_v2 )))   continue;
-        
+              
         //electron ID
         if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_el_OSV2  ))) continue;
         if (abs(hyp_lt_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_el_OSV2  ))) continue;
@@ -468,10 +469,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         nHypPass++;
 	
         v_goodHyps.push_back( hypIdx );
-      
+            
       }
 
       if( v_goodHyps.size() == 0 ) continue;
+
+      if(debug) cout << "Found good hyp" << endl;
 
       unsigned int hypIdx = selectBestZHyp(v_goodHyps);
 
