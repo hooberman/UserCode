@@ -231,11 +231,24 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   // file loop
   //------------------
 
+  char* thisFile = "blah";
+
   TIter fileIter(listOfFiles);
   TFile* currentFile = 0;
   while ((currentFile = (TFile*)fileIter.Next())){
     
     TFile* f = new TFile(currentFile->GetTitle());
+
+    if( !f || f->IsZombie() ) {
+      cout << "Skipping bad input file: " << currentFile->GetTitle() << endl;
+      continue; //exit(1);                                                                                             
+    }
+
+    if( strcmp(thisFile,currentFile->GetTitle()) != 0 ){
+      thisFile = (char*) currentFile->GetTitle();
+      cout << thisFile << endl;
+    }
+
     TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
@@ -996,7 +1009,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( nHypPass > 1 && isData ) 
         cout << "Found " << nHypPass << " hypotheses passing selection" << endl;
 
+
     } // end loop over events
+
+    delete f;
   } // end loop over files
 
   if( nSkip_els_conv_dist > 0 ){
