@@ -76,6 +76,7 @@ class Z_looper
 
   Float_t ml_;
   Float_t mg_;
+  Float_t x_;
 
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
