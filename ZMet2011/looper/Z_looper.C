@@ -346,21 +346,30 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       if( !isData ){
 
-	weight_ = cms2.evt_scale1fb() * kFactor * lumi;
-
 	if( TString(prefix).Contains("LM") ){
-	  if( strcmp( prefix , "LM0" ) == 0 ) weight_ *= kfactorSUSY( "lm0" );
-	  if( strcmp( prefix , "LM1" ) == 0 ) weight_ *= kfactorSUSY( "lm1" );
-	  if( strcmp( prefix , "LM2" ) == 0 ) weight_ *= kfactorSUSY( "lm2" );
-	  if( strcmp( prefix , "LM3" ) == 0 ) weight_ *= kfactorSUSY( "lm3" );
-	  if( strcmp( prefix , "LM4" ) == 0 ) weight_ *= kfactorSUSY( "lm4" );
-	  if( strcmp( prefix , "LM5" ) == 0 ) weight_ *= kfactorSUSY( "lm5" );
-	  if( strcmp( prefix , "LM6" ) == 0 ) weight_ *= kfactorSUSY( "lm6" );
-	  if( strcmp( prefix , "LM7" ) == 0 ) weight_ *= kfactorSUSY( "lm7" );
-	  if( strcmp( prefix , "LM8" ) == 0 ) weight_ *= kfactorSUSY( "lm8" );
-	  if( strcmp( prefix , "LM9" ) == 0 ) weight_ *= kfactorSUSY( "lm9" );
+	  weight_ = 1;
 	}
-        pthat_  = cms2.genps_pthat();
+
+	else{
+
+	  weight_ = cms2.evt_scale1fb() * kFactor * lumi;
+
+	  if( TString(prefix).Contains("LM") ){
+	    if( strcmp( prefix , "LM0" ) == 0 ) weight_ *= kfactorSUSY( "lm0" );
+	    if( strcmp( prefix , "LM1" ) == 0 ) weight_ *= kfactorSUSY( "lm1" );
+	    if( strcmp( prefix , "LM2" ) == 0 ) weight_ *= kfactorSUSY( "lm2" );
+	    if( strcmp( prefix , "LM3" ) == 0 ) weight_ *= kfactorSUSY( "lm3" );
+	    if( strcmp( prefix , "LM4" ) == 0 ) weight_ *= kfactorSUSY( "lm4" );
+	    if( strcmp( prefix , "LM5" ) == 0 ) weight_ *= kfactorSUSY( "lm5" );
+	    if( strcmp( prefix , "LM6" ) == 0 ) weight_ *= kfactorSUSY( "lm6" );
+	    if( strcmp( prefix , "LM7" ) == 0 ) weight_ *= kfactorSUSY( "lm7" );
+	    if( strcmp( prefix , "LM8" ) == 0 ) weight_ *= kfactorSUSY( "lm8" );
+	    if( strcmp( prefix , "LM9" ) == 0 ) weight_ *= kfactorSUSY( "lm9" );
+	  }
+	}
+
+	pthat_  = cms2.genps_pthat();
+
       }
       
       // calomet, pfmet, genmet
@@ -405,10 +414,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       mg_ = -1.;
       ml_ = -1.; 
+      x_  = -1.;
 
       if(TString(prefix).Contains("T5zz")){
 	mg_ = sparm_mG();
 	ml_ = sparm_mL();
+	x_  = sparm_mf();
       }
       
       vector<unsigned int> v_goodHyps;
@@ -1353,6 +1364,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("qscale",       &qscale_,       "qscale/F"       );
   babyTree_->Branch("mg",           &mg_,           "mg/F"           );
   babyTree_->Branch("ml",           &ml_,           "ml/F"           );
+  babyTree_->Branch("x",            &x_,            "x/F"            );
 
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
