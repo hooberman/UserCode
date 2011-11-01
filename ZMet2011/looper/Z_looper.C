@@ -50,7 +50,7 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-00";
+const char* iter                 = "V00-02-01";
 const char* jsonfilename         = "../jsons/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -83,6 +83,28 @@ bool passesPFJetID(unsigned int pfJetIdx) {
 
   return true;
 }  
+
+//--------------------------------------------------------------------
+
+pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, double rescale = 1.0 ){
+  float met = p_met.first;
+  float metPhi = p_met.second;
+  float metx = met*cos(metPhi);
+  float mety = met*sin(metPhi);
+
+  float lepx = p4_dilep.Px();
+  float lepy = p4_dilep.Py();
+      
+  //hadronic component of MET (well, mostly), scaled
+  float metHx = (metx + lepx)*rescale;
+  float metHy = (mety + lepy)*rescale;
+  float metNewx = metHx - lepx;
+  float metNewy = metHy - lepy;
+  float metNewPhi = atan2(metNewy, metNewx);
+      
+  pair<float, float> p_met2 = make_pair(sqrt(metNewx*metNewx + metNewy*metNewy), metNewPhi);
+  return p_met2;
+}
 
 //--------------------------------------------------------------------
 
@@ -346,30 +368,31 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       if( !isData ){
 
+	// if( TString(prefix).Contains("LM") ){
+	//   weight_ = 1;
+	// }
+
+	// else{
+
+	weight_ = cms2.evt_scale1fb() * kFactor * lumi;
+	  
 	if( TString(prefix).Contains("LM") ){
-	  weight_ = 1;
+	  if( strcmp( prefix , "LM0" ) == 0 ) weight_ *= kfactorSUSY( "lm0" );
+	  if( strcmp( prefix , "LM1" ) == 0 ) weight_ *= kfactorSUSY( "lm1" );
+	  if( strcmp( prefix , "LM2" ) == 0 ) weight_ *= kfactorSUSY( "lm2" );
+	  if( strcmp( prefix , "LM3" ) == 0 ) weight_ *= kfactorSUSY( "lm3" );
+	  if( strcmp( prefix , "LM4" ) == 0 ) weight_ *= kfactorSUSY( "lm4" );
+	  if( strcmp( prefix , "LM5" ) == 0 ) weight_ *= kfactorSUSY( "lm5" );
+	  if( strcmp( prefix , "LM6" ) == 0 ) weight_ *= kfactorSUSY( "lm6" );
+	  if( strcmp( prefix , "LM7" ) == 0 ) weight_ *= kfactorSUSY( "lm7" );
+	  if( strcmp( prefix , "LM8" ) == 0 ) weight_ *= kfactorSUSY( "lm8" );
+	  if( strcmp( prefix , "LM9" ) == 0 ) weight_ *= kfactorSUSY( "lm9" );
 	}
-
-	else{
-
-	  weight_ = cms2.evt_scale1fb() * kFactor * lumi;
-
-	  if( TString(prefix).Contains("LM") ){
-	    if( strcmp( prefix , "LM0" ) == 0 ) weight_ *= kfactorSUSY( "lm0" );
-	    if( strcmp( prefix , "LM1" ) == 0 ) weight_ *= kfactorSUSY( "lm1" );
-	    if( strcmp( prefix , "LM2" ) == 0 ) weight_ *= kfactorSUSY( "lm2" );
-	    if( strcmp( prefix , "LM3" ) == 0 ) weight_ *= kfactorSUSY( "lm3" );
-	    if( strcmp( prefix , "LM4" ) == 0 ) weight_ *= kfactorSUSY( "lm4" );
-	    if( strcmp( prefix , "LM5" ) == 0 ) weight_ *= kfactorSUSY( "lm5" );
-	    if( strcmp( prefix , "LM6" ) == 0 ) weight_ *= kfactorSUSY( "lm6" );
-	    if( strcmp( prefix , "LM7" ) == 0 ) weight_ *= kfactorSUSY( "lm7" );
-	    if( strcmp( prefix , "LM8" ) == 0 ) weight_ *= kfactorSUSY( "lm8" );
-	    if( strcmp( prefix , "LM9" ) == 0 ) weight_ *= kfactorSUSY( "lm9" );
-	  }
-	}
+	
+	//	}
 
 	pthat_  = cms2.genps_pthat();
-
+	
       }
       
       // calomet, pfmet, genmet
@@ -381,6 +404,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       pfmetphi_ = cms2.evt_pfmetPhi();
       pfsumet_  = cms2.evt_pfsumet();
       
+
       if (!isData){
         genmet_     = cms2.gen_met();
         genmetphi_  = cms2.gen_metPhi();
@@ -516,7 +540,23 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( leptype_ == 0 ) nGoodEl+=weight_;
       if( leptype_ == 1 ) nGoodMu+=weight_;
       if( leptype_ == 2 ) nGoodEM+=weight_;
+
+      //--------------------------
+      // met up/downvars
+      //--------------------------
+
+      pair<float, float> p_met = getMet( "pfMET"    , hypIdx);
+      pair<float, float> p_pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.075 );
+      pair<float, float> p_pfmetDn   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.925 );
+      pair<float, float> p_pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.000 );
+
+      
+      pfmetUp_ = p_pfmetUp.first;
+      pfmetDn_ = p_pfmetDn.first;
   
+      float pfmetTest = p_pfmetTest.first;
+      if( fabs( pfmet_ - pfmetTest ) > 0.1 ) cout << "ERROR pfmets " << pfmet_ << " vs. " << pfmetTest << endl; 
+
       //--------------------------
       // leading lepton = ll
       //--------------------------
@@ -853,6 +893,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //jet stuff--------------------------------------------------------------------- 
         
       nJets_        = 0;
+      nJetsUp_      = 0;
+      nJetsDn_      = 0;
       sumJetPt_     = 0.;
       nJets40_      = 0;
       sumJetPt10_   = 0.;
@@ -875,9 +917,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       for ( unsigned int ijet = 0 ; ijet < jpts_p4().size() ; ijet++ ) {
           
-        LorentzVector vjet = jpts_cor().at(ijet) * jpts_p4().at(ijet);
-        LorentzVector vlt  = hyp_lt_p4()[hypIdx];
-        LorentzVector vll  = hyp_ll_p4()[hypIdx];
+        LorentzVector vjet   = jpts_cor().at(ijet) * jpts_p4().at(ijet);
+        LorentzVector vlt    = hyp_lt_p4()[hypIdx];
+        LorentzVector vll    = hyp_ll_p4()[hypIdx];
 
         if( fabs( vjet.eta() ) > 2.5 )           continue;
         if( vjet.pt()  < 30.         )           continue;
@@ -905,9 +947,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //loop over pfjets pt > 30 GeV |eta| < 3.0
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-        LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-        LorentzVector vlt  = hyp_lt_p4()[hypIdx];
-        LorentzVector vll  = hyp_ll_p4()[hypIdx];
+        LorentzVector vjet   = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+        LorentzVector vjetUp = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.075;
+        LorentzVector vjetDn = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.925;
+        LorentzVector vlt    = hyp_lt_p4()[hypIdx];
+        LorentzVector vll    = hyp_ll_p4()[hypIdx];
 
         if( fabs( vjet.eta() ) > 3.0 ) continue;
      
@@ -939,6 +983,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           if( emfrac > maxemf_ ) maxemf_ = emfrac;
         }
 
+	if ( vjetUp.pt() > 30. ) nJetsUp_++;
+	if ( vjetDn.pt() > 30. ) nJetsDn_++;
         if( vjet.pt() < 30. )                    continue;
           
         //find max jet pt
@@ -981,9 +1027,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         }
 	*/
 
-        if ( vjet.pt() > 30. ) nJets_++;
-        if ( vjet.pt() > 40. ) nJets40_++;
-          
+        if ( vjet.pt()   > 30. ) nJets_++;
+        if ( vjet.pt()   > 40. ) nJets40_++;
       }
        
       jetmax_pt_ = -1;
@@ -1392,6 +1437,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //met stuff
   babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"   );
+  babyTree_->Branch("pfmetup",      &pfmetUp_,      "pfmetup/F" );
+  babyTree_->Branch("pfmetdn",      &pfmetDn_,      "pfmetdn/F" );
   babyTree_->Branch("pfmetphi",     &pfmetphi_,     "pfmetphi/F");
   babyTree_->Branch("pfsumet",      &pfsumet_,      "pfsumet/F" );
   babyTree_->Branch("met",          &met_,          "met/F"      );
@@ -1420,6 +1467,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //jet stuff
   babyTree_->Branch("njets",          &nJets_,            "njets/I"       );
+  babyTree_->Branch("njetsup",        &nJetsUp_,          "njetsup/I"     );
+  babyTree_->Branch("njetsdn",        &nJetsDn_,          "njetsdn/I"     );
   babyTree_->Branch("njpt",           &nJPT_,             "njpt/I"        );
   babyTree_->Branch("njets40",        &nJets40_,          "njets40/I"     );
   babyTree_->Branch("sumjetpt",       &sumJetPt_,         "sumjetpt/F"    );

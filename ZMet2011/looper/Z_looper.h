@@ -91,6 +91,8 @@ class Z_looper
 
   // pfmet stuff
   Float_t pfmet_;
+  Float_t pfmetUp_;
+  Float_t pfmetDn_;
   Float_t pfmetphi_;
   Float_t pfsumet_;
 
@@ -141,6 +143,8 @@ class Z_looper
   // jet stuff
   Int_t   failjetid_;
   Int_t   nJets_;
+  Int_t   nJetsUp_;
+  Int_t   nJetsDn_;
   Int_t   nJPT_;
   Int_t   nJets40_;
   Float_t sumJetPt_;
