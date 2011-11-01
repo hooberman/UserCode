@@ -54,6 +54,7 @@ class Z_looper
   // event stuff
   char    dataset_[200];
   Int_t   run_;
+  Int_t   st_;
   Int_t   goodrun_;
   Int_t   lumi_;
   Int_t   event_;

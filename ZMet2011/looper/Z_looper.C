@@ -422,6 +422,17 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	x_  = sparm_mf();
       }
       
+      st_ = -1;
+
+      if(TString(prefix).Contains("singletop")){
+	if     ( TString(evt_dataset()).Contains("TuneZ2_s-")  ) st_ = 0;
+	else if( TString(evt_dataset()).Contains("TuneZ2_t-")  ) st_ = 1;
+	else if( TString(evt_dataset()).Contains("TuneZ2_tW-") ) st_ = 2;
+	else{
+	  cout << "Unrecognized single top sample " << evt_dataset() << endl;
+	}
+      }
+
       vector<unsigned int> v_goodHyps;
       v_goodHyps.clear();
 
@@ -1349,6 +1360,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   //event stuff
   babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
+  babyTree_->Branch("st",           &st_,           "st/I"           );
   babyTree_->Branch("goodrun",      &goodrun_,      "goodrun/I"      );
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I"         );
   babyTree_->Branch("event",        &event_,        "event/I"        );
