@@ -22,15 +22,14 @@
   runZLooper("wz_summer11_madgraph"  , false );
   runZLooper("zz_summer11_madgraph"  , false );
   runZLooper("data"                  , true  );
+  runZLooper("ttbar"                 , false );
+  runZLooper("zjets"                 , false );
+  runZLooper("LM4"                   , false );
+  runZLooper("LM8"                   , false );
+  runZLooper("LM9"                   , false );
+  runZLooper("singletop"             , false );
+  runZLooper("T5zz"                  , false );
 
-  //runZLooper("ttbar"                 , false );
-  //runZLooper("zjets"                 , false );
-  //runZLooper("LM4"                   , false );
-  //runZLooper("LM8"                   , false );
-  //runZLooper("T5zz"                  , false );
-  //runZLooper("singletop"             , false );
-  //runZLooper("LM4"                   , false );
-  //runZLooper("LM8"                   , false );
   //runZLooper("wz_spring11_pythia"    , false );
   //runZLooper("wz_summer11_pythia"    , false );
   //runZLooper("zz_spring11_pythia"    , false );

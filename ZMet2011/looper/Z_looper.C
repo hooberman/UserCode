@@ -199,7 +199,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   set_goodrun_file( jsonfilename );
 
-  set_vtxreweight_rootfile("vtxreweight_Spring11MC_153pb_Zselection.root",true);
+  set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_3p5fb_Zselection.root",true);
 
   bookHistos();
   

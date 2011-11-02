@@ -83,28 +83,19 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
   
   else if( strcmp( prefix , "ttbar" ) == 0 ){
-    pickSkimIfExists(ch,"cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zjets" ) == 0 ){
-    
-    pickSkimIfExists(ch,"cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
-    pickSkimIfExists(ch,"cms2/DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root");
-    pickSkimIfExists(ch,"cms2/DYToTauTau_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/merged*root");
-    pickSkimIfExists(ch,"cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root");
-    pickSkimIfExists(ch,"cms2/DYToEE_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
-    pickSkimIfExists(ch,"cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/dilep_ZMassLessThan50Skim/skim*root");
-    pickSkimIfExists(ch,"cms2/DYToMuMu_M-10To20_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root");
-		  
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "T5zz" ) == 0 ){
     pickSkimIfExists(ch,"/nfs-7/userdata/warren/SMS-T5zz_x-05_Mgluino-150to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged*root");
-    //pickSkimIfExists(ch,"/nfs-7/userdata/warren/SMS-T5zz_x-05_Mgluino-150to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple.root");
   }
 
   //----------------------------------------------------------------------------------------
@@ -112,7 +103,6 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   else if( strcmp( prefix , "wz_summer11_madgraph" ) == 0 ){
     pickSkimIfExists(ch,"/nfs-7/userdata/cms2/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
     pickSkimIfExists(ch,"/nfs-7/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    //pickSkimIfExists(ch,"/nfs-7/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
   }
 
   //----------------------------------------------------------------------------------------
@@ -150,9 +140,6 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "singletop" ) == 0 ){
-
-    //pickSkimIfExists(ch,"/nfs-7/userdata/cms2/T_TuneZ2_s-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
-
     pickSkimIfExists(ch,"/nfs-7/userdata/cms2/T_TuneZ2_s-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
     pickSkimIfExists(ch,"/nfs-7/userdata/cms2/Tbar_TuneZ2_s-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
     pickSkimIfExists(ch,"/nfs-7/userdata/cms2/T_TuneZ2_t-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
@@ -164,13 +151,19 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "LM4" ) == 0 ){
-    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/LM4_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/LM4_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "LM8" ) == 0 ){
-    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/LM8_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/LM8_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "LM9" ) == 0 ){
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/LM9_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
