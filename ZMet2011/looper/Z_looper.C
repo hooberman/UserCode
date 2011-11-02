@@ -9,6 +9,7 @@
 
 #include "TChain.h"
 #include "TDirectory.h"
+#include "TLorentzVector.h"
 #include "TFile.h"
 #include "TROOT.h"
 #include "TH1F.h"
@@ -35,7 +36,7 @@
 
 //#include "../CORE/jetSelections.cc"
 #include "../CORE/triggerUtils.h"
-//#include "../CORE/mcSelections.cc"
+#include "../CORE/mcSelections.h"
 
 using namespace tas;
 inline double fround(double n, double d){
@@ -470,6 +471,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       killedJet.clear();
       goodMuonIndices.clear();
       goodPFMuonIndices.clear();
+
+      nlep_ = 0;
+      nmu_  = 0;
+      nel_  = 0;
       
       if( generalLeptonVeto ){
               
@@ -477,13 +482,17 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           if( els_p4().at(iel).pt() < 20 ) continue;
           if( !pass_electronSelection( iel , electronSelection_el_OSV2 , false , false ) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
-          killedJet.push_back( false );
+	  nlep_++;
+	  nel_++;
+	  killedJet.push_back( false );
         }
               
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
           if( mus_p4().at(imu).pt() < 20 )           continue;
           if( !muonId( imu , OSZ_v2 ))               continue;
           goodLeptons.push_back( mus_p4().at(imu) );
+	  nlep_++;
+	  nmu_++;
           killedJet.push_back( false );
 	  goodMuonIndices.push_back( imu );
 	  int ipf = mus_pfmusidx().at(imu);
@@ -595,6 +604,61 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       dilep_   = &hyp_p4().at(hypIdx);
 
       float dilmass = hyp_p4().at(hypIdx).mass();
+
+      //-------------------------
+      // 3-lepton stuff
+      //-------------------------
+      
+      lep3_ = 0;
+      w_    = 0;
+
+      if( nlep_ > 2 ){
+
+	//cout << endl << endl;
+	//dumpDocLines(false);
+
+	// find 3rd lepton
+	int   imax  = -1;
+	float maxpt = -1.;
+	
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( *lep1_ , goodLeptons.at(ilep) ) < 0.1 ) continue;
+	  if( dRbetweenVectors( *lep2_ , goodLeptons.at(ilep) ) < 0.1 ) continue;
+
+	  if( goodLeptons.at(ilep).pt() > maxpt ){
+	    maxpt = goodLeptons.at(ilep).pt();
+	    imax = ilep;
+	  }
+
+	}
+
+	if( imax < 0 ){
+	  cout << "ERROR! didn't find 3rd lepton!" << endl;
+	}
+
+	else{
+	  lep3_ = &goodLeptons.at(imax);
+	
+	  
+	  LorentzVector* pfmet_p4 = new LorentzVector( pfmet_ * cos(pfmetphi_) , pfmet_ * sin(pfmetphi_) ,      0      , pfmet_     );
+
+	  w_ = &(*lep3_+*pfmet_p4);
+
+	}
+
+	// cout << endl << endl;
+	// cout << "lep1 pt " << lep1_->pt()            << endl;
+	// cout << "lep2 pt " << lep2_->pt()            << endl;
+	// cout << "lep3 pt " << lep3_->pt()            << endl;
+	// cout << "M(1,2)  " << (*lep1_+*lep2_).mass() << endl;
+	// cout << "M(1,3)  " << (*lep1_+*lep3_).mass() << endl;
+	// cout << "M(2,3)  " << (*lep2_+*lep3_).mass() << endl;
+	// cout << "pfmet   " << pfmet_                 << endl;
+	// cout << "Z pt    " << dilep_->pt()           << endl;
+	// cout << "W pt    " << w_->pt()               << endl;
+
+      }
+
 
       //-------------------------
       // met errors
@@ -985,6 +1049,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	if ( vjetUp.pt() > 30. ) nJetsUp_++;
 	if ( vjetDn.pt() > 30. ) nJetsDn_++;
+
         if( vjet.pt() < 30. )                    continue;
           
         //find max jet pt
@@ -1405,6 +1470,9 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   //event stuff
   babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
+  babyTree_->Branch("nlep",         &nlep_,         "nlep/I"         );
+  babyTree_->Branch("nel",          &nel_,          "nel/I"          );
+  babyTree_->Branch("nmu",          &nmu_,          "nmu/I"          );
   babyTree_->Branch("st",           &st_,           "st/I"           );
   babyTree_->Branch("goodrun",      &goodrun_,      "goodrun/I"      );
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I"         );
@@ -1519,6 +1587,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
   babyTree_->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   babyTree_->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
+  babyTree_->Branch("lep3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep3_	);
+  babyTree_->Branch("w"       , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &w_ 	);
   babyTree_->Branch("jet"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
 
 }

@@ -74,6 +74,9 @@ class Z_looper
   Float_t metErrorC_;
   Int_t   id1_;
   Int_t   id2_;
+  Int_t   nlep_;
+  Int_t   nmu_;
+  Int_t   nel_;
 
   Float_t ml_;
   Float_t mg_;
@@ -81,6 +84,8 @@ class Z_looper
 
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
+  LorentzVector*  lep3_;
+  LorentzVector*  w_;
   LorentzVector*  dilep_;
   LorentzVector*  jet_; 
 
