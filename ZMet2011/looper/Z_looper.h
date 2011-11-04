@@ -53,11 +53,11 @@ class Z_looper
 
   // event stuff
   char    dataset_[200];
-  Int_t   run_;
+  UInt_t  run_;
   Int_t   st_;
   Int_t   goodrun_;
-  Int_t   lumi_;
-  Int_t   event_;
+  UInt_t  lumi_;
+  UInt_t  event_;
   Int_t   leptype_;
   Int_t   ecaltype_;
   Int_t   nGoodVertex_;
