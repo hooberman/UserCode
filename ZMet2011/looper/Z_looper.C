@@ -51,8 +51,8 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-01";
-const char* jsonfilename         = "../jsons/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+const char* iter                 = "V00-02-02";
+const char* jsonfilename         = "../jsons/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -609,21 +609,19 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // 3-lepton stuff
       //-------------------------
       
-      lep3_ = 0;
-      w_    = 0;
+      VofP4 goodExtraLeptons;
 
       if( nlep_ > 2 ){
 
-	//cout << endl << endl;
-	//dumpDocLines(false);
-
-	// find 3rd lepton
+	// find extra leptons
 	int   imax  = -1;
 	float maxpt = -1.;
 	
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
 	  if( dRbetweenVectors( *lep1_ , goodLeptons.at(ilep) ) < 0.1 ) continue;
 	  if( dRbetweenVectors( *lep2_ , goodLeptons.at(ilep) ) < 0.1 ) continue;
+
+	  goodExtraLeptons.push_back( goodLeptons.at(ilep) );
 
 	  if( goodLeptons.at(ilep).pt() > maxpt ){
 	    maxpt = goodLeptons.at(ilep).pt();
@@ -632,31 +630,17 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	}
 
-	if( imax < 0 ){
-	  cout << "ERROR! didn't find 3rd lepton!" << endl;
-	}
+	sort(goodExtraLeptons.begin()  , goodExtraLeptons.end()  , sortByPt);
 
-	else{
-	  lep3_ = &goodLeptons.at(imax);
-	
-	  
+	if( goodExtraLeptons.size() > 0 ) lep3_ = &(goodExtraLeptons.at(0)); 
+	if( goodExtraLeptons.size() > 1 ) lep4_ = &(goodExtraLeptons.at(0)); 
+	if( goodExtraLeptons.size() > 2 ) lep5_ = &(goodExtraLeptons.at(0)); 
+	if( goodExtraLeptons.size() > 3 ) lep6_ = &(goodExtraLeptons.at(0)); 
+
+	if( goodExtraLeptons.size() > 0 ){
 	  LorentzVector* pfmet_p4 = new LorentzVector( pfmet_ * cos(pfmetphi_) , pfmet_ * sin(pfmetphi_) ,      0      , pfmet_     );
-
 	  w_ = &(*lep3_+*pfmet_p4);
-
 	}
-
-	// cout << endl << endl;
-	// cout << "lep1 pt " << lep1_->pt()            << endl;
-	// cout << "lep2 pt " << lep2_->pt()            << endl;
-	// cout << "lep3 pt " << lep3_->pt()            << endl;
-	// cout << "M(1,2)  " << (*lep1_+*lep2_).mass() << endl;
-	// cout << "M(1,3)  " << (*lep1_+*lep3_).mass() << endl;
-	// cout << "M(2,3)  " << (*lep2_+*lep3_).mass() << endl;
-	// cout << "pfmet   " << pfmet_                 << endl;
-	// cout << "Z pt    " << dilep_->pt()           << endl;
-	// cout << "W pt    " << w_->pt()               << endl;
-
       }
 
 
@@ -1008,6 +992,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         killedJet.at( ilep ) = false;
       }
         
+      VofP4 goodJets;
+      VofP4 goodBJets;
+
       //loop over pfjets pt > 30 GeV |eta| < 3.0
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
@@ -1052,6 +1039,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
         if( vjet.pt() < 30. )                    continue;
           
+	goodJets.push_back(vjet);
+
         //find max jet pt
         if( vjet.pt() > maxpt ){
           maxpt   = vjet.pt();
@@ -1067,30 +1056,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         }
 
 	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 )  nbl_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 )  nbm_++;
-
-	/*
-        //find closest calojet to use btagging info
-        float dRmin    = 100;
-        int   iCaloJet = -1;
-          
-        for( unsigned int iC = 0 ; iC < jets_p4().size() ; iC++ ){
-            
-          LorentzVector vcalojet = jets_p4().at(iC);
-          if( vcalojet.pt() * jets_cor().at(iC) < 10 ) continue;
-            
-          float dR = dRbetweenVectors(vjet, vcalojet);
-          if( dR < dRmin ){
-            dRmin = dR;
-            iCaloJet = iC;
-          }
-        }
-          
-        if( iCaloJet > -1 ){
-          if( jets_simpleSecondaryVertexHighEffBJetTag().at(iCaloJet) > 1.74 ) ++nbtags_;
-          //if( jets_trackCountingHighEffBJetTag().at(iCaloJet) > 1.7 ) ++nbtags_;
-        }
-	*/
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
+	  goodBJets.push_back(vjet);
+	  nbm_++;
+	}
 
         if ( vjet.pt()   > 30. ) nJets_++;
         if ( vjet.pt()   > 40. ) nJets40_++;
@@ -1104,6 +1073,36 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
 
       vecJetPt_ = jetSystem.pt();
+
+      //-------------------------------------------------------------
+      // variables for lljj mass bump
+      //-------------------------------------------------------------
+
+      sort(goodJets.begin()  , goodJets.end()  , sortByPt);
+      sort(goodBJets.begin() , goodBJets.end() , sortByPt);
+
+      if( goodJets.size()  > 0 ) jet1_   = &(goodJets.at(0));
+      if( goodJets.size()  > 1 ) jet2_   = &(goodJets.at(1));
+      if( goodJets.size()  > 2 ) jet3_   = &(goodJets.at(2));
+      if( goodJets.size()  > 3 ) jet4_   = &(goodJets.at(3));
+
+      if( goodBJets.size() > 0 ) bjet1_  = &(goodBJets.at(0));
+      if( goodBJets.size() > 1 ) bjet2_  = &(goodBJets.at(1));
+      if( goodBJets.size() > 2 ) bjet3_  = &(goodBJets.at(2));
+      if( goodBJets.size() > 3 ) bjet4_  = &(goodBJets.at(3));
+
+      if( goodJets.size() >= 2 ){
+	lljj_     = ( *lep1_ + *lep2_ + *jet1_ + *jet2_ ).mass();
+	jj_       = ( *jet1_ + *jet2_          ).mass();
+	l1jj_     = ( *lep1_ + *jet1_ + *jet2_ ).mass();
+	l2jj_     = ( *lep2_ + *jet1_ + *jet2_ ).mass();
+	j1ll_     = ( *jet1_ + *lep1_ + *lep2_ ).mass();
+	j2ll_     = ( *jet2_ + *lep1_ + *lep2_ ).mass();
+	l1j1_     = ( *lep1_ + *jet1_          ).mass();
+	l2j2_     = ( *lep2_ + *jet2_          ).mass();
+	l1j2_     = ( *lep1_ + *jet2_          ).mass();
+	l2j1_     = ( *lep2_ + *jet1_          ).mass();
+      }
       
       //fill histos and ntuple----------------------------------------------------------- 
 
@@ -1352,10 +1351,32 @@ void Z_looper::InitBabyNtuple (){
   goodvtx_     =  -999999;
   goodtrks_    =  -999999;
 
-  dilep_		= 0;
-  jet_			= 0;
-  lep1_			= 0;
-  lep2_			= 0;
+  lljj_		= -1;
+  jj_		= -1;
+  l1jj_		= -1;
+  l2jj_		= -1;
+  j1ll_		= -1;
+  j2ll_		= -1;
+  l1j1_		= -1;
+  l2j2_		= -1;
+  l1j2_		= -1;
+  l2j1_		= -1;
+  dilep_	= 0;
+  jet1_		= 0;
+  jet2_		= 0;
+  jet3_		= 0;
+  jet4_		= 0;
+  bjet1_	= 0;
+  bjet2_	= 0;
+  bjet3_       	= 0;
+  bjet4_       	= 0;
+  lep1_		= 0;
+  lep2_		= 0;
+  lep3_         = 0;
+  lep4_         = 0;
+  lep5_         = 0;
+  lep6_         = 0;
+  w_            = 0;
 
   mllgen_  = -999.;
   qscale_  = -999.;
@@ -1584,12 +1605,37 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("flagll",                &flagll_,                "flagll/I");  
   babyTree_->Branch("flaglt",                &flaglt_,                "flaglt/I");  
 
+  babyTree_->Branch("lljj",                 &lljj_,                 "lljj/F");  
+  babyTree_->Branch("jj"  ,                 &jj_  ,                 "jj/F"  );  
+  babyTree_->Branch("l1jj",                 &l1jj_,                 "l1jj/F");  
+  babyTree_->Branch("l2jj",                 &l2jj_,                 "l2jj/F");  
+  babyTree_->Branch("j1ll",                 &j1ll_,                 "j1ll/F");  
+  babyTree_->Branch("j2ll",                 &j2ll_,                 "j2ll/F");  
+
+  babyTree_->Branch("l1j1",                 &l1j1_,                 "l1j1/F");  
+  babyTree_->Branch("l2j2",                 &l2j2_,                 "l2j2/F");  
+  babyTree_->Branch("l1j2",                 &l1j2_,                 "l1j2/F");  
+  babyTree_->Branch("l2j1",                 &l2j1_,                 "l2j1/F");  
+
   babyTree_->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
+  babyTree_->Branch("w"       , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &w_ 	);
+
   babyTree_->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   babyTree_->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
   babyTree_->Branch("lep3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep3_	);
-  babyTree_->Branch("w"       , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &w_ 	);
-  babyTree_->Branch("jet"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
+  babyTree_->Branch("lep4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep4_	);
+  babyTree_->Branch("lep5"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep5_	);
+  babyTree_->Branch("lep6"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep6_	);
+
+  babyTree_->Branch("jet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet1_	);
+  babyTree_->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
+  babyTree_->Branch("jet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet3_	);
+  babyTree_->Branch("jet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet4_	);
+
+  babyTree_->Branch("bjet1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet1_	);
+  babyTree_->Branch("bjet2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet2_	);
+  babyTree_->Branch("bjet3"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet3_	);
+  babyTree_->Branch("bjet4"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet4_	);
 
 }
 

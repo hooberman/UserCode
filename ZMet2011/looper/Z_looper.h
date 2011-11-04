@@ -85,9 +85,30 @@ class Z_looper
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
   LorentzVector*  lep3_;
+  LorentzVector*  lep4_;
+  LorentzVector*  lep5_;
+  LorentzVector*  lep6_;
   LorentzVector*  w_;
   LorentzVector*  dilep_;
-  LorentzVector*  jet_; 
+  LorentzVector*  jet1_; 
+  LorentzVector*  jet2_; 
+  LorentzVector*  jet3_; 
+  LorentzVector*  jet4_; 
+  LorentzVector*  bjet1_; 
+  LorentzVector*  bjet2_; 
+  LorentzVector*  bjet3_; 
+  LorentzVector*  bjet4_; 
+
+  Float_t lljj_;
+  Float_t jj_;
+  Float_t l1jj_;
+  Float_t l2jj_;
+  Float_t j1ll_;
+  Float_t j2ll_;
+  Float_t l1j1_;
+  Float_t l2j2_;
+  Float_t l1j2_;
+  Float_t l2j1_;
 
   // genmet stuff
   Float_t genmet_;
