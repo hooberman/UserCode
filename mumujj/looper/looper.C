@@ -442,18 +442,18 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	cout << "-------------------------------------------------------"   << endl;
       }
       
-      //--------------------------------
-      // require trigger
-      //--------------------------------
-
-      if( !passMuMuJJTrigger_v1( isData ) ) continue;
-
       //---------------------------------------------
       // event cleaning and good run list
       //---------------------------------------------
 
       if( !cleaning_goodDAVertexApril2011() )                        continue;
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+
+      //--------------------------------
+      // require trigger
+      //--------------------------------
+
+      if( !passMuMuJJTrigger_v1( isData ) ) continue;
 
       //---------------------
       // skip duplicates
