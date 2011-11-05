@@ -41,8 +41,8 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-02";
-  const char* jsonfile  = "jsons/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-00-03";
+  const char* jsonfile  = "jsons/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -201,12 +201,14 @@ void doAll(bool skipFWLite = true)
   bool rundata     = 0;
 
   bool rundatamay10  = 1;
-  bool rundata165    = 1;
-  bool rundata166    = 1;
-  bool rundata167    = 1;
-  bool rundata168    = 1;
+  bool rundataPRv4   = 1;
+  bool rundata165    = 0;
+  bool rundata166    = 0;
+  bool rundata167    = 0;
+  bool rundata168    = 0;
   bool rundataaug05  = 1;
   bool rundataPRv6   = 1;
+  bool rundata2011B  = 1;
 
   bool rundata41   = 0;
   bool rundataskim = 0;
@@ -1029,8 +1031,10 @@ void doAll(bool skipFWLite = true)
   TChain* chdata166    = new  TChain("Events");
   TChain* chdata167    = new  TChain("Events");
   TChain* chdata168    = new  TChain("Events");
+  TChain* chdataPRv4   = new  TChain("Events");
   TChain* chdataaug05  = new  TChain("Events");
   TChain* chdataPRv6   = new  TChain("Events");
+  TChain* chdata2011B  = new  TChain("Events");
 
   //-------------------------------------------
   // May10 rereco
@@ -1044,6 +1048,11 @@ void doAll(bool skipFWLite = true)
   //-------------------------------------------
   // prompt reco v4
   //-------------------------------------------
+
+  if(rundataPRv4){
+    cout << "adding data PRv4" << endl;
+    pickSkimIfExists(chdataPRv4,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+  }
 
   if(rundata165){
     cout << "adding data 165" << endl;
@@ -1081,6 +1090,16 @@ void doAll(bool skipFWLite = true)
   if(rundataPRv6){
     cout << "adding data PRv6" << endl;
     pickSkimIfExists(chdataPRv6,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+  }
+
+  //-------------------------------------------
+  // 2011B
+  //-------------------------------------------
+
+  if(rundata2011B){
+    cout << "adding data 2011B" << endl;
+    pickSkimIfExists(chdata2011B,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    pickSkimIfExists(chdata2011B,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-34/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged*root");
   }
 
   if(rundata){
@@ -1146,6 +1165,11 @@ void doAll(bool skipFWLite = true)
 		    looper->ScanChain(chdatamay10,"datamay10", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing data may10" << endl;
 		  }
+		  if (rundataPRv4) {
+		    cout << "Processing data PRv4" << endl;
+		    looper->ScanChain(chdataPRv4,"dataPRv4", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing dataPRv4" << endl;
+		  }
 		  if (rundata165) {
 		    cout << "Processing data 165" << endl;
 		    looper->ScanChain(chdata165,"data165", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1176,8 +1200,11 @@ void doAll(bool skipFWLite = true)
 		    looper->ScanChain(chdataPRv6,"dataPRv6", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing dataPRv6" << endl;
 		  }
-
-
+		  if (rundata2011B) {
+		    cout << "Processing data 2011B" << endl;
+		    looper->ScanChain(chdata2011B,"data2011B", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data2011B" << endl;
+		  }
 		  if (rundata) {
 		    cout << "Processing data" << endl;
 		    looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
