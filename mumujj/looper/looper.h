@@ -211,6 +211,7 @@ class looper
 	Int_t   id2_;
 	Int_t   w1_;
 	Int_t   w2_;
+	Int_t   diltrig_;
         Float_t ptl2_;
         Float_t ptj1_;
         Float_t ptj2_;
