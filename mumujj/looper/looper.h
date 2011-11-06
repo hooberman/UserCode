@@ -221,9 +221,9 @@ class looper
         Float_t meff_;
         Float_t mt_;
         char    dataset_[200];
-        UInt_t  run_;
-        UInt_t  lumi_;
-        UInt_t  event_;
+        ULong64_t  run_;
+        ULong64_t  lumi_;
+        ULong64_t  event_;
 	Float_t y_;
 	Float_t ht_;
 	Float_t htoffset_;
