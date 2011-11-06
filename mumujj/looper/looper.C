@@ -532,6 +532,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       std::vector<LorentzVector> trigObjs;
 
+      diltrig_ = passSUSYTrigger2011_v1( isData , 0 , true ) ? 1 : 0;
+
       if( isData ){
 
 	//-----------------------------------------------------------------------------
@@ -563,12 +565,20 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v8")];
 	}
 	//-----------------------------------------------------------------------------
-	else if (evt_run() >= 173212 && evt_run() <= 177878){
+	else if (evt_run() >= 173212 && evt_run() <= 178380){
 	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu30_eta2p1_v3")];
 	}
 	//-----------------------------------------------------------------------------
+	else if (evt_run() >= 178420 && evt_run() <= 179889){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu30_eta2p1_v6")];
+	}
+	//-----------------------------------------------------------------------------
+	else if (evt_run() >= 179959 && evt_run() <= 180093){
+	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu30_eta2p1_v7")];
+	}
+	//-----------------------------------------------------------------------------
 	if( trigObjs.size() == 0 ){
-	  cout << __LINE__ << " ERROR! didn't find matching trigger objects" << endl;
+	  cout << "ERROR! didn't find matching trigger objects" << endl;
 	  continue;
 	}
 	//-----------------------------------------------------------------------------
@@ -580,7 +590,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
 
 	if( trigObjs.size() == 0 ){
-	  cout << __LINE__ << " ERROR! didn't find matching trigger objects" << endl;
+	  cout << "ERROR! didn't find matching trigger objects" << endl;
 	  continue;
 	}
       }
@@ -1044,6 +1054,7 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   //Set branch addresses
   //variables must be declared in looper.h
+  outTree->Branch("diltrig",         &diltrig_,          "diltrig/I");
   outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
   outTree->Branch("json",            &json_,             "json/I");
   outTree->Branch("weight",          &weight_,           "weight/F");
