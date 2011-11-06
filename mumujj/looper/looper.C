@@ -37,9 +37,8 @@
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 
-
 bool verbose      = false;
-bool doTenPercent = false;
+bool doTenPercent = true;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"

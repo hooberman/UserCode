@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-03";
+  const char* version   = "V00-00-04";
   const char* jsonfile  = "jsons/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -198,8 +198,7 @@ void doAll(bool skipFWLite = true)
 
   //Flags for files to run over
   bool rundata_SingleMu = 0;
-  bool rundata     = 0;
-
+  bool rundata       = 0;
   bool rundatamay10  = 1;
   bool rundataPRv4   = 1;
   bool rundata165    = 0;
@@ -215,7 +214,7 @@ void doAll(bool skipFWLite = true)
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -229,7 +228,7 @@ void doAll(bool skipFWLite = true)
   bool runWjets    = 0;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
-  bool runZjets    = 0;
+  bool runZjets    = 1;
   bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
@@ -391,7 +390,7 @@ void doAll(bool skipFWLite = true)
   TChain* chZjets = new  TChain("Events");
   if(runZjets){
     pickSkimIfExists(chZjets,
-		     "cms2/DYJetsToLL_TuneD6T_M-50_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root", 
+		     "/nfs-7/userdata/cms2/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",		 
                      "Zjets");
   }
 
@@ -399,7 +398,7 @@ void doAll(bool skipFWLite = true)
   if (runttall) {
     
     pickSkimIfExists(chtopall, 
-     		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root",
+     		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
      		     "TTJets");
     
   }
@@ -1106,11 +1105,11 @@ void doAll(bool skipFWLite = true)
     
     cout << "adding SingleMu data" << endl;
     
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_165*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_173236_0.root");
 
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+   //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_165*root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
   }
 
   TChain* chdata_SingleMu = new TChain("Events");
@@ -1148,6 +1147,12 @@ void doAll(bool skipFWLite = true)
 		    if( frmodeIdx == 1 ) cout << "Doing single fake estimate" << endl;
 		  }
 
+		  if (runZjets) {
+		    cout << "Processing Zjets" << endl;
+		    looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing Zjets" << endl;
+		    hist::color("Zjets", kBlack);
+		  }
 		  if (runttall) {
 		    cout << "Processing ttbar all.. " << endl;
 		    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1245,12 +1250,6 @@ void doAll(bool skipFWLite = true)
 		    looper->ScanChain(chDYtautau,"DYtautau", kDYtautau, preDYtautau, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing DY->tautau" << endl;
 		    hist::color("DYtautau", kBlack);
-		  }
-		  if (runZjets) {
-		    cout << "Processing Zjets" << endl;
-		    looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing Zjets" << endl;
-		    hist::color("Zjets", kBlack);
 		  }
 		  if (runQCD) {
 		    cout << "Processing QCD.. " << endl;
