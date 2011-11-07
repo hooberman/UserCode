@@ -733,15 +733,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       InitBaby();
 
-      for( unsigned int i = 0; i < cms2.hlt_trigNames().size(); i++ ){
-
-	if( !TString(cms2.hlt_trigNames().at(i).Data()).Contains("SingleEG") ) continue;
-	cout << cms2.passHLTTrigger(cms2.hlt_trigNames().at(i).Data()) << "\t"
-	     << cms2.hlt_prescales().at(i) << "\t" 
-	     << cms2.hlt_trigNames().at(i).Data() << endl;
-	
-      } 
-
       if(strcmp(prefix,"LMscan") == 0){
 	if( sparm_m12() > 500  )                        continue;	
 	if( sparm_m0()  > 1000.0 && sparm_m12() > 300 ) continue;
@@ -875,7 +866,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  cout << endl << "--------------------------------" << endl;
 	  cout << "hyp       " << i << endl;
 	  cout << "lep ll ID " << hyp_ll_id()[i] << " pt " << hyp_ll_p4()[i].pt() << endl;
-	  cout << "lep ll ID " << hyp_lt_id()[i] << " pt " << hyp_lt_p4()[i].pt() << endl;
+	  cout << "lep lt ID " << hyp_lt_id()[i] << " pt " << hyp_lt_p4()[i].pt() << endl;
 	  cout << "mass      " << hyp_p4()[i].mass() << endl;
 	  cout << "trig?     " << passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) << endl;
 	  //PrintTriggers();
