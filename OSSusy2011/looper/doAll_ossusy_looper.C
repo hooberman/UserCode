@@ -43,7 +43,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-06";
+  const char* version   = "temp";
+  //const char* version   = "V00-02-06";
   const char* jsonfile  = "jsons/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -271,7 +272,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runttotr    = 0;
   bool runVV       = 0;
   bool runWW       = 0;
-  bool runWZ       = 1;
+  bool runWZ       = 0;
   bool runZZ       = 0;
   bool runWjets    = 0;
   bool runWjetsMG  = 0;
@@ -286,7 +287,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runtW       = 0;
   bool runVQQ      = 0;
   bool runLM0      = 0;
-  bool runLM1      = 0;
+  bool runLM1      = 1;
   bool runLM2      = 0;
   bool runLM3      = 0;
   bool runLM4      = 0;
@@ -308,7 +309,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-
+  bool runT2tt     = 0;
+  bool runT1lh     = 0;
   
   char* dir = "";
 
@@ -602,7 +604,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM0 = new TChain("Events");
   if (runLM0) {
     pickSkimIfExists(chLM0, 
-		     "cms2/LM0_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "/nfs-7/userdata/cms2/LM0_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
                      "SUSY_LM0");
 
   }
@@ -611,15 +613,15 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM1 = new TChain("Events");
   if (runLM1) {
     pickSkimIfExists(chLM1, 
-                     "cms2/LM1_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
-                     "SUSY_LM1");
+		     "/nfs-7/userdata/cms2/LM1_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
+		     "SUSY_LM1");
   }
   
   // LM2
   TChain *chLM2 = new TChain("Events");
   if (runLM2) {
     pickSkimIfExists(chLM2, 
-                     "cms2/LM2_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "/nfs-7/userdata/cms2/LM2_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
                      "SUSY_LM2");
   }
 
@@ -627,7 +629,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM3 = new TChain("Events");
   if (runLM3) {
     pickSkimIfExists(chLM3, 
-                     "cms2/LM3_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "/nfs-7/userdata/cms2/LM3_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
                      "SUSY_LM3");
   }
 
@@ -635,7 +637,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM4 = new TChain("Events");
   if (runLM4) {
     pickSkimIfExists(chLM4, 
-                     "cms2/LM4_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "/nfs-7/userdata/cms2/LM4_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
                      "SUSY_LM4");
   }
 
@@ -643,7 +645,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM5 = new TChain("Events");
   if (runLM5) {
     pickSkimIfExists(chLM5, 
-                     "cms2/LM5_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "/nfs-7/userdata/cms2/LM5_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
                      "SUSY_LM5");
   }
 
@@ -651,7 +653,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM6 = new TChain("Events");
   if (runLM6) {
     pickSkimIfExists(chLM6, 
-                     "cms2/LM6_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "/nfs-7/userdata/cms2/LM6_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
                      "SUSY_LM6");
   }
 
@@ -825,6 +827,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   if (runT1lh) {
     
     pickSkimIfExists(chT1lh,
+		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged*root",
+                     "T1lh");  
+    /*
+    pickSkimIfExists(chT1lh,
 		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_3.root",
                      "T1lh");  
 
@@ -847,7 +853,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chT1lh,
 		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_10.root",
                      "T1lh");  
-
+    */
 
   }
 
@@ -891,15 +897,29 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       if( trig == ossusy_looper::e_highpt ){
 
 	cout << "Doing high-pT dilepton trigger data" << endl;
+
+	// pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skimmed_ntuple_165633_0.root");
+	// pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skimmed_ntuple_166890_0.root");
+	// pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skimmed_ntuple_167746_0.root");
+	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_999999_5.root");
+	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_999999_6.root");
+	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skimmed_ntuple_999999_1.root");
+	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011A-05Aug2011-v1_AOD/V04-02-30/SSignSkim/skimmed_ntuple_999999_1.root");
+	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011A-05Aug2011-v1_AOD/V04-02-30/SSignSkim/skimmed_ntuple_999999_4.root");
+	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011A-PromptReco-v6_AOD/V04-02-30/SSignSkim/skimmed_ntuple_173439_1.root");
+	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_176308_1.root");
+	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_176797_0.root");
+	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-30/SSignSkim/skimmed_ntuple_177449_0.root");
 	
 	//pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged_ntuple_173663_0.root");
 	//pickSkimIfExists(chdata,"/home/users/benhoob/OSSusy2011/filter/output/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/OSSkim/merged_ntuple.root");
-	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_178110_2.root");
-	   /*
+	//pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_178110_2.root");
+
+	
 	//---------------------------
 	// May10 rereco
 	//---------------------------
-	
+
 	pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
 	pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
 	pickSkimIfExists(chdata,"cms2_data/MuEG_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
@@ -935,7 +955,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-30/SSignSkim/skim*root");
-	   */
+
+
       }
       
       else if( trig == ossusy_looper::e_lowpt ){
