@@ -53,7 +53,7 @@ void printHeader(){
   cout << delimstart << setw(width1) << "Sample"    << setw(width2)
        << delim      << setw(width1) << e           << setw(width2)
        << delim      << setw(width1) << m           << setw(width2)
-       << delim      << setw(width1) << "tot"       << setw(width2) 
+       << delim      << setw(width1) << "total"     << setw(width2) 
        << delimend   << endl;
 
 }
@@ -251,7 +251,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 
     bool correlatedError = false;
 
-    if( TString(labels[imc]).Contains("T2tt") ) continue;
+    if( TString(labels[imc]).Contains("T2") ) continue;
 
     // data-driven DY estimate
     if( strcmp(labels[imc],"DYdata")   == 0 ){
@@ -310,7 +310,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
   // print sum of SM MC samples
   //-------------------------------
 
-  print( hmctot , "tot SM MC" );
+  print( hmctot , "total SM MC" );
 
   printLine(latex);
  
@@ -326,11 +326,13 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 
   for(unsigned int imc = 0 ; imc < chmc.size() ; imc++){
 
-    if( !TString(labels[imc]).Contains("T2tt") ) continue;
+    if( !TString(labels[imc]).Contains("T2") ) continue;
 
     chmc[imc]->Draw("leptype>>hyield",sel*weight);
 
-    if( TString(labels[imc]).Contains("X6") ) hyield->Scale(6);
+    if( TString(labels[imc]).Contains("X5")  ) hyield->Scale(5);
+    if( TString(labels[imc]).Contains("X6")  ) hyield->Scale(6);
+    if( TString(labels[imc]).Contains("X10") ) hyield->Scale(10);
 
     //do efficiency correction
     //hyield->SetBinContent  ( 2 , hyield->GetBinContent(2) * 0.90);
@@ -353,7 +355,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayData, float x1, float y1, float x2, float y2){
 
   int colors[]={6,2,7,4,5,8,9,15,12};
-  int sigcolors[]={2,4,7,4,5,8,9,15,12};
+  int sigcolors[]={4,1,7,4,5,8,9,15,12};
   int isigmc = 0;
 
   TLegend *leg = new TLegend(x1,y1,x2,y2);
@@ -375,13 +377,13 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
 
     char* t = labels.at(imc);
 
-    if( TString(t).Contains("T2tt") ) continue;
+    if( TString(t).Contains("T2") ) continue;
 
     mchist[imc] = new TH1F(Form("mc_%i",imc),Form("mc_%i",imc),1,0,1);
 
-    if( TString( labels.at(imc) ).Contains("T2tt") ){
+    if( TString( labels.at(imc) ).Contains("T2") ){
       mchist[imc]->SetFillColor( 0 );
-      mchist[imc]->SetLineStyle(2);
+      //mchist[imc]->SetLineStyle(2);
       mchist[imc]->SetLineColor( sigcolors[imc] );
     }else{
       mchist[imc]->SetFillColor( colors[imc] );
@@ -391,7 +393,15 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
     if( strcmp("ttall",t)    == 0 ) t = "t#bar{t}";
     if( strcmp("ttl",t)      == 0 ) t = "t#bar{t} #rightarrow #font[12]{l}+jets";
     if( strcmp("tt1l",t)     == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{#pm}} + jets";
+    if( strcmp("ttsl",t)     == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{#pm}} + jets";
     if( strcmp("tt2l",t)     == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{+}l^{-}}";
+    if( strcmp("ttdl",t)     == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{+}l^{-}}";
+    if( strcmp("ttdl_lost",t)  == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{+}l^{-}} (lost)";
+    if( strcmp("ttdl_lep",t)   == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{+}l^{-}} (e/#mu)";
+    if( strcmp("ttdl_tauh",t)  == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{+}l^{-}} (#tau_{had})";
+    if( strcmp("ttdl_tauh1",t) == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{+}l^{-}} (#tau_{had}#rightarrow1-prong)";
+    if( strcmp("ttdl_tauhm",t) == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{+}l^{-}} (#tau_{had}#rightarrow3-prong)";
+    if( strcmp("ttdl_taul",t)  == 0 ) t = "t#bar{t} #rightarrow #font[12]{l^{+}l^{-}} (#tau_{lep})";
     if( strcmp("ttfake",t)   == 0 ) t = "t#bar{t} #rightarrow hadrons";
     if( strcmp("ttll",t)     == 0 ) t = "t#bar{t} #rightarrow #font[12]{l}#font[12]{l}";
     if( strcmp("ttltau",t)   == 0 ) t = "t#bar{t} #rightarrow #font[1]{l}#font[12]{#tau}";
@@ -414,18 +424,18 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
   // T2tt samples
   //-----------------
 
-  //for( unsigned int imc = 0 ; imc < nmc ; imc++ ){
-  for( int imc = nmc - 1 ; imc >= 0 ; imc-- ){
+  for( unsigned int imc = 0 ; imc < nmc ; imc++ ){
+  //for( int imc = nmc - 1 ; imc >= 0 ; imc-- ){
 
     char* t = labels.at(imc);
 
-    if( !TString(t).Contains("T2tt") ) continue;
+    if( !TString(t).Contains("T2") ) continue;
 
     mchist[imc] = new TH1F(Form("mc_%i",imc),Form("mc_%i",imc),1,0,1);
 
-    if( TString( labels.at(imc) ).Contains("T2tt") ){
+    if( TString( labels.at(imc) ).Contains("T2") ){
       mchist[imc]->SetFillColor( 0 );
-      mchist[imc]->SetLineStyle(2);
+      //mchist[imc]->SetLineStyle(2);
       mchist[imc]->SetLineWidth(2);
       mchist[imc]->SetLineColor( sigcolors[isigmc++] );
     }else{
@@ -481,7 +491,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   cout << "Plotting var " << myvar << " flavor " << flavor << endl;
 
   int colors[]={6,2,7,4,5,8,9,15,12};
-  int sigcolors[]={2,4,7,4,5,8,9,15,12};
+  int sigcolors[]={4,1,7,4,5,8,9,15,12};
   int isigmc = 0;
 
   assert( chmc.size() == labels.size() );
@@ -506,7 +516,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   for( unsigned int imc = 0 ; imc < nmc ; imc++ ){
   //for( int imc = nmc-1 ; imc > -1 ; imc-- ){
 
-    bool isSignal = TString( labels.at(imc) ).Contains("T2tt");
+    bool isSignal = TString( labels.at(imc) ).Contains("T2");
 
     mchist[imc] = new TH1F(Form("%s_mc_%i_%s",myvar,imc,flavor),Form("%s_mc_%i_%s",myvar,imc,flavor),nbins,xmin,xmax);
     mchist[imc]->Sumw2();
@@ -515,12 +525,20 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
     if( isSignal ){
       mchist[imc]->SetFillColor( 0 );
-      mchist[imc]->SetLineStyle(2);
+      //mchist[imc]->SetLineStyle(2);
       mchist[imc]->SetLineWidth(2);
       mchist[imc]->SetLineColor( sigcolors[isigmc++] );
+      if( TString( labels.at(imc) ).Contains("X5") ){
+	mchist[imc]->Scale(5);
+	cout << "Scaling signal MC by 5" << endl;
+      }
       if( TString( labels.at(imc) ).Contains("X6") ){
 	mchist[imc]->Scale(6);
-	cout << "Scaling T2tt MC by 6" << endl;
+	cout << "Scaling signal MC by 6" << endl;
+      }
+      if( TString( labels.at(imc) ).Contains("X10") ){
+	mchist[imc]->Scale(10);
+	cout << "Scaling signal MC by 10" << endl;
       }
     }else{
       mchist[imc]->SetLineWidth(1);
@@ -528,9 +546,11 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
       mchist[imc]->SetLineColor( 1 );
     }
 
-    mcstack->Add( mchist[imc] );
+    //mcstack->Add( mchist[imc] );
 
     if( !isSignal ){
+      mcstack->Add( mchist[imc] );
+
       if( imc == 0 ){
 	mctothist = (TH1F*) mchist[imc]->Clone();
 	smtothist = (TH1F*) mchist[imc]->Clone();
@@ -542,7 +562,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     }
     else{
       mctothist->Add(mchist[imc]);
-      
+      sighist.push_back( mchist[imc] );
     }
 
     cout << "MC yield " << labels[imc] << " " << Form("%.2f",mchist[imc]->Integral()) << endl;
@@ -560,16 +580,35 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     datahist->GetXaxis()->SetTitle(xtitle);
     datahist->Draw("E1");
     mcstack->Draw("samehist");
+    
+    for( unsigned int isig = 0 ; isig < sighist.size() ; isig++ ){
+      sighist.at(isig)->Add(smtothist);
+      sighist.at(isig)->Draw("samehist");
+    } 
+
     datahist->Draw("sameE1");
     datahist->Draw("sameaxis");
-    
+
     if(!log) datahist->GetYaxis()->SetRangeUser(0.,1.4*max);
     
   }
   else{
+    float max = mctothist->GetMaximum();
+    if( log ) mctothist->SetMaximum( 15 * max );
+    else      mctothist->SetMaximum( 1.4 * max );
+
+    mctothist->SetLineColor(0);
+    mctothist->SetFillColor(0);
+
     mctothist->GetXaxis()->SetTitle(xtitle);
-    mctothist->Draw();
-    mcstack->Draw("same");
+    mctothist->Draw("hist");
+    mcstack->Draw("samehist");
+
+    for( unsigned int isig = 0 ; isig < sighist.size() ; isig++ ){
+      sighist.at(isig)->Add(smtothist);
+      sighist.at(isig)->Draw("samehist");
+    } 
+
     mctothist->Draw("sameaxis");
   }
 

@@ -82,34 +82,44 @@ void initialize(char* path){
 
     data->Reset();
     ttall->Reset();
-    tt0l->Reset();
-    tt1l->Reset();
-    tt2l->Reset();
+    ttfake->Reset();
+    ttsl->Reset();
+    ttdl->Reset();
     ttl->Reset();
     ttll->Reset();
     ttltau->Reset();
     tttau->Reset();
     tttautau->Reset();
     ttotr->Reset();
+    ttdllost->Reset();
+    ttdllep->Reset();
+    ttdltauh->Reset();
+    ttdltauh1->Reset();
+    ttdltauhm->Reset();
+    ttdltaul->Reset();
     wjets->Reset();
     t2tt->Reset();
     t2ttA->Reset();
     t2ttB->Reset();
     t2ttC->Reset();
+    t2bwA->Reset();
+    t2bwB->Reset();
     qcd->Reset();
     tW->Reset();
 
     mc.clear();
     mctex.clear();
     mclabels.clear();
+    sigmc.clear();
+    sigmclabels.clear();
   }
 
   else{
     data	= new TChain("t");
     ttall	= new TChain("t");
-    tt0l	= new TChain("t");
-    tt1l	= new TChain("t");
-    tt2l	= new TChain("t");
+    ttfake	= new TChain("t");
+    ttsl	= new TChain("t");
+    ttdl	= new TChain("t");
     ttl  	= new TChain("t");
     ttll	= new TChain("t");
     ttltau	= new TChain("t");
@@ -121,8 +131,17 @@ void initialize(char* path){
     t2ttA	= new TChain("t");
     t2ttB	= new TChain("t");
     t2ttC	= new TChain("t");
+    t2bwA	= new TChain("t");
+    t2bwB	= new TChain("t");
     qcd	        = new TChain("t");
     tW	        = new TChain("t");
+    ttdllost    = new TChain("t");
+    ttdllep     = new TChain("t");
+    ttdltauh    = new TChain("t");
+    ttdltauh1   = new TChain("t");
+    ttdltauhm   = new TChain("t");
+    ttdltaul    = new TChain("t");
+
   }
 
   cout << endl;
@@ -130,27 +149,51 @@ void initialize(char* path){
   
   data->Add(Form("%s/data_smallTree.root",path));
   ttall->Add(Form("%s/ttall_smallTree.root",path));
-  tt0l->Add(Form("%s/tt0l_smallTree.root",path));
-  tt1l->Add(Form("%s/tt1l_smallTree.root",path));
-  tt2l->Add(Form("%s/tt2l_smallTree.root",path));
+  ttfake->Add(Form("%s/ttfake_smallTree.root",path));
+  ttsl->Add(Form("%s/ttsl_smallTree.root",path));
+  ttdl->Add(Form("%s/ttdl_smallTree.root",path));
   ttl->Add(Form("%s/ttl_smallTree.root",path));
   ttll->Add(Form("%s/ttll_smallTree.root",path));
   ttltau->Add(Form("%s/ttltau_smallTree.root",path));
   tttau->Add(Form("%s/tttau_smallTree.root",path));
   tttautau->Add(Form("%s/tttautau_smallTree.root",path));
   ttotr->Add(Form("%s/ttotr_smallTree.root",path));
+  ttdllost->Add(Form("%s/ttdllost_smallTree.root",path));
+  ttdllep->Add(Form("%s/ttdllep_smallTree.root",path));
+  ttdltauh->Add(Form("%s/ttdltauh_smallTree.root",path));
+  ttdltauh1->Add(Form("%s/ttdltauh1_smallTree.root",path));
+  ttdltauhm->Add(Form("%s/ttdltauhm_smallTree.root",path));
+  ttdltaul->Add(Form("%s/ttdltaul_smallTree.root",path));
   wjets->Add(Form("%s/wjets_smallTree.root",path));
   qcd->Add(Form("%s/qcd_smallTree.root",path));
   tW->Add(Form("%s/tW_smallTree.root",path));
   //t2tt->Add(Form("%s/T2tt_few_smallTree.root",path));
-  t2ttA->Add(Form("%s/T2tt_350_100_smallTree.root",path));
-  t2ttB->Add(Form("%s/T2tt_450_100_smallTree.root",path));
-  t2ttC->Add(Form("%s/T2tt_200_50_smallTree.root",path));
-  
+  //t2ttA->Add(Form("%s/T2tt_350_100_smallTree.root",path));
+  //t2ttB->Add(Form("%s/T2tt_450_100_smallTree.root",path));
+  //t2ttC->Add(Form("%s/T2tt_200_50_smallTree.root",path));
+  t2ttA->Add(Form("%s/T2tt_250_50_smallTree.root",path));
+  t2ttB->Add(Form("%s/T2tt_350_50_smallTree.root",path));
+  t2ttC->Add(Form("%s/T2tt_400_50_smallTree.root",path));
+  //t2ttC->Add(Form("%s/T2tt_450_50_smallTree.root",path));
+  t2bwA->Add(Form("%s/T2bw_250_50_0.50_smallTree.root",path));
+  t2bwB->Add(Form("%s/T2bw_250_50_0.75_smallTree.root",path));
+
+  //------------------------------
+  // SM MC
+  //------------------------------
+
   //mc.push_back(ttall);       mclabels.push_back("ttall");    
-  mc.push_back(tt1l);        mclabels.push_back("tt1l");    
-  mc.push_back(tt2l);        mclabels.push_back("tt2l");    
-  mc.push_back(tt0l);        mclabels.push_back("ttfake");    
+  mc.push_back(ttsl);        mclabels.push_back("ttsl");    
+  mc.push_back(ttdl);        mclabels.push_back("ttdl");    
+  // mc.push_back(ttdllost);    mclabels.push_back("ttdl_lost");    
+  // mc.push_back(ttdllep);     mclabels.push_back("ttdl_lep");    
+  // //mc.push_back(ttdltauh);    mclabels.push_back("ttdl_tauh");    
+  // mc.push_back(ttdltauh1);   mclabels.push_back("ttdl_tauh1");    
+  // mc.push_back(ttdltauhm);   mclabels.push_back("ttdl_tauhm");    
+  // mc.push_back(ttdltaul);    mclabels.push_back("ttdl_taul");    
+
+  
+  mc.push_back(ttfake);      mclabels.push_back("ttfake");
   // mc.push_back(ttl);         mclabels.push_back("ttl");    
   // mc.push_back(ttll);        mclabels.push_back("ttll");    
   // mc.push_back(ttltau);      mclabels.push_back("ttltau");   
@@ -158,14 +201,33 @@ void initialize(char* path){
   // mc.push_back(tttautau);    mclabels.push_back("tttautau");   
   // mc.push_back(ttotr);       mclabels.push_back("ttotr");   
   mc.push_back(wjets);       mclabels.push_back("wjets");   
-  mc.push_back(qcd);         mclabels.push_back("qcd");   
+  mc.push_back(qcd);         mclabels.push_back("QCD");   
   mc.push_back(tW);          mclabels.push_back("single top");   
-  //mc.push_back(t2tt);        mclabels.push_back("T2tt");   
-  mc.push_back(t2ttA);       mclabels.push_back("T2tt 350/100 X6");   
-  mc.push_back(t2ttB);       mclabels.push_back("T2tt 450/100 X6");   
-  //mc.push_back(t2ttC);       mclabels.push_back("T2tt 4.0");   
   
+
+  //------------------------------
+  // signal MC
+  //------------------------------
+
+  //mc.push_back(t2tt);        mclabels.push_back("T2tt");   
+  //mc.push_back(t2ttA);       mclabels.push_back("T2tt 350/100 X6");   
+  //mc.push_back(t2ttB);       mclabels.push_back("T2tt 450/100 X6");   
+  //mc.push_back(t2ttA);       mclabels.push_back("T2tt 250/50");   
+  //mc.push_back(t2ttB);       mclabels.push_back("T2tt 300/50");   
+  //mc.push_back(t2ttC);       mclabels.push_back("T2tt 350/50");   
+  
+  //mc.push_back(t2ttA);       mclabels.push_back("T2tt 250/50 X5");   
+  //mc.push_back(t2ttB);       mclabels.push_back("T2tt 350/50");   
+  //mc.push_back(t2ttC);       mclabels.push_back("T2tt 400/50");   
+  //mc.push_back(t2ttC);       mclabels.push_back("T2tt 450/50");   
+  //mc.push_back(t2bwA);       mclabels.push_back("T2bw 250/50 0.5");   
+  mc.push_back(t2bwB);       mclabels.push_back("T2bw 250/50 0.75");   
+
+
   alreadyInitialized_ = true;
+
+
+
 }
 
 //------------------------------------------
@@ -175,6 +237,8 @@ void initialize(char* path){
 TCut selection_TCut(){
 
   TCut nlep1("ngoodlep == 1");
+  TCut nlep2("ngoodlep == 2");
+  TCut ngenleps2("nleps == 2");
   TCut leppt("(leptype==0 && lep1.pt()>25)||(leptype==1 && lep1.pt()>20)");
   // TCut njets1("njets >= 1");
   // TCut njets2("njets >= 2");
@@ -184,12 +248,16 @@ TCut selection_TCut(){
   TCut njets2("ncalojets >= 2");
   TCut njets3("ncalojets >= 3");
   TCut njets4("ncalojets >= 4");
+  TCut njets4pt20("ncalojets25 >= 4");
   TCut met60("pfmet > 60");
   TCut met50("pfmet > 50");
   TCut met100("pfmet > 100");
+  TCut met150("pfmet > 150");
+  TCut met200("pfmet > 200");
   TCut metpresel("(leptype==0&&pfmet>30)||(leptype==1&&pfmet>20)");
-  TCut ht300("ht > 300");
-  TCut ht500("ht > 500");
+  TCut ht300("htcalo > 300");
+  TCut ht500("htcalo > 500");
+  TCut ht600("htcalo > 649");
   TCut dphi05("dphijm > 0.5");
   TCut btags0("nbtags==0");
   TCut btags2("nbctcm>=2");
@@ -197,28 +265,51 @@ TCut selection_TCut(){
   TCut mt100("mt>100");
   TCut mt150("mt>150");
   TCut mt200("mt>200");
+  //TCut trkreliso02("trkreliso10>0.2||trkpt10<0");
+  TCut trkreliso01("trkreliso5>0.1||trkpt5<0");
+  //TCut trkreliso01("trkreliso5>0.1");
   TCut trkreliso02("trkreliso10>0.2");
-  TCut trkreliso01("trkreliso5>0.1");
+  TCut trkveto_pt5_iso5("trkreliso5*trkpt5>5");
+  TCut trkveto_pt10_iso5("trkreliso10*trkpt10>5");
+  //TCut aviveto("(trkpt5>20 && trkreliso5>0.25) || (trkpt5<20 && trkpt5>10 && trkpt5*trkreliso5>5) || (trkpt5<10)"); 
+  //TCut aviveto("(trkpt5>20 && trkreliso5>0.1) || (trkpt5<20 && trkpt5>5 && trkpt5*trkreliso5>2)"); 
+  TCut aviveto("(trkpt5>20 && trkreliso5>0.1) || (trkpt5<20 && trkpt5>5 && trkpt5*trkreliso5>2)"); 
 
   TCut sel;
   sel    += nlep1;
+  //sel    += nlep2;
   sel    += leppt;
-  sel    += njets3;
-  sel    += met50;
+  //sel    += njets3;
+  //sel    += njets4pt20;
+  sel    += njets4;
+  //sel    += met50;
   sel    += met100;
+  //sel    += met150;
+  //sel    += met200;
   //sel    += met60;
   //sel    += dphi05;
-  //sel    += met100;
   //sel    += ht300;
   //sel    += ht500;
   //sel    += btags0;
+  sel    += btags1;
   //sel    += btags1;
-  sel    += btags2;
-  //sel    += mt150;
+  //sel    += btags2;
+  //sel    += mt100;
   //sel    += mt150;
   //sel    += mt200;
   sel    += trkreliso01;
+  //sel    += aviveto;
+  //sel    += "trkreliso5 > 0.1";
+  //sel    += "trkreliso10 > 0.1";
   //sel    += trkreliso02;
+  //sel    += ht600;
+  //sel    += trkveto_pt5_iso5;
+  //sel    += trkveto_pt10_iso5;
+  //sel    += ngenleps2;
+  //sel    += "trkpt5<10";
+  //sel    += "trkpt5>10&&trkpt5<20";
+  //sel    += "trkpt5>20";
+  //sel    += "trkreliso5>0.5";
 
   cout << "Using selection         : " << sel.GetTitle() << endl;
  
@@ -229,7 +320,7 @@ TCut weight_TCut(){
 
   //TCut weight("weight*ndavtxweight");
   //TCut weight("weight * 0.204 * ndavtxweight");
-  TCut weight("weight * 0.98 * ndavtxweight * 1.13");
+  TCut weight("weight * 0.98 * ndavtxweight");
   //TCut weight("weight * 5 * ndavtxweight");
 
   cout << "Using weight            : " << weight.GetTitle() << endl;
@@ -361,10 +452,11 @@ void printYieldTable( char* path , bool latex = false ){
 
 void makePlots( char* path , bool printgif = false ){
 
-  bool combine6 = false;
-  bool residual = false;
-  bool log      = false;
-
+  bool combine     = false;
+  int  nplots      = 4;
+  bool residual    = false;
+  bool log         = false;
+  bool overlayData = true;
 
   initialize(path);
 
@@ -377,25 +469,39 @@ void makePlots( char* path , bool printgif = false ){
   vector<float> xi;
   vector<float> xf;
 
-  // vars.push_back("pfmet");        xt.push_back("pfmet (GeV)");      n.push_back(30);  xi.push_back(0.); xf.push_back(300.);
-  // vars.push_back("htcalo");       xt.push_back("H_{T} (GeV)");      n.push_back(30);  xi.push_back(0.); xf.push_back(700.);
-  // vars.push_back("ncalojets");    xt.push_back("H_{T} (GeV)");      n.push_back(10);  xi.push_back(0.); xf.push_back(10.);
-  // vars.push_back("lep1.pt()");    xt.push_back("pfmet (GeV)");      n.push_back(5);   xi.push_back(0.); xf.push_back(250.);
-  // vars.push_back("mt");           xt.push_back("H_{T} (GeV)");      n.push_back(7);   xi.push_back(0.); xf.push_back(700.);
-  // vars.push_back("nbctcm");       xt.push_back("H_{T} (GeV)");      n.push_back(4);   xi.push_back(0.); xf.push_back(4.);
 
-  // vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  /*
+  vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
   // vars.push_back("htcalo");       xt.push_back("H_{T} (GeV)");		            n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
   // vars.push_back("ncalojets");    xt.push_back("jet multiplicity");	            n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
-  // vars.push_back("lep1.pt()");    xt.push_back("lepton p_{T} (GeV)");	            n.push_back(20); xi.push_back(0.);   xf.push_back(200.);
-  // vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  // vars.push_back("nbctcm");       xt.push_back("b-jet multiplicity");	            n.push_back(5);  xi.push_back(0.);   xf.push_back(5.);
-  
+  vars.push_back("lep1.pt()");    xt.push_back("lepton p_{T} (GeV)");	            n.push_back(20); xi.push_back(0.);   xf.push_back(200.);
+  vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  vars.push_back("nbctcm");       xt.push_back("b-jet multiplicity");	            n.push_back(5);  xi.push_back(0.);   xf.push_back(5.);
+  */
 
+  //vars.push_back("ngoodlep");       xt.push_back("nleptons");  	                    n.push_back(5); xi.push_back(0.);   xf.push_back(5.);
+  //vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  //vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  //vars.push_back("htcalo");        xt.push_back("H_{T} (GeV)");		            n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
   //vars.push_back("trkreliso5");    xt.push_back("track reliso");		            n.push_back(50); xi.push_back(0.);     xf.push_back(1.);
+  //vars.push_back("mt");            xt.push_back("M_{T} (GeV)");		                    n.push_back(30);  xi.push_back(0.);     xf.push_back(300.);
+  //vars.push_back("mleptrk5");      xt.push_back("M_{lepton-track} (GeV)");		    n.push_back(30);  xi.push_back(0.);     xf.push_back(300.);
+  vars.push_back("mt");            xt.push_back("M_{T} (GeV)");		            n.push_back(20);  xi.push_back(100.);     xf.push_back(300.);
+  //vars.push_back("mclep2.pt()");   xt.push_back("2nd gen lepton p_{T} (GeV)");		    n.push_back(50);  xi.push_back(0.);     xf.push_back(100.);
+
+  //vars.push_back("trkreliso5");    xt.push_back("track reliso5");		            n.push_back(50); xi.push_back(0.);     xf.push_back(1.);
+  //vars.push_back("trkreliso10");   xt.push_back("track reliso10");		            n.push_back(50); xi.push_back(0.);     xf.push_back(1.);
+
   //vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(16); xi.push_back(0.);     xf.push_back(400.);
-  vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(11); xi.push_back(125.);   xf.push_back(400.);
-  //vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(11); xi.push_back(70.);    xf.push_back(400.);
+  //vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(11); xi.push_back(125.);   xf.push_back(400.);
+  //vars.push_back("mctaudpt2");      xt.push_back("#tau daughter p_{T} (GeV)");		    n.push_back(20); xi.push_back(0.);   xf.push_back(100.);
+  //vars.push_back("mclep2.pt()");      xt.push_back("2nd lepton p_{T} (GeV)");		    n.push_back(20); xi.push_back(0.);   xf.push_back(100.);
+  //vars.push_back("pfmet");          xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(11); xi.push_back(70.);    xf.push_back(400.);
+  //vars.push_back("pfmet");          xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(16); xi.push_back(0.);    xf.push_back(400.);
+  //vars.push_back("ndavtx");          xt.push_back("nDAvertices");  	            n.push_back(20); xi.push_back(0.);    xf.push_back(20.);
+  //vars.push_back("trkreliso5");          xt.push_back("track reliso");            n.push_back(20); xi.push_back(0.);    xf.push_back(1.);
+  //vars.push_back("trkreliso5*trkpt5");   xt.push_back("track iso");               n.push_back(20); xi.push_back(0.);    xf.push_back(10.);
+  //vars.push_back("trkreliso10");         xt.push_back("trkreliso p_{T} > 10 GeV");            n.push_back(20); xi.push_back(0.);    xf.push_back(1.);
 
   const unsigned int nvars = vars.size();
   
@@ -411,48 +517,52 @@ void makePlots( char* path , bool printgif = false ){
     //if( ivar < 2 ) log = true;
     //else           log = false;
 
-    if( combine6 ){
-      if( ivar % 6 == 0 ){
+    if( combine ){
+      if( ivar % nplots == 0 ){
 	canCounter++;
-	can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),2000,1200);
+	can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1400,1200);
+	//can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),2000,1200);
 	
-	legpad[canCounter] = new TPad("legpad","legpad",18./20.,0,1,1);
+	legpad[canCounter] = new TPad("legpad","legpad",12./14.,0,1,1);
 	legpad[canCounter]->Draw();
 	legpad[canCounter]->cd();
 
-	TLegend *leg = getLegend( mc , mclabels , true , 0.2 , 0.3 , 0.8 , 0.7 );
+	TLegend *leg = getLegend( mc , mclabels , true , 0. , 0.3 , 0.95 , 0.7 );
 	leg->SetTextSize(0.1);
 	leg->SetBorderSize(1);
 	leg->Draw();
 
 	can[canCounter]->cd();
 
-	plotpad[canCounter] = new TPad("plotpad","plotpad",0,0,18./20.,1);
+	plotpad[canCounter] = new TPad("plotpad","plotpad",0,0,12./14.,1);
 	plotpad[canCounter]->Draw();
 	plotpad[canCounter]->cd();
 
-	plotpad[canCounter]->Divide(3,2);
+	//plotpad[canCounter]->Divide(3,2);
+	plotpad[canCounter]->Divide(2,2);
 	plotpad[canCounter]->cd(1);
 
       }else{
-	plotpad[canCounter]->cd(1+ivar%6);
+	plotpad[canCounter]->cd(1+ivar%nplots);
       }
     }else{
       can[ivar] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),600,600);
     }
 
-    compareDataMC( mc , mclabels , data , vars[ivar] , sel , weight , n[ivar] , xi[ivar] , xf[ivar] , xt[ivar] , true , residual , !combine6 , log );
+    compareDataMC( mc , mclabels , data , vars[ivar] , sel , weight , n[ivar] , xi[ivar] , xf[ivar] , xt[ivar] , overlayData , residual , !combine , log );
 
-    if( printgif && !combine6 ){
-      can[ivar]->Print(Form("../plots/%s.pdf",vars[ivar]));
-      can[ivar]->Print(Form("../plots/%s.eps",vars[ivar]));
+    if( printgif && !combine ){
+      //can[ivar]->Print(Form("../plots/%s.pdf",vars[ivar]));
+      can[ivar]->Print(Form("../plots/%s.ps",vars[ivar]));
+      gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.ps ../plots/%s.pdf",vars[ivar],vars[ivar]));
       can[ivar]->Print(Form("../plots/%s.png",vars[ivar]));
     }
   } 
 
-  if( printgif && combine6 ){
-    can[0]->Print("../plots/makePlots.pdf");
-    can[0]->Print("../plots/makePlots.eps");
+  if( printgif && combine ){
+    //can[0]->Print("../plots/makePlots.pdf");
+    can[0]->Print("../plots/makePlots.ps");
+    gROOT->ProcessLine(".! ps2pdf ../plots/makePlots.ps ../plots/makePlots.pdf");
     can[0]->Print("../plots/makePlots.png");
   }
 
@@ -492,24 +602,24 @@ void makeStandardPlots( char* path , bool sigregion = false ){
   vector<float> xi;
   vector<float> xf;
 
-  vars.push_back("lep1.pt()");    xt.push_back("lepton p_{T} (GeV)");	            n.push_back(20); xi.push_back(0.);   xf.push_back(200.);
-  vars.push_back("lep1.eta()");   xt.push_back("lepton #eta")       ;	            n.push_back(20); xi.push_back(-3.);  xf.push_back(3.);
-  vars.push_back("jet.pt()");     xt.push_back("max jet p_{T} (GeV)");              n.push_back(20); xi.push_back(0.);   xf.push_back(400.);
-  vars.push_back("jet.eta()");    xt.push_back("max jet #eta");	                    n.push_back(20); xi.push_back(-3);   xf.push_back( 3);
-  vars.push_back("dphijm");       xt.push_back("#Delta#phi(max jet,pfmet)");        n.push_back(20); xi.push_back(0);    xf.push_back(3.2);
-  vars.push_back("tcmet");        xt.push_back("tcmet (GeV)");    	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  vars.push_back("y");            xt.push_back("y (GeV^{1/2})");                    n.push_back(20); xi.push_back(0.);   xf.push_back(20.);
-  vars.push_back("htcalo");       xt.push_back("H_{T} (GeV)");		            n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
-  vars.push_back("ncalojets");    xt.push_back("jet multiplicity");	            n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
-  vars.push_back("nbctcm");       xt.push_back("b-jet multiplicity");	            n.push_back(5);  xi.push_back(0.);   xf.push_back(5.);
-  vars.push_back("ndavtx");       xt.push_back("nDAVertices");		            n.push_back(20); xi.push_back(0.);   xf.push_back(20.);
+  // vars.push_back("lep1.pt()");    xt.push_back("lepton p_{T} (GeV)");	            n.push_back(20); xi.push_back(0.);   xf.push_back(200.);
+  // vars.push_back("lep1.eta()");   xt.push_back("lepton #eta")       ;	            n.push_back(20); xi.push_back(-3.);  xf.push_back(3.);
+  // vars.push_back("jet.pt()");     xt.push_back("max jet p_{T} (GeV)");              n.push_back(20); xi.push_back(0.);   xf.push_back(400.);
+  // vars.push_back("jet.eta()");    xt.push_back("max jet #eta");	                    n.push_back(20); xi.push_back(-3);   xf.push_back( 3);
+  // vars.push_back("dphijm");       xt.push_back("#Delta#phi(max jet,pfmet)");        n.push_back(20); xi.push_back(0);    xf.push_back(3.2);
+  // vars.push_back("tcmet");        xt.push_back("tcmet (GeV)");    	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  // vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
+  // vars.push_back("y");            xt.push_back("y (GeV^{1/2})");                    n.push_back(20); xi.push_back(0.);   xf.push_back(20.);
+  // vars.push_back("htcalo");       xt.push_back("H_{T} (GeV)");		            n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
+  // vars.push_back("ncalojets");    xt.push_back("jet multiplicity");	            n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
+  // vars.push_back("nbctcm");       xt.push_back("b-jet multiplicity");	            n.push_back(5);  xi.push_back(0.);   xf.push_back(5.);
+  // vars.push_back("ndavtx");       xt.push_back("nDAVertices");		            n.push_back(20); xi.push_back(0.);   xf.push_back(20.);
   vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(20); xi.push_back(100.);   xf.push_back(300.);
-  vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(15); xi.push_back(150.);   xf.push_back(300.);
-  vars.push_back("meff");         xt.push_back("effective mass (GeV)");	            n.push_back(20); xi.push_back(0.);   xf.push_back(2000.);
-  vars.push_back("trkreliso5");   xt.push_back("track rel iso (p_{T} > 5 GeV)");    n.push_back(20); xi.push_back(0.);   xf.push_back(1.);
-  vars.push_back("trkreliso10");  xt.push_back("track rel iso (p_{T} > 10 GeV)");   n.push_back(20); xi.push_back(0.);   xf.push_back(1.);
+  // vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(20); xi.push_back(100.);   xf.push_back(300.);
+  // vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(15); xi.push_back(150.);   xf.push_back(300.);
+  // vars.push_back("meff");         xt.push_back("effective mass (GeV)");	            n.push_back(20); xi.push_back(0.);   xf.push_back(2000.);
+  // vars.push_back("trkreliso5");   xt.push_back("track rel iso (p_{T} > 5 GeV)");    n.push_back(20); xi.push_back(0.);   xf.push_back(1.);
+  // vars.push_back("trkreliso10");  xt.push_back("track rel iso (p_{T} > 10 GeV)");   n.push_back(20); xi.push_back(0.);   xf.push_back(1.);
 
   //vars.push_back("ht");         xt.push_back("H_{T} (GeV)");		              n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
   //vars.push_back("njets");      xt.push_back("jet multiplicity");	              n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
