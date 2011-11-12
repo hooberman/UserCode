@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-04";
+  const char* version   = "V00-00-05";
   const char* jsonfile  = "jsons/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -214,7 +214,7 @@ void doAll(bool skipFWLite = true)
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -1146,18 +1146,17 @@ void doAll(bool skipFWLite = true)
 		    if( frmodeIdx == 0 ) cout << "Doing double fake estimate" << endl;
 		    if( frmodeIdx == 1 ) cout << "Doing single fake estimate" << endl;
 		  }
-
-		  if (runZjets) {
-		    cout << "Processing Zjets" << endl;
-		    looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing Zjets" << endl;
-		    hist::color("Zjets", kBlack);
-		  }
 		  if (runttall) {
 		    cout << "Processing ttbar all.. " << endl;
 		    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing ttbar all.. " << endl;
 		    hist::color("ttall", kYellow);
+		  }
+		  if (runZjets) {
+		    cout << "Processing Zjets" << endl;
+		    looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing Zjets" << endl;
+		    hist::color("Zjets", kBlack);
 		  }
 		  if (rundataskim) {
 		    cout << "Processing data skim" << endl;

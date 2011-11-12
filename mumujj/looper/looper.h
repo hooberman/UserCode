@@ -107,6 +107,12 @@ class looper
 	Int_t   passid1_;
 	Int_t   passid2_;
 
+	/* vector<int> pingruns; */
+	/* vector<int> pinglumis; */
+	/* vector<int> pingevents; */
+	
+	/* ifstream pingfile; */
+
         LorentzVector*  lep1trk_;
         LorentzVector*  lep1glb_;
         LorentzVector*  lep1sta_;

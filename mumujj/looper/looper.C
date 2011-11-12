@@ -38,7 +38,7 @@
 #include "../Tools/msugraCrossSection.cc"
 
 bool verbose      = false;
-bool doTenPercent = true;
+bool doTenPercent = false;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -322,6 +322,35 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
   if( !initialized ){
 
+    // //---------------------------------
+    // // store Ping's events in vectors
+    // //---------------------------------
+    
+    // if( usePingSelection ){
+    //   int pingrun;
+    //   int pinglumi;
+    //   long pingevent;
+    //   float pingmass;
+      
+    //   int nping = 0;
+      
+    //   ifile.open("ping.text");
+
+    //   while( ifile.good() ){
+    // 	nping++;
+    // 	ifile >> pingrun >> pinglumi >> pingevent >> pingmass;
+    // 	cout << pingrun << " " << pinglumi << " " << pingevent << endl;
+	
+    // 	pingruns.push_back(pingrun);
+    // 	pinglumis.push_back(pinglumi);
+    // 	pingevents.push_back(pingevent);
+    //   }
+      
+    //   cout << "Loaded " << nping << " events from Ping" << endl;
+    // }
+
+
+
     //set json
     cout << "setting json " << g_json << endl;
     set_goodrun_file( g_json );
@@ -331,7 +360,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
     initialized = true;
   }
-  
+
+
+
+
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
     cout << "DATA!!!" << endl;
