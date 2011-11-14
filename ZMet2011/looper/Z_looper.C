@@ -51,7 +51,7 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-02";
+const char* iter                 = "V00-02-03";
 const char* jsonfilename         = "../jsons/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -505,6 +505,18 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
       
+	if( debug ){
+	  cout << "hyp    " << hypIdx << endl;
+	  cout << "trig   " << passSUSYTrigger2011_v1( isData , hyp_type()[hypIdx] , true ) << endl;
+	  cout << "ptll   " << hyp_ll_p4()[hypIdx].pt() << endl;
+	  cout << "ptlt   " << hyp_lt_p4()[hypIdx].pt() << endl;
+	  cout << "mass   " << hyp_p4()[hypIdx].mass() << endl;
+	  if( abs(hyp_ll_id()[hypIdx]) == 13 )   cout << "muon ll " << muonId( hyp_ll_index()[hypIdx] , OSZ_v2 ) << endl;
+	  if( abs(hyp_lt_id()[hypIdx]) == 13 )   cout << "muon lt " << muonId( hyp_lt_index()[hypIdx] , OSZ_v2 ) << endl;
+	  if( abs(hyp_ll_id()[hypIdx]) == 11 )   cout << "ele ll  " << pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_el_OSV2  ) << endl;
+	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_el_OSV2  ) << endl;
+	}
+
         if( !passSUSYTrigger2011_v1( isData , hyp_type()[hypIdx] , true ) ) continue;
       
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
