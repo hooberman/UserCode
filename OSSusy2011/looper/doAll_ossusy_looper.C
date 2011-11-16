@@ -44,7 +44,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   //---------------------------------------------------------------
   
   const char* version   = "V00-02-07";
-  const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON.txt";
+  const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
