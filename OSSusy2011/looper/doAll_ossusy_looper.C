@@ -43,9 +43,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "temp";
-  //const char* version   = "V00-02-06";
-  const char* jsonfile  = "jsons/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-02-07";
+  const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -257,12 +256,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   */
     
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
+  bool runphotons  = 0;
   bool runttall    = 0;
   bool runttpowheg = 0;
   bool runtt42     = 0;
@@ -287,7 +287,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runtW       = 0;
   bool runVQQ      = 0;
   bool runLM0      = 0;
-  bool runLM1      = 1;
+  bool runLM1      = 0;
   bool runLM2      = 0;
   bool runLM3      = 0;
   bool runLM4      = 0;
@@ -365,6 +365,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		     "QCD");
 
 
+  }
+
+  TChain* chphotons = new  TChain("Events");
+  if(runphotons){
+    pickSkimIfExists(chphotons,"/nfs-7/userdata/cms2/G_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root"); 
   }
 
   TChain* chZjets = new  TChain("Events");
@@ -897,24 +902,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
       if( trig == ossusy_looper::e_highpt ){
 
 	cout << "Doing high-pT dilepton trigger data" << endl;
-
-	// pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skimmed_ntuple_165633_0.root");
-	// pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skimmed_ntuple_166890_0.root");
-	// pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skimmed_ntuple_167746_0.root");
-	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_999999_5.root");
-	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_999999_6.root");
-	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skimmed_ntuple_999999_1.root");
-	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011A-05Aug2011-v1_AOD/V04-02-30/SSignSkim/skimmed_ntuple_999999_1.root");
-	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011A-05Aug2011-v1_AOD/V04-02-30/SSignSkim/skimmed_ntuple_999999_4.root");
-	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011A-PromptReco-v6_AOD/V04-02-30/SSignSkim/skimmed_ntuple_173439_1.root");
-	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_176308_1.root");
-	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_176797_0.root");
-	// pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-30/SSignSkim/skimmed_ntuple_177449_0.root");
-	
-	//pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/merged_ntuple_173663_0.root");
-	//pickSkimIfExists(chdata,"/home/users/benhoob/OSSusy2011/filter/output/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/OSSkim/merged_ntuple.root");
-	//pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skimmed_ntuple_178110_2.root");
-
 	
 	//---------------------------
 	// May10 rereco
@@ -955,6 +942,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
 	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-30/SSignSkim/skim*root");
+
+	//---------------------------
+	// Run2011B prompt reco v1
+	//---------------------------
+
+	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleElectronTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleMuTriggerSkim/skim*root");
+	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-34/SSignSkim/skim*root");
 
 
       }
@@ -1051,6 +1046,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chQCD,"qcd", kqcd, preqcd, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing  QCD.. " << endl;
 		      hist::color("qcd", kOrange);
+		    }
+		    if (runphotons) {
+		      cout << "Processing photons.. " << endl;
+		      looper->ScanChain(chphotons,"photons", 1, 1, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing  photons.. " << endl;
 		    }
 		    if (runQCDpt15) {
 		      cout << "Processing QCDpt15.. " << endl;
