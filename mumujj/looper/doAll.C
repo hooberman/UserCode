@@ -41,13 +41,14 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-05";
+  const char* version   = "V00-00-06";
   const char* jsonfile  = "jsons/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
 
   //Load CORE stuff
+  /*
   gROOT->ProcessLine(".L ../CORE/CMS2.cc+");
   gROOT->ProcessLine(".L ../CORE/utilities.cc+");
   gROOT->ProcessLine(".L ../CORE/trackSelections.cc+");
@@ -65,8 +66,10 @@ void doAll(bool skipFWLite = true)
   gROOT->ProcessLine(".L ../CORE/mcSUSYkfactor.cc+");
   gROOT->ProcessLine(".L ../CORE/triggerSuperModel.cc+");
   gROOT->ProcessLine(".L ../CORE/triggerUtils.cc+");
+  //gROOT->ProcessLine(".L ../CORE/jetcorr/JetCorrectorParameters.icc+");
   //gROOT->ProcessLine(".L ../CORE/jetSelections.cc+");
   gROOT->ProcessLine(".L ../CORE/ttbarSelections.cc+");
+  */
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
@@ -198,16 +201,17 @@ void doAll(bool skipFWLite = true)
 
   //Flags for files to run over
   bool rundata_SingleMu = 0;
+  bool runping       = 1;
   bool rundata       = 0;
-  bool rundatamay10  = 1;
-  bool rundataPRv4   = 1;
+  bool rundatamay10  = 0;
+  bool rundataPRv4   = 0;
   bool rundata165    = 0;
   bool rundata166    = 0;
   bool rundata167    = 0;
   bool rundata168    = 0;
-  bool rundataaug05  = 1;
-  bool rundataPRv6   = 1;
-  bool rundata2011B  = 1;
+  bool rundataaug05  = 0;
+  bool rundataPRv6   = 0;
+  bool rundata2011B  = 0;
 
   bool rundata41   = 0;
   bool rundataskim = 0;
@@ -228,7 +232,7 @@ void doAll(bool skipFWLite = true)
   bool runWjets    = 0;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
-  bool runZjets    = 1;
+  bool runZjets    = 0;
   bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
@@ -1034,6 +1038,16 @@ void doAll(bool skipFWLite = true)
   TChain* chdataaug05  = new  TChain("Events");
   TChain* chdataPRv6   = new  TChain("Events");
   TChain* chdata2011B  = new  TChain("Events");
+  TChain* chping       = new  TChain("Events");
+
+  //-------------------------------------------
+  // Ping's 398 events
+  //-------------------------------------------
+
+  if(runping){
+    cout << "adding Ping's 398 events" << endl;
+    pickSkimIfExists(chping,"/tas/benhoob/home/skimEvents/lljj/cms2/SingleMu.root");
+  }
 
   //-------------------------------------------
   // May10 rereco
@@ -1164,6 +1178,11 @@ void doAll(bool skipFWLite = true)
 		    cout << "Done processing data skim" << endl;
 		    hist::color("dataskim", kBlack);
 		  }            
+		  if (runping) {
+		    cout << "Processing Ping's events" << endl;
+		    looper->ScanChain(chping,"dataping", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing Ping's data" << endl;
+		  }
 		  if (rundatamay10) {
 		    cout << "Processing data may10" << endl;
 		    looper->ScanChain(chdatamay10,"datamay10", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);

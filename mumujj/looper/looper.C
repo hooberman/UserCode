@@ -18,30 +18,20 @@
 #include "histtools.h"
 #include "looper.h"
 #include "TTreeCache.h"
-#include "../CORE/CMS2.h"
-#include "../CORE/metSelections.h"
-#include "../CORE/trackSelections.h"
-#include "../CORE/eventSelections.h"
-#include "../CORE/electronSelections.h"
-#include "../CORE/electronSelectionsParameters.h"
-#include "../CORE/mcSelections.h"
-#include "../CORE/muonSelections.h"
+
+#include "../CORE/CMS2.cc"
+#ifndef __CINT__
+#include "../CORE/trackSelections.cc"
+#include "../CORE/eventSelections.cc"
+#include "../CORE/muonSelections.cc"
 #include "../Tools/goodrun.cc"
-#include "../CORE/utilities.cc"
-#include "../CORE/ttbarSelections.h"
-#include "../CORE/susySelections.h"
-#include "../CORE/mcSUSYkfactor.h"
-#include "../CORE/triggerSuperModel.h"
-#include "../CORE/triggerUtils.h"
-//#include "../CORE/jetSelections.h"
+#include "../CORE/triggerUtils.cc"
+#include "../CORE/jetSelections.cc"
 #include "../Tools/vtxreweight.cc"
-#include "../Tools/msugraCrossSection.cc"
+#endif
 
 bool verbose      = false;
 bool doTenPercent = false;
-
-//#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
-//#include "../CORE/triggerUtils.cc"
 
 using namespace std;
 using namespace tas;
@@ -91,7 +81,7 @@ double dRbetweenVectors(const LorentzVector &vec1,
 }
 
 //--------------------------------------------------------------------
-
+/*
 bool passesPFJetID(unsigned int pfJetIdx) {
 
   float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
@@ -120,7 +110,7 @@ bool passesPFJetID(unsigned int pfJetIdx) {
 
   return true;
 }  
-
+*/
 //--------------------------------------------------------------------
 
 struct DorkyEventIdentifier {
@@ -315,41 +305,53 @@ TString triggerName(TString triggerPattern){
 
 //--------------------------------------------------------------------
 
+float getPingMass( int thisrun , int thislumi , unsigned int thisevent ){
+
+  ifstream ifile("ping.txt");
+
+  int run;
+  int lumi;
+  long event;
+  float mass;
+  string dummy;
+
+  float pingmass = -1.;
+
+  while( ifile.good() ){
+
+    ifile >> run >> lumi >> event >> mass;
+
+    if( run==thisrun && lumi==thislumi && event==thisevent ){
+      //cout << "Found! " << run << " " << lumi << " " << event << " mass " << mass << endl;
+      pingmass = mass;
+    }
+
+  }
+
+  if( pingmass < 0 ) cout << "ERROR! didn't find Ping mass! " << thisrun << " " << thislumi << " " << thisevent << " <<<-----------------------------------" << endl;
+  ifile.close();
+  return pingmass;
+
+}
+
+//--------------------------------------------------------------------
+
 int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, float lumi,
 		      JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 
 {
 
+
+  // Jet Corrections
+  std::vector<std::string> jetcorr_pf_L2L3_filenames;
+  jetcorr_pf_L2L3_filenames.clear();
+
+  FactorizedJetCorrector *jet_pf_L2L3corrector;
+
   if( !initialized ){
 
-    // //---------------------------------
-    // // store Ping's events in vectors
-    // //---------------------------------
-    
-    // if( usePingSelection ){
-    //   int pingrun;
-    //   int pinglumi;
-    //   long pingevent;
-    //   float pingmass;
-      
-    //   int nping = 0;
-      
-    //   ifile.open("ping.text");
-
-    //   while( ifile.good() ){
-    // 	nping++;
-    // 	ifile >> pingrun >> pinglumi >> pingevent >> pingmass;
-    // 	cout << pingrun << " " << pinglumi << " " << pingevent << endl;
-	
-    // 	pingruns.push_back(pingrun);
-    // 	pinglumis.push_back(pinglumi);
-    // 	pingevents.push_back(pingevent);
-    //   }
-      
-    //   cout << "Loaded " << nping << " events from Ping" << endl;
-    // }
-
-
+    jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START42_V13_AK5PF_L2L3Residual.txt");
+    jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
 
     //set json
     cout << "setting json " << g_json << endl;
@@ -395,6 +397,9 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
   int   nSkip_els_conv_dist = 0;
   float nevents             = 0.0;
+
+  int ntot  = 0;
+  int npass = 0;
 
   if(g_createTree) makeTree(prefix, doFakeApp, frmode);
 
@@ -449,6 +454,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       InitBaby();
 
+      pingmass_ = getPingMass(evt_run(),evt_lumiBlock(),evt_event());
+
       //------------------------------------------------------------------------
       // idiot check: make sure that HLT_IsoMu24 is present for all MC events
       //------------------------------------------------------------------------
@@ -477,14 +484,14 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // event cleaning and good run list
       //---------------------------------------------
 
-      if( !cleaning_goodDAVertexApril2011() )                        continue;
-      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      //if( !cleaning_goodDAVertexApril2011() )                        continue;
+      //if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
 
       //--------------------------------
       // require trigger
       //--------------------------------
 
-      if( !passMuMuJJTrigger_v1( isData ) ) continue;
+      //if( !passMuMuJJTrigger_v1( isData ) ) continue;
 
       //---------------------
       // skip duplicates
@@ -557,13 +564,21 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
 	//cout << "Found muon " << ngoodlep_ << " pt " << mus_p4().at(imu).pt() << endl;
       }  
-      
+
+      ntot++;
+
       // REQUIRE AT LEAST 1 GOOD LEPTON!!!
-      if( goodLeptons.size() < 1 ) continue;
+      if( goodLeptons.size() < 1 ){
+	cout << "Fail >=1 good lepton requirement" << endl;
+	continue;
+      }
+
+      npass++;
 
       std::vector<LorentzVector> trigObjs;
 
-      diltrig_ = passSUSYTrigger2011_v1( isData , 0 , true ) ? 1 : 0;
+      diltrig_ = -999;
+      //diltrig_ = passSUSYTrigger2011_v1( isData , 0 , true ) ? 1 : 0;
 
       if( isData ){
 
@@ -649,8 +664,12 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // require pt > 25 GeV lepton matched to trigger object
       //---------------------------------------------------------
 
-      if( imaxpt < 0 )  continue;
-      
+      if( imaxpt < 0 ){
+	hping->Fill(pingmass_);
+	cout << "didn't find muon matched to trigger object" << endl;
+	continue;
+      }
+
       id1_       = lepId.at(imaxpt);
       lep1_      = &goodLeptons.at(imaxpt);
       int index1 = lepIndex.at(imaxpt);
@@ -721,10 +740,11 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       int ntaus      =  0;
       int nleps      =  0;
       float dilptgen = -1;
-      
+      /*
       if( !isData ){
 
-	w1_     = leptonOrTauIsFromW( index1 , id1_ , true );
+	w1_ = -999;
+	//w1_     = leptonOrTauIsFromW( index1 , id1_ , true );
 	pthat_  = genps_pthat();
 	qscale_ = genps_qScale();
 	
@@ -777,7 +797,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
 	}
       }
-    
+      */
+
       //pfjets
       VofP4 vpfjets_p4;
 
@@ -790,9 +811,14 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       vector<int> goodjets;
       goodjets.clear();
 
+      //---------------------
+      // apply residual JEC
+      //---------------------
+
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-	LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+	float         jet_cor = jetCorrection(cms2.pfjets_p4().at(ijet), jet_pf_L2L3corrector);
+	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * jet_cor * pfjets_p4().at(ijet);
 
 	if( generalLeptonVeto ){
 	  bool rejectJet = false;
@@ -828,8 +854,12 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // require >=2 jets!!!!!!
       //------------------------------------
 
-      if( njets_ < 2 ) continue;
-      
+      if( njets_ < 2 ){
+	cout << "less than 2 jets " << njets_ << endl;
+	hping->Fill(pingmass_);
+	continue;
+      }
+
       vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_p4_sorted(vpfjets_p4);
       sort(vpfjets_p4_sorted.begin(), vpfjets_p4_sorted.end(), sortByPt);
 
@@ -842,6 +872,11 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       jet2_  = &vpfjets_p4_sorted.at(1);
       if( njets_ > 2 ) jet3_  = &vpfjets_p4_sorted.at(2);
       if( njets_ > 3 ) jet4_  = &vpfjets_p4_sorted.at(3);
+
+      jetcor1_ = jetCorrection( vpfjets_p4_sorted.at(0), jet_pf_L2L3corrector);
+      jetcor2_ = jetCorrection( vpfjets_p4_sorted.at(1), jet_pf_L2L3corrector);
+
+      cout << "jetcor1 " << jetcor1_ << " jetcor2 " << jetcor2_ << endl;
 
       mmjj_ = -1;
       if( ngoodlep_ > 1 ){
@@ -866,22 +901,22 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
 	weight_ = kFactor * evt_scale1fb() * lumi;
 
-	if( TString(prefix).Contains("LM") ){
-	  if( strcmp( prefix , "LM0" )  == 0 ) weight_ *= kfactorSUSY( "lm0" );
-	  if( strcmp( prefix , "LM1" )  == 0 ) weight_ *= kfactorSUSY( "lm1" );
-	  if( strcmp( prefix , "LM2" )  == 0 ) weight_ *= kfactorSUSY( "lm2" );
-	  if( strcmp( prefix , "LM3" )  == 0 ) weight_ *= kfactorSUSY( "lm3" );
-	  if( strcmp( prefix , "LM4" )  == 0 ) weight_ *= kfactorSUSY( "lm4" );
-	  if( strcmp( prefix , "LM5" )  == 0 ) weight_ *= kfactorSUSY( "lm5" );
-	  if( strcmp( prefix , "LM6" )  == 0 ) weight_ *= kfactorSUSY( "lm6" );
-	  if( strcmp( prefix , "LM7" )  == 0 ) weight_ *= kfactorSUSY( "lm7" );
-	  if( strcmp( prefix , "LM8" )  == 0 ) weight_ *= kfactorSUSY( "lm8" );
-	  if( strcmp( prefix , "LM9" )  == 0 ) weight_ *= kfactorSUSY( "lm9" );
-	  if( strcmp( prefix , "LM10" ) == 0 ) weight_ *= kfactorSUSY( "lm10");
-	  if( strcmp( prefix , "LM11" ) == 0 ) weight_ *= kfactorSUSY( "lm11");
-	  if( strcmp( prefix , "LM12" ) == 0 ) weight_ *= kfactorSUSY( "lm12");
-	  if( strcmp( prefix , "LM13" ) == 0 ) weight_ *= kfactorSUSY( "lm13");
-	}
+	// if( TString(prefix).Contains("LM") ){
+	//   if( strcmp( prefix , "LM0" )  == 0 ) weight_ *= kfactorSUSY( "lm0" );
+	//   if( strcmp( prefix , "LM1" )  == 0 ) weight_ *= kfactorSUSY( "lm1" );
+	//   if( strcmp( prefix , "LM2" )  == 0 ) weight_ *= kfactorSUSY( "lm2" );
+	//   if( strcmp( prefix , "LM3" )  == 0 ) weight_ *= kfactorSUSY( "lm3" );
+	//   if( strcmp( prefix , "LM4" )  == 0 ) weight_ *= kfactorSUSY( "lm4" );
+	//   if( strcmp( prefix , "LM5" )  == 0 ) weight_ *= kfactorSUSY( "lm5" );
+	//   if( strcmp( prefix , "LM6" )  == 0 ) weight_ *= kfactorSUSY( "lm6" );
+	//   if( strcmp( prefix , "LM7" )  == 0 ) weight_ *= kfactorSUSY( "lm7" );
+	//   if( strcmp( prefix , "LM8" )  == 0 ) weight_ *= kfactorSUSY( "lm8" );
+	//   if( strcmp( prefix , "LM9" )  == 0 ) weight_ *= kfactorSUSY( "lm9" );
+	//   if( strcmp( prefix , "LM10" ) == 0 ) weight_ *= kfactorSUSY( "lm10");
+	//   if( strcmp( prefix , "LM11" ) == 0 ) weight_ *= kfactorSUSY( "lm11");
+	//   if( strcmp( prefix , "LM12" ) == 0 ) weight_ *= kfactorSUSY( "lm12");
+	//   if( strcmp( prefix , "LM13" ) == 0 ) weight_ *= kfactorSUSY( "lm13");
+	// }
 
 	if( doTenPercent )	  weight_ *= 10;
       }
@@ -925,6 +960,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
   cout << "Sample: " << prefix << endl;
   cout << "nevents " << nevents << endl;
   cout << endl;
+  cout << ntot << " total events, " << npass << " pass events" << endl;
 
   if(g_createTree) closeTree();
   
@@ -952,6 +988,7 @@ void looper::BookHistos(char *prefix)
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
+  hping = new TH1F("hping","hping",2000,0,2000);
 
   cout << "End book histos..." << endl;
 }// CMS2::BookHistos()
@@ -1086,6 +1123,9 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   //Set branch addresses
   //variables must be declared in looper.h
   outTree->Branch("diltrig",         &diltrig_,          "diltrig/I");
+  outTree->Branch("pingmass",        &pingmass_,         "pingmass/F");
+  outTree->Branch("jetcor1",         &jetcor1_,          "jetcor1/F");
+  outTree->Branch("jetcor2",         &jetcor2_,          "jetcor2/F");
   outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
   outTree->Branch("json",            &json_,             "json/I");
   outTree->Branch("weight",          &weight_,           "weight/F");

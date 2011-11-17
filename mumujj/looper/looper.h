@@ -134,6 +134,9 @@ class looper
 	Int_t   acc_2010_;
 	Int_t   acc_highmet_;
 	Int_t   acc_highht_;
+	Float_t pingmass_;
+	Float_t jetcor1_;
+	Float_t jetcor2_;
 	Float_t mmjj_;
 	Float_t mmjjtrk_;
 	Float_t mmjjglb_;
@@ -269,6 +272,7 @@ class looper
         // Lots and lots of histograms
 
         //Z histos
+	TH1F* hping;
         TH1F* hdilMass_Z[4][4];
         TH1F* htcmet_event_Z[4][4];
         TH1F* htcmet_looper_Z[4][4];
