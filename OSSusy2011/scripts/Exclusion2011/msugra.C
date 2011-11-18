@@ -18,6 +18,7 @@
 #include "TLegend.h"
 #include "TLatex.h"
 #include "TCanvas.h"
+#include "TROOT.h"
 
 //#include "cl95cms_landsberg.c"
 
@@ -29,14 +30,14 @@ using namespace std;
 //-------------------------------------------
 
 const Double_t mylumi        = 3.5;
-const bool     doCorrection  = false;
+const bool     doCorrection  = true;
 
 //-------------------------------------------
 // uncertainties
 //-------------------------------------------
 
-const float lumierr = 0.06;  // 11% lumi error
-const float leperr  = 0.04;  // lepton ID/iso + trigger uncertainty
+const float lumierr = 0.06;  // 6% lumi error
+const float leperr  = 0.05;  // lepton ID/iso + trigger uncertainty
 const float pdferr  = 0.20;  // PDF uncertainty
 
 //----------------------------------------------
@@ -57,7 +58,7 @@ const int   rebin   = 1;     // rebin yield histos
 
 float getUpperLimit( float seff ){
 
-  float ul = 1e10;
+  float ul = 9999.;
 
   //-----------
   // CLs
@@ -73,25 +74,14 @@ float getUpperLimit( float seff ){
   if(seff > 0.7 && seff < 0.8) ul = 21.0;
   if(seff > 0.8 && seff < 0.9) ul = 22.7;
 
-  // if(seff > 0.0 && seff < 0.1) ul = 11.3;
-  // if(seff > 0.1 && seff < 0.2) ul = 11.9;
-  // if(seff > 0.2 && seff < 0.3) ul = 13.3;
-  // if(seff > 0.3 && seff < 0.4) ul = 14.3;
-  // if(seff > 0.4 && seff < 0.5) ul = 15.8;
-  // if(seff > 0.5 && seff < 0.6) ul = 17.4;
-  // if(seff > 0.6 && seff < 0.7) ul = 18.7;
-
-  if( seff > 0.7 ){
-    cout << "Error, signal efficiency uncertainty too large! " << seff << endl;
-    exit(0);
-  }
+  if( seff > 0.9 ) cout << "Error, signal efficiency uncertainty too large! " << seff << endl;
 
   return ul;
 }
 
 float getExpectedUpperLimit( float seff ){
 
-  float ul = 1e10;
+  float ul = 9999.;
 
   //-----------
   // expected
@@ -114,7 +104,7 @@ float getExpectedUpperLimit( float seff ){
 
 float getExpectedP1UpperLimit( float seff ){
 
-  float ul = 1e10;
+  float ul = 9999.;
 
   //-----------
   // expected
@@ -137,7 +127,7 @@ float getExpectedP1UpperLimit( float seff ){
 
 float getExpectedM1UpperLimit( float seff ){
 
-  float ul = 1e10;
+  float ul = 9999.;
 
   //-----------
   // expected
@@ -162,7 +152,7 @@ float getExpectedM1UpperLimit( float seff ){
 TH1F* getCurve               ( TH2I *hist , char* name );
 TGraphErrors* getCurve_TGraph( TH2I *hist , char* name );
 
-void msugra( char* filename ){
+void msugra( char* filename , bool print = false ){
   
   TFile *corfile = new TFile();
   TH2F* hscan    = new TH2F();
@@ -179,13 +169,11 @@ void msugra( char* filename ){
   }
 
   TFile *outfile = new TFile("exclusion.root","RECREATE");
-  //TFile *outfile = new TFile("exclusion_Fall10_pfmet_pfjets.root","RECREATE");
 
   //-----------------------------------
   // Here we load the yield histograms
   //-----------------------------------
   TFile *f = TFile::Open( filename );
-
   
   //TH2F* hyield     = (TH2F*) f->Get("msugra",prefix));
   TH2F* hyield_k   = (TH2F*) f->Get("msugra");
@@ -194,38 +182,7 @@ void msugra( char* filename ){
   TH2F* hyield_jup = (TH2F*) f->Get("msugra_jup");
   TH2F* hyield_jdn = (TH2F*) f->Get("msugra_jdn");
 
-  
-  // hyield_k->RebinX(4);
-  // hyield_k->RebinY(2);
-  // hyield_k->Scale(1./8.);
-
-  // hyield_kup->RebinX(4);
-  // hyield_kup->RebinY(2);
-  // hyield_kup->Scale(1./8.);
-
-  // hyield_kdn->RebinX(4);
-  // hyield_kdn->RebinY(2);
-  // hyield_kdn->Scale(1./8.);
-
-  // hyield_jup->RebinX(4);
-  // hyield_jup->RebinY(2);
-  // hyield_jup->Scale(1./8.);
-
-  // hyield_jdn->RebinX(4);
-  // hyield_jdn->RebinY(2);
-  // hyield_jdn->Scale(1./8.);
-  
-
-  /*
-  TH2F* hyield_k   = (TH2F*) f->Get("LMscan10_lmgridyield_k");
-  TH2F* hyield_kup = (TH2F*) f->Get("LMscan10_lmgridyield_kup");
-  TH2F* hyield_kdn = (TH2F*) f->Get("LMscan10_lmgridyield_kdn");
-  TH2F* hyield_jup = (TH2F*) f->Get("LMscan10_lmgridyield_jup");
-  TH2F* hyield_jdn = (TH2F*) f->Get("LMscan10_lmgridyield_jdn");
-  */
-
-
-  hyield_k->Scale(mylumi);
+  hyield_k->  Scale(mylumi);
   hyield_kup->Scale(mylumi);
   hyield_kdn->Scale(mylumi);
   hyield_jup->Scale(mylumi);
@@ -301,6 +258,9 @@ void msugra( char* filename ){
       int   ngen  = 1;
       float scale = 1.0;
 
+      int m0  = hyield_k->GetXaxis()->GetBinCenter(m0bin);
+      int m12 = hyield_k->GetXaxis()->GetBinCenter(m12bin);
+
       if( doCorrection ){
 	ngen = hscan->GetBinContent(m0bin,m12bin);
 
@@ -309,24 +269,10 @@ void msugra( char* filename ){
 	  continue;
 	}
       }
-
-      //---------------------------
-      // find LM6
-      //---------------------------
-
-      // if( fabs( hyield_k->GetXaxis()->GetBinCenter(m0bin) - 80 ) < 0.1 && fabs ( hyield_k->GetYaxis()->GetBinCenter(m12bin) - 400 ) < 0.1 ){
-      //   cout << "Found LM6" << endl;
-      // }
-      // else{ continue; }
      
       cout << endl << endl << "------------------------------------------------------------------------" << endl;
       cout << endl << "m0 " << m0bin-1 << " m12 " << m12bin-1 << endl;
       cout << hyield_k->GetXaxis()->GetBinCenter(m0bin) << " " << hyield_k->GetYaxis()->GetBinCenter(m12bin) << endl;
-
-      if( doCorrection ){
-	cout << "ngen " << ngen << endl;
-	cout << "Rescaling yields by " << scale << endl;
-      }
 
       //------------------------
       // skip bins with 0 yield
@@ -336,53 +282,6 @@ void msugra( char* filename ){
 	cout << "zero yield, skipping!" << endl;
 	continue; 
       }
-
-      //------------------------
-      // skip bins m0 > 1000 GeV or m12 > 500 GeV
-      //------------------------
-
-      // if( hyield_k->GetXaxis()->GetBinCenter(m0bin) > 1000 ){
-      //   cout << "m0 > 1000 GeV, skipping" << endl;
-      //   continue;
-      // }
-
-      // if( hyield_k->GetYaxis()->GetBinCenter(m12bin) > 500 ){
-      //   cout << "m12 > 500 GeV, skipping" << endl;
-      //   continue;
-      // }
-
-      //-------------------------------------------------
-      // this can save a lot of time, turned off here
-      //-------------------------------------------------
-     
-      //      //a point with LO yield > 10 is definitely excluded
-      //      if( yield > 10. ){
-      //        ul_NLO[m0bin-1][m12bin-1]        = -1;
-      //        ul_NLO_SC[m0bin-1][m12bin-1]     = -1;
-      //        ul_NLO_nobkg[m0bin-1][m12bin-1]  = -1;
-      //        ul_NLO_exp[m0bin-1][m12bin-1]    = -1;
-      //        ul_LO[m0bin-1][m12bin-1]         = -1;
-      //        hUL_NLO->SetBinContent     ( m0bin , m12bin , -1 );
-      //        hUL_NLO_exp->SetBinContent ( m0bin , m12bin , -1 );
-      //        hUL_LO->SetBinContent      ( m0bin , m12bin , -1 );
-      //        cout << "yield " << yield << " point is excluded, skipping" << endl;
-      //        continue;
-      //      }
-
-      //      //a point with NLO yield < 3 is definitely not excluded
-      //      if( yield_k < 3. ){
-      //        ul_NLO[m0bin-1][m12bin-1]        = 100;
-      //        ul_NLO_SC[m0bin-1][m12bin-1]     = 100;
-      //        ul_NLO_nobkg[m0bin-1][m12bin-1]  = 100;
-      //        ul_NLO_exp[m0bin-1][m12bin-1]    = 100;
-      //        ul_LO[m0bin-1][m12bin-1]         = 100;
-      //        cout << "yield " << yield << " point is NOT excluded, skipping" << endl;
-      //        hUL_NLO->SetBinContent     ( m0bin , m12bin , 100 );
-      //        hUL_NLO_exp->SetBinContent ( m0bin , m12bin , 100 );
-      //        hUL_LO->SetBinContent      ( m0bin , m12bin , 100 );
-      //        continue;
-      //      }
-     
 
       //--------------------------
       //uncertainty from k-factor
@@ -415,22 +314,10 @@ void msugra( char* filename ){
       if( yield_k > 5 && yield_k < 8 )
 	htotuncertainty->Fill( accerr_NLO[m0bin-1][m12bin-1] );
 
-      //ul_NLO[m0bin-1][m12bin-1] = ilum * CL95( ilum, slum, eff, accerr_NLO[m0bin-1][m12bin-1], bck, sbck, n, false, nuissanceModel );
       ul_NLO[m0bin-1][m12bin-1]       = getUpperLimit          ( accerr_NLO[m0bin-1][m12bin-1] );
       ul_NLO_exp[m0bin-1][m12bin-1]   = getExpectedUpperLimit  ( accerr_NLO[m0bin-1][m12bin-1] );
       ul_NLO_expp1[m0bin-1][m12bin-1] = getExpectedP1UpperLimit( accerr_NLO[m0bin-1][m12bin-1] );
       ul_NLO_expm1[m0bin-1][m12bin-1] = getExpectedM1UpperLimit( accerr_NLO[m0bin-1][m12bin-1] );
-
-      //----------------------------------------------------------------
-      //add up LO uncertainties (NOT including k-factor uncertainty)
-      //----------------------------------------------------------------
-
-      float err2_LO = 0.;
-      err2_LO += jerr * jerr;                                               //JES
-      err2_LO += lumierr * lumierr;                                         //lumi
-      err2_LO += leperr * leperr;                                           //lep efficiency
-      err2_LO += pdferr * pdferr;                                           //PDF uncertainty
-      accerr_LO[m0bin-1][m12bin-1] = err2_LO > 0 ? sqrt( err2_LO ) : 0.;    //total
 
       //--------------------------
       //printout errors and UL
@@ -449,17 +336,15 @@ void msugra( char* filename ){
       cout << "NLO UL sig cont  " << ul_NLO_SC[m0bin-1][m12bin-1] << endl;
       cout << "NLO UL no bkg    " << ul_NLO_nobkg[m0bin-1][m12bin-1] << endl;
       cout << "NLO UL exp       " << ul_NLO_exp[m0bin-1][m12bin-1] << endl;
-      cout << "total error LO   " << accerr_LO[m0bin-1][m12bin-1] << endl;
-      cout << "LO UL            " << ul_LO[m0bin-1][m12bin-1] << endl;
      
       hUL_NLO->SetBinContent( m0bin , m12bin , ul_NLO[m0bin-1][m12bin-1] );
       hUL_NLO_exp->SetBinContent( m0bin , m12bin , ul_NLO_exp[m0bin-1][m12bin-1] );
       hUL_NLO_expp1->SetBinContent( m0bin , m12bin , ul_NLO_expp1[m0bin-1][m12bin-1] );
       hUL_NLO_expm1->SetBinContent( m0bin , m12bin , ul_NLO_expm1[m0bin-1][m12bin-1] );
-      hUL_LO->SetBinContent( m0bin , m12bin , ul_LO[m0bin-1][m12bin-1] );
     }
   }
 
+  cout << __LINE__ << endl;
   //--------------------------------------------------------------------------------------------------------
   // at this point we have calculated the yields and upper limits at each point
   // next step is to build TH2 histos (ie. hexcl_NLO_obs) which are 1 if point is excluded, otherwise 0
@@ -496,9 +381,10 @@ void msugra( char* filename ){
 	int ngen = hscan->GetBinContent(m0bin,m12bin);
 
 	if( ngen != 10000 ){
-	  //cout << "Skipping point with " << ngen << " entries" << endl;
 	  hexcl_NLO_obs->SetBinContent( m0bin , m12bin , 2 );
 	  hexcl_NLO_exp->SetBinContent( m0bin , m12bin , 2 );
+	  hexcl_NLO_expp1->SetBinContent( m0bin , m12bin , 2 );
+	  hexcl_NLO_expm1->SetBinContent( m0bin , m12bin , 2 );
 	  continue;
 	}
       }
@@ -611,30 +497,72 @@ void msugra( char* filename ){
   // now draw a bunch of plots
   //----------------------------------
 
-  //excluded points
-  TCanvas *c1 = new TCanvas("c1","",1000,800);
-  c1->Divide(2,2);
-
   TLatex *t = new TLatex();
   t->SetNDC();
 
-  c1->cd(1);
+  bool overlayTGraph = false;
+
+  TCanvas *c1 = new TCanvas("c1","c1",1000,800);
+  c1->cd();
+  gPad->SetRightMargin(0.2);
+  gPad->SetTopMargin(0.1);
+  hexcl_NLO_obs->GetXaxis()->SetTitle("m_{0} (GeV)");
+  hexcl_NLO_obs->GetYaxis()->SetTitle("m_{1/2} (GeV)");
+  hexcl_NLO_obs->GetXaxis()->SetNdivisions(5);
   hexcl_NLO_obs->Draw("colz");
-  t->DrawLatex(0.5,0.8,"observed NLO");
+  t->DrawLatex(0.2,0.92,"observed NLO");
+  if( overlayTGraph ){
+    TGraphErrors* gr_NLO_obs = getCurve_TGraph( hexcl_NLO_obs , "gr_NLO_obs" );
+    gr_NLO_obs->Draw("same");
+  }
 
-  c1->cd(2);
+  TCanvas *c2 = new TCanvas("c2","c2",1000,800);
+  c2->cd();
+  gPad->SetRightMargin(0.2);
+  gPad->SetTopMargin(0.1);
+  hexcl_NLO_exp->GetXaxis()->SetTitle("m_{0} (GeV)");
+  hexcl_NLO_exp->GetYaxis()->SetTitle("m_{1/2} (GeV)");
+  hexcl_NLO_exp->GetXaxis()->SetNdivisions(5);
   hexcl_NLO_exp->Draw("colz");
-  t->DrawLatex(0.5,0.8,"expected NLO");
+  t->DrawLatex(0.2,0.92,"expected NLO");
  
-  c1->cd(3);
+  TCanvas *c3 = new TCanvas("c3","c3",1000,800);
+  c3->cd();
+  gPad->SetRightMargin(0.2);
+  gPad->SetTopMargin(0.1);
+  hexcl_NLO_expp1->GetXaxis()->SetTitle("m_{0} (GeV)");
+  hexcl_NLO_expp1->GetYaxis()->SetTitle("m_{1/2} (GeV)");
+  hexcl_NLO_expp1->GetXaxis()->SetNdivisions(5);
   hexcl_NLO_expp1->Draw("colz");
-  t->DrawLatex(0.5,0.8,"expected(+1) NLO");
+  t->DrawLatex(0.2,0.92,"expected(+1) NLO");
 
-  c1->cd(4);
+  TCanvas *c4 = new TCanvas("c4","c4",1000,800);
+  c4->cd(1);
+  gPad->SetRightMargin(0.2);
+  gPad->SetTopMargin(0.1);
+  hexcl_NLO_expm1->GetXaxis()->SetTitle("m_{0} (GeV)");
+  hexcl_NLO_expm1->GetYaxis()->SetTitle("m_{1/2} (GeV)");
+  hexcl_NLO_expm1->GetXaxis()->SetNdivisions(5);
   hexcl_NLO_expm1->Draw("colz");
-  t->DrawLatex(0.5,0.8,"expected(-1) NLO");
+  t->DrawLatex(0.2,0.92,"expected(-1) NLO");
  
-  c1->Print("exclusion/exclusion.png");
+  if( print ){
+    c1->Print("../../plots/exclusion_obs.png");
+    c2->Print("../../plots/exclusion_exp.png");
+    c3->Print("../../plots/exclusion_expp1.png");
+    c4->Print("../../plots/exclusion_expm1.png");
+
+    c1->Print("../../plots/exclusion_obs.eps");
+    c2->Print("../../plots/exclusion_exp.eps");
+    c3->Print("../../plots/exclusion_expp1.eps");
+    c4->Print("../../plots/exclusion_expm1.eps");
+
+    gROOT->ProcessLine(".! ps2pdf ../../plots/exclusion_obs.eps   ../../plots/exclusion_obs.pdf");
+    gROOT->ProcessLine(".! ps2pdf ../../plots/exclusion_exp.eps   ../../plots/exclusion_exp.pdf");
+    gROOT->ProcessLine(".! ps2pdf ../../plots/exclusion_expp1.eps ../../plots/exclusion_expp1.pdf");
+    gROOT->ProcessLine(".! ps2pdf ../../plots/exclusion_expm1.eps ../../plots/exclusion_expm1.pdf");
+  }
+
 
   /*
   //exclusion TH1
@@ -835,6 +763,8 @@ TGraphErrors* getCurve_TGraph( TH2I *hist , char* name ){
   TGraphErrors *gr = new TGraphErrors(npoints,xpoint,ypoint,ex,ey);
   gr->SetName(name);
   gr->SetTitle(name);
+  gr->SetLineWidth(3);
+  gr->SetLineColor(4);
 
   return gr;
  
