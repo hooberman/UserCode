@@ -27,6 +27,34 @@
 
 using namespace std;
 
+void printCard( char* name , float sigtot , float kerr ){
+
+  ofstream* ofile = new ofstream();
+
+  ofile->open(Form("cards/%s.txt",name));
+
+  *ofile <<      "imax 1 number of channels"                                                            << endl;
+  *ofile <<      "jmax 1 number of background"                                                          << endl;
+  *ofile <<      "kmax * number of nuisance parameters"                                                 << endl;
+  *ofile <<      "Observation 35                                                            "           << endl;
+  *ofile << Form("shapes      *   * rootfiles/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC",name) << endl;
+  *ofile << Form("shapes data_obs * rootfiles/%s.root  histo_Data" , name )                             << endl;
+  *ofile <<      "bin                                  1       1"                                       << endl;
+  *ofile << Form("process                      %s     bkg" , name )                                     << endl;
+  *ofile <<      "process                              0       1"                                       << endl;
+  *ofile << Form("rate                              %.1f    25.5" , sigtot)                             << endl;
+  *ofile <<      "lumi                       lnN   1.060       -"                                       << endl;
+  *ofile <<      "eff_leptons                lnN   1.050       -"                                       << endl;
+  *ofile << Form("k                          lnN    %.2f       -"  , kerr)                              << endl;
+  *ofile <<      "JES_shape                shape     1.0       -"                                       << endl;
+  *ofile <<      "stat                 shapeStat       -     1.0"                                       << endl;
+  *ofile <<      "syst                     shape       -     1.0"                                       << endl;
+  
+  ofile->close();
+
+}
+
+
 float getYield( TChain *ch , TCut sel , TCut weight ){
 
   TH1F* hee = new TH1F("hee","hee",1,0,1);
@@ -68,7 +96,7 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("t");
-  ch->Add("output/V00-02-06/highpt/LMscan_smallTree.root");
+  ch->Add("output/V00-02-07/highpt/LMscan_smallTree.root");
 
   //---------------------------------------
   // selection
@@ -86,6 +114,7 @@ void makeCMSSMCards(){
   TCut SR1("ht>300 && ht<600 && pfmet>275");
   TCut SR2("ht>600 && pfmet>275");
   TCut SR3("ht>600 && pfmet>200 && pfmet<275");
+  TCut sig("(ht>300 && pfmet>275) || (ht>600 && pfmet>200)");
 
   TCut SR1jup("htUp>300 && htUp<600 && pfmetUp>275");
   TCut SR2jup("htUp>600 && pfmetUp>275");
@@ -121,127 +150,109 @@ void makeCMSSMCards(){
     hkup[i]   = new TH2F( Form("hkup_%i",i) , Form("hkup_%i",i) , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
     hkdn[i]   = new TH2F( Form("hkdn_%i",i) , Form("hkdn_%i",i) , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
 
+    h[i]    ->Sumw2();
+    hjup[i] ->Sumw2();
+    hjdn[i] ->Sumw2();
+    hkup[i] ->Sumw2();
+    hkdn[i] ->Sumw2();
   }
 
-  TH2F* h_SR1_SF = new TH2F("h_SR1_SF"      , "h_SR1_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR1_OF = new TH2F("h_SR1_OF"      , "h_SR1_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2_SF = new TH2F("h_SR2_SF"      , "h_SR2_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2_OF = new TH2F("h_SR2_OF"      , "h_SR2_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3_SF = new TH2F("h_SR3_SF"      , "h_SR3_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3_OF = new TH2F("h_SR3_OF"      , "h_SR3_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-
-  TH2F* h_SR1jup_SF = new TH2F("h_SR1jup_SF"      , "h_SR1jup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR1jup_OF = new TH2F("h_SR1jup_OF"      , "h_SR1jup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2jup_SF = new TH2F("h_SR2jup_SF"      , "h_SR2jup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2jup_OF = new TH2F("h_SR2jup_OF"      , "h_SR2jup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3jup_SF = new TH2F("h_SR3jup_SF"      , "h_SR3jup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3jup_OF = new TH2F("h_SR3jup_OF"      , "h_SR3jup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-
-  TH2F* h_SR1jdn_SF = new TH2F("h_SR1jdn_SF"      , "h_SR1jdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR1jdn_OF = new TH2F("h_SR1jdn_OF"      , "h_SR1jdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2jdn_SF = new TH2F("h_SR2jdn_SF"      , "h_SR2jdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2jdn_OF = new TH2F("h_SR2jdn_OF"      , "h_SR2jdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3jdn_SF = new TH2F("h_SR3jdn_SF"      , "h_SR3jdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3jdn_OF = new TH2F("h_SR3jdn_OF"      , "h_SR3jdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-
-  TH2F* h_SR1kup_SF = new TH2F("h_SR1kup_SF"      , "h_SR1kup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR1kup_OF = new TH2F("h_SR1kup_OF"      , "h_SR1kup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2kup_SF = new TH2F("h_SR2kup_SF"      , "h_SR2kup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2kup_OF = new TH2F("h_SR2kup_OF"      , "h_SR2kup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3kup_SF = new TH2F("h_SR3kup_SF"      , "h_SR3kup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3kup_OF = new TH2F("h_SR3kup_OF"      , "h_SR3kup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-
-  TH2F* h_SR1kdn_SF = new TH2F("h_SR1kdn_SF"      , "h_SR1kdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR1kdn_OF = new TH2F("h_SR1kdn_OF"      , "h_SR1kdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2kdn_SF = new TH2F("h_SR2kdn_SF"      , "h_SR2kdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR2kdn_OF = new TH2F("h_SR2kdn_OF"      , "h_SR2kdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3kdn_SF = new TH2F("h_SR3kdn_SF"      , "h_SR3kdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-  TH2F* h_SR3kdn_OF = new TH2F("h_SR3kdn_OF"      , "h_SR3kdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
-
-  h_SR1_SF->Sumw2();
-  h_SR1_OF->Sumw2();
-  h_SR2_SF->Sumw2();
-  h_SR2_OF->Sumw2();
-  h_SR3_SF->Sumw2();
-  h_SR3_OF->Sumw2();
-
-  h_SR1jup_SF->Sumw2();
-  h_SR1jup_OF->Sumw2();
-  h_SR2jup_SF->Sumw2();
-  h_SR2jup_OF->Sumw2();
-  h_SR3jup_SF->Sumw2();
-  h_SR3jup_OF->Sumw2();
-
-  h_SR1jdn_SF->Sumw2();
-  h_SR1jdn_OF->Sumw2();
-  h_SR2jdn_SF->Sumw2();
-  h_SR2jdn_OF->Sumw2();
-  h_SR3jdn_SF->Sumw2();
-  h_SR3jdn_OF->Sumw2();
-
-  h_SR1kup_SF->Sumw2();
-  h_SR1kup_OF->Sumw2();
-  h_SR2kup_SF->Sumw2();
-  h_SR2kup_OF->Sumw2();
-  h_SR3kup_SF->Sumw2();
-  h_SR3kup_OF->Sumw2();
-
-  h_SR1kdn_SF->Sumw2();
-  h_SR1kdn_OF->Sumw2();
-  h_SR2kdn_SF->Sumw2();
-  h_SR2kdn_OF->Sumw2();
-  h_SR3kdn_SF->Sumw2();
-  h_SR3kdn_OF->Sumw2();
+  TH2F* hall    = new TH2F( "hall"    , "hall"    , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* hkupall = new TH2F( "hkupall" , "hkupall" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* hkdnall = new TH2F( "hkdnall" , "hkdnall" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  
+  hall->Sumw2();
+  hkupall->Sumw2();
+  hkdnall->Sumw2();
 
   TCanvas *ctemp = new TCanvas();
   ctemp->cd();
 
+ 
   //nominal
-  ch->Draw("m12:m0>>h_SR1_SF"        , (presel + SR1 + SF) * weight );
-  ch->Draw("m12:m0>>h_SR1_OF"        , (presel + SR1 + OF) * weight );
-  ch->Draw("m12:m0>>h_SR2_SF"        , (presel + SR2 + SF) * weight );
-  ch->Draw("m12:m0>>h_SR2_OF"        , (presel + SR2 + OF) * weight );
-  ch->Draw("m12:m0>>h_SR3_SF"        , (presel + SR3 + SF) * weight );
-  ch->Draw("m12:m0>>h_SR3_OF"        , (presel + SR3 + OF) * weight );
+  cout << "Filling nominal histos" << endl;
+  ch->Draw("m12:m0>>h_0"        , (presel + SR1 + SF) * weight );
+  ch->Draw("m12:m0>>h_1"        , (presel + SR1 + OF) * weight );
+  ch->Draw("m12:m0>>h_2"        , (presel + SR2 + SF) * weight );
+  ch->Draw("m12:m0>>h_3"        , (presel + SR2 + OF) * weight );
+  ch->Draw("m12:m0>>h_4"        , (presel + SR3 + SF) * weight );
+  ch->Draw("m12:m0>>h_5"        , (presel + SR3 + OF) * weight );
+  ch->Draw("m12:m0>>hall"       , (presel + sig     ) * weight );
+  
+  // //JES up
+  // cout << "Filling JES up histos" << endl;
+  // ch->Draw("m12:m0>>hjup_0"     , (preseljup + SR1jup + SF) * weight );
+  // ch->Draw("m12:m0>>hjup_1"     , (preseljup + SR1jup + OF) * weight );
+  // ch->Draw("m12:m0>>hjup_2"     , (preseljup + SR2jup + SF) * weight );
+  // ch->Draw("m12:m0>>hjup_3"     , (preseljup + SR2jup + OF) * weight );
+  // ch->Draw("m12:m0>>hjup_4"     , (preseljup + SR3jup + SF) * weight );
+  // ch->Draw("m12:m0>>hjup_5"     , (preseljup + SR3jup + OF) * weight );
 
-  //JES up
-  ch->Draw("m12:m0>>h_SR1jup_SF"     , (preseljup + SR1jup + SF) * weight );
-  ch->Draw("m12:m0>>h_SR1jup_OF"     , (preseljup + SR1jup + OF) * weight );
-  ch->Draw("m12:m0>>h_SR2jup_SF"     , (preseljup + SR2jup + SF) * weight );
-  ch->Draw("m12:m0>>h_SR2jup_OF"     , (preseljup + SR2jup + OF) * weight );
-  ch->Draw("m12:m0>>h_SR3jup_SF"     , (preseljup + SR3jup + SF) * weight );
-  ch->Draw("m12:m0>>h_SR3jup_OF"     , (preseljup + SR3jup + OF) * weight );
+  // //JES down
+  // cout << "Filling JES dn histos" << endl;
+  // ch->Draw("m12:m0>>hjdn_0"     , (preseljdn + SR1jdn + SF) * weight );
+  // ch->Draw("m12:m0>>hjdn_1"     , (preseljdn + SR1jdn + OF) * weight );
+  // ch->Draw("m12:m0>>hjdn_2"     , (preseljdn + SR2jdn + SF) * weight );
+  // ch->Draw("m12:m0>>hjdn_3"     , (preseljdn + SR2jdn + OF) * weight );
+  // ch->Draw("m12:m0>>hjdn_4"     , (preseljdn + SR3jdn + SF) * weight );
+  // ch->Draw("m12:m0>>hjdn_5"     , (preseljdn + SR3jdn + OF) * weight );
 
-  //JES down
-  ch->Draw("m12:m0>>h_SR1jdn_SF"     , (preseljdn + SR1jdn + SF) * weight );
-  ch->Draw("m12:m0>>h_SR1jdn_OF"     , (preseljdn + SR1jdn + OF) * weight );
-  ch->Draw("m12:m0>>h_SR2jdn_SF"     , (preseljdn + SR2jdn + SF) * weight );
-  ch->Draw("m12:m0>>h_SR2jdn_OF"     , (preseljdn + SR2jdn + OF) * weight );
-  ch->Draw("m12:m0>>h_SR3jdn_SF"     , (preseljdn + SR3jdn + SF) * weight );
-  ch->Draw("m12:m0>>h_SR3jdn_OF"     , (preseljdn + SR3jdn + OF) * weight );
+  // //k-factor up
+  // cout << "Filling k up histos" << endl;
+  // ch->Draw("m12:m0>>hkup_0"     , (presel + SR1 + SF) * weightkup );
+  // ch->Draw("m12:m0>>hkup_1"     , (presel + SR1 + OF) * weightkup );
+  // ch->Draw("m12:m0>>hkup_2"     , (presel + SR2 + SF) * weightkup );
+  // ch->Draw("m12:m0>>hkup_3"     , (presel + SR2 + OF) * weightkup );
+  // ch->Draw("m12:m0>>hkup_4"     , (presel + SR3 + SF) * weightkup );
+  // ch->Draw("m12:m0>>hkup_5"     , (presel + SR3 + OF) * weightkup );
+  ch->Draw("m12:m0>>hkupall"    , (presel + sig     ) * weightkup );
 
-  //k-factor up
-  ch->Draw("m12:m0>>h_SR1kup_SF"     , (presel + SR1 + SF) * weightkup );
-  ch->Draw("m12:m0>>h_SR1kup_OF"     , (presel + SR1 + OF) * weightkup );
-  ch->Draw("m12:m0>>h_SR2kup_SF"     , (presel + SR2 + SF) * weightkup );
-  ch->Draw("m12:m0>>h_SR2kup_OF"     , (presel + SR2 + OF) * weightkup );
-  ch->Draw("m12:m0>>h_SR3kup_SF"     , (presel + SR3 + SF) * weightkup );
-  ch->Draw("m12:m0>>h_SR3kup_OF"     , (presel + SR3 + OF) * weightkup );
-
-  //k-factor down
-  ch->Draw("m12:m0>>h_SR1kdn_SF"     , (presel + SR1 + SF) * weightkdn );
-  ch->Draw("m12:m0>>h_SR1kdn_OF"     , (presel + SR1 + OF) * weightkdn );
-  ch->Draw("m12:m0>>h_SR2kdn_SF"     , (presel + SR2 + SF) * weightkdn );
-  ch->Draw("m12:m0>>h_SR2kdn_OF"     , (presel + SR2 + OF) * weightkdn );
-  ch->Draw("m12:m0>>h_SR3kdn_SF"     , (presel + SR3 + SF) * weightkdn );
-  ch->Draw("m12:m0>>h_SR3kdn_OF"     , (presel + SR3 + OF) * weightkdn );
+  // //k-factor down
+  // cout << "Filling k down histos" << endl;
+  // ch->Draw("m12:m0>>hkdn_0"     , (presel + SR1 + SF) * weightkdn );
+  // ch->Draw("m12:m0>>hkdn_1"     , (presel + SR1 + OF) * weightkdn );
+  // ch->Draw("m12:m0>>hkdn_2"     , (presel + SR2 + SF) * weightkdn );
+  // ch->Draw("m12:m0>>hkdn_3"     , (presel + SR2 + OF) * weightkdn );
+  // ch->Draw("m12:m0>>hkdn_4"     , (presel + SR3 + SF) * weightkdn );
+  // ch->Draw("m12:m0>>hkdn_5"     , (presel + SR3 + OF) * weightkdn );
+  ch->Draw("m12:m0>>hkdnall"    , (presel + sig     ) * weightkdn );
 
   delete ctemp;
 
 
-  int bin = h_SR1_SF->FindBin(80,400);
-  cout << "yield " << h_SR2_SF->GetBinContent(bin)+h_SR2_OF->GetBinContent(bin)+h_SR3_SF->GetBinContent(bin)+h_SR3_OF->GetBinContent(bin) << endl;
+  for( int m0bin = 1 ; m0bin <= hall->GetXaxis()->GetNbins() ; m0bin++ ){
+    for( int m12bin = 1 ; m12bin <= hall->GetYaxis()->GetNbins() ; m12bin++ ){
 
+      if( !( m0bin == 10 && m12bin == 10 ) ) continue;
+
+      float nom = hall->GetBinContent(m0bin,m12bin);
+      float kdn = hkupall->GetBinContent(m0bin,m12bin);
+      float kup = hkdnall->GetBinContent(m0bin,m12bin);
+	     
+      float dup = kup / nom - 1;
+      float ddn = 1 - kdn / nom;
+      float kerr = 0.5 * ( dup + ddn );
+
+      float sigtot = hall->GetBinContent(m0bin,m12bin);
+      printCard( Form("CMSSM_%i_%i",m0bin,m12bin) , sigtot , 1+kerr );
+
+    }
+  }
+
+
+  // TCanvas *c1 = new TCanvas("c1","c1",1000,800);
+  // c1->cd();
+  // gStyle->SetPaintTextFormat(".1f");
+  // hall->Draw("colz");
+
+
+  //int bin = h[0]->FindBin(80,400);
+  //cout << "yield " << h[2]->GetBinContent(bin)+h[3]->GetBinContent(bin)+h[4]->GetBinContent(bin)+h[5]->GetBinContent(bin) << endl;
+
+
+
+
+  //for( unsigned int m0
 
   //cout << "yield " << yield_highHT_SF << endl;
 
@@ -485,3 +496,85 @@ f
   // cout << "SR2 OF   : " << Form("%.1f +/- %.1f",h2OF->GetBinContent(1),h2OF->GetBinError(1)) << endl;
   // cout << "SR3 SF   : " << Form("%.1f +/- %.1f",h3SF->GetBinContent(1),h3SF->GetBinError(1)) << endl;
   // cout << "SR3 OF   : " << Form("%.1f +/- %.1f",h3OF->GetBinContent(1),h3OF->GetBinError(1)) << endl;
+
+
+
+
+
+
+
+/*
+
+
+
+
+  TH2F* h_SR1_SF = new TH2F("h_SR1_SF"      , "h_SR1_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR1_OF = new TH2F("h_SR1_OF"      , "h_SR1_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2_SF = new TH2F("h_SR2_SF"      , "h_SR2_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2_OF = new TH2F("h_SR2_OF"      , "h_SR2_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3_SF = new TH2F("h_SR3_SF"      , "h_SR3_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3_OF = new TH2F("h_SR3_OF"      , "h_SR3_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+  TH2F* h_SR1jup_SF = new TH2F("h_SR1jup_SF"      , "h_SR1jup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR1jup_OF = new TH2F("h_SR1jup_OF"      , "h_SR1jup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2jup_SF = new TH2F("h_SR2jup_SF"      , "h_SR2jup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2jup_OF = new TH2F("h_SR2jup_OF"      , "h_SR2jup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3jup_SF = new TH2F("h_SR3jup_SF"      , "h_SR3jup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3jup_OF = new TH2F("h_SR3jup_OF"      , "h_SR3jup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+  TH2F* h_SR1jdn_SF = new TH2F("h_SR1jdn_SF"      , "h_SR1jdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR1jdn_OF = new TH2F("h_SR1jdn_OF"      , "h_SR1jdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2jdn_SF = new TH2F("h_SR2jdn_SF"      , "h_SR2jdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2jdn_OF = new TH2F("h_SR2jdn_OF"      , "h_SR2jdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3jdn_SF = new TH2F("h_SR3jdn_SF"      , "h_SR3jdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3jdn_OF = new TH2F("h_SR3jdn_OF"      , "h_SR3jdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+  TH2F* h_SR1kup_SF = new TH2F("h_SR1kup_SF"      , "h_SR1kup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR1kup_OF = new TH2F("h_SR1kup_OF"      , "h_SR1kup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2kup_SF = new TH2F("h_SR2kup_SF"      , "h_SR2kup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2kup_OF = new TH2F("h_SR2kup_OF"      , "h_SR2kup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3kup_SF = new TH2F("h_SR3kup_SF"      , "h_SR3kup_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3kup_OF = new TH2F("h_SR3kup_OF"      , "h_SR3kup_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+  TH2F* h_SR1kdn_SF = new TH2F("h_SR1kdn_SF"      , "h_SR1kdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR1kdn_OF = new TH2F("h_SR1kdn_OF"      , "h_SR1kdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2kdn_SF = new TH2F("h_SR2kdn_SF"      , "h_SR2kdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR2kdn_OF = new TH2F("h_SR2kdn_OF"      , "h_SR2kdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3kdn_SF = new TH2F("h_SR3kdn_SF"      , "h_SR3kdn_SF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+  TH2F* h_SR3kdn_OF = new TH2F("h_SR3kdn_OF"      , "h_SR3kdn_OF" , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
+
+  h_SR1_SF->Sumw2();
+  h_SR1_OF->Sumw2();
+  h_SR2_SF->Sumw2();
+  h_SR2_OF->Sumw2();
+  h_SR3_SF->Sumw2();
+  h_SR3_OF->Sumw2();
+
+  h_SR1jup_SF->Sumw2();
+  h_SR1jup_OF->Sumw2();
+  h_SR2jup_SF->Sumw2();
+  h_SR2jup_OF->Sumw2();
+  h_SR3jup_SF->Sumw2();
+  h_SR3jup_OF->Sumw2();
+
+  h_SR1jdn_SF->Sumw2();
+  h_SR1jdn_OF->Sumw2();
+  h_SR2jdn_SF->Sumw2();
+  h_SR2jdn_OF->Sumw2();
+  h_SR3jdn_SF->Sumw2();
+  h_SR3jdn_OF->Sumw2();
+
+  h_SR1kup_SF->Sumw2();
+  h_SR1kup_OF->Sumw2();
+  h_SR2kup_SF->Sumw2();
+  h_SR2kup_OF->Sumw2();
+  h_SR3kup_SF->Sumw2();
+  h_SR3kup_OF->Sumw2();
+
+  h_SR1kdn_SF->Sumw2();
+  h_SR1kdn_OF->Sumw2();
+  h_SR2kdn_SF->Sumw2();
+  h_SR2kdn_OF->Sumw2();
+  h_SR3kdn_SF->Sumw2();
+  h_SR3kdn_OF->Sumw2();
+*/
