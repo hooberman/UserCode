@@ -55,40 +55,6 @@ void printCard( char* name , float sigtot , float kerr ){
 }
 
 
-float getYield( TChain *ch , TCut sel , TCut weight ){
-
-  TH1F* hee = new TH1F("hee","hee",1,0,1);
-  TH1F* hmm = new TH1F("hmm","hmm",1,0,1);
-  TH1F* hem = new TH1F("hem","hem",1,0,1);
-
-  hee->Sumw2();
-  hmm->Sumw2();
-  hem->Sumw2();
-
-  TCut ee("leptype==0");
-  TCut mm("leptype==1");
-  TCut em("leptype==2");
-
-  ch->Draw("0.5>>hee",(sel+ee)*weight);
-  ch->Draw("0.5>>hmm",(sel+mm)*weight);
-  ch->Draw("0.5>>hem",(sel+em)*weight);
-
-  float nee = hee->GetBinContent(1);
-  float nmm = hmm->GetBinContent(1);
-  float nem = hem->GetBinContent(1);
-
-  float eee = hee->GetBinError(1);
-  float emm = hmm->GetBinError(1);
-  float eem = hem->GetBinError(1);
-
-  float tot    = 1.05 * nee + 1.08 * nem + 1.12 * nmm;
-  float toterr = 1.05 * eee + 1.08 * eem + 1.12 * emm;
-
-  cout << "Yield " << Form("%.1f +/- %.1f",tot,toterr) << endl;
-  return tot;
-
-}
-
 void makeCMSSMCards(){
 
   //---------------------------------------
@@ -179,42 +145,42 @@ void makeCMSSMCards(){
   ch->Draw("m12:m0>>h_5"        , (presel + SR3 + OF) * weight );
   ch->Draw("m12:m0>>hall"       , (presel + sig     ) * weight );
   
-  // //JES up
-  // cout << "Filling JES up histos" << endl;
-  // ch->Draw("m12:m0>>hjup_0"     , (preseljup + SR1jup + SF) * weight );
-  // ch->Draw("m12:m0>>hjup_1"     , (preseljup + SR1jup + OF) * weight );
-  // ch->Draw("m12:m0>>hjup_2"     , (preseljup + SR2jup + SF) * weight );
-  // ch->Draw("m12:m0>>hjup_3"     , (preseljup + SR2jup + OF) * weight );
-  // ch->Draw("m12:m0>>hjup_4"     , (preseljup + SR3jup + SF) * weight );
-  // ch->Draw("m12:m0>>hjup_5"     , (preseljup + SR3jup + OF) * weight );
-
-  // //JES down
-  // cout << "Filling JES dn histos" << endl;
-  // ch->Draw("m12:m0>>hjdn_0"     , (preseljdn + SR1jdn + SF) * weight );
-  // ch->Draw("m12:m0>>hjdn_1"     , (preseljdn + SR1jdn + OF) * weight );
-  // ch->Draw("m12:m0>>hjdn_2"     , (preseljdn + SR2jdn + SF) * weight );
-  // ch->Draw("m12:m0>>hjdn_3"     , (preseljdn + SR2jdn + OF) * weight );
-  // ch->Draw("m12:m0>>hjdn_4"     , (preseljdn + SR3jdn + SF) * weight );
-  // ch->Draw("m12:m0>>hjdn_5"     , (preseljdn + SR3jdn + OF) * weight );
-
-  // //k-factor up
-  // cout << "Filling k up histos" << endl;
-  // ch->Draw("m12:m0>>hkup_0"     , (presel + SR1 + SF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_1"     , (presel + SR1 + OF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_2"     , (presel + SR2 + SF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_3"     , (presel + SR2 + OF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_4"     , (presel + SR3 + SF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_5"     , (presel + SR3 + OF) * weightkup );
+  //JES up
+  cout << "Filling JES up histos" << endl;
+  ch->Draw("m12:m0>>hjup_0"     , (preseljup + SR1jup + SF) * weight );
+  ch->Draw("m12:m0>>hjup_1"     , (preseljup + SR1jup + OF) * weight );
+  ch->Draw("m12:m0>>hjup_2"     , (preseljup + SR2jup + SF) * weight );
+  ch->Draw("m12:m0>>hjup_3"     , (preseljup + SR2jup + OF) * weight );
+  ch->Draw("m12:m0>>hjup_4"     , (preseljup + SR3jup + SF) * weight );
+  ch->Draw("m12:m0>>hjup_5"     , (preseljup + SR3jup + OF) * weight );
+  
+  //JES down
+  cout << "Filling JES dn histos" << endl;
+  ch->Draw("m12:m0>>hjdn_0"     , (preseljdn + SR1jdn + SF) * weight );
+  ch->Draw("m12:m0>>hjdn_1"     , (preseljdn + SR1jdn + OF) * weight );
+  ch->Draw("m12:m0>>hjdn_2"     , (preseljdn + SR2jdn + SF) * weight );
+  ch->Draw("m12:m0>>hjdn_3"     , (preseljdn + SR2jdn + OF) * weight );
+  ch->Draw("m12:m0>>hjdn_4"     , (preseljdn + SR3jdn + SF) * weight );
+  ch->Draw("m12:m0>>hjdn_5"     , (preseljdn + SR3jdn + OF) * weight );
+  
+  //k-factor up
+  cout << "Filling k up histos" << endl;
+  ch->Draw("m12:m0>>hkup_0"     , (presel + SR1 + SF) * weightkup );
+  ch->Draw("m12:m0>>hkup_1"     , (presel + SR1 + OF) * weightkup );
+  ch->Draw("m12:m0>>hkup_2"     , (presel + SR2 + SF) * weightkup );
+  ch->Draw("m12:m0>>hkup_3"     , (presel + SR2 + OF) * weightkup );
+  ch->Draw("m12:m0>>hkup_4"     , (presel + SR3 + SF) * weightkup );
+  ch->Draw("m12:m0>>hkup_5"     , (presel + SR3 + OF) * weightkup );
   ch->Draw("m12:m0>>hkupall"    , (presel + sig     ) * weightkup );
-
-  // //k-factor down
-  // cout << "Filling k down histos" << endl;
-  // ch->Draw("m12:m0>>hkdn_0"     , (presel + SR1 + SF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_1"     , (presel + SR1 + OF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_2"     , (presel + SR2 + SF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_3"     , (presel + SR2 + OF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_4"     , (presel + SR3 + SF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_5"     , (presel + SR3 + OF) * weightkdn );
+  
+  //k-factor down
+  cout << "Filling k down histos" << endl;
+  ch->Draw("m12:m0>>hkdn_0"     , (presel + SR1 + SF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_1"     , (presel + SR1 + OF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_2"     , (presel + SR2 + SF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_3"     , (presel + SR2 + OF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_4"     , (presel + SR3 + SF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_5"     , (presel + SR3 + OF) * weightkdn );
   ch->Draw("m12:m0>>hkdnall"    , (presel + sig     ) * weightkdn );
 
   delete ctemp;
@@ -223,7 +189,10 @@ void makeCMSSMCards(){
   for( int m0bin = 1 ; m0bin <= hall->GetXaxis()->GetNbins() ; m0bin++ ){
     for( int m12bin = 1 ; m12bin <= hall->GetYaxis()->GetNbins() ; m12bin++ ){
 
-      if( !( m0bin == 10 && m12bin == 10 ) ) continue;
+      int m0  = hall->GetXaxis()->GetBinCenter(m0bin);
+      int m12 = hall->GetXaxis()->GetBinCenter(m12bin);
+
+      if( !( m0 == 80 && m12 == 400 ) ) continue;
 
       float nom = hall->GetBinContent(m0bin,m12bin);
       float kdn = hkupall->GetBinContent(m0bin,m12bin);
@@ -236,17 +205,83 @@ void makeCMSSMCards(){
       float sigtot = hall->GetBinContent(m0bin,m12bin);
       printCard( Form("CMSSM_%i_%i",m0bin,m12bin) , sigtot , 1+kerr );
 
+
+      //---------------------------------------
+      // make root file
+      //---------------------------------------
+
+      TH1F* histo_CMSSM               = new TH1F( Form("histo_CMSSM_%i_%i"              ,m0bin,m12bin) , Form("histo_CMSSM_%i_%i"              ,m0bin,m12bin) , nbins,0,nbins);
+      TH1F* histo_CMSSM_JES_shapeUp   = new TH1F( Form("histo_CMSSM_%i_%i_JES_shapeUp"  ,m0bin,m12bin) , Form("histo_CMSSM_%i_%i_JES_shapeUp"  ,m0bin,m12bin) , nbins,0,nbins);
+      TH1F* histo_CMSSM_JES_shapeDown = new TH1F( Form("histo_CMSSM_%i_%i_JES_shapeDown",m0bin,m12bin) , Form("histo_CMSSM_%i_%i_JES_shapeDown",m0bin,m12bin) , nbins,0,nbins);
+
+      for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
+	histo_CMSSM->SetBinContent              ( ibin + 1 , h[ibin]->GetBinContent(m0bin,m12bin) );
+	histo_CMSSM_JES_shapeUp->SetBinContent  ( ibin + 1 , hjup[ibin]->GetBinContent(m0bin,m12bin) );
+	histo_CMSSM_JES_shapeDown->SetBinContent( ibin + 1 , hjdn[ibin]->GetBinContent(m0bin,m12bin) );
+      }
+      
+      //signal regions                         R1(SF)      R1(OF)    R2(SF)     R2(OF)      R3(SF)   R3(OF)
+      int     data_yield[nbins]           = {    4     ,     9    ,    6     ,    4     ,     3    ,    9   };
+      float   bkg_yield[nbins]            = {   3.4    ,    3.4   ,   4.1    ,   4.1    ,    5.2   ,   5.2  };
+      float   bkg_syst[nbins]             = {   1.8    ,    1.8   ,   1.9    ,   1.9    ,    2.0   ,   2.0  };
+      float   bkg_stat[nbins]             = {   4.2    ,    4.2   ,   3.5    ,   3.5    ,    3.5   ,   3.5  };
+
+      TH1F* histo_Data = new TH1F("histo_Data","histo_Data",nbins,0,nbins);
+
+      for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
+	histo_Data->SetBinContent( ibin+1 , data_yield[ibin] );
+      }
+
+      TH1F* histo_bkg               = new TH1F("histo_bkg","histo_bkg",nbins,0,nbins);
+      TH1F* histo_bkg_statUp        = new TH1F("histo_bkg_statUp"  ,"histo_bkg_statUp"  ,nbins,0,nbins);
+      TH1F* histo_bkg_statDown      = new TH1F("histo_bkg_statDown","histo_bkg_statDown",nbins,0,nbins);
+      TH1F* histo_bkg_systUp        = new TH1F("histo_bkg_systUp"  ,"histo_bkg_systUp"  ,nbins,0,nbins);
+      TH1F* histo_bkg_systDown      = new TH1F("histo_bkg_systDown","histo_bkg_systDown",nbins,0,nbins);
+      
+      for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
+	histo_bkg               -> SetBinContent(ibin+1,bkg_yield[ibin]);
+	histo_bkg_statUp        -> SetBinContent(ibin+1, bkg_yield[ibin] + bkg_stat[ibin] );
+	histo_bkg_statDown      -> SetBinContent(ibin+1, bkg_yield[ibin] - bkg_stat[ibin] );
+	histo_bkg_systUp        -> SetBinContent(ibin+1, bkg_yield[ibin] + bkg_syst[ibin] );
+	histo_bkg_systDown      -> SetBinContent(ibin+1, bkg_yield[ibin] - bkg_syst[ibin] );
+      }
+
+
+      TFile *f = TFile::Open( Form("rootfiles/CMSSM_%i_%i.root",m0bin,m12bin) , "RECREATE");
+      f->cd();
+      histo_Data->Write();
+      histo_bkg->Write();
+      histo_bkg_statUp->Write();
+      histo_bkg_statDown->Write();
+      histo_bkg_systUp->Write();
+      histo_bkg_systDown->Write();
+      histo_CMSSM->Write();
+      histo_CMSSM_JES_shapeUp->Write();
+      histo_CMSSM_JES_shapeDown->Write();
+      f->Close();
+
+      delete histo_Data;
+      delete histo_bkg;
+      delete histo_bkg_statUp;
+      delete histo_bkg_statDown;
+      delete histo_bkg_systUp;
+      delete histo_bkg_systDown;
+      delete histo_CMSSM;
+      delete histo_CMSSM_JES_shapeUp;
+      delete histo_CMSSM_JES_shapeDown;
     }
   }
 
-
-  // TCanvas *c1 = new TCanvas("c1","c1",1000,800);
-  // c1->cd();
-  // gStyle->SetPaintTextFormat(".1f");
-  // hall->Draw("colz");
-
-
-  //int bin = h[0]->FindBin(80,400);
+ 
+  /*
+  TCanvas *c1 = new TCanvas("c1","c1",1000,800);
+  c1->cd();
+  gStyle->SetPaintTextFormat(".1f");
+  hall->Draw("colz");
+  int bin = h[0]->FindBin(80,400);
+  cout << "yield " << hall->GetBinContent(bin) << endl;
+  */
+  //
   //cout << "yield " << h[2]->GetBinContent(bin)+h[3]->GetBinContent(bin)+h[4]->GetBinContent(bin)+h[5]->GetBinContent(bin) << endl;
 
 
