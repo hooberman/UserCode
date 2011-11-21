@@ -2134,6 +2134,13 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    if( leptype_ == 2 ) trgeff_ = 0.95;
 	  }
 
+	  lepscale_ = 1;
+	  if(!isData){
+	    if( leptype_ == 0 ) lepscale_ = 1.05;
+	    if( leptype_ == 1 ) lepscale_ = 1.12;
+	    if( leptype_ == 2 ) lepscale_ = 1.08;
+	  }
+
           outTree->Fill();
         }
 
@@ -4062,6 +4069,7 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("json",            &json_,             "json/I");
   outTree->Branch("htoffset",        &htoffset_,         "htoffset/F");
   outTree->Branch("htuncor",         &htuncor_,          "htuncor/F");
+  outTree->Branch("lepscale",        &lepscale_,         "lepscale/F");
   outTree->Branch("njetsoffset",     &njetsoffset_,      "njetsoffset/I");
   outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
