@@ -43,8 +43,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-07";
-  const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
+  const char* version   = "V00-02-08";
+  const char* jsonfile  = "jsons/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -256,7 +256,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   */
     
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -308,7 +308,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML6      = 0;
   bool runML7      = 0;
   bool runML8      = 0;
-  bool runLMscan   = 1; 
+  bool runLMscan   = 0; 
   bool runT2tt     = 0;
   bool runT1lh     = 0;
   
@@ -879,7 +879,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chdata     = new  TChain("Events");
   TChain* chdata41   = new  TChain("Events");
 
-  for( int pt = 0 ; pt < 1 ; ++pt ){
+  for( int pt = 1 ; pt < 2 ; ++pt ){
 
     //set trigger type
     if( pt == 0 ) trig = ossusy_looper::e_highpt;
@@ -958,10 +958,42 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 	
 	cout << "Doing dilepton-HT trigger data" << endl;
 
+	//---------------------------
+	// may10 rereco
+	//---------------------------
+
 	pickSkimIfExists(chdata,"cms2_data/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed*root");
 	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed*root");
+
+	//---------------------------
+	// prompt reco v4
+	//---------------------------
+
 	pickSkimIfExists(chdata,"cms2_data/ElectronHad_Run2011A-PromptReco-v4_AOD/V04-02-20/SSignSkim/skimmed*root");
 	pickSkimIfExists(chdata,"cms2_data/MuHad_Run2011A-PromptReco-v4_AOD/V04-02-20/SSignSkim/skimmed*root");
+
+	//---------------------------
+	// aug05 rereco
+	//---------------------------
+
+	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/ElectronHad_Run2011A-05Aug2011-v1_AOD/V04-02-29/SSignSkim/skimmed*root");
+	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuHad_Run2011A-05Aug2011-v1_AOD/V04-02-33/SSignSkim/skimmed*root");
+
+	//---------------------------
+	// prompt reco v6
+	//---------------------------
+
+	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/ElectronHad_Run2011A-PromptReco-v6_AOD/V04-02-29/SSignSkim/skimmed*root");
+	pickSkimIfExists(chdata,"/nfs-6/userdata/cms2/MuHad_Run2011A-PromptReco-v6_AOD/V04-02-33/SSignSkim/skim*root");
+
+	//---------------------------
+	// 2011B
+	//---------------------------
+
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+	pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+
+
 
       }
 	
