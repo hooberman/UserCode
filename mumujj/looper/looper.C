@@ -808,9 +808,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       nbtags20_  = 0;
       nbtags33_  = 0;
 
-      vector<int> goodjets;
-      goodjets.clear();
-
       //---------------------
       // apply residual JEC
       //---------------------
@@ -835,7 +832,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	ht_ += vjet.pt();
 
 	vpfjets_p4.push_back( vjet );
-	goodjets.push_back(ijet);
 
 	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
 	  nbtags17_++;
@@ -850,44 +846,96 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	}
       }
 	  
+      //-----------------------------
+      // DON'T apply residual JEC
+      //-----------------------------
+
+      njetsuncor_ = 0;
+      VofP4 vpfjets_uncor_p4;
+
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+
+	if( generalLeptonVeto ){
+	  bool rejectJet = false;
+	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.5 ) rejectJet = true;  
+	  }
+	  if( rejectJet ) continue;
+	}
+
+	if( vjet.pt() < 25         ) continue;
+	if( fabs(vjet.eta()) > 3.0 ) continue;
+
+	njetsuncor_++;
+	vpfjets_uncor_p4.push_back( vjet );
+
+      }
+	  
       //------------------------------------
       // require >=2 jets!!!!!!
       //------------------------------------
 
-      if( njets_ < 2 ){
-	cout << "less than 2 jets " << njets_ << endl;
-	hping->Fill(pingmass_);
-	continue;
-      }
-
-      vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_p4_sorted(vpfjets_p4);
-      sort(vpfjets_p4_sorted.begin(), vpfjets_p4_sorted.end(), sortByPt);
+      // if( njets_ < 2 ){
+      // 	cout << "less than 2 jets " << njets_ << endl;
+      // 	hping->Fill(pingmass_);
+      // 	continue;
+      // }
 
       jet1_  = 0;
       jet2_  = 0;
       jet3_  = 0;
       jet4_  = 0;
 
-      jet1_  = &vpfjets_p4_sorted.at(0);
-      jet2_  = &vpfjets_p4_sorted.at(1);
+      mmjj_      = -1;
+      mmjjtrk_   = -1;
+      mmjjglb_   = -1;
+      mmjjsta_   = -1;
+      mjjj_      = -1;
+      mmjjuncor_ = -1;
+
+
+      //--------------------------------------
+      // corrected jets
+      //--------------------------------------
+
+      vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_p4_sorted(vpfjets_p4);
+      sort(vpfjets_p4_sorted.begin(), vpfjets_p4_sorted.end(), sortByPt);
+
+      if( njets_ > 0 ) jet1_  = &vpfjets_p4_sorted.at(0);
+      if( njets_ > 1 ) jet2_  = &vpfjets_p4_sorted.at(1);
       if( njets_ > 2 ) jet3_  = &vpfjets_p4_sorted.at(2);
       if( njets_ > 3 ) jet4_  = &vpfjets_p4_sorted.at(3);
 
-      jetcor1_ = jetCorrection( vpfjets_p4_sorted.at(0), jet_pf_L2L3corrector);
-      jetcor2_ = jetCorrection( vpfjets_p4_sorted.at(1), jet_pf_L2L3corrector);
+      if( njets_ >= 2 ){
 
-      cout << "jetcor1 " << jetcor1_ << " jetcor2 " << jetcor2_ << endl;
-
-      mmjj_ = -1;
-      if( ngoodlep_ > 1 ){
-	mmjj_    = (*lep1_    + *lep2_    + *jet1_ + *jet2_).mass();
-	mmjjtrk_ = (*lep1trk_ + *lep2trk_ + *jet1_ + *jet2_).mass();
-	mmjjglb_ = (*lep1glb_ + *lep2glb_ + *jet1_ + *jet2_).mass();
-	mmjjsta_ = (*lep1sta_ + *lep2sta_ + *jet1_ + *jet2_).mass();
+	jetcor1_ = jetCorrection( vpfjets_p4_sorted.at(0), jet_pf_L2L3corrector);
+	jetcor2_ = jetCorrection( vpfjets_p4_sorted.at(1), jet_pf_L2L3corrector);
+	
+	if( ngoodlep_ > 1 ){
+	  mmjj_    = (*lep1_    + *lep2_    + *jet1_ + *jet2_).mass();
+	  mmjjtrk_ = (*lep1trk_ + *lep2trk_ + *jet1_ + *jet2_).mass();
+	  mmjjglb_ = (*lep1glb_ + *lep2glb_ + *jet1_ + *jet2_).mass();
+	  mmjjsta_ = (*lep1sta_ + *lep2sta_ + *jet1_ + *jet2_).mass();
+	}
+	
+	if( njets_ > 2    ) mjjj_ = (*lep1_+*jet1_+*jet2_+*jet3_).mass();
       }
 
-      mjjj_ = -1;
-      if( njets_ > 2    ) mjjj_ = (*lep1_+*jet1_+*jet2_+*jet3_).mass();
+      //--------------------------------------
+      // UN-corrected jets
+      //--------------------------------------
+
+      vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_uncor_p4_sorted(vpfjets_uncor_p4);
+      sort(vpfjets_uncor_p4_sorted.begin(), vpfjets_uncor_p4_sorted.end(), sortByPt);
+
+      if( njetsuncor_ >= 2 && ngoodlep_ > 1 ){
+	mmjjuncor_ = (*lep1_    + *lep2_    + vpfjets_uncor_p4_sorted.at(0) + vpfjets_uncor_p4_sorted.at(1)).mass();
+      }
+
+
+
      
       pfmet_    = evt_pfmet();
       pfmetphi_ = evt_pfmetPhi();
@@ -1124,6 +1172,7 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   //variables must be declared in looper.h
   outTree->Branch("diltrig",         &diltrig_,          "diltrig/I");
   outTree->Branch("pingmass",        &pingmass_,         "pingmass/F");
+  outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
   outTree->Branch("jetcor1",         &jetcor1_,          "jetcor1/F");
   outTree->Branch("jetcor2",         &jetcor2_,          "jetcor2/F");
   outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
@@ -1202,6 +1251,7 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("dphijm",          &dphijm_,           "dphijm/F");  
   outTree->Branch("ptjetraw",        &ptjetraw_,         "ptjetraw/F");  
   outTree->Branch("mmjj",            &mmjj_,             "mmjj/F");  
+  outTree->Branch("mmjjuncor",       &mmjjuncor_,        "mmjjuncor/F");  
   outTree->Branch("mmjjtrk",         &mmjjtrk_,          "mmjjtrk/F");  
   outTree->Branch("mmjjglb",         &mmjjglb_,          "mmjjglb/F");  
   outTree->Branch("mmjjsta",         &mmjjsta_,          "mmjjsta/F");  
