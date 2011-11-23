@@ -81,6 +81,112 @@ double dRbetweenVectors(const LorentzVector &vec1,
 }
 
 //--------------------------------------------------------------------
+
+
+//-------------------------------------------------------
+// get exact trigger name corresponding to given pattern
+//-------------------------------------------------------
+TString triggerName(TString triggerPattern){
+
+  bool    foundTrigger  = false;
+  TString exact_hltname = "";
+
+  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
+    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
+      foundTrigger  = true;
+      exact_hltname = hlt_trigNames().at(itrig);
+      break;
+    }
+  }
+
+  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
+
+  return exact_hltname;
+
+}
+
+
+
+//---------------------------------------------
+// Check if trigger is unprescaled and passes
+//---------------------------------------------
+bool passUnprescaledHLTTriggerPattern(const char* arg){
+
+  //cout << "Checking for pattern " << arg << endl;
+
+  TString HLTTriggerPattern(arg);
+
+  TString HLTTrigger = triggerName( HLTTriggerPattern );
+
+  //cout << "Found trigger " << HLTTrigger << endl;
+
+  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND")){
+    //cout << "Didn't find trigger!" << endl;
+    return false;
+  }
+  return passUnprescaledHLTTrigger( HLTTrigger );
+
+}
+
+//---------------------------------------------
+// single muon triggers for lljj bump search
+//---------------------------------------------
+
+bool passMuMuJJTrigger_v1( bool isData ) {
+
+  if( isData ){
+    
+    //-----------------------------------------------------------------------------
+    if (evt_run() >= 160329 && evt_run() <= 163261){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v5") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 163269 && evt_run() <= 164236){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v2") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 165088 && evt_run() <= 165887){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v4") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() == 166346 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v6") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 165922 && evt_run() <= 167043){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v5") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 167078 && evt_run() <= 170053){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v7") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 170071 && evt_run() <= 173198){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v8") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 173212 && evt_run() <= 178380){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v3") )   return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 178420 && evt_run() <= 179889){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v6") )   return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 179959 && evt_run() <= 180093){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v7") )   return true;
+    }
+    //-----------------------------------------------------------------------------
+  }
+
+  else{
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )  return true;
+  }
+
+  return false;
+}
+
+//--------------------------------------------------------------------
 /*
 bool passesPFJetID(unsigned int pfJetIdx) {
 
@@ -284,27 +390,6 @@ bool looper::objectPassTrigger(const LorentzVector &obj, const std::vector<Loren
 
 //--------------------------------------------------------------------
 
-TString triggerName(TString triggerPattern){
-
-  bool    foundTrigger  = false;
-  TString exact_hltname = "";
-
-  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
-    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
-      foundTrigger  = true;
-      exact_hltname = hlt_trigNames().at(itrig);
-      break;
-    }
-  }
-
-  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
-
-  return exact_hltname;
-
-}
-
-//--------------------------------------------------------------------
-
 float getPingMass( int thisrun , int thislumi , unsigned int thisevent ){
 
   ifstream ifile("ping.txt");
@@ -328,7 +413,7 @@ float getPingMass( int thisrun , int thislumi , unsigned int thisevent ){
 
   }
 
-  if( pingmass < 0 ) cout << "ERROR! didn't find Ping mass! " << thisrun << " " << thislumi << " " << thisevent << " <<<-----------------------------------" << endl;
+  //if( pingmass < 0 ) cout << "ERROR! didn't find Ping mass! " << thisrun << " " << thislumi << " " << thisevent << " <<<-----------------------------------" << endl;
   ifile.close();
   return pingmass;
 
@@ -491,7 +576,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // require trigger
       //--------------------------------
 
-      //if( !passMuMuJJTrigger_v1( isData ) ) continue;
+      if( !passMuMuJJTrigger_v1( isData ) ) continue;
 
       //---------------------
       // skip duplicates
@@ -569,7 +654,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       // REQUIRE AT LEAST 1 GOOD LEPTON!!!
       if( goodLeptons.size() < 1 ){
-	cout << "Fail >=1 good lepton requirement" << endl;
+	//cout << "Fail >=1 good lepton requirement" << endl;
 	continue;
       }
 
@@ -666,7 +751,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       if( imaxpt < 0 ){
 	hping->Fill(pingmass_);
-	cout << "didn't find muon matched to trigger object" << endl;
+	//cout << "didn't find muon matched to trigger object" << endl;
 	continue;
       }
 
