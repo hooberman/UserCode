@@ -137,8 +137,12 @@ class looper
 	Float_t pingmass_;
 	Float_t jetcor1_;
 	Float_t jetcor2_;
+	Float_t cor1_;
+	Float_t cor2_;
 	Float_t mmjj_;
 	Float_t mmjjuncor_;
+	Float_t mmjjc_;
+	Float_t mmjjdef_;
 	Float_t mmjjtrk_;
 	Float_t mmjjglb_;
 	Float_t mmjjsta_;
@@ -170,6 +174,7 @@ class looper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
+        Int_t   njetsplain_;
         Int_t   ngenjets_;
         Int_t   npfjets_;
         Int_t   npfjets40_;

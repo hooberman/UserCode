@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-08";
+  const char* version   = "V00-00-09";
   const char* jsonfile  = "jsons/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -201,7 +201,7 @@ void doAll(bool skipFWLite = true)
 
   //Flags for files to run over
   bool rundata_SingleMu = 0;
-  bool runping       = 0;
+  bool runping       = 1;
   bool rundata       = 0;
   bool rundatamay10  = 0;
   bool rundataPRv4   = 0;
@@ -218,7 +218,7 @@ void doAll(bool skipFWLite = true)
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -232,7 +232,7 @@ void doAll(bool skipFWLite = true)
   bool runWjets    = 0;
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
-  bool runZjets    = 1;
+  bool runZjets    = 0;
   bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
