@@ -34,6 +34,7 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
   return;
 }
 
+
 void doAll(bool skipFWLite = true)
 {
 
@@ -42,7 +43,7 @@ void doAll(bool skipFWLite = true)
   //---------------------------------------------------------------
   
   const char* version   = "V00-00-09";
-  const char* jsonfile  = "jsons/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
