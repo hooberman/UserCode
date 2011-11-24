@@ -186,37 +186,82 @@ bool passMuMuJJTrigger_v1( bool isData ) {
   return false;
 }
 
-//--------------------------------------------------------------------
-/*
-bool passesPFJetID(unsigned int pfJetIdx) {
+/*****************************************************************************************/
+//passes the OS SUSY trigger selection 2011
+/*****************************************************************************************/
 
-  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
-  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
-
-  if (pfjet_nef_ >= 0.99)
-    return false;
-  if (pfjet_nhf_ >= 0.99)
-    return false;
-  if (pfjet_mult_ < 2)
-    return false;
-
-  if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) < 2.4)
-    {
-      if (pfjet_chf_ < 1e-6)
-	return false;
-      if (pfjet_cm_ < 1)
-	return false;
-      if (pfjet_cef_ >= 0.99)
-	return false;
+bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
+  
+  //----------------------------------------
+  // no trigger requirements applied to MC
+  //----------------------------------------
+  
+  if( !isData ) return true; 
+  
+  //---------------------------------
+  // triggers for lepton-HT datasets
+  //---------------------------------
+  
+  if( !highpt ) {
+  
+    //mm
+    if( hypType == 0 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT150_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT160_v") )   return true;
     }
+    
+    //em
+    else if( hypType == 1 || hypType == 2 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT150_v") )     return true; 
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT150_v") )     return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v") )     return true; 
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v") )     return true;
+    }
+    
+    //ee
+    else if( hypType == 3 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v") )   return true;
+    }
+  }
+  
+  //---------------------------------
+  // triggers for dilepton datasets
+  //---------------------------------
+  
+  else{
+  
+    //mm
+    if( hypType == 0 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu7_v" ) )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu8_v" ) )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
+    }
+    
+    //em
+    else if( hypType == 1 || hypType == 2 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdL_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdL_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v") )   return true;
 
-  return true;
-}  
-*/
+    }
+    
+    //ee
+    else if( hypType == 3 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )                                   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v") ) return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+    }                                     
+  }        
+  
+  return false;
+    
+}
+
 //--------------------------------------------------------------------
 
 struct DorkyEventIdentifier {
@@ -443,7 +488,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
     set_goodrun_file( g_json );
 
     //set vtx reweighting hist
-    set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_3p5fb_Zselection.root");
 
     initialized = true;
   }
@@ -539,7 +584,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       InitBaby();
 
-      pingmass_ = getPingMass(evt_run(),evt_lumiBlock(),evt_event());
+      pingmass_ = -1;
+      if( TString(prefix).Contains("ping") ) pingmass_ = getPingMass(evt_run(),evt_lumiBlock(),evt_event());
 
       //------------------------------------------------------------------------
       // idiot check: make sure that HLT_IsoMu24 is present for all MC events
@@ -569,8 +615,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // event cleaning and good run list
       //---------------------------------------------
 
-      //if( !cleaning_goodDAVertexApril2011() )                        continue;
-      //if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      if( !cleaning_goodDAVertexApril2011() )                        continue;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
 
       //--------------------------------
       // require trigger
@@ -662,8 +708,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       std::vector<LorentzVector> trigObjs;
 
-      diltrig_ = -999;
-      //diltrig_ = passSUSYTrigger2011_v1( isData , 0 , true ) ? 1 : 0;
+      diltrig_ = passSUSYTrigger2011_v1( isData , 0 , true ) ? 1 : 0;
 
       if( isData ){
 
@@ -958,9 +1003,9 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       }
 	  
-      //-----------------------------
-      // DON'T apply residual JEC
-      //-----------------------------
+      //--------------------------------------
+      // DON'T apply any jet corrections
+      //--------------------------------------
 
       njetsplain_ = 0;
       VofP4 vpfjets_plain_p4;
@@ -1006,7 +1051,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       mmjjsta_   = -1;
       mjjj_      = -1;
       mmjjuncor_ = -1;
-
 
       //--------------------------------------
       // corrected jets
@@ -1057,9 +1101,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_plain_p4_sorted(vpfjets_plain_p4);
       sort(vpfjets_plain_p4_sorted.begin(), vpfjets_plain_p4_sorted.end(), sortByPt);
 
-      mmjjc_ = -1;
-      cor1_  = -1;
-      cor2_  = -1;
+      mmjjc_  = -1;
+      cor1_   = -1;
+      cor2_   = -1;
+      metnew_ = -1;
 
       if( njetsplain_ >= 2 && ngoodlep_ > 1 ){
 
@@ -1089,8 +1134,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
 	    float metxnew = metx - (cor1_-1) * vpfjets_plain_p4_sorted.at(0).x() - (cor2_-1) * vpfjets_plain_p4_sorted.at(1).x();
 	    float metynew = mety - (cor1_-1) * vpfjets_plain_p4_sorted.at(0).y() - (cor2_-1) * vpfjets_plain_p4_sorted.at(1).y();
-	    float metnew  = sqrt( metxnew * metxnew + metynew * metynew );
-	    cout << "new met " << metnew << endl;
+	    metnew_  = sqrt( metxnew * metxnew + metynew * metynew );
+	    //cout << "new met " << metnew << endl;
 
 	  }
 	  else{
@@ -1119,23 +1164,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       else{
 
 	weight_ = kFactor * evt_scale1fb() * lumi;
-
-	// if( TString(prefix).Contains("LM") ){
-	//   if( strcmp( prefix , "LM0" )  == 0 ) weight_ *= kfactorSUSY( "lm0" );
-	//   if( strcmp( prefix , "LM1" )  == 0 ) weight_ *= kfactorSUSY( "lm1" );
-	//   if( strcmp( prefix , "LM2" )  == 0 ) weight_ *= kfactorSUSY( "lm2" );
-	//   if( strcmp( prefix , "LM3" )  == 0 ) weight_ *= kfactorSUSY( "lm3" );
-	//   if( strcmp( prefix , "LM4" )  == 0 ) weight_ *= kfactorSUSY( "lm4" );
-	//   if( strcmp( prefix , "LM5" )  == 0 ) weight_ *= kfactorSUSY( "lm5" );
-	//   if( strcmp( prefix , "LM6" )  == 0 ) weight_ *= kfactorSUSY( "lm6" );
-	//   if( strcmp( prefix , "LM7" )  == 0 ) weight_ *= kfactorSUSY( "lm7" );
-	//   if( strcmp( prefix , "LM8" )  == 0 ) weight_ *= kfactorSUSY( "lm8" );
-	//   if( strcmp( prefix , "LM9" )  == 0 ) weight_ *= kfactorSUSY( "lm9" );
-	//   if( strcmp( prefix , "LM10" ) == 0 ) weight_ *= kfactorSUSY( "lm10");
-	//   if( strcmp( prefix , "LM11" ) == 0 ) weight_ *= kfactorSUSY( "lm11");
-	//   if( strcmp( prefix , "LM12" ) == 0 ) weight_ *= kfactorSUSY( "lm12");
-	//   if( strcmp( prefix , "LM13" ) == 0 ) weight_ *= kfactorSUSY( "lm13");
-	// }
 
 	if( doTenPercent )	  weight_ *= 10;
       }
@@ -1343,6 +1371,7 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   //variables must be declared in looper.h
   outTree->Branch("diltrig",         &diltrig_,          "diltrig/I");
   outTree->Branch("pingmass",        &pingmass_,         "pingmass/F");
+  outTree->Branch("metnew",          &metnew_,           "metnew/F");
   outTree->Branch("mmjjdef",         &mmjjdef_,          "mmjjdef/F");
   outTree->Branch("mmjjc",           &mmjjc_,            "mmjjc/F");
   outTree->Branch("cor1",            &cor1_,             "cor1/F");

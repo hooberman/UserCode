@@ -142,6 +142,7 @@ class looper
 	Float_t mmjj_;
 	Float_t mmjjuncor_;
 	Float_t mmjjc_;
+	Float_t metnew_;
 	Float_t mmjjdef_;
 	Float_t mmjjtrk_;
 	Float_t mmjjglb_;
