@@ -107,6 +107,18 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "dyee" ) == 0 ){
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "dymm" ) == 0 ){
+    pickSkimIfExists(ch,"/nfs-3/userdata/cms2/DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "T5zz" ) == 0 ){
     pickSkimIfExists(ch,"/nfs-7/userdata/warren/SMS-T5zz_x-05_Mgluino-150to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged*root");
   }
