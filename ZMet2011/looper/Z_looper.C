@@ -51,8 +51,8 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-03";
-const char* jsonfilename         = "../jsons/Cert_160404-179431_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+const char* iter                 = "V00-02-04";
+const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -489,7 +489,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
               
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
           if( mus_p4().at(imu).pt() < 20 )           continue;
-          if( !muonId( imu , OSZ_v2 ))               continue;
+          if( !muonId( imu , OSZ_v4 ))               continue;
           goodLeptons.push_back( mus_p4().at(imu) );
 	  nlep_++;
 	  nmu_++;
@@ -511,8 +511,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  cout << "ptll   " << hyp_ll_p4()[hypIdx].pt() << endl;
 	  cout << "ptlt   " << hyp_lt_p4()[hypIdx].pt() << endl;
 	  cout << "mass   " << hyp_p4()[hypIdx].mass() << endl;
-	  if( abs(hyp_ll_id()[hypIdx]) == 13 )   cout << "muon ll " << muonId( hyp_ll_index()[hypIdx] , OSZ_v2 ) << endl;
-	  if( abs(hyp_lt_id()[hypIdx]) == 13 )   cout << "muon lt " << muonId( hyp_lt_index()[hypIdx] , OSZ_v2 ) << endl;
+	  if( abs(hyp_ll_id()[hypIdx]) == 13 )   cout << "muon ll " << muonId( hyp_ll_index()[hypIdx] , OSZ_v4 ) << endl;
+	  if( abs(hyp_lt_id()[hypIdx]) == 13 )   cout << "muon lt " << muonId( hyp_lt_index()[hypIdx] , OSZ_v4 ) << endl;
 	  if( abs(hyp_ll_id()[hypIdx]) == 11 )   cout << "ele ll  " << pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_el_OSV2  ) << endl;
 	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_el_OSV2  ) << endl;
 	}
@@ -526,8 +526,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
       
         //muon ID
-        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , OSZ_v2 )))   continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , OSZ_v2 )))   continue;
+        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , OSZ_v4 )))   continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , OSZ_v4 )))   continue;
               
         //electron ID
         if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_el_OSV2  ))) continue;
@@ -616,6 +616,40 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       dilep_   = &hyp_p4().at(hypIdx);
 
       float dilmass = hyp_p4().at(hypIdx).mass();
+
+      ptgen1_ = -1;
+      ptgen2_ = -1;
+
+      if( !isData ){
+	
+	if( abs(id1_) == 13 ){
+	  int mcid1   = mus_mc3idx().at(index1);
+          if( mcid1 >=0 && mcid1 < genps_p4().size() ){
+            ptgen1_   = genps_p4().at(mcid1).pt();
+	  }
+	}
+	else if( abs(id1_) == 11 ){
+	  int mcid1   = els_mc3idx().at(index1);
+          if( mcid1 >=0 && mcid1 < genps_p4().size() ){
+            ptgen1_   = genps_p4().at(mcid1).pt();
+	  }
+	}
+
+	if( abs(id2_) == 13 ){
+	  int mcid2   = mus_mc3idx().at(index2);
+          if( mcid2 >=0 && mcid2 < genps_p4().size() ){
+            ptgen2_   = genps_p4().at(mcid2).pt();
+	  }
+	}
+	else if( abs(id2_) == 11 ){
+	  int mcid2   = els_mc3idx().at(index2);
+          if( mcid2 >=0 && mcid2 < genps_p4().size() ){
+            ptgen2_   = genps_p4().at(mcid2).pt();
+	  }
+	}
+
+
+      }
 
       //-------------------------
       // 3-lepton stuff
@@ -1523,6 +1557,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("mg",           &mg_,           "mg/F"           );
   babyTree_->Branch("ml",           &ml_,           "ml/F"           );
   babyTree_->Branch("x",            &x_,            "x/F"            );
+  babyTree_->Branch("ptgen1",       &ptgen1_,       "ptgen1/F"       );
+  babyTree_->Branch("ptgen2",       &ptgen2_,       "ptgen2/F"       );
 
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
