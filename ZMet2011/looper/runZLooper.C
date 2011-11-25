@@ -193,6 +193,18 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "LM4v2" ) == 0 ){
+    pickSkimIfExists(ch,"/tas/cms2/LM4_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "LM8v2" ) == 0 ){
+    pickSkimIfExists(ch,"/tas/cms2/LM8_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "LM9" ) == 0 ){
     pickSkimIfExists(ch,"/nfs-7/userdata/cms2/LM9_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
