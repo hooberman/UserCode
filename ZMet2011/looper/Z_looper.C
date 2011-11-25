@@ -295,20 +295,20 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       nTot++;
     
       float ksusy = 1;
-      if( strcmp( prefix , "LM0"  ) == 0 ) ksusy = kfactorSUSY( "lm0"  );
-      if( strcmp( prefix , "LM1"  ) == 0 ) ksusy = kfactorSUSY( "lm1"  );
-      if( strcmp( prefix , "LM2"  ) == 0 ) ksusy = kfactorSUSY( "lm2"  );
-      if( strcmp( prefix , "LM3"  ) == 0 ) ksusy = kfactorSUSY( "lm3"  );
-      if( strcmp( prefix , "LM4"  ) == 0 ) ksusy = kfactorSUSY( "lm4"  );
-      if( strcmp( prefix , "LM5"  ) == 0 ) ksusy = kfactorSUSY( "lm5"  );
-      if( strcmp( prefix , "LM6"  ) == 0 ) ksusy = kfactorSUSY( "lm6"  );
-      if( strcmp( prefix , "LM7"  ) == 0 ) ksusy = kfactorSUSY( "lm7"  );
-      if( strcmp( prefix , "LM8"  ) == 0 ) ksusy = kfactorSUSY( "lm8"  );
-      if( strcmp( prefix , "LM9"  ) == 0 ) ksusy = kfactorSUSY( "lm9"  );
-      if( strcmp( prefix , "LM10" ) == 0 ) ksusy = kfactorSUSY( "lm10" );
-      if( strcmp( prefix , "LM11" ) == 0 ) ksusy = kfactorSUSY( "lm11" );
-      if( strcmp( prefix , "LM12" ) == 0 ) ksusy = kfactorSUSY( "lm12" );
-      if( strcmp( prefix , "LM13" ) == 0 ) ksusy = kfactorSUSY( "lm13" );
+      if( TString(prefix).Contains("LM0")  ) ksusy = kfactorSUSY( "lm0"   );
+      if( TString(prefix).Contains("LM1")  ) ksusy = kfactorSUSY( "lm1"   );
+      if( TString(prefix).Contains("LM2")  ) ksusy = kfactorSUSY( "lm2"   );
+      if( TString(prefix).Contains("LM3")  ) ksusy = kfactorSUSY( "lm3"   );
+      if( TString(prefix).Contains("LM4")  ) ksusy = kfactorSUSY( "lm4"   );
+      if( TString(prefix).Contains("LM5")  ) ksusy = kfactorSUSY( "lm5"   );
+      if( TString(prefix).Contains("LM6")  ) ksusy = kfactorSUSY( "lm6"   );
+      if( TString(prefix).Contains("LM7")  ) ksusy = kfactorSUSY( "lm7"   );
+      if( TString(prefix).Contains("LM8")  ) ksusy = kfactorSUSY( "lm8"   );
+      if( TString(prefix).Contains("LM9")  ) ksusy = kfactorSUSY( "lm9"   );
+      if( TString(prefix).Contains("LM10") ) ksusy = kfactorSUSY( "lm10"  );
+      if( TString(prefix).Contains("LM11") ) ksusy = kfactorSUSY( "lm11"  );
+      if( TString(prefix).Contains("LM12") ) ksusy = kfactorSUSY( "lm12"  );
+      if( TString(prefix).Contains("LM13") ) ksusy = kfactorSUSY( "lm13"  );
 
       if( PassGenSelection( isData ) > 60. ){
 	nGenPass60++;
@@ -369,31 +369,22 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       if( !isData ){
 
-	// if( TString(prefix).Contains("LM") ){
-	//   weight_ = 1;
-	// }
-
-	// else{
-
 	weight_ = cms2.evt_scale1fb() * kFactor * lumi;
 	  
 	if( TString(prefix).Contains("LM") ){
-	  if( strcmp( prefix , "LM0" ) == 0 ) weight_ *= kfactorSUSY( "lm0" );
-	  if( strcmp( prefix , "LM1" ) == 0 ) weight_ *= kfactorSUSY( "lm1" );
-	  if( strcmp( prefix , "LM2" ) == 0 ) weight_ *= kfactorSUSY( "lm2" );
-	  if( strcmp( prefix , "LM3" ) == 0 ) weight_ *= kfactorSUSY( "lm3" );
-	  if( strcmp( prefix , "LM4" ) == 0 ) weight_ *= kfactorSUSY( "lm4" );
-	  if( strcmp( prefix , "LM5" ) == 0 ) weight_ *= kfactorSUSY( "lm5" );
-	  if( strcmp( prefix , "LM6" ) == 0 ) weight_ *= kfactorSUSY( "lm6" );
-	  if( strcmp( prefix , "LM7" ) == 0 ) weight_ *= kfactorSUSY( "lm7" );
-	  if( strcmp( prefix , "LM8" ) == 0 ) weight_ *= kfactorSUSY( "lm8" );
-	  if( strcmp( prefix , "LM9" ) == 0 ) weight_ *= kfactorSUSY( "lm9" );
+	  if( TString(prefix).Contains("LM0") ) weight_ *= kfactorSUSY( "lm0" );
+	  if( TString(prefix).Contains("LM1") ) weight_ *= kfactorSUSY( "lm1" );
+	  if( TString(prefix).Contains("LM2") ) weight_ *= kfactorSUSY( "lm2" );
+	  if( TString(prefix).Contains("LM3") ) weight_ *= kfactorSUSY( "lm3" );
+	  if( TString(prefix).Contains("LM4") ) weight_ *= kfactorSUSY( "lm4" );
+	  if( TString(prefix).Contains("LM5") ) weight_ *= kfactorSUSY( "lm5" );
+	  if( TString(prefix).Contains("LM6") ) weight_ *= kfactorSUSY( "lm6" );
+	  if( TString(prefix).Contains("LM7") ) weight_ *= kfactorSUSY( "lm7" );
+	  if( TString(prefix).Contains("LM8") ) weight_ *= kfactorSUSY( "lm8" );
+	  if( TString(prefix).Contains("LM9") ) weight_ *= kfactorSUSY( "lm9" );
 	}
-	
-	//	}
 
-	pthat_  = cms2.genps_pthat();
-	
+	pthat_  = cms2.genps_pthat();	
       }
       
       // calomet, pfmet, genmet
