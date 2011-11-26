@@ -42,7 +42,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-00-09";
+  const char* version   = "V00-00-10";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -204,14 +204,14 @@ void doAll(bool skipFWLite = true)
   bool rundata_SingleMu = 0;
   bool runping       = 0;
   bool rundata       = 0;
-  bool rundatamay10  = 1;
-  bool rundataPRv4   = 1;
+  bool rundatamay10  = 0;
+  bool rundataPRv4   = 0;
   bool rundata165    = 0;
   bool rundata166    = 0;
   bool rundata167    = 0;
   bool rundata168    = 0;
-  bool rundataaug05  = 1;
-  bool rundataPRv6   = 1;
+  bool rundataaug05  = 0;
+  bool rundataPRv6   = 0;
   bool rundata2011B  = 1;
 
   bool rundata41   = 0;
