@@ -173,7 +173,7 @@ bool passMuMuJJTrigger_v1( bool isData ) {
       if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v6") )   return true;
     }
     //-----------------------------------------------------------------------------
-    else if (evt_run() >= 179959 && evt_run() <= 180093){
+    else if (evt_run() >= 179959 && evt_run() <= 180291){
       if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v7") )   return true;
     }
     //-----------------------------------------------------------------------------
@@ -749,7 +749,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu30_eta2p1_v6")];
 	}
 	//-----------------------------------------------------------------------------
-	else if (evt_run() >= 179959 && evt_run() <= 180093){
+	else if (evt_run() >= 179959 && evt_run() <= 180291){
 	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu30_eta2p1_v7")];
 	}
 	//-----------------------------------------------------------------------------

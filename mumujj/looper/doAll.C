@@ -1167,12 +1167,6 @@ void doAll(bool skipFWLite = true)
 		    cout << "Done processing ttbar all.. " << endl;
 		    hist::color("ttall", kYellow);
 		  }
-		  if (runZjets) {
-		    cout << "Processing Zjets" << endl;
-		    looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing Zjets" << endl;
-		    hist::color("Zjets", kBlack);
-		  }
 		  if (rundataskim) {
 		    cout << "Processing data skim" << endl;
 		    looper->ScanChain(chdataskim,"dataskim", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1228,6 +1222,12 @@ void doAll(bool skipFWLite = true)
 		    cout << "Processing data 2011B" << endl;
 		    looper->ScanChain(chdata2011B,"data2011B", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing data2011B" << endl;
+		  }
+		  if (runZjets) {
+		    cout << "Processing Zjets" << endl;
+		    looper->ScanChain(chZjets,"Zjets", kZjets, preZjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing Zjets" << endl;
+		    hist::color("Zjets", kBlack);
 		  }
 		  if (rundata) {
 		    cout << "Processing data" << endl;
