@@ -43,8 +43,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-08";
-  const char* jsonfile  = "jsons/Cert_160404-178078_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+  const char* version   = "V00-02-09";
+  const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
@@ -256,7 +256,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   */
     
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -264,6 +264,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCD      = 0;
   bool runphotons  = 0;
   bool runttall    = 0;
+  bool runttallbig = 1;
   bool runttpowheg = 0;
   bool runtt42     = 0;
   bool runttdil    = 0;
@@ -388,6 +389,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chtopall, 	
     		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
     		     "TTJets");
+  }
+
+  TChain* chtopallbig = new TChain("Events");
+  if (runttallbig) {
+    pickSkimIfExists(chtopallbig,"/nfs-6/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v2/V04-02-29/merged*root");
   }
 
   TChain* chtop42 = new TChain("Events");
@@ -879,7 +885,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain* chdata     = new  TChain("Events");
   TChain* chdata41   = new  TChain("Events");
 
-  for( int pt = 1 ; pt < 2 ; ++pt ){
+  for( int pt = 0 ; pt < 1 ; ++pt ){
 
     //set trigger type
     if( pt == 0 ) trig = ossusy_looper::e_highpt;
@@ -1042,6 +1048,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing ttbar all.. " << endl;
 		      hist::color("ttall", kYellow);
+		    }
+		    if (runttallbig) {
+		      cout << "Processing ttbar all big.. " << endl;
+		      looper->ScanChain(chtopallbig,"ttallbig", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing ttbar all big.. " << endl;
 		    }
 		    if (runDYtot) {
 		      cout << "Processing DY->all" << endl;
