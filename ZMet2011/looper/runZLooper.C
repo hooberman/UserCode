@@ -107,6 +107,12 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "zjetsS6_incomplete" ) == 0 ){
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMS2_V04-02-29/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v1/ntuple_8*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "dyee" ) == 0 ){
     pickSkimIfExists(ch,"/nfs-7/userdata/cms2/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
