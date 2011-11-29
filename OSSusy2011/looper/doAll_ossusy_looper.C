@@ -264,7 +264,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCD      = 0;
   bool runphotons  = 0;
   bool runttall    = 0;
-  bool runttallbig = 1;
+  bool runttallPUS6 = 1;
   bool runttpowheg = 0;
   bool runtt42     = 0;
   bool runttdil    = 0;
@@ -382,18 +382,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
-    // pickSkimIfExists(chtopall, 	
-    // 		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
-    // 		     "TTJets");
-
-    pickSkimIfExists(chtopall, 	
-    		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
-    		     "TTJets");
+    //pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
+    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
-  TChain* chtopallbig = new TChain("Events");
-  if (runttallbig) {
-    pickSkimIfExists(chtopallbig,"/nfs-6/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v2/V04-02-29/merged*root");
+  TChain* chtopallPUS6 = new TChain("Events");
+  if (runttallPUS6) {
+    //pickSkimIfExists(chtopallPUS6,"/nfs-6/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v2/V04-02-29/merged_ntuple.*root");
+    pickSkimIfExists(chtopallPUS6,"/nfs-6/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v2/V04-02-29/merged*root");
   }
 
   TChain* chtop42 = new TChain("Events");
@@ -1049,10 +1045,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      cout << "Done processing ttbar all.. " << endl;
 		      hist::color("ttall", kYellow);
 		    }
-		    if (runttallbig) {
-		      cout << "Processing ttbar all big.. " << endl;
-		      looper->ScanChain(chtopallbig,"ttallbig", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing ttbar all big.. " << endl;
+		    if (runttallPUS6) {
+		      cout << "Processing ttbar all PUS6.. " << endl;
+		      looper->ScanChain(chtopallPUS6,"ttallPUS6", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing ttbar all PUS6.. " << endl;
 		    }
 		    if (runDYtot) {
 		      cout << "Processing DY->all" << endl;

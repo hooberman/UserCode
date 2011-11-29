@@ -532,12 +532,32 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                              JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 {
 
+  bool isData = false;
+  if( TString(prefix).Contains("data")  ){
+    cout << "DATA!!!" << endl;
+    isData = true;
+  }
+  if( TString(prefix).Contains("data")  ){
+    cout << "DATA!!!" << endl;
+    isData       = true;
+    doTenPercent = false;
+  }
+  if( doTenPercent ) cout << "Processing 10% of MC" << endl;
+
+  if( !isData ){
+
+    if( TString(prefix).Contains("PUS6") ){
+      set_vtxreweight_rootfile("vtxreweight_Fall11MC_PUS6_4p7fb_Zselection.root",true);
+    }
+    
+    else{
+      set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
+    }
+  }
 
   if( !initialized ){
     cout << "setting json " << g_json << endl;
     set_goodrun_file( g_json );
-
-    set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
 
     set_msugra_file("goodModelNames_tanbeta10.txt");
 
@@ -586,17 +606,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   int nSS = 0;
   int nOS = 0;
 
-  bool isData = false;
-  if( TString(prefix).Contains("data")  ){
-    cout << "DATA!!!" << endl;
-    isData = true;
-  }
-  if( TString(prefix).Contains("data")  ){
-    cout << "DATA!!!" << endl;
-    isData       = true;
-    doTenPercent = false;
-  }
-  if( doTenPercent ) cout << "Processing 10% of MC" << endl;
 
   // instanciate topmass solver REPLACETOPMASS
   //ttdilepsolve * d_llsol = new ttdilepsolve;
