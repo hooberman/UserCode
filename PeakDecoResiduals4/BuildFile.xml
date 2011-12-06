@@ -12,6 +12,8 @@
 <use   name="MagneticField/Engine"/>
 <use   name="rootrflx"/>
 <use   name="CLHEP"/>
+<use   name="CondFormats/SiStripObjects"/>
+<use   name="CalibTracker/SiStripCommon"/>
 <use   name="rootmath"/>
 <export>
   <lib   name="1"/>

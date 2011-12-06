@@ -39,7 +39,8 @@
 <use   name="DQMServices/Core"/>
 <use   name="CLHEP"/>
 <use   name="root"/>
-<library   file="*.cc" name="AlignmentOfflinevalidationPlugins">
-  <use   name="Alignment/OfflineValidation"/>
-  <flags   EDM_PLUGIN="1"/>
+
+<library file="*.cc" name="AlignmentPeakDecoResiduals4Plugins">
+   <use name="Alignment/PeakDecoResiduals4"/>
+   <flags EDM_PLUGIN="1"/>
 </library>
