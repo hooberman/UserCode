@@ -25,7 +25,8 @@
 #include <sstream>
 #include <iomanip>
 
-float getObservedLimit( int metcut , float jes );
+float getObservedLimit( int metcut , float sigerr );
+float getExpectedLimit( int metcut , float sigerr );
 
 using namespace std;
 
@@ -86,9 +87,9 @@ void SMS(bool print = false){
 
   //sigcuts.push_back(TCut(presel+met30));      signames.push_back("E_{T}^{miss} > 30 GeV");     ul.push_back(2518.);   labels.push_back("met030"); cuts.push_back(30);
   //sigcuts.push_back(TCut(presel+met60));      signames.push_back("E_{T}^{miss} > 60 GeV");     ul.push_back(134.);    labels.push_back("met060"); cuts.push_back(60);
-  //sigcuts.push_back(TCut(presel+met100));     signames.push_back("E_{T}^{miss} > 100 GeV");    ul.push_back(35.0);    labels.push_back("met100"); cuts.push_back(100);
+  sigcuts.push_back(TCut(presel+met100));     signames.push_back("E_{T}^{miss} > 100 GeV");    ul.push_back(35.0);    labels.push_back("met100"); cuts.push_back(100);
   sigcuts.push_back(TCut(presel+met200));     signames.push_back("E_{T}^{miss} > 200 GeV");    ul.push_back(7.2);     labels.push_back("met200"); cuts.push_back(200);
-  //sigcuts.push_back(TCut(presel+met300));     signames.push_back("E_{T}^{miss} > 300 GeV");    ul.push_back(3.0);     labels.push_back("met300"); cuts.push_back(300);
+  sigcuts.push_back(TCut(presel+met300));     signames.push_back("E_{T}^{miss} > 300 GeV");    ul.push_back(3.0);     labels.push_back("met300"); cuts.push_back(300);
 
   const unsigned int nsig = sigcuts.size();
 
@@ -100,6 +101,7 @@ void SMS(bool print = false){
   TH2F* heffup[nsig];
   TH2F* heffdn[nsig];
   TH2F* hxsec[nsig];
+  TH2F* hxsec_exp[nsig];
   TH2F* hexcl[nsig];
   TH2F* hjes[nsig];
   
@@ -125,12 +127,13 @@ void SMS(bool print = false){
     cout << "Selection up  : " << jesupcut      << endl;
     cout << "Selection dn  : " << jesdncut      << endl;
 
-    heff[i]     = new TH2F(Form("heff_%i",i)    , Form("heff_%i",i)    , 48,0,1200,48,0,1200);
-    heffup[i]   = new TH2F(Form("heffup_%i",i)  , Form("heffup_%i",i)  , 48,0,1200,48,0,1200);
-    heffdn[i]   = new TH2F(Form("heffdn_%i",i)  , Form("heffdn_%i",i)  , 48,0,1200,48,0,1200);
-    hxsec[i]    = new TH2F(Form("hxsec_%i",i)   , Form("hxsec_%i",i)   , 48,0,1200,48,0,1200);
-    hexcl[i]    = new TH2F(Form("hexcl_%i",i)   , Form("hexcl_%i",i)   , 48,0,1200,48,0,1200);
-    hjes[i]     = new TH2F(Form("hjes_%i",i)    , Form("hjes_%i",i)    , 48,0,1200,48,0,1200);
+    heff[i]      = new TH2F(Form("heff_%i",i)        , Form("heff_%i",i)       , 48,0,1200,48,0,1200);
+    heffup[i]    = new TH2F(Form("heffup_%i",i)      , Form("heffup_%i",i)     , 48,0,1200,48,0,1200);
+    heffdn[i]    = new TH2F(Form("heffdn_%i",i)      , Form("heffdn_%i",i)     , 48,0,1200,48,0,1200);
+    hxsec[i]     = new TH2F(Form("hxsec_%i",i)       , Form("hxsec_%i",i)      , 48,0,1200,48,0,1200);
+    hxsec_exp[i] = new TH2F(Form("hxsec_exp_%i",i)   , Form("hxsec_exp_%i",i)  , 48,0,1200,48,0,1200);
+    hexcl[i]     = new TH2F(Form("hexcl_%i",i)       , Form("hexcl_%i",i)      , 48,0,1200,48,0,1200);
+    hjes[i]      = new TH2F(Form("hjes_%i",i)        , Form("hjes_%i",i)       , 48,0,1200,48,0,1200);
 
     ch->Draw(Form("ml:mg>>heff_%i",i),sigcuts.at(i));
     heff[i]->Scale(1./denom);
@@ -151,32 +154,26 @@ void SMS(bool print = false){
 	float effup  = heffup[i]->GetBinContent(ibin,jbin);
 	float effdn  = heffdn[i]->GetBinContent(ibin,jbin);
 
-	if( eff < 1e-20 ) continue;
-	if( effdn < 1e-20 ) cout << "Error eff JES down " << effdn << endl;
+	if( eff   < 1e-20 ) continue;
 
-	// cout << endl;
-	// cout << "mg ml     " << mg << " " << ml << endl;
-	// cout << "eff       " << eff   << endl;
-	// cout << "effup     " << effup << endl;
-	// cout << "effdn     " << effdn << endl;
-
-	//if( effdn > 0 ){
 	float dup    = effup/eff-1;
 	float ddn    = 1-effdn/eff;
 	float djes   = 0.5 * (dup+ddn);
 	hjes[i]->SetBinContent(ibin,jbin,djes);
 
-	// cout << "dup       " << dup  << endl;
-	// cout << "ddn       " << ddn  << endl;
-	// cout << "djes      " << djes << endl;
-	//}
+	float toterr = sqrt( 0.06*0.06 + 0.05*0.05 + djes*djes );
 
-	float this_ul = getObservedLimit( cuts.at(i) , djes );
+	float this_ul = getObservedLimit( cuts.at(i) , toterr );
+	float xsecul  = this_ul / ( lumi * eff * 0.19 );
 
-	float xsecul = this_ul / ( lumi * eff * 0.19 );
-	//float xsecul = ul.at(i) / ( lumi * eff * 0.19 );
-	if( eff > 0 ) hxsec[i]->SetBinContent(ibin,jbin, xsecul );
-	
+	float this_ul_exp = getExpectedLimit( cuts.at(i) , toterr );
+	float xsecul_exp  = this_ul_exp / ( lumi * eff * 0.19 );
+
+	if( eff > 0 ){
+	  hxsec[i]->SetBinContent(ibin,jbin, xsecul );
+	  hxsec_exp[i]->SetBinContent(ibin,jbin, xsecul_exp );
+	}
+
 	int   bin = refxsec->FindBin(mg);
 	float xsec = refxsec->GetBinContent(bin);
 
@@ -188,6 +185,8 @@ void SMS(bool print = false){
   }
 
   delete ctemp;
+
+  cout << endl << endl;
 
   //--------------------------------------------------
   // make pretty pictures
@@ -279,7 +278,7 @@ void SMS(bool print = false){
     hexcl[i]->GetXaxis()->SetTitle("gluino mass (GeV)");
     hexcl[i]->GetZaxis()->SetTitle("excluded points");
     hexcl[i]->Draw("colz");
-    gr_excl->Draw("same");
+    //gr_excl->Draw("same");
 
     t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
     t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
@@ -303,99 +302,106 @@ void SMS(bool print = false){
     t->DrawLatex(0.2,0.71,signames.at(i).c_str());
     t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 3.5 fb^{-1}");
 
-
-
-
     if( print ){
-      can[i]->Print(Form("../plots/%s.eps",labels.at(i).c_str()));
-      gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.eps  ../plots/%s.pdf",labels.at(i).c_str(),labels.at(i).c_str()));
+      can[i]->Print(Form("../../plots/%s.pdf",labels.at(i).c_str()));
+      //can[i]->Print(Form("../plots/%s.eps",labels.at(i).c_str()));
+      //gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.eps  ../plots/%s.pdf",labels.at(i).c_str(),labels.at(i).c_str()));
     }
 
     int bin = heff[i]->FindBin(600,200);
     cout << "efficiency (600,200) " << heff[i]->GetBinContent(bin) << endl;
     cout << "xsec UL              " << hxsec[i]->GetBinContent(bin) << endl;
-
+    cout << "xsec UL exp          " << hxsec_exp[i]->GetBinContent(bin) << endl;
+    cout << "JES                  " << hjes[i]->GetBinContent(bin) << endl;
+    cout << endl << endl;
   }
+  
+  TFile *outfile = TFile::Open("histos.root","RECREATE");
+  outfile->cd();
+  for( unsigned int i = 0 ; i < nsig ; ++i ){
+    hxsec[i]->Write();
+    heff[i]->Write();
+    hxsec_exp[i]->Write();
+  }
+  outfile->Close();
 
 }
 
 
 
-float getObservedLimit( int metcut , float jes ){
+float getObservedLimit( int metcut , float sigerr ){
 
   float ul = 999;
 
-  if( jes > 0.5 ){
-    cout << "ERROR! JES too high " << jes << ", quitting" << endl;
-    exit(0);
-  }
-
   if( metcut == 100 ){
-    if     ( jes > 0.00 && jes < 0.10 ) ul = 39.2;
-    else if( jes > 0.10 && jes < 0.20 ) ul = 42.5;
-    else if( jes > 0.20 && jes < 0.30 ) ul = 45.4;
-    else if( jes > 0.30 && jes < 0.40 ) ul = 49.7;
-    else if( jes > 0.40 && jes < 0.50 ) ul = 54.3;
+    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 39.2;
+    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 42.5;
+    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 45.4;
+    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 49.7;
+    else if( sigerr >= 0.40 && sigerr < 0.50 ) ul = 54.3;
   }
   else if( metcut == 200 ){
-    if     ( jes > 0.00 && jes < 0.10 ) ul = 6.6;
-    else if( jes > 0.10 && jes < 0.20 ) ul = 6.9;
-    else if( jes > 0.20 && jes < 0.30 ) ul = 7.9;
-    else if( jes > 0.30 && jes < 0.40 ) ul = 8.7;
-    else if( jes > 0.40 && jes < 0.50 ) ul = 9.5;
+    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 6.6;
+    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 6.9;
+    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 7.9;
+    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 8.7;
+    else if( sigerr >= 0.40 && sigerr < 0.51 ) ul = 9.5;
   }
   else if( metcut == 300 ){
-    if     ( jes > 0.00 && jes < 0.10 ) ul = 3.1;
-    else if( jes > 0.10 && jes < 0.20 ) ul = 3.2;
-    else if( jes > 0.20 && jes < 0.30 ) ul = 3.3;
-    else if( jes > 0.30 && jes < 0.40 ) ul = 3.5;
-    else if( jes > 0.40 && jes < 0.50 ) ul = 3.8;
+    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 3.1;
+    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 3.2;
+    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 3.3;
+    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 3.5;
+    else if( sigerr >= 0.40 && sigerr < 0.50 ) ul = 3.8;
+    else if( sigerr >= 0.50 && sigerr < 1.00 ) ul = 5.3;
   }  
   else{
     cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
     exit(0);
+  }
+
+  if( ul > 998 ){
+    cout << "Error ul " << ul << " metcut " << metcut << " SIGERR " << sigerr << endl;
   }
 
   return ul;
-
-
 }
 
 
 
-float getExpectedLimit( int metcut , float jes ){
+float getExpectedLimit( int metcut , float sigerr ){
 
   float ul = 999;
 
-  if( jes > 0.5 ){
-    cout << "ERROR! JES too high " << jes << ", quitting" << endl;
-    exit(0);
-  }
-
   if( metcut == 100 ){
-    if     ( jes > 0.00 && jes < 0.10 ) ul = 46.5;
-    else if( jes > 0.10 && jes < 0.20 ) ul = 48.3;
-    else if( jes > 0.20 && jes < 0.30 ) ul = 52.2;
-    else if( jes > 0.30 && jes < 0.40 ) ul = 57.0;
-    else if( jes > 0.40 && jes < 0.50 ) ul = 61.9;
+    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 46.5;
+    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 48.3;
+    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 52.2;
+    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 57.0;
+    else if( sigerr >= 0.40 && sigerr < 0.50 ) ul = 61.9;
   }
   else if( metcut == 200 ){
-    if     ( jes > 0.00 && jes < 0.10 ) ul = 9.2;
-    else if( jes > 0.10 && jes < 0.20 ) ul = 9.8;
-    else if( jes > 0.20 && jes < 0.30 ) ul = 10.4;
-    else if( jes > 0.30 && jes < 0.40 ) ul = 11.3;
-    else if( jes > 0.40 && jes < 0.50 ) ul = 12.0;
+    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 9.2;
+    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 9.8;
+    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 10.4;
+    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 11.3;
+    else if( sigerr >= 0.40 && sigerr < 0.51 ) ul = 12.0;
   }
   else if( metcut == 300 ){
-    if     ( jes > 0.00 && jes < 0.10 ) ul = 4.3;
-    else if( jes > 0.10 && jes < 0.20 ) ul = 4.5;
-    else if( jes > 0.20 && jes < 0.30 ) ul = 4.8;
-    else if( jes > 0.30 && jes < 0.40 ) ul = 5.2;
-    else if( jes > 0.40 && jes < 0.50 ) ul = 5.2;
+    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 4.3;
+    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 4.5;
+    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 4.8;
+    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 5.2;
+    else if( sigerr >= 0.40 && sigerr < 0.50 ) ul = 5.2;
+    else if( sigerr >= 0.50 && sigerr < 1.00 ) ul = 7.8;
   }  
   else{
     cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
     exit(0);
+  }
+
+  if( ul > 998 ){
+    cout << "Error ul " << ul << " metcut " << metcut << " SIGERR " << sigerr << endl;
   }
 
   return ul;
