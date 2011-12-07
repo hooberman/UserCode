@@ -742,10 +742,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       InitBaby();
 
-      // if(strcmp(prefix,"LMscan") == 0){
-      // 	if( sparm_m12() > 500  )                        continue;	
-      // 	if( sparm_m0()  > 1000.0 && sparm_m12() > 300 ) continue;
-      // }
+      if( TString(prefix).Contains("LMscan") ){
+       	if( sparm_m12() > 500    ) continue;	
+       	if( sparm_m0()  > 2000.0 ) continue;
+      }
 
       if(strcmp(prefix,"T2tt") == 0){
 	if( sparm_mG() > 850 ) continue;

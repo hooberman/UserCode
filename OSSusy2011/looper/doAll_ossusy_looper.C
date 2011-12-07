@@ -256,7 +256,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   */
     
   //Flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -264,7 +264,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCD      = 0;
   bool runphotons  = 0;
   bool runttall    = 0;
-  bool runttallPUS6 = 1;
+  bool runttallPUS6= 0;
   bool runttpowheg = 0;
   bool runtt42     = 0;
   bool runttdil    = 0;
@@ -310,6 +310,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
+  bool runLMscanFall1 = 0; 
   bool runT2tt     = 0;
   bool runT1lh     = 0;
   
@@ -784,6 +785,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "SUSY_ML8");
   }
 
+  TChain *chLMscanFall11 = new TChain("Events");
+  if (runLMscanFall11) {
+
+    pickSkimIfExists(chLMscanFall11,"/hadoop/cms/store/user/jaehyeok/CMS2_VB04-02-29_Fastsim/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2_new/ntuple*root");
+
+
+  }
+
   // LMscan
   TChain *chLMscan = new TChain("Events");
   if (runLMscan) {
@@ -874,7 +883,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
   char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
   char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
-  bool doFakeApp          = false;
+  bool doFakeApp          = true;
 
   ossusy_looper::TrigEnum trig;
 
@@ -1334,6 +1343,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing LMscan" << endl;
 		      hist::color("LMscan", kOrange-7);
+		    }
+		    if (runLMscanFall11) {
+		      cout << "Processing LMscanFall11" << endl;
+		      looper->ScanChain(chLMscanFall11, "LMscanFall11", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11" << endl;
 		    }
 		    if (runT1lh) {
 		      cout << "Processing T1lh" << endl;
