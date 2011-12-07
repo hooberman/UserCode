@@ -25,8 +25,8 @@
 #include <sstream>
 #include <iomanip>
 
-float getObservedLimit( int metcut , float sigerr );
-float getExpectedLimit( int metcut , float sigerr );
+float getObservedLimit( int metcut , float seff );
+float getExpectedLimit( int metcut , float seff );
 
 using namespace std;
 
@@ -37,7 +37,7 @@ void SMS(bool print = false){
   //--------------------------------------------------
   
   const float denom    = 20000;
-  const float lumi     = 3500;
+  const float lumi     = 4700;
   const char* filename = "../../output/V00-02-01/T5zz_baby.root";
 
   cout << "Using file        " << filename << endl;
@@ -223,7 +223,7 @@ void SMS(bool print = false){
     t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
     t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
     t->DrawLatex(0.2,0.71,signames.at(i).c_str());
-    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 3.5 fb^{-1}");
+    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
     //-------------------------------
     // cross section
@@ -265,7 +265,7 @@ void SMS(bool print = false){
     t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
     t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
     t->DrawLatex(0.2,0.71,signames.at(i).c_str());
-    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 3.5 fb^{-1}");
+    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
     //-------------------------------
     // excluded points
@@ -283,7 +283,7 @@ void SMS(bool print = false){
     t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
     t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
     t->DrawLatex(0.2,0.71,signames.at(i).c_str());
-    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 3.5 fb^{-1}");
+    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
     //-------------------------------
     // JES uncertainty
@@ -300,7 +300,7 @@ void SMS(bool print = false){
     t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
     t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
     t->DrawLatex(0.2,0.71,signames.at(i).c_str());
-    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 3.5 fb^{-1}");
+    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
     if( print ){
       can[i]->Print(Form("../../plots/%s.pdf",labels.at(i).c_str()));
@@ -329,31 +329,31 @@ void SMS(bool print = false){
 
 
 
-float getObservedLimit( int metcut , float sigerr ){
+float getObservedLimit( int metcut , float seff ){
 
   float ul = 999;
 
   if( metcut == 100 ){
-    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 39.2;
-    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 42.5;
-    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 45.4;
-    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 49.7;
-    else if( sigerr >= 0.40 && sigerr < 0.50 ) ul = 54.3;
+    if(seff >= 0.0 && seff < 0.1) ul = 58.3;
+    if(seff >= 0.1 && seff < 0.2) ul = 61.4;
+    if(seff >= 0.2 && seff < 0.3) ul = 65.6;
+    if(seff >= 0.3 && seff < 0.4) ul = 69.4;
+    if(seff >= 0.4 && seff < 0.5) ul = 74.9;
   }
   else if( metcut == 200 ){
-    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 6.6;
-    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 6.9;
-    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 7.9;
-    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 8.7;
-    else if( sigerr >= 0.40 && sigerr < 0.51 ) ul = 9.5;
+    if(seff >= 0.0 && seff < 0.1) ul = 7.9;
+    if(seff >= 0.1 && seff < 0.2) ul = 7.9;
+    if(seff >= 0.2 && seff < 0.3) ul = 8.3;
+    if(seff >= 0.3 && seff < 0.4) ul = 9.0;
+    if(seff >= 0.4 && seff < 0.5) ul = 9.2;
   }
   else if( metcut == 300 ){
-    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 3.1;
-    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 3.2;
-    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 3.3;
-    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 3.5;
-    else if( sigerr >= 0.40 && sigerr < 0.50 ) ul = 3.8;
-    else if( sigerr >= 0.50 && sigerr < 1.00 ) ul = 5.3;
+    if(seff >= 0.0 && seff < 0.1) ul = 2.7;
+    if(seff >= 0.1 && seff < 0.2) ul = 2.8;
+    if(seff >= 0.2 && seff < 0.3) ul = 2.9;
+    if(seff >= 0.3 && seff < 0.4) ul = 3.0;
+    if(seff >= 0.4 && seff < 0.5) ul = 3.2;
+    else if( seff >= 0.50 && seff < 1.00 ) ul = 3.2;
   }  
   else{
     cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
@@ -361,7 +361,7 @@ float getObservedLimit( int metcut , float sigerr ){
   }
 
   if( ul > 998 ){
-    cout << "Error ul " << ul << " metcut " << metcut << " SIGERR " << sigerr << endl;
+    cout << "Error ul " << ul << " metcut " << metcut << " SEFF " << seff << endl;
   }
 
   return ul;
@@ -369,31 +369,31 @@ float getObservedLimit( int metcut , float sigerr ){
 
 
 
-float getExpectedLimit( int metcut , float sigerr ){
+float getExpectedLimit( int metcut , float seff ){
 
   float ul = 999;
 
   if( metcut == 100 ){
-    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 46.5;
-    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 48.3;
-    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 52.2;
-    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 57.0;
-    else if( sigerr >= 0.40 && sigerr < 0.50 ) ul = 61.9;
+    if(seff >= 0.0 && seff < 0.1) ul = 61.0;
+    if(seff >= 0.1 && seff < 0.2) ul = 63.9;
+    if(seff >= 0.2 && seff < 0.3) ul = 68.1;
+    if(seff >= 0.3 && seff < 0.4) ul = 73.5;
+    if(seff >= 0.4 && seff < 0.5) ul = 79.1;
   }
   else if( metcut == 200 ){
-    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 9.2;
-    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 9.8;
-    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 10.4;
-    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 11.3;
-    else if( sigerr >= 0.40 && sigerr < 0.51 ) ul = 12.0;
+    if(seff >= 0.0 && seff < 0.1) ul = 10.3;
+    if(seff >= 0.1 && seff < 0.2) ul = 10.7;
+    if(seff >= 0.2 && seff < 0.3) ul = 11.3;
+    if(seff >= 0.3 && seff < 0.4) ul = 12.5;
+    if(seff >= 0.4 && seff < 0.5) ul = 13.7;
   }
   else if( metcut == 300 ){
-    if     ( sigerr >= 0.00 && sigerr < 0.10 ) ul = 4.3;
-    else if( sigerr >= 0.10 && sigerr < 0.20 ) ul = 4.5;
-    else if( sigerr >= 0.20 && sigerr < 0.30 ) ul = 4.8;
-    else if( sigerr >= 0.30 && sigerr < 0.40 ) ul = 5.2;
-    else if( sigerr >= 0.40 && sigerr < 0.50 ) ul = 5.2;
-    else if( sigerr >= 0.50 && sigerr < 1.00 ) ul = 7.8;
+    if(seff >= 0.0 && seff < 0.1) ul = 4.7;
+    if(seff >= 0.1 && seff < 0.2) ul = 4.9;
+    if(seff >= 0.2 && seff < 0.3) ul = 5.1;
+    if(seff >= 0.3 && seff < 0.4) ul = 5.3;
+    if(seff >= 0.4 && seff < 0.5) ul = 5.7;
+    else if( seff >= 0.50 && seff < 1.00 ) ul = 8.0;
   }  
   else{
     cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
@@ -401,7 +401,7 @@ float getExpectedLimit( int metcut , float sigerr ){
   }
 
   if( ul > 998 ){
-    cout << "Error ul " << ul << " metcut " << metcut << " SIGERR " << sigerr << endl;
+    cout << "Error ul " << ul << " metcut " << metcut << " SEFF " << seff << endl;
   }
 
   return ul;
