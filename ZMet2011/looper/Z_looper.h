@@ -42,7 +42,12 @@ class Z_looper
   float PassGenSelection( bool isData );
   float getMetError(  vector<int> goodMuonIndices );
   float getMetError_claudio(  vector<int> goodMuonIndices );
-        
+  float gluinoPairCrossSection( float gluinomass );
+
+  bool    initialized;
+  TH1D*   gg_xsec_hist;
+  TFile*  gg_xsec_file;
+
  private:
                 
   //ntuple, file
@@ -65,6 +70,7 @@ class Z_looper
   Float_t weight_;
   Float_t ptgen1_;
   Float_t ptgen2_;
+  Float_t trgeff_;
   Float_t pthat_;
   Float_t qscale_;
   Float_t mllgen_;

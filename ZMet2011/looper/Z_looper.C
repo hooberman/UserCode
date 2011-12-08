@@ -51,7 +51,7 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-04";
+const char* iter                 = "V00-02-05";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -191,6 +191,31 @@ void printEvent(){
 
 //--------------------------------------------------------------------
 
+float Z_looper::gluinoPairCrossSection( float gluinomass ){
+
+  cout << "M(g) " << gluinomass << endl;
+
+  // stop mass divisible by 10
+  if( ((int)gluinomass%10)<1 ){
+    int   bin  = gg_xsec_hist->FindBin(gluinomass);
+    float xsec = gg_xsec_hist->GetBinContent(bin);
+    cout << "Found xsec A " << xsec << endl;
+    return xsec;
+  }
+
+  // stop mass not divisible by 10
+  else{
+    int   bin   = gg_xsec_hist->FindBin(gluinomass);
+    float xsec1 = gg_xsec_hist->GetBinContent(bin-1);
+    float xsec2 = gg_xsec_hist->GetBinContent(bin);
+    float xsec  = 0.5 * ( xsec1 + xsec2 );
+    cout << "Found xsec B " << xsec << endl;
+    return xsec;
+  }
+}
+
+//--------------------------------------------------------------------
+
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, int my_nEvents, float kFactor){
 
@@ -199,10 +224,27 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   set_goodrun_file( jsonfilename );
 
-  set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_3p5fb_Zselection.root",true);
+  set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
 
   bookHistos();
   
+
+  //set stop cross section file
+  gg_xsec_file = TFile::Open("reference_xSec.root");
+  
+  if( !gg_xsec_file->IsOpen() ){
+    cout << "Error, could not open gluino cross section TFile, quitting" << endl;
+    exit(0);
+  }
+
+  gg_xsec_hist        = (TH1D*) gg_xsec_file->Get("gluino");
+    
+  if( gg_xsec_hist == 0 ){
+    cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
+    exit(0);
+  }
+
+
   //-----------------------
   // make a baby ntuple
   //-----------------------
@@ -387,6 +429,18 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	pthat_  = cms2.genps_pthat();	
       }
       
+      mg_ = -1.;
+      ml_ = -1.; 
+      x_  = -1.;
+
+      if(TString(prefix).Contains("T5zz")){
+	mg_ = sparm_mG();
+	ml_ = sparm_mL();
+	x_  = sparm_mf();
+
+	weight_ = lumi * gluinoPairCrossSection(mg_) * (1000./105000.);
+      }
+      
       // calomet, pfmet, genmet
       met_       = cms2.evt_met();
       metphi_    = cms2.evt_metPhi();
@@ -426,16 +480,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  }
 	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
 	}
-      }
-      
-      mg_ = -1.;
-      ml_ = -1.; 
-      x_  = -1.;
-
-      if(TString(prefix).Contains("T5zz")){
-	mg_ = sparm_mG();
-	ml_ = sparm_mL();
-	x_  = sparm_mf();
       }
       
       st_ = -1;
@@ -546,6 +590,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         cout << "Skipping unknown dilepton type = " << hyp_type()[hypIdx] << endl;
         continue;
       }
+
+      trgeff_ = -1;
+      if     ( leptype_ == 0 ) trgeff_ = 1.00;
+      else if( leptype_ == 1 ) trgeff_ = 0.90;
+      else if( leptype_ == 2 ) trgeff_ = 0.95;
 
       dilmass_ = hyp_p4()[hypIdx].mass();
 
@@ -1537,6 +1586,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("event",        &event_,        "event/I"        );
   babyTree_->Branch("failjetid",    &failjetid_,    "failjetid/I"    );
   babyTree_->Branch("maxemf",       &maxemf_,       "maxemf/F"       );
+  babyTree_->Branch("trgeff",       &trgeff_,       "trgeff/F"       );
   babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I"         );
   babyTree_->Branch("ndavtx",       &nGoodDAVertex_,"ndavtx/I"       );
   babyTree_->Branch("weight",       &weight_,       "weight/F"       );
