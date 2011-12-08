@@ -180,7 +180,7 @@ void makeCMSSMCards(){
   for( int mgbin = 1 ; mgbin <= hall->GetXaxis()->GetNbins() ; mgbin++ ){
     for( int mlbin = 1 ; mlbin <= hall->GetYaxis()->GetNbins() ; mlbin++ ){
 
-      if( !( mgbin == 40 && mlbin == 5 ) && !(mgbin == 20 && mlbin == 10) ) continue;
+      //if( !( mgbin == 40 && mlbin == 5 ) && !(mgbin == 20 && mlbin == 10) ) continue;
 
       int mg  = hall->GetXaxis()->GetBinCenter(mgbin)-12.5;
       int ml  = hall->GetXaxis()->GetBinCenter(mlbin)-12.5;
