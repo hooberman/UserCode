@@ -193,13 +193,10 @@ void printEvent(){
 
 float Z_looper::gluinoPairCrossSection( float gluinomass ){
 
-  cout << "M(g) " << gluinomass << endl;
-
   // stop mass divisible by 10
   if( ((int)gluinomass%10)<1 ){
     int   bin  = gg_xsec_hist->FindBin(gluinomass);
     float xsec = gg_xsec_hist->GetBinContent(bin);
-    cout << "Found xsec A " << xsec << endl;
     return xsec;
   }
 
@@ -209,7 +206,6 @@ float Z_looper::gluinoPairCrossSection( float gluinomass ){
     float xsec1 = gg_xsec_hist->GetBinContent(bin-1);
     float xsec2 = gg_xsec_hist->GetBinContent(bin);
     float xsec  = 0.5 * ( xsec1 + xsec2 );
-    cout << "Found xsec B " << xsec << endl;
     return xsec;
   }
 }

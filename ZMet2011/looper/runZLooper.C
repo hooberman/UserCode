@@ -131,6 +131,12 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "T5zzl" ) == 0 ){
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/SMS-T5zzl_Mgluino-150to1200_mLSP-50to1100_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v1/VB04-02-29_Fastsim/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "T5zzgmsb" ) == 0 ){
     pickSkimIfExists(ch,"/nfs-6/userdata/cms2/SMS-T5zzgmsb_mGluino-100to1200_mNLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v1/VB04-02-29_Fastsim/merged*root");
   }
