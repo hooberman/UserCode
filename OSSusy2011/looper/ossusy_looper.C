@@ -2188,7 +2188,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	// fill msugra histos
 	//---------------------------
 
-	if( TString(prefix).Contains("LMscan") )
+	if( TString(prefix).Contains("LMscan") ){
 
 	  float lmscanweight = weight * trgeff_ * ndavtxweight_;
 
