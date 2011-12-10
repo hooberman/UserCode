@@ -1728,7 +1728,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  mL_ = sparm_mL();
 	}
 
-        else if(strcmp(prefix,"LMscan") == 0){
+	else if( TString(prefix).Contains("LMscan") ){
 
           m0  = sparm_m0();
           m12 = sparm_m12();
@@ -2018,7 +2018,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           else if( strcmp( prefix , "LM10" )    == 0 ) k_ = kfactorSUSY( "lm10" );
           else if( strcmp( prefix , "LM11" )    == 0 ) k_ = kfactorSUSY( "lm11" );
           else if( strcmp( prefix , "LM12" )    == 0 ) k_ = kfactorSUSY( "lm12" );
-	  else if( strcmp( prefix , "LMscan" )  == 0 ) k_ = kfactorSUSY(m0,m12,"tanbeta10");
+	  else if( TString(prefix).Contains("LMscan") ) k_ = kfactorSUSY(m0,m12,"tanbeta10");
 
           float dzcut  = 0.1; // dz(trk,vtx) requirement
           float etacut = 3.0; // neutral PFCandidate eta requirement
@@ -2188,7 +2188,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	// fill msugra histos
 	//---------------------------
 
-	if(strcmp(prefix,"LMscan") == 0){
+	if( TString(prefix).Contains("LMscan") )
 
 	  float lmscanweight = weight * trgeff_ * ndavtxweight_;
 
@@ -2833,7 +2833,7 @@ void ossusy_looper::BookHistos(char *prefix)
   double binedges1500[6] = {0., 100., 200., 400., 800., 1500.};
   //double binedges2000[11] = {0., 100., 200., 300., 400., 500., 600., 800., 1000., 1500., 2000.};
 
-  if(strcmp("LMscan",prefix)==0){
+  if( TString(prefix).Contains("LMscan") ){
 
     msugra_highmet	= new TH2F("msugra_highmet","msugra high MET yield",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
     msugra_highht	= new TH2F("msugra_highht" ,"msugra high HT yield" ,nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);

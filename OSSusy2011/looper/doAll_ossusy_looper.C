@@ -256,7 +256,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   */
     
   //Flags for files to run over
-  bool rundata     = 1;
+  bool rundata     = 0;
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
@@ -294,6 +294,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLM4      = 0;
   bool runLM5      = 0;
   bool runLM6      = 0;
+  bool runLM6v2    = 0;
   bool runLM7      = 0;
   bool runLM8      = 0;
   bool runLM9      = 0;
@@ -310,7 +311,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  bool runLMscanFall1 = 0; 
+  bool runLMscanFall11 = 1; 
   bool runT2tt     = 0;
   bool runT1lh     = 0;
   
@@ -665,6 +666,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "SUSY_LM6");
   }
 
+  // LM6v2
+  TChain *chLM6v2 = new TChain("Events");
+  if (runLM6v2) {
+    pickSkimIfExists(chLM6v2,"/nfs-7/userdata/cms2/LM6_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root");
+  }
+
   // LM7
   TChain *chLM7 = new TChain("Events");
   if (runLM7) {
@@ -788,7 +795,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLMscanFall11 = new TChain("Events");
   if (runLMscanFall11) {
 
-    pickSkimIfExists(chLMscanFall11,"/hadoop/cms/store/user/jaehyeok/CMS2_VB04-02-29_Fastsim/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2_new/ntuple*root");
+    pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/VB04-02-29_Fastsim/preprocessing/ntuple*root");
 
 
   }
@@ -883,7 +890,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
   char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
   char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
-  bool doFakeApp          = true;
+  bool doFakeApp          = false;
 
   ossusy_looper::TrigEnum trig;
 
@@ -1255,6 +1262,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chLM6, "LM6", kLM6, preLM6, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing LM6" << endl;
 		      hist::color("LM6", kOrange+6);
+		    }
+		    if (runLM6v2) {
+		      cout << "Processing LM6v2" << endl;
+		      looper->ScanChain(chLM6v2, "LM6v2", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LM6v2" << endl;
 		    }
 		    if (runLM7) {
 		      cout << "Processing LM7" << endl;
