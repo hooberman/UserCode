@@ -261,9 +261,25 @@ void makeCMSSMCards(){
       float   bkg_err[nbins]              = {   4671   ,   153   ,    27   ,  2.60   , 0.89 };
 
       if( do3jets ){
-	data_yield[nbins]                 = {  4022    ,   342   ,   129   ,     8   ,    0 };
-	bkg_yield[nbins]                  = {  3983.   ,   369.  ,   119.  ,   8.7   ,  1.8 };
- 	bkg_err[nbins]                    = {   978.   ,    57.  ,    12.  ,   1.7   ,  0.6 };
+
+	data_yield[0]   = 4022;
+	data_yield[1]   =  342;
+	data_yield[2]   =  129;
+	data_yield[3]   =    8;
+	data_yield[4]   =    0;
+
+	bkg_yield[0]    = 3983.;
+	bkg_yield[1]    =  369.;
+	bkg_yield[2]    =  119.;
+	bkg_yield[3]    =   8.7;
+	bkg_yield[4]    =   1.8;
+
+	bkg_err[0]      =  978.;
+	bkg_err[1]      =   57.;
+	bkg_err[2]      =   12.;
+	bkg_err[3]      =   1.7;
+	bkg_err[4]      =   0.6;
+
       }
 
       TH1F* histo_Data = new TH1F("histo_Data","histo_Data",nbins,0,nbins);
