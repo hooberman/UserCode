@@ -1,0 +1,72 @@
+The following recipe will perform a shape analysis using the results from SUS-11-017 and assuming LM4 signal.
+This assumes that you have set up Lands, information can be found here:
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideLandS
+
+
+
+Step 1) Produce root file containing signal and background yields and uncertainties, saved as histograms.
+
+You do this with a file called makeRootFile_LM4.C, this is where the yields in each MET bin for the data, 
+signal and backgrounds, and the stat and syst uncertainties, are stored. Currently what I've done is
+to separate the results into 4 EXCLUSIVE bins, 30-60, 60-100, 100-200 and >200 using SUS-11-017. 
+
+USAGE:
+root -b makeRootFile_LM4.C+;
+
+OUTPUT:
+The output is a file called Z_shape_LM4.root
+
+
+
+Step 2) Read in the information from the root file and perform the upper limit calculation. This is performed
+using the "data card" called Z_shape_LM4.txt. The data card contains the information (number of backgrounds,
+which systematic uncertainties to attribute to each background, etc.) that lands needs to interpret the histos
+you made in step 1.
+
+USAGE:
+../test/lands.exe -d Z_shape_LM4.txt -tB 1000 -tPB 30 -t 1000 -M Bayesian --doExpectation 0
+
+This runs lands using the data card. Currently running in Bayesian mode since its faster, we will switch to CLs later.
+
+OUTPUT:
+The output is a bunch of information printed to the screen (yes, this is annoying). In this case you will see:
+
+------------------------------------------------------------
+Observed Upper Limit on the ratio R at 95% CL = 0.525759
+------------------------------------------------------------
+
+The result is a quantity called R, which is:
+R = ( signal yield upper limit ) / ( total expected signal yield )
+
+The reason that R is useful is that if R < 1, then the point is excluded, otherwise its not. In this case we see
+that R ~ 0.5, in other words you would exclude a point with ~half the expected cross section of LM4. To interpret
+this in terms of a yield upper limit, note that the total expected signal yield is the SUM of the expected backgrounds
+in the 4 bins, in other words its the LM4 yield for MET > 30 GeV. The signal yield upper limit is therefore:
+signal yield upper limit = R * total expected signal yield = 0.53 * 25.4 = 13.5. 
+Therefore the signal yield upper limit for the MET > 30 GeV signal region is 13.5.
+
+When you are doing the SMS scans, note that you will need to put a cross section upper limit at each point:
+UL(xsec) = UL(yield) / (efficiency X luminosity)
+
+The efficiency calculation would be the same as the one you did previously, just remember that this is now the
+efficiency for MET > 30 GeV.
+
+
+CLS USAGE:
+To get the CLS limit (instead of Bayesian, as above) is a 3-step process:
+
+1) Run lands using the data card: 
+../test/lands.exe -d Z_shape_LM4.txt -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n Z_shape_LM4
+This time however, the output will be another root file: Z_shape_LM4_m2lnQ.root
+
+2) wait ~2 minutes
+
+3) Now, read in the root file produced in 1) above and get R
+
+root -b ../test/fitRvsCLs.C+
+run("Z_shape_LM4_m2lnQ.root","plot")
+
+OUTPUT:
+Limit: r < 0.48131 +/- 0.0048994 @ 95% CL
+
+The R value is 0.48, which is ~10% better than the Bayesian limit (this is what we generally see comparing Bayesian vs. CLs)
