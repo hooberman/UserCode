@@ -743,7 +743,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       InitBaby();
 
       if( TString(prefix).Contains("LMscan") ){
-       	if( sparm_m12() > 500    ) continue;	
+       	if( sparm_m12() > 700    ) continue;	
        	if( sparm_m0()  > 2000.0 ) continue;
       }
 
