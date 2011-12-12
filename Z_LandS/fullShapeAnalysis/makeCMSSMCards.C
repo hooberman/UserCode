@@ -68,10 +68,10 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-04/T5zzl_baby.root");
-  char* version = "V00-00-04";
+  ch->Add("output/V00-02-04/T5zz_baby.root");
+  char* version = "V00-01-00";
 
-  bool do3jets = true;
+  bool do3jets = false;
 
   //---------------------------------------
   // selection
@@ -243,10 +243,9 @@ void makeCMSSMCards(){
       printCard( Form("SMS_%i_%i",mgbin,mlbin) , sigtot , version , do3jets);
       
       //signal regions                          met100    met200    met300
-
       int     data_yield[nbins]           = {     276   ,    14   ,    0 };
       float   bkg_yield[nbins]            = {     276   ,  15.7   , 3.09 };
-      float   bkg_err[nbins]              = {      27   ,  2.60   , 0.89 };
+      float   bkg_err[nbins]              = {      27   ,  2.60   ,  1.0 };
 
       if( do3jets ){
 
