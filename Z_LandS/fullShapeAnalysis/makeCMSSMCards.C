@@ -37,9 +37,9 @@ void printCard( char* name , float sigtot , char* version , bool do3jets ){
   *ofile <<      "jmax 1 number of background"                                                          << endl;
   *ofile <<      "kmax * number of nuisance parameters"                                                 << endl;
   if( !do3jets ){
-    *ofile <<      "Observation 16483                                                         "           << endl;
+    *ofile <<      "Observation 290                                                           "           << endl;
   }else{
-    *ofile <<      "Observation 4501                                                          "           << endl;
+    *ofile <<      "Observation 137                                                           "           << endl;
   }
   *ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
   *ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                               << endl;
@@ -47,9 +47,9 @@ void printCard( char* name , float sigtot , char* version , bool do3jets ){
   *ofile << Form("process                      %s     bkg" , name )                                     << endl;
   *ofile <<      "process                              0       1"                                       << endl;
   if( !do3jets ){
-    *ofile << Form("rate                              %.1f   16438" , sigtot)                             << endl;
+    *ofile << Form("rate                              %.1f   295" , sigtot)                             << endl;
   }else{
-    *ofile << Form("rate                              %.1f    4481" , sigtot)                             << endl;
+    *ofile << Form("rate                              %.1f   129" , sigtot)                             << endl;
   }
   *ofile <<      "lumi                       lnN   1.060       -"                                       << endl;
   *ofile <<      "eff_leptons                lnN   1.050       -"                                       << endl;
@@ -89,21 +89,15 @@ void makeCMSSMCards(){
     preseljdn = TCut("dilmass>81 && dilmass<101 && njetsdn>=3   && leptype<2");
   }
 
-  TCut met30_60  ("pfmet>30  && pfmet<60");
-  TCut met60_100 ("pfmet>60  && pfmet<100");
   TCut met100_200("pfmet>100 && pfmet<200");
   TCut met200_300("pfmet>200 && pfmet<300");
   TCut met300    ("pfmet>300");
   TCut met30     ("pfmet>30");
 
-  TCut met30_60up  ("pfmetup>30  && pfmetup<60");
-  TCut met60_100up ("pfmetup>60  && pfmetup<100");
   TCut met100_200up("pfmetup>100 && pfmetup<200");
   TCut met200_300up("pfmetup>200 && pfmetup<300");
   TCut met300up    ("pfmetup>300");
 
-  TCut met30_60dn  ("pfmetdn>30  && pfmetdn<60");
-  TCut met60_100dn ("pfmetdn>60  && pfmetdn<100");
   TCut met100_200dn("pfmetdn>100 && pfmetdn<200");
   TCut met200_300dn("pfmetdn>200 && pfmetdn<300");
   TCut met300dn    ("pfmetdn>300");
@@ -113,7 +107,7 @@ void makeCMSSMCards(){
   // preselection and signal region yields
   //---------------------------------------
 
-  const unsigned int nbins = 5;
+  const unsigned int nbins = 3;
 
   TH2F* h[nbins];
   TH2F* hjup[nbins];
@@ -138,26 +132,20 @@ void makeCMSSMCards(){
   ctemp->cd();
 
   cout << "Filling nominal histos" << endl;
-  ch->Draw("ml:mg>>h_0"         , (presel+met30_60  ) * weight);
-  ch->Draw("ml:mg>>h_1"         , (presel+met60_100 ) * weight);
-  ch->Draw("ml:mg>>h_2"         , (presel+met100_200) * weight);
-  ch->Draw("ml:mg>>h_3"         , (presel+met200_300) * weight);
-  ch->Draw("ml:mg>>h_4"         , (presel+met300    ) * weight);
+  ch->Draw("ml:mg>>h_0"         , (presel+met100_200) * weight);
+  ch->Draw("ml:mg>>h_1"         , (presel+met200_300) * weight);
+  ch->Draw("ml:mg>>h_2"         , (presel+met300    ) * weight);
   ch->Draw("ml:mg>>hall"        , (presel+met30     ) * weight);
 
   cout << "Filling JES up histos" << endl;
-  ch->Draw("ml:mg>>hjup_0"      , (preseljup+met30_60up  ) * weight);
-  ch->Draw("ml:mg>>hjup_1"      , (preseljup+met60_100up ) * weight);
-  ch->Draw("ml:mg>>hjup_2"      , (preseljup+met100_200up) * weight);
-  ch->Draw("ml:mg>>hjup_3"      , (preseljup+met200_300up) * weight);
-  ch->Draw("ml:mg>>hjup_4"      , (preseljup+met300up    ) * weight);
+  ch->Draw("ml:mg>>hjup_0"      , (preseljup+met100_200up) * weight);
+  ch->Draw("ml:mg>>hjup_1"      , (preseljup+met200_300up) * weight);
+  ch->Draw("ml:mg>>hjup_2"      , (preseljup+met300up    ) * weight);
 
   cout << "Filling JES down histos" << endl;
-  ch->Draw("ml:mg>>hjdn_0"      , (preseljdn+met30_60dn  ) * weight);
-  ch->Draw("ml:mg>>hjdn_1"      , (preseljdn+met60_100dn ) * weight);
-  ch->Draw("ml:mg>>hjdn_2"      , (preseljdn+met100_200dn) * weight);
-  ch->Draw("ml:mg>>hjdn_3"      , (preseljdn+met200_300dn) * weight);
-  ch->Draw("ml:mg>>hjdn_4"      , (preseljdn+met300dn    ) * weight);
+  ch->Draw("ml:mg>>hjdn_0"      , (preseljdn+met100_200dn) * weight);
+  ch->Draw("ml:mg>>hjdn_1"      , (preseljdn+met200_300dn) * weight);
+  ch->Draw("ml:mg>>hjdn_2"      , (preseljdn+met300dn    ) * weight);
   ch->Draw("ml:mg>>hjdnall"     , (preseljdn+met30dn     ) * weight);
 
   delete ctemp;
@@ -201,7 +189,7 @@ void makeCMSSMCards(){
       int mg  = hall->GetXaxis()->GetBinCenter(mgbin)-12.5;
       int ml  = hall->GetXaxis()->GetBinCenter(mlbin)-12.5;
 
-      cout << "mg " << mg << " ml " << ml << endl;
+      //cout << "mg " << mg << " ml " << ml << endl;
 
       if( hjdnall->GetBinContent(mgbin,mlbin) < 1e-10 ) continue;
 
@@ -254,31 +242,25 @@ void makeCMSSMCards(){
 
       printCard( Form("SMS_%i_%i",mgbin,mlbin) , sigtot , version , do3jets);
       
-      //signal regions                         met30      met60    met100    met200    met300
+      //signal regions                          met100    met200    met300
 
-      int     data_yield[nbins]           = {  15314   ,   879   ,   276   ,    14   ,    0 };
-      float   bkg_yield[nbins]            = {  15195   ,   948   ,   276   ,  15.7   , 3.09 };
-      float   bkg_err[nbins]              = {   4671   ,   153   ,    27   ,  2.60   , 0.89 };
+      int     data_yield[nbins]           = {     276   ,    14   ,    0 };
+      float   bkg_yield[nbins]            = {     276   ,  15.7   , 3.09 };
+      float   bkg_err[nbins]              = {      27   ,  2.60   , 0.89 };
 
       if( do3jets ){
 
-	data_yield[0]   = 4022;
-	data_yield[1]   =  342;
-	data_yield[2]   =  129;
-	data_yield[3]   =    8;
-	data_yield[4]   =    0;
+	data_yield[0]   =  129;
+	data_yield[1]   =    8;
+	data_yield[2]   =    0;
 
-	bkg_yield[0]    = 3983.;
-	bkg_yield[1]    =  369.;
-	bkg_yield[2]    =  119.;
-	bkg_yield[3]    =   8.7;
-	bkg_yield[4]    =   1.8;
+	bkg_yield[0]    =  119.;
+	bkg_yield[1]    =   8.7;
+	bkg_yield[2]    =   1.8;
 
-	bkg_err[0]      =  978.;
-	bkg_err[1]      =   57.;
-	bkg_err[2]      =   12.;
-	bkg_err[3]      =   1.7;
-	bkg_err[4]      =   0.6;
+	bkg_err[0]      =   12.;
+	bkg_err[1]      =   1.7;
+	bkg_err[2]      =   0.6;
 
       }
 
