@@ -68,10 +68,10 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-04/T5zz_baby.root");
-  char* version = "V00-01-01";
+  ch->Add("output/V00-02-04/T5zzl_baby.root");
+  char* version = "V00-01-02";
 
-  bool do3jets = true;
+  bool do3jets = false;
 
   //---------------------------------------
   // selection
