@@ -1,0 +1,14 @@
+***V00-00-04***
+T5zzl, njets >= 3
+
+***V00-00-03***
+T5zzl, njets >= 2
+
+***V00-00-02***
+T5zz, njets >= 3
+
+***V00-00-01***
+T5zz, njets >= 2
+
+***V00-00-00***
+Initial try using T5zz and njets >= 2. Syst uncertainties were wrong --> DO NOT USE
