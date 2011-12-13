@@ -1541,6 +1541,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	ngenjets_ = 0;
 	htgen_    = 0;
+	htgen2_   = 0;
 
 	if( !isData ){
 	  for (unsigned int igjet = 0 ; igjet < genjets_p4().size() ; igjet++) {
@@ -1565,6 +1566,21 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    ngenjets_++;
 	    htgen_ += vgjet.pt();
 	  }
+
+	  for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
+	    if (cms2.genps_status().at(gidx) != 3)
+	      continue;
+	    if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
+	      continue;
+	    if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
+	      continue;
+	    if (cms2.genps_p4().at(gidx).pt() < 30.)
+	      continue;
+	    
+	    htgen2_ += cms2.genps_p4().at(gidx).pt();
+	  }
+
+
 	}
 
         // sumjetpt, meff calculation
@@ -4216,6 +4232,7 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("y",               &y_,                "y/F");  
   outTree->Branch("ht",              &ht_,               "ht/F");  
   outTree->Branch("htgen",           &htgen_,            "htgen/F");  
+  outTree->Branch("htgen2",          &htgen2_,           "htgen2/F");  
   outTree->Branch("htpf",            &htpf_,             "htpf/F");  
   outTree->Branch("htjpt",           &htjpt_,            "htjpt/F");  
   outTree->Branch("htpf25",          &htpf25_,           "htpf25/F");  

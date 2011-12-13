@@ -245,6 +245,7 @@ class ossusy_looper
 	Int_t   njetsuncor_;
 	Int_t   njetsoffset_;
 	Float_t htgen_;
+	Float_t htgen2_;
 	Float_t htpf_;
 	Float_t htpf40_;
 	Float_t htpf25_;
