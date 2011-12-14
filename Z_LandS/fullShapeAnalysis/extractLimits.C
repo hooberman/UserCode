@@ -28,7 +28,7 @@
 
 using namespace std;
 
-char* version             = "V00-00-00";
+char* version             = "V00-01-04";
 
 bool fileInList(string thisfilename);
 
@@ -57,6 +57,7 @@ void extractLimits( bool print = false ){
       // int mg  = hexcl->GetXaxis()->GetBinCenter(mgbin);
       // int ml = hexcl->GetXaxis()->GetBinCenter(mlbin);
       // if( mgbin < 45 ) continue;
+      // if( mgbin > 44 ) continue;
 
       hexcl->SetBinContent(mgbin,mlbin,0);
 

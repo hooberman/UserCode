@@ -54,37 +54,37 @@ void plotYields( int mgbin , int mlbinbin , char* version ){
 
 
   cout << endl;
-  for( unsigned int ibin = 1 ; ibin <= 5 ; ibin++ ){
+  for( unsigned int ibin = 1 ; ibin <= 3 ; ibin++ ){
     cout << "yield      " << ibin << " " << Form("%.1f",hsig->GetBinContent(ibin)) << endl;
   }
 
   cout << endl;
-  for( unsigned int ibin = 1 ; ibin <= 5 ; ibin++ ){
+  for( unsigned int ibin = 1 ; ibin <= 3 ; ibin++ ){
     cout << "yieldup    " << ibin << " " << Form("%.1f",hsigup->GetBinContent(ibin)) << endl;
   }
 
   cout << endl;
-  for( unsigned int ibin = 1 ; ibin <= 5 ; ibin++ ){
+  for( unsigned int ibin = 1 ; ibin <= 3 ; ibin++ ){
     cout << "yielddn    " << ibin << " " << Form("%.1f",hsigdn->GetBinContent(ibin)) << endl;
   }
 
   cout << endl;
-  for( unsigned int ibin = 1 ; ibin <= 5 ; ibin++ ){
+  for( unsigned int ibin = 1 ; ibin <= 3 ; ibin++ ){
     cout << "bkg        " << ibin << " " << Form("%.1f",hbkg->GetBinContent(ibin)) << endl;
   }
 
   cout << endl;
-  for( unsigned int ibin = 1 ; ibin <= 5 ; ibin++ ){
+  for( unsigned int ibin = 1 ; ibin <= 3 ; ibin++ ){
     cout << "bkgerrup  " << ibin << " " << Form("%.1f",hbkgerrup->GetBinContent(ibin)) << endl;
   }
 
   cout << endl;
-  for( unsigned int ibin = 1 ; ibin <= 5 ; ibin++ ){
+  for( unsigned int ibin = 1 ; ibin <= 3 ; ibin++ ){
     cout << "bkgerrdn  " << ibin << " " << Form("%.1f",hbkgerrdn->GetBinContent(ibin)) << endl;
   }
 
   cout << endl;
-  for( unsigned int ibin = 1 ; ibin <= 5 ; ibin++ ){
+  for( unsigned int ibin = 1 ; ibin <= 3 ; ibin++ ){
     cout << "data       " << ibin << " " << Form("%.1f",hdata->GetBinContent(ibin)) << endl;
   }
 
