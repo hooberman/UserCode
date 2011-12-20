@@ -193,21 +193,9 @@ void printEvent(){
 
 float Z_looper::gluinoPairCrossSection( float gluinomass ){
 
-  // stop mass divisible by 10
-  if( ((int)gluinomass%10)<1 ){
-    int   bin  = gg_xsec_hist->FindBin(gluinomass);
-    float xsec = gg_xsec_hist->GetBinContent(bin);
-    return xsec;
-  }
+  int   bin  = gg_xsec_hist->FindBin(gluinomass);
+  float xsec = gg_xsec_hist->GetBinContent(bin);
 
-  // stop mass not divisible by 10
-  else{
-    int   bin   = gg_xsec_hist->FindBin(gluinomass);
-    float xsec1 = gg_xsec_hist->GetBinContent(bin-1);
-    float xsec2 = gg_xsec_hist->GetBinContent(bin);
-    float xsec  = 0.5 * ( xsec1 + xsec2 );
-    return xsec;
-  }
 }
 
 //--------------------------------------------------------------------
