@@ -102,6 +102,7 @@ TCut selection_TCut(){
   TCut ht200("sumjetpt > 200.0");
   TCut mmtype("leptype==1");
   TCut eetype("leptype==0");
+  TCut sf("leptype==0 || leptype==1");
   TCut leadjet120("jet1.pt()>120");
   TCut mll50("dilmass>50");
   TCut zveto("dilmass<70 || dilmass>100");
@@ -113,16 +114,17 @@ TCut selection_TCut(){
   TCut id1("passid1==1");
   TCut id2("passid2==1");
   
-  //TCut sel;
-  //sel += mmtype;
-  //sel += zpass;
-  //sel += nlep3;
-  //sel += met30;
-  //sel += met60;
-  //sel += nlep4;
-  //sel += njets2;
-  //sel += btags1;
-  //sel += btags2;
+  TCut sel;
+  sel += sf;
+  sel += zpass;
+  sel += njets2;
+  // sel += mmtype;
+  // sel += nlep3;
+  // sel += met30;
+  // sel += met60;
+  // sel += nlep4;
+  // sel += btags1;
+  // sel += btags2;
 
   //TCut sel = "njets>1";
   //TCut sel = zpass;
@@ -131,7 +133,7 @@ TCut selection_TCut(){
   //--------------------------------
   // lljj selection
   //--------------------------------
-
+  /*
   TCut sel;
   //sel += pt2520;
   sel += pt3020;
@@ -141,6 +143,7 @@ TCut selection_TCut(){
   sel += zveto;
   sel += nbtags1;
   //sel += mmtype;
+  */
 
   cout << "Using selection         : " << sel.GetTitle() << endl;
 
@@ -148,7 +151,7 @@ TCut selection_TCut(){
 }
 TCut weight_TCut(){
 
-  TCut weight("davtxweight * weight * 4.3 * 0.93");
+  TCut weight("weight * 4.65");
   //TCut weight("weight * davtxweight");
   //TCut weight("1");
   
