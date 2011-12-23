@@ -18,12 +18,12 @@ process.source = cms.Source("PoolSource",
 #        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/6019850A-09C0-E011-8487-BCAEC5329720.root',
 #        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/4E489C40-0DC0-E011-83F0-003048D2C0F2.root',
 #        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/2E678643-0DC0-E011-959F-BCAEC53296F9.root'
-        #    'file:/tas/benhoob/PeakDecoResiduals/MinimumBias_Run2010A-PromptReco-v4/842A5974-A674-DF11-B27A-0030487C6090.root'
     ),
 )
 
 
 #process.source.inputCommands = cms.untracked.vstring('keep *', 'drop *_MEtoEDMConverter_*_*') # hack to get rid of the memory consumption problem in 2_2_X and beond
+
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(False),
     Rethrow = cms.untracked.vstring("ProductNotFound"), # make this exception fatal
@@ -40,29 +40,28 @@ reportEvery = cms.untracked.int32(1000) # every 1000th only
 process.MessageLogger.statistics.append('cout')
 
 
-#############################################################
-##select trigger bits 40 OR 41
-##AND NOT (36 OR 37 OR 38 OR 39)
-##no BPTX coincidence is requested
-##still valid for 2010 datataking ?!? -->replaced by HLT trigger?
-##########################################################
-process.load('L1TriggerConfig.L1GtConfigProducers.L1GtTriggerMaskTechTrigConfig_cff')
-process.load('HLTrigger/HLTfilters/hltLevel1GTSeed_cfi')
-process.L1T1=process.hltLevel1GTSeed.clone()
-process.L1T1.L1TechTriggerSeeding = cms.bool(True)
-process.L1T1.L1SeedsLogicalExpression=cms.string('0 AND (40 OR 41) AND NOT (36 OR 37 OR 38 OR 39) AND NOT ((42 AND (NOT 43)) OR (43 AND (NOT 42)))')
+#--------------------------------
+# filter beam scraping events
+#--------------------------------
 
-####################################################################
-##Filter events with physicsDaclaration bit set & technical trigger
-####################################################################
-#The HLT path "PhysicsDeclared" will be removed with the transition to the 1e29 menu.
-#However, users will be able to select the events with the PhysicsDeclared bit on in the following ways:
-#
-#    * adding to your cms.Path the process.hltPhysicsDeclared filter:
-#
-process.load('HLTrigger.special.hltPhysicsDeclared_cfi')
-process.hltPhysicsDeclared.L1GtReadoutRecordTag = 'gtDigis'
-process.mypath=cms.Path(process.hltPhysicsDeclared)
+process.noscraping = cms.EDFilter("FilterOutScraping",
+                                applyfilter = cms.untracked.bool(True),
+                                debugOn = cms.untracked.bool(True),
+                                numtrack = cms.untracked.uint32(10),
+                                thresh = cms.untracked.double(0.25)
+                                )
+
+#--------------------------------
+# require a good vertex
+#--------------------------------
+
+process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
+                                           vertexCollection = cms.InputTag('offlinePrimaryVertices'),
+                                           minimumNDOF = cms.uint32(4) ,
+                                           maxAbsZ = cms.double(15), 
+                                           maxd0 = cms.double(2) 
+                                           )
+
 
     
 #############################################################
@@ -71,6 +70,7 @@ process.mypath=cms.Path(process.hltPhysicsDeclared)
 ##is only available in initial track selection
 ##(Quality information is thrown away by the tracker refitters)
 ##########################################################
+
 import Alignment.CommonAlignmentProducer.AlignmentTrackSelector_cfi
 process.HighPuritySelector = Alignment.CommonAlignmentProducer.AlignmentTrackSelector_cfi.AlignmentTrackSelector.clone(
     applyBasicCuts = True,
@@ -79,33 +79,6 @@ process.HighPuritySelector = Alignment.CommonAlignmentProducer.AlignmentTrackSel
     src = 'generalTracks',
     trackQualities = ["highPurity"]
     )
-
-###############################################################
-## Quality filters on the event (REAL DATA - FIRST COLLISIONS DEC09 ONLY!)
-## see https://twiki.cern.ch/twiki/bin/viewauth/CMS/TRKPromptFeedBack#Event_and_track_selection_recipe
-##NOT in PATH yet, to be commented in, if necessay
-##
-#########################################################    
-#process.oneGoodVertexFilter = cms.EDFilter("VertexSelector",
-#                                           src = cms.InputTag("offlinePrimaryVertices"),
-#                                           cut = cms.string("!isFake && ndof > 4 && abs(z) <= 15 && position.Rho <= 2"), # tracksSize() > 3# for the older cut
-#                                           filter = cms.bool(True),   # otherwise it won't filter the events, just produce an empty vertex #collection.
-#                                           )
-
-
-#process.noScraping= cms.EDFilter("FilterOutScraping",
-#                                 #src=cms.InputTag("ALCARECOTkAlMinBias"),
-#                                 src=cms.InputTag("generalTracks"),
-#                                 applyfilter = cms.untracked.bool(True),
-#                                 debugOn = cms.untracked.bool(False), ## Or 'True' to get some per-event info
-#                                 numtrack = cms.untracked.uint32(10),
-#                                 thresh = cms.untracked.double(0.25)
-#                                 )
-####################################
-
-
-
-
       
 #-- Track hit filter
 # TrackerTrackHitFilter takes as input the tracks/trajectories coming out from TrackRefitter1
@@ -270,10 +243,8 @@ process.TFileService = cms.Service("TFileService",
 
 
 process.p = cms.Path(
-#    process.oneGoodVertexFilter*
-#    process.noScraping*
-#    process.L1T1*
-#    process.hltPhysicsDeclared*
+    process.noscraping*
+    process.primaryVertexFilter*
     process.offlineBeamSpot*
     process.HighPuritySelector*
     process.TrackRefitter1*
