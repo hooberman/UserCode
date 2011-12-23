@@ -229,7 +229,7 @@ process.es_prefer_APE = cms.ESPrefer("PoolDBESSource", "APE")
 process.load("Alignment.PeakDecoResiduals4.PeakDecoResiduals4_cfi")
 process.PeakDecoResiduals4.Tracks = 'TrackRefitter2'
 process.PeakDecoResiduals4.trajectoryInput = 'TrackRefitter2'
-process.PeakDecoResiduals4.debug = cms.bool(True)
+process.PeakDecoResiduals4.debug = cms.bool(False)
 process.PeakDecoResiduals4.runOnCosmics = cms.bool(False)
 process.PeakDecoResiduals4.createTree = cms.bool(True)
 
