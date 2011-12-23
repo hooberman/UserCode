@@ -488,7 +488,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
     set_goodrun_file( g_json );
 
     //set vtx reweighting hist
-    set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_3p5fb_Zselection.root");
+    set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root");
 
     initialized = true;
   }
