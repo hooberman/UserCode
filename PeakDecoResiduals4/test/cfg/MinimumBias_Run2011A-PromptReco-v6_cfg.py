@@ -231,7 +231,7 @@ process.PeakDecoResiduals4.Tracks = 'TrackRefitter2'
 process.PeakDecoResiduals4.trajectoryInput = 'TrackRefitter2'
 process.PeakDecoResiduals4.debug = cms.bool(False)
 process.PeakDecoResiduals4.runOnCosmics = cms.bool(False)
-process.PeakDecoResiduals4.createTree = cms.bool(True)
+process.PeakDecoResiduals4.createTree = cms.bool(False)
 
 
 #process.TFileService.fileName = '/tmp/benhoob/temp.root'

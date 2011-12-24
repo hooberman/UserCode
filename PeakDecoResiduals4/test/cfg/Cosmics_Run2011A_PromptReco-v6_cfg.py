@@ -9,15 +9,19 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/630/883CFB93-4FC0-E011-BA94-003048D375AA.root',
-#        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/630/6633024F-54C0-E011-B3AB-003048F118D4.root',
-#        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/F40D9540-0DC0-E011-84E7-0030486780AC.root',
-#        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/EC29840A-09C0-E011-9CAD-485B39897227.root',
-#        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/D4C31A0B-09C0-E011-BA10-485B3962633D.root',
-#        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/D4C19A0A-09C0-E011-B038-BCAEC518FF80.root',
-#        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/6019850A-09C0-E011-8487-BCAEC5329720.root',
-#        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/4E489C40-0DC0-E011-83F0-003048D2C0F2.root',
-#        '/store/data/Run2011A/MinimumBias/RECO/PromptReco-v6/000/172/620/2E678643-0DC0-E011-959F-BCAEC53296F9.root'
+
+'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/659/7A4F15D6-2AC0-E011-A7D8-003048F024FE.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/659/166BBCD6-2AC0-E011-BE8B-0030487CD6B4.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/635/E2BCA3E5-06C1-E011-A6E0-003048F1C420.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/630/D8D14B71-E1C0-E011-BFEF-003048F11DE2.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/627/B01AA350-08C0-E011-8A21-BCAEC5329702.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/625/2CD8D5D0-07C0-E011-AE1D-BCAEC5329730.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/622/B66B697A-FDBF-E011-BE79-BCAEC518FF69.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/622/A2155A7B-FDBF-E011-9931-003048673374.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/622/6AD3987A-FDBF-E011-8A83-E0CB4E55365C.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/622/44F3C977-FDBF-E011-8016-BCAEC518FF8F.root',
+#'/store/data/Run2011A/Cosmics/RECO/PromptReco-v6/000/172/620/D451FF13-42C0-E011-86C4-BCAEC5329732.root'
+
     ),
 )
 
@@ -76,7 +80,8 @@ process.HighPuritySelector = Alignment.CommonAlignmentProducer.AlignmentTrackSel
     applyBasicCuts = True,
     filter = True,
     #src = 'ALCARECOTkAlMinBias',
-    src = 'generalTracks',
+    src = 'ctfWithMaterialTracksP5',
+    #src = 'generalTracks',
     trackQualities = ["highPurity"]
     )
       
@@ -169,8 +174,9 @@ process.load("RecoTracker.TrackProducer.TrackRefitters_cff")
 ## parameters for TrackRefitter
 #process.load("RecoTracker.TrackProducer.RefitterWithMaterial_cff")
 import RecoTracker.TrackProducer.TrackRefitters_cff
-process.TrackRefitter1 = process.TrackRefitter.clone(
-   src = 'HighPuritySelector',
+#process.TrackRefitter1 = process.TrackRefitter.clone(
+process.TrackRefitter1 = process.TrackRefitterP5.clone(
+#   src = 'HighPuritySelector',
    TrajectoryInEvent = True,
    TTRHBuilder = "WithAngleAndTemplate",
    NavigationSchool = ""
@@ -243,14 +249,15 @@ process.TFileService = cms.Service("TFileService",
 
 
 process.p = cms.Path(
-    process.noscraping*
-    process.primaryVertexFilter*
+#    process.noscraping*
+#    process.primaryVertexFilter*
     process.offlineBeamSpot*
-    process.HighPuritySelector*
+#    process.HighPuritySelector*
     process.TrackRefitter1*
     process.TrackerTrackHitFilter*
     process.HitFilteredTracks*
     process.AlignmentTrackSelector*
     process.TrackRefitter2*
-    process.PeakDecoResiduals4)
+    process.PeakDecoResiduals4
+)
 
