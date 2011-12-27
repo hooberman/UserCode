@@ -739,8 +739,24 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       //tree->LoadTree(z);
 
       cms2.GetEntry(z);
-
       InitBaby();
+
+      /*
+      cout << endl << endl;
+      dumpDocLines();
+
+      for (int j=0; j<cms2.genps_id().size(); j++) {
+
+	int id = abs(cms2.genps_id().at(j));
+
+	if( id != 15 ) continue;
+
+	int nd = cms2.genps_lepdaughter_id()[j].size();
+
+	cout << "ndaughters " << nd << endl;
+	if (nd==0) cout << "ERROR! 0 DAUGHTERS!!! <<<<----------------------------" << endl;
+      }
+      */
 
       if( TString(prefix).Contains("LMscan") ){
        	if( sparm_m12() > 700    ) continue;	
