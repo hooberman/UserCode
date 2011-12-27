@@ -43,7 +43,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-09";
+  //const char* version   = "V00-02-09";
+  const char* version   = "temp";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -263,7 +264,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
   bool runphotons  = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runttallPUS6= 0;
   bool runttpowheg = 0;
   bool runtt42     = 0;
@@ -311,9 +312,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  bool runLMscanFall11 = 1; 
+  bool runLMscanFall11 = 0; 
   bool runT2tt     = 0;
   bool runT1lh     = 0;
+  bool runZZZ      = 0;
   
   char* dir = "";
 
@@ -375,6 +377,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     pickSkimIfExists(chphotons,"/nfs-7/userdata/cms2/G_Pt-170to300_TuneZ2_7TeV_pythia6_Summer11-PU_S4_START42_V11-v1/merged*root"); 
   }
 
+  TChain* chZZZ = new  TChain("Events");
+  if(runZZZ){
+    pickSkimIfExists(chZZZ,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/ZZZNoGstar_TuneZ2_7TeV-madgraphCMSSW42xPUv1_spadhi-ZZZNoGstar_TuneZ2_7TeV-madgraphCMSSW42xPUv1-9ab11d163a88ab8f3641ab081403ebc5/VB04-02-29_FastSim/merged*root");
+  }
+
   TChain* chZjets = new  TChain("Events");
   if(runZjets){
 
@@ -384,8 +391,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
-    //pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
-    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
+    //pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   TChain* chtopallPUS6 = new TChain("Events");
@@ -1106,6 +1113,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      cout << "Processing photons.. " << endl;
 		      looper->ScanChain(chphotons,"photons", 1, 1, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing  photons.. " << endl;
+		    }
+		    if (runZZZ) {
+		      cout << "Processing ZZZ.. " << endl;
+		      looper->ScanChain(chZZZ,"ZZZ", 1, 1, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing  ZZZ.. " << endl;
 		    }
 		    if (runQCDpt15) {
 		      cout << "Processing QCDpt15.. " << endl;
