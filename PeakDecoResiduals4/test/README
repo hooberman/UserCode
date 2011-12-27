@@ -1,0 +1,10 @@
+*** default config, w/ and w/o tree ***
+MinimumBias_Run2011A-PromptReco-v6
+MinimumBias_Run2011A-PromptReco-v6_NoTree
+
+*** default config, w/ and w/o tree ***
+Cosmics_Run2011A-PromptReco-v6
+Cosmics_Run2011A-PromptReco-v6_NoTree
+
+*** disable backplane corrections using snippet from Marco ***
+MinimumBias_Run2011A-PromptReco-v6_noBP_NoTree
