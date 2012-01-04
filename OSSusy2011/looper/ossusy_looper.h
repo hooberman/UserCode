@@ -107,6 +107,10 @@ class ossusy_looper
         LorentzVector*  jet2_; 
  
         // Baby ntuple variables
+	Float_t xsecnom_;
+	Float_t xsecup_;
+	Float_t xsecdn_;			
+	Float_t fileff_;
 	Float_t lepscale_;
 	Float_t mG_;
 	Float_t mlljj_;

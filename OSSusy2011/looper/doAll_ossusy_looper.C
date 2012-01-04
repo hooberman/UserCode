@@ -43,8 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  //const char* version   = "V00-02-09";
-  const char* version   = "temp";
+  const char* version   = "V00-02-11";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -264,7 +263,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
   bool runphotons  = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runttallPUS6= 0;
   bool runttpowheg = 0;
   bool runtt42     = 0;
@@ -312,7 +311,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  bool runLMscanFall11 = 0; 
+  bool runLMscanFall11    = 1; 
+  bool runLMscanFall11dil = 1; 
   bool runT2tt     = 0;
   bool runT1lh     = 0;
   bool runZZZ      = 0;
@@ -799,11 +799,21 @@ void doAll_ossusy_looper(bool skipFWLite = true)
                      "SUSY_ML8");
   }
 
+  TChain *chLMscanFall11dil = new TChain("Events");
+  if (runLMscanFall11) {
+
+    //pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple*root");
+
+    pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_147_1_sap.root");
+
+  }
+
   TChain *chLMscanFall11 = new TChain("Events");
   if (runLMscanFall11) {
 
-    pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/VB04-02-29_Fastsim/preprocessing/ntuple*root");
+    //pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple*root")
 
+    pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple_999_1_FO8.root");
 
   }
 
@@ -1367,6 +1377,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing LMscan" << endl;
 		      hist::color("LMscan", kOrange-7);
+		    }
+		    if (runLMscanFall11dil) {
+		      cout << "Processing LMscanFall11 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil, "LMscanFall11dil", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil" << endl;
 		    }
 		    if (runLMscanFall11) {
 		      cout << "Processing LMscanFall11" << endl;
