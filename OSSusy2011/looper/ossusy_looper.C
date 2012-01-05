@@ -772,11 +772,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       if( !cleaning_goodDAVertexApril2011() )                        continue;
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
 
-      float pthat_cutoff = 30.;
-      if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
-        continue;
-      }
-
       // skip duplicates
       if( isData ) {
         DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
@@ -1128,7 +1123,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
         if( !isData ){
 
-	  pthat_  = genps_pthat();
+	  pthat_  = -999; //genps_pthat();
 	  qscale_ = genps_qScale();
 
           //splitting ttbar into ttdil/ttotr
