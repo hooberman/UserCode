@@ -802,18 +802,18 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLMscanFall11dil = new TChain("Events");
   if (runLMscanFall11) {
 
-    //pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple*root");
+    pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple*root");
 
-    pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_147_1_sap.root");
+    //pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_147_1_sap.root");
 
   }
 
   TChain *chLMscanFall11 = new TChain("Events");
   if (runLMscanFall11) {
 
-    //pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple*root")
+    pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple*root");
 
-    pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple_999_1_FO8.root");
+    //pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple_999_1_FO8.root");
 
   }
 
