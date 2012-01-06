@@ -549,6 +549,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     if( TString(prefix).Contains("PUS6") ){
       set_vtxreweight_rootfile("vtxreweight_Fall11MC_PUS6_4p7fb_Zselection.root",true);
     }
+
+    else if( TString(prefix).Contains("LMscanFall11") ){
+      set_vtxreweight_rootfile("vtxreweight_CMSSM_4p7fb_Zselection.root",true);
+    }
     
     else{
       set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
