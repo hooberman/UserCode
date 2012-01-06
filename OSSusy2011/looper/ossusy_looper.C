@@ -1803,20 +1803,20 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  if( doTenPercent )	  weight *= 10;
 
           if( TString(prefix).Contains("LM") ){
-            if( strcmp( prefix , "LM0" )  == 0 ) weight *= kfactorSUSY( "lm0" );
-            if( strcmp( prefix , "LM1" )  == 0 ) weight *= kfactorSUSY( "lm1" );
-            if( strcmp( prefix , "LM2" )  == 0 ) weight *= kfactorSUSY( "lm2" );
-            if( strcmp( prefix , "LM3" )  == 0 ) weight *= kfactorSUSY( "lm3" );
-            if( strcmp( prefix , "LM4" )  == 0 ) weight *= kfactorSUSY( "lm4" );
-            if( strcmp( prefix , "LM5" )  == 0 ) weight *= kfactorSUSY( "lm5" );
-            if( strcmp( prefix , "LM6" )  == 0 ) weight *= kfactorSUSY( "lm6" );
-            if( strcmp( prefix , "LM7" )  == 0 ) weight *= kfactorSUSY( "lm7" );
-            if( strcmp( prefix , "LM8" )  == 0 ) weight *= kfactorSUSY( "lm8" );
-            if( strcmp( prefix , "LM9" )  == 0 ) weight *= kfactorSUSY( "lm9" );
-            if( strcmp( prefix , "LM10" ) == 0 ) weight *= kfactorSUSY( "lm10");
-            if( strcmp( prefix , "LM11" ) == 0 ) weight *= kfactorSUSY( "lm11");
-            if( strcmp( prefix , "LM12" ) == 0 ) weight *= kfactorSUSY( "lm12");
-            if( strcmp( prefix , "LM13" ) == 0 ) weight *= kfactorSUSY( "lm13");
+	    if( TString(prefix).Contains("LM0") )  weight *= kfactorSUSY( "lm0"  );
+	    if( TString(prefix).Contains("LM1") )  weight *= kfactorSUSY( "lm1"  );
+	    if( TString(prefix).Contains("LM2") )  weight *= kfactorSUSY( "lm2"  );
+	    if( TString(prefix).Contains("LM3") )  weight *= kfactorSUSY( "lm3"  );
+	    if( TString(prefix).Contains("LM4") )  weight *= kfactorSUSY( "lm4"  );
+	    if( TString(prefix).Contains("LM5") )  weight *= kfactorSUSY( "lm5"  );
+	    if( TString(prefix).Contains("LM6") )  weight *= kfactorSUSY( "lm6"  );
+	    if( TString(prefix).Contains("LM7") )  weight *= kfactorSUSY( "lm7"  );
+	    if( TString(prefix).Contains("LM8") )  weight *= kfactorSUSY( "lm8"  );
+	    if( TString(prefix).Contains("LM9") )  weight *= kfactorSUSY( "lm9"  );
+	    if( TString(prefix).Contains("LM10") ) weight *= kfactorSUSY( "lm10" );
+	    if( TString(prefix).Contains("LM11") ) weight *= kfactorSUSY( "lm11" );
+	    if( TString(prefix).Contains("LM12") ) weight *= kfactorSUSY( "lm12" );
+	    if( TString(prefix).Contains("LM13") ) weight *= kfactorSUSY( "lm13" );
           }
         }
 
@@ -2047,20 +2047,20 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  hbhe_         = evt_hbheFilter();
 
           k_ = 1;
-          if     ( strcmp( prefix , "LM0"  )    == 0 ) k_ = kfactorSUSY( "lm0"  );
-          else if( strcmp( prefix , "LM1"  )    == 0 ) k_ = kfactorSUSY( "lm1"  );
-          else if( strcmp( prefix , "LM2"  )    == 0 ) k_ = kfactorSUSY( "lm2"  );
-          else if( strcmp( prefix , "LM3"  )    == 0 ) k_ = kfactorSUSY( "lm3"  );
-          else if( strcmp( prefix , "LM4"  )    == 0 ) k_ = kfactorSUSY( "lm4"  );
-          else if( strcmp( prefix , "LM5"  )    == 0 ) k_ = kfactorSUSY( "lm5"  );
-          else if( strcmp( prefix , "LM6"  )    == 0 ) k_ = kfactorSUSY( "lm6"  );
-          else if( strcmp( prefix , "LM7"  )    == 0 ) k_ = kfactorSUSY( "lm7"  );
-          else if( strcmp( prefix , "LM8"  )    == 0 ) k_ = kfactorSUSY( "lm8"  );
-          else if( strcmp( prefix , "LM9"  )    == 0 ) k_ = kfactorSUSY( "lm9"  );
-          else if( strcmp( prefix , "LM10" )    == 0 ) k_ = kfactorSUSY( "lm10" );
-          else if( strcmp( prefix , "LM11" )    == 0 ) k_ = kfactorSUSY( "lm11" );
-          else if( strcmp( prefix , "LM12" )    == 0 ) k_ = kfactorSUSY( "lm12" );
-	  else if( TString(prefix).Contains("LMscan") ) k_ = kfactorSUSY(m0,m12,"tanbeta10");
+	  if( TString(prefix).Contains("LM0") )  k_ = kfactorSUSY( "lm0" );
+	  if( TString(prefix).Contains("LM1") )  k_ = kfactorSUSY( "lm1" );
+	  if( TString(prefix).Contains("LM2") )  k_ = kfactorSUSY( "lm2" );
+	  if( TString(prefix).Contains("LM3") )  k_ = kfactorSUSY( "lm3" );
+	  if( TString(prefix).Contains("LM4") )  k_ = kfactorSUSY( "lm4" );
+	  if( TString(prefix).Contains("LM5") )  k_ = kfactorSUSY( "lm5" );
+	  if( TString(prefix).Contains("LM6") )  k_ = kfactorSUSY( "lm6" );
+	  if( TString(prefix).Contains("LM7") )  k_ = kfactorSUSY( "lm7" );
+	  if( TString(prefix).Contains("LM8") )  k_ = kfactorSUSY( "lm8" );
+	  if( TString(prefix).Contains("LM9") )  k_ = kfactorSUSY( "lm9" );
+	  if( TString(prefix).Contains("LM10") ) k_ = kfactorSUSY( "lm10" );
+	  if( TString(prefix).Contains("LM11") ) k_ = kfactorSUSY( "lm11" );
+	  if( TString(prefix).Contains("LM12") ) k_ = kfactorSUSY( "lm12" );
+	  if( TString(prefix).Contains("LM13") ) k_ = kfactorSUSY( "lm13" );
 
           float dzcut  = 0.1; // dz(trk,vtx) requirement
           float etacut = 3.0; // neutral PFCandidate eta requirement
