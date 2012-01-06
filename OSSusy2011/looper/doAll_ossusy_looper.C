@@ -1378,15 +1378,15 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      cout << "Done processing LMscan" << endl;
 		      hist::color("LMscan", kOrange-7);
 		    }
-		    if (runLMscanFall11dil) {
-		      cout << "Processing LMscanFall11 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil, "LMscanFall11dil", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil" << endl;
-		    }
 		    if (runLMscanFall11) {
 		      cout << "Processing LMscanFall11" << endl;
 		      looper->ScanChain(chLMscanFall11, "LMscanFall11", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing LMscanFall11" << endl;
+		    }
+		    if (runLMscanFall11dil) {
+		      cout << "Processing LMscanFall11 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil, "LMscanFall11dil", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil" << endl;
 		    }
 		    if (runT1lh) {
 		      cout << "Processing T1lh" << endl;
