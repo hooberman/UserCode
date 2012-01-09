@@ -1771,16 +1771,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Scale05");
 	  xsecsusy_  = cmssm_loxsec(m0,m12);
 	  xsecsusy2_ = getMsugraCrossSection(m0,m12,10);
-
-	  xsecnom_   = CMSSMCrossSection(m0,m12,"tanbeta10");
-	  xsecdn_    = CMSSMCrossSection(m0,m12,"tanbeta10Scale05");
-	  xsecup_    = CMSSMCrossSection(m0,m12,"tanbeta10Scale20");
-
-	  fileff_ = 1;
-	  if( TString(prefix).Contains("dil") ) fileff_ = sparm_dilepfiltereff();
-
-	  //weight = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
-	  weight = lumi * xsecnom_ * (1000. / 10000.) * fileff_; // k * xsec / nevents
+	  
+	  weight = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
 
 	  if( doTenPercent )	  weight *= 10;
         }
@@ -1966,6 +1958,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //        p_met = getMet( "muCorJESMET"    , hypIdx);
         float mucorjesmet = 1234. ;//p_met.first;
 
+	/*
 	// pfmet, corrected for muon veto cone energies
 	metStruct vetoMetStruct = vetoCorMet( hypIdx );
 	pfmetveto_ = vetoMetStruct.met;
@@ -1975,6 +1968,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	metStruct hvetoMetStruct = vetoCorMet( hypIdx , 99999 , 6 );
 	pfmethveto_ = hvetoMetStruct.met;
+	*/
 
         //fill tree for baby ntuple 
         if(g_createTree){
@@ -2238,18 +2232,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 300. && pfmet_ > 275. ){
 	    msugra_highmet->Fill(m0,m12,lmscanweight); 
-	    //msugra_highmet_kup->Fill(m0,m12,lmscanweight*(ksusyup_/ksusy_)); 
-	    //msugra_highmet_kdn->Fill(m0,m12,lmscanweight*(ksusydn_/ksusy_)); 
-	    msugra_highmet_kup->Fill(m0,m12,lmscanweight*(xsecup_/xsecnom_)); 
-	    msugra_highmet_kdn->Fill(m0,m12,lmscanweight*(xsecdn_/xsecnom_)); 
+	    msugra_highmet_kup->Fill(m0,m12,lmscanweight*(ksusyup_/ksusy_)); 
+	    msugra_highmet_kdn->Fill(m0,m12,lmscanweight*(ksusydn_/ksusy_)); 
 	  }
 
 	  if( passz == 0 && npfjets_ >= 2 && htpf_ > 600. && pfmet_ > 200. ){
 	    msugra_highht ->Fill(m0,m12,lmscanweight); 
-	    //msugra_highht_kup ->Fill(m0,m12,lmscanweight*(ksusyup_/ksusy_)); 
-	    //msugra_highht_kdn ->Fill(m0,m12,lmscanweight*(ksusydn_/ksusy_)); 
-	    msugra_highht_kup ->Fill(m0,m12,lmscanweight*(xsecup_/xsecnom_)); 
-	    msugra_highht_kdn ->Fill(m0,m12,lmscanweight*(xsecdn_/xsecnom_)); 
+	    msugra_highht_kup ->Fill(m0,m12,lmscanweight*(ksusyup_/ksusy_)); 
+	    msugra_highht_kdn ->Fill(m0,m12,lmscanweight*(ksusydn_/ksusy_)); 
 	  }
 
 	  if( passz == 0 && njetsUp_ >= 2 && htUp_ > 300. && pfmetUp_ > 275. ){
@@ -4119,9 +4109,6 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("acc_highmet",     &acc_highmet_,      "acc_highmet/I");
   outTree->Branch("acc_highht",      &acc_highht_,       "acc_highht/I");
   outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
-  outTree->Branch("xsecnom",         &xsecnom_,          "xsecnom/F");
-  outTree->Branch("xsecup",          &xsecup_,           "xsecup/F");
-  outTree->Branch("xsecdn",          &xsecdn_,           "xsecdn/F");
   outTree->Branch("fileff",          &fileff_,           "fileff/F");
   outTree->Branch("jetid",           &jetid_,            "jetid/I");
   outTree->Branch("jetid30",         &jetid30_,          "jetid30/I");
