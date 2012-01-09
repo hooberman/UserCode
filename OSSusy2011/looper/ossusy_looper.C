@@ -2181,9 +2181,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	  lepscale_ = 1;
 	  if(!isData){
-	    if( leptype_ == 0 ) lepscale_ = 1.05;
-	    if( leptype_ == 1 ) lepscale_ = 1.12;
-	    if( leptype_ == 2 ) lepscale_ = 1.08;
+	    if( leptype_ == 0 ) lepscale_ = 1.000;
+	    if( leptype_ == 1 ) lepscale_ = 1.050;
+	    if( leptype_ == 2 ) lepscale_ = 1.025;
 	  }
 
           outTree->Fill();
