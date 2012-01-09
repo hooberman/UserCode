@@ -800,7 +800,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   }
 
   TChain *chLMscanFall11dil = new TChain("Events");
-  if (runLMscanFall11) {
+  if (runLMscanFall11dil) {
 
     pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple*root");
 
