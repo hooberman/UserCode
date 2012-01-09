@@ -38,14 +38,14 @@ void makeZPlot_2jets( bool print = false ){
   // read in data histogram
   //------------------------------------------------------
 
-  TFile* file1     = new TFile("data_35fb_2jets.root");
+  TFile* file1     = new TFile("data_47fb_2jets.root");
   TH1F*  hist_data = (TH1F*) file1->Get("hdata");
 
   //------------------------------------------------------
   // read in histograms: photon pred, OF, WZ/ZZ
   //------------------------------------------------------
 
-  TFile *file2 = new TFile("histsave_2jets.root");
+  TFile *file2 = new TFile("histsave_nj2_4p7fb.root");
 
   TH1F* hist_OF_2011A      = (TH1F*) file2->Get("ttbarpred_2011A_all");
   TH1F* hist_OF_2011B      = (TH1F*) file2->Get("ttbarpred_2011B_all");
@@ -178,7 +178,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   // make the legend
   //-----------------------------------------
 
-  TLegend *leg = new TLegend(0.55,0.45,0.95,0.7);
+  TLegend *leg = new TLegend(0.55,0.45,0.9,0.7);
   leg->AddEntry(hist_data,"data","lp");
   leg->AddEntry(hist_photon    ,"total bkg (#gamma+jets)","l");
   //leg->AddEntry(hist_QCD    ,"total bkg (QCD)","l");
@@ -196,7 +196,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   text->SetNDC();
   text->SetTextSize(0.05);
   text->DrawLatex(0.42,0.88,"CMS Preliminary");
-  text->DrawLatex(0.42,0.81,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}L dt = 3.5 fb^{-1}");
+  text->DrawLatex(0.42,0.81,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}L dt = 4.7 fb^{-1}");
   text->DrawLatex(0.42,0.74,"Events with ee/#mu#mu + #geq2 jets");
 
   //-----------------------------------------
