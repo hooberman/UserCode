@@ -1772,7 +1772,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  xsecsusy_  = cmssm_loxsec(m0,m12,"../data/msugra_tanb10_2012_LO.root");
 	  xsecsusy2_ = getMsugraCrossSection(m0,m12,10);
 	  
-	  cout << "m0 " << m0 << " m1/2 " << m12 << " LO xsec " << xsecsusy_ << " k " << ksusy_ << " kup " << ksusyup_ << " ksusydn " << ksusydn_ << endl << endl;
+	  //cout << "m0 " << m0 << " m1/2 " << m12 << " LO xsec " << xsecsusy_ << " k " << ksusy_ << " kup " << ksusyup_ << " ksusydn " << ksusydn_ << endl << endl;
 	  weight = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
 
 	  if( doTenPercent )	  weight *= 10;
@@ -2227,7 +2227,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	if( TString(prefix).Contains("LMscan") ){
 
-	  float lmscanweight = weight * trgeff_ * ndavtxweight_;
+	  float lmscanweight = weight * trgeff_ * ndavtxweight_ * lepscale_;
 
 	  msugra_all->Fill(m0,m12,lmscanweight); 
 
