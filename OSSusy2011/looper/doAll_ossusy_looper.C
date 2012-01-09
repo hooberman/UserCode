@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-11";
+  const char* version   = "V00-02-12";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -312,7 +312,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML8      = 0;
   bool runLMscan   = 0; 
   bool runLMscanFall11    = 1; 
-  bool runLMscanFall11dil = 1; 
+  bool runLMscanFall11dil = 0; 
   bool runT2tt     = 0;
   bool runT1lh     = 0;
   bool runZZZ      = 0;
@@ -812,6 +812,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   if (runLMscanFall11) {
 
     pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple*root");
+
+
+    // LM6
+    //pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple_2596_*.root");
+    //pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple_2597_*.root");
 
     //pickSkimIfExists(chLMscanFall11,"/nfs-7/userdata/cms2/mSUGRA_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v5/VB04-02-29_Fastsim_mSUGRA/preprocessing/ntuple_999_1_FO8.root");
 
