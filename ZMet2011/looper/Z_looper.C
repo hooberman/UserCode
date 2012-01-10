@@ -196,6 +196,7 @@ float Z_looper::gluinoPairCrossSection( float gluinomass ){
   int   bin  = gg_xsec_hist->FindBin(gluinomass);
   float xsec = gg_xsec_hist->GetBinContent(bin);
 
+  return xsec;
 }
 
 //--------------------------------------------------------------------
