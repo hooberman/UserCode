@@ -22,7 +22,7 @@
   // runZLooper("data"                  , true  );
   // runZLooper("ttbar"                 , false );
   // runZLooper("zjets"                 , false );
-  // runZLooper("zjetsS6_incomplete"     , false );
+  // runZLooper("zjetsS6_incomplete"    , false );
   // runZLooper("dyee"                  , false );
   // runZLooper("dymm"                  , false );
   // runZLooper("wz_summer11_madgraph"  , false );
@@ -34,8 +34,10 @@
   // runZLooper("LM9"                   , false );
   // runZLooper("singletop"             , false );
   // runZLooper("T5zzgmsb"              , false );
-  runZLooper("T5zz"                  , false );
-  // runZLooper("T5zzl"                  , false );
+  runZLooper("T5zzgmsb_hadoop"            , false );
+  // runZLooper("T5zz"                  , false );
+  // runZLooper("ZZZ"                   , false );
+  // runZLooper("T5zzl"                 , false );
   // runZLooper("wz_summer11_pythia"    , false );
   // runZLooper("zz_summer11_pythia"    , false );
 
