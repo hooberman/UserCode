@@ -68,8 +68,8 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-04/T5zz_baby.root");
-  char* version = "V00-01-06";
+  ch->Add("output/V00-02-05/T5zzgmsb_hadoop_baby.root");
+  char* version = "V00-01-07";
 
   bool do3jets = false;
 
