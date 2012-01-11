@@ -334,6 +334,7 @@ void makeCMSSMCards(){
 
       if( sigtotjdn < 1e-10 ) continue;
       if( sigtot    < 2     ) continue;
+      if( sigtot    > 80    ) continue;
 
       //float sigtot = hall->GetBinContent(m0bin,m12bin);
 
