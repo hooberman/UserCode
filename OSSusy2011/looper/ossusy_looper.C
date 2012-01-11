@@ -1771,9 +1771,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Scale05_2012");
 	  xsecsusy_  = cmssm_loxsec(m0,m12,"../data/msugra_tanb10_2012_LO.root");
 	  xsecsusy2_ = getMsugraCrossSection(m0,m12,10);
-	  
+
+	  fileff_ = 1;
+	  if( TString(prefix).Contains("dil") )  fileff_ = sparm_dilepfiltereff();
+
 	  //cout << "m0 " << m0 << " m1/2 " << m12 << " LO xsec " << xsecsusy_ << " k " << ksusy_ << " kup " << ksusyup_ << " ksusydn " << ksusydn_ << endl << endl;
-	  weight = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
+	  weight = lumi * fileff_ * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
 
 	  if( doTenPercent )	  weight *= 10;
         }
