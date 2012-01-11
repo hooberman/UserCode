@@ -34,10 +34,10 @@
   // runZLooper("LM9"                   , false );
   // runZLooper("singletop"             , false );
   // runZLooper("T5zzgmsb"              , false );
-  runZLooper("T5zzgmsb_hadoop"            , false );
-  // runZLooper("T5zz"                  , false );
+  // runZLooper("T5zzgmsb_hadoop"            , false );
+  runZLooper("T5zz"                  , false );
   // runZLooper("ZZZ"                   , false );
-  // runZLooper("T5zzl"                 , false );
+  runZLooper("T5zzl"                 , false );
   // runZLooper("wz_summer11_pythia"    , false );
   // runZLooper("zz_summer11_pythia"    , false );
 
