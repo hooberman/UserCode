@@ -28,7 +28,7 @@
 
 using namespace std;
 
-char* version             = "V00-01-04";
+char* version             = "V00-01-00";
 
 bool fileInList(string thisfilename);
 
@@ -39,6 +39,7 @@ void extractLimits( bool print = false ){
   //------------------------------------------
 
   TH2F* hexcl    = new TH2F( "hexcl"    , "hexcl"    , 48,0,1200,48,0,1200);
+  TH2F* hexp     = new TH2F( "hexp"     , "hexp"     , 48,0,1200,48,0,1200);
 
   ofstream* doScript_failed = new ofstream();
   doScript_failed->open(Form("cards/%s/doLimits_failed.sh",version));
@@ -82,6 +83,7 @@ void extractLimits( bool print = false ){
       
       else{
 	hexcl->SetBinContent(mgbin,mlbin,mylimit.obs);
+	hexp->SetBinContent(mgbin,mlbin,mylimit.exp);
       }
       
     }
@@ -104,6 +106,7 @@ void extractLimits( bool print = false ){
 
   TFile* outfile = TFile::Open(Form("cards/%s/observed_limit.root",version),"RECREATE");
   hexcl->Write();
+  hexp->Write();
   outfile->Close();
 
   if( print ){
