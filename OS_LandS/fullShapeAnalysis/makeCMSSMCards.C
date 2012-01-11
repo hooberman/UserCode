@@ -229,6 +229,18 @@ void makeCMSSMCards(){
   ofstream* doScript_CLs = new ofstream();
   doScript_CLs->open(Form("cards/%s/doLimits_CLs.sh",version));
 
+  ofstream* doScript_CLs1 = new ofstream();
+  doScript_CLs1->open(Form("cards/%s/doLimits_CLs1.sh",version));
+
+  ofstream* doScript_CLs2 = new ofstream();
+  doScript_CLs2->open(Form("cards/%s/doLimits_CLs2.sh",version));
+
+  ofstream* doScript_CLs3 = new ofstream();
+  doScript_CLs3->open(Form("cards/%s/doLimits_CLs3.sh",version));
+
+  ofstream* doScript_CLs4 = new ofstream();
+  doScript_CLs4->open(Form("cards/%s/doLimits_CLs4.sh",version));
+
   ofstream* filelist = new ofstream();
   filelist->open(Form("cards/%s/file_list.txt",version));
 
@@ -250,6 +262,8 @@ void makeCMSSMCards(){
   //------------------------------------------
   // loop over CMSSM points
   //------------------------------------------
+
+  int counter = 0;
 
   for( int m0bin = 1 ; m0bin <= hall->GetXaxis()->GetNbins() ; m0bin++ ){
     for( int m12bin = 1 ; m12bin <= hall->GetYaxis()->GetNbins() ; m12bin++ ){
@@ -323,11 +337,23 @@ void makeCMSSMCards(){
 
       //float sigtot = hall->GetBinContent(m0bin,m12bin);
 
+      counter++;
+
       *doScript << Form("../../../../test/lands.exe -M Bayesian -d CMSSM_%i_%i.txt",m0bin,m12bin)         << endl;
 
       *doScript_CLs << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
 
+      if( counter%4 == 0 ) *doScript_CLs1 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
+
+      if( counter%4 == 1 ) *doScript_CLs2 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
+
+      if( counter%4 == 2 ) *doScript_CLs3 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
+
+      if( counter%4 == 3 ) *doScript_CLs4 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
+
       *filelist << Form("cards/%s/CMSSM_%i_%i.txt_Bayesian_bysObsLimit.root",version,m0bin,m12bin)        << endl;
+
+      *filelist_CLs << Form("cards/%s/CMSSM_%i_%i_m2lnQ2.root",version,m0bin,m12bin)        << endl;
 
       printCard( Form("CMSSM_%i_%i",m0bin,m12bin) , sigtot , 1+kerr , version );
       
