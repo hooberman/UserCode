@@ -36,17 +36,17 @@ void printCard( char* name , float sigtot , float kerr , char* version ){
   *ofile <<      "imax 1 number of channels"                                                            << endl;
   *ofile <<      "jmax 1 number of background"                                                          << endl;
   *ofile <<      "kmax * number of nuisance parameters"                                                 << endl;
-  *ofile <<      "Observation 35                                                            "           << endl;
+  *ofile <<      "Observation 48                                                            "           << endl;
   *ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
   *ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                               << endl;
   *ofile <<      "bin                                  1       1"                                       << endl;
   *ofile << Form("process                      %s     bkg" , name )                                     << endl;
   *ofile <<      "process                              0       1"                                       << endl;
-  *ofile << Form("rate                              %.1f    25.5" , sigtot)                             << endl;
-  *ofile <<      "lumi                       lnN   1.060       -"                                       << endl;
+  *ofile << Form("rate                              %.1f    33.29" , sigtot)                            << endl;
+  *ofile <<      "lumi                       lnN   1.045       -"                                       << endl;
   *ofile <<      "eff_leptons                lnN   1.050       -"                                       << endl;
-  *ofile << Form("k                          lnN    %.2f       -"  , kerr)                              << endl;
-  *ofile <<      "pdf                        lnN     1.2       -"                                       << endl;
+  //*ofile << Form("k                          lnN    %.2f       -"  , kerr)                              << endl;
+  //*ofile <<      "pdf                        lnN     1.2       -"                                       << endl;
   *ofile <<      "JES_shape                shape     1.0       -"                                       << endl;
   *ofile <<      "stat                 shapeStat       -     1.0"                                       << endl;
   *ofile <<      "syst                     shape       -     1.0"                                       << endl;
@@ -63,17 +63,17 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("t");
-  ch->Add("output/V00-02-07/highpt/LMscan_smallTree.root");
-  char* version = "V00-00-03";
+  ch->Add("output/V00-02-12/highpt/LMscan_smallTree.root");
+  char* version = "V00-00-04";
   bool doSigCont = true;
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("weight * 3.5 * ndavtxweight * trgeff * lepscale");
-  TCut weightkup("weight * 3.5 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
-  TCut weightkdn("weight * 3.5 * ndavtxweight * trgeff * lepscale * ksusydn/ksusy");
+  TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
+  TCut weightkup("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
+  TCut weightkdn("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusydn/ksusy");
   TCut presel("pfmet>50 && njets>=2 && ht>100 && !passz");
   TCut preselptll("pfmet>50 && njets>=2 && ht>100 && !passz && ( (leptype==2) || (leptype<2 && pfmet>75) )");
   TCut preseljup("pfmetUp>50   && njetsUp>=2   && htUp>100   && !passz");
@@ -121,7 +121,7 @@ void makeCMSSMCards(){
 
   const unsigned int nbins = 6;
 
-  float KKC[nbins] = { 2.656 , 2.656 , 2.464 , 2.464 , 2.002 , 2.002 };
+  float KKC[nbins] = { 2.74 , 2.74 , 2.59 , 2.59 , 1.81 , 1.81 };
 
   TH2F* h[nbins];
   TH2F* hptll[nbins];
@@ -226,20 +226,26 @@ void makeCMSSMCards(){
   ofstream* doScript = new ofstream();
   doScript->open(Form("cards/%s/doLimits.sh",version));
 
+  ofstream* doScript_CLs = new ofstream();
+  doScript_CLs->open(Form("cards/%s/doLimits_CLs.sh",version));
+
   ofstream* filelist = new ofstream();
   filelist->open(Form("cards/%s/file_list.txt",version));
+
+  ofstream* filelist_CLs = new ofstream();
+  filelist_CLs->open(Form("cards/%s/file_list_CLs.txt",version));
 
   //------------------------------------------
   // open histogram of #entries/CMSSM point
   //------------------------------------------
 
-  TFile* corfile = TFile::Open("mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0.root");
-  TH2F*  hscan   = (TH2F*) corfile->Get("hscan");
+  // TFile* corfile = TFile::Open("mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0.root");
+  // TH2F*  hscan   = (TH2F*) corfile->Get("hscan");
   
-  if( hscan == 0 ){
-    cout << "Can't find TH2 hscan!!!" << endl;
-    exit(0);
-  }
+  // if( hscan == 0 ){
+  //   cout << "Can't find TH2 hscan!!!" << endl;
+  //   exit(0);
+  // }
 
   //------------------------------------------
   // loop over CMSSM points
@@ -252,8 +258,8 @@ void makeCMSSMCards(){
       // require nentries = 10
       //------------------------------------------
       
-      int ngen = hscan->GetBinContent(m0bin,m12bin);
-      if( ngen != 10000 )  continue;
+      //int ngen = hscan->GetBinContent(m0bin,m12bin);
+      //if( ngen != 10000 )  continue;
       
       int m0  = hall->GetXaxis()->GetBinCenter(m0bin);
       int m12 = hall->GetXaxis()->GetBinCenter(m12bin);
@@ -318,15 +324,18 @@ void makeCMSSMCards(){
       //float sigtot = hall->GetBinContent(m0bin,m12bin);
 
       *doScript << Form("../../../../test/lands.exe -M Bayesian -d CMSSM_%i_%i.txt",m0bin,m12bin)         << endl;
+
+      *doScript_CLs << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
+
       *filelist << Form("cards/%s/CMSSM_%i_%i.txt_Bayesian_bysObsLimit.root",version,m0bin,m12bin)        << endl;
 
       printCard( Form("CMSSM_%i_%i",m0bin,m12bin) , sigtot , 1+kerr , version );
       
       //signal regions                         R1(SF)      R1(OF)    R2(SF)     R2(OF)      R3(SF)   R3(OF)
-      int     data_yield[nbins]           = {    4     ,     9    ,    6     ,    4     ,     3    ,    9   };
-      float   bkg_yield[nbins]            = {   3.4    ,    3.4   ,   4.1    ,   4.1    ,    5.2   ,   5.2  };
-      float   bkg_syst[nbins]             = {   1.8    ,    1.8   ,   1.9    ,   1.9    ,    2.0   ,   2.0  };
-      float   bkg_stat[nbins]             = {   4.2    ,    4.2   ,   3.5    ,   3.5    ,    3.5   ,   3.5  };
+      int     data_yield[nbins]           = {    9     ,    10    ,    6     ,    5     ,     5    ,    13  };
+      float   bkg_yield[nbins]            = {   5.7    ,    5.7   ,   5.2    ,   5.2    ,    5.6   ,   5.6  };
+      float   bkg_syst[nbins]             = {   2.8    ,    2.8   ,   1.9    ,   1.9    ,    2.1   ,   2.1  };
+      float   bkg_stat[nbins]             = {   5.1    ,    5.1   ,   4.1    ,   4.1    ,    3.4   ,   3.4  };
 
       TH1F* histo_Data = new TH1F("histo_Data","histo_Data",nbins,0,nbins);
 
