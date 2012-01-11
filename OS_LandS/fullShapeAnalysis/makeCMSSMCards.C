@@ -63,7 +63,7 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("t");
-  ch->Add("output/V00-02-12/highpt/LMscan_smallTree.root");
+  ch->Add("output/V00-02-12/highpt/LMscanFall11_smallTree.root");
   char* version = "V00-00-04";
   bool doSigCont = true;
 
