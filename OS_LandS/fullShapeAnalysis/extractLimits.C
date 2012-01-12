@@ -51,30 +51,10 @@ void extractLimits( bool print = false ){
   TH2F* hexpm1   = new TH2F( "hexpm1"   , "hexpm1"   , nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
 
   //------------------------------------------
-  // open histogram of #entries/CMSSM point
-  //------------------------------------------
-
-  // TFile* corfile = TFile::Open("mSUGRA_m0-20to2000_m12-20to760_tanb-10andA0-0.root");
-  // TH2F*  hscan   = (TH2F*) corfile->Get("hscan");
-  
-  // if( hscan == 0 ){
-  //   cout << "Can't find TH2 hscan!!!" << endl;
-  //   exit(0);
-  // }
-
-  //------------------------------------------
   // loop over CMSSM points
   //------------------------------------------
 
   TFile* f = new TFile();
-
-  // ofstream* ofile    = new ofstream();
-  // ofstream* filelist = new ofstream();
-
-  // if( writeExpectedLimits ){
-  //   ofile->open(Form("cards/%s/doLimits_expected.sh",version));
-  //   filelist->open(Form("cards/%s/file_list_expected.txt",version));
-  // }
 
   ofstream* doScript_failed = new ofstream();
   doScript_failed->open(Form("cards/%s/doLimits_failed.sh",version));
@@ -83,36 +63,23 @@ void extractLimits( bool print = false ){
     for( int m12bin = 1 ; m12bin <= hexcl->GetYaxis()->GetNbins() ; m12bin++ ){
 
       //------------------------------------------
-      // require nentries = 10
-      //------------------------------------------
-      
-      // int ngen = hscan->GetBinContent(m0bin,m12bin);
-
-      // if( ngen != 10000 ){
-      // 	//cout << "Skipping point with " << ngen << " entries" << endl;
-      // 	hexcl->SetBinContent(m0bin,m12bin,2);
-      // 	continue;
-      // }
-
-      //------------------------------------------
       // restrict range
       //------------------------------------------
 
       int m0  = hexcl->GetXaxis()->GetBinCenter(m0bin);
       int m12 = hexcl->GetXaxis()->GetBinCenter(m12bin);
 
-      //if( m0 == 80 && m12 == 400 ) cout << "Found LM6 " << endl;
-      //else continue;
-      //if( m0bin >= 50 ) continue;
-
       hexcl->SetBinContent(m0bin,m12bin,0);
+
+      if( m0bin>49 ) continue;
+      //if( m0==80 && m12==400 ) cout << "FOUND LM6 " << endl;
+      //else continue;
 
       //------------------------------------------
       // open file, if available
       //------------------------------------------
 
       char* filename = Form("cards/%s/CMSSM_%i_%i_m2lnQ2.root",version,m0bin,m12bin);
-      //char* filename = Form("cards/%s/CMSSM_%i_%i.txt_Bayesian_bysObsLimit.root",version,m0bin,m12bin);
 
       bool found = fileInList( filename );
       if( !found ) continue;
@@ -136,10 +103,10 @@ void extractLimits( bool print = false ){
 	cout << "Expected(+1)  " << mylimit.expp1 << endl;
 	cout << "Expected(-1)  " << mylimit.expm1 << endl;
 
-	hexcl-> SetBinContent(m0bin,m12bin,mylimit.obs);
-	hexp->  SetBinContent(m0bin,m12bin,mylimit.exp);
-	hexpp1->SetBinContent(m0bin,m12bin,mylimit.expp1);
-	hexpm1->SetBinContent(m0bin,m12bin,mylimit.expm1);
+	hexcl-> SetBinContent(m0bin,m12bin, mylimit.obs   < 1.0 ? 1 : -1 );
+	hexp->  SetBinContent(m0bin,m12bin, mylimit.exp   < 1.0 ? 1 : -1 );
+	hexpp1->SetBinContent(m0bin,m12bin, mylimit.expp1 < 1.0 ? 1 : -1 );
+	hexpm1->SetBinContent(m0bin,m12bin, mylimit.expm1 < 1.0 ? 1 : -1 );
       }
 
 
