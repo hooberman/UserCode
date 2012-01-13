@@ -82,9 +82,6 @@ void makeZPlot_2jets( bool print = false ){
   // make the plot
   //------------------------------------------------------
 
-  //TCanvas *can = new TCanvas();
-  //doPlot( can , hist_VV , hist_OF , hist_photon , hist_QCD , hist_data , true , print );
-
   TCanvas *main_canvas = new TCanvas("main_canvas", "main_canvas",0,0,600,750);
   gStyle->SetOptFit(1);
   gStyle->SetOptStat(0);
@@ -128,12 +125,6 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   can->cd(); 
 
   if( residual ){
-    // TPad* plotpad = new TPad("plotpad","plotpad",0.0,0.0,1.0,0.8);
-    // TPad* plotpad = new TPad("plotpad","plotpad",0.0,0.2,1.0,1.0);
-    // plotpad->Draw();
-    // plotpad->cd();
-    // plotpad->SetLogy();
-    // plotpad->SetRightMargin(0.05);
 
     TPad *plotpad = new TPad("plotpad", "plotpad",0,0.2,1,1);
     plotpad->Draw();
@@ -184,24 +175,13 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   hist_data->GetZaxis()->SetTitleFont(42);
   hist_data->Draw("E1");
 
-  // hist_data->SetLineColor(1);
-  // hist_data->SetMarkerColor(1);
-  // hist_data->SetMarkerSize(1);
-  // hist_data->GetXaxis()->SetTitle("E_{T}^{miss} [GeV]");
-  // hist_data->GetYaxis()->SetTitle("events / 5 GeV");
-  // hist_data->SetMinimum(0.05);
-  // hist_data->Draw("E1");
-  // hist_data->SetMinimum(0.1);
-
   hist_VV->SetFillColor(kGreen+2);
   hist_OF->SetFillColor(kMagenta+2);
-  //hist_photon->SetFillColor(kRed-4);
   hist_photon->SetLineColor(kRed);
   hist_QCD->SetLineColor(kBlue);
   hist_photon->SetFillColor(0);
   hist_VV->SetLineColor(1);
   hist_OF->SetLineColor(1);
-  //hist_photon->SetLineColor(1);
   hist_VV->SetLineWidth(1);
   hist_OF->SetLineWidth(1);
   hist_photon->SetLineWidth(2);
@@ -214,11 +194,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   THStack* mcstack = new THStack("mcstack","mcstack");
   mcstack->Add(hist_OF,"hist");
   mcstack->Add(hist_VV,"hist");
-  //mcstack->Add(hist_photon,"hist");
   hist_photon->Add(hist_OF);
   hist_photon->Add(hist_VV);
-  //hist_QCD->Add(hist_OF);
-  //hist_QCD->Add(hist_VV);
 
   //-----------------------------------------
   // make a hist of the total prediction
@@ -244,7 +221,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   // make the legend
   //-----------------------------------------
 
-  TLegend *leg = new TLegend(0.55,0.55,0.9,0.9);
+  TLegend *leg = new TLegend(0.55,0.62,0.9,0.9);
   leg->AddEntry(hist_data,"data","lp");
   leg->AddEntry(hist_photon    ,"total bkg (#gamma+jets)","l");
   //leg->AddEntry(hist_QCD    ,"total bkg (QCD)","l");
@@ -261,21 +238,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   TLatex *text = new TLatex();
   text->SetNDC();
   text->SetTextSize(0.042);
-  //text->DrawLatex(0.42,0.88,"CMS Preliminary");
-  //text->DrawLatex(0.42,0.81,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}L dt = 4.7 fb^{-1}");
-  text->DrawLatex(0.53,0.48,"Z#rightarrow ee/#mu#mu + #geq2 jets");
-
+  text->DrawLatex(0.60,0.48,"ee/#mu#mu + #geq2 jets");
   text->DrawLatex(0.14,0.95,"CMS Preliminary,   #sqrt{s} = 7 TeV,   L_{int} = 4.7 fb^{-1}");
-
-  TPaveText *pt = new TPaveText(0.27,0.93,0.77,1,"blNDC");
-  // pt->SetBorderSize(0);
-  // pt->SetFillColor(0);
-  // pt->SetFillStyle(4000);
-  // pt->SetTextFont(42);
-  // pt->SetTextSize(0.042);
-  
-  // TText *ttext = pt->AddText("CMS Preliminary, #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
-  // pt->Draw("same");
 
   //-----------------------------------------
   // make a TPad for the ratio histogram
@@ -289,7 +253,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
     //plotpad->Modified();
     can->cd();    
 
-   // ------------>Primitives in pad: coverpad
+    // ------------>Primitives in pad: coverpad
     TPad* coverpad = new TPad("coverpad", "coverpad",0.122,0.16,1,0.303);
     coverpad->Draw();
     coverpad->cd();
@@ -307,11 +271,6 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
     coverpad->SetFrameBorderMode(0);
     coverpad->Modified();
     can->cd();
-
-    // TPad* respad = new TPad("respad","respad",0.0,0.0,1.0,0.289);
-    // respad->Draw();
-    // respad->cd();
-    // respad->SetRightMargin(0.05);
 
     TPad* bottompad = new TPad("bottompad", "Ratio Pad",0,0,1,0.289);
     bottompad->Draw();
@@ -365,14 +324,6 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
     //-----------------------------------------
     // histogram formatting
     //-----------------------------------------
-
-    // ratio->GetXaxis()->SetLabelSize(0);
-    // ratio->GetYaxis()->SetLabelSize(0.2);
-    // ratio->GetYaxis()->SetNdivisions(5);
-    // ratio->GetYaxis()->SetTitleSize(0.24);
-    // ratio->GetYaxis()->SetTitleOffset(0.25);
-    // ratio->GetYaxis()->SetRangeUser(0,2);
-    // ratio->GetXaxis()->SetTitle("");
 
     ratio->GetYaxis()->SetRangeUser(0,2);
     ratio->GetXaxis()->SetTitle("E_{T}^{miss} [GeV]");
