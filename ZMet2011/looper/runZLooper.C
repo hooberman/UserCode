@@ -138,7 +138,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "T5zzl" ) == 0 ){
-    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/SMS-T5zzl_Mgluino-150to1200_mLSP-50to1100_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v1/VB04-02-29_Fastsim/merged*root");
+    pickSkimIfExists(ch,"/nfs-7a/userdata/cms2/SMS-T5zzl_Mgluino-150to1200_mLSP-50to1100_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v1/VB04-02-29_Fastsim/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "T5zzgmsb_hadoop" ) == 0 ){
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/benhoob/CMS2_VB04-02-29_Fastsim/SMS-T5zzgmsb_mGluino-100to1200_mNLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v1_BAK/ntuple*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/benhoob/CMS2_VB04-02-29_Fastsim/SMS-T5zzgmsb_mGluino-100to1200_mNLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v1/ntuple*root");
   }
 
   //----------------------------------------------------------------------------------------
@@ -211,6 +211,12 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "LM4v2" ) == 0 ){
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/LM4_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "LM8" ) == 0 ){
     pickSkimIfExists(ch,"/nfs-7/userdata/cms2/LM8_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
@@ -224,7 +230,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "LM8v2" ) == 0 ){
-    pickSkimIfExists(ch,"/tas/cms2/LM8_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/LM8_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root");
   }
 
   //----------------------------------------------------------------------------------------

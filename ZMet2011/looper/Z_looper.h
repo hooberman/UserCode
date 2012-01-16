@@ -40,6 +40,7 @@ class Z_looper
   void fillHistos(TH1F *h1[4],    float value, float weight, int myType);
   void fillHistos(TH1F *h1[4][4], float value, float weight, int myType, int nJetsIdx);
   float PassGenSelection( bool isData );
+  float GenWeight( bool isData , char* prefix, int metcut );
   float getMetError(  vector<int> goodMuonIndices );
   float getMetError_claudio(  vector<int> goodMuonIndices );
   float gluinoPairCrossSection( float gluinomass );
@@ -80,6 +81,10 @@ class Z_looper
   Float_t dpdm_;
   Float_t metError_;
   Float_t metErrorC_;
+  Float_t eff0_;
+  Float_t eff100_;
+  Float_t eff200_;
+  Float_t eff300_;
   Int_t   id1_;
   Int_t   id2_;
   Int_t   nlep_;

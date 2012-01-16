@@ -8,6 +8,7 @@
 #include "histtools.h"
 
 #include "TChain.h"
+#include "TF1.h"
 #include "TDirectory.h"
 #include "TLorentzVector.h"
 #include "TFile.h"
@@ -50,6 +51,7 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
+const bool  doGenSelection       = true;
 const float lumi                 = 1.0; 
 const char* iter                 = "V00-02-05";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
@@ -234,9 +236,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   // make a baby ntuple
   //-----------------------
 
-  stringstream babyfilename;
-  babyfilename << prefix << "_baby.root";
-  MakeBabyNtuple( Form("../output/%s/%s_baby.root", iter , prefix ) );
+  //stringstream babyfilename;
+  //babyfilename << prefix << "_baby.root";
+  if( doGenSelection ) MakeBabyNtuple( Form("../output/%s/%s_gen_baby.root"  , iter , prefix ) );
+  else                 MakeBabyNtuple( Form("../output/%s/%s_baby.root"      , iter , prefix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -320,6 +323,23 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( !isData ) sigma = cms2.evt_xsec_incl();
 
       nTot++;
+
+      if( doGenSelection ){
+
+	InitBabyNtuple();
+
+	weight_ = cms2.evt_scale1fb();
+	  	
+	if( TString(prefix).Contains("LM4") ) weight_ *= kfactorSUSY( "lm4" );
+	if( TString(prefix).Contains("LM8") ) weight_ *= kfactorSUSY( "lm8" );
+
+	eff0_   = GenWeight(isData,(char*)prefix,0);
+	eff100_ = GenWeight(isData,(char*)prefix,100);
+	eff200_ = GenWeight(isData,(char*)prefix,200);
+	eff300_ = GenWeight(isData,(char*)prefix,300);
+	FillBabyNtuple();
+	continue;
+      }
     
       float ksusy = 1;
       if( TString(prefix).Contains("LM0")  ) ksusy = kfactorSUSY( "lm0"   );
@@ -522,6 +542,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         }
       
       }
+
       
       for(unsigned int hypIdx = 0; hypIdx < hyp_p4().size(); ++hypIdx) {
       
@@ -1585,6 +1606,10 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("x",            &x_,            "x/F"            );
   babyTree_->Branch("ptgen1",       &ptgen1_,       "ptgen1/F"       );
   babyTree_->Branch("ptgen2",       &ptgen2_,       "ptgen2/F"       );
+  babyTree_->Branch("eff0",         &eff0_,         "eff0/F"         );
+  babyTree_->Branch("eff100",       &eff100_,       "eff100/F"       );
+  babyTree_->Branch("eff200",       &eff200_,       "eff200/F"       );
+  babyTree_->Branch("eff300",       &eff300_,       "eff300/F"       );
 
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
@@ -1901,3 +1926,238 @@ float Z_looper::PassGenSelection( bool isData ){
     return cms2.gen_met();
     
 }
+
+
+double fitf (double* x, double* par) {
+  double arg = 0;
+  if (par[2] != 0)
+    arg = (x[0] - par[1])/par[2];
+  
+  double fitval = 0.5 * par[0] * (TMath::Erf(arg) + 1);
+  return fitval;
+}
+
+float Z_looper::GenWeight( bool isData , char* prefix, int metcut ){
+  
+  if( isData ) return 0.;
+
+  //---------------------------------------------
+  // does this event pass the analysis selection?
+  //---------------------------------------------
+  
+  // mc leptons
+  std::vector<unsigned int> mcLeptonIndices;
+  int nGoodLep = 0;
+  for (size_t i = 0; i < cms2.genps_id().size(); ++i){
+    
+    //electron or muon
+    if (!(abs(cms2.genps_id()[i]) == 11 || abs(cms2.genps_id()[i]) == 13))      continue;
+
+    //pt > 20 GeV, |eta| < 2.5
+    if ( cms2.genps_p4()[i].Pt() < 20.0 || fabs(cms2.genps_p4()[i].Eta()) > 2.5) continue;
+
+    nGoodLep++;
+    mcLeptonIndices.push_back(i);
+  }
+
+  if( nGoodLep < 2 ) return 0.;
+
+  //look for OS pt > 20,20 GeV pair Z mass veto
+  bool foundPair = false;
+  int lep1idx = -1;
+  int lep2idx = -1;
+
+  for( unsigned int i = 0 ; i < mcLeptonIndices.size() ; ++i ){
+    unsigned int ilep = mcLeptonIndices.at(i);
+    for( unsigned int j = i + 1 ; j < mcLeptonIndices.size() ; ++j ){
+      unsigned int jlep = mcLeptonIndices.at(j);
+
+	//OS
+	if ( cms2.genps_id()[ilep] * cms2.genps_id()[jlep] > 0 )                            continue;
+
+	//SF
+	if ( abs( cms2.genps_id()[ilep] ) != abs( cms2.genps_id()[jlep] ) )                 continue;
+
+	//Z mass 81-101 GeV
+	float dilmass = ( cms2.genps_p4()[ilep] + cms2.genps_p4()[jlep] ).mass();
+	if( dilmass < 81.0 || dilmass > 101. ) continue;
+	
+	//found OS pair!
+	foundPair = true;
+	lep1idx = ilep;
+	lep2idx = jlep;
+
+      }
+    }
+
+    if( !foundPair ) return 0.;
+   
+    // mc jets
+    
+    int nGoodJet   = 0;
+
+    // float sumJetPt = 0.;
+    // for (size_t j = 0; j < cms2.evt_ngenjets(); ++j) 
+    // {
+    //     if (cms2.genjets_p4()[j].Pt() < 30.0)       continue;
+    //     if (fabs(cms2.genjets_p4()[j].Eta()) > 3.0) continue;
+    //     bool clean = true;
+    //     for ( size_t i = 0; i < mcLeptonIndices.size(); ++i) 
+    //     {
+    //         if (ROOT::Math::VectorUtil::DeltaR(cms2.genjets_p4()[j], cms2.genps_p4()[mcLeptonIndices[i]]) < 0.4) {
+    //             clean = false;
+    //             break;
+    //         }
+    //     }
+    //     if (clean){
+    // 	  nGoodJet ++;
+    // 	  sumJetPt += genjets_p4()[j].Pt();
+    // 	}
+    // }
+
+    for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
+
+      if (cms2.genps_status().at(gidx) != 3)
+	continue;
+
+      if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
+	continue;
+
+      if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
+	continue;
+
+      if (cms2.genps_p4().at(gidx).pt() < 30.)
+	continue;
+      
+      nGoodJet++;
+    }
+
+    if( nGoodJet < 2 ) return 0.;
+
+    // pass selection, now calculate weight
+
+    int lep1id = abs( genps_id()[lep1idx] );
+    int lep2id = abs( genps_id()[lep2idx] );
+
+    float trgeff = 1;
+    if( lep1id == 11 && lep2id == 11 ) trgeff = 1.00;   //ee
+    if( lep1id == 13 && lep2id == 13 ) trgeff = 0.90;   //mm
+    if( lep1id == 13 && lep2id == 11 ) trgeff = 0.95;   //em
+    if( lep1id == 11 && lep2id == 13 ) trgeff = 0.95;   //em
+    
+    float lep1eff = 1;
+    float lep2eff = 1;
+
+    float pt1 = genps_p4()[lep1idx].Pt();
+    float pt2 = genps_p4()[lep2idx].Pt();
+
+
+    float isodeg = 1.00;
+    if     ( TString(prefix).Contains("LM4") ) isodeg = 0.95;
+    else if( TString(prefix).Contains("LM8") ) isodeg = 0.90;
+    else{
+      cout << "Error, unrecognized prefix " << prefix << ", quitting" << endl;
+      exit(0);
+    }
+
+    // electron
+    if ( lep1id == 11 ){
+
+      if( pt1 > 60 ){
+	lep1eff *= 0.93;    // ID efficiency
+	lep1eff *= 0.97;    // iso efficiency
+	lep1eff *= isodeg;  // LM4 iso degradation
+      }
+
+      else{
+	lep1eff *= (pt1-20) * 0.00250 + 0.83; // ID efficiency
+	lep1eff *= (pt1-20) * 0.00225 + 0.88; // iso efficiency
+	lep1eff *= isodeg;                    // LM4 iso degradation
+      }
+    }
+
+    // muon
+    else if( lep1id == 13 ){
+
+      lep1eff *= 0.91;      // ID efficiency
+
+      if( pt1 > 60 ){
+	lep1eff *= 0.97;    // iso efficiency
+	lep1eff *= isodeg;  // LM4 iso degradation
+      }
+
+      else{
+	lep1eff *= (pt1-20) * 0.003 + 0.85;   // iso efficiency
+	lep1eff *= isodeg;                    // LM4 iso degradation
+      }
+    }
+
+    // electron
+    if ( lep2id == 11 ){
+
+      if( pt2 > 60 ){
+	lep2eff *= 0.93;    // ID efficiency
+	lep2eff *= 0.97;    // iso efficiency
+	lep2eff *= isodeg;  // LM4 iso degradation
+      }
+
+      else{
+	lep2eff *= (pt2-20) * 0.00250 + 0.83; // ID efficiency
+	lep2eff *= (pt2-20) * 0.00225 + 0.88; // iso efficiency
+	lep2eff *= isodeg;                    // LM4 iso degradation
+      }
+    }
+
+    // muon
+    else if( lep2id == 13 ){
+
+      lep2eff *= 0.91;      // ID efficiency
+
+      if( pt2 > 60 ){
+	lep2eff *= 0.97;    // iso efficiency
+	lep2eff *= isodeg;  // LM4 iso degradation
+      }
+
+      else{
+	lep2eff *= (pt2-20) * 0.003 + 0.85;   // iso efficiency
+	lep2eff *= isodeg;                    // LM4 iso degradation
+      }
+    }
+
+
+    TF1* erf = new TF1("erf", fitf, 0, 600, 3);
+    
+    float meteff = 1;
+
+    if( metcut == 0 ){
+      meteff = 1;
+    }
+
+    else if( metcut == 100 ){
+      erf->SetParameters(1.00, 103, 29);
+      meteff = erf->Eval(cms2.gen_met());
+    }
+
+    else if( metcut == 200 ){
+      erf->SetParameters(0.99, 214, 38);
+      meteff = erf->Eval(cms2.gen_met());
+    }
+
+    else if( metcut == 300 ){
+      erf->SetParameters(0.98, 321, 40);
+      meteff = erf->Eval(cms2.gen_met());
+    }    
+
+    else{
+      cout << "ERROR! unrecognized metcut " << metcut << ", quitting" << endl;
+      exit(0);
+    }
+      
+    float eff = trgeff * lep1eff * lep2eff * meteff;
+
+    return eff;
+
+
+}
+
+
