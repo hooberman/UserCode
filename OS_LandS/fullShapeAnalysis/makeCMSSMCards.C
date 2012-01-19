@@ -64,7 +64,7 @@ void makeCMSSMCards(){
   
   TChain *ch = new TChain("t");
   ch->Add("output/V00-02-12/highpt/LMscanFall11dil_smallTree.root");
-  char* version = "V00-00-07";
+  char* version = "V00-00-08";
   bool doSigCont = true;
 
   //---------------------------------------
@@ -72,7 +72,7 @@ void makeCMSSMCards(){
   //---------------------------------------
 
   //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
-  TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale * ( 1 + sqrt(pow(ksusydn/ksusy-1,2)+0.2*0.2) )");
+  TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale * ( 1 - sqrt(pow(ksusyup/ksusy-1,2)+0.2*0.2) )");
   //TCut weightkup("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
   //TCut weightkdn("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusydn/ksusy");
   TCut presel("pfmet>50 && njets>=2 && ht>100 && !passz");
