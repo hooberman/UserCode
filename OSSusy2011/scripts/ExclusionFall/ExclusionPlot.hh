@@ -15,7 +15,7 @@
 #include <vector>
 
 void ExclusionPlot();
-void CommandMSUGRA(TString plotName,Int_t tanBeta, Bool_t plotLO);
+void CommandMSUGRA(TString plotName);
 void setPlottingStyle(TH1F& hsig);
  
 //a little plotting routine to calculate the NLO cross-section
