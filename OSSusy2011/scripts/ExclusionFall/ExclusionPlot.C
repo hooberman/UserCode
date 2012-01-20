@@ -174,14 +174,18 @@ void CommandMSUGRA(TString plotName_){
   // make legend
   //-----------------------------------
   
-  TLegend* myleg = new TLegend(0.3,0.75,0.54,0.9,NULL,"brNDC");
+  TLegend* myleg = new TLegend(0.2,0.75,0.34,0.9,NULL,"brNDC");
   myleg->SetFillColor(0); 
   myleg->SetShadowColor(0);
   myleg->SetTextSize(0.03);
   myleg->SetBorderSize(0);
 
   myleg->AddEntry(observedLimit,"NLO observed limit","l");
-      
+  myleg->AddEntry(expectedLimit,"NLO expected limit","l");
+  myleg->AddEntry(observedLimitTheoryUp,"NLO observed limit (#pm1#sigma theory)","l");
+  myleg->AddEntry(expectedLimitTheoryUp,"NLO expected limit (#pm1#sigma theory)","l");
+  myleg->AddEntry(expectedLimitM1,"NLO expected limit (#pm1#sigma stat)","l");
+
   //-----------------------------------
   // constant squark/gluino contours
   //-----------------------------------
@@ -735,7 +739,7 @@ TF1* constant_squark(int tanBeta,int i){
   char hname[200];
 
   sprintf(hname,"lnsq_%i",i); 
-  TF1* lnsq = new TF1(hname,"sqrt([0]-x*x*[1]+[2])",0,1000);
+  TF1* lnsq = new TF1(hname,"sqrt([0]-x*x*[1]+[2])",0,2000);
   lnsq->SetParameter(0,coef1[i-1]);
   lnsq->SetParameter(1,coef2[i-1]);
   lnsq->SetParameter(2,coef3[i-1]);

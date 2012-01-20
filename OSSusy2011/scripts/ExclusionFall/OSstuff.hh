@@ -32,7 +32,39 @@ TGraph *observedLimit_OS2011(){
 }
 
 TGraph *expectedLimit_OS2011(){
-  return observedLimit_OS2011();
+
+  const unsigned int no = 18;
+  float xo[no];
+  float yo[no];
+
+  int i = -1;
+
+  xo[++i] = 60;   yo[i] = 450;
+  xo[++i] = 100;  yo[i] = 450;
+  xo[++i] = 125;  yo[i] = 435;
+  xo[++i] = 150;  yo[i] = 420;
+  xo[++i] = 180;  yo[i] = 380;
+  xo[++i] = 190;  yo[i] = 350;
+  xo[++i] = 195;  yo[i] = 330;
+  xo[++i] = 210;  yo[i] = 320;
+  xo[++i] = 250;  yo[i] = 330;
+  xo[++i] = 300;  yo[i] = 340;
+  xo[++i] = 450;  yo[i] = 360;
+  xo[++i] = 580;  yo[i] = 360;
+  xo[++i] = 600;  yo[i] = 350;
+  xo[++i] = 590;  yo[i] = 300;
+  xo[++i] = 800;  yo[i] = 260;
+  xo[++i] = 1000; yo[i] = 230;
+  xo[++i] = 1400; yo[i] = 190;
+  xo[++i] = 2000; yo[i] = 180;
+
+  for( int ip = 0 ; ip < 18 ; ip++ ) yo[ip] -= 5;
+
+  TGraph* gro = new TGraph(no,xo,yo);
+  gro->SetLineWidth(5);
+
+  return gro;
+
 }
   
 TGraph *expectedLimitP1_OS2011(){
