@@ -29,7 +29,7 @@ using namespace std;
 
 TGraph *observedLimit_OS2011(){
 
-  const unsigned int no = 15;
+  const unsigned int no = 18;
   float xo[no];
   float yo[no];
 
@@ -37,14 +37,17 @@ TGraph *observedLimit_OS2011(){
 
   xo[++i] = 60;   yo[i] = 450;
   xo[++i] = 100;  yo[i] = 450;
+  xo[++i] = 125;  yo[i] = 435;
   xo[++i] = 150;  yo[i] = 420;
-  xo[++i] = 190;  yo[i] = 400;
-  xo[++i] = 190;  yo[i] = 310;
-  xo[++i] = 195;  yo[i] = 300;
-  xo[++i] = 250;  yo[i] = 340;
+  xo[++i] = 180;  yo[i] = 380;
+  xo[++i] = 190;  yo[i] = 350;
+  xo[++i] = 195;  yo[i] = 330;
+  xo[++i] = 210;  yo[i] = 320;
+  xo[++i] = 250;  yo[i] = 330;
+  xo[++i] = 300;  yo[i] = 340;
   xo[++i] = 450;  yo[i] = 360;
-  xo[++i] = 600;  yo[i] = 370;
-  xo[++i] = 600;  yo[i] = 360;
+  xo[++i] = 580;  yo[i] = 360;
+  xo[++i] = 600;  yo[i] = 350;
   xo[++i] = 590;  yo[i] = 300;
   xo[++i] = 800;  yo[i] = 260;
   xo[++i] = 1000; yo[i] = 230;
@@ -53,6 +56,7 @@ TGraph *observedLimit_OS2011(){
 
   TGraph* gro = new TGraph(no,xo,yo);
   gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
 
   return gro;
 }
@@ -189,9 +193,9 @@ TGraph *expectedLimitTheoryUp_OS2011(){
   xo[++i] = 450;  yo[i] = 375;
   xo[++i] = 550;  yo[i] = 372;
   xo[++i] = 640;  yo[i] = 350;
-  xo[++i] = 670;  yo[i] = 300;
+  xo[++i] = 670;  yo[i] = 310;
   xo[++i] = 800;  yo[i] = 270;
-  xo[++i] = 1000; yo[i] = 230;
+  xo[++i] = 1000; yo[i] = 240;
   xo[++i] = 1200; yo[i] = 220;
   xo[++i] = 1400; yo[i] = 200;
   xo[++i] = 2000; yo[i] = 200;
@@ -258,9 +262,10 @@ void CMSSM(){
   hobs->Draw("colz");
   TGraph* gobs = observedLimit_OS2011();
   gobs->Draw("c");
+  gobs->Draw("p");
   st_gr_tanBeta10->Draw("fsame");
   t->DrawLatex(0.5,0.7,"observed limit");
-
+  /*
   //expected limit
   TCanvas *c2 = new TCanvas("c2","c2",1200,600);
   c2->cd();
@@ -350,7 +355,7 @@ void CMSSM(){
   st_gr_tanBeta10->Draw("fsame");
   t->DrawLatex(0.5,0.7,"experved limit (theory DOWN)");
 
-
+  */
     
 
 

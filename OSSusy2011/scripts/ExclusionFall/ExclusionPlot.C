@@ -55,24 +55,28 @@ void CommandMSUGRA(TString plotName_){
   TGraph* NoEWSB      = set_NoEWSB(tanBeta_);         //noEWSB
   //TGraph* TEV_tlp_cdf = set_tev_tlp_cdf(tanBeta_);    //trilepton cdf
   //TGraph* TEV_tlp_d0  = set_tev_tlp_d0(tanBeta_);     //trilepton d0
-  //TGraph* TEV_sn_d0_1 = set_sneutrino_d0_1(tanBeta_); //D0 sneutrino
-  //TGraph* TEV_sn_d0_2 = set_sneutrino_d0_2(tanBeta_); //D0 sneutrino
+  TGraph* TEV_sn_d0_1 = set_sneutrino_d0_1(tanBeta_); //D0 sneutrino
+  TGraph* TEV_sn_d0_2 = set_sneutrino_d0_2(tanBeta_); //D0 sneutrino
 
   //-----------------------------------
   // constant sqquark and gluino lines
   //-----------------------------------
 
-  const unsigned int nlines = 4;
+  const unsigned int nslines = 5;
+  const unsigned int nglines = 4;
 
-  TF1* lnsq[nlines];
-  TF1* lngl[nlines];
-  
-  TLatex* sq_text[nlines];
-  TLatex* gl_text[nlines];
+  TF1* lnsq[nslines];
+  TF1* lngl[nglines];
 
-  for(unsigned int i = 0; i < nlines; i++){
+  TLatex* sq_text[nslines];
+  TLatex* gl_text[nglines];
+
+  for(unsigned int i = 0; i < nslines; i++){
     lnsq[i]    = constant_squark(tanBeta_,i);
     sq_text[i] = constant_squark_text(i,*lnsq[i],tanBeta_);
+  }
+
+  for(unsigned int i = 0; i < nglines; i++){
     lngl[i]    = constant_gluino(tanBeta_,i);
     gl_text[i] = constant_gluino_text(i,*lngl[i]);
   }
@@ -120,9 +124,38 @@ void CommandMSUGRA(TString plotName_){
   //-----------------------------------
   // format contours
   //-----------------------------------
-  
+
+  observedLimit->SetLineWidth(2);
   observedLimit->SetLineColor(2);
+
+  observedLimitTheoryUp->SetLineWidth(2);
+  observedLimitTheoryUp->SetLineColor(2);
+  observedLimitTheoryUp->SetLineStyle(2);
+
+  observedLimitTheoryDown->SetLineWidth(2);
+  observedLimitTheoryDown->SetLineColor(2);
+  observedLimitTheoryDown->SetLineStyle(2);
+
+  expectedLimit->SetLineWidth(2);
   expectedLimit->SetLineColor(4);
+
+  expectedLimitTheoryUp->SetLineWidth(2);
+  expectedLimitTheoryUp->SetLineColor(4);
+  expectedLimitTheoryUp->SetLineStyle(2);
+
+  expectedLimitTheoryDown->SetLineWidth(2);
+  expectedLimitTheoryDown->SetLineColor(4);
+  expectedLimitTheoryDown->SetLineStyle(2);
+
+  expectedLimitM1->SetLineWidth(2);
+  expectedLimitM1->SetLineColor(4);
+  expectedLimitM1->SetLineStyle(3);
+
+  expectedLimitP1->SetLineWidth(2);
+  expectedLimitP1->SetLineColor(4);
+  expectedLimitP1->SetLineStyle(3);
+
+
 
   //-----------------------------------
   // draw dummy histogram
@@ -153,10 +186,13 @@ void CommandMSUGRA(TString plotName_){
   // constant squark/gluino contours
   //-----------------------------------
 
-  for (unsigned int it=1;it<nlines;it++) {   
-    lngl[it]->Draw("same");   
+  for (unsigned int it=1;it<nslines;it++) {   
     lnsq[it]->Draw("same");
     sq_text[it]->Draw();
+  }
+
+  for (unsigned int it=1;it<nglines;it++) {   
+    lngl[it]->Draw("same");   
     gl_text[it]->Draw();
   }
 
@@ -165,6 +201,13 @@ void CommandMSUGRA(TString plotName_){
   //-----------------------------------
 
   observedLimit->Draw("c");
+  observedLimitTheoryUp->Draw("samec");
+  observedLimitTheoryDown->Draw("samec");
+  expectedLimit->Draw("samec");
+  expectedLimitTheoryUp->Draw("samec");
+  expectedLimitTheoryDown->Draw("samec");
+  expectedLimitM1->Draw("samec");
+  expectedLimitP1->Draw("samec");
 
   //-----------------------------------
   // draw prior excluded regions
@@ -232,24 +275,20 @@ void CommandMSUGRA(TString plotName_){
   tLM3->Draw("same");
   LM6->Draw("same");
   tLM6->Draw("same");
+
+  //-----------------------------------
+  // write output
+  //-----------------------------------
  
- 
-  //First->Draw("samec");
-  // if (tanBeta_ == 3) Third->Draw("samec");
-  //if (tanBeta_ == 3 && plotLO_) Second->Draw("samec");
-  
   hist->Draw("sameaxis");
   cvsSys->RedrawAxis();
   cvsSys->Update();
-  cvsSys->Write();
-  
+  cvsSys->Write();  
   cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
   cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
   cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
   
   output->Write();
-  //output->Close();
-  //delete output; 
   
 }
 
@@ -679,44 +718,6 @@ TGraph* set_tev_stau(Int_t tanBeta){
 
     return 0;
 }
-
-//--------------------
-// old (2010)
-//--------------------
-/*
-TGraph* set_tev_stau(Int_t tanBeta){
-
-    double st_m0_tanBeta3[] = {0,10,20,30,40,50,60,70,80,90,100,0};
-    double st_m12_tanBeta3[] = {337,341,356,378,406,439,473,510,548,587,626,626};   
-
-    double st_m0_tanBeta10[] = {0,10,20,30,40,50,60,70,80,90,100,0};
-    double st_m12_tanBeta10[] = {213,220,240,275,312,351,393,435,476,518,559,559};
-
-    double st_m0_tanBeta50[] = {200,210,220,230,240,250,260,270,280,290,310,325,200,200};
-    double st_m12_tanBeta50[] = {206,226,246,267,288,310,332,354,376,399,450,500,500,206};
-
-
-    TGraph* st_gr_tanBeta3 = new TGraph(12,st_m0_tanBeta3,st_m12_tanBeta3);
-    TGraph* st_gr_tanBeta10 = new TGraph(12,st_m0_tanBeta10,st_m12_tanBeta10);
-    TGraph* st_gr_tanBeta50 = new TGraph(14,st_m0_tanBeta50,st_m12_tanBeta50);
-
-    st_gr_tanBeta3->SetFillColor(40);
-    st_gr_tanBeta3->SetFillStyle(1001);
-
-    st_gr_tanBeta50->SetFillColor(40);
-    st_gr_tanBeta50->SetFillStyle(1001);
-    
-    st_gr_tanBeta10->SetFillColor(40);
-    st_gr_tanBeta10->SetFillStyle(1001);
-
-
-    if     (tanBeta == 3)  return st_gr_tanBeta3;
-    else if(tanBeta == 10) return st_gr_tanBeta10;
-    else if(tanBeta == 50) return st_gr_tanBeta50;
-    else return 0;
-}
-*/
-
 //-----------------------
 // new (Sanjay)
 //-----------------------
@@ -743,37 +744,6 @@ TF1* constant_squark(int tanBeta,int i){
 
   return lnsq;
 }
-
-/*
-//-----------------------
-// old (2010 results)
-//-----------------------
-
-TF1* constant_squark(int tanBeta,int i){
-
-  //---lines of constant gluino/squark
-  
-  double coef1   = 0.35;
-  double coef2[] = {5,5,4.6,4.1};
-  //double coef2[] = {5,5,5,5};
-
-  char hname[200];
-
-  sprintf(hname,"lnsq_%i",i); 
-
-  
-  TF1* lnsq = new TF1(hname,"sqrt([0]-x*x*[1]-[2])",0,m0max);
-  lnsq->SetParameter(0,(500+spacing*(i-1))*(500+spacing*(i-1))/coef2[i]);
-  lnsq->SetParameter(1,1./coef2[i]);
-  //--tanbeta=10 --> cos2beta = -99/101
-  lnsq->SetParameter(2,-coef1*91*91*(2*TMath::Cos(TMath::ATan(tanBeta)))/coef2[i]);
-  //lnsq->SetParameter(2,-coef1*91*91*(TMath::Cos(2*TMath::ATan(tanBeta)))/coef2[i]);
-  lnsq->SetLineWidth(1);
-  lnsq->SetLineColor(kGray);
-
-  return lnsq;
-}
-*/
 
 TGraph* set_NoEWSB(Int_t tanBeta){
 
@@ -945,8 +915,8 @@ TLegend* makeNoEWSBLegend(Double_t txtsz,Int_t tanBeta_){
 
   Double_t ypos_1 = 0.10;
   Double_t ypos_2 = 0.20;
-  Double_t xpos_1 = 0.84;
-  Double_t xpos_2 = 0.94;
+  Double_t xpos_1 = 0.82;
+  Double_t xpos_2 = 0.92;
   if(tanBeta_ == 40){
     xpos_1 = 0.10;
     xpos_2 = 0.20;
