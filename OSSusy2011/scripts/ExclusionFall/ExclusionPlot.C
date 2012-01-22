@@ -12,6 +12,7 @@
 #include "TMarker.h"
 #include <vector>
 #include "TMath.h"
+#include "TROOT.h"
 
 const float m0max    = 2000; // x-axis range
 const float m12max   =  700; // y-axis range
@@ -291,7 +292,7 @@ void CommandMSUGRA(TString plotName_){
   cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".eps");
   cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".pdf");
   cvsSys->SaveAs("RA6_ExclusionLimit_tanb"+tanb+".png");
-  
+  gROOT->ProcessLine(".! ps2pdf RA6_ExclusionLimit_tanb"+tanb+".eps RA6_ExclusionLimit_tanb"+tanb+"_ppt.pdf");
   output->Write();
   
 }
