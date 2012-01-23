@@ -42,7 +42,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-01-00";
+  const char* version   = "V00-01-01";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -1056,8 +1056,6 @@ void doAll(bool skipFWLite = true)
 
   if(rundatamay10){
     cout << "adding data May10" << endl;
-    //pickSkimIfExists(chdatamay10,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-    //pickSkimIfExists(chdatamay10,"/hadoop/cms/store/user/benhoob/DiMuonPt20/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
     pickSkimIfExists(chdatamay10,"DiMuonPt20/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
   }
 
@@ -1067,10 +1065,41 @@ void doAll(bool skipFWLite = true)
 
   if(rundataPRv4){
     cout << "adding data PRv4" << endl;
-    //pickSkimIfExists(chdataPRv4,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-    //pickSkimIfExists(chdataPRv4,"/hadoop/cms/store/user/benhoob/DiMuonPt20/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
     pickSkimIfExists(chdataPRv4,"DiMuonPt20/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
   }
+
+  //-------------------------------------------
+  // Aug05 rereco
+  //-------------------------------------------
+
+  if(rundataaug05){
+    cout << "adding data aug05" << endl;
+    pickSkimIfExists(chdataaug05,"DiMuonPt20/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
+  }
+
+  //-------------------------------------------
+  // prompt reco v6
+  //-------------------------------------------
+
+  if(rundataPRv6){
+    cout << "adding data PRv6" << endl;
+    pickSkimIfExists(chdataPRv6,"DiMuonPt20/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
+ }
+
+  //-------------------------------------------
+  // 2011B
+  //-------------------------------------------
+
+  if(rundata2011B){
+    cout << "adding data 2011B" << endl;
+    pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
+    pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/DiMuonPt20/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+
+
 
   if(rundata165){
     cout << "adding data 165" << endl;
@@ -1090,43 +1119,6 @@ void doAll(bool skipFWLite = true)
   if(rundata168){
     cout << "adding data 168" << endl;
     pickSkimIfExists(chdata168,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_168*root");
-  }
-
-  //-------------------------------------------
-  // Aug05 rereco
-  //-------------------------------------------
-
-  if(rundataaug05){
-    cout << "adding data aug05" << endl;
-    //pickSkimIfExists(chdataaug05,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-    //pickSkimIfExists(chdataaug05,"/hadoop/cms/store/user/benhoob/DiMuonPt20/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
-    pickSkimIfExists(chdataaug05,"DiMuonPt20/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
-  }
-
-  //-------------------------------------------
-  // prompt reco v6
-  //-------------------------------------------
-
-  if(rundataPRv6){
-    cout << "adding data PRv6" << endl;
-    //pickSkimIfExists(chdataPRv6,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-    //pickSkimIfExists(chdataPRv6,"/hadoop/cms/store/user/benhoob/DiMuonPt20/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
-    pickSkimIfExists(chdataPRv6,"DiMuonPt20/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
- }
-
-  //-------------------------------------------
-  // 2011B
-  //-------------------------------------------
-
-  if(rundata2011B){
-    cout << "adding data 2011B" << endl;
-    //pickSkimIfExists(chdata2011B,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-    //pickSkimIfExists(chdata2011B,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-34/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged*root");
-    //pickSkimIfExists(chdata2011B,"/hadoop/cms/store/user/benhoob/DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/DiMuonPt20/merged*root");
-    //pickSkimIfExists(chdata2011B,"/hadoop/cms/store/user/benhoob/DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
-
-    pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
-    pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/DiMuonPt20/merged*root");
   }
 
   if(rundata){

@@ -933,6 +933,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       //pfjets
       VofP4 vpfjets_p4;
+      vector<int> jetIndex;
 
       njets_     = 0;
       ht_        = 0.;
@@ -957,6 +958,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	ht_ += vjet.pt();
 
 	vpfjets_p4.push_back( vjet );
+	jetIndex.push_back(ijet);
       }
 
 
@@ -1007,17 +1009,19 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       nbtags20_24_ = 0;
 
       if( njets_ > 0 ){
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet1) > 1.7 )   nbtags17_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet1) > 2.0 )   nbtags20_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet1) > 2.0 && abs( vpfjets_p4.at(ijet1).eta() ) < 2.4 )  nbtags20_24_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet1) > 3.3 )   nbtags33_++;
+	int jetidx1 = jetIndex.at(ijet1);
+	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 1.7 )   nbtags17_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 2.0 )   nbtags20_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 2.0 && fabs( vpfjets_p4.at(ijet1).eta() ) < 2.4 )  nbtags20_24_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 3.3 )   nbtags33_++;
       }
 
       if( njets_ > 1 ){
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet2) > 1.7 )   nbtags17_++;	  
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet2) > 2.0 )   nbtags20_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet2) > 2.0 && abs( vpfjets_p4.at(ijet2).eta() ) < 2.4 )  nbtags20_24_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet2) > 3.3 )   nbtags33_++;
+	int jetidx2 = jetIndex.at(ijet2);
+	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 1.7 )   nbtags17_++;	  
+	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 2.0 )   nbtags20_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 2.0 && fabs( vpfjets_p4.at(ijet2).eta() ) < 2.4 )  nbtags20_24_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 3.3 )   nbtags33_++;
       }
 
       //-----------------------------
