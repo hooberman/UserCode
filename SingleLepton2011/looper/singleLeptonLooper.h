@@ -142,6 +142,14 @@ class singleLeptonLooper
         LorentzVector*  lep2_;
         LorentzVector*  dilep_;
         LorentzVector*  jet_; 
+        LorentzVector*  cjet1_; 
+        LorentzVector*  cjet2_; 
+        LorentzVector*  cjet3_; 
+        LorentzVector*  cjet4_; 
+        LorentzVector*  pfjet1_; 
+        LorentzVector*  pfjet2_; 
+        LorentzVector*  pfjet3_; 
+        LorentzVector*  pfjet4_; 
  	LorentzVector*  nonisoel_;   
  	LorentzVector*  nonisomu_;   
 
@@ -263,8 +271,6 @@ class singleLeptonLooper
 	Float_t iso2_;
 	Float_t isont2_;
         Float_t ptl2_;
-        Float_t ptj1_;
-        Float_t ptj2_;
         Float_t etal1_;
         Float_t etal2_;
         Float_t phil1_;
@@ -308,6 +314,8 @@ class singleLeptonLooper
 	Float_t ksusydn_;
 	Float_t xsecsusy_;
 	Float_t xsecsusy2_;
+
+	Float_t mbb_;
 
         // for fakeRates
         double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);

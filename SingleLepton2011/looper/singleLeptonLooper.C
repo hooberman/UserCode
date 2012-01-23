@@ -311,6 +311,7 @@ void singleLeptonLooper::InitBaby(){
   m12_		= -9999;
   mG_		= -9999;
   mL_		= -9999;
+  x_		= -9999;
   ksusy_	= -999;
   ksusyup_	= -999;
   ksusydn_	= -999;
@@ -332,8 +333,17 @@ void singleLeptonLooper::InitBaby(){
   cosphijz_	= -9999.;
   dilep_	= 0;
   jet_		= 0;
+  cjet1_	= 0;
+  cjet2_	= 0;
+  cjet3_	= 0;
+  cjet4_	= 0;
+  pfjet1_	= 0;
+  pfjet2_	= 0;
+  pfjet3_	= 0;
+  pfjet4_	= 0;
   lep1_		= 0;
   lep2_		= 0;
+  mbb_       = -9999.;
 
 }
 
@@ -870,7 +880,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // require trigger
       //--------------------------------
 
-      if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
+      if( !passSingleLep2JetSUSYTrigger2011( isData , leptype_ ) ) continue;
+      //      if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
 
 
       //--------------------------------
@@ -916,6 +927,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	
 	LorentzVector vdilepton(0,0,0,0);
 	LorentzVector vttbar(0,0,0,0);
+	int ntops = 0;
 
 	for ( int igen = 0 ; igen < genps_id().size() ; igen++ ) { 
 	  if ( abs( cms2.genps_id().at(igen) ) == 11) vdilepton += genps_p4().at(igen); 
@@ -927,11 +939,13 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    t_         = &(genps_p4().at(igen));
 	    ptt_       = genps_p4().at(igen).pt();
 	    vttbar    += genps_p4().at(igen);
+	    ntops++;
 	  }
 	  if( id == -6 ){
 	    tbar_      = &(genps_p4().at(igen));
 	    pttbar_    = genps_p4().at(igen).pt();
 	    vttbar    += genps_p4().at(igen);
+	    ntops++;
 	  }
 
 	  // skip lines up to t and tbar
@@ -948,23 +962,26 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  // found additional parton
 	  npartons_ ++;
 	  if( genps_p4().at(igen).pt() > maxpartonpt_ ) maxpartonpt_ = genps_p4().at(igen).pt();
-	  cout << "found parton, igen " << igen << " id " << pid << " motherid " << mothid << " pt " << genps_p4().at(igen).pt() << endl;
+	  //	  cout << "found parton, igen " << igen << " id " << pid << " motherid " << mothid << " pt " << genps_p4().at(igen).pt() << endl;
 
 	}
 
-	if( npartons_ > 0 ){
-	  cout << endl << endl;
-	  dumpDocLines();
-	  cout << endl << endl;
-	  cout << "number of partons " << npartons_    << endl;
-	  cout << "max parton pt     " << maxpartonpt_ << endl;
-	}
+	// if( npartons_ > 0 ){
+	//   cout << endl << endl;
+	//   dumpDocLines();
+	//   cout << endl << endl;
+	//   cout << "number of partons " << npartons_    << endl;
+	//   cout << "max parton pt     " << maxpartonpt_ << endl;
+	// }
 
+	//count tops and only get two
 	//ttbar_    = &(vttbar);
-	ttbar_    = &(*t_ + *tbar_);
-	ptttbar_  = ttbar_->pt();
-	mttbar_   = ttbar_->mass();
-	etattbar_ = ttbar_->eta();
+	if (ntops==2) {
+	  ttbar_    = &(*t_ + *tbar_);
+	  ptttbar_  = ttbar_->pt();
+	  mttbar_   = ttbar_->mass();
+	  etattbar_ = ttbar_->eta();
+	}
 
 	if( nels + nmus == 2) dilptgen = vdilepton.pt();
         
@@ -1261,7 +1278,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	bool isGoodLepton = false;
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
+	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) 
+	    isGoodLepton = true;  
 	}
 	if( isGoodLepton ) continue;
 
@@ -1387,6 +1405,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 3.0 ){ 
 	  njets15_++;
+	  if (njets15_==1) pfjet1_ = &(vjet);
+	  else if (njets15_==2) pfjet2_ = &(vjet);
+	  else if (njets15_==3) pfjet3_ = &(vjet);
+	  else if (njets15_==4) pfjet4_ = &(vjet);
 	}
 
 	if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 3.0 ){
@@ -1511,7 +1533,15 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 	if( rejectJet ) continue;
 
-	if( vjet.pt() > 15.  ) ncalojets15_++;
+	if( vjet.pt() > 15.  ) {
+
+	  ncalojets15_++;
+	  if (ncalojets15_==1) cjet1_ = &(vjet);
+	  else if (ncalojets15_==2) cjet2_ = &(vjet);
+	  else if (ncalojets15_==3) cjet3_ = &(vjet);
+	  else if (ncalojets15_==4) cjet4_ = &(vjet);
+
+	}
 	if( vjet.pt() > 20.  ) ncalojets20_++;
 	if( vjet.pt() > 25.  ) ncalojets25_++;
 	if( vjet.pt() > 30.  ) ncalojets30_++;
@@ -1819,6 +1849,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       if( dphilm_ > TMath::Pi() ) dphilm_ = TMath::TwoPi() - dphilm_;
 
       mt_ = sqrt( 2 * ( lep1_->pt() * pfmet_ * (1 - cos( dphilm_ ) ) ) );
+
+      //dijet mass two bs highest pT b-tagged jets
+      if (mediumBJets.size()>1) {
+	mbb_ = (mediumBJets.at(0)+mediumBJets.at(1)).M();
+      }
 
       /*
       //REPLACETOPMASS
@@ -2745,6 +2780,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("mg",              &mG_,               "mg/F");
   outTree->Branch("ml",              &mL_,               "ml/F");
+  outTree->Branch("x",               &x_,                "x/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");
   outTree->Branch("id2",             &id2_,              "id2/I");
@@ -2762,8 +2798,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("isont2",          &isont2_,           "isont2/F");
   outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
   outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
-  outTree->Branch("ptj1",            &ptj1_,             "ptj1/F");
-  outTree->Branch("ptj2",            &ptj2_,             "ptj2/F");
   outTree->Branch("etal1",           &etal1_,            "etal1/F");
   outTree->Branch("etal2",           &etal2_,            "etal2/F");
   outTree->Branch("phil1",           &phil1_,            "phil1/F");
@@ -2825,6 +2859,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nbctcl",          &nbctcl_,           "nbctcl/I");  
   outTree->Branch("nbctcm",          &nbctcm_,           "nbctcm/I");  
   outTree->Branch("htcalo",          &htcalo_,           "htcalo/F");  
+  outTree->Branch("mbb",             &mbb_,              "mbb/F");
   outTree->Branch("trgjet"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trgjet_	);
   outTree->Branch("mlep"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
@@ -2832,6 +2867,14 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mclep1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep1_	);
   outTree->Branch("mclep2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep2_	);
   outTree->Branch("jet"	     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
+  outTree->Branch("cjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet1_	);
+  outTree->Branch("cjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet2_	);
+  outTree->Branch("cjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet3_	);
+  outTree->Branch("cjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet4_	);
+  outTree->Branch("pfjet1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet1_	);
+  outTree->Branch("pfjet2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet2_	);
+  outTree->Branch("pfjet3"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet3_	);
+  outTree->Branch("pfjet4"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet4_	);
   outTree->Branch("nonisoel" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisoel_	);
   outTree->Branch("nonisomu" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisomu_	);
   outTree->Branch("t"        , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &t_   	);
