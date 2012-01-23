@@ -1433,7 +1433,7 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
   outTree->Branch("nbtags17",        &nbtags17_,         "nbtags17/I");
   outTree->Branch("nbtags20",        &nbtags20_,         "nbtags20/I");
-  outTree->Branch("nbtags2024",      &nbtags2024_,       "nbtags2024/I");
+  outTree->Branch("nbtags2024",      &nbtags20_24_,      "nbtags2024/I");
   outTree->Branch("nbtags33",        &nbtags33_,         "nbtags33/I");
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
