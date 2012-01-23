@@ -892,6 +892,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       tbar_     = 0;
       ttbar_    = 0;
 
+      npartons_    =  0;
+      maxpartonpt_ = -1;
+
       if( !isData ){
 
 	w1_     = leptonOrTauIsFromW( index1 , id1_ , isLM );
@@ -930,6 +933,31 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    pttbar_    = genps_p4().at(igen).pt();
 	    vttbar    += genps_p4().at(igen);
 	  }
+
+	  // skip lines up to t and tbar
+	  if( igen < 8 ) continue;
+
+	  // require particle is a quark or a gluon
+	  int pid = abs( genps_id().at(igen) );
+	  if( !( pid==1 || pid==2 || pid==3 || pid==4 || pid==5 || pid==6 || pid == 21 ) ) continue;
+
+	  // require mother is not a top or W
+	  int mothid = abs(genps_id_mother().at(igen));
+	  if( mothid == 6 || mothid == 24) continue;
+
+	  // found additional parton
+	  npartons_ ++;
+	  if( genps_p4().at(igen).pt() > maxpartonpt_ ) maxpartonpt_ = genps_p4().at(igen).pt();
+	  cout << "found parton, igen " << igen << " id " << pid << " motherid " << mothid << " pt " << genps_p4().at(igen).pt() << endl;
+
+	}
+
+	if( npartons_ > 0 ){
+	  cout << endl << endl;
+	  dumpDocLines();
+	  cout << endl << endl;
+	  cout << "number of partons " << npartons_    << endl;
+	  cout << "max parton pt     " << maxpartonpt_ << endl;
 	}
 
 	//ttbar_    = &(vttbar);
@@ -2639,6 +2667,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pttbar",          &pttbar_,           "pttbar/F");
   outTree->Branch("ptttbar",         &ptttbar_,          "ptttbar/F");
   outTree->Branch("mttbar",          &mttbar_,           "mttbar/F");
+  outTree->Branch("npartons",        &npartons_,         "npartons/I");
+  outTree->Branch("maxpartonpt",     &maxpartonpt_,      "maxpartonpt/F");
   outTree->Branch("etattbar",        &etattbar_,         "etatbar/F");
   outTree->Branch("njetsoffset",     &njetsoffset_,      "njetsoffset/I");
   outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");

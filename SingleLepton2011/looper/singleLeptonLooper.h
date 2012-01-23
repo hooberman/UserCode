@@ -124,6 +124,8 @@ class singleLeptonLooper
 	Float_t mjj_;
 	Int_t   nbctcl_;
 	Int_t   nbctcm_;
+	Int_t   npartons_;
+	Float_t maxpartonpt_;
 	Float_t ptt_;
 	Float_t pttbar_;
 	Float_t ptttbar_;
@@ -270,9 +272,9 @@ class singleLeptonLooper
         Float_t meff_;
         Float_t mt_;
         char    dataset_[200];
-        Int_t   run_;
-        Int_t   lumi_;
-        Int_t   event_;
+        UInt_t  run_;
+        UInt_t  lumi_;
+        UInt_t  event_;
 	Float_t y_;
 	Float_t ht_;
 	Float_t htoffset_;
