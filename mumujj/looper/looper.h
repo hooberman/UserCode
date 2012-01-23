@@ -96,6 +96,8 @@ class looper
 	Float_t trkpt_;
 	Float_t trkreliso_;
 
+	Int_t   hlt1_;
+	Int_t   hlt2_;
 	Int_t   mlepid_;
 	Int_t   mleppassid_;
 	Int_t   mleppassiso_;

@@ -709,12 +709,9 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       ntot++;
 
-      // REQUIRE AT LEAST 1 GOOD LEPTON!!!
-      if( goodLeptons.size() < 1 ){
-	//cout << "Fail >=1 good lepton requirement" << endl;
-	continue;
-      }
-
+      // REQUIRE AT LEAST 2 GOOD LEPTONS!!!
+      if( goodLeptons.size() < 2 )  continue;
+      
       npass++;
 
       std::vector<LorentzVector> trigObjs;
@@ -782,96 +779,90 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	}
       }
 
-      //-----------------------------------------------------------------------
-      // find leading lepton, require pt > 25 GeV and match to trigger object
-      //-----------------------------------------------------------------------
+      //-----------------------------------------------------------
+      // find 2 leading leptons
+      //-----------------------------------------------------------
 
       float maxpt   = -1;
-      int   imaxpt  = -1;
-      int   imaxpt2 = -1;
+      int   ilep1   = -1;
+      int   ilep2   = -1;
       
+      // if( goodLeptons.size()>2 ){
+      // 	cout << endl << endl;
+      // }
+
       for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
 
-	if( goodLeptons.at(ilep).pt() < 25 )                             continue;
-	if( !objectPassTrigger( goodLeptons.at(ilep) , trigObjs ,20 ) )  continue;
+	// if( goodLeptons.size()>2 ){
+	//   cout << "Lepton " << ilep << " " << goodLeptons.at(ilep).pt() << endl;
+	// }
 
 	if( goodLeptons.at(ilep).pt() > maxpt ){
 	  maxpt  = goodLeptons.at(ilep).pt();
-	  imaxpt = ilep;
+	  ilep1  = ilep;
 	}
       }
 
-      //---------------------------------------------------------
-      // require pt > 25 GeV lepton matched to trigger object
-      //---------------------------------------------------------
+      maxpt = -1;
 
-      if( imaxpt < 0 ){
-	hping->Fill(pingmass_);
-	//cout << "didn't find muon matched to trigger object" << endl;
-	continue;
+      for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+
+	if( ilep == ilep1 ) continue;
+
+	if( goodLeptons.at(ilep).pt() > maxpt ){
+	  maxpt   = goodLeptons.at(ilep).pt();
+	  ilep2   = ilep;
+	}
       }
 
-      id1_       = lepId.at(imaxpt);
-      lep1_      = &goodLeptons.at(imaxpt);
-      int index1 = lepIndex.at(imaxpt);
+      if( ilep1 < 0 || ilep2 < 0 ){
+	cout << "ERROR! ilep1 ilep2 " << ilep1 << " " << ilep2 << endl;
+	exit(0);
+      }
+
+      // if( goodLeptons.size()>2 ){
+      // 	cout << "1st lepton   " << goodLeptons.at(ilep1).pt() << endl;
+      // 	cout << "2nd lepton   " << goodLeptons.at(ilep2).pt() << endl;
+      // }
+
+      //-----------------------------------------------------------------------
+      // are either muon matched to trigger object?
+      //-----------------------------------------------------------------------
+
+      hlt1_ = 0;
+      hlt2_ = 0;
+
+      if( objectPassTrigger( goodLeptons.at(ilep1) , trigObjs ,20 ) ) hlt1_ = 1;      
+      if( objectPassTrigger( goodLeptons.at(ilep2) , trigObjs ,20 ) ) hlt2_ = 1;      
+      
+      //---------------------------------------------------------
+      // muon branches
+      //---------------------------------------------------------
+
+
+      int index1 = lepIndex.at(ilep1);
+      int index2 = lepIndex.at(ilep2);
+
+      id1_       = lepId.at(ilep1);
+      lep1_      = &goodLeptons.at(ilep1);
       iso1_      = muonIsoValue(index1,false);
       passid1_   = muonIdNotIsolated( index1 , OSGeneric_v3 ) ? 1 : 0;
 
-      lep1trk_   = &(mus_trk_p4().at(imaxpt));
-      lep1glb_   = &(mus_gfit_p4().at(imaxpt));
-      lep1sta_   = &(mus_sta_p4().at(imaxpt));
-
-      //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
-
-      //---------------------------------------------
-      // find 2nd leading lepton (if >=2 leptons)
-      //---------------------------------------------
-
-      id2_       = -999;
-      lep2_      = 0;
-      int index2 = -1;
-      dilmass_   = -999;
-      iso2_      = -1.;
-      passid2_   = -1;
+      lep1trk_   = &(mus_trk_p4().at(ilep1));
+      lep1glb_   = &(mus_gfit_p4().at(ilep1));
+      lep1sta_   = &(mus_sta_p4().at(ilep1));
+      	
+      id2_       = lepId.at(ilep2);
+      lep2_      = &goodLeptons.at(ilep2);
+      iso2_      = muonIsoValue(index2,false);
+      passid2_   = muonIdNotIsolated( index2, OSGeneric_v3 ) ? 1 : 0;
       
-      lep2trk_   = 0;
-      lep2glb_   = 0;
-      lep2sta_   = 0;
+      lep2trk_   = &(mus_trk_p4().at(ilep2));
+      lep2glb_   = &(mus_gfit_p4().at(ilep2));
+      lep2sta_   = &(mus_sta_p4().at(ilep2));
 
-      if( ngoodlep_ > 1 ){
+      dilmass_   = ( goodLeptons.at(ilep1) + goodLeptons.at(ilep2) ).mass();
 
-	maxpt = -1;
-	
-	for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	  
-	  if( ilep == imaxpt ) continue;
-	  
-	  if( goodLeptons.at(ilep).pt() > maxpt ){
-	    maxpt   = goodLeptons.at(ilep).pt();
-	    imaxpt2 = ilep;
-	  }
-	}
-	
-	if( imaxpt2 < 0 ){
-	  cout << "ERROR! QUITTING imaxpt2 " << imaxpt2 << endl;
-	  exit(3);
-	}
-	
-	id2_       = lepId.at(imaxpt2);
-	lep2_      = &goodLeptons.at(imaxpt2);
-	index2     = lepIndex.at(imaxpt2);
-	dilmass_   = (goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass();
-	iso2_      = muonIsoValue(index2,false);
-	passid2_   = muonIdNotIsolated( index2, OSGeneric_v3 ) ? 1 : 0;
-
-	lep2trk_   = &(mus_trk_p4().at(imaxpt2));
-	lep2glb_   = &(mus_gfit_p4().at(imaxpt2));
-	lep2sta_   = &(mus_sta_p4().at(imaxpt2));
-
-      }
-
-      //cout << "2nd deading lepton: pt " << lep2_->pt() << " id " << id2_ << " mass " << dilmass_ << endl;
-	  
       //--------------------------------
       // get MC quantities
       //--------------------------------
@@ -945,10 +936,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       njets_     = 0;
       ht_        = 0.;
-      nbtags17_  = 0;
-      nbtags20_  = 0;
-      nbtags33_  = 0;
-      nbtags20_24_  = 0;
 
       //---------------------
       // apply residual JEC
@@ -956,16 +943,12 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-	float         jet_cor = jetCorrection(cms2.pfjets_p4().at(ijet), jet_pf_L2L3corrector);
+	float         jet_cor = 1;
+	if( isData )  jet_cor = jetCorrection(cms2.pfjets_p4().at(ijet), jet_pf_L2L3corrector);
 	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * jet_cor * pfjets_p4().at(ijet);
 
-	if( generalLeptonVeto ){
-	  bool rejectJet = false;
-	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.5 ) rejectJet = true;  
-	  }
-	  if( rejectJet ) continue;
-	}
+	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
+	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
 
 	if( vjet.pt() < 25         ) continue;
 	if( fabs(vjet.eta()) > 3.0 ) continue;
@@ -974,24 +957,69 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	ht_ += vjet.pt();
 
 	vpfjets_p4.push_back( vjet );
+      }
 
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
-	  nbtags17_++;
-	}
 
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 2.0 ){
-	  nbtags20_++;
-	}
+      maxpt   = -1;
+      int   ijet1   = -1;
+      int   ijet2   = -1;
+      
+      // if( vpfjets_p4.size()>2 ){
+      // 	cout << endl << endl;
+      // }
 
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 2.0 && abs( vjet.eta() ) < 2.4 ){
-	  nbtags20_24_++;
-	}
+      for( unsigned int ijet = 0 ; ijet < vpfjets_p4.size() ; ijet++ ){
 
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
-	  nbtags33_++;
+	// if( vpfjets_p4.size()>2 ){
+	//   cout << "Jet " << ijet << " " << vpfjets_p4.at(ijet).pt() << endl;
+	// }
+
+	if( vpfjets_p4.at(ijet).pt() > maxpt ){
+	  maxpt  = vpfjets_p4.at(ijet).pt();
+	  ijet1  = ijet;
 	}
       }
-	  
+
+      maxpt = -1;
+
+      for( unsigned int ijet = 0 ; ijet < vpfjets_p4.size() ; ijet++ ){
+
+	if( ijet == ijet1 ) continue;
+
+	if( vpfjets_p4.at(ijet).pt() > maxpt ){
+	  maxpt   = vpfjets_p4.at(ijet).pt();
+	  ijet2   = ijet;
+	}
+      }
+
+      // if( vpfjets_p4.size()>2 ){
+      // 	cout << "Jet1 " << vpfjets_p4.at(ijet1).pt() << endl;
+      // 	cout << "Jet2 " << vpfjets_p4.at(ijet2).pt() << endl;
+      // }
+
+      //-----------------------------
+      // count b-tags
+      //-----------------------------
+
+      nbtags17_    = 0;
+      nbtags20_    = 0;
+      nbtags33_    = 0;
+      nbtags20_24_ = 0;
+
+      if( njets_ > 0 ){
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet1) > 1.7 )   nbtags17_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet1) > 2.0 )   nbtags20_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet1) > 2.0 && abs( vpfjets_p4.at(ijet1).eta() ) < 2.4 )  nbtags20_24_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet1) > 3.3 )   nbtags33_++;
+      }
+
+      if( njets_ > 1 ){
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet2) > 1.7 )   nbtags17_++;	  
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet2) > 2.0 )   nbtags20_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet2) > 2.0 && abs( vpfjets_p4.at(ijet2).eta() ) < 2.4 )  nbtags20_24_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet2) > 3.3 )   nbtags33_++;
+      }
+
       //-----------------------------
       // DON'T apply residual JEC
       //-----------------------------
@@ -1003,13 +1031,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
           
 	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
 
-	if( generalLeptonVeto ){
-	  bool rejectJet = false;
-	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.5 ) rejectJet = true;  
-	  }
-	  if( rejectJet ) continue;
-	}
+	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
+	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
 
 	if( vjet.pt() < 25         ) continue;
 	if( fabs(vjet.eta()) > 3.0 ) continue;
@@ -1030,13 +1053,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
           
 	LorentzVector vjet    = pfjets_p4().at(ijet);
 
-	if( generalLeptonVeto ){
-	  bool rejectJet = false;
-	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.5 ) rejectJet = true;  
-	  }
-	  if( rejectJet ) continue;
-	}
+	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
+	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
 
 	if( vjet.pt() < 25         ) continue;
 	if( fabs(vjet.eta()) > 3.0 ) continue;
@@ -1049,12 +1067,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       //------------------------------------
       // require >=2 jets!!!!!!
       //------------------------------------
-
-      // if( njets_ < 2 ){
-      // 	cout << "less than 2 jets " << njets_ << endl;
-      // 	hping->Fill(pingmass_);
-      // 	continue;
-      // }
 
       jet1_  = 0;
       jet2_  = 0;
@@ -1162,12 +1174,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	else{
 	  mmjjc_ = -2;
 	}
-
-
       }
-
-
-
 
       pfmet_    = evt_pfmet();
       pfmetphi_ = evt_pfmetPhi();
@@ -1386,6 +1393,8 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   //Set branch addresses
   //variables must be declared in looper.h
   outTree->Branch("diltrig",         &diltrig_,          "diltrig/I");
+  outTree->Branch("hlt1",            &hlt1_,             "hlt1/I");
+  outTree->Branch("hlt2",            &hlt2_,             "hlt2/I");
   outTree->Branch("pingmass",        &pingmass_,         "pingmass/F");
   outTree->Branch("metnew",          &metnew_,           "metnew/F");
   outTree->Branch("mmjjdef",         &mmjjdef_,          "mmjjdef/F");
