@@ -82,6 +82,17 @@ double dRbetweenVectors(const LorentzVector &vec1,
 
 //--------------------------------------------------------------------
 
+bool mumujjID( int index ){
+  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                  return false; // eta cut
+  if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                    return false; // global muon
+  if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                    return false; // tracker muon
+  if (cms2.mus_validHits().at(index) < 11)                            return false; // # of tracker hits  
+  if (cms2.mus_gfit_validSTAHits().at(index)==0 )                     return false; // Glb fit must have hits in mu chambers
+  if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false; // >=1 pixel hits
+  if (cms2.mus_nmatches().at(index)<2)                                return false; // >=2 muon chamber matches
+  if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2)                  return false; // d0 from beamspot
+  return true;
+}
 
 //-------------------------------------------------------
 // get exact trigger name corresponding to given pattern
@@ -684,8 +695,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       */
 
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 20 )                         continue;
-	if( !muonIdNotIsolated( imu , muonSelection_mumujj ))    continue;
+	if( mus_p4().at(imu).pt() < 20 )            continue;
+	if( !mumujjID( imu ))                       continue;
 
 	goodLeptons.push_back( mus_p4().at(imu) );
 	lepId.push_back( mus_charge().at(imu) * 13 );
@@ -782,7 +793,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
 
 	if( goodLeptons.at(ilep).pt() < 25 )                             continue;
-	if( !objectPassTrigger( goodLeptons.at(ilep) , trigObjs ,25 ) )  continue;
+	if( !objectPassTrigger( goodLeptons.at(ilep) , trigObjs ,20 ) )  continue;
 
 	if( goodLeptons.at(ilep).pt() > maxpt ){
 	  maxpt  = goodLeptons.at(ilep).pt();
