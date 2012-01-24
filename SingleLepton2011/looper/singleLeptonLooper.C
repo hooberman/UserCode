@@ -880,8 +880,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // require trigger
       //--------------------------------
 
-      if( !passSingleLep2JetSUSYTrigger2011( isData , leptype_ ) ) continue;
-      //      if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
+      if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
 
 
       //--------------------------------
