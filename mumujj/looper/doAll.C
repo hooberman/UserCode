@@ -42,7 +42,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-01-01";
+  const char* version   = "V00-01-02";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -1066,6 +1066,7 @@ void doAll(bool skipFWLite = true)
   if(rundataPRv4){
     cout << "adding data PRv4" << endl;
     pickSkimIfExists(chdataPRv4,"DiMuonPt20/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
+    //pickSkimIfExists(chdataPRv4,"DiMuonPt20/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged_ntuple_166565_0_skim.root");
   }
 
   //-------------------------------------------

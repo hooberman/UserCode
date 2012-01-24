@@ -189,6 +189,8 @@ class looper
         Int_t   nbtags17_;
         Int_t   nbtags20_;
         Int_t   nbtags20_24_;
+        Int_t   nbtags20c_;
+        Int_t   nbtags20_24c_;
         Int_t   nbtags33_;
         Float_t dilmass_;
         Float_t topmass_;

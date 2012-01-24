@@ -82,6 +82,29 @@ double dRbetweenVectors(const LorentzVector &vec1,
 
 //--------------------------------------------------------------------
 
+int findCaloJetIndex( int ipfjet ){
+
+  LorentzVector pfjet = pfjets_p4().at(ipfjet);
+
+  float drmin   = 100;
+  int   ijetmin = -1;
+
+  for( unsigned int icjet = 0 ; icjet < jets_p4().size() ; icjet++ ){
+    
+    float dr = dRbetweenVectors( pfjet , jets_p4().at(icjet) );
+
+    if( dr < drmin ){
+      drmin   = dr;
+      ijetmin = icjet;
+    }
+  }
+    
+  return ijetmin;
+
+}
+
+//--------------------------------------------------------------------
+
 bool mumujjID( int index ){
   if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                  return false; // eta cut
   if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                    return false; // global muon
@@ -593,6 +616,9 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       cms2.GetEntry(z);
 
+      // if( evt_event() == 75893698 || evt_event() == 56544417 ) cout << "FOUND! " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+      // else continue;
+
       InitBaby();
 
       pingmass_ = -1;
@@ -942,11 +968,22 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // apply residual JEC
       //---------------------
 
+      // cout << "|" << setw(12) << "Index"         << setw(4) 
+      // 	   << "|" << setw(12) << "pT [GeV]"      << setw(4) 
+      // 	   << "|" << setw(12) << "eta"           << setw(4) 
+      // 	   << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
+      
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
+	
 	float         jet_cor = 1;
 	if( isData )  jet_cor = jetCorrection(cms2.pfjets_p4().at(ijet), jet_pf_L2L3corrector);
 	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * jet_cor * pfjets_p4().at(ijet);
+
+	// cout << "|" << setw(12) << ijet                    << setw(4) 
+	//      << "|" << setw(12) << Form("%.1f",vjet.pt())                    << setw(4) 
+	//      << "|" << setw(12) << Form("%.2f",vjet.eta())                    << setw(4) 
+	//      << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(ijet))
+        //      << setw(4) << "|" << endl;
 
 	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
 	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
@@ -961,6 +998,28 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	jetIndex.push_back(ijet);
       }
 
+      //-----------------------------------------
+
+      /*
+      cout << "CALO" << endl;
+      cout << "|" << setw(12) << "Index"         << setw(4) 
+	   << "|" << setw(12) << "pT [GeV]"      << setw(4) 
+	   << "|" << setw(12) << "eta"           << setw(4) 
+	   << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
+      
+      for (unsigned int ijet = 0 ; ijet < jets_p4().size() ; ijet++) {
+	
+	LorentzVector vjet    = jets_corL1FastL2L3().at(ijet) * jets_p4().at(ijet);
+
+	cout << "|" << setw(12) << ijet                    << setw(4) 
+	     << "|" << setw(12) << Form("%.1f",vjet.pt())                    << setw(4) 
+	     << "|" << setw(12) << Form("%.2f",vjet.eta())                    << setw(4) 
+	     << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(ijet))
+             << setw(4) << "|" << endl;
+      }
+      */
+
+      //-----------------------------------------
 
       maxpt   = -1;
       int   ijet1   = -1;
@@ -1008,20 +1067,43 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       nbtags33_    = 0;
       nbtags20_24_ = 0;
 
+      nbtags20c_    = 0;
+      nbtags20_24c_ = 0;
+
       if( njets_ > 0 ){
+
 	int jetidx1 = jetIndex.at(ijet1);
+
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 1.7 )   nbtags17_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 2.0 )   nbtags20_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 2.0 && fabs( vpfjets_p4.at(ijet1).eta() ) < 2.4 )  nbtags20_24_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 3.3 )   nbtags33_++;
+
+	int cjetidx1 = findCaloJetIndex(ijet1);
+
+	if( cjetidx1 > -1 ){
+	  if( jets_trackCountingHighEffBJetTag().at(cjetidx1) > 2.0 )   nbtags20c_++;
+	  if( jets_trackCountingHighEffBJetTag().at(cjetidx1) > 2.0 && fabs( jets_p4().at(cjetidx1).eta() ) < 2.4 )  nbtags20_24c_++;
+	}
+
       }
 
       if( njets_ > 1 ){
+
 	int jetidx2 = jetIndex.at(ijet2);
+
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 1.7 )   nbtags17_++;	  
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 2.0 )   nbtags20_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 2.0 && fabs( vpfjets_p4.at(ijet2).eta() ) < 2.4 )  nbtags20_24_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 3.3 )   nbtags33_++;
+
+	int cjetidx2 = findCaloJetIndex(ijet2);
+
+	if( cjetidx2 > -1 ){
+	  if( jets_trackCountingHighEffBJetTag().at(cjetidx2) > 2.0 )   nbtags20c_++;
+	  if( jets_trackCountingHighEffBJetTag().at(cjetidx2) > 2.0 && fabs( jets_p4().at(cjetidx2).eta() ) < 2.4 )  nbtags20_24c_++;
+	}
+
       }
 
       //-----------------------------
@@ -1458,6 +1540,8 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nbtags17",        &nbtags17_,         "nbtags17/I");
   outTree->Branch("nbtags20",        &nbtags20_,         "nbtags20/I");
   outTree->Branch("nbtags2024",      &nbtags20_24_,      "nbtags2024/I");
+  outTree->Branch("nbtags20c",       &nbtags20c_,        "nbtags20c/I");
+  outTree->Branch("nbtags2024c",     &nbtags20_24c_,     "nbtags2024c/I");
   outTree->Branch("nbtags33",        &nbtags33_,         "nbtags33/I");
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
