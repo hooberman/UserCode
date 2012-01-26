@@ -99,8 +99,9 @@ int findCaloJetIndex( int ipfjet ){
     }
   }
     
-  return ijetmin;
+  if( drmin < 0.1 ) return ijetmin;
 
+  return -1;
 }
 
 //--------------------------------------------------------------------
