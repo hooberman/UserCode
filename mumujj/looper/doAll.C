@@ -42,7 +42,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-01-03";
+  const char* version   = "V00-01-04";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -1095,6 +1095,11 @@ void doAll(bool skipFWLite = true)
     cout << "adding data 2011B" << endl;
     pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
     pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/DiMuonPt20/merged*root");
+
+    // pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged_ntuple_177053_0_skim.root");
+    // pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/DiMuonPt20/merged_ntuple_178708_0_skim.root");
+    // pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/DiMuonPt20/merged_ntuple_178421_0_skim.root");
+    // pickSkimIfExists(chdata2011B,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/DiMuonPt20/merged_ntuple_178365_0_skim.root");
   }
 
   //----------------------------------------------------------------------------------------
