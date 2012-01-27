@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-12";
+  const char* version   = "V00-02-13";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -263,7 +263,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
   bool runphotons  = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runttallPUS6= 0;
   bool runttpowheg = 0;
   bool runtt42     = 0;
@@ -311,7 +311,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  bool runLMscanFall11    = 1; 
+  bool runLMscanFall11    = 0; 
   bool runLMscanFall11dil = 0; 
   bool runT2tt     = 0;
   bool runT1lh     = 0;
@@ -912,7 +912,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
   char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
   char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
-  bool doFakeApp          = false;
+  bool doFakeApp          = true;
 
   ossusy_looper::TrigEnum trig;
 
