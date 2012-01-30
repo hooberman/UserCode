@@ -83,6 +83,49 @@ bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector
 
 }
 
+bool objectPassTrigger(const LorentzVector &obj, char* trigname, float ptmin, int id, float drmax){
+
+  std::vector<int>           trigId = cms2.hlt_trigObjs_id()[findTriggerIndex(trigname)];
+  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
+
+  assert( trigId.size() == trigp4.size() );
+  if( trigId.size() == 0 ) return false;
+
+  float drMin = 999.99;
+
+  for (int i = 0; i < trigp4.size(); ++i){
+    if ( trigp4[i].Pt() < ptmin ) continue;
+    if ( trigId[i] != id        ) continue;
+    float dr = dRbetweenVectors(trigp4[i], obj);
+    if (dr < drMin) drMin = dr;
+  }
+
+  if (drMin < drmax) return true;
+  return false;
+
+}
+
+
+float getTriggerObjectPt(char* trigname, int id){
+
+  std::vector<int>           trigId = cms2.hlt_trigObjs_id()[findTriggerIndex(trigname)];
+  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
+
+  assert( trigId.size() == trigp4.size() );
+  if( trigId.size() == 0 ) return false;
+
+  float ptmax = -1;
+
+  for (int i = 0; i < trigp4.size(); ++i){
+    if ( trigId[i] != id        ) continue;
+
+    if( trigp4.at(i).pt() > ptmax ) ptmax = trigp4.at(i).pt();
+
+  }
+
+  return ptmax;
+}
+
 //--------------------------------------------------------------------
 
 TString triggerName(TString triggerPattern){
@@ -123,6 +166,23 @@ bool passUnprescaledHLTTriggerPattern(const char* arg){
     return false;
   }
   return passUnprescaledHLTTrigger( HLTTrigger );
+}
+
+//--------------------------------------------------------------------
+
+bool passHLTTriggerPattern(const char* arg){
+
+  //---------------------------------------------
+  // Check if trigger is unprescaled and passes
+  //---------------------------------------------
+
+  TString HLTTriggerPattern(arg);
+  TString HLTTrigger = triggerName( HLTTriggerPattern );
+
+  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND")){
+    return false;
+  }
+  return passHLTTrigger( HLTTrigger );
 }
 
 //--------------------------------------------------------------------
@@ -365,7 +425,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	cout << "-------------------------------------------------------"   << endl;
       }
 
-      if( evt_run() < 178420 || evt_run() > 180291 ) continue;
+      //if( evt_run() < 178420 || evt_run() > 180291 ) continue;
+      if( evt_run() < 179959 || evt_run() > 180291 ) continue;
 
       //---------------------------------------------
       // event cleaning and good run list
@@ -439,7 +500,17 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	ngoodmu_++;
 	ngoodlep_++;
       }  
-      
+
+      //std::vector<int> mutrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v5")];
+      //std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele27_WP80_DiCentralPFJet25_v5")];
+      // std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele100_CaloIdVT_TrkIdT_v3")];
+
+      // if( eltrigId.size()>0 ){
+      // 	for( unsigned int i = 0 ; i < eltrigId.size() ; i++ ){
+      // 	  cout << i << " " << eltrigId.at(i) << endl;
+      // 	}
+      // }
+
       //------------------------------------------------
       // trigger study: turn-on curve for jet triggers
       //------------------------------------------------
@@ -666,12 +737,20 @@ int looper::ScanChain(TChain* chain, char *prefix){
       //----------------------------------------
 
       eledijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v")     ? 1 : 0; // 178420-180291
-      eledijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT25_v")     ? 1 : 0; // 178420-180291
-      eledijet_      = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_v")             ? 1 : 0; // 178420-180291
+      eledijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_Ele32_WP80_DiCentralPFJet25_PFMHT25_v")     ? 1 : 0; // 178420-180291
+      eledijet_      = passHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_v")                        ? 1 : 0; // 178420-180291
 
       mudijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT15_v")  ? 1 : 0; // 178420-180291
       mudijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT25_v")  ? 1 : 0; // 178420-180291
-      mudijet_      = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")          ? 1 : 0; // 178420-180291
+      mudijet_      = passHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")                     ? 1 : 0; // 178420-180291
+
+      // store pt of electron matched to electron-dijet trigger
+      if( evt_run() < 178420 || evt_run() > 179889 ){
+	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v4" , 82);
+      }
+      else if( evt_run() < 179959 || evt_run() > 180291 ){
+	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v5" , 82);
+      }
 
       outTree->Fill();
     
@@ -730,6 +809,7 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("htc",             &htc_,              "htc/F");
   outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
   outTree->Branch("pfmetphi",        &pfmetphi_,         "pfmetphi/F");
+  outTree->Branch("elptmatch",       &elptmatch_,        "elptmatch/F");
   outTree->Branch("pfsumet",         &pfsumet_,          "pfsumet/F");
   outTree->Branch("dataset",         &dataset_,          "dataset[200]/C");
   outTree->Branch("run",             &run_,              "run/I");
