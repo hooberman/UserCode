@@ -85,6 +85,58 @@ bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector
 
 //--------------------------------------------------------------------
 
+TString triggerName(TString triggerPattern){
+
+  //-------------------------------------------------------
+  // get exact trigger name corresponding to given pattern
+  //-------------------------------------------------------
+
+  bool    foundTrigger  = false;
+  TString exact_hltname = "";
+
+  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
+    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
+      foundTrigger  = true;
+      exact_hltname = hlt_trigNames().at(itrig);
+      break;
+    }
+  }
+
+  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
+
+  return exact_hltname;
+
+}
+
+//--------------------------------------------------------------------
+
+bool passUnprescaledHLTTriggerPattern(const char* arg){
+
+  //---------------------------------------------
+  // Check if trigger is unprescaled and passes
+  //---------------------------------------------
+
+  TString HLTTriggerPattern(arg);
+  TString HLTTrigger = triggerName( HLTTriggerPattern );
+
+  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND")){
+    return false;
+  }
+  return passUnprescaledHLTTrigger( HLTTrigger );
+}
+
+//--------------------------------------------------------------------
+
+bool passElDijetMHT(){
+
+
+
+  return false;
+}
+
+
+//--------------------------------------------------------------------
+
 looper::looper()
 {
   g_susybaseline = false;
@@ -312,6 +364,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	cout << evt_dataset() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 	cout << "-------------------------------------------------------"   << endl;
       }
+
+      if( evt_run() < 178420 || evt_run() > 180291 ) continue;
 
       //---------------------------------------------
       // event cleaning and good run list
@@ -607,6 +661,18 @@ int looper::ScanChain(TChain* chain, char *prefix){
       lumi_         = evt_lumiBlock();              //lumi
       event_        = evt_event();                  //event
 
+      //----------------------------------------
+      // triggers
+      //----------------------------------------
+
+      eledijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v")     ? 1 : 0; // 178420-180291
+      eledijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT25_v")     ? 1 : 0; // 178420-180291
+      eledijet_      = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_v")             ? 1 : 0; // 178420-180291
+
+      mudijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT15_v")  ? 1 : 0; // 178420-180291
+      mudijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT25_v")  ? 1 : 0; // 178420-180291
+      mudijet_      = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")          ? 1 : 0; // 178420-180291
+
       outTree->Fill();
     
     } // entries
@@ -673,6 +739,12 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
+  outTree->Branch("eledijet",        &eledijet_,         "eledijet/I");
+  outTree->Branch("eledijetmht15",   &eledijetmht15_,    "eledijetmht15/I");
+  outTree->Branch("eledijetmht25",   &eledijetmht25_,    "eledijetmht25/I");
+  outTree->Branch("mudijet",         &mudijet_,          "mudijet/I");
+  outTree->Branch("mudijetmht15",    &mudijetmht15_,     "mudijetmht15/I");
+  outTree->Branch("mudijetmht25",    &mudijetmht25_,     "mudijetmht25/I");
   outTree->Branch("cjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet1_	);
   outTree->Branch("cjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet2_	);
   outTree->Branch("cjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet3_	);
