@@ -1,485 +1,708 @@
-#ifndef singleLeptonLooper_h
-#define singleLeptonLooper_h
-
-#include <vector>
+#include <algorithm>
+#include <iostream>
 #include <map>
+#include <vector>
+#include <set>
+#include <sstream>
+#include "TChain.h"
+#include "TChainElement.h"
+#include "TDirectory.h"
+#include "TFile.h"
+#include "TProfile.h"
+#include "TTree.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TMath.h"
+#include "TRandom3.h"
 #include "Math/LorentzVector.h"
-#include "Math/PxPyPzE4D.h"
-#include "../CORE/SimpleFakeRate.h" // will .h be ok? lets see.. 101007
+#include "histtools.h"
+#include "looper.h"
+#include "TTreeCache.h"
+#include "../CORE/CMS2.h"
+#include "../CORE/metSelections.h"
+#include "../CORE/trackSelections.h"
+#include "../CORE/eventSelections.h"
+#include "../CORE/electronSelections.h"
+#include "../CORE/electronSelectionsParameters.h"
+#include "../CORE/mcSelections.h"
+#include "../CORE/muonSelections.h"
+#include "../Tools/goodrun.cc"
+#include "../CORE/utilities.cc"
+#include "../CORE/ttbarSelections.h"
+#include "../CORE/susySelections.h"
+#include "../CORE/mcSUSYkfactor.h"
+#include "../CORE/triggerSuperModel.h"
+#include "../CORE/triggerUtils.h"
+#include "../Tools/vtxreweight.cc"
+#include "../Tools/msugraCrossSection.cc"
 
-//#include "../CORE/topmass/ttdilepsolve.h" REPLACETOPMASS
+bool verbose        = false;
+bool doTenPercent   = false;
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+using namespace std;
+using namespace tas;
+
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
-typedef map<unsigned int, unsigned int> m_uiui;
 
-class  TChain;
-class  TH1F;
-class  TH2F;
-class  TRandom3;
-class  TTree;
-struct metStruct;
+//--------------------------------------------------------------------
 
-class singleLeptonLooper
+double dRbetweenVectors(const LorentzVector &vec1, 
+			const LorentzVector &vec2 ){ 
+
+  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
+  double deta = vec1.Eta() - vec2.Eta();
+  return sqrt(dphi*dphi + deta*deta);
+}
+
+//--------------------------------------------------------------------
+
+int findTriggerIndex(TString trigName)
 {
-    public: 
-        singleLeptonLooper();
-        ~singleLeptonLooper() {}
+    vector<TString>::const_iterator begin_it = hlt_trigNames().begin();
+    vector<TString>::const_iterator end_it = hlt_trigNames().end();
+    vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);
+    if(found_it != end_it) return found_it - begin_it;
+    return -1;
+}
 
-        enum TrigEnum { e_highpt = 0, e_lowpt };  
-        // e_highpt  :   high pt dilepton triggers, 20,10  
-        // e_lowpt   :   dilepton-HT cross triggers, 10,5            
-        enum JetTypeEnum { e_JPT = 0, e_calo , e_pfjet };
-        // e_JPT     :   jpt jets
-        // e_calo    :   l1 and l2 corrected calo jets
-        // e_pfjet   :   corrected pfjets
-        enum MetTypeEnum { e_tcmet = 0, e_muon, e_muonjes , e_pfmet };
-        // e_tcmet   :   track corrected met
-        // e_muon    :   calo met with muon corrections
-        // e_muonjes :   calo met with muon and jet energy scale corrections
-        // e_pfmet   :   particle-flow met
-        enum ZVetoEnum   { e_standard = 0, e_allzveto, e_nozveto, e_selectz };
-        // e_standard:   apply Z-veto to same-flavor pairs
-        // e_allzveto:   apply Z-veto regardless of lepton flavor
-        // e_nozveto :   no Z-veto
-        // e_selectz :   select Z by requiring SF OS pair in Z mass window
-        enum FREnum   { e_qcd = 0, e_wjets };
-        // e_qcd     :   derive prediction for 2 fake leptons
-        // e_wjets   :   derive prediction for 1 real and one fake lepton
-	
-        int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., 
-		       int prescale = 1., float lumi = 1.,
-                       JetTypeEnum jetType = e_JPT, 
-                       MetTypeEnum metType = e_tcmet,
-                       ZVetoEnum zveto = e_standard,
-                       FREnum frmode  = e_wjets,
-                       bool doFakeApp = false,
-                       bool calculateTCMET = false
-                       );
-        void BookHistos (char *prefix);
-        float getCosThetaStarWeight();
-        float smearMet( float met , float sumjetpt , float metscale );
-	void InitBaby();
-	float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx = 0 );
-	
-        // Set globals
-        void set_susybaseline (bool  b)    { g_susybaseline = b; }
-        void set_createTree   (bool  b)    { g_createTree   = b; }
-        void set_useBitMask   (bool  b)    { g_useBitMask   = b; }
-        void set_version      (char* v)    { g_version      = v; }
-	void set_json         (char* v)    { g_json         = v; }        
-        void set_trigger      (TrigEnum t) { g_trig         = t; } 
+//--------------------------------------------------------------------
 
-        // Baby ntuple methods
-        void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
-	float stopPairCrossSection( float stopmass );
-        void closeTree ();
-	float trackIso( int thisPf , float dz_thresh = 0.2 );
+bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector> &trigObjs, float pt) 
+{
 
-	bool initialized;
-	TH1D*   stop_xsec_hist;
-	TFile*  stop_xsec_file;
+  float drMin = 999.99;
+  for (size_t i = 0; i < trigObjs.size(); ++i)
+    {
+      if (trigObjs[i].Pt() < pt) continue;
+      float dr = dRbetweenVectors(trigObjs[i], obj);
+      if (dr < drMin) drMin = dr;
+    }
 
-    private:
+  if (drMin < 0.1) return true;
+  return false;
 
-        // Globals
-        bool  g_susybaseline;
-        bool  g_createTree;
-        bool  g_useBitMask;
-        char* g_version;
-	char* g_json;      
-	TrigEnum g_trig;
-        TRandom3 *random3_;
+}
 
-	Int_t   mcid1_;    
-	Int_t   mcid2_;    
-	Int_t	mcdecay1_; 
-	Int_t   mcdecay2_; 
-	Int_t	mcndec1_; 
-	Int_t   mcndec2_; 
-	Float_t mctaudpt1_;
-	Float_t mctaudpt2_;
-	Float_t mcdr1_;    
-	Float_t mcdr2_;    
+//--------------------------------------------------------------------
 
-	Float_t trkpt5_;
-	Float_t mleptrk5_;
-	Float_t trkreliso5_;
-	Float_t trkpt10_;
-	Float_t mleptrk10_;
-	Float_t trkreliso10_;
+looper::looper()
+{
+  g_susybaseline = false;
+  g_createTree   = false;
+  g_useBitMask   = false;
+  random3_ = new TRandom3(1);
+}
 
-	Int_t   mlepid_;
-	Int_t   mleppassid_;
-	Int_t   mleppassiso_;
-	Float_t mlepiso_;
-	Float_t mlepdr_;
+//--------------------------------------------------------------------
 
-	Int_t   ncalojets_;
-	Int_t   ncalojets15_;
-	Int_t   ncalojets20_;
-	Int_t   ncalojets25_;
-	Int_t   ncalojets30_;
-	Float_t htcalo_;
-	Float_t mjj_;
-	Int_t   nbctcl_;
-	Int_t   nbctcm_;
-	Int_t   npartons_;
-	Float_t maxpartonpt_;
-	Float_t ptt_;
-	Float_t pttbar_;
-	Float_t ptttbar_;
-	Float_t mttbar_;
-	Float_t etattbar_;
-	LorentzVector*  t_;   
-	LorentzVector*  tbar_;   
-	LorentzVector*  ttbar_;   
-	LorentzVector*  mlep_;   
-	LorentzVector*  trgjet_;   
-	LorentzVector*  mclep1_;   
-	LorentzVector*  mclep2_;   
-        LorentzVector*  lep1_;
-        LorentzVector*  lep2_;
-        LorentzVector*  dilep_;
-        LorentzVector*  jet_; 
-        LorentzVector*  cjet1_; 
-        LorentzVector*  cjet2_; 
-        LorentzVector*  cjet3_; 
-        LorentzVector*  cjet4_; 
-        LorentzVector*  pfjet1_; 
-        LorentzVector*  pfjet2_; 
-        LorentzVector*  pfjet3_; 
-        LorentzVector*  pfjet4_; 
- 	LorentzVector*  nonisoel_;   
- 	LorentzVector*  nonisomu_;   
+bool passesCaloJetID (const LorentzVector &jetp4)
+{
+  int jet_idx = -1;
+  double minDR = 999;
 
-        // Baby ntuple variables
-	Int_t   passtrg_;
-	Float_t dphilm_;
-	Float_t mG_;
-	Float_t x_;
-	Float_t mL_;
-	Float_t ecalveto1_;
-	Float_t ecalveto2_;
-	Float_t hcalveto1_;
-	Float_t hcalveto2_;
-        TFile  *outFile;
-        TTree  *outTree;
-	Int_t   acc_2010_;
-	Int_t   acc_highmet_;
-	Int_t   acc_highht_;
-	Float_t pthat_;
-	Float_t qscale_;
-        Float_t weight_;
-        Float_t trgeff_;
-        Float_t pfmetsig_;
-        Float_t smeff_;
-        Float_t k_;
-        Float_t mllgen_;
-        Float_t dphijm_;
-        Float_t costhetaweight_;
-	Int_t   njpt_;
-	Float_t htjpt_;
-        Int_t   hbhe_;
-	Int_t   jetid_;
-	Int_t   jetid30_;
-        Int_t   mull_;
-        Int_t   json_;
-        Int_t   mult_;
-        Int_t   mullgen_;
-        Int_t   multgen_;
-        Int_t   nlep_;
-        Int_t   ngoodlep_;
-        Int_t   ngoodel_;
-        Int_t   ngoodmu_;
-        Int_t   proc_;
-        Int_t   leptype_;
-        Int_t   njets_;
-        Int_t   ngenjets_;
-        Int_t   npfjets_;
-        Int_t   npfjets40_;
-        Int_t   npfjetspv_;
-        Int_t   njetsUp_;
-        Int_t   npfjets25_;
-        Int_t   njetsDown_;
-	Float_t trkmet_;
-	Float_t trkmetphi_;
-	Float_t trkmetproj_;
-	Float_t trkmet4_;
-	Float_t trkmet4phi_;
-	Float_t trkmet4proj_;
-	Float_t trkmet8_;
-	Float_t trkmet8phi_;
-	Float_t trkmet8proj_;
-	Float_t trkjetmet_;
-	Float_t trkjetmetphi_;
-	Float_t trkjetmetproj_;
-        Float_t htUp_;
-        Float_t htDown_;
-        Int_t   nvtx_;
-        Int_t   nbtags_;
-        Int_t   nbtagstcl_;
-        Int_t   nbtagstcm_;
-        Float_t dilmass_;
-        Float_t topmass_;
-        Float_t tcmet_;
-        Float_t tcmet00_;
-        Float_t tcmet10_;
-        Float_t tcmet20_;
-        Float_t tcmet30_;
-        Float_t tcmet40_;
-        Float_t tcmet50_;
-        Float_t genmet_;
-        Float_t gensumet_;
-        Float_t genmetphi_;
-        Float_t mucormet_;
-        Float_t mucorjesmet_;
-        Float_t pfmet_;
-        Float_t pfsumet_;
-        Float_t pfmetveto_;
-        Float_t pfmetphi_;
-        Float_t tcmet_35X_;
-        Float_t tcmet_event_;
-        Float_t tcmet_looper_;
-        Float_t tcmetUp_;
-        Float_t tcmetDown_;
-        Float_t tcmetTest_;
-        Float_t pfmetUp_;
-        Float_t pfmetDown_;
-        Float_t pfmetTest_;
-        Float_t tcsumet_;
-        Float_t tcmetphi_;
-        Float_t mt2_;
-        Float_t mt2j_;
-        Float_t mt2jcore_;
-        Float_t sumjetpt_;
-        Float_t dileta_;
-        Float_t dilpt_;
-        Float_t dildphi_;
-        Float_t vecjetpt_;
-        Int_t   pass_;
-        Int_t   passz_;
-        Float_t m0_;
-        Float_t m12_;
-        Float_t ptl1_;
-	Int_t   id1_;
-	Int_t   id2_;
-	Int_t   w1_;
-	Int_t   w2_;
-	Float_t iso1_;
-	Float_t isont1_;
-	Float_t iso2_;
-	Float_t isont2_;
-        Float_t ptl2_;
-        Float_t etal1_;
-        Float_t etal2_;
-        Float_t phil1_;
-        Float_t phil2_;
-        Float_t meff_;
-        Float_t mt_;
-        char    dataset_[200];
-        UInt_t  run_;
-        UInt_t  lumi_;
-        UInt_t  event_;
-	Float_t y_;
-	Float_t ht_;
-	Float_t htoffset_;
-	Float_t htuncor_;
-	Int_t   njetsuncor_;
-	Int_t   njetsoffset_;
-	Float_t htgen_;
-	Float_t htpf_;
-	Float_t htpf40_;
-	Float_t htpf25_;
-	Float_t htpfpv_;
-	Float_t ptjetraw_;
-	Float_t ptjet23_;
-	Float_t ptjetF23_;
-	Float_t ptjetO23_;
-	Float_t cosphijz_;
-	Int_t   njets15_;
-	Int_t   ndavtx_;
-	Int_t   nels_;
-	Int_t   nmus_;
-	Int_t   ntaus_;
-	Int_t   nleps_;
-	Float_t ndavtxweight_;
-	Float_t etasc1_;
-	Float_t etasc2_;
-	Float_t emjet10_;
-	Float_t emjet20_;
+  for (unsigned int i = 0; i < cms2.jets_p4().size(); i++)
+    {
+      double deltaR = ROOT::Math::VectorUtil::DeltaR(jetp4, cms2.jets_p4()[i]);
 
-	Float_t ksusy_;
-	Float_t ksusyup_;
-	Float_t ksusydn_;
-	Float_t xsecsusy_;
-	Float_t xsecsusy2_;
+      if (deltaR < minDR)
+	{
+	  minDR = deltaR;
+	  jet_idx = i;
+	}
+    }
 
-	Float_t mbb_;
+  if (jet_idx < 0)
+    return false;
 
-        // for fakeRates
-        double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
+  if (cms2.jets_emFrac()[jet_idx] < 0.01 || cms2.jets_fHPD()[jet_idx] > 0.98 || cms2.jets_n90Hits()[jet_idx] < 2)
+    return false;
 
-        // Lots and lots of histograms
+  return true;
+}
 
-        //Z histos
-        TH1F* hdilMass_Z[4][4];
-        TH1F* htcmet_event_Z[4][4];
-        TH1F* htcmet_looper_Z[4][4];
-        TH1F* hpfmet_Z[4][4];
-        TH1F* hmucormet_Z[4][4];
-        TH1F* hmucorjesmet_Z[4][4];
+//--------------------------------------------------------------------
 
-        TH1F* h_PU_trkpt;
-        TH1F* hyield;
-        TH1F* hyield_weight;
-        TH1F* hyieldsig;
-        TH1F* hyield_unweighted;
-        TH1F* hyieldsig_unweighted;
+bool passesPFJetID(unsigned int pfJetIdx) {
 
-        TH2F*     hdtcmetevent_genmet[4][4];
-        TProfile* tdtcmetevent_genmet[4][4];
-        TH2F*     hdtcmetlooper_genmet[4][4];
-        TProfile* tdtcmetlooper_genmet[4][4];
-        TH2F*     hdpfmet_genmet[4][4];
-        TProfile* tdpfmet_genmet[4][4];
-        TH2F*     hdmucormet_genmet[4][4];
-        TProfile* tdmucormet_genmet[4][4];
-        TH2F*     hdmucorjesmet_genmet[4][4];
-        TProfile* tdmucorjesmet_genmet[4][4];
+  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
+  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
 
-        TH1F* hmt2j_signal[4][4];
-        TH1F* hmt2j_control[4][4];
-        TH1F* hmt2j_all[4][4];
-        TH2F* hmet_dilpt_signal[4][4];
-        TH2F* hmet_dilpt_control[4][4];
-        TH2F* hmet_dilpt_all[4][4];
-              
-        TH1F* hmt[4][4];
-        TH1F* hetaz[4][4];
-        TProfile* htcsumet_tcmet_prof[4][4]; 
-        TProfile* hsumJetPt_tcmetsqrtsumet_prof[4][4]; 
-        TProfile* hgensumet_genmet_prof[4][4]; 
-        //TProfile* hsumJetPt_tcmetpowtcsumet_prof[4][4][101]; 
-        //TH2F* hsumJetPt_tcmetpowtcsumet_th2[4][4][101];
-        //TH2F*     hsumJetPt_tcmetpowtcsumet_th2[101];
-        //TProfile* hsumJetPt_tcmetpowtcsumet_prof[101];
+  if (pfjet_nef_ >= 0.99)
+    return false;
+  if (pfjet_nhf_ >= 0.99)
+    return false;
+  if (pfjet_mult_ < 2)
+    return false;
 
-	TH2F* msugra_highmet;
-	TH2F* msugra_highht;
-	TH2F* msugra_all;
+  if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) < 2.4)
+    {
+      if (pfjet_chf_ < 1e-6)
+	return false;
+      if (pfjet_cm_ < 1)
+	return false;
+      if (pfjet_cef_ >= 0.99)
+	return false;
+    }
 
-	TH2F* msugra_highmet_kup;
-	TH2F* msugra_highmet_kdn;
-	TH2F* msugra_highmet_jup;
-	TH2F* msugra_highmet_jdn;
+  return true;
+}  
 
-	TH2F* msugra_highht_kup;
-	TH2F* msugra_highht_kdn;
-	TH2F* msugra_highht_jup;
-	TH2F* msugra_highht_jdn;
+//--------------------------------------------------------------------
 
-        TH2F* hsumJetPt_tcmet[4][4];
-        TH2F* hsumJetPt_tcmetsqrtsumet[4][4]; 
-        TH2F* hsumJetPt_tcmetsumet[4][4]; 
-        TH2F* hetaZ_tcmet[4][4]; 
-        TH2F* hetaZ_tcmetsqrtsumet[4][4]; 
-        TH2F* hetaZ_tcmetsumet[4][4]; 
-
-        TH2F* hdilMass_tcmet[4][4];
-        TH1F* hmt2core[4][4];               // MT2 from CORE
-        TH1F* hmt2jcore[4][4];               // MT2J from CORE
-        TH1F* hmt2j[4][4];                   // potentially custom MT2J
-        TH1F* hsumJetPt[4][4];               // scalar sum jet Et
-        TH1F* hsumJetPt_cut[4][4];               // scalar sum jet Et
-        TH2F* hDtcmetgenmetVsumJetPt[4][4];
-        TH2F* hDmetmuonjesgenmetVsumJetPt[4][4];
-        TH1F* hmeffJet[4][4];                // scalar sum jet pt + scalar sum dil pt + (tc)met
-
-        TH2F* habcd[4][4];                   
-        TProfile* habcd_tprof[4][4];                   
-        TH2F* habcd_nopresel[4][4];                   
-        TProfile* habcd_tprof_nopresel[4][4];                   
-        TH1F* hsumJptPt[4][4];               // scalar sum JPT jet Et
-        TH1F* hsumJptPt_cut[4][4];               // scalar sum JPT jet Et
-        TH1F* hmeffJPT[4][4];                // scalar sum JPT jet pt + scalar sum dil pt + (tc)met
-
-        TH1F* hsumHypPt[4][4];               // scalar sum JPT jet Et
-        TH1F* hmeffHyp[4][4];                // scalar sum JPT jet pt + scalar sum dil pt + (tc)met
-
-        TH1F* hnJet[4];                      // Njet distributions
-        TH1F* hnJpt[4];                      // Njpt distributions
-        TH1F* hnBtagJpt[4];                  // N btag jpts
-        TH1F* hnHypJet[4];                   // Hyp Njet distributions
-        TH1F* helePt[4][4];                  // electron Pt
-        TH1F* hmuPt[4][4];                   // muon Pt
-        TH1F* hminLepPt[4][4];               // minimum lepton Pt
-        TH1F* hmaxLepPt[4][4];               // maximum lepton Pt
-        TH1F* hminLepEta[4][4];              // minimum lepton eta
-        TH1F* hmaxLepEta[4][4];              // maximum lepton eta
-        TH1F* helePhi[4][4];                 // electron phi
-        TH1F* hmuPhi[4][4];                  // muon phi
-        TH1F* hdphiLep[4][4];                // delta phi between leptons
-        TH1F* hdrLep[4][4];                  // dR between leptons
-        TH1F* hdrJ1J2[4][4];                 // dR between 2 leading jets
-        TH1F* heleEta[4][4];                 // electron eta
-        TH1F* hmuEta[4][4];                  // muon eta
-        TH1F* htopMass[4][4];                // top mass estimate for 2 highest pt jets
-        TH1F* htopMassAllComb[4][4];         // top mass estimate for all jets
-        TH1F* hdilMass[4][4];                // dilepton mass
-        TH1F* hdilMass_cut[4][4];            // dilepton mass
-        TH1F* hdilPt[4][4];                  // dilepton Pt
-        TH1F* hdilPt_zveto[4][4];            // dilepton Pt with z-veto applied
-        TH1F* hdilPtSmeared[4][4];           // dilepton Pt with Gaussian smearing
-
-        TH1F* hgenmet[4][4];                 // MET corrected for muons and JES
-        TH1F* hgenmetPhi[4][4];              // MET corrected for muons and JES phi
-        TH1F* hmetmuon[4][4];                // MET corrected for muons and JES
-        TH1F* hmetmuonPhi[4][4];             // MET corrected for muons and JES phi
-        TH1F* hmetmuonjes[4][4];             // MET corrected for muons and JES
-        TH1F* hmetmuonjesPhi[4][4];          // MET corrected for muons and JES phi
-        TH1F* htcmet[4][4];                  // tc MET
-        TH1F* htcmet_sqrtht[4][4];           // tc MET
-        TH1F* htcmetPhi[4][4];               // tc MET phi
-        TH1F* hpfmet[4][4];                  // tc MET
-        TH1F* hpfmetPhi[4][4];               // tc MET phi
-
-        TH2F* hmetmuonVsDilepPt[4][4];       // MET vs dilepton Pt
-        TH2F* hmetmuonOverPtVsDphi[4][4];    // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
-        TH2F* hmetmuonjesVsDilepPt[4][4];    // MET vs dilepton Pt
-        TH2F* hmetmuonjesOverPtVsDphi[4][4]; // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
-        TH2F* htcmetVsDilepPt[4][4];         // tc MET vs dilepton Pt
-        TH2F* htcmetOverPtVsDphi[4][4];      // tc MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
-
-        TH2F* hdphillvsmll[4][4];            // delta phi between leptons vs dilepton mass
-        TH1F* hptJet1[4][4];                 // Pt of 1st jet
-        TH1F* hptJet2[4][4];                 // Pt of 2nd jet
-        TH1F* hptJet3[4][4];                 // Pt of 3rd jet
-        TH1F* hptJet4[4][4];                 // Pt of 4th jet
-        TH1F* hetaJet1[4][4];                // eta of 1st jet
-        TH1F* hetaJet2[4][4];                // eta of 2nd jet
-        TH1F* hetaJet3[4][4];                // eta of 3rd jet
-        TH1F* hetaJet4[4][4];                // eta of 4th jet
-        TH1F* hptJpt1[4][4];                 // Pt of 1st JPT jet
-        TH1F* hptJpt2[4][4];                 // Pt of 2nd JPT jet
-        TH1F* hptJpt3[4][4];                 // Pt of 3rd JPT jet
-        TH1F* hptJpt4[4][4];                 // Pt of 4th JPT jet
-        TH1F* hptBtagJpt1[4][4];             // Pt of 1st JPT jet
-        TH1F* hptBtagJpt2[4][4];             // Pt of 2nd JPT jet
-        TH1F* hptBtagJpt3[4][4];             // Pt of 3rd JPT jet
-        TH1F* hptBtagJpt4[4][4];             // Pt of 4th JPT jet
-        TH1F* hetaJpt1[4][4];                // eta of 1st JPT jet
-        TH1F* hetaJpt2[4][4];                // eta of 2nd JPT jet
-        TH1F* hetaJpt3[4][4];                // eta of 3rd JPT jet
-        TH1F* hetaJpt4[4][4];                // eta of 4th JPT jet=
-        TH1F* hptHypJet1[4][4];              // Pt of 1st JPT jet
-        TH1F* hptHypJet2[4][4];              // Pt of 2nd JPT jet
-        TH1F* hptHypJet3[4][4];              // Pt of 3rd JPT jet
-        TH1F* hptHypJet4[4][4];              // Pt of 4th JPT jet
-        TH1F* hetaHypJet1[4][4];             // eta of 1st JPT jet
-        TH1F* hetaHypJet2[4][4];             // eta of 2nd JPT jet
-        TH1F* hetaHypJet3[4][4];             // eta of 3rd JPT jet
-        TH1F* hetaHypJet4[4][4];             // eta of 4th JPT jet
+struct DorkyEventIdentifier {
+  // this is a workaround for not having unique event id's in MC
+  unsigned long int run, event,lumi;
+  bool operator < (const DorkyEventIdentifier &) const;
+  bool operator == (const DorkyEventIdentifier &) const;
 };
 
-#endif
+//--------------------------------------------------------------------
+
+bool DorkyEventIdentifier::operator < (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return run < other.run;
+  if (event != other.event)
+    return event < other.event;
+  if(lumi != other.lumi)
+    return lumi < other.lumi;
+  return false;
+}
+
+//--------------------------------------------------------------------
+
+bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
+{
+  if (run != other.run)
+    return false;
+  if (event != other.event)
+    return false;
+  return true;
+}
+
+//--------------------------------------------------------------------
+
+std::set<DorkyEventIdentifier> already_seen;
+bool is_duplicate (const DorkyEventIdentifier &id) {
+  std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
+    already_seen.insert(id);
+  return !ret.second;
+}
+
+//--------------------------------------------------------------------
+
+void looper::InitBaby(){
+
+  pjet1_ = 0;
+  pjet2_ = 0;
+  pjet3_ = 0;
+  pjet4_ = 0;
+  cjet1_ = 0;
+  cjet2_ = 0;
+  cjet3_ = 0;
+  cjet4_ = 0;
+
+  run_     = -999;
+  event_   = -999;
+  lumi_    = -999;
+}
+
+//--------------------------------------------------------------------
+
+void looper::closeTree()
+{
+  outFile->cd();
+  outTree->Write();
+  outFile->Close();
+  delete outFile;
+}
+
+int looper::ScanChain(TChain* chain, char *prefix){
+
+  set_goodrun_file( g_json );
+
+  bool isData = true;
+
+  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+  rootdir->cd();
+
+  BookHistos(prefix);
+  
+  unsigned int nEventsChain = chain->GetEntries();
+  unsigned int nEventsTotal = 0;
+  // map isn't needed for this purpose, vector is sufficient
+  // better would be to use a struct with run, lb, event
+  map<int,int> m_events;
+
+  // loop over files
+  TObjArray *listOfFiles = chain->GetListOfFiles();
+  TIter fileIter(listOfFiles);
+  TChainElement* currentFile = 0;
+
+  int nSkip_els_conv_dist = 0;
+
+  float netot  = 0.;
+  float nmtot  = 0.;
+  float nepass = 0.;
+  float nmpass = 0.;
+
+  if(g_createTree) makeTree(prefix);
+
+  bool hasJptBtagBranch = true;
+
+  char* thisFile = "blah";
+
+  while((currentFile = (TChainElement*)fileIter.Next())) {
+    TFile* f = new TFile(currentFile->GetTitle());
+
+    if( !f || f->IsZombie() ) {
+      cout << "Skipping bad input file: " << currentFile->GetTitle() << endl;
+      continue; //exit(1);                                                                                             
+    }
+
+    if( strcmp(thisFile,currentFile->GetTitle()) != 0 ){
+      thisFile = (char*) currentFile->GetTitle();
+      cout << thisFile << endl;
+    }
+
+    TTree *tree = (TTree*)f->Get("Events");
+
+    //Matevz
+    TTreeCache::SetLearnEntries(100);
+    tree->SetCacheSize(128*1024*1024);
+
+    cms2.Init(tree);
+      
+    unsigned int nEntries = tree->GetEntries();
+
+    for(unsigned int z = 0; z < nEntries; ++z) {
+      ++nEventsTotal;
+
+      if( doTenPercent ){
+	if( !(nEventsTotal%10==0) ) continue;
+      }
+
+      // progress feedback to user
+      if (nEventsTotal % 1000 == 0){
+        
+        // xterm magic from L. Vacavant and A. Cerri
+        if (isatty(1)){
+                
+          printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+                 "\033[0m\033[32m <---\033[0m\015", (float)nEventsTotal/(nEventsChain*0.01));
+          fflush(stdout);
+        }
+      }
+
+      //Matevz
+      tree->LoadTree(z);
+
+      cms2.GetEntry(z);
+
+      InitBaby();
+
+      if( verbose ){
+	cout << "-------------------------------------------------------"   << endl;
+	cout << "Event " << z                                               << endl;
+	cout << "File  " << currentFile->GetTitle()                         << endl;
+	cout << evt_dataset() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+	cout << "-------------------------------------------------------"   << endl;
+      }
+
+      //---------------------------------------------
+      // event cleaning and good run list
+      //---------------------------------------------
+
+      if( !cleaning_goodDAVertexApril2011() )                        continue;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+
+      //---------------------
+      // skip duplicates
+      //---------------------
+
+      if( isData ) {
+        DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
+        if (is_duplicate(id) ){
+          continue;
+        }
+      }
+
+      //-------------------------------------
+      // skip events with bad els_conv_dist
+      //-------------------------------------
+ 
+      bool skipEvent = false;
+      for( unsigned int iEl = 0 ; iEl < els_conv_dist().size() ; ++iEl ){
+        if( els_conv_dist().at(iEl) != els_conv_dist().at(iEl) ){
+          skipEvent = true;
+        }
+        if( els_sigmaIEtaIEta().at(iEl) != els_sigmaIEtaIEta().at(iEl) ){
+          skipEvent = true;
+        }
+        if( els_sigmaIEtaIEtaSC().at(iEl) != els_sigmaIEtaIEtaSC().at(iEl) ){
+          skipEvent = true;
+        }
+      }
+             
+      if( skipEvent ){
+        nSkip_els_conv_dist++;
+        continue;
+      }
+   
+      //---------------------------------------------
+      // find leptons passing analysis selection
+      //---------------------------------------------
+
+      VofP4 goodLeptons;
+      vector<int> lepId;
+      vector<int> lepIndex;
+
+      ngoodlep_ = 0;
+      ngoodel_  = 0;
+      ngoodmu_  = 0;
+            
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 10 )                                              continue;
+	if( !pass_electronSelection( iel , electronSelection_ssV5 , false , false ) ) continue;
+	goodLeptons.push_back( els_p4().at(iel) );
+	lepId.push_back( els_charge().at(iel) * 11 );
+	lepIndex.push_back(iel);
+	ngoodel_++;
+	ngoodlep_++;
+      }
+
+          
+      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+	if( mus_p4().at(imu).pt() < 10 )           continue;
+	if( !muonId( imu , OSGeneric_v3 ))         continue;
+	goodLeptons.push_back( mus_p4().at(imu) );
+	lepId.push_back( mus_charge().at(imu) * 13 );
+	lepIndex.push_back(imu);
+	ngoodmu_++;
+	ngoodlep_++;
+      }  
+      
+      //------------------------------------------------
+      // trigger study: turn-on curve for jet triggers
+      //------------------------------------------------
+
+      /*
+      trgjet_  = 0;
+      passtrg_ = -1;
+
+      if( doTriggerStudy ){
+
+	// only consider muon events
+	if( abs(id1_) == 11 ) continue;
+
+	// run range for which HLT_Mu17_CentralJet30 is un-prescaled
+	if( evt_run() < 160329 || evt_run() > 163261 ) continue;
+
+	// require event passes HLT_Mu20_v1
+	if( !passUnprescaledHLTTrigger("HLT_Mu20_v1") ) continue;
+ 
+	// require found trigger object
+	std::vector<LorentzVector> muonObj;
+	muonObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu20_v1")];
+
+	if( muonObj.size() == 0 ) continue;
+
+	// require offline muon matched to muon trigger object (dR < 0.1)
+	if( dRbetweenVectors( *lep1_ , muonObj.at(0) ) > 0.1 ) continue;
+
+	// now get trigger objects for HLT_Mu20_CentralJet30
+	std::vector<LorentzVector> muonJetObj;
+	if( evt_run() >= 160329 && evt_run() <= 161176 )
+	  muonJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu17_CentralJet30_v1")];
+	else if( evt_run() >= 161210 && evt_run() <= 163261 )
+	  muonJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu17_CentralJet30_v2")];
+
+	// did event pass HLT_Mu17_CentralJet30?
+	passtrg_ = 0;
+	if( evt_run() >= 160329 && evt_run() <= 161176 )
+	  passtrg_ = passUnprescaledHLTTrigger("HLT_Mu17_CentralJet30_v1") ? 1 : 0;
+	else if( evt_run() >= 161210 && evt_run() <= 163261 )
+	  passtrg_ = passUnprescaledHLTTrigger("HLT_Mu17_CentralJet30_v2") ? 1 : 0;
+
+	// now find highest pt offline jet matched to HLT jet
+	int offlinejet = -1;
+	int njets      =  0;
+	float maxpt    = -1;
+
+        for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
+          
+          LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
+
+	  if( dRbetweenVectors( vjet , *lep1_ ) < 0.4 ) continue;
+	  //if( vjet.pt() < 20. )                                          continue;
+
+	  // if event passed trigger, require jet is matched to HLT object
+	  if( passtrg_ == 1 ){
+	    
+	    bool HLTmatch = false;
+
+	    for( unsigned int ihlt = 0 ; ihlt < muonJetObj.size() ; ++ihlt ){
+	      
+	      // exclude HLT muon object
+	      if( dRbetweenVectors( vjet , muonObj.at(0) ) < 0.1 )       continue;
+	    
+	      // dr match to HLT jet object
+	      if( dRbetweenVectors( vjet , muonJetObj.at(ihlt) ) > 0.4 ) continue;
+
+	      HLTmatch = true;
+	    }
+
+	    if( !HLTmatch ) continue;
+	  }
+
+	  njets++;
+
+	  if( vjet.pt() > maxpt ){
+	    maxpt      = vjet.pt();
+	    offlinejet = ijet;
+	  }
+
+        }
+
+	//if( passtrg_ == 0 ) cout << "FAIL TRIGGER" << endl;
+	if( offlinejet < 0 ) continue;
+	//if( njets > 1      ) continue;
+
+	// now store offline jet p4 and whether muon-jet trigger passed
+	trgjet_  = &(jets_p4().at(offlinejet) * jets_corL1FastL2L3().at(offlinejet));
+
+	outTree->Fill();
+	continue;
+
+	// cout << "muonJetObj.size() " << muonJetObj.size() << endl;
+	// cout << "muon trigger       : pt, eta, phi    " << muonObj.at(0).pt() << ", " << muonObj.at(0).eta() << ", " << muonObj.at(0).phi() << endl;
+
+	// if( muonJetObj.size() > 1 ){
+	//   cout << "muon-jet trigger 1 : pt, eta, phi    " << muonJetObj.at(0).pt() << ", " << muonJetObj.at(0).eta() << ", " << muonJetObj.at(0).phi() << endl;
+	//   cout << "muon-jet trigger 2 : pt, eta, phi    " << muonJetObj.at(1).pt() << ", " << muonJetObj.at(1).eta() << ", " << muonJetObj.at(1).phi() << endl;
+
+	//
+	//   float dr2 = dRbetweenVectors( muonObj.at(0) , muonJetObj.at(1) );
+
+	//   cout << "dr1 " << dr1 << " dr2 " << dr2 << endl;
+	// }
+
+
+
+	//cout << endl << endl;
+	//cout << "trigger objects " << muonObj.size() << endl;
+	//if( muonObj.size() > 0 ) cout << "pt, eta, phi    " << muonObj.at(0).pt() << ", " << muonObj.at(0).eta() << ", " << muonObj.at(0).phi() << endl;
+	//cout << "muon " << lep1_->pt() << ", " << lep1_->eta() << ", " << lep1_->phi() << endl;
+
+      }
+      */
+
+      //-------------------------------------
+      // jet counting
+      //-------------------------------------
+
+      VofP4 vpfjets_p4;
+
+      njets_ = 0.;
+      ht_    = 0.;
+
+      int   imaxjet   = -1;
+      float maxjetpt  = -1.;
+
+      vector<int> goodjets;
+      goodjets.clear();
+
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+
+	LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+          
+	if( !passesPFJetID(ijet) )     continue;
+	if( fabs( vjet.eta() ) > 3.0 ) continue;
+	if( vjet.pt() < 30 )           continue;
+
+	njets_++;
+	ht_ += vjet.pt();
+
+	vpfjets_p4.push_back( vjet );
+      }
+
+      sort( vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
+
+      if( njets_ > 0 ) 	pjet1_ = &( vpfjets_p4.at(0) );
+      if( njets_ > 1 ) 	pjet2_ = &( vpfjets_p4.at(1) );
+      if( njets_ > 2 ) 	pjet3_ = &( vpfjets_p4.at(2) );
+      if( njets_ > 3 ) 	pjet4_ = &( vpfjets_p4.at(3) );
+
+      //------------------------------------------
+      // count calojets
+      //------------------------------------------
+
+      VofP4 vcalojets_p4;
+      ncjets_ = 0;
+      htc_    = 0.0;
+
+      for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
+	
+	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
+
+	if( !passesCaloJetID( vjet ) )         continue;	
+	if( fabs( vjet.eta() ) > 3.0 )         continue;
+	if( vjet.pt() < 30           )         continue;
+
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+
+	htc_ += vjet.pt();
+	ncjets_ ++;
+	
+	vcalojets_p4.push_back(vjet);
+      }
+
+      sort( vcalojets_p4.begin(), vcalojets_p4.end(), sortByPt);
+
+      if( ncjets_ > 0 ) 	cjet1_ = &( vcalojets_p4.at(0) );
+      if( ncjets_ > 1 ) 	cjet2_ = &( vcalojets_p4.at(1) );
+      if( ncjets_ > 2 ) 	cjet3_ = &( vcalojets_p4.at(2) );
+      if( ncjets_ > 3 ) 	cjet4_ = &( vcalojets_p4.at(3) );
+
+      //----------------------------
+      // MET flavors
+      //----------------------------
+
+      pfmet_    = evt_pfmet();
+      pfmetphi_ = evt_pfmetPhi();
+      pfsumet_  = evt_pfsumet();
+
+      //----------------------------------------
+      // nvertex variables
+      //----------------------------------------
+
+      nvtx_ = 0;
+    
+      for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
+	if(isGoodVertex(v)) ++nvtx_;
+      }
+
+      ndavtx_ = 0;
+    
+      for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+	if(isGoodDAVertex(v)) ++ndavtx_;
+      }
+
+      strcpy(dataset_, cms2.evt_dataset().Data());  //dataset name
+      run_          = evt_run();                    //run
+      lumi_         = evt_lumiBlock();              //lumi
+      event_        = evt_event();                  //event
+
+      outTree->Fill();
+    
+    } // entries
+
+    delete f;
+  } // currentFile
+
+  if( nSkip_els_conv_dist > 0 )
+    cout << "Skipped " << nSkip_els_conv_dist << " events due to nan in els_conv_dist" << endl;
+
+  if(g_createTree) closeTree();
+  
+  already_seen.clear();
+
+  if (nEventsChain != nEventsTotal)
+    std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
+
+  return 0;
+
+}
+
+//--------------------------------------------------------------------
+ 
+void looper::BookHistos(char *prefix)
+{
+  // Prefix comes from the sample and it is passed to the scanning function
+  // Suffix is "ee" "em" "em" "all" which depends on the final state
+  // For example: histogram named tt_hnJet_ee would be the Njet distribution
+  // for the ee final state in the ttbar sample.
+  // MAKE SURE TO CAL SUMW2 FOR EACH 1D HISTOGRAM BEFORE FILLING!!!!!!
+  cout << "Begin book histos..." << endl;
+
+  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+  rootdir->cd();
+
+  cout << "End book histos..." << endl;
+}// CMS2::BookHistos()
+
+//--------------------------------------------------------------------
+
+void looper::makeTree(char *prefix ){
+  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+  rootdir->cd();
+
+  outFile   = new TFile(Form("../output/%s/%s.root",g_version,prefix), "RECREATE");
+  //outFile   = new TFile("temp.root","RECREATE");
+  outFile->cd();
+  outTree = new TTree("t","Tree");
+
+  //Set branch addresses
+  //variables must be declared in looper.h
+  outTree->Branch("njets",           &njets_,            "njets/I");
+  outTree->Branch("ncjets",          &ncjets_,           "ncjets/I");
+  outTree->Branch("ht",              &ht_,               "ht/F");
+  outTree->Branch("htc",             &htc_,              "htc/F");
+  outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
+  outTree->Branch("pfmetphi",        &pfmetphi_,         "pfmetphi/F");
+  outTree->Branch("pfsumet",         &pfsumet_,          "pfsumet/F");
+  outTree->Branch("dataset",         &dataset_,          "dataset[200]/C");
+  outTree->Branch("run",             &run_,              "run/I");
+  outTree->Branch("lumi",            &lumi_,             "lumi/I");
+  outTree->Branch("event",           &event_,            "event/I");
+  outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
+  outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
+  outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
+  outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
+  outTree->Branch("cjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet1_	);
+  outTree->Branch("cjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet2_	);
+  outTree->Branch("cjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet3_	);
+  outTree->Branch("cjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet4_	);
+  outTree->Branch("pjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet1_	);
+  outTree->Branch("pjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet2_	);
+  outTree->Branch("pjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet3_	);
+  outTree->Branch("pjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet4_	);
+
+}
+
+//--------------------------------------------------------------------
+
+vector<int> goodDAVertices(){
+
+  vector<int> myVertices;
+  myVertices.clear();
+  
+  for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+    if( !isGoodDAVertex(v) ) continue;
+    myVertices.push_back(v);
+  }
+  
+  return myVertices;
+}
+
+//--------------------------------------------------------------------
+
+float looper::dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx ){
+  
+  return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
+  
+}
