@@ -108,19 +108,24 @@ bool objectPassTrigger(const LorentzVector &obj, char* trigname, float ptmin, in
 
 float getTriggerObjectPt(char* trigname, int id){
 
+  int index = findTriggerIndex(trigname);
+
+  if( index < 0 ){
+    cout << "ERROR! can't find trigger " << trigname << " in run " << evt_run() << ", quitting" << endl;
+    exit(0);
+  }
+
   std::vector<int>           trigId = cms2.hlt_trigObjs_id()[findTriggerIndex(trigname)];
   std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
 
   assert( trigId.size() == trigp4.size() );
   if( trigId.size() == 0 ) return false;
 
-  float ptmax = -1;
+  float ptmax = -2;
 
   for (int i = 0; i < trigp4.size(); ++i){
     if ( trigId[i] != id        ) continue;
-
     if( trigp4.at(i).pt() > ptmax ) ptmax = trigp4.at(i).pt();
-
   }
 
   return ptmax;
@@ -745,10 +750,12 @@ int looper::ScanChain(TChain* chain, char *prefix){
       mudijet_      = passHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")                     ? 1 : 0; // 178420-180291
 
       // store pt of electron matched to electron-dijet trigger
-      if( evt_run() < 178420 || evt_run() > 179889 ){
+      elptmatch_ = -1;
+
+      if( evt_run() >= 178420 && evt_run() <= 179889 ){
 	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v4" , 82);
       }
-      else if( evt_run() < 179959 || evt_run() > 180291 ){
+      else if( evt_run() >= 179959 && evt_run() <= 180291 ){
 	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v5" , 82);
       }
 
