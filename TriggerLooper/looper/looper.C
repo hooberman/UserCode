@@ -824,6 +824,7 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("event",           &event_,            "event/I");
   outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
   outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
+  outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
   outTree->Branch("eledijet",        &eledijet_,         "eledijet/I");
