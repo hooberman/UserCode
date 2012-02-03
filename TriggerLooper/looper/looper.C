@@ -314,6 +314,10 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
 
 void looper::InitBaby(){
 
+  eledijet_hltele_ = 0; 
+  eletrijet_hltele_ = 0; 
+  mudijet_hltmu_ = 0; 
+  mutrijet_hltmu_ = 0; 
   pjet1_ = 0;
   pjet2_ = 0;
   pjet3_ = 0;
@@ -322,7 +326,42 @@ void looper::InitBaby(){
   cjet2_ = 0;
   cjet3_ = 0;
   cjet4_ = 0;
-
+  pjet1_L1Fast_ = -999.;
+  pjet2_L1Fast_ = -999.;
+  pjet3_L1Fast_ = -999.;
+  pjet4_L1Fast_ = -999.;
+  pjet1_L2L3_ = -999.;
+  pjet2_L2L3_ = -999.;
+  pjet3_L2L3_ = -999.;
+  pjet4_L2L3_ = -999.;
+  eledijet_n82_ = -9;
+  eletrijet_n82_ = -9;
+  eledijet_n85_ = -9;
+  eletrijet_n85_ = -9;
+  mudijet_n83_ = -9;
+  mutrijet_n83_ = -9;
+  mudijet_n85_ = -9;
+  mutrijet_n85_ = -9;
+  eledijet_trigmindr_ejet_ = 999.;
+  eletrijet_trigmindr_ejet_ = 999.;
+  mudijet_trigmindr_mujet_ = 999.;
+  mutrijet_trigmindr_mujet_ = 999.;
+  eledijet_trigdr_pjet1_ = 999.;
+  eledijet_trigdr_pjet2_ = 999.;
+  eledijet_trigdr_pjet3_ = 999.;
+  eledijet_trigdr_pjet4_ = 999.;
+  eletrijet_trigdr_pjet1_ = 999.;
+  eletrijet_trigdr_pjet2_ = 999.;
+  eletrijet_trigdr_pjet3_ = 999.;
+  eletrijet_trigdr_pjet4_ = 999.;
+  mudijet_trigdr_pjet1_ = 999.;
+  mudijet_trigdr_pjet2_ = 999.;
+  mudijet_trigdr_pjet3_ = 999.;
+  mudijet_trigdr_pjet4_ = 999.;
+  mutrijet_trigdr_pjet1_ = 999.;
+  mutrijet_trigdr_pjet2_ = 999.;
+  mutrijet_trigdr_pjet3_ = 999.;
+  mutrijet_trigdr_pjet4_ = 999.;
   run_     = -999;
   event_   = -999;
   lumi_    = -999;
@@ -634,7 +673,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       //-------------------------------------
       // jet counting
       //-------------------------------------
-
+      //Add 2 jet corrections per jet
+      //Min dR between e at HLT and jet object at HLT
       VofP4 vpfjets_p4;
 
       njets_ = 0.;
@@ -657,8 +697,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	if( rejectJet ) continue;
           
 	if( !passesPFJetID(ijet) )     continue;
-	if( fabs( vjet.eta() ) > 3.0 ) continue;
-	if( vjet.pt() < 30 )           continue;
+	if( fabs( vjet.eta() ) > 2.5 ) continue;
+	if( vjet.pt() < 20 )           continue;
 
 	njets_++;
 	ht_ += vjet.pt();
@@ -673,6 +713,27 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( njets_ > 2 ) 	pjet3_ = &( vpfjets_p4.at(2) );
       if( njets_ > 3 ) 	pjet4_ = &( vpfjets_p4.at(3) );
 
+      if( njets_ > 0 ) {
+	int i_j1 = getJetIndex(vpfjets_p4.at(0));
+	pjet1_L1Fast_ = pfjets_corL1FastL2L3().at(i_j1)/pfjets_cor().at(i_j1);
+	pjet1_L2L3_ = pfjets_cor().at(i_j1);
+      }
+      if( njets_ > 1 ) {
+	int i_j2 = getJetIndex(vpfjets_p4.at(1));
+	pjet2_L1Fast_ = pfjets_corL1FastL2L3().at(i_j2)/pfjets_cor().at(i_j2);
+	pjet2_L2L3_ = pfjets_cor().at(i_j2);
+      }
+      if( njets_ > 2 ) {
+	int i_j3 = getJetIndex(vpfjets_p4.at(2));
+	pjet3_L1Fast_ = pfjets_corL1FastL2L3().at(i_j3)/pfjets_cor().at(i_j3);
+	pjet3_L2L3_ = pfjets_cor().at(i_j3);
+      }
+      if( njets_ > 3 ) {
+	int i_j4 = getJetIndex(vpfjets_p4.at(3));
+	pjet4_L1Fast_ = pfjets_corL1FastL2L3().at(i_j4)/pfjets_cor().at(i_j4);
+	pjet4_L2L3_ = pfjets_cor().at(i_j4);
+      }
+
       //------------------------------------------
       // count calojets
       //------------------------------------------
@@ -686,8 +747,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
 
 	if( !passesCaloJetID( vjet ) )         continue;	
-	if( fabs( vjet.eta() ) > 3.0 )         continue;
-	if( vjet.pt() < 30           )         continue;
+	if( fabs( vjet.eta() ) > 2.5 )         continue;
+	if( vjet.pt() < 20           )         continue;
 
 	bool rejectJet = false;
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
@@ -741,13 +802,18 @@ int looper::ScanChain(TChain* chain, char *prefix){
       // triggers
       //----------------------------------------
 
-      eledijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v")     ? 1 : 0; // 178420-180291
-      eledijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_Ele32_WP80_DiCentralPFJet25_PFMHT25_v")     ? 1 : 0; // 178420-180291
-      eledijet_      = passHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_v")                        ? 1 : 0; // 178420-180291
+      eledijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v")            		? 1 : 0; // 178420-180291
+      eledijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_Ele32_WP80_DiCentralPFJet25_PFMHT25_v")            		? 1 : 0; // 178420-180291
+      eledijet_hg_   = passHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_v")                               		? 1 : 0; // 178420-180291
+      eledijet_      = passHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralPFJet30_v")   		? 1 : 0; // 178420-180291 
+      eletrijet_     = passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v")  	? 1 : 0; // 178420-180291 
+      elequadjet_    = passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_QuadCentralPFJet30_v") 	? 1 : 0; // 178420-180291 
 
-      mudijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT15_v")  ? 1 : 0; // 178420-180291
-      mudijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT25_v")  ? 1 : 0; // 178420-180291
-      mudijet_      = passHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")                     ? 1 : 0; // 178420-180291
+      mudijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT15_v")         		? 1 : 0; // 178420-180291
+      mudijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT25_v")         		? 1 : 0; // 178420-180291
+      mudijet_      = passHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")                            		? 1 : 0; // 178420-180291
+      mutrijet_     = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v")                           	? 1 : 0; // 178420-180291
+      muquadjet_    = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_QuadCentralPFJet30_v")                          	? 1 : 0; // 178420-180291
 
       // store pt of electron matched to electron-dijet trigger
       elptmatch_ = -1;
@@ -758,6 +824,145 @@ int looper::ScanChain(TChain* chain, char *prefix){
       else if( evt_run() >= 179959 && evt_run() <= 180291 ){
 	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v5" , 82);
       }
+
+      // now get trigger objects and store minimum jet dR
+      bool passtrig = (eledijet_==1 || eletrijet_==1 || mudijet_==1 || mutrijet_==1) ? true: false;
+      if ( passtrig ) {
+
+	std::vector<LorentzVector> muDiJetObj;
+	std::vector<LorentzVector> muTriJetObj;
+	std::vector<LorentzVector> eleDiJetObj;
+	std::vector<LorentzVector> eleTriJetObj;
+	std::vector<int>  muDiJetId;
+	std::vector<int>  muTriJetId;
+	std::vector<int>  eleDiJetId;
+	std::vector<int>  eleTriJetId;
+
+	//Need to find the exact triggers used for different runs
+	TString HLTTrigger_EleDiJet  = triggerName( "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralPFJet30_v" );
+	TString HLTTrigger_EleTriJet = triggerName( "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v" );
+	TString HLTTrigger_MuDiJet   = triggerName( "HLT_IsoMu17_eta2p1_DiCentralPFJet25_v" );
+	TString HLTTrigger_MuTriJet  = triggerName( "HLT_IsoMu17_eta2p1_TriCentralPFJet30_v" );
+	//	TString triggerName(TString triggerPattern)
+	eleDiJetObj  = cms2.hlt_trigObjs_p4()[findTriggerIndex(HLTTrigger_EleDiJet)];
+	eleTriJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex(HLTTrigger_EleTriJet)];
+	eleDiJetId   = cms2.hlt_trigObjs_id()[findTriggerIndex(HLTTrigger_EleDiJet)];
+	eleTriJetId  = cms2.hlt_trigObjs_id()[findTriggerIndex(HLTTrigger_EleTriJet)];
+	muDiJetObj  = cms2.hlt_trigObjs_p4()[findTriggerIndex(HLTTrigger_MuDiJet)];
+	muTriJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex(HLTTrigger_MuTriJet)];
+	muDiJetId   = cms2.hlt_trigObjs_id()[findTriggerIndex(HLTTrigger_MuDiJet)];
+	muTriJetId  = cms2.hlt_trigObjs_id()[findTriggerIndex(HLTTrigger_MuTriJet)];
+
+	// now find HLT jet matched to offline jet
+	//loop over selected jets 
+	for (unsigned int ijet = 0; ijet < vpfjets_p4.size(); ijet++) {
+	  
+	  LorentzVector vjet = vpfjets_p4.at(ijet);
+	  // dijet triggers
+	  if ( eledijet_==1 ) {
+	    eledijet_trigmindr_ejet_ = getMinDR(82, 85, eleDiJetId, eleDiJetObj);
+	    float minhltdr = 999.;
+	    eledijet_n82_ = 0;
+	    eledijet_n85_ = 0;
+	    for( unsigned int ihlt = 0 ; ihlt < eleDiJetObj.size() ; ++ihlt ){
+	      if ( eleDiJetId.at(ihlt)==82 ) {
+		eledijet_n82_++;
+		if (eledijet_n82_==1) eledijet_hltele_ = &( eleDiJetObj.at(ihlt) );
+		if ( (eleDiJetObj.at(ihlt)).pt() > eledijet_hltele_->pt() ) 
+		  eledijet_hltele_ = &( eleDiJetObj.at(ihlt) );
+	      }
+	      if ( eleDiJetId.at(ihlt)==85 ) eledijet_n85_++;
+	      //Only look for jet objects
+	      if ( eleDiJetId.at(ihlt)!=85 ) continue;
+	      // dr match to HLT jet object
+	      float hltdr = dRbetweenVectors( vjet , eleDiJetObj.at(ihlt) );
+	      if ( minhltdr > hltdr ) minhltdr = hltdr;
+	    } // end loop over trig objects
+
+	    if (ijet==0) eledijet_trigdr_pjet1_ = minhltdr;
+	    else if (ijet==1) eledijet_trigdr_pjet2_ = minhltdr;
+	    else if (ijet==2) eledijet_trigdr_pjet3_ = minhltdr;
+	    else if (ijet==3) eledijet_trigdr_pjet4_ = minhltdr;
+	  } 
+	  if ( mudijet_==1 ) {
+	    mudijet_trigmindr_mujet_ = getMinDR(83, 85, muDiJetId, muDiJetObj);
+	    float minhltdr = 999.;
+	    mudijet_n83_ = 0;
+	    mudijet_n85_ = 0;
+	    for( unsigned int ihlt = 0 ; ihlt < muDiJetObj.size() ; ++ihlt ){
+	      if ( muDiJetId.at(ihlt)==83 ) {
+		mudijet_n83_++;
+		if (mudijet_n83_==1) mudijet_hltmu_ = &( muDiJetObj.at(ihlt) );
+		if ( muDiJetObj.at(ihlt).pt() > mudijet_hltmu_->pt() )
+		  mudijet_hltmu_ = &( muDiJetObj.at(ihlt) );
+	      }
+	      if ( muDiJetId.at(ihlt)==85 ) mudijet_n85_++;
+	      //Only look for jet objects
+	      if ( muDiJetId.at(ihlt)!=85 ) continue;
+	      // dr match to HLT jet object
+	      float hltdr = dRbetweenVectors( vjet , muDiJetObj.at(ihlt) );
+	      if ( minhltdr > hltdr ) minhltdr = hltdr;
+	    } // end loop over trig objects
+
+	    if (ijet==0) mudijet_trigdr_pjet1_ = minhltdr;
+	    else if (ijet==1) mudijet_trigdr_pjet2_ = minhltdr;
+	    else if (ijet==2) mudijet_trigdr_pjet3_ = minhltdr;
+	    else if (ijet==3) mudijet_trigdr_pjet4_ = minhltdr;
+	  }// end dijet triggers
+	  
+	  // trijet triggers
+	  if ( eletrijet_==1 ) {
+	    eletrijet_trigmindr_ejet_ = getMinDR(82, 85, eleTriJetId, eleTriJetObj);
+	    float minhltdr = 999.;
+	    eletrijet_n82_ = 0;
+	    eletrijet_n85_ = 0;
+	    for( unsigned int ihlt = 0 ; ihlt < eleTriJetObj.size() ; ++ihlt ){
+	      if ( eleTriJetId.at(ihlt)==82 ) {
+		eletrijet_n82_++;
+		if (eletrijet_n82_==1) eletrijet_hltele_ = &( eleTriJetObj.at(ihlt) );
+		if ( eleTriJetObj.at(ihlt).pt() > eletrijet_hltele_->pt() )
+		  eletrijet_hltele_ = &( eleTriJetObj.at(ihlt) );
+	      }
+	      if ( eleTriJetId.at(ihlt)==85 ) eletrijet_n85_++;
+	      //Only look for jet objects
+	      if ( eleTriJetId.at(ihlt)!=85 ) continue;
+	      // dr match to HLT jet object
+	      float hltdr = dRbetweenVectors( vjet , eleTriJetObj.at(ihlt) );
+	      if ( minhltdr > hltdr ) minhltdr = hltdr;
+	    } // end loop over trig objects
+
+	    if (ijet==0) eletrijet_trigdr_pjet1_ = minhltdr;
+	    else if (ijet==1) eletrijet_trigdr_pjet2_ = minhltdr;
+	    else if (ijet==2) eletrijet_trigdr_pjet3_ = minhltdr;
+	    else if (ijet==3) eletrijet_trigdr_pjet4_ = minhltdr;
+	  } 
+	  if ( mutrijet_==1 ) {
+	    mutrijet_trigmindr_mujet_ = getMinDR(83, 85, muTriJetId, muTriJetObj);
+	    float minhltdr = 999.;
+	    mutrijet_n83_ = 0;
+	    mutrijet_n85_ = 0;
+	    for( unsigned int ihlt = 0 ; ihlt < muTriJetObj.size() ; ++ihlt ){
+	      if ( muTriJetId.at(ihlt)==83 ) {
+		mutrijet_n83_++;
+		if (mutrijet_n83_==1) mutrijet_hltmu_ = &( muTriJetObj.at(ihlt) );
+		if ( muTriJetObj.at(ihlt).pt() > mutrijet_hltmu_->pt() )
+		  mutrijet_hltmu_ = &( muTriJetObj.at(ihlt) );
+	      }
+	      if ( muTriJetId.at(ihlt)==85 ) mutrijet_n85_++;
+	      //Only look for jet objects
+	      if ( muTriJetId.at(ihlt)!=85 ) continue;
+	      // dr match to HLT jet object
+	      float hltdr = dRbetweenVectors( vjet , muTriJetObj.at(ihlt) );
+	      if ( minhltdr > hltdr ) minhltdr = hltdr;
+	    } // end loop over trig objects
+
+	    if (ijet==0) mutrijet_trigdr_pjet1_ = minhltdr;
+	    else if (ijet==1) mutrijet_trigdr_pjet2_ = minhltdr;
+	    else if (ijet==2) mutrijet_trigdr_pjet3_ = minhltdr;
+	    else if (ijet==3) mutrijet_trigdr_pjet4_ = minhltdr;
+	  }// end trijet triggers
+	} // end loop over jets
+      }// end check for pass trigger
 
       outTree->Fill();
     
@@ -827,12 +1032,57 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
-  outTree->Branch("eledijet",        &eledijet_,         "eledijet/I");
+  outTree->Branch("eledijet_hg",     &eledijet_hg_,      "eledijet_hg/I");
   outTree->Branch("eledijetmht15",   &eledijetmht15_,    "eledijetmht15/I");
   outTree->Branch("eledijetmht25",   &eledijetmht25_,    "eledijetmht25/I");
+  outTree->Branch("eledijet",        &eledijet_,         "eledijet/I");
+  outTree->Branch("eletrijet",       &eletrijet_,        "eletrijet/I");
+  outTree->Branch("elequadjet",      &elequadjet_,       "elequadjet/I");
   outTree->Branch("mudijet",         &mudijet_,          "mudijet/I");
   outTree->Branch("mudijetmht15",    &mudijetmht15_,     "mudijetmht15/I");
   outTree->Branch("mudijetmht25",    &mudijetmht25_,     "mudijetmht25/I");
+  outTree->Branch("mutrijet",        &mutrijet_,         "mutrijet/I");
+  outTree->Branch("muquadjet",       &muquadjet_,        "muquadjet/I");
+  outTree->Branch("pjet1_L1Fast",    &pjet1_L1Fast_,     "pjet1_L1Fast/F");
+  outTree->Branch("pjet2_L1Fast",    &pjet2_L1Fast_,     "pjet2_L1Fast/F");
+  outTree->Branch("pjet3_L1Fast",    &pjet3_L1Fast_,     "pjet3_L1Fast/F");
+  outTree->Branch("pjet4_L1Fast",    &pjet4_L1Fast_,     "pjet4_L1Fast/F");
+  outTree->Branch("pjet1_L2L3",      &pjet1_L2L3_,       "pjet1_L2L3/F");
+  outTree->Branch("pjet2_L2L3",      &pjet2_L2L3_,       "pjet2_L2L3/F");
+  outTree->Branch("pjet3_L2L3",      &pjet3_L2L3_,       "pjet3_L2L3/F");
+  outTree->Branch("pjet4_L2L3",      &pjet4_L2L3_,       "pjet4_L2L3/F");
+  outTree->Branch("eledijet_n82",    &eledijet_n82_,     "eledijet_n82/I");
+  outTree->Branch("eletrijet_n82",   &eletrijet_n82_,    "eletrijet_n82/I");
+  outTree->Branch("mudijet_n83",     &mudijet_n83_,      "mudijet_n83/I");
+  outTree->Branch("mutrijet_n83",    &mutrijet_n83_,     "mutrijet_n83/I");
+  outTree->Branch("eledijet_n85",    &eledijet_n85_,     "eledijet_n85/I");
+  outTree->Branch("eletrijet_n85",   &eletrijet_n85_,    "eletrijet_n85/I");
+  outTree->Branch("mudijet_n85",     &mudijet_n85_,      "mudijet_n85/I");
+  outTree->Branch("mutrijet_n85",    &mutrijet_n85_,     "mutrijet_n85/I");
+  outTree->Branch("eledijet_trigmindr_ejet",    &eledijet_trigmindr_ejet_,     "eledijet_trigmindr_ejet/F");
+  outTree->Branch("eletrijet_trigmindr_ejet",   &eletrijet_trigmindr_ejet_,    "eletrijet_trigmindr_ejet/F");
+  outTree->Branch("mudijet_trigmindr_mujet",     &mudijet_trigmindr_mujet_,      "mudijet_trigmindr_mujet/F");
+  outTree->Branch("mutrijet_trigmindr_mujet",    &mutrijet_trigmindr_mujet_,     "mutrijet_trigmindr_mujet/F");
+  outTree->Branch("eledijet_trigdr_pjet1",        &eledijet_trigdr_pjet1_,         "eledijet_trigdr_pjet1/F");
+  outTree->Branch("eledijet_trigdr_pjet2",        &eledijet_trigdr_pjet2_,         "eledijet_trigdr_pjet2/F");
+  outTree->Branch("eledijet_trigdr_pjet3",        &eledijet_trigdr_pjet3_,         "eledijet_trigdr_pjet3/F");
+  outTree->Branch("eledijet_trigdr_pjet4",        &eledijet_trigdr_pjet4_,         "eledijet_trigdr_pjet4/F");
+  outTree->Branch("eletrijet_trigdr_pjet1",       &eletrijet_trigdr_pjet1_,        "eletrijet_trigdr_pjet1/F");
+  outTree->Branch("eletrijet_trigdr_pjet2",       &eletrijet_trigdr_pjet2_,        "eletrijet_trigdr_pjet2/F");
+  outTree->Branch("eletrijet_trigdr_pjet3",       &eletrijet_trigdr_pjet3_,        "eletrijet_trigdr_pjet3/F");
+  outTree->Branch("eletrijet_trigdr_pjet4",       &eletrijet_trigdr_pjet4_,        "eletrijet_trigdr_pjet4/F");
+  outTree->Branch("mudijet_trigdr_pjet1",         &mudijet_trigdr_pjet1_,          "mudijet_trigdr_pjet1/F");
+  outTree->Branch("mudijet_trigdr_pjet2",         &mudijet_trigdr_pjet2_,          "mudijet_trigdr_pjet2/F");
+  outTree->Branch("mudijet_trigdr_pjet3",         &mudijet_trigdr_pjet3_,          "mudijet_trigdr_pjet3/F");
+  outTree->Branch("mudijet_trigdr_pjet4",         &mudijet_trigdr_pjet4_,          "mudijet_trigdr_pjet4/F");
+  outTree->Branch("mutrijet_trigdr_pjet1",        &mutrijet_trigdr_pjet1_,         "mutrijet_trigdr_pjet1/F");
+  outTree->Branch("mutrijet_trigdr_pjet2",        &mutrijet_trigdr_pjet2_,         "mutrijet_trigdr_pjet2/F");
+  outTree->Branch("mutrijet_trigdr_pjet3",        &mutrijet_trigdr_pjet3_,         "mutrijet_trigdr_pjet3/F");
+  outTree->Branch("mutrijet_trigdr_pjet4",        &mutrijet_trigdr_pjet4_,         "mutrijet_trigdr_pjet4/F");
+  outTree->Branch("eledijet_hltele"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &eledijet_hltele_	);
+  outTree->Branch("eletrijet_hltele"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &eletrijet_hltele_);
+  outTree->Branch("mudijet_hltmu"       , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mudijet_hltmu_	);
+  outTree->Branch("mutrijet_hltmu"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mutrijet_hltmu_  );
   outTree->Branch("cjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet1_	);
   outTree->Branch("cjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet2_	);
   outTree->Branch("cjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet3_	);
@@ -865,4 +1115,38 @@ float looper::dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx )
   
   return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
   
+}
+
+
+//--------------------------------------------------------------------
+
+float looper::getMinDR(int type1, int type2, std::vector<int> hltid, std::vector<LorentzVector> hltobj) {
+  
+  float mindr = 9999.;
+  for( unsigned int ihlt1 = 0 ; ihlt1 < hltobj.size() ; ++ihlt1 ){
+    if ( hltid.at(ihlt1)!=type1 ) continue;
+    for( unsigned int ihlt2 = 0 ; ihlt2 < hltobj.size() ; ++ihlt2 ){
+      if ( hltid.at(ihlt2)!=type2 ) continue;
+      float dr = dRbetweenVectors( hltobj.at(ihlt1) , hltobj.at(ihlt2) );
+      if ( mindr > dr ) mindr = dr;
+      }
+  }
+  return mindr;
+}
+
+//--------------------------------------------------------------------
+
+int looper::getJetIndex(LorentzVector jet) {
+
+  int matchindex = -1;
+  for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+
+    LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+    if (dRbetweenVectors( vjet , jet ) > 0.4 ) continue;
+    if ( abs(jet.pt()-vjet.pt()) > 5) continue;
+    matchindex = ijet;
+    break;
+  }
+  
+  return matchindex;
 }
