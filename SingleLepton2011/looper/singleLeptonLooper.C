@@ -682,7 +682,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	//cout << "Found muon " << ngoodlep_ << " pt " << mus_p4().at(imu).pt() << endl;
       }  
-      
+
       // REQUIRE AT LEAST 1 GOOD LEPTON!!!
       if( goodLeptons.size() < 1 ) continue;
 
@@ -1359,6 +1359,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       nbtagstcm_  = 0;
 
       npfjets40_  = 0;
+      npfjets50_  = 0;
       htpf40_     = 0.;
 
       npfjetspv_  = 0;
@@ -1398,11 +1399,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
           
 	if( !passesPFJetID(ijet) ){
 	  jetid_ = 0;
-	  if( vjet.pt() > 30 && fabs( vjet.eta() ) < 3.0 ) jetid30_ = 0;
+	  if( vjet.pt() > 30 && fabs( vjet.eta() ) < 2.5 ) jetid30_ = 0;
 	  continue;
 	}
 
-	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 3.0 ){ 
+	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 2.5 ){ 
 	  njets15_++;
 	  if (njets15_==1) pfjet1_ = &(vjet);
 	  else if (njets15_==2) pfjet2_ = &(vjet);
@@ -1410,18 +1411,18 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  else if (njets15_==4) pfjet4_ = &(vjet);
 	}
 
-	if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 3.0 ){
+	if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 2.5 ){
 	  njetsUp_++;
 	  htUp_ += vjetUp.pt();
 	}
 
-	if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 3.0 ){
+	if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 2.5 ){
 	  njetsDown_++;
 	  htDown_ += vjetDown.pt();
 	}
 
 	if( vjet.pt() < 30. )                    continue;
-	if( fabs( vjet.eta() ) > 3.0 )           continue;
+	if( fabs( vjet.eta() ) > 2.5 )           continue;
 
 	if( fabs( vjet.eta() ) < 2.5 ){
 	  npfjets25_ ++;
@@ -1432,6 +1433,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  npfjets40_ ++;
 	  htpf40_    += vjet.pt();
 	}
+
+	if( vjet.pt() > 50. ) npfjets50_ ++;
 
 	njets_++;
 	ht_ += vjet.pt();
@@ -1662,7 +1665,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  if( rejectJet ) continue;
 	}
           
-	if( fabs( vjet.eta() ) > 3.0 )           continue;
+	if( fabs( vjet.eta() ) > 2.5 )           continue;
 	if( !passesPFJetID(ijet) )               continue;
 	if( vjet.pt() < 30. )                    continue;
 
@@ -1690,7 +1693,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  if( rejectJet ) continue;
 	}
           
-	if( fabs( vjet.eta() ) > 3.0 )           continue;
+	if( fabs( vjet.eta() ) > 2.5 )           continue;
 	if( !passesPFJetID(ijet) )               continue;
 	if( vjet.pt() < 15. )                    continue;
 
@@ -1718,7 +1721,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  }
 	    
 	  if( vgjet.pt() < 30.                   )  continue;
-	  if( fabs( vgjet.eta() ) > 3.0          )  continue;
+	  if( fabs( vgjet.eta() ) > 2.5          )  continue;
 	    
 	  ngenjets_++;
 	  htgen_ += vgjet.pt();
@@ -1938,6 +1941,13 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if     ( leptype_ == 0 ) nepass += weight_;
 	else if( leptype_ == 1 ) nmpass += weight_;
       }
+
+      //-------------------------------------
+      // triggers
+      //-------------------------------------
+
+      eltrijet_ = passHLTTrigger("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v3") ? 1 : 0;
+      mutrijet_ = passHLTTrigger("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v3") ? 1 : 0;
 
       outTree->Fill();
     
@@ -2725,6 +2735,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
   outTree->Branch("mull",            &mull_,             "mull/I");
   outTree->Branch("mult",            &mult_,             "mult/I");
+  outTree->Branch("eltrijet",        &eltrijet_,         "eltrijet/I");
+  outTree->Branch("mutrijet",        &mutrijet_,         "mutrijet/I");
   outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
   outTree->Branch("multgen",         &multgen_,          "multgen/I");
   outTree->Branch("proc",            &proc_,             "proc/I");
@@ -2762,6 +2774,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("njpt",            &njpt_,             "njpt/I");
   outTree->Branch("npfjets25",       &npfjets25_,        "npfjets25/I");
   outTree->Branch("npfjets40",       &npfjets40_,        "npfjets40/I");
+  outTree->Branch("npfjets50",       &npfjets50_,        "npfjets50/I");
   outTree->Branch("npfjetspv",       &npfjetspv_,        "npfjetspv/I");
   outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
   outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
