@@ -200,6 +200,7 @@ class singleLeptonLooper
         Int_t   ngenjets_;
         Int_t   npfjets_;
         Int_t   npfjets40_;
+        Int_t   npfjets50_;
         Int_t   npfjetspv_;
         Int_t   njetsUp_;
         Int_t   npfjets25_;
