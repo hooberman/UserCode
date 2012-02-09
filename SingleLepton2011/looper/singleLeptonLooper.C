@@ -18,24 +18,31 @@
 #include "histtools.h"
 #include "singleLeptonLooper.h"
 #include "TTreeCache.h"
-#include "../CORE/CMS2.h"
-#include "../CORE/metSelections.h"
-#include "../CORE/trackSelections.h"
-#include "../CORE/eventSelections.h"
-#include "../CORE/electronSelections.h"
-#include "../CORE/electronSelectionsParameters.h"
-#include "../CORE/mcSelections.h"
-#include "../CORE/muonSelections.h"
-#include "../Tools/goodrun.cc"
+#include "TDatabasePDG.h"
+
+#include "../CORE/CMS2.cc"
+#ifndef __CINT__
 #include "../CORE/utilities.cc"
-#include "../CORE/ttbarSelections.h"
-#include "../CORE/susySelections.h"
-#include "../CORE/mcSUSYkfactor.h"
-#include "../CORE/triggerSuperModel.h"
-#include "../CORE/triggerUtils.h"
-//#include "../CORE/jetSelections.h"
+#include "../CORE/ssSelections.cc"
+#include "../CORE/electronSelections.cc"
+#include "../CORE/electronSelectionsParameters.cc"
+#include "../CORE/MITConversionUtilities.cc"
+#include "../CORE/muonSelections.cc"
+#include "../CORE/eventSelections.cc"
+#include "../CORE/trackSelections.cc"
+#include "../CORE/metSelections.cc"
+#include "../CORE/jetSelections.cc"
+#include "../CORE/photonSelections.cc"
+#include "../CORE/triggerUtils.cc"
+#include "../CORE/triggerSuperModel.cc"
+#include "../CORE/mcSelections.cc"
+#include "../CORE/susySelections.cc"
+#include "../CORE/mcSUSYkfactor.cc"
+#include "../CORE/SimpleFakeRate.cc"
+#include "../Tools/goodrun.cc"
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
+#endif
 
 bool verbose        = false;
 bool doTenPercent   = false;
@@ -159,64 +166,6 @@ singleLeptonLooper::singleLeptonLooper()
   random3_ = new TRandom3(1);
   initialized = false;
 }
-
-//--------------------------------------------------------------------
-
-bool passesCaloJetID (const LorentzVector &jetp4)
-{
-  int jet_idx = -1;
-  double minDR = 999;
-
-  for (unsigned int i = 0; i < cms2.jets_p4().size(); i++)
-    {
-      double deltaR = ROOT::Math::VectorUtil::DeltaR(jetp4, cms2.jets_p4()[i]);
-
-      if (deltaR < minDR)
-	{
-	  minDR = deltaR;
-	  jet_idx = i;
-	}
-    }
-
-  if (jet_idx < 0)
-    return false;
-
-  if (cms2.jets_emFrac()[jet_idx] < 0.01 || cms2.jets_fHPD()[jet_idx] > 0.98 || cms2.jets_n90Hits()[jet_idx] < 2)
-    return false;
-
-  return true;
-}
-
-//--------------------------------------------------------------------
-
-bool passesPFJetID(unsigned int pfJetIdx) {
-
-  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
-  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
-
-  if (pfjet_nef_ >= 0.99)
-    return false;
-  if (pfjet_nhf_ >= 0.99)
-    return false;
-  if (pfjet_mult_ < 2)
-    return false;
-
-  if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) < 2.4)
-    {
-      if (pfjet_chf_ < 1e-6)
-	return false;
-      if (pfjet_cm_ < 1)
-	return false;
-      if (pfjet_cef_ >= 0.99)
-	return false;
-    }
-
-  return true;
-}  
 
 //--------------------------------------------------------------------
 
@@ -437,6 +386,47 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 				  JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 
 {
+
+
+  //------------------------------------------------------------------------------------------------------
+  // latest-and-greatest JEC
+  //------------------------------------------------------------------------------------------------------
+
+  std::vector<std::string> jetcorr_filenames_pfL1FastJetL2L3;
+  FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3;
+
+  std::vector<std::string> jetcorr_filenames_caloL1OffsetL2L3;
+  FactorizedJetCorrector *jet_corrector_caloL1OffsetL2L3;
+
+  jetcorr_filenames_pfL1FastJetL2L3.clear();
+  jetcorr_filenames_caloL1OffsetL2L3.clear();
+  
+  if ( TString(prefix).Contains("data") ) {
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L1FastJet.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L3Absolute.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2L3Residual.txt");
+
+    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L1Offset.txt");
+    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L2Relative.txt");
+    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L3Absolute.txt");
+    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L2L3Residual.txt");
+  } 
+  else {
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L1FastJet.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L3Absolute.txt");
+    
+    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/DESIGN42_V17_AK5Calo_L1Offset.txt");
+    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/DESIGN42_V17_AK5Calo_L2Relative.txt");
+    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/DESIGN42_V17_AK5Calo_L3Absolute.txt");
+  }
+
+  jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
+  jet_corrector_caloL1OffsetL2L3 = makeJetCorrector(jetcorr_filenames_caloL1OffsetL2L3);
+
+
+  // vector<double> factors = JetCorrector->getSubCorrections();
 
   if( !initialized ){
 
@@ -1232,6 +1222,22 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       }
       */
 
+      //----------------------------------------
+      // nvertex variables
+      //----------------------------------------
+
+      nvtx_ = 0;
+    
+      for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
+	if(isGoodVertex(v)) ++nvtx_;
+      }
+
+      ndavtx_ = 0;
+    
+      for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+	if(isGoodDAVertex(v)) ++ndavtx_;
+      }
+
       //-------------------------------------
       // jet counting
       //-------------------------------------
@@ -1272,9 +1278,16 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
-	LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-	LorentzVector vjetUp    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.075;
-	LorentzVector vjetDown  = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.925;
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+
+	double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
+
+	LorentzVector vjet      = corr * pfjets_p4().at(ijet);
+	LorentzVector vjetUp    = corr * pfjets_p4().at(ijet) * 1.075;
+	LorentzVector vjetDown  = corr * pfjets_p4().at(ijet) * 0.925;
 
 	if( generalLeptonVeto ){
 	  bool rejectJet = false;
@@ -1410,8 +1423,15 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       VofP4 mediumBJets;
 
       for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
-	
-	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
+
+	jet_corrector_caloL1OffsetL2L3->setNPV   ( ndavtx_                           );
+	jet_corrector_caloL1OffsetL2L3->setJetE  ( cms2.jets_p4().at(ijet).energy()  );
+	jet_corrector_caloL1OffsetL2L3->setJetPt ( cms2.jets_p4().at(ijet).pt()      );
+	jet_corrector_caloL1OffsetL2L3->setJetEta( cms2.jets_p4().at(ijet).eta()     );
+
+	double corr = jet_corrector_caloL1OffsetL2L3->getCorrection();
+
+	LorentzVector vjet = jets_p4().at(ijet) * corr;
 
 	if( !passesCaloJetID( vjet ) )         continue;	
 	if( fabs( vjet.eta() ) > 2.5 )         continue;
@@ -1717,21 +1737,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
       }
 
-      //----------------------------------------
-      // nvertex variables
-      //----------------------------------------
-
-      nvtx_ = 0;
-    
-      for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
-	if(isGoodVertex(v)) ++nvtx_;
-      }
-
-      ndavtx_ = 0;
-    
-      for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-	if(isGoodDAVertex(v)) ++ndavtx_;
-      }
 
       //tranverse mass leading lepton & met
       dphilm_ = fabs( lep1_->phi() - pfmetphi_ );
@@ -1833,8 +1838,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // triggers
       //-------------------------------------
 
-      eltrijet_ = passHLTTrigger("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v3") ? 1 : 0;
-      mutrijet_ = passHLTTrigger("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v3") ? 1 : 0;
+      //eltrijet_ = passHLTTrigger("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v3") ? 1 : 0;
+      //mutrijet_ = passHLTTrigger("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v3") ? 1 : 0;
 
       ldi_  = passSingleLep2JetSUSYTrigger2011( isData , leptype_ ) ? 1 : 0;
       ltri_ = passSingleLep3JetSUSYTrigger2011( isData , leptype_ ) ? 1 : 0;
