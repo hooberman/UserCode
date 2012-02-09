@@ -117,6 +117,7 @@ class singleLeptonLooper
 	Float_t mlepiso_;
 	Float_t mlepdr_;
 
+	Float_t mgcor_;
 	Int_t   ldi_;
 	Int_t   ltri_;
 	Int_t   smu_;

@@ -783,6 +783,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       npartons_    =  0;
       maxpartonpt_ = -1;
 
+      mgcor_ = 1.0;
+
       if( !isData ){
 
 	w1_     = leptonOrTauIsFromW( index1 , id1_ , isLM );
@@ -797,6 +799,13 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	nmus_  = nmus;
 	ntaus_ = ntaus;
 	nleps_ = nleps;
+
+	// this is a weight which corrects for the wrong MG W->lnu BF
+	if( TString(prefix).Contains("ttall") ){
+	  if( nleps == 0 ) mgcor_ = 1.029;
+	  if( nleps == 1 ) mgcor_ = 0.986;
+	  if( nleps == 2 ) mgcor_ = 0.947;
+	}
 
 	if( strcmp(prefix,"ttem")  == 0 && ( nels + nmus ) != 2 ) continue;
 	if( strcmp(prefix,"ttdil") == 0 && nleps != 2           ) continue;
@@ -2603,6 +2612,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("trgeff",          &trgeff_,           "trgeff/F");
   outTree->Branch("pthat",           &pthat_,            "pthat/F");
   outTree->Branch("qscale",          &qscale_,           "qscale/F");
+  outTree->Branch("mgcor",           &mgcor_,            "mgcor/F");
   outTree->Branch("ksusy",           &ksusy_,            "ksusy/F");
   outTree->Branch("ksusyup",         &ksusyup_,          "ksusyup/F");
   outTree->Branch("ksusydn",         &ksusydn_,          "ksusydn/F");
