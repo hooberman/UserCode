@@ -117,6 +117,9 @@ class singleLeptonLooper
 	Float_t mlepiso_;
 	Float_t mlepdr_;
 
+	Int_t   ldi_;
+	Int_t   ltri_;
+	Int_t   smu_;
 	Int_t   ncalojets_;
 	Int_t   ncalojets15_;
 	Int_t   ncalojets20_;

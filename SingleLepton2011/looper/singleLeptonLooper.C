@@ -445,7 +445,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     set_goodrun_file( g_json );
 
     //set vtx reweighting hist
-    set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
 
     //set msugra cross section file
     set_msugra_file("goodModelNames_tanbeta10.txt");
@@ -595,7 +595,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       // skip stop-pair events with m(stop) > 850 GeV
       if( TString(prefix).Contains("T2") ){
-	if( sparm_mG() > 500.0 ) continue;
+	if( sparm_mG() > 800.0 ) continue;
       }
 
       //---------------------------------------------
@@ -1827,6 +1827,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       eltrijet_ = passHLTTrigger("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v3") ? 1 : 0;
       mutrijet_ = passHLTTrigger("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v3") ? 1 : 0;
 
+      ldi_  = passSingleLep2JetSUSYTrigger2011( isData , leptype_ ) ? 1 : 0;
+      ltri_ = passSingleLep3JetSUSYTrigger2011( isData , leptype_ ) ? 1 : 0;
+      smu_  = passSingleMuTrigger2011(          isData , leptype_ ) ? 1 : 0;
+
       outTree->Fill();
     
     } // entries
@@ -2615,6 +2619,9 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mult",            &mult_,             "mult/I");
   outTree->Branch("eltrijet",        &eltrijet_,         "eltrijet/I");
   outTree->Branch("mutrijet",        &mutrijet_,         "mutrijet/I");
+  outTree->Branch("ldi",             &ldi_,              "ldi/I");
+  outTree->Branch("ltri",            &ltri_,             "ltri/I");
+  outTree->Branch("smu",             &smu_,              "smu/I");
   outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
   outTree->Branch("multgen",         &multgen_,          "multgen/I");
   outTree->Branch("proc",            &proc_,             "proc/I");
