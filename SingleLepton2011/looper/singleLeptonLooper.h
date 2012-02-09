@@ -137,7 +137,6 @@ class singleLeptonLooper
 	LorentzVector*  tbar_;   
 	LorentzVector*  ttbar_;   
 	LorentzVector*  mlep_;   
-	LorentzVector*  trgjet_;   
 	LorentzVector*  mclep1_;   
 	LorentzVector*  mclep2_;   
         LorentzVector*  lep1_;
@@ -156,7 +155,6 @@ class singleLeptonLooper
  	LorentzVector*  nonisomu_;   
 
         // Baby ntuple variables
-	Int_t   passtrg_;
 	Float_t dphilm_;
 	Float_t mG_;
 	Float_t x_;

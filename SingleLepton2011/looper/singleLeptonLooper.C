@@ -37,7 +37,6 @@
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 
-bool doTriggerStudy = false;
 bool verbose        = false;
 bool doTenPercent   = false;
 
@@ -586,14 +585,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       InitBaby();
 
-      if( doTriggerStudy ){
-      	// run range for which HLT_Mu17_CentralJet30 is un-prescaled
-      	if( evt_run() < 160329 || evt_run() > 163261 ) continue;
-
-      	// require event passes HLT_Mu20_v1
-      	if( !passUnprescaledHLTTrigger("HLT_Mu20_v1") )   continue;
-      }
-
       if( verbose ){
 	cout << "-------------------------------------------------------"   << endl;
 	cout << "Event " << z                                               << endl;
@@ -714,119 +705,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       int index1 = lepIndex.at(imaxpt);
 
       //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
-
-      //------------------------------------------------
-      // trigger study: turn-on curve for jet triggers
-      //------------------------------------------------
-
-      trgjet_  = 0;
-      passtrg_ = -1;
-
-      if( doTriggerStudy ){
-
-	// only consider muon events
-	if( abs(id1_) == 11 ) continue;
-
-	// run range for which HLT_Mu17_CentralJet30 is un-prescaled
-	if( evt_run() < 160329 || evt_run() > 163261 ) continue;
-
-	// require event passes HLT_Mu20_v1
-	if( !passUnprescaledHLTTrigger("HLT_Mu20_v1") ) continue;
- 
-	// require found trigger object
-	std::vector<LorentzVector> muonObj;
-	muonObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu20_v1")];
-
-	if( muonObj.size() == 0 ) continue;
-
-	// require offline muon matched to muon trigger object (dR < 0.1)
-	if( dRbetweenVectors( *lep1_ , muonObj.at(0) ) > 0.1 ) continue;
-
-	// now get trigger objects for HLT_Mu20_CentralJet30
-	std::vector<LorentzVector> muonJetObj;
-	if( evt_run() >= 160329 && evt_run() <= 161176 )
-	  muonJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu17_CentralJet30_v1")];
-	else if( evt_run() >= 161210 && evt_run() <= 163261 )
-	  muonJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu17_CentralJet30_v2")];
-
-	// did event pass HLT_Mu17_CentralJet30?
-	passtrg_ = 0;
-	if( evt_run() >= 160329 && evt_run() <= 161176 )
-	  passtrg_ = passUnprescaledHLTTrigger("HLT_Mu17_CentralJet30_v1") ? 1 : 0;
-	else if( evt_run() >= 161210 && evt_run() <= 163261 )
-	  passtrg_ = passUnprescaledHLTTrigger("HLT_Mu17_CentralJet30_v2") ? 1 : 0;
-
-	// now find highest pt offline jet matched to HLT jet
-	int offlinejet = -1;
-	int njets      =  0;
-	float maxpt    = -1;
-
-        for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
-          
-          LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
-
-	  if( dRbetweenVectors( vjet , *lep1_ ) < 0.4 ) continue;
-	  //if( vjet.pt() < 20. )                                          continue;
-
-	  // if event passed trigger, require jet is matched to HLT object
-	  if( passtrg_ == 1 ){
-	    
-	    bool HLTmatch = false;
-
-	    for( unsigned int ihlt = 0 ; ihlt < muonJetObj.size() ; ++ihlt ){
-	      
-	      // exclude HLT muon object
-	      if( dRbetweenVectors( vjet , muonObj.at(0) ) < 0.1 )       continue;
-	    
-	      // dr match to HLT jet object
-	      if( dRbetweenVectors( vjet , muonJetObj.at(ihlt) ) > 0.4 ) continue;
-
-	      HLTmatch = true;
-	    }
-
-	    if( !HLTmatch ) continue;
-	  }
-
-	  njets++;
-
-	  if( vjet.pt() > maxpt ){
-	    maxpt      = vjet.pt();
-	    offlinejet = ijet;
-	  }
-
-        }
-
-	//if( passtrg_ == 0 ) cout << "FAIL TRIGGER" << endl;
-	if( offlinejet < 0 ) continue;
-	//if( njets > 1      ) continue;
-
-	// now store offline jet p4 and whether muon-jet trigger passed
-	trgjet_  = &(jets_p4().at(offlinejet) * jets_corL1FastL2L3().at(offlinejet));
-
-	outTree->Fill();
-	continue;
-
-	// cout << "muonJetObj.size() " << muonJetObj.size() << endl;
-	// cout << "muon trigger       : pt, eta, phi    " << muonObj.at(0).pt() << ", " << muonObj.at(0).eta() << ", " << muonObj.at(0).phi() << endl;
-
-	// if( muonJetObj.size() > 1 ){
-	//   cout << "muon-jet trigger 1 : pt, eta, phi    " << muonJetObj.at(0).pt() << ", " << muonJetObj.at(0).eta() << ", " << muonJetObj.at(0).phi() << endl;
-	//   cout << "muon-jet trigger 2 : pt, eta, phi    " << muonJetObj.at(1).pt() << ", " << muonJetObj.at(1).eta() << ", " << muonJetObj.at(1).phi() << endl;
-
-	//
-	//   float dr2 = dRbetweenVectors( muonObj.at(0) , muonJetObj.at(1) );
-
-	//   cout << "dr1 " << dr1 << " dr2 " << dr2 << endl;
-	// }
-
-
-
-	//cout << endl << endl;
-	//cout << "trigger objects " << muonObj.size() << endl;
-	//if( muonObj.size() > 0 ) cout << "pt, eta, phi    " << muonObj.at(0).pt() << ", " << muonObj.at(0).eta() << ", " << muonObj.at(0).phi() << endl;
-	//cout << "muon " << lep1_->pt() << ", " << lep1_->eta() << ", " << lep1_->phi() << endl;
-
-      }
 
       //---------------------------------------------
       // find 2nd leading lepton (if >=2 leptons)
@@ -2862,7 +2740,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("trkreliso5",      &trkreliso5_,       "trkreliso5/F");  
   outTree->Branch("trkpt10",         &trkpt10_,          "trkpt10/F");  
   outTree->Branch("trkreliso10",     &trkreliso10_,      "trkreliso10/F");  
-  outTree->Branch("passtrg",         &passtrg_,          "passtrg/I");  
   outTree->Branch("ncalojets",       &ncalojets_,        "ncalojets/I");  
   outTree->Branch("ncalojets15",     &ncalojets15_,      "ncalojets15/I");  
   outTree->Branch("ncalojets20",     &ncalojets20_,      "ncalojets20/I");  
@@ -2872,7 +2749,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nbctcm",          &nbctcm_,           "nbctcm/I");  
   outTree->Branch("htcalo",          &htcalo_,           "htcalo/F");  
   outTree->Branch("mbb",             &mbb_,              "mbb/F");
-  outTree->Branch("trgjet"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trgjet_	);
   outTree->Branch("mlep"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
