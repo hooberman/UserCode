@@ -296,39 +296,37 @@ void doAll(bool skipFWLite = true)
   if(rundata){
     
     cout << "adding ElectronHad and MuHad or SingleMu data" << endl;
-    
-    //---------------------------
-    // May10 rereco
-    //---------------------------
-   
+
     pickSkimIfExists(chdata,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_999999_0_skim.root");//l+2j filtered
-
-    /*
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root"); 
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");    
-
-    //pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");//l+3j filtered
-    //pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");//l+3j filtered
-
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");//l+2j filtered
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");//l+2j filtered
-
-    //---------------------------
-    // prompt reco v4
-    //---------------------------
     
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    // May10
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");   
+    // PRv4
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
 
-    //pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");//l+3j filtered
-    //pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");//l+3j filtered
+    // Aug05
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
 
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");//l+2j filtered
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/ElectronHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");//l+2j filtered
-    */
+    // PRv6
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
 
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple_180252_0.root");
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-35/MuHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-35_merged/V04-02-35/merged_ntuple_180252_0.root");
+    // 2011B
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+
+    // 2011B
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011B-PromptReco-v1_AOD/V04-02-35/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-34/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged*root");
   }
 
 
