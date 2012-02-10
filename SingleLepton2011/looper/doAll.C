@@ -43,7 +43,7 @@ void doAll(bool skipFWLite = true)
   
   const char* version    = "temp";
   //const char* version    = "V00-02-01";
-  const char* jsonfile   = "jsons/Cert_EPSFINAL_May10ReReco_v2_PromptReco_160404_167913_JSON_goodruns.txt";
+  const char* jsonfile   = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
   cout << "Version : " << version     << endl;

@@ -1,7 +1,7 @@
 // Loads a bunch of tools in interpretative mode
 void setup( bool skipFWLite = false ) {
     if (! skipFWLite) {
-        gSystem->Load("libFWCoreFWLite");
+        gSystem->Load("libFWCoreFWLite.so");
         AutoLibraryLoader::enable();
     }
 

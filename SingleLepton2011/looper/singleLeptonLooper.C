@@ -57,7 +57,6 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 //mSUGRA scan parameters-----------------------------
 
-const bool  generalLeptonVeto = true;
 const int   nm0points    = 100;
 const float m0min        = 20.;
 const float m0max        = 2020.;
@@ -233,15 +232,71 @@ int getIndexFromM12(float m12){
 
 void singleLeptonLooper::InitBaby(){
 
-	
-  mcid1_    = -1;
-  mcid2_    = -1;
-  mclep1_   =  0;
-  mclep2_   =  0;
-  mcdecay1_ = -1;
-  mcdecay2_ = -1;
-  mcdr1_    = -1;
-  mcdr2_    = -1;
+
+  jetid_	= 1;
+  jetid30_	= 1;
+
+  // btag variables
+  nbtagsssv_	= 0;
+  nbtagstcl_	= 0;
+  nbtagstcm_	= 0;
+  nbtagscsvl_   = 0;
+  nbtagscsvm_   = 0;
+  nbtagscsvt_   = 0;
+
+  // njets with JEC variation
+  njetsUp_	= 0;
+  njetsDown_	= 0;
+  htUp_		= 0.;
+  htDown_	= 0.;
+
+  // pfjet vars
+  npfjets30_	= 0;
+  npfjets35_	= 0;
+  npfjets40_	= 0;
+  npfjets45_	= 0;
+  npfresjets30_	= 0;
+  npfresjets35_	= 0;
+  npfresjets40_	= 0;
+  npfresjets45_	= 0;
+
+  htpf30_	= 0.;
+  htpf35_	= 0.;
+  htpf40_	= 0.;
+  htpf45_	= 0.;
+  htpfres30_	= 0.;
+  htpfres35_	= 0.;
+  htpfres40_	= 0.;
+  htpfres45_	= 0.;
+
+  // calojet vars
+  ncjets30_	= 0;
+  ncjets35_	= 0;
+  ncjets40_	= 0;
+  ncjets45_	= 0;
+  ncresjets30_	= 0;
+  ncresjets35_	= 0;
+  ncresjets40_	= 0;
+  ncresjets45_	= 0;
+
+  htc30_	= 0.;
+  htc35_	= 0.;
+  htc40_	= 0.;
+  htc45_	= 0.;
+  htcres30_	= 0.;
+  htcres35_	= 0.;
+  htcres40_	= 0.;
+  htcres45_	= 0.;
+
+  // MC truth info
+  mcid1_	= -1;
+  mcid2_	= -1;
+  mclep1_	=  0;
+  mclep2_	=  0;
+  mcdecay1_	= -1;
+  mcdecay2_	= -1;
+  mcdr1_	= -1;
+  mcdr2_	= -1;
   
   mlepid_       = -1;
   mlep_         =  0;
@@ -281,17 +336,31 @@ void singleLeptonLooper::InitBaby(){
   cosphijz_	= -9999.;
   dilep_	= 0;
   jet_		= 0;
+
+  // jet p4's
   cjet1_	= 0;
   cjet2_	= 0;
   cjet3_	= 0;
   cjet4_	= 0;
+
   pfjet1_	= 0;
   pfjet2_	= 0;
   pfjet3_	= 0;
   pfjet4_	= 0;
+
+  cresjet1_	= 0;
+  cresjet2_	= 0;
+  cresjet3_	= 0;
+  cresjet4_	= 0;
+
+  pfresjet1_	= 0;
+  pfresjet2_	= 0;
+  pfresjet3_	= 0;
+  pfresjet4_	= 0;
+
   lep1_		= 0;
   lep2_		= 0;
-  mbb_       = -9999.;
+  mbb_		= -9999.;
 
 }
 
@@ -401,32 +470,45 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   jetcorr_filenames_pfL1FastJetL2L3.clear();
   jetcorr_filenames_caloL1OffsetL2L3.clear();
   
+  //string pfUncertaintyFile;
+  //string caloUncertaintyFile;
+
   if ( TString(prefix).Contains("data") ) {
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L1FastJet.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2Relative.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L3Absolute.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2L3Residual.txt");
 
+    //pfUncertaintyFile = "jetCorrections/GR_R_42_V23_AK5PF_Uncertainty.txt";
+
     jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L1Offset.txt");
     jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L2Relative.txt");
     jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L3Absolute.txt");
     jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L2L3Residual.txt");
+
+    //caloUncertaintyFile = "jetCorrections/GR_R_42_V23_AK5Calo_Uncertainty.txt";
   } 
   else {
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L1FastJet.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L2Relative.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L3Absolute.txt");
     
+    //pfUncertaintyFile = "jetCorrections/DESIGN42_V17_AK5PF_Uncertainty.txt";
+
     jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/DESIGN42_V17_AK5Calo_L1Offset.txt");
     jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/DESIGN42_V17_AK5Calo_L2Relative.txt");
     jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/DESIGN42_V17_AK5Calo_L3Absolute.txt");
+
+    //caloUncertaintyFile = "jetCorrections/DESIGN42_V17_AK5Calo_Uncertainty.txt";
   }
 
   jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
   jet_corrector_caloL1OffsetL2L3 = makeJetCorrector(jetcorr_filenames_caloL1OffsetL2L3);
 
+  //JetCorrectionUncertainty *pfUncertainty   = new JetCorrectionUncertainty( pfUncertaintyFile   );
+  //JetCorrectionUncertainty *caloUncertainty = new JetCorrectionUncertainty( caloUncertaintyFile );
 
-  // vector<double> factors = JetCorrector->getSubCorrections();
+
 
   if( !initialized ){
 
@@ -1206,22 +1288,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
       }
 
-      /*
-      if( (w1_==1||w1_==2) && nleps_==2 && ntaus_==1 && ngoodlep_ == 1){
-
-	if( trkpt_ * trkreliso_ > 50 ){
-
-	  cout << endl << endl;
-	  cout << "-------------------------------------------------------------------" << endl;
-	  dumpDocLines();
-	  cout << endl;
-	  cout << "track iso, reliso " << trkpt_ << ", " << trkpt_*trkreliso_ << ", " << trkreliso_ << endl;
-	  cout << "track pt eta phi  " << Form("%.1f",trkpt_) << " " << Form("%.1f",pfcands_p4().at(itrk).phi()) << ", " << Form("%.1f",pfcands_p4().at(itrk).eta()) << endl;
-
-	}
-      }
-      */
-
       //----------------------------------------
       // nvertex variables
       //----------------------------------------
@@ -1242,124 +1308,184 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // jet counting
       //-------------------------------------
 
-      VofP4 vpfjets_p4;
-
-      njets_ = 0.;
-      ht_    = 0.;
-      nbtags_  = 0;
-
-      nbtagstcl_  = 0;
-      nbtagstcm_  = 0;
-
-      npfjets40_  = 0;
-      npfjets50_  = 0;
-      htpf40_     = 0.;
-
-      npfjetspv_  = 0;
-      htpfpv_     = 0.;
-
-      htpf25_     = 0.;
-      npfjets25_  = 0;
-      njets15_    = 0;
-
-      njetsUp_   = 0;
-      njetsDown_ = 0;
-      htUp_      = 0.;
-      htDown_    = 0.;
+      VofP4 mediumBJets;
 
       int   imaxjet   = -1;
       float maxjetpt  = -1.;
 
-      vector<int> goodjets;
-      goodjets.clear();
-
-      jetid_   = 1;
-      jetid30_ = 1;
+      VofP4 vpfjets_p4;
+      VofP4 vpfresjets_p4;
+      vpfjets_p4.clear();
+      vpfresjets_p4.clear();
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
+
+	// get L1FastL2L3Residual total correction
 	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
 	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
 	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
 	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
-
 	double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
 
-	LorentzVector vjet      = corr * pfjets_p4().at(ijet);
-	LorentzVector vjetUp    = corr * pfjets_p4().at(ijet) * 1.075;
-	LorentzVector vjetDown  = corr * pfjets_p4().at(ijet) * 0.925;
+	// get L1Fast, L2, L3, Residual individual corrections
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+	vector<float> factors = jet_corrector_pfL1FastJetL2L3->getSubCorrections();
 
-	if( generalLeptonVeto ){
-	  bool rejectJet = false;
-	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	  }
-	  if( rejectJet ) continue;
+	// get residual correction only
+	float rescorr = 1;
+	if( isData ){
+	  if( factors.size() == 4 ) rescorr = factors.at(3) / factors.at(2);
+	  else                      cout << "ERROR! " << factors.size() << " jetSubCorrections" << endl;
 	}
-          
+
+	LorentzVector vjet      = corr    * pfjets_p4().at(ijet);
+	LorentzVector vresjet   = rescorr * pfjets_p4().at(ijet);
+	LorentzVector vjetUp    = corr    * pfjets_p4().at(ijet) * 1.075; // over-estimate...
+	LorentzVector vjetDown  = corr    * pfjets_p4().at(ijet) * 0.925; // over-estimate...
+
+	// lepton-jet overlap removal
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+	          
+	// PFJetID
 	if( !passesPFJetID(ijet) ){
 	  jetid_ = 0;
 	  if( vjet.pt() > 30 && fabs( vjet.eta() ) < 2.5 ) jetid30_ = 0;
 	  continue;
 	}
 
-	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 2.5 ){ 
-	  njets15_++;
-	  if (njets15_==1) pfjet1_ = &(vjet);
-	  else if (njets15_==2) pfjet2_ = &(vjet);
-	  else if (njets15_==3) pfjet3_ = &(vjet);
-	  else if (njets15_==4) pfjet4_ = &(vjet);
+	// store L1FastL2L3Residual jet p4's pt > 15 GeV
+	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 2.5 ){
+	  vpfjets_p4.push_back( vjet );
 	}
 
+	// store Residual jet p4's pt > 15 GeV
+	if( vresjet.pt() > 15 && fabs( vresjet.eta() ) < 2.5 ){
+	  vpfresjets_p4.push_back( vresjet );
+	}
+
+	// njets JEC up
 	if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 2.5 ){
 	  njetsUp_++;
 	  htUp_ += vjetUp.pt();
 	}
 
+	// njets JEC down
 	if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 2.5 ){
 	  njetsDown_++;
 	  htDown_ += vjetDown.pt();
 	}
 
-	if( vjet.pt() < 30. )                    continue;
+	// njets: residual only, pt > 30 GeV
+	if( vresjet.pt() > 30 && fabs( vresjet.eta() ) < 2.5 ){
+	  npfresjets30_ ++;
+	  htpfres30_ += vresjet.pt();
+	}
+
+	// njets: residual only, pt > 35 GeV
+	if( vresjet.pt() > 35 && fabs( vresjet.eta() ) < 2.5 ){
+	  npfresjets35_ ++;
+	  htpfres35_ += vresjet.pt();
+	}
+
+	// njets: residual only, pt > 40 GeV
+	if( vresjet.pt() > 40 && fabs( vresjet.eta() ) < 2.5 ){
+	  npfresjets40_ ++;
+	  htpfres40_ += vresjet.pt();
+	}
+
+	// njets: residual only, pt > 45 GeV
+	if( vresjet.pt() > 45 && fabs( vresjet.eta() ) < 2.5 ){
+	  npfresjets45_ ++;
+	  htpfres45_ += vresjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 30 GeV
+	if( vjet.pt() > 30 && fabs( vjet.eta() ) < 2.5 ){
+	  npfjets30_ ++;
+	  htpf30_ += vjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 35 GeV
+	if( vjet.pt() > 35 && fabs( vjet.eta() ) < 2.5 ){
+	  npfjets35_ ++;
+	  htpf35_ += vjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 40 GeV
+	if( vjet.pt() > 40 && fabs( vjet.eta() ) < 2.5 ){
+	  npfjets40_ ++;
+	  htpf40_ += vjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 45 GeV
+	if( vjet.pt() > 45 && fabs( vjet.eta() ) < 2.5 ){
+	  npfjets45_ ++;
+	  htpf45_ += vjet.pt();
+	}
+
+	if(       vjet.pt()    < 30. )           continue;
 	if( fabs( vjet.eta() ) > 2.5 )           continue;
 
-	if( fabs( vjet.eta() ) < 2.5 ){
-	  npfjets25_ ++;
-	  htpf25_  += vjet.pt();
-	}
-
-	if( vjet.pt() > 40. ){
-	  npfjets40_ ++;
-	  htpf40_    += vjet.pt();
-	}
-
-	if( vjet.pt() > 50. ) npfjets50_ ++;
-
-	njets_++;
-	ht_ += vjet.pt();
-
-	vpfjets_p4.push_back( vjet );
-	goodjets.push_back(ijet);
-
+	// btag variables: SSV
 	if( pfjets_simpleSecondaryVertexHighEffBJetTag().at(ijet) > 1.74 ){
-	  nbtags_++;
+	  nbtagsssv_++;
 	}
 
+	// btag variables: TCHEL
 	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
 	  nbtagstcl_++;
 	}
 
+	// btag variables: TCHEM
 	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
 	  nbtagstcm_++;
 	}
 
+	// btag variables: CSVL
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.244 ){
+	  nbtagscsvl_++;
+	}
+
+	// btag variables: CSVM
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.679 ){
+	  nbtagscsvm_++;
+	  mediumBJets.push_back(vjet);
+	}
+
+	// btag variables: CSVT
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.898 ){
+	  nbtagscsvt_++;
+	}
+
+	// store max jet pt
 	if( vjet.pt() > maxjetpt ){
 	  maxjetpt = vjet.pt();
 	  imaxjet  = ijet;
 	}
       }
 
+      // store L1FastL2L3Residual pfjets
+      sort(vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
+      if( vpfjets_p4.size() > 0 ) pfjet1_  = &vpfjets_p4.at(0);
+      if( vpfjets_p4.size() > 1 ) pfjet2_  = &vpfjets_p4.at(1);
+      if( vpfjets_p4.size() > 2 ) pfjet3_  = &vpfjets_p4.at(2);
+      if( vpfjets_p4.size() > 3 ) pfjet4_  = &vpfjets_p4.at(3);
+
+      // store Residual pfjets
+      sort(vpfresjets_p4.begin(), vpfresjets_p4.end(), sortByPt);
+      if( vpfresjets_p4.size() > 0 ) pfresjet1_  = &vpfresjets_p4.at(0);
+      if( vpfresjets_p4.size() > 1 ) pfresjet2_  = &vpfresjets_p4.at(1);
+      if( vpfresjets_p4.size() > 2 ) pfresjet3_  = &vpfresjets_p4.at(2);
+      if( vpfresjets_p4.size() > 3 ) pfresjet4_  = &vpfresjets_p4.at(3);
+
+      // max jet variables
       if( imaxjet > -1 ){ 
 	jet_ = &(pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet));
 
@@ -1375,16 +1501,19 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
       }
 
-      nbctcl_      = 0;
-      nbctcm_      = 0;
-      ncalojets_   = 0;
-      ncalojets15_ = 0;
-      ncalojets20_ = 0;
-      ncalojets25_ = 0;
-      ncalojets30_ = 0;
-      htcalo_      = 0;
+      // nbctcl_      = 0;
+      // nbctcm_      = 0;
+      // ncalojets_   = 0;
+      // ncalojets15_ = 0;
+      // ncalojets20_ = 0;
+      // ncalojets25_ = 0;
+      // ncalojets30_ = 0;
+      // htcalo_      = 0;
       emjet10_     = -1;
       emjet20_     = -1;
+
+      // ncalojetsres_ = 0;
+      // htcalores_    = 0.0;
 
       //-------------------------------------------------------------
       // find jet with max EM fraction outside tracker acceptance
@@ -1418,62 +1547,128 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // count calojets
       //------------------------------------------
 
-      vector<int> goodCaloJetIndices;
-      VofP4 goodCaloJets;
-      VofP4 mediumBJets;
+      //VofP4 goodCaloJets;
+
+
+      VofP4 vcjets_p4;     
+      VofP4 vcresjets_p4;   
+
+      vcjets_p4.clear();
+      vcresjets_p4.clear();
 
       for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
 
+	// get total L1OffsetL2L3Residual corrections
 	jet_corrector_caloL1OffsetL2L3->setNPV   ( ndavtx_                           );
 	jet_corrector_caloL1OffsetL2L3->setJetE  ( cms2.jets_p4().at(ijet).energy()  );
 	jet_corrector_caloL1OffsetL2L3->setJetPt ( cms2.jets_p4().at(ijet).pt()      );
 	jet_corrector_caloL1OffsetL2L3->setJetEta( cms2.jets_p4().at(ijet).eta()     );
-
 	double corr = jet_corrector_caloL1OffsetL2L3->getCorrection();
 
-	LorentzVector vjet = jets_p4().at(ijet) * corr;
+	// get individual L1Offset, L2, L3, Residual corrections
+	jet_corrector_caloL1OffsetL2L3->setNPV   ( ndavtx_                           );
+	jet_corrector_caloL1OffsetL2L3->setJetE  ( cms2.jets_p4().at(ijet).energy()  );
+	jet_corrector_caloL1OffsetL2L3->setJetPt ( cms2.jets_p4().at(ijet).pt()      );
+	jet_corrector_caloL1OffsetL2L3->setJetEta( cms2.jets_p4().at(ijet).eta()     );
+	vector<float> factors = jet_corrector_caloL1OffsetL2L3->getSubCorrections();
 
-	if( !passesCaloJetID( vjet ) )         continue;	
-	if( fabs( vjet.eta() ) > 2.5 )         continue;
+	// get residual correction only
+	float rescorr = 1;
+	if( isData ){
+	  if( factors.size() == 4 ) rescorr = factors.at(3) / factors.at(2);
+	  else                      cout << "ERROR! " << factors.size() << " jetSubCorrections" << endl;
+	}
 
+	LorentzVector vjet    = jets_p4().at(ijet) * corr;
+	LorentzVector vresjet = jets_p4().at(ijet) * rescorr;
+
+	// jet-lepton overlap removal
 	bool rejectJet = false;
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
 	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
 	}
 	if( rejectJet ) continue;
 
-	if( vjet.pt() > 15.  ) {
+	// jet ID
+	if( !passesCaloJetID( vjet ) )         continue;	
 
-	  ncalojets15_++;
-	  if (ncalojets15_==1) cjet1_ = &(vjet);
-	  else if (ncalojets15_==2) cjet2_ = &(vjet);
-	  else if (ncalojets15_==3) cjet3_ = &(vjet);
-	  else if (ncalojets15_==4) cjet4_ = &(vjet);
-
-	}
-	if( vjet.pt() > 20.  ) ncalojets20_++;
-	if( vjet.pt() > 25.  ) ncalojets25_++;
-	if( vjet.pt() > 30.  ) ncalojets30_++;
-
-	if( vjet.pt() < 35.  ) continue;
-
-	goodCaloJetIndices.push_back(ijet);
-	ncalojets_ ++;
-	htcalo_  += vjet.pt();
-
-	if( jets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
-	  nbctcl_++;
-	}
-	if( jets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
-	  nbctcm_++;
-	  mediumBJets.push_back(vjet);
-	}
-	else{
-	  goodCaloJets.push_back(vjet);
+	// store L1FastL2L3Residual jet p4's pt > 15 GeV
+	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 2.5 ){
+	  vcjets_p4.push_back( vjet );
 	}
 
+	// store Residual jet p4's pt > 15 GeV
+	if( vresjet.pt() > 15 && fabs( vresjet.eta() ) < 2.5 ){
+	  vcresjets_p4.push_back( vresjet );
+	}
 
+	// njets: residual only, pt > 30 GeV
+	if( vresjet.pt() > 30 && fabs( vresjet.eta() ) < 2.5 ){
+	  ncresjets30_ ++;
+	  htcres30_ += vresjet.pt();
+	}
+
+	// njets: residual only, pt > 35 GeV
+	if( vresjet.pt() > 35 && fabs( vresjet.eta() ) < 2.5 ){
+	  ncresjets35_ ++;
+	  htcres35_ += vresjet.pt();
+	}
+
+	// njets: residual only, pt > 40 GeV
+	if( vresjet.pt() > 40 && fabs( vresjet.eta() ) < 2.5 ){
+	  ncresjets40_ ++;
+	  htcres40_ += vresjet.pt();
+	}
+
+	// njets: residual only, pt > 45 GeV
+	if( vresjet.pt() > 45 && fabs( vresjet.eta() ) < 2.5 ){
+	  ncresjets45_ ++;
+	  htcres45_ += vresjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 30 GeV
+	if( vjet.pt() > 30 && fabs( vjet.eta() ) < 2.5 ){
+	  ncjets30_ ++;
+	  htc30_ += vjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 35 GeV
+	if( vjet.pt() > 35 && fabs( vjet.eta() ) < 2.5 ){
+	  ncjets35_ ++;
+	  htc35_ += vjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 40 GeV
+	if( vjet.pt() > 40 && fabs( vjet.eta() ) < 2.5 ){
+	  ncjets40_ ++;
+	  htc40_ += vjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 45 GeV
+	if( vjet.pt() > 45 && fabs( vjet.eta() ) < 2.5 ){
+	  ncjets45_ ++;
+	  htc45_ += vjet.pt();
+	}
+
+	// // store non-b jets
+	// if( jets_trackCountingHighEffBJetTag().at(ijet) < 3.3 ){
+	//   goodCaloJets.push_back(vjet);
+	// }
       }
+
+      // store L1FastL2L3Residual cjets
+      sort(vcjets_p4.begin(), vcjets_p4.end(), sortByPt);
+      if( vcjets_p4.size() > 0 ) cjet1_  = &vcjets_p4.at(0);
+      if( vcjets_p4.size() > 1 ) cjet2_  = &vcjets_p4.at(1);
+      if( vcjets_p4.size() > 2 ) cjet3_  = &vcjets_p4.at(2);
+      if( vcjets_p4.size() > 3 ) cjet4_  = &vcjets_p4.at(3);
+
+      // store Residual cjets
+      sort(vcresjets_p4.begin(), vcresjets_p4.end(), sortByPt);
+      if( vcresjets_p4.size() > 0 ) cresjet1_  = &vcresjets_p4.at(0);
+      if( vcresjets_p4.size() > 1 ) cresjet2_  = &vcresjets_p4.at(1);
+      if( vcresjets_p4.size() > 2 ) cresjet3_  = &vcresjets_p4.at(2);
+      if( vcresjets_p4.size() > 3 ) cresjet4_  = &vcresjets_p4.at(3);
 
       //--------------------------------
       // get non-isolated leptons
@@ -1546,12 +1741,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // jet mass variables
       //---------------------------------
 
-      mjj_ = -1;
+      // mjj_ = -1;
 
-      if( nbctcm_ >= 2 && goodCaloJets.size() >= 2 ){
-	sort( goodCaloJets.begin(), goodCaloJets.end(), sortByPt);
-	mjj_ = ( goodCaloJets.at(0) + goodCaloJets.at(1) ).mass();
-      }
+      // if( nbctcm_ >= 2 && goodCaloJets.size() >= 2 ){
+      // 	sort( goodCaloJets.begin(), goodCaloJets.end(), sortByPt);
+      // 	mjj_ = ( goodCaloJets.at(0) + goodCaloJets.at(1) ).mass();
+      // }
 
       //---------------------------------
       // L1offset jets
@@ -1564,13 +1759,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
           
 	LorentzVector vjet = pfjets_corL1L2L3().at(ijet) * pfjets_p4().at(ijet);
 
-	if( generalLeptonVeto ){
-	  bool rejectJet = false;
-	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	  }
-	  if( rejectJet ) continue;
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
 	}
+	if( rejectJet ) continue;
           
 	if( fabs( vjet.eta() ) > 2.5 )           continue;
 	if( !passesPFJetID(ijet) )               continue;
@@ -1592,13 +1785,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
           
 	LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
 
-	if( generalLeptonVeto ){
-	  bool rejectJet = false;
-	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	  }
-	  if( rejectJet ) continue;
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
 	}
+	if( rejectJet ) continue;
           
 	if( fabs( vjet.eta() ) > 2.5 )           continue;
 	if( !passesPFJetID(ijet) )               continue;
@@ -1619,13 +1810,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    
 	  LorentzVector vgjet = genjets_p4().at(igjet);
 
-	  if( generalLeptonVeto ){
-	    bool rejectJet = false;
-	    for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	      if( dRbetweenVectors( vgjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	    }
-	    if( rejectJet ) continue;
+	  bool rejectJet = false;
+	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	    if( dRbetweenVectors( vgjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
 	  }
+	  if( rejectJet ) continue;
 	    
 	  if( vgjet.pt() < 30.                   )  continue;
 	  if( fabs( vgjet.eta() ) > 2.5          )  continue;
@@ -1777,7 +1966,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       //other vars for baby
 
-      pass_         = ( njets_ >= 3 && pfmet_ > 25. ) ? 1 : 0;
+      pass_         = ( npfjets30_ >= 3 && pfmet_ > 25. ) ? 1 : 0;
       proc_         = getProcessType(prefix);       //integer specifying sample
       topmass_      = -999;//topMass;                      //topepton mass //REPLACE TOPMASS
       y_	    = pfmet_ / sqrt( ht_ ); //y=MET/sqrt(HT)
@@ -2077,281 +2266,6 @@ float returnBias(float sumJetPt, singleLeptonLooper::MetTypeEnum metType)
   }
 }
 
-//--------------------------------------------------------------------
-                                                                     
-                                             
-float singleLeptonLooper::getCosThetaStarWeight(){
-
-
-  int nels = 0;
-  int nmus  = 0;
-  int ntaus = 0;
-  int nleps = 0;
-    
-  nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
-    
-  ///////////////////////////
-  // Generator Information //
-  ///////////////////////////
-  //
-  int ntplus  = 0;
-  int ntminus = 0;
-  int nWplus  = 0;
-  int nWminus = 0;
-  int nbplus  = 0;
-  int nbminus = 0;
-  int nlplus  = 0;
-  int nlminus = 0;
-  int nnu     = 0;
-  int nnubar  = 0;
-
-  LorentzVector genp4_tplus_;
-  LorentzVector genp4_tminus_;
-  LorentzVector genp4_Wplus_;
-  LorentzVector genp4_Wminus_;
-  LorentzVector genp4_lplus_;
-  LorentzVector genp4_lminus_;
-  LorentzVector genp4_bplus_;
-  LorentzVector genp4_bminus_;
-  LorentzVector genp4_nu_;
-  LorentzVector genp4_nubar_;
-  LorentzVector genp4_Wplus_bminus_;
-  LorentzVector genp4_Wminus_bplus_;
-  LorentzVector genp4_lminus_nubar_;
-  LorentzVector genp4_lplus_nu_;
-  LorentzVector genp4_lminus_lplus_;
-  LorentzVector genp4_nu_nubar_;
-  LorentzVector genp4_Wminus_tCM_;
-  LorentzVector genp4_Wplus_tCM_;
-  LorentzVector genp4_lminus_tCM_;
-  LorentzVector genp4_nubar_tCM_;
-  LorentzVector genp4_lplus_tCM_;
-  LorentzVector genp4_nu_tCM_;
-  LorentzVector genp4_lminus_WCM_;
-  LorentzVector genp4_nubar_WCM_;
-  LorentzVector genp4_lplus_WCM_;
-  LorentzVector genp4_nu_WCM_;
-  LorentzVector genp4_lminus_nubar_WCM_;
-  LorentzVector genp4_lplus_nu_WCM_;
-  
-  float theta_lminus_nubar_WCM_;
-  float theta_lplus_nu_WCM_;
-  int   genid_lplus_;
-  int   genid_lminus_;
-
-  // loop on generator particles
-  for( unsigned int i=0; i < genps_id().size(); i++ ){
-
-    // top
-    if( genps_id().at(i) == 6 ){
-      genp4_tplus_ = genps_p4().at(i);
-      ntplus++;
-    }
-    if( genps_id().at(i) == -6 ){
-      genp4_tminus_ = genps_p4().at(i);
-      ntminus++;
-    }
-
-    // W's from top
-    if( genps_id().at(i) == 24 && genps_id_mother().at(i) == 6 ){
-      genp4_Wplus_ = genps_p4().at(i);
-      nWplus++;
-    }
-    if( genps_id().at(i) == -24 && genps_id_mother().at(i) == -6 ){
-      genp4_Wminus_ = genps_p4().at(i);
-      nWminus++;
-    }
-
-    // leptons from W+
-    if( genps_id_mother().at(i) == 24 ){
-      if( genps_id().at(i) == -11 || genps_id().at(i) == -13 ){
-        genp4_lplus_ = genps_p4().at(i);
-        nlplus++;
-        if( genps_id().at(i) == -11 ){
-          genid_lplus_ = -11;
-        } 
-        else if( genps_id().at(i) == -13 ){
-          genid_lplus_ = -13;
-        }
-      }
-      if( genps_id().at(i) == 12 || genps_id().at(i) == 14 ){
-        genp4_nu_ = genps_p4().at(i);
-        nnu++;
-      }
-    }
-
-    // leptons from W-
-    if( genps_id_mother().at(i) == -24 ){
-      if( genps_id().at(i) == 11 || genps_id().at(i) == 13 ){
-        genp4_lminus_ = genps_p4().at(i);
-        nlminus++;
-        if( genps_id().at(i) == 11 ){
-          genid_lminus_ = 11;;
-        } 
-        else if( genps_id().at(i) == 13 ){
-          genid_lminus_ = 13;
-        }
-      }
-      if( genps_id().at(i) == -12 || genps_id().at(i) == -14 ){
-        genp4_nubar_ = genps_p4().at(i);
-        nnubar++;
-      }
-    }
-
-    // b's
-    if( genps_id().at(i) == 5 && genps_id_mother().at(i) == 6){
-      nbminus++;
-      genp4_bminus_ = genps_p4().at(i);
-    }
-    if( genps_id().at(i) == -5 && genps_id_mother().at(i) == -6){
-      nbplus++;
-      genp4_bplus_ = genps_p4().at(i);
-    }
-
-  } // end loop on generator particles
-
-  // Construct some composite 4-vectors
-  genp4_Wplus_bminus_ = genp4_Wplus_  + genp4_bminus_;
-  genp4_Wminus_bplus_ = genp4_Wminus_ + genp4_bplus_;
-  genp4_lminus_nubar_ = genp4_lminus_ + genp4_nubar_;
-  genp4_lplus_nu_     = genp4_lplus_  + genp4_nu_;
-  genp4_lminus_lplus_ = genp4_lminus_ + genp4_lplus_;
-  genp4_nu_nubar_     = genp4_nu_     + genp4_nubar_;
-
-  // Sanity
-  if( ntplus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 t" << endl;
-    exit(1);
-  }
-  if( ntminus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 tbar" << endl;
-    exit(1);
-  }
-  if( nWplus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 W+" << endl;
-    exit(1);
-  }
-  if( nWminus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 W-" << endl;
-    exit(1);
-  }
-  if( nbplus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 b+ from top" << endl;
-    //exit(1);
-  }
-  if( nbminus != 1 ){ 
-    cout << "ERROR: did not find exactly 1 b- from top" << endl;
-    //exit(1);
-  }
-  // 
-  if( ntaus == 0 ){
-    if( nlplus != 1 ){ 
-      cout << "ERROR: did not find exactly 1 e+ or mu+" << endl;
-      exit(1);
-    }
-    if( nlminus != 1 ){ 
-      cout << "ERROR: did not find exactly 1 e- or mu-" << endl;
-      exit(1);
-    }
-    if( nnu != 1 ){
-      cout << "ERROR: did not find exactly 1 nu" << endl;
-      exit(1);
-    }
-    if( nnubar != 1 ){
-      cout << "ERROR: did not find exactly 1 nubar" << endl;
-      exit(1);
-    }
-  } 
-  else {
-    //cout << "Unhandled Case: N Taus = " << ntaus << endl << endl;
-    return -2;
-  }
-
-
-
-      
-
-  // Boost from the LAB to the top CM
-  ROOT::Math::Boost boost_tplus_CM( genp4_tplus_.BoostToCM().x(), genp4_tplus_.BoostToCM().y(), genp4_tplus_.BoostToCM().z() );
-  ROOT::Math::Boost boost_tminus_CM( genp4_tminus_.BoostToCM().x(), genp4_tminus_.BoostToCM().y(), genp4_tminus_.BoostToCM().z() );
-  
-  // Boost from the LAB to the W CM
-  ROOT::Math::Boost boost_Wplus_CM( genp4_Wplus_.BoostToCM().x(), genp4_Wplus_.BoostToCM().y(), genp4_Wplus_.BoostToCM().z() );
-  ROOT::Math::Boost boost_Wminus_CM( genp4_Wminus_.BoostToCM().x(), genp4_Wminus_.BoostToCM().y(), genp4_Wminus_.BoostToCM().z() );
-  
-  // Get the W, lepton, and neutrino 4-vectors in the top rest frame
-  genp4_Wminus_tCM_       = boost_tminus_CM * genp4_Wminus_;
-  genp4_Wplus_tCM_        = boost_tplus_CM  * genp4_Wplus_;
-  genp4_lminus_tCM_       = boost_tminus_CM * genp4_lminus_;
-  genp4_nubar_tCM_        = boost_tminus_CM * genp4_nubar_;
-  genp4_lplus_tCM_        = boost_tplus_CM  * genp4_lplus_;
-  genp4_nu_tCM_           = boost_tplus_CM  * genp4_nu_;
-
-  // Boost from the top CM to the W CM ( tW notation )
-  ROOT::Math::Boost boost_Wplus_tWCM( genp4_Wplus_tCM_.BoostToCM().x(), genp4_Wplus_tCM_.BoostToCM().y(), genp4_Wplus_tCM_.BoostToCM().z() );
-  ROOT::Math::Boost boost_Wminus_tWCM( genp4_Wminus_tCM_.BoostToCM().x(), genp4_Wminus_tCM_.BoostToCM().y(), genp4_Wminus_tCM_.BoostToCM().z() );
-
-  // Boost from the W CM to the top CM ( Wt notation )
-  ROOT::Math::Boost boost_Wplus_WtCM  = boost_Wplus_tWCM.Inverse();
-  ROOT::Math::Boost boost_Wminus_WtCM = boost_Wminus_tWCM.Inverse();
-        
-  // Get the lepton and neutrino 4-vectors in the W rest frame
-
-  //--- LAB -> top CM -> W CM ---//
-  genp4_lminus_WCM_       = boost_Wminus_tWCM * genp4_lminus_tCM_;
-  genp4_nubar_WCM_        = boost_Wminus_tWCM * genp4_nubar_tCM_;
-  genp4_lplus_WCM_        = boost_Wplus_tWCM  * genp4_lplus_tCM_;
-  genp4_nu_WCM_           = boost_Wplus_tWCM  * genp4_nu_tCM_;
-
-  /*
-  //--- LAB -> W -> top ---//
-  genp4_lminus_WCM_       = boost_Wminus_CM * genp4_lminus_;
-  genp4_nubar_WCM_        = boost_Wminus_CM * genp4_nubar_;
-  genp4_lplus_WCM_        = boost_Wplus_CM  * genp4_lplus_;
-  genp4_nu_WCM_           = boost_Wplus_CM  * genp4_nu_;
-
-  genp4_lminus_WCM_       = boost_Wminus_WtCM * genp4_lminus_WCM_;
-  genp4_nubar_WCM_        = boost_Wminus_WtCM * genp4_nubar_WCM_;
-  genp4_lplus_WCM_        = boost_Wplus_WtCM  * genp4_lplus_WCM_;
-  genp4_nu_WCM_           = boost_Wplus_WtCM  * genp4_nu_WCM_;
-  */
-
-  // Composite 4-vectors
-  genp4_lminus_nubar_WCM_ = genp4_lminus_WCM_ + genp4_nubar_WCM_;
-  genp4_lplus_nu_WCM_     = genp4_lplus_WCM_  + genp4_nu_WCM_;
-
-  // W +/- in the lab frame here
-  // want W direction in the top rest frame
-  // NB: this says theta, but it is real cosTheta
-
-  theta_lminus_nubar_WCM_ = genp4_lminus_WCM_.Px()*genp4_Wminus_tCM_.Px() +
-    genp4_lminus_WCM_.Py()*genp4_Wminus_tCM_.Py() +
-    genp4_lminus_WCM_.Pz()*genp4_Wminus_tCM_.Pz();
-
-  theta_lplus_nu_WCM_     = genp4_lplus_WCM_.Px()*genp4_Wplus_tCM_.Px() +
-    genp4_lplus_WCM_.Py()*genp4_Wplus_tCM_.Py() +
-    genp4_lplus_WCM_.Pz()*genp4_Wplus_tCM_.Pz();
-
-  theta_lminus_nubar_WCM_ /= genp4_lminus_WCM_.P()*genp4_Wminus_tCM_.P();
-  theta_lplus_nu_WCM_     /= genp4_lplus_WCM_.P()*genp4_Wplus_tCM_.P();
-
-  float x1 = theta_lminus_nubar_WCM_;
-  float x2 = theta_lplus_nu_WCM_;
-
-  float f1 = 0.703 * (1 - x1 * x1 ) + 0.5 * 0.297 * ( 1 - x1 ) * ( 1 - x1 );
-  float f2 = 0.703 * (1 - x2 * x2 ) + 0.5 * 0.297 * ( 1 - x2 ) * ( 1 - x2 );
-
-  
-  float weight = -1;
-
-  if( f1 > 0 && f2 > 0 ) weight = 1. / ( f1 * f2 );
-
-  return weight;
-
-}
-
-
-
 //*****************************************************************
 // get the FR weight
 //*****************************************************************
@@ -2632,8 +2546,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
   outTree->Branch("mull",            &mull_,             "mull/I");
   outTree->Branch("mult",            &mult_,             "mult/I");
-  outTree->Branch("eltrijet",        &eltrijet_,         "eltrijet/I");
-  outTree->Branch("mutrijet",        &mutrijet_,         "mutrijet/I");
+  //outTree->Branch("eltrijet",        &eltrijet_,         "eltrijet/I");
+  //outTree->Branch("mutrijet",        &mutrijet_,         "mutrijet/I");
   outTree->Branch("ldi",             &ldi_,              "ldi/I");
   outTree->Branch("ltri",            &ltri_,             "ltri/I");
   outTree->Branch("smu",             &smu_,              "smu/I");
@@ -2669,13 +2583,61 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("dileta",          &dileta_,           "dileta/F");
   outTree->Branch("dilpt",           &dilpt_,            "dilpt/F");
   outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
-  outTree->Branch("njets",           &njets_,            "njets/I");
   outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
   outTree->Branch("njpt",            &njpt_,             "njpt/I");
-  outTree->Branch("npfjets25",       &npfjets25_,        "npfjets25/I");
+
+  // pfjets L1FastL2L3Res
+  outTree->Branch("npfjets30",       &npfjets30_,        "npfjets30/I");
+  outTree->Branch("npfjets35",       &npfjets35_,        "npfjets35/I");
   outTree->Branch("npfjets40",       &npfjets40_,        "npfjets40/I");
-  outTree->Branch("npfjets50",       &npfjets50_,        "npfjets50/I");
-  outTree->Branch("npfjetspv",       &npfjetspv_,        "npfjetspv/I");
+  outTree->Branch("npfjets45",       &npfjets45_,        "npfjets45/I");
+
+  outTree->Branch("htpf30",          &htpf30_,           "htpf30/I");
+  outTree->Branch("htpf35",          &htpf35_,           "htpf35/I");
+  outTree->Branch("htpf40",          &htpf40_,           "htpf40/I");
+  outTree->Branch("htpf45",          &htpf45_,           "htpf45/I");
+
+  // pfjets Res
+  outTree->Branch("npfresjets30",    &npfresjets30_,     "npfresjets30/I");
+  outTree->Branch("npfresjets35",    &npfresjets35_,     "npfresjets35/I");
+  outTree->Branch("npfresjets40",    &npfresjets40_,     "npfresjets40/I");
+  outTree->Branch("npfresjets45",    &npfresjets45_,     "npfresjets45/I");
+
+  outTree->Branch("htpfres30",       &htpfres30_,        "htpfres30/I");
+  outTree->Branch("htpfres35",       &htpfres35_,        "htpfres35/I");
+  outTree->Branch("htpfres40",       &htpfres40_,        "htpfres40/I");
+  outTree->Branch("htpfres45",       &htpfres45_,        "htpfres45/I");
+
+  /// calojets L1OffsetL2L3Res
+  outTree->Branch("ncjets30",        &ncjets30_,         "ncjets30/I");
+  outTree->Branch("ncjets35",        &ncjets35_,         "ncjets35/I");
+  outTree->Branch("ncjets40",        &ncjets40_,         "ncjets40/I");
+  outTree->Branch("ncjets45",        &ncjets45_,         "ncjets45/I");
+
+  outTree->Branch("htc30",           &htc30_,            "htc30/I");
+  outTree->Branch("htc35",           &htc35_,            "htc35/I");
+  outTree->Branch("htc40",           &htc40_,            "htc40/I");
+  outTree->Branch("htc45",           &htc45_,            "htc45/I");
+
+  /// calojets Res
+  outTree->Branch("ncresjets30",     &ncresjets30_,      "ncresjets30/I");
+  outTree->Branch("ncresjets35",     &ncresjets35_,      "ncresjets35/I");
+  outTree->Branch("ncresjets40",     &ncresjets40_,      "ncresjets40/I");
+  outTree->Branch("ncresjets45",     &ncresjets45_,      "ncresjets45/I");
+
+  outTree->Branch("htcres30",        &htcres30_,         "htcres30/I");
+  outTree->Branch("htcres35",        &htcres35_,         "htcres35/I");
+  outTree->Branch("htcres40",        &htcres40_,         "htcres40/I");
+  outTree->Branch("htcres45",        &htcres45_,         "htcres45/I");
+
+  // btag variables
+  outTree->Branch("nbtagsssv",       &nbtagsssv_,        "nbtagsssv/I");
+  outTree->Branch("nbtagstcl",       &nbtagstcl_,        "nbtagstcl/I");
+  outTree->Branch("nbtagstcm",       &nbtagstcm_,        "nbtagstcm/I");
+  outTree->Branch("nbtagscsvl",      &nbtagscsvl_,       "nbtagscsvl/I");
+  outTree->Branch("nbtagscsvm",      &nbtagscsvm_,       "nbtagscsvm/I");
+  outTree->Branch("nbtagscsvt",      &nbtagscsvt_,       "nbtagscsvt/I");
+
   outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
   outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
   outTree->Branch("htUp",            &htUp_,             "htUp/F");
@@ -2683,9 +2645,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
   outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
-  outTree->Branch("nbtags",          &nbtags_,           "nbtags/I");
-  outTree->Branch("nbtagstcl",       &nbtagstcl_,        "nbtagstcl/I");
-  outTree->Branch("nbtagstcm",       &nbtagstcm_,        "nbtagstcm/I");
   outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
   outTree->Branch("pass",            &pass_,             "pass/I");
   outTree->Branch("passz",           &passz_,            "passz/I");
@@ -2724,9 +2683,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ht",              &ht_,               "ht/F");  
   outTree->Branch("htgen",           &htgen_,            "htgen/F");  
   outTree->Branch("htjpt",           &htjpt_,            "htjpt/F");  
-  outTree->Branch("htpf25",          &htpf25_,           "htpf25/F");  
-  outTree->Branch("htpf40",          &htpf40_,           "htpf40/F");  
-  outTree->Branch("htpfpv",          &htpfpv_,           "htpfpv/F");  
   outTree->Branch("nels",            &nels_,             "nels/I");  
   outTree->Branch("nmus",            &nmus_,             "nmus/I");  
   outTree->Branch("ntaus",           &ntaus_,            "ntaus/I");  
@@ -2737,7 +2693,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ptjetF23",        &ptjetF23_,         "ptjetF23/F");  
   outTree->Branch("ptjetO23",        &ptjetO23_,         "ptjetO23/F");  
   //outTree->Branch("cosphijz",        &cosphijz_,         "cosphijz/F");  
-  outTree->Branch("njets15",         &njets15_,          "njets15/I");  
   outTree->Branch("mcid1",           &mcid1_,            "mcid1/I");  
   outTree->Branch("mcdr1",           &mcdr1_,            "mcdr1/F");  
   outTree->Branch("mcdecay1",        &mcdecay1_,         "mcdecay1/I");  
@@ -2762,29 +2717,35 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("trkreliso5",      &trkreliso5_,       "trkreliso5/F");  
   outTree->Branch("trkpt10",         &trkpt10_,          "trkpt10/F");  
   outTree->Branch("trkreliso10",     &trkreliso10_,      "trkreliso10/F");  
-  outTree->Branch("ncalojets",       &ncalojets_,        "ncalojets/I");  
-  outTree->Branch("ncalojets15",     &ncalojets15_,      "ncalojets15/I");  
-  outTree->Branch("ncalojets20",     &ncalojets20_,      "ncalojets20/I");  
-  outTree->Branch("ncalojets25",     &ncalojets25_,      "ncalojets25/I");  
-  outTree->Branch("ncalojets30",     &ncalojets30_,      "ncalojets30/I");  
-  outTree->Branch("nbctcl",          &nbctcl_,           "nbctcl/I");  
-  outTree->Branch("nbctcm",          &nbctcm_,           "nbctcm/I");  
-  outTree->Branch("htcalo",          &htcalo_,           "htcalo/F");  
   outTree->Branch("mbb",             &mbb_,              "mbb/F");
+
   outTree->Branch("mlep"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
   outTree->Branch("mclep1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep1_	);
   outTree->Branch("mclep2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep2_	);
   outTree->Branch("jet"	     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
+
   outTree->Branch("cjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet1_	);
   outTree->Branch("cjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet2_	);
   outTree->Branch("cjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet3_	);
   outTree->Branch("cjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet4_	);
+
   outTree->Branch("pfjet1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet1_	);
   outTree->Branch("pfjet2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet2_	);
   outTree->Branch("pfjet3"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet3_	);
   outTree->Branch("pfjet4"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet4_	);
+
+  outTree->Branch("cresjet1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet1_	);
+  outTree->Branch("cresjet2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet2_	);
+  outTree->Branch("cresjet3" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet3_	);
+  outTree->Branch("cresjet4" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet4_	);
+
+  outTree->Branch("pfresjet1", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet1_	);
+  outTree->Branch("pfresjet2", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet2_	);
+  outTree->Branch("pfresjet3", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet3_	);
+  outTree->Branch("pfresjet4", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet4_	);
+
   outTree->Branch("nonisoel" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisoel_	);
   outTree->Branch("nonisomu" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisomu_	);
   outTree->Branch("t"        , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &t_   	);
