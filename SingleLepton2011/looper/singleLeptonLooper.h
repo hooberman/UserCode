@@ -180,6 +180,14 @@ class singleLeptonLooper
 	Float_t etattbar_;
 	Float_t mgcor_;
 
+	// Type1 pfmet
+	Float_t t1met10_;
+	Float_t t1met20_;
+	Float_t t1met30_;
+	Float_t t1metres10_;
+	Float_t t1metres20_;
+	Float_t t1metres30_;
+
 	// assorted p4's
 	LorentzVector*  t_;   
 	LorentzVector*  tbar_;   
@@ -251,6 +259,7 @@ class singleLeptonLooper
         Int_t   nlep_;
         Int_t   ngoodlep_;
         Int_t   ngoodel_;
+        Int_t   nosel_;
         Int_t   ngoodmu_;
         Int_t   proc_;
         Int_t   leptype_;

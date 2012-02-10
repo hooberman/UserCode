@@ -449,6 +449,24 @@ float singleLeptonLooper::stopPairCrossSection( float stopmass ){
   }
 }
 
+float Type1PFMET( VofP4 jets_p4 , vector<float> cors , float minpt ){
+
+  float metx = evt_pfmet() * cos( evt_pfmetPhi() );
+  float mety = evt_pfmet() * sin( evt_pfmetPhi() );
+
+  assert( jets_p4.size() == cors.size() );
+
+  for( unsigned int i = 0 ; i < jets_p4.size() ; ++i ){
+    if( jets_p4.at(i).pt() < minpt ) continue;
+    metx += jets_p4.at(i).px() - jets_p4.at(i).px() * cors.at(i);
+    mety += jets_p4.at(i).py() - jets_p4.at(i).py() * cors.at(i);
+  }
+
+  return sqrt( metx*metx + mety*mety );
+
+}
+
+
 //--------------------------------------------------------------------
 
 int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, float lumi,
@@ -832,7 +850,19 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
 
+      //-----------------------------------------------------------------
+      // number of OS generic electrons *in addition to* primary lepton
+      //-----------------------------------------------------------------
 
+      nosel_ = 0;
+
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 10 )                                                 continue;
+	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+	if( dRbetweenVectors( *lep1_ , els_p4().at(iel) ) < 0.1 )                        continue;
+	nosel_++;
+      }
+      
       //--------------------------------
       // get MC quantities
       //--------------------------------
@@ -1314,9 +1344,16 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       float maxjetpt  = -1.;
 
       VofP4 vpfjets_p4;
+      VofP4 vpfrawjets_p4;
       VofP4 vpfresjets_p4;
       vpfjets_p4.clear();
+      vpfrawjets_p4.clear();
       vpfresjets_p4.clear();
+
+      vector<float> fullcors;
+      vector<float> rescors;
+      fullcors.clear();
+      rescors.clear();
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
@@ -1358,6 +1395,13 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  jetid_ = 0;
 	  if( vjet.pt() > 30 && fabs( vjet.eta() ) < 2.5 ) jetid30_ = 0;
 	  continue;
+	}
+
+	// store raw pfjet p4's and corrections for type1 pfmet
+	if( pfjets_p4().at(ijet).pt() > 10 ){
+	  vpfrawjets_p4.push_back( pfjets_p4().at(ijet) );
+	  fullcors.push_back( corr );
+	  rescors.push_back( rescorr );
 	}
 
 	// store L1FastL2L3Residual jet p4's pt > 15 GeV
@@ -1471,6 +1515,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
       }
 
+      // type1 met's
+      t1met10_       = Type1PFMET( vpfrawjets_p4 , fullcors , 10.0 );
+      t1met20_       = Type1PFMET( vpfrawjets_p4 , fullcors , 20.0 );
+      t1met30_       = Type1PFMET( vpfrawjets_p4 , fullcors , 30.0 );
+      t1metres10_    = Type1PFMET( vpfrawjets_p4 , rescors  , 10.0 );
+      t1metres20_    = Type1PFMET( vpfrawjets_p4 , rescors  , 20.0 );
+      t1metres30_    = Type1PFMET( vpfrawjets_p4 , rescors  , 30.0 );
+
       // store L1FastL2L3Residual pfjets
       sort(vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
       if( vpfjets_p4.size() > 0 ) pfjet1_  = &vpfjets_p4.at(0);
@@ -1501,19 +1553,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	dphijm_ = acos(cos(vjet.phi()-evt_pfmetPhi()));
       }
 
-      // nbctcl_      = 0;
-      // nbctcm_      = 0;
-      // ncalojets_   = 0;
-      // ncalojets15_ = 0;
-      // ncalojets20_ = 0;
-      // ncalojets25_ = 0;
-      // ncalojets30_ = 0;
-      // htcalo_      = 0;
       emjet10_     = -1;
       emjet20_     = -1;
-
-      // ncalojetsres_ = 0;
-      // htcalores_    = 0.0;
 
       //-------------------------------------------------------------
       // find jet with max EM fraction outside tracker acceptance
@@ -2541,6 +2582,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("k",               &k_,                "k/F");
   outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
   outTree->Branch("nlep",            &nlep_,             "nlep/I");
+  outTree->Branch("nosel",           &nosel_,            "nosel/I");
   outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
   outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
   outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
@@ -2592,21 +2634,29 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("npfjets40",       &npfjets40_,        "npfjets40/I");
   outTree->Branch("npfjets45",       &npfjets45_,        "npfjets45/I");
 
-  outTree->Branch("htpf30",          &htpf30_,           "htpf30/I");
-  outTree->Branch("htpf35",          &htpf35_,           "htpf35/I");
-  outTree->Branch("htpf40",          &htpf40_,           "htpf40/I");
-  outTree->Branch("htpf45",          &htpf45_,           "htpf45/I");
+  outTree->Branch("htpf30",          &htpf30_,           "htpf30/F");
+  outTree->Branch("htpf35",          &htpf35_,           "htpf35/F");
+  outTree->Branch("htpf40",          &htpf40_,           "htpf40/F");
+  outTree->Branch("htpf45",          &htpf45_,           "htpf45/F");
 
+  // type1 met flavors
+  outTree->Branch("t1met10",         &t1met10_,          "t1met10/F");
+  outTree->Branch("t1met20",         &t1met20_,          "t1met20/F");
+  outTree->Branch("t1met30",         &t1met30_,          "t1met30/F");
+  outTree->Branch("t1metres10",      &t1metres10_,       "t1metres10/F");
+  outTree->Branch("t1metres20",      &t1metres20_,       "t1metres20/F");
+  outTree->Branch("t1metres30",      &t1metres30_,       "t1metres30/F");
+  
   // pfjets Res
   outTree->Branch("npfresjets30",    &npfresjets30_,     "npfresjets30/I");
   outTree->Branch("npfresjets35",    &npfresjets35_,     "npfresjets35/I");
   outTree->Branch("npfresjets40",    &npfresjets40_,     "npfresjets40/I");
   outTree->Branch("npfresjets45",    &npfresjets45_,     "npfresjets45/I");
 
-  outTree->Branch("htpfres30",       &htpfres30_,        "htpfres30/I");
-  outTree->Branch("htpfres35",       &htpfres35_,        "htpfres35/I");
-  outTree->Branch("htpfres40",       &htpfres40_,        "htpfres40/I");
-  outTree->Branch("htpfres45",       &htpfres45_,        "htpfres45/I");
+  outTree->Branch("htpfres30",       &htpfres30_,        "htpfres30/F");
+  outTree->Branch("htpfres35",       &htpfres35_,        "htpfres35/F");
+  outTree->Branch("htpfres40",       &htpfres40_,        "htpfres40/F");
+  outTree->Branch("htpfres45",       &htpfres45_,        "htpfres45/F");
 
   /// calojets L1OffsetL2L3Res
   outTree->Branch("ncjets30",        &ncjets30_,         "ncjets30/I");
@@ -2614,10 +2664,10 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ncjets40",        &ncjets40_,         "ncjets40/I");
   outTree->Branch("ncjets45",        &ncjets45_,         "ncjets45/I");
 
-  outTree->Branch("htc30",           &htc30_,            "htc30/I");
-  outTree->Branch("htc35",           &htc35_,            "htc35/I");
-  outTree->Branch("htc40",           &htc40_,            "htc40/I");
-  outTree->Branch("htc45",           &htc45_,            "htc45/I");
+  outTree->Branch("htc30",           &htc30_,            "htc30/F");
+  outTree->Branch("htc35",           &htc35_,            "htc35/F");
+  outTree->Branch("htc40",           &htc40_,            "htc40/F");
+  outTree->Branch("htc45",           &htc45_,            "htc45/F");
 
   /// calojets Res
   outTree->Branch("ncresjets30",     &ncresjets30_,      "ncresjets30/I");
@@ -2625,10 +2675,10 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ncresjets40",     &ncresjets40_,      "ncresjets40/I");
   outTree->Branch("ncresjets45",     &ncresjets45_,      "ncresjets45/I");
 
-  outTree->Branch("htcres30",        &htcres30_,         "htcres30/I");
-  outTree->Branch("htcres35",        &htcres35_,         "htcres35/I");
-  outTree->Branch("htcres40",        &htcres40_,         "htcres40/I");
-  outTree->Branch("htcres45",        &htcres45_,         "htcres45/I");
+  outTree->Branch("htcres30",        &htcres30_,         "htcres30/F");
+  outTree->Branch("htcres35",        &htcres35_,         "htcres35/F");
+  outTree->Branch("htcres40",        &htcres40_,         "htcres40/F");
+  outTree->Branch("htcres45",        &htcres45_,         "htcres45/F");
 
   // btag variables
   outTree->Branch("nbtagsssv",       &nbtagsssv_,        "nbtagsssv/I");
