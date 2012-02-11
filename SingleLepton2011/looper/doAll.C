@@ -90,14 +90,14 @@ void doAll(bool skipFWLite = true)
  
   // flags for files to run over
   bool rundata     = 1;
-  bool runttall    = 0;
-  bool runWjets    = 0;
-  bool runQCD      = 0;
-  bool runtW       = 0;
-  bool runDYtot    = 0;
-  bool runT2tt     = 0; 
+  bool runttall    = 1;
+  bool runWjets    = 1;
+  bool runQCD      = 1;
+  bool runtW       = 1;
+  bool runDYtot    = 1;
+  bool runT2tt     = 1; 
   bool runT2tt_few = 0;
-  bool runT2bw     = 0;
+  bool runT2bw     = 1;
 
   if( useMCSkims )  cout << "Using MC skims" << endl;
   else              cout << "Using full MC samples" << endl;
@@ -142,7 +142,7 @@ void doAll(bool skipFWLite = true)
 
   TChain* chDYtot = new  TChain("Events");
   if(runDYtot){
-    string dypath = "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/"
+    string dypath = "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/";
     pickSkimIfExists(chDYtot,dypath+"DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-29/SingleLeptonAndTwoJets/merged*root");
     pickSkimIfExists(chDYtot,dypath+"DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
     pickSkimIfExists(chDYtot,dypath+"DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
