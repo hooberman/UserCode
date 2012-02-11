@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-13";
+  const char* version   = "V00-02-14";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -263,7 +263,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
   bool runphotons  = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runttallPUS6= 0;
   bool runttpowheg = 0;
   bool runtt42     = 0;
@@ -289,12 +289,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runVQQ      = 0;
   bool runLM0      = 0;
   bool runLM1      = 0;
+  bool runLM1v2    = 1;
   bool runLM2      = 0;
   bool runLM3      = 0;
+  bool runLM3v2    = 1;
   bool runLM4      = 0;
   bool runLM5      = 0;
   bool runLM6      = 0;
-  bool runLM6v2    = 0;
+  bool runLM6v2    = 1;
   bool runLM7      = 0;
   bool runLM8      = 0;
   bool runLM9      = 0;
@@ -391,8 +393,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
-    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
-    //pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    //pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
+    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   TChain* chtopallPUS6 = new TChain("Events");
@@ -633,6 +635,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		     "SUSY_LM1");
   }
   
+  // LM1v2
+  TChain *chLM1v2 = new TChain("Events");
+  if (runLM1v2) {
+    pickSkimIfExists(chLM1v2, 
+		     "/nfs-7/userdata/cms2/LM1_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root",
+		     "SUSY_LM1");
+  }
+  
   // LM2
   TChain *chLM2 = new TChain("Events");
   if (runLM2) {
@@ -646,6 +656,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   if (runLM3) {
     pickSkimIfExists(chLM3, 
 		     "/nfs-7/userdata/cms2/LM3_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
+                     "SUSY_LM3");
+  }
+
+  // LM3v2
+  TChain *chLM3v2 = new TChain("Events");
+  if (runLM3v2) {
+    pickSkimIfExists(chLM3, 
+		     "/nfs-7/userdata/cms2/LM3_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root",
                      "SUSY_LM3");
   }
 
@@ -912,7 +930,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
   char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
   char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
-  bool doFakeApp          = true;
+  bool doFakeApp          = false;
 
   ossusy_looper::TrigEnum trig;
 
@@ -1260,6 +1278,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      cout << "Done processing LM1" << endl;
 		      hist::color("LM1", kOrange+1);
 		    }
+		    if (runLM1v2) {
+		      cout << "Processing LM1v2" << endl;
+		      looper->ScanChain(chLM1v2, "LM1v2", kLM1, preLM1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LM1v2" << endl;
+		    }
 		    if (runLM2) {
 		      cout << "Processing LM2" << endl;
 		      looper->ScanChain(chLM2, "LM2", kLM2, preLM2, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1271,6 +1294,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chLM3, "LM3", kLM3, preLM3, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing LM3" << endl;
 		      hist::color("LM3", kOrange+3);
+		    }
+		    if (runLM3v2) {
+		      cout << "Processing LM3v2" << endl;
+		      looper->ScanChain(chLM3v2, "LM3v2", kLM3, preLM3, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LM3v2" << endl;
 		    }
 		    if (runLM4) {
 		      cout << "Processing LM4" << endl;

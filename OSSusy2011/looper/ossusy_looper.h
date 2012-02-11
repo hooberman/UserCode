@@ -82,6 +82,8 @@ class ossusy_looper
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
         void closeTree ();
 	int PassGenSelectionOS( bool isData , float metcut , float htcut , float ycut );
+	float GenWeight( bool isData , int metcut, int htcut );
+	void lepEfficiencies( bool isData );
 
 	float stopPairCrossSection( float stopmass );
 	TH1D*   stop_xsec_hist;
@@ -107,6 +109,10 @@ class ossusy_looper
         LorentzVector*  jet2_; 
  
         // Baby ntuple variables
+	Float_t geff_;
+	Float_t geffmet_;
+	Float_t geffht_;
+	Float_t gefftight_;
 	Float_t fileff_;
 	Float_t lepscale_;
 	Float_t mG_;
@@ -277,6 +283,11 @@ class ossusy_looper
         double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
 
         // Lots and lots of histograms
+
+	TH1F* hel;
+	TH1F* hmu;
+	TH1F* helpass;
+	TH1F* hmupass;
 
         //Z histos
         TH1F* hdilMass_Z[4][4];

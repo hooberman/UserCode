@@ -8,6 +8,7 @@
 #include "TChainElement.h"
 #include "TDirectory.h"
 #include "TFile.h"
+#include "TF1.h"
 #include "TProfile.h"
 #include "TTree.h"
 #include "TH1F.h"
@@ -53,13 +54,14 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 //mSUGRA scan parameters-----------------------------
 
+const bool  doGenSelection    = false;
 const bool  generalLeptonVeto = true;
-const int   nm0points    = 100;
-const float m0min        = 20.;
-const float m0max        = 2020.;
-const int   nm12points   = 38;
-const float m12min       = 20.;
-const float m12max       = 780.;
+const int   nm0points         = 100;
+const float m0min             = 20.;
+const float m0max             = 2020.;
+const int   nm12points        = 38;
+const float m12min            = 20.;
+const float m12max            = 780.;
 
 //---------------------------------------------------
 
@@ -744,6 +746,26 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       cms2.GetEntry(z);
       InitBaby();
+
+      if( doGenSelection ){
+
+	weight_ = cms2.evt_scale1fb();
+	  	
+	if( TString(prefix).Contains("LM6") ) weight_ *= kfactorSUSY( "lm6" );
+
+	//cout << endl << endl;
+	//dumpDocLines();
+
+	geff_      = GenWeight(isData,0,0);     // no HT or MET
+	geffmet_   = GenWeight(isData,275,300); // high MET
+	geffht_    = GenWeight(isData,200,600); // high HT
+	gefftight_ = GenWeight(isData,275,600); // SR2
+
+	lepEfficiencies(isData);
+
+	outTree->Fill();
+	continue;
+      }
 
       /*
       cout << endl << endl;
@@ -2822,6 +2844,11 @@ void ossusy_looper::BookHistos(char *prefix)
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
+  
+  hel     = new TH1F("hel"     ,"",30,0,150);
+  hmu     = new TH1F("hmu"     ,"",30,0,150);
+  helpass = new TH1F("helpass" ,"",30,0,150);
+  hmupass = new TH1F("hmupass" ,"",30,0,150);
 
   hyield = new TH1F(Form("%s_yield",prefix),Form("%s Event Yields",prefix),4,0,4);
   hyield->GetXaxis()->SetTitle("dil type");
@@ -4097,7 +4124,7 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   }
 
   char* isgen = "";
-  if     ( genLeptonSelection  ) isgen = "_gen";
+  if     ( doGenSelection  ) isgen = "_gen";
 
   char* tpsuffix = "";
   if( doTenPercent ) tpsuffix = "_tenPercent";
@@ -4109,6 +4136,10 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   //Set branch addresses
   //variables must be declared in ossusy_looper.h
+  outTree->Branch("geff",            &geff_,             "geff/F");
+  outTree->Branch("geffmet",         &geffmet_,          "geffmet/F");
+  outTree->Branch("geffht",          &geffht_,           "geffht/F");
+  outTree->Branch("gefftight",       &gefftight_,        "gefftight/F");
   outTree->Branch("acc_2010",        &acc_2010_,         "acc_2010/I");
   outTree->Branch("acc_highmet",     &acc_highmet_,      "acc_highmet/I");
   outTree->Branch("acc_highht",      &acc_highht_,       "acc_highht/I");
@@ -4598,3 +4629,382 @@ std::pair<float,float> ossusy_looper::PFCandidateMET(const unsigned int vtxIdx, 
   
   return make_pair( met , metphi );
 }
+
+
+double fitf (double* x, double* par) {
+  double arg = 0;
+  if (par[2] != 0)
+    arg = (x[0] - par[1])/par[2];
+  
+  double fitval = 0.5 * par[0] * (TMath::Erf(arg) + 1);
+  return fitval;
+}
+
+double mfitf (double* x, double* par) {                                                                                                                                         
+  double arg = 0;                                                                                                                                                                 
+  if (par[2] != 0)                                                                                                                                                                
+    arg = (x[0] - 10.)/par[2];                                                                                                                                                     
+  
+  double fitval = par[0]*TMath::Erf(arg)+par[1]*(1.-TMath::Erf(arg));                                                                                                             
+  return fitval;                                                                                                                                                                  
+}                                                                                                                                                                               
+       
+
+void ossusy_looper::lepEfficiencies( bool isData ){
+    
+  // mc leptons
+  VofP4 leps;
+  vector<int> ids;
+
+  // loop over gen particles: store p4's and ID's of gen leptons
+  for (size_t i = 0; i < cms2.genps_id().size(); ++i){
+    
+    int   id  = cms2.genps_id().at(i);
+    float pt  = cms2.genps_p4().at(i).pt();
+    float eta = cms2.genps_p4().at(i).eta();
+
+    // require e, mu, or tau
+    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
+
+    // e or mu
+    if( abs(id)==11 || abs(id)==13 ){
+
+      // pt > 10 and |eta| < 2.5
+      if( pt > 10 && fabs(eta) < 2.5 ){
+	leps.push_back( genps_p4().at(i) );
+	ids.push_back( id );
+      }
+    }
+
+    // tau --> get leptonic daughters
+    else if( abs(id)==15 ){
+
+      for(unsigned int j = 0; j < cms2.genps_lepdaughter_id().at(i).size(); j++) {
+	
+	int   id2  = cms2.genps_lepdaughter_id().at(i).at(j);
+	float pt2  = cms2.genps_lepdaughter_p4().at(i).at(j).pt();
+	float eta2 = cms2.genps_lepdaughter_p4().at(i).at(j).eta();
+	
+	// require e or mu
+	if( !( abs(id2)==11 || abs(id2)==13 ) ) continue;
+	
+	// pt > 10 and |eta| < 2.5
+	if( pt2 > 10 && fabs(eta2) < 2.5 ){
+	  leps.push_back( cms2.genps_lepdaughter_p4().at(i).at(j) );
+	  ids.push_back(id2);
+	}
+      }
+    }
+
+    else{
+      cout << "ERROR! gen particle ID " << id << endl;
+      exit(0);
+    }
+
+  }
+
+
+  for( unsigned int i = 0 ; i < leps.size() ; ++i ){
+
+    // electron
+    if( abs(ids.at(i))==11 ){
+
+      // fill denominator
+      hel->Fill( leps.at(i).pt() );
+
+      // check for matched reco electron
+      bool match = false;
+
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 10 )                                                 continue;
+	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+	if( dRbetweenVectors( els_p4().at(iel) , leps.at(i) ) < 0.3 ) match = true;
+      }
+
+      if( match ) helpass->Fill( leps.at(i).pt() );
+    }
+
+    // muon
+    if( abs(ids.at(i))==13 ){
+
+      // fill denominator
+      hmu->Fill( leps.at(i).pt() );
+
+      // check for matched reco muon
+      bool match = false;
+
+      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+	if( mus_p4().at(imu).pt() < 10 )           continue;
+	if( !muonId( imu , OSGeneric_v3 ))         continue;
+	if( dRbetweenVectors( mus_p4().at(imu) , leps.at(i) ) < 0.3 ) match = true;
+      }
+
+      if( match ) hmupass->Fill( leps.at(i).pt() );
+    }
+  }
+
+}
+
+float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
+  
+  if( isData ) return 0.;
+
+  //---------------------------------------------
+  // does this event pass the analysis selection?
+  //---------------------------------------------
+  
+  // mc leptons
+  VofP4 leps;
+  vector<int> ids;
+
+  // loop over gen particles: store p4's and ID's of gen leptons
+  for (size_t i = 0; i < cms2.genps_id().size(); ++i){
+    
+    int   id  = cms2.genps_id().at(i);
+    float pt  = cms2.genps_p4().at(i).pt();
+    float eta = cms2.genps_p4().at(i).eta();
+
+    // require e, mu, or tau
+    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
+
+    // e or mu
+    if( abs(id)==11 || abs(id)==13 ){
+
+      // pt > 10 and |eta| < 2.5
+      if( pt > 10 && fabs(eta) < 2.5 ){
+	leps.push_back( genps_p4().at(i) );
+	ids.push_back( id );
+      }
+    }
+
+    // tau --> get leptonic daughters
+    else if( abs(id)==15 ){
+
+      for(unsigned int j = 0; j < cms2.genps_lepdaughter_id().at(i).size(); j++) {
+	
+	int   id2  = cms2.genps_lepdaughter_id().at(i).at(j);
+	float pt2  = cms2.genps_lepdaughter_p4().at(i).at(j).pt();
+	float eta2 = cms2.genps_lepdaughter_p4().at(i).at(j).eta();
+	
+	// require e or mu
+	if( !( abs(id2)==11 || abs(id2)==13 ) ) continue;
+	
+	// pt > 10 and |eta| < 2.5
+	if( pt2 > 10 && fabs(eta2) < 2.5 ){
+	  leps.push_back( cms2.genps_lepdaughter_p4().at(i).at(j) );
+	  ids.push_back(id2);
+	}
+      }
+    }
+
+    else{
+      cout << "ERROR! gen particle ID " << id << endl;
+      exit(0);
+    }
+
+  }
+
+  assert( leps.size() == ids.size() );
+
+  // cout << "List of good leptons" << endl;
+  // for( unsigned int i = 0 ; i < leps.size() ; ++i ){
+  //   cout << i << " " << ids.at(i) << " " << Form("%.1f",leps.at(i).pt()) << endl;
+  // }
+  // cout << endl;
+
+  // require >=2 leptons
+  if( leps.size() < 2 ) return 0.0;
+
+  //look for OS pt > 20,10 GeV pair Z mass veto
+  bool  foundPair = false;
+  int   lep1idx   = -1;
+  int   lep2idx   = -1;
+  float maxpt     = -1;
+
+  for( unsigned int i = 0 ; i < leps.size() ; ++i ){
+
+    for( unsigned int j = i + 1 ; j < leps.size() ; ++j ){
+
+      // max pt > 20 GeV
+      if( max( leps.at(i).pt() , leps.at(j).pt() ) < 20 ) continue;
+
+      // OS
+      if( ids.at(i) * ids.at(j) > 0 ) continue;
+
+      // Z veto
+      float dilmass = ( leps.at(i) + leps.at(j) ).mass();      
+      if( abs(ids.at(i)) == abs(ids.at(j)) && dilmass > 76 && dilmass < 106 ) continue;
+	
+      //found lepton pair!
+      foundPair = true;
+
+      if( leps.at(i).pt() + leps.at(j).pt() > maxpt ){
+	maxpt   = leps.at(i).pt() + leps.at(j).pt();
+	lep1idx = i;
+	lep2idx = j;
+      }
+
+    }
+  }
+
+  if( !foundPair ) return 0.;
+
+  // cout << "Found pair" << endl;
+  // cout << ids.at(lep1idx) << " " << Form("%.1f",leps.at(lep1idx).pt()) << endl;
+  // cout << ids.at(lep2idx) << " " << Form("%.1f",leps.at(lep2idx).pt()) << endl;
+  // cout << endl;
+
+  // get ht and njets
+  float ht    = 0.;
+  int   njets = 0;
+
+  for (size_t j = 0; j < cms2.genjets_p4().size(); ++j){
+
+    // pt and eta cuts
+    if (cms2.genjets_p4().at(j).pt() < 30.0)       continue;
+    if (fabs(cms2.genjets_p4().at(j).eta()) > 3.0) continue;
+
+    bool reject = false;
+    for( unsigned int i = 0 ; i < leps.size() ; ++i ){
+      if( dRbetweenVectors( genjets_p4().at(j) , leps.at(i) ) < 0.4 ) reject = true;
+    }
+    if( reject ) continue;
+
+    njets ++;
+    ht += genjets_p4().at(j).pt();
+    
+  }
+
+  //int nGoodJet   = 0;
+  
+  // for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
+
+  //   if (cms2.genps_status().at(gidx) != 3)
+  // 	continue;
+
+  //   if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
+  // 	continue;
+
+  //   if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
+  // 	continue;
+
+  //   if (cms2.genps_p4().at(gidx).pt() < 30.)
+  // 	continue;
+      
+  //   nGoodJet++;
+  // }
+
+  // if( nGoodJet < 2 ) return 0.;
+
+
+  // pass selection, now calculate weight
+  int lep1id = abs( ids.at(lep1idx) );
+  int lep2id = abs( ids.at(lep2idx) );
+
+  // trigger efficiency
+  float trgeff = 1;
+  if( lep1id == 11 && lep2id == 11 ) trgeff = 1.00;   //ee
+  if( lep1id == 13 && lep2id == 13 ) trgeff = 0.90;   //mm
+  if( lep1id == 13 && lep2id == 11 ) trgeff = 0.95;   //em
+  if( lep1id == 11 && lep2id == 13 ) trgeff = 0.95;   //em
+
+  float lep1eff = 1;
+  float lep2eff = 1;
+
+  float pt1 = leps.at(lep1idx).pt();
+  float pt2 = leps.at(lep2idx).pt();
+
+  TF1* leperf = new TF1("leperf", mfitf, 0, 600, 3);
+
+  // lepton1 is electron
+  if( lep1id == 11 ){
+    leperf->SetParameter(0,0.82);
+    leperf->SetParameter(1,0.40);
+    leperf->SetParameter(2,17.0);
+    lep1eff = leperf->Eval(pt1);
+  }
+
+  // lepton1 is muon
+  else if( lep1id == 13 ){
+    leperf->SetParameter(0,0.89);
+    leperf->SetParameter(1,0.68);
+    leperf->SetParameter(2,24.0);
+    lep1eff = leperf->Eval(pt1);
+  }
+
+  // lepton2 is electron
+  if( lep2id == 11 ){
+    leperf->SetParameter(0,0.82);
+    leperf->SetParameter(1,0.40);
+    leperf->SetParameter(2,17.0);
+    lep2eff = leperf->Eval(pt2);
+  }
+
+  // lepton2 is muon
+  else if( lep2id == 13 ){
+    leperf->SetParameter(0,0.89);
+    leperf->SetParameter(1,0.68);
+    leperf->SetParameter(2,24.0);
+    lep2eff = leperf->Eval(pt2);
+  }
+  
+  TF1* erf = new TF1("erf", fitf, 0, 600, 3);
+  
+  // evaluate met efficiency
+
+  float meteff = 1;
+  
+  if( metcut == 0 ){
+    meteff = 1;
+  }
+
+  else if( metcut == 200 ){
+    erf->SetParameters(1.00, 211, 36);
+    meteff = erf->Eval(cms2.gen_met());
+  }
+
+  else if( metcut == 275 ){
+    erf->SetParameters(1.00, 291, 39);
+    meteff = erf->Eval(cms2.gen_met());
+  }
+
+  else{
+    cout << "ERROR! unrecognized metcut " << metcut << ", quitting" << endl;
+    exit(0);
+  }
+  
+  // evaluate ht efficiency
+
+  float hteff = 1;
+  
+  if( htcut == 0 ){
+    hteff = 1;
+  }
+
+  else if( htcut == 125 ){
+    erf->SetParameters(1.00, 114, 42);
+    hteff = erf->Eval(ht);
+  }
+
+  else if( htcut == 300 ){
+    erf->SetParameters(1.00, 285, 48);
+    hteff = erf->Eval(ht);
+  }
+
+  else if( htcut == 600 ){
+    erf->SetParameters(0.99, 591, 55);
+    hteff = erf->Eval(ht);
+  }
+
+  else{
+    cout << "ERROR! unrecognized htcut " << htcut << ", quitting" << endl;
+    exit(0);
+  }
+  
+  float eff = trgeff * lep1eff * lep2eff * meteff * hteff;
+  
+  return eff;
+
+}
+
+
