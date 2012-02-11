@@ -475,6 +475,25 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 {
 
+  //------------------------------------------------------------------------------------------------------
+  // set json, vertex reweighting function and msugra cross section files
+  //------------------------------------------------------------------------------------------------------
+  
+  if( !initialized ){
+
+    //set json
+    cout << "setting json " << g_json << endl;
+    set_goodrun_file( g_json );
+
+    //set vtx reweighting hist
+    set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
+
+    //set msugra cross section file
+    set_msugra_file("goodModelNames_tanbeta10.txt");
+
+
+    initialized = true;
+  }
 
   //------------------------------------------------------------------------------------------------------
   // latest-and-greatest JEC
@@ -527,37 +546,24 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   //JetCorrectionUncertainty *pfUncertainty   = new JetCorrectionUncertainty( pfUncertaintyFile   );
   //JetCorrectionUncertainty *caloUncertainty = new JetCorrectionUncertainty( caloUncertaintyFile );
 
+  //------------------------------------------------
+  // set stop cross section file
+  //------------------------------------------------
 
-
-  if( !initialized ){
-
-    //set json
-    cout << "setting json " << g_json << endl;
-    set_goodrun_file( g_json );
-
-    //set vtx reweighting hist
-    set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
-
-    //set msugra cross section file
-    set_msugra_file("goodModelNames_tanbeta10.txt");
-
-    //set stop cross section file
-    stop_xsec_file = TFile::Open("../data/reference_xSec_stop.root");
-
-    if( !stop_xsec_file->IsOpen() ){
-      cout << "Error, could not open stop cross section TFile, quitting" << endl;
-      exit(0);
-    }
-
-    stop_xsec_hist        = (TH1D*) stop_xsec_file->Get("stop");
-    
-    if( stop_xsec_hist == 0 ){
-      cout << "Error, could not retrieve stop cross section hist, quitting" << endl;
-      exit(0);
-    }
-
-    initialized = true;
+  stop_xsec_file = TFile::Open("../data/reference_xSec_stop.root");
+  
+  if( !stop_xsec_file->IsOpen() ){
+    cout << "Error, could not open stop cross section TFile, quitting" << endl;
+    exit(0);
   }
+  
+  stop_xsec_hist        = (TH1D*) stop_xsec_file->Get("stop");
+  
+  if( stop_xsec_hist == 0 ){
+    cout << "Error, could not retrieve stop cross section hist, quitting" << endl;
+    exit(0);
+  }
+
   
   bool isLM = TString(prefix).Contains("LM");
   bool isData = false;
