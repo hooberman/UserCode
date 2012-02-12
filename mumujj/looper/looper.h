@@ -273,6 +273,10 @@ class looper
 	Float_t ndavtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
+	Int_t   mtrg_;
+	Int_t   eetrg_;
+	Int_t   mmtrg_;
+	Int_t   emtrg_;
 
 	Float_t ksusy_;
 	Float_t ksusyup_;

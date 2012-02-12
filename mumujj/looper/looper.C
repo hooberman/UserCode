@@ -28,6 +28,9 @@
 #include "../CORE/triggerUtils.cc"
 #include "../CORE/jetSelections.cc"
 #include "../Tools/vtxreweight.cc"
+#include "../CORE/electronSelections.cc"
+#include "../CORE/electronSelectionsParameters.cc"
+#include "../CORE/MITConversionUtilities.cc"
 #endif
 
 bool verbose      = false;
@@ -295,6 +298,78 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
   
   return false;
     
+}
+
+/*****************************************************************************************/
+// pass dimuon trigger
+/*****************************************************************************************/
+
+bool passMMTrigger( bool isData ){
+  
+  //----------------------------------------
+  // no trigger requirements applied to MC
+  //----------------------------------------
+  
+  if( !isData ) return true; 
+  
+  //---------------------------------
+  // triggers for dilepton datasets
+  //---------------------------------
+
+  if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu7_v" ) )   return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu8_v" ) )   return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
+  
+  return false;    
+}
+
+/*****************************************************************************************/
+// pass dielectron trigger
+/*****************************************************************************************/
+
+bool passEETrigger( bool isData ){
+  
+  //----------------------------------------
+  // no trigger requirements applied to MC
+  //----------------------------------------
+  
+  if( !isData ) return true; 
+  
+  //---------------------------------
+  // triggers for dilepton datasets
+  //---------------------------------
+    
+  //ee
+  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )                                   return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v") ) return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+  
+  return false;    
+}
+
+/*****************************************************************************************/
+// pass e-mu trigger
+/*****************************************************************************************/
+
+bool passEMTrigger( bool isData ){
+  
+  //----------------------------------------
+  // no trigger requirements applied to MC
+  //----------------------------------------
+  
+  if( !isData ) return true; 
+  
+  //---------------------------------
+  // triggers for dilepton datasets
+  //---------------------------------
+
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdL_v")           )   return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdL_v")           )   return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v") )   return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v") )   return true;  
+  
+  return false;    
 }
 
 //--------------------------------------------------------------------
@@ -664,7 +739,12 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // require trigger
       //--------------------------------
 
-      if( !passMuMuJJTrigger_v1( isData ) ) continue;
+      if( !( passMuMuJJTrigger_v1(isData) || passMMTrigger(isData) || passEETrigger(isData) || passEETrigger(isData) ) ) continue;
+
+      mtrg_  = passMuMuJJTrigger_v1( isData ) ? 1 : 0;
+      eetrg_ = passEETrigger(isData)          ? 1 : 0;
+      mmtrg_ = passMMTrigger(isData)          ? 1 : 0;
+      emtrg_ = passEMTrigger(isData)          ? 1 : 0;
 
       //---------------------
       // skip duplicates
@@ -711,10 +791,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       ngoodel_  = 0;
       ngoodmu_  = 0;
 
-      /*
-	for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 10 )                                                 continue;
-	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 20 )                                                 continue;
+	if( !pass_electronSelection( iel , electronSelection_el_ping , false , false ) ) continue;
+
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepId.push_back( els_charge().at(iel) * 11 );
 	lepIndex.push_back(iel);
@@ -722,8 +802,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	ngoodlep_++;
 	
 	//cout << "Found electron " << ngoodlep_ << " pt " << els_p4().at(iel).pt() << endl;
-	}
-      */
+      }
+      
 
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 20 )            continue;
@@ -793,8 +873,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	}
 	//-----------------------------------------------------------------------------
 	if( trigObjs.size() == 0 ){
-	  cout << "ERROR! didn't find matching trigger objects" << endl;
-	  continue;
+	  //cout << "ERROR! didn't find matching trigger objects" << endl;
+	  //continue;
 	}
 	//-----------------------------------------------------------------------------
       }
@@ -805,8 +885,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
 
 	if( trigObjs.size() == 0 ){
-	  cout << "ERROR! didn't find matching trigger objects" << endl;
-	  continue;
+	  //cout << "ERROR! didn't find matching trigger objects" << endl;
+	  //continue;
 	}
       }
 
@@ -856,43 +936,71 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // 	cout << "2nd lepton   " << goodLeptons.at(ilep2).pt() << endl;
       // }
 
-      //-----------------------------------------------------------------------
-      // are either muon matched to trigger object?
-      //-----------------------------------------------------------------------
-
-      hlt1_ = 0;
-      hlt2_ = 0;
-
-      if( objectPassTrigger( goodLeptons.at(ilep1) , trigObjs ,20 ) ) hlt1_ = 1;      
-      if( objectPassTrigger( goodLeptons.at(ilep2) , trigObjs ,20 ) ) hlt2_ = 1;      
       
       //---------------------------------------------------------
       // muon branches
       //---------------------------------------------------------
-
 
       int index1 = lepIndex.at(ilep1);
       int index2 = lepIndex.at(ilep2);
 
       id1_       = lepId.at(ilep1);
       lep1_      = &goodLeptons.at(ilep1);
-      iso1_      = muonIsoValue(index1,false);
-      passid1_   = muonIdNotIsolated( index1 , OSGeneric_v3 ) ? 1 : 0;
+      if( abs(id1_) == 13 ){
+	iso1_      = muonIsoValue(index1,false);
+	passid1_   = muonIdNotIsolated( index1 , OSGeneric_v3 ) ? 1 : 0;
+	lep1trk_   = &(mus_trk_p4().at(index1));
+	lep1glb_   = &(mus_gfit_p4().at(index1));
+	lep1sta_   = &(mus_sta_p4().at(index1));
+      }
+      else{
+	iso1_      = electronIsolation_rel_v1(index1,true);
+	passid1_   = pass_electronSelection( index1 , electronSelection_el_OSV3_noiso ) ? 1 : 0 ;
+	lep1trk_   = &goodLeptons.at(ilep1);
+	lep1glb_   = &goodLeptons.at(ilep1);
+	lep1sta_   = &goodLeptons.at(ilep1);
+      }
 
-      lep1trk_   = &(mus_trk_p4().at(ilep1));
-      lep1glb_   = &(mus_gfit_p4().at(ilep1));
-      lep1sta_   = &(mus_sta_p4().at(ilep1));
-      	
       id2_       = lepId.at(ilep2);
       lep2_      = &goodLeptons.at(ilep2);
-      iso2_      = muonIsoValue(index2,false);
-      passid2_   = muonIdNotIsolated( index2, OSGeneric_v3 ) ? 1 : 0;
-      
-      lep2trk_   = &(mus_trk_p4().at(ilep2));
-      lep2glb_   = &(mus_gfit_p4().at(ilep2));
-      lep2sta_   = &(mus_sta_p4().at(ilep2));
+      if( abs(id2_) == 13 ){
+	iso2_      = muonIsoValue(index2,false);
+	passid2_   = muonIdNotIsolated( index2 , OSGeneric_v3 ) ? 1 : 0;
+	lep2trk_   = &(mus_trk_p4().at(index2));
+	lep2glb_   = &(mus_gfit_p4().at(index2));
+	lep2sta_   = &(mus_sta_p4().at(index2));
+      }
+      else{
+	iso2_      = electronIsolation_rel_v1(index2,true);
+	passid2_   = pass_electronSelection( index2 , electronSelection_el_OSV3_noiso ) ? 1 : 0 ;
+	lep2trk_   = &goodLeptons.at(ilep2);
+	lep2glb_   = &goodLeptons.at(ilep2);
+	lep2sta_   = &goodLeptons.at(ilep2);
+      }
 
       dilmass_   = ( goodLeptons.at(ilep1) + goodLeptons.at(ilep2) ).mass();
+
+      leptype_ = -1;
+      if( abs(id1_) == 11 && abs(id2_) == 11 ) leptype_ = 0;
+      if( abs(id1_) == 13 && abs(id2_) == 13 ) leptype_ = 1;
+      if( abs(id1_) == 11 && abs(id2_) == 13 ) leptype_ = 2;
+      if( abs(id1_) == 13 && abs(id2_) == 11 ) leptype_ = 2;
+
+      //-----------------------------------------------------------------------
+      // are either muon matched to trigger object?
+      //-----------------------------------------------------------------------
+
+      hlt1_ = -1;
+      hlt2_ = -1;
+
+      if( abs(id1_) == 13 ){
+	if( objectPassTrigger( goodLeptons.at(ilep1) , trigObjs ,20 ) ) hlt1_ = 1;      
+	else                                                            hlt1_ = 0;
+      }
+      if( abs(id2_) == 13 ){
+	if( objectPassTrigger( goodLeptons.at(ilep2) , trigObjs ,20 ) ) hlt2_ = 1;      
+	else                                                            hlt2_ = 0;
+      }
 
       //--------------------------------
       // get MC quantities
@@ -1572,6 +1680,11 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   //Set branch addresses
   //variables must be declared in looper.h
+  outTree->Branch("leptype",         &leptype_,          "leptype/I");
+  outTree->Branch("mtrg",            &mtrg_,             "mtrg/I");
+  outTree->Branch("eetrg",           &eetrg_,            "eetrg/I");
+  outTree->Branch("mmtrg",           &mmtrg_,            "mmtrg/I");
+  outTree->Branch("emtrg",           &emtrg_,            "emtrg/I");
   outTree->Branch("diltrig",         &diltrig_,          "diltrig/I");
   outTree->Branch("hlt1",            &hlt1_,             "hlt1/I");
   outTree->Branch("hlt2",            &hlt2_,             "hlt2/I");
