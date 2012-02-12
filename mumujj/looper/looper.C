@@ -1249,6 +1249,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       mmjjsta_   = -1;
       mjjj_      = -1;
       mmjjuncor_ = -1;
+      mmjjtrkuncor_ = -1;
+      mmjjtrkdef_   = -1;
 
       //--------------------------------------
       // corrected jets
@@ -1287,12 +1289,18 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       sort(vpfjets_uncor_p4_sorted.begin(), vpfjets_uncor_p4_sorted.end(), sortByPt);
 
       if( njetsuncor_ >= 2 && ngoodlep_ > 1 ){
-	mmjjuncor_ = (*lep1_    + *lep2_    + vpfjets_uncor_p4_sorted.at(0) + vpfjets_uncor_p4_sorted.at(1)).mass();
+	mmjjuncor_    = (*lep1_    + *lep2_    + vpfjets_uncor_p4_sorted.at(0) + vpfjets_uncor_p4_sorted.at(1)).mass();
+	mmjjtrkuncor_ = (*lep1trk_ + *lep2trk_ + vpfjets_uncor_p4_sorted.at(0) + vpfjets_uncor_p4_sorted.at(1)).mass();
       }
 
-      if( isData ) mmjjdef_  = mmjj_;
-      else         mmjjdef_  = mmjjuncor_;
-     
+      if( isData ){
+	mmjjdef_     = mmjj_;
+	mmjjtrkdef_  = mmjjtrk_;
+      }
+      else{
+	mmjjdef_     = mmjjuncor_;
+	mmjjtrkdef_  = mmjjtrkuncor_;
+      }
       
       //--------------------------------------
       // plain jets
@@ -1570,6 +1578,8 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pingmass",        &pingmass_,         "pingmass/F");
   outTree->Branch("metnew",          &metnew_,           "metnew/F");
   outTree->Branch("mmjjdef",         &mmjjdef_,          "mmjjdef/F");
+  outTree->Branch("mmjjtrkuncor",    &mmjjtrkuncor_,     "mmjjtrkuncor/F");
+  outTree->Branch("mmjjtrkdef",      &mmjjtrkdef_,       "mmjjtrkdef/F");
   outTree->Branch("mmjjc",           &mmjjc_,            "mmjjc/F");
   outTree->Branch("cor1",            &cor1_,             "cor1/F");
   outTree->Branch("cor2",            &cor2_,             "cor2/F");

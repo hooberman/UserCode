@@ -42,7 +42,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-01-04";
+  const char* version   = "V00-01-05";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -219,7 +219,7 @@ void doAll(bool skipFWLite = true)
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -234,7 +234,7 @@ void doAll(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 0;
+  bool runDYtot    = 1;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -401,11 +401,9 @@ void doAll(bool skipFWLite = true)
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
-    
     pickSkimIfExists(chtopall, 
      		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
-     		     "TTJets");
-    
+     		     "TTJets");    
   }
   
   TChain* chtop42 = new TChain("Events");
