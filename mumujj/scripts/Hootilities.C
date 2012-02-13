@@ -51,9 +51,7 @@ void printLine( bool latex ){
 void printHeader(){
 
   cout << delimstart << setw(width1) << "Sample"    << setw(width2)
-       << delim      << setw(width1) << e           << setw(width2)
-       << delim      << setw(width1) << m           << setw(width2)
-       << delim      << setw(width1) << "tot"       << setw(width2) 
+       << delim      << setw(width1) << "Yield"     << setw(width2) 
        << delimend   << endl;
 
 }
@@ -85,8 +83,6 @@ void print( TH1F* h , string label , bool correlatedError = false ){
   }
 
   cout << delimstart << setw(width1) << label      << setw(width2)
-       << delim      << setw(width1) << se.str()   << setw(width2)
-       << delim      << setw(width1) << sm.str()   << setw(width2)
        << delim      << setw(width1) << stot.str() << setw(width2)
        << delimend   << endl;
   
@@ -116,7 +112,7 @@ void initSymbols( bool latex ){
 
   width1      = 20;
   width2      = 4;
-  linelength  = (width1+width2)*4+1;
+  linelength  = (width1+width2)*2+1;
 
   //-------------------------------------------------------
   // symbols
@@ -286,7 +282,17 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 
     //vanilla MC
     else{
-      chmc[imc]->Draw("0.5>>hyield",sel*weight);
+
+      TString tsel(sel.GetTitle());
+
+      TCut mcsel = sel;
+      // if( tsel.Contains("mmjj") ){
+      // 	tsel.ReplaceAll("mmjj","mmjjuncor");
+      // 	mcsel = TCut(tsel);
+      // 	cout << __LINE__ << " SWITCHING TO " << mcsel.GetTitle() << endl;
+      // }
+
+      chmc[imc]->Draw("0.5>>hyield",mcsel*weight);
 
       //do efficiency correction
       //hyield->SetBinContent  ( 2 , hyield->GetBinContent(2) * 0.90);
@@ -340,10 +346,8 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 
   }
 
-  printLine(latex);
+  //printLine(latex);
 
-
-  
   delete ctemp;
 }
 
@@ -467,6 +471,8 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
   TString tvar(var);
   tvar.ReplaceAll("()","");
+  tvar.ReplaceAll("(","");
+  tvar.ReplaceAll(")","");
   tvar.ReplaceAll(".","");
   const char* myvar = tvar;
 
@@ -497,7 +503,22 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     mchist[imc] = new TH1F(Form("%s_mc_%i_%s",myvar,imc,flavor),Form("%s_mc_%i_%s",myvar,imc,flavor),nbins,xmin,xmax);
     mchist[imc]->Sumw2();
 
-    chmc.at(imc)->Draw(Form("TMath::Min(%s,%f)>>%s_mc_%i_%s",var,xmax-0.01,myvar,imc,flavor),sel*weight*trigweight);
+    TString mcvar(var);
+    // if( mcvar.Contains("mmjj") ){
+    //   mcvar = "mmjjuncor";
+    //   cout << __LINE__ << " SWITCHING TO " << mcvar << endl;
+    // }
+    const char* mymcvar = mcvar;
+
+    TString tsel(sel.GetTitle());
+    TCut mcsel = sel;
+    // if( tsel.Contains("mmjj") ){
+    //   tsel.ReplaceAll("mmjj","mmjjuncor");
+    //   mcsel = TCut(tsel);
+    //   cout << __LINE__ << " SWITCHING TO " << mcsel.GetTitle() << endl;
+    // }
+
+    chmc.at(imc)->Draw(Form("TMath::Min(%s,%f)>>%s_mc_%i_%s",mymcvar,xmax-0.01,myvar,imc,flavor),mcsel*weight*trigweight);
 
     if( TString( labels.at(imc) ).Contains("LM") ){
       mchist[imc]->SetFillColor( 0 );
@@ -554,7 +575,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   text->SetTextSize(0.05);
   text->DrawLatex(0.2,0.88,"CMS Preliminary");
   //text->DrawLatex(0.2,0.83,"0.98 fb^{-1} at #sqrt{s} = 7 TeV");
-  text->DrawLatex(0.2,0.83,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.3 fb^{-1}");
+  text->DrawLatex(0.2,0.83,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
   // if     ( TString(flavor).Contains("e")  )  text->DrawLatex(0.2,0.78,"e-channel");
   // else if( TString(flavor).Contains("m")  )  text->DrawLatex(0.2,0.78,"#mu-channel");

@@ -197,7 +197,7 @@ void initialize(char* path){
   cout << endl;
   cout << "Loading babies at       : " << path << endl;
   
-  /*
+
   data->Add(Form("%s/datamay10_smallTree.root",path));
   data->Add(Form("%s/dataPRv4_smallTree.root",path));
   data->Add(Form("%s/dataaug05_smallTree.root",path));
@@ -205,13 +205,14 @@ void initialize(char* path){
   data->Add(Form("%s/data2011B_smallTree.root",path));
 
   ttall->Add(Form("%s/ttall_smallTree.root",path));
-  dy->Add(Form("%s/Zjets_smallTree.root",path));
-  */
+  dy->Add(Form("%s/Zjets_2jets_smallTree.root",path));
+  
 
+  /*
   data->Add("../output/V00-00-07/dataping_smallTree.root");
   ttall->Add("../output/V00-00-08/ttall_smallTree.root");
   dy->Add("../output/V00-00-08//Zjets_2jets_smallTree.root");
-
+  */
 
   /*
   data->Add(Form("%s/data165_smallTree.root",path));
@@ -264,10 +265,12 @@ TCut selection_TCut(){
   sel += mll50;
   sel += zveto;
   sel += ngoodlep2;
-  sel += "mmjj > 600 && mmjj < 1400";
-  //  sel += nbtags1;
-  // sel += iso1;
-  // sel += iso2;
+  // sel += "mmjj > 600 && mmjj < 1400";
+  // sel += "mmjj > 850 && mmjj < 1150";
+  sel += nbtags1;
+  //sel += "dilmass>100";
+  //sel += iso1;
+  //sel += iso2;
   // sel += id1;
   // sel += id2;
   // sel += mu2;
@@ -287,7 +290,8 @@ TCut weight_TCut(){
   //TCut weight("weight*ndavtxweight");
   //TCut weight("weight * 0.204 * ndavtxweight");
   //TCut weight("weight * 0.8 * ndavtxweight");
-  TCut weight("weight * ndavtxweight * 2.0");
+  TCut weight("weight * ndavtxweight * 4.7");
+  //TCut weight("weight * ndavtxweight * 2.0");
   //TCut weight("1");
 
   cout << "Using weight            : " << weight.GetTitle() << endl;
@@ -333,11 +337,15 @@ void makePlots( char* path , bool printgif = false ){
   vector<float> xi;
   vector<float> xf;
 
-  //vars.push_back("mmjj");      xt.push_back("m(#mu#mujj) (GeV)");           n.push_back(50); xi.push_back(350.); xf.push_back(1850.);
-  vars.push_back("mmjj");      xt.push_back("m(#mu#mujj) (GeV)");           n.push_back(25); xi.push_back(350.); xf.push_back(1850.);
-  //vars.push_back("dilmass");   xt.push_back("m(#mu#mu) (GeV)");             n.push_back(50); xi.push_back(0.); xf.push_back(200.);
-  //vars.push_back("lep1.pt()"); xt.push_back("primary muon p_{T} (GeV)");    n.push_back(10); xi.push_back(0.); xf.push_back(300.);
-  //vars.push_back("lep2.pt()"); xt.push_back("secondary muon p_{T} (GeV)");  n.push_back(10); xi.push_back(0.); xf.push_back(200.);
+  //vars.push_back("mmjj");             xt.push_back("m(#mu#mujj) (GeV)");           n.push_back(50); xi.push_back(350.); xf.push_back(1850.);
+  //vars.push_back("mmjjdef");            xt.push_back("m(#mu#mujj) (GeV)");           n.push_back(25); xi.push_back(350.); xf.push_back(1850.);
+  //vars.push_back("ndavtx");             xt.push_back("ndavtx");                      n.push_back(20); xi.push_back(0.); xf.push_back(20.);
+  //vars.push_back("dilmass");          xt.push_back("m(#mu#mu) (GeV)");             n.push_back(50); xi.push_back(0.); xf.push_back(200.);
+  vars.push_back("dilmass");          xt.push_back("m(#mu#mu) (GeV)");             n.push_back(30); xi.push_back(0.); xf.push_back(300.);
+  //vars.push_back("lep1.pt()");        xt.push_back("primary muon p_{T} (GeV)");    n.push_back(10); xi.push_back(0.); xf.push_back(300.);
+  //vars.push_back("lep2.pt()");        xt.push_back("secondary muon p_{T} (GeV)");  n.push_back(10); xi.push_back(0.); xf.push_back(200.);
+  //vars.push_back("abs(jet1.eta())");    xt.push_back("1^{st} jet |#eta|");      n.push_back(6); xi.push_back(0); xf.push_back(3.);
+  //vars.push_back("abs(jet2.eta())");    xt.push_back("2^{nd} jet |#eta|");      n.push_back(6); xi.push_back(0); xf.push_back(3.);
 
   const unsigned int nvars = vars.size();
   
@@ -345,10 +353,10 @@ void makePlots( char* path , bool printgif = false ){
   TPad* legpad[nvars];
   TPad* plotpad[nvars];
 
-  bool residual = false;
+  bool residual = true;
 
   int canCounter = -1;
-  bool log = false;
+  bool log = true;
 
   for( unsigned int ivar = 0 ; ivar < nvars ; ++ivar ){     
 
@@ -394,9 +402,17 @@ void makePlots( char* path , bool printgif = false ){
 
     //if( printgif ) can[ivar]->Print(Form("../plots/%s.pdf",vars[ivar]));
     if( printgif ){
-      can[ivar]->Print(Form("../plots/%s.pdf",myvar));
-      can[ivar]->Print(Form("../plots/%s.gif",myvar));
-      can[ivar]->Print(Form("../plots/%s.png",myvar));
+
+      TString tvar(myvar);
+      tvar.ReplaceAll("(","");
+      tvar.ReplaceAll(")","");
+      tvar.ReplaceAll(".","");
+      const char* mtvar = tvar;
+
+      can[ivar]->Print(Form("../plots/%s.eps",mtvar));
+      can[ivar]->Print(Form("../plots/%s.gif",mtvar));
+      can[ivar]->Print(Form("../plots/%s.png",mtvar));
+      gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.eps ../plots/%s.pdf",mtvar,mtvar));
     }
   } 
 }
