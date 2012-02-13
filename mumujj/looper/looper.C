@@ -1404,10 +1404,12 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       if( isData ){
 	mmjjdef_     = mmjj_;
 	mmjjtrkdef_  = mmjjtrk_;
+	njetsdef_    = njets_;
       }
       else{
 	mmjjdef_     = mmjjuncor_;
 	mmjjtrkdef_  = mmjjtrkuncor_;
+	njetsdef_    = njetsuncor_;
       }
       
       //--------------------------------------
@@ -1736,6 +1738,7 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("dilpt",           &dilpt_,            "dilpt/F");
   outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
+  outTree->Branch("njetsdef",        &njetsdef_,         "njetsdef/I");
   outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
   outTree->Branch("njpt",            &njpt_,             "njpt/I");
   outTree->Branch("npfjets25",       &npfjets25_,        "npfjets25/I");
