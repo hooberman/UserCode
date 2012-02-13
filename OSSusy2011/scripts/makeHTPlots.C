@@ -37,8 +37,8 @@ void makeHTPlots(){
   gStyle->SetOptFit(0);
 
   TChain *ch = new TChain("t");
-  ch->Add("../output/V00-02-09/highpt/LM6v2_smallTree.root");
-  //ch->Add("../output/V00-02-00/LM4_baby.root");
+  //ch->Add("../output/V00-02-09/highpt/LM6v2_smallTree.root");
+  ch->Add("../output/V00-02-10/highpt/LM6v2_smallTree.root");
 
   vector<TCut> metcuts;
   vector<float> metcutvals;
@@ -59,8 +59,10 @@ void makeHTPlots(){
     hpass[i]   = new TH1F(Form("hpass_%i",i),Form("hpass_%i",i),25,0,1000);
     hall[i]    = new TH1F(Form("hall_%i",i), Form("hall_%i",i) ,25,0,1000);
 
-    ch->Draw(Form("htgen>>hpass_%i",i),sel+metcuts.at(i));
-    ch->Draw(Form("htgen>>hall_%i",i)  ,sel);
+    //ch->Draw(Form("htgen>>hpass_%i",i),sel+metcuts.at(i));
+    //ch->Draw(Form("htgen>>hall_%i",i)  ,sel);
+    ch->Draw(Form("htgen2>>hpass_%i",i),sel+metcuts.at(i));
+    ch->Draw(Form("htgen2>>hall_%i",i)  ,sel);
 
   }
 
