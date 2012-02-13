@@ -38,7 +38,8 @@ void makeHTPlots(){
 
   TChain *ch = new TChain("t");
   //ch->Add("../output/V00-02-09/highpt/LM6v2_smallTree.root");
-  ch->Add("../output/V00-02-10/highpt/LM6v2_smallTree.root");
+  //ch->Add("../output/V00-02-10/highpt/LM6v2_smallTree.root");
+  ch->Add("../output/V00-02-14/highpt/LM6v2_smallTree.root");
 
   vector<TCut> metcuts;
   vector<float> metcutvals;
@@ -71,11 +72,17 @@ void makeHTPlots(){
 
   TCanvas *can = new TCanvas();
   can->cd();
-  //gPad->SetGridx();
-  //gPad->SetGridy();
+
+  gPad->SetRightMargin(0.1);
+  gPad->SetTopMargin(0.1);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  
+  gStyle->SetOptFit(0);
+
 
   TGraphAsymmErrors* gr[n];  
-  TLegend *leg = new TLegend(0.7,0.2,0.95,0.4);
+  TLegend *leg = new TLegend(0.63,0.2,0.88,0.4);
   leg->SetFillColor(0);
   leg->SetBorderSize(1);
   leg->SetTextSize(0.03);
@@ -133,6 +140,7 @@ void makeHTPlots(){
     gr[i]->GetXaxis()->SetTitle("generator-level H_{T} (GeV)");
     gr[i]->GetYaxis()->SetTitle("efficiency");
     gr[i]->SetMaximum(1);
+    gr[i]->SetMinimum(0);
     gr[i]->BayesDivide(hpass[i],hall[i]);
 
     //gr[i]->Fit(efunc,"R");
@@ -156,6 +164,10 @@ void makeHTPlots(){
   can->Print("../plots/ht_turnon_LM6.pdf");
 
 
+  TLatex *t = new TLatex();
+  t->SetNDC();
+  t->SetTextSize(0.05);
+  t->DrawLatex(0.25,0.92,"CMS Simulation, #sqrt{s} = 7 TeV");
 
 
 
