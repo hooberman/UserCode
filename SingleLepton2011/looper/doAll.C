@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-03-00";
+  const char* version    = "V00-03-02";
   const char* jsonfile   = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
@@ -89,15 +89,22 @@ void doAll(bool skipFWLite = true)
   int pretW       = 1;
  
   // flags for files to run over
-  bool rundata     = 1;
-  bool runttall    = 1;
-  bool runWjets    = 1;
-  bool runQCD      = 1;
-  bool runtW       = 1;
+  bool rundata     = 0;
+  bool runttall    = 0;
+  bool runWjets    = 0;
+  bool runQCD      = 0;
+  bool runtW       = 0;
   bool runDYtot    = 1;
-  bool runT2tt     = 1; 
+  bool runT2tt     = 0; 
   bool runT2tt_few = 0;
-  bool runT2bw     = 1;
+  bool runT2bw     = 0;
+
+  bool rundatamay10   = 1;
+  bool rundataprv4    = 1;
+  bool rundataaug05   = 1;
+  bool rundataprv6    = 1;
+  bool rundata2011b33 = 1;
+  bool rundata2011b34 = 1;
 
   if( useMCSkims )  cout << "Using MC skims" << endl;
   else              cout << "Using full MC samples" << endl;
@@ -202,6 +209,105 @@ void doAll(bool skipFWLite = true)
   }
 
   //----------------------------------------
+  // DATA: May10
+  //----------------------------------------
+
+  TChain* chdatamay10 = new  TChain("Events");
+
+  if(rundatamay10){
+
+    cout << "adding ElectronHad, MuHad, SingleMu May10 data" << endl;
+    
+    // May10
+    pickSkimIfExists(chdatamay10,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdatamay10,"/nfs-7/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdatamay10,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+
+  }
+
+  //----------------------------------------
+  // DATA: PRv4
+  //----------------------------------------
+
+  TChain* chdataprv4 = new  TChain("Events");
+
+  if(rundataprv4){
+    
+    cout << "adding ElectronHad, MuHad, SingleMu PRv4 data" << endl;
+
+    // PRv4
+    pickSkimIfExists(chdataprv4,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdataprv4,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdataprv4,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+  }
+
+  //----------------------------------------
+  // DATA: Aug05
+  //----------------------------------------
+
+  TChain* chdataaug05 = new  TChain("Events");
+
+  if(rundataaug05){
+    
+    cout << "adding ElectronHad, MuHad, SingleMu Aug05 data" << endl;
+    
+    // Aug05
+    pickSkimIfExists(chdataaug05,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdataaug05,"/nfs-7/userdata/cms2/MuHad_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdataaug05,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+
+  }
+
+  //----------------------------------------
+  // DATA: PRv6
+  //----------------------------------------
+
+  TChain* chdataprv6     = new  TChain("Events");
+
+  if(rundata){
+    
+    cout << "adding ElectronHad, MuHad, SingleMu PRv6 data" << endl;
+
+    // PRv6
+    pickSkimIfExists(chdataprv6,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdataprv6,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdataprv6,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+  }
+
+  //----------------------------------------
+  // DATA: 2011B V33
+  //----------------------------------------
+
+  TChain* chdata2011b33 = new  TChain("Events");
+
+  if(rundata2011b33){
+    
+    cout << "adding ElectronHad, MuHad, SingleMu 2011B V33 data" << endl;
+
+    // 2011B
+    pickSkimIfExists(chdata2011b33,"/nfs-7/userdata/cms2/ElectronHad_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata2011b33,"/nfs-7/userdata/cms2/MuHad_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata2011b33,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+
+  }
+
+  //----------------------------------------
+  // DATA: 2011B V34
+  //----------------------------------------
+
+  TChain* chdata2011b34 = new  TChain("Events");
+
+  if(rundata2011b34){
+    
+    cout << "adding ElectronHad, MuHad, SingleMu 2011B V34 data" << endl;
+    // 2011B
+    pickSkimIfExists(chdata2011b34,"/nfs-7/userdata/cms2/ElectronHad_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata2011b34,"/nfs-7/userdata/cms2/MuHad_Run2011B-PromptReco-v1_AOD/V04-02-35/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chdata2011b34,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndTwoJets/merged*root");
+    
+  }
+
+  //----------------------------------------
   // DATA
   //----------------------------------------
 
@@ -280,16 +386,46 @@ void doAll(bool skipFWLite = true)
 		  }
 
 		  //--------------------------------------------------------------------
+		  if (rundatamay10) {
+		    cout << "Processing datamay10" << endl;
+		    looper->ScanChain(chdatamay10,"datamay10", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing datamay10" << endl;
+		  }
+		  //--------------------------------------------------------------------
+		  if (rundataprv4) {
+		    cout << "Processing dataprv4" << endl;
+		    looper->ScanChain(chdataprv4,"dataprv4", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing dataprv4" << endl;
+		  }
+		  //--------------------------------------------------------------------
+		  if (rundataaug05) {
+		    cout << "Processing dataaug05" << endl;
+		    looper->ScanChain(chdataaug05,"dataaug05", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing dataaug05" << endl;
+		  }
+		  //--------------------------------------------------------------------
+		  if (rundataprv6) {
+		    cout << "Processing dataprv6" << endl;
+		    looper->ScanChain(chdataprv6,"dataprv6", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing dataprv6" << endl;
+		  }
+		  //--------------------------------------------------------------------
+		  if (rundata2011b33) {
+		    cout << "Processing data2011b33" << endl;
+		    looper->ScanChain(chdata2011b33,"data2011b33", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data2011b33" << endl;
+		  }
+		  //--------------------------------------------------------------------
+		  if (rundata2011b34) {
+		    cout << "Processing data2011b34" << endl;
+		    looper->ScanChain(chdata2011b34,"data2011b34", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data2011b34" << endl;
+		  }
+		  //--------------------------------------------------------------------
 		  if (runttall) {
 		    cout << "Processing ttbar all.. " << endl;
 		    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing ttbar all.. " << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (rundata) {
-		    cout << "Processing data" << endl;
-		    looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing data" << endl;
 		  }
 		  //--------------------------------------------------------------------
 		  if (runDYtot) {
@@ -333,6 +469,13 @@ void doAll(bool skipFWLite = true)
 		    looper->ScanChain(chT2bw,"T2bw", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing T2bw all.. " << endl;
 		  }
+		  //--------------------------------------------------------------------
+		  if (rundata) {
+		    cout << "Processing data" << endl;
+		    looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		    cout << "Done processing data" << endl;
+		  }
+		  //--------------------------------------------------------------------
 
 		  // save all the histograms
 		  const char* outFile;
