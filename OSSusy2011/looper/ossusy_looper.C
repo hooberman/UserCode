@@ -4858,41 +4858,40 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   float ht    = 0.;
   int   njets = 0;
 
-  for (size_t j = 0; j < cms2.genjets_p4().size(); ++j){
+  // for (size_t j = 0; j < cms2.genjets_p4().size(); ++j){
 
-    // pt and eta cuts
-    if (cms2.genjets_p4().at(j).pt() < 30.0)       continue;
-    if (fabs(cms2.genjets_p4().at(j).eta()) > 3.0) continue;
+  //   // pt and eta cuts
+  //   if (cms2.genjets_p4().at(j).pt() < 30.0)       continue;
+  //   if (fabs(cms2.genjets_p4().at(j).eta()) > 3.0) continue;
 
-    bool reject = false;
-    for( unsigned int i = 0 ; i < leps.size() ; ++i ){
-      if( dRbetweenVectors( genjets_p4().at(j) , leps.at(i) ) < 0.4 ) reject = true;
-    }
-    if( reject ) continue;
+  //   bool reject = false;
+  //   for( unsigned int i = 0 ; i < leps.size() ; ++i ){
+  //     if( dRbetweenVectors( genjets_p4().at(j) , leps.at(i) ) < 0.4 ) reject = true;
+  //   }
+  //   if( reject ) continue;
 
-    njets ++;
-    ht += genjets_p4().at(j).pt();
+  //   njets ++;
+  //   ht += genjets_p4().at(j).pt();
     
-  }
-
-  //int nGoodJet   = 0;
-  
-  // for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
-
-  //   if (cms2.genps_status().at(gidx) != 3)
-  // 	continue;
-
-  //   if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
-  // 	continue;
-
-  //   if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
-  // 	continue;
-
-  //   if (cms2.genps_p4().at(gidx).pt() < 30.)
-  // 	continue;
-      
-  //   nGoodJet++;
   // }
+
+  for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
+    
+    if (cms2.genps_status().at(gidx) != 3)
+      continue;
+    
+    if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
+      continue;
+    
+    if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
+      continue;
+    
+    if (cms2.genps_p4().at(gidx).pt() < 30.)
+      continue;
+    
+    njets++;
+    ht += genps_p4().at(gidx).pt(); 
+  }
 
   // if( nGoodJet < 2 ) return 0.;
 
@@ -4982,17 +4981,20 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   }
 
   else if( htcut == 125 ){
-    erf->SetParameters(1.00, 114, 42);
+    //erf->SetParameters(1.00, 114, 42); // HT from genjets
+    erf->SetParameters(1.00, 88, 75); // HT from status 3 partons
     hteff = erf->Eval(ht);
   }
 
   else if( htcut == 300 ){
-    erf->SetParameters(1.00, 285, 48);
+    //erf->SetParameters(1.00, 285, 48); // HT from genjets	  
+    erf->SetParameters(1.00, 269, 88); // HT from status 3 partons
     hteff = erf->Eval(ht);
   }
 
   else if( htcut == 600 ){
-    erf->SetParameters(0.99, 591, 55);
+    //erf->SetParameters(0.99, 591, 55); // HT from genjets	  
+    erf->SetParameters(0.99, 579, 98); // HT from status 3 partons
     hteff = erf->Eval(ht);
   }
 

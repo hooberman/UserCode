@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-14";
+  const char* version   = "V00-02-15";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -662,7 +662,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // LM3v2
   TChain *chLM3v2 = new TChain("Events");
   if (runLM3v2) {
-    pickSkimIfExists(chLM3, 
+    pickSkimIfExists(chLM3v2, 
 		     "/nfs-7/userdata/cms2/LM3_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root",
                      "SUSY_LM3");
   }
