@@ -179,6 +179,7 @@ class singleLeptonLooper
 	Float_t mttbar_;
 	Float_t etattbar_;
 	Float_t mgcor_;
+	Int_t   wflav_;
 
 	// Type1 pfmet
 	Float_t t1met10_;

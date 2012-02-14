@@ -893,6 +893,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       maxpartonpt_ = -1;
 
       mgcor_ = 1.0;
+      wflav_ = -1;
 
       if( !isData ){
 
@@ -900,6 +901,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	pthat_  = genps_pthat();
 	qscale_ = genps_qScale();
 	
+	//store W flavor history
+	wflav_ = (int)genps_flavorHistoryFilterResult();
+
 	//splitting ttbar into ttdil/ttotr
 	//nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
 	nleps = leptonGenpCount(nels, nmus, ntaus);
@@ -2580,6 +2584,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pthat",           &pthat_,            "pthat/F");
   outTree->Branch("qscale",          &qscale_,           "qscale/F");
   outTree->Branch("mgcor",           &mgcor_,            "mgcor/F");
+  outTree->Branch("wflav",           &wflav_,            "wflav/I");
   outTree->Branch("ksusy",           &ksusy_,            "ksusy/F");
   outTree->Branch("ksusyup",         &ksusyup_,          "ksusyup/F");
   outTree->Branch("ksusydn",         &ksusydn_,          "ksusydn/F");
