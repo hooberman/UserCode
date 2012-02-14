@@ -104,11 +104,16 @@ class ossusy_looper
 
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
+        LorentzVector*  genlep1_;
+        LorentzVector*  genlep2_;
         LorentzVector*  dilep_;
         LorentzVector*  jet_; 
         LorentzVector*  jet2_; 
  
         // Baby ntuple variables
+	Int_t   foundPair_;
+	Int_t   reco1_;
+	Int_t   reco2_;
 	Float_t geff_;
 	Float_t geffmet_;
 	Float_t geffht_;

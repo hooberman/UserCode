@@ -54,7 +54,7 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 //mSUGRA scan parameters-----------------------------
 
-const bool  doGenSelection    = false;
+const bool  doGenSelection    = true;
 const bool  generalLeptonVeto = true;
 const int   nm0points         = 100;
 const float m0min             = 20.;
@@ -203,6 +203,56 @@ bool passesPFJetID(unsigned int pfJetIdx) {
 
   return true;
 }  
+
+//--------------------------------------------------------------------
+
+float getHT(){
+
+  //----------------------------------------
+  // store selected leptons in goodLeptons
+  //----------------------------------------
+
+  VofP4 goodLeptons;
+  goodLeptons.clear();
+  
+  for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+    if( els_p4().at(iel).pt() < 10 )                                                 continue;
+    if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+    goodLeptons.push_back( els_p4().at(iel) );
+  }
+          
+  for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+    if( mus_p4().at(imu).pt() < 10 )           continue;
+    if( !muonId( imu , OSGeneric_v3 ))         continue;
+    goodLeptons.push_back( mus_p4().at(imu) );
+  }  
+
+  //----------------------------------------
+  // calculate HT
+  //----------------------------------------
+  
+  float ht = 0;
+
+  for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+    LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+
+    if( vjet.pt() < 30. )                    continue;
+    if( fabs( vjet.eta() ) > 3.0 )           continue;
+    if( !passesPFJetID(ijet) )               continue;
+
+    bool rejectJet = false;
+    for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+      if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+    }
+    if( rejectJet ) continue;
+    
+    ht+=vjet.pt();
+  }
+
+  return ht;
+
+}
 
 //--------------------------------------------------------------------
 
@@ -751,6 +801,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	weight_ = cms2.evt_scale1fb();
 	  	
+	if( TString(prefix).Contains("LM1") ) weight_ *= kfactorSUSY( "lm1" );
+	if( TString(prefix).Contains("LM3") ) weight_ *= kfactorSUSY( "lm3" );
 	if( TString(prefix).Contains("LM6") ) weight_ *= kfactorSUSY( "lm6" );
 
 	//cout << endl << endl;
@@ -763,6 +815,178 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	lepEfficiencies(isData);
 
+	ngenjets_ = 0;
+	htgen2_   = 0;
+
+	VofP4 genjets;
+
+	for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
+	  if (cms2.genps_status().at(gidx) != 3)
+	    continue;
+	  if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
+	    continue;
+	  if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
+	    continue;
+	  if (cms2.genps_p4().at(gidx).pt() < 30.)
+	    continue;
+	
+	  ngenjets_++;
+	  htgen2_ += cms2.genps_p4().at(gidx).pt();
+	  genjets.push_back(genps_p4().at(gidx));
+	}
+
+	genmet_ = gen_met();
+	pfmet_  = evt_pfmet();
+	ht_     = getHT();
+
+  
+	// mc leptons
+	VofP4 leps;
+	vector<int> ids;
+	
+	// loop over gen particles: store p4's and ID's of gen leptons
+	for (size_t i = 0; i < cms2.genps_id().size(); ++i){
+
+	  bool jetOverlap = false;
+	  for( unsigned int j = 0 ; j < genjets.size() ; ++j ){
+	    if( dRbetweenVectors( genps_p4().at(i) , genjets.at(j) ) < 0.4 ) jetOverlap = true;
+	  }
+	  if( jetOverlap ) continue;
+	  
+	  int   id  = cms2.genps_id().at(i);
+	  float pt  = cms2.genps_p4().at(i).pt();
+	  float eta = cms2.genps_p4().at(i).eta();
+	  
+	  // require e, mu, or tau
+	  if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
+	  
+	  // e or mu
+	  if( abs(id)==11 || abs(id)==13 ){
+	    
+	    // pt > 10 and |eta| < 2.5
+	    if( pt > 10 && fabs(eta) < 2.5 ){
+	      leps.push_back( genps_p4().at(i) );
+	      ids.push_back( id );
+	    }
+	  }
+
+	  // tau --> get leptonic daughters
+	  else if( abs(id)==15 ){
+	    
+	    for(unsigned int j = 0; j < cms2.genps_lepdaughter_id().at(i).size(); j++) {
+	      
+	      int   id2  = cms2.genps_lepdaughter_id().at(i).at(j);
+	      float pt2  = cms2.genps_lepdaughter_p4().at(i).at(j).pt();
+	      float eta2 = cms2.genps_lepdaughter_p4().at(i).at(j).eta();
+	      
+	      // require e or mu
+	      if( !( abs(id2)==11 || abs(id2)==13 ) ) continue;
+	      
+	      // pt > 10 and |eta| < 2.5
+	      if( pt2 > 10 && fabs(eta2) < 2.5 ){
+		leps.push_back( cms2.genps_lepdaughter_p4().at(i).at(j) );
+		ids.push_back(id2);
+	      }
+	    }
+	  }
+	  
+	  else{
+	    cout << "ERROR! gen particle ID " << id << endl;
+	    exit(0);
+	  }
+	  
+	}
+
+	assert( leps.size() == ids.size() );
+
+	foundPair_ = 0;
+	genlep1_   = 0;
+	genlep2_   = 0;
+
+	// require >=2 leptons
+	if( leps.size() >= 2 ){
+
+	  //look for OS pt > 20,10 GeV pair Z mass veto
+
+	  int   lep1idx   = -1;
+	  int   lep2idx   = -1;
+	  float maxpt     = -1;
+	  
+	  for( unsigned int i = 0 ; i < leps.size() ; ++i ){
+	    
+	    for( unsigned int j = i + 1 ; j < leps.size() ; ++j ){
+
+	      // max pt > 20 GeV
+	      if( max( leps.at(i).pt() , leps.at(j).pt() ) < 20 ) continue;
+
+	      // OS
+	      if( ids.at(i) * ids.at(j) > 0 ) continue;
+
+	      // Z veto
+	      float dilmass = ( leps.at(i) + leps.at(j) ).mass();      
+	      if( abs(ids.at(i)) == abs(ids.at(j)) && dilmass > 76 && dilmass < 106 ) continue;
+	
+	      //found lepton pair!
+	      foundPair_ = 1;
+
+	      if( leps.at(i).pt() + leps.at(j).pt() > maxpt ){
+		maxpt   = leps.at(i).pt() + leps.at(j).pt();
+		lep1idx = i;
+		lep2idx = j;
+	      }
+	    }
+	  }
+
+	  if( foundPair_ == 1 ){
+	    if( leps.at(lep1idx).pt() > leps.at(lep2idx).pt() ){
+	      genlep1_ = &leps.at(lep1idx);
+	      genlep2_ = &leps.at(lep2idx);
+	    }
+	    else{
+	      genlep1_ = &leps.at(lep2idx);
+	      genlep2_ = &leps.at(lep1idx);
+	    }
+	  }
+	}
+
+	VofP4 goodLeptons;
+	
+	ngoodlep_ = 0;
+	ngoodel_  = 0;
+	ngoodmu_  = 0;
+            
+        for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+          if( els_p4().at(iel).pt() < 10 )                                                 continue;
+          if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+          goodLeptons.push_back( els_p4().at(iel) );
+          ngoodel_++;
+          ngoodlep_++;
+        }
+	
+        for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+          if( mus_p4().at(imu).pt() < 10 )           continue;
+          if( !muonId( imu , OSGeneric_v3 ))         continue;
+          goodLeptons.push_back( mus_p4().at(imu) );
+          ngoodmu_++;
+          ngoodlep_++;
+        }  
+
+	reco1_ = 0;
+	reco2_ = 0;
+
+	if( foundPair_ == 1 ){
+	  for( unsigned int i = 0 ; i < goodLeptons.size() ; ++i ){
+	    if( dRbetweenVectors( *genlep1_ , goodLeptons.at(i) ) < 0.2 ) reco1_ = 1;
+	    if( dRbetweenVectors( *genlep2_ , goodLeptons.at(i) ) < 0.2 ) reco2_ = 1;
+	  }
+        }
+
+	ndavtx_ = 0;
+    
+        for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+          if(isGoodDAVertex(v)) ++ndavtx_;
+        }
+	  
 	outTree->Fill();
 	continue;
       }
@@ -4305,10 +4529,15 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("cosphijz",        &cosphijz_,         "cosphijz/F");  
   outTree->Branch("mlljj",           &mlljj_,            "mlljj/F");  
   outTree->Branch("njets15",         &njets15_,          "njets15/I");  
+  outTree->Branch("foundPair",       &foundPair_,        "foundPair/I");  
+  outTree->Branch("reco1",           &reco1_,            "reco1/I");  
+  outTree->Branch("reco2",           &reco2_,            "reco2/I");  
  
   outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
+  outTree->Branch("genlep1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &genlep1_	);
+  outTree->Branch("genlep2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &genlep2_	);
   outTree->Branch("jet"	    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	        );
   outTree->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
 
@@ -4982,19 +5211,26 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
 
   else if( htcut == 125 ){
     //erf->SetParameters(1.00, 114, 42); // HT from genjets
-    erf->SetParameters(1.00, 88, 75); // HT from status 3 partons
+    //erf->SetParameters(1.00, 88, 75);  // HT from status 3 partons
+    erf->SetParameters(1.00, 123, 53);   // v1: HT from status 3 partons with reco and gen selection
+    //erf->SetParameters(2.00, 50, 53);  // v2: dummy vars
+    //erf->SetParameters(1.00, 88, 75);  // v3: AN version
     hteff = erf->Eval(ht);
   }
 
   else if( htcut == 300 ){
     //erf->SetParameters(1.00, 285, 48); // HT from genjets	  
-    erf->SetParameters(1.00, 269, 88); // HT from status 3 partons
+    erf->SetParameters(0.99, 291, 69);   // v1: HT from status 3 partons with reco and gen selection
+    //erf->SetParameters(3, 91, 69);     // v2: dummy vars
+    //erf->SetParameters(1.00, 269, 88); // v3: AN version
     hteff = erf->Eval(ht);
   }
 
   else if( htcut == 600 ){
     //erf->SetParameters(0.99, 591, 55); // HT from genjets	  
-    erf->SetParameters(0.99, 579, 98); // HT from status 3 partons
+    erf->SetParameters(0.99, 582, 91);   // v1: HT from status 3 partons with reco and gen selection
+    //erf->SetParameters(4, 432, 91);    // v2: dummy vars
+    //erf->SetParameters(0.99, 579, 98); // v3: AN version
     hteff = erf->Eval(ht);
   }
 
