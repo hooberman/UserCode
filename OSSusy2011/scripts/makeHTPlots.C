@@ -39,7 +39,9 @@ void makeHTPlots(){
   TChain *ch = new TChain("t");
   //ch->Add("../output/V00-02-09/highpt/LM6v2_smallTree.root");
   //ch->Add("../output/V00-02-10/highpt/LM6v2_smallTree.root");
-  ch->Add("../output/V00-02-14/highpt/LM6v2_smallTree.root");
+  //ch->Add("../output/V00-02-15/highpt/LM6v2_smallTree.root");
+  //ch->Add("../output/V00-02-16/highpt/LM6v2_smallTree_gen_TEMP.root");
+  ch->Add("../output/V00-02-18/highpt/LM6v2_smallTree_gen.root");
 
   vector<TCut> metcuts;
   vector<float> metcutvals;
@@ -48,7 +50,8 @@ void makeHTPlots(){
   metcuts.push_back(TCut("ht>300")); metcutvals.push_back(300);
   metcuts.push_back(TCut("ht>600")); metcutvals.push_back(600);
 
-  TCut sel("njets>=2 && pfmet>50 && !passz");
+  //TCut sel("njets>=2 && pfmet>50 && !passz");
+  TCut sel("foundPair==1 && reco1==1 && reco2==1 && genmet>50 && pfmet>50");
 
   const unsigned int n = metcuts.size();
 
@@ -92,6 +95,10 @@ void makeHTPlots(){
   TLine line;
   line.SetLineWidth(2);
   line.SetLineStyle(2);
+
+  float norm[n];
+  float offset[n];
+  float width[n];
 
   for( unsigned int i = 0 ; i < metcuts.size() ; ++i){
 
@@ -146,6 +153,9 @@ void makeHTPlots(){
     //gr[i]->Fit(efunc,"R");
     gr[i]->Fit(erf[i],"R");
 
+    norm[i]   = erf[i]->GetParameter(0);
+    offset[i] = erf[i]->GetParameter(1);
+    width[i]  = erf[i]->GetParameter(2);
 
     if( i==0 ) gr[i]->Draw("AP");
     else       gr[i]->Draw("sameP");
@@ -160,17 +170,17 @@ void makeHTPlots(){
 
   leg->Draw();
 
-
-  can->Print("../plots/ht_turnon_LM6.pdf");
-
-
   TLatex *t = new TLatex();
   t->SetNDC();
   t->SetTextSize(0.05);
   t->DrawLatex(0.25,0.92,"CMS Simulation, #sqrt{s} = 7 TeV");
 
+  can->Print("../plots/ht_turnon_LM6.pdf");
 
-
+  cout << endl << endl;
+  for( int i = 0 ; i < 3 ; ++i ){
+    cout << "norm width offset " << Form("%.2f  %.0f  %.0f",norm[i],width[i],offset[i]) << endl;
+  }
 }
 
 double fitf (double* x, double* par) {

@@ -37,8 +37,10 @@ void makeMETPlots(){
   gStyle->SetOptFit(0);
 
   TChain *ch = new TChain("t");
-  ch->Add("../output/V00-02-09/highpt/LM6v2_smallTree.root");
+  //ch->Add("../output/V00-02-09/highpt/LM6v2_smallTree.root");
   //ch->Add("../output/V00-02-00/LM4_baby.root");
+  //ch->Add("../output/V00-02-16/highpt/LM6v2_smallTree_gen_TEMP.root");
+  ch->Add("../output/V00-02-18/highpt/LM6v2_smallTree_gen.root");
 
   vector<TCut> metcuts;
   vector<float> metcutvals;
@@ -46,7 +48,8 @@ void makeMETPlots(){
   metcuts.push_back(TCut("pfmet>200")); metcutvals.push_back(200);
   metcuts.push_back(TCut("pfmet>275")); metcutvals.push_back(275);
 
-  TCut sel("njets>=2 && ht>100 && !passz");
+  //TCut sel("njets>=2 && ht>100 && !passz");
+  TCut sel("foundPair==1 && reco1==1 && reco2==1 && ht>100 && htgen2>100 && ngenjets>=2");
 
   const unsigned int n = metcuts.size();
 
@@ -68,11 +71,14 @@ void makeMETPlots(){
 
   TCanvas *can = new TCanvas();
   can->cd();
-  //gPad->SetGridx();
-  //gPad->SetGridy();
+  gPad->SetRightMargin(0.1);
+  gPad->SetTopMargin(0.1);
+  gPad->SetGridx();
+  gPad->SetGridy();  
+  gStyle->SetOptFit(0);
 
   TGraphAsymmErrors* gr[n];  
-  TLegend *leg = new TLegend(0.65,0.2,0.95,0.4);
+  TLegend *leg = new TLegend(0.6,0.2,0.87,0.4);
   leg->SetFillColor(0);
   leg->SetBorderSize(1);
   leg->SetTextSize(0.03);
@@ -147,6 +153,13 @@ void makeMETPlots(){
   }
 
   leg->Draw();
+
+
+
+  TLatex *t = new TLatex();
+  t->SetNDC();
+  t->SetTextSize(0.05);
+  t->DrawLatex(0.25,0.92,"CMS Simulation, #sqrt{s} = 7 TeV");
 
 
   can->Print("../plots/met_turnon_LM6.pdf");

@@ -5206,7 +5206,7 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   }
 
   else if( metcut == 200 ){
-    erf->SetParameters(1.00, 211, 36);
+    erf->SetParameters(1.00, 211, 37);
     meteff = erf->Eval(cms2.gen_met());
   }
 
@@ -5229,27 +5229,17 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   }
 
   else if( htcut == 125 ){
-    //erf->SetParameters(1.00, 114, 42); // HT from genjets
-    //erf->SetParameters(1.00, 88, 75);  // HT from status 3 partons
-    erf->SetParameters(1.00, 123, 53);   // v1: HT from status 3 partons with reco and gen selection
-    //erf->SetParameters(2.00, 50, 53);  // v2: dummy vars
-    //erf->SetParameters(1.00, 88, 75);  // v3: AN version
+    erf->SetParameters(1.00, 124, 56);
     hteff = erf->Eval(ht);
   }
 
   else if( htcut == 300 ){
-    //erf->SetParameters(1.00, 285, 48); // HT from genjets	  
-    erf->SetParameters(0.99, 291, 69);   // v1: HT from status 3 partons with reco and gen selection
-    //erf->SetParameters(3, 91, 69);     // v2: dummy vars
-    //erf->SetParameters(1.00, 269, 88); // v3: AN version
+    erf->SetParameters(1.00, 283, 75);
     hteff = erf->Eval(ht);
   }
 
   else if( htcut == 600 ){
-    //erf->SetParameters(0.99, 591, 55); // HT from genjets	  
-    erf->SetParameters(0.99, 582, 91);   // v1: HT from status 3 partons with reco and gen selection
-    //erf->SetParameters(4, 432, 91);    // v2: dummy vars
-    //erf->SetParameters(0.99, 579, 98); // v3: AN version
+    erf->SetParameters(0.99, 582, 93);
     hteff = erf->Eval(ht);
   }
 
