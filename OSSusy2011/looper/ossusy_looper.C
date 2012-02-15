@@ -902,6 +902,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	foundPair_ = 0;
 	genlep1_   = 0;
 	genlep2_   = 0;
+	genid1_    = 0;
+	genid2_    = 0;
 
 	// require >=2 leptons
 	if( leps.size() >= 2 ){
@@ -941,10 +943,14 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    if( leps.at(lep1idx).pt() > leps.at(lep2idx).pt() ){
 	      genlep1_ = &leps.at(lep1idx);
 	      genlep2_ = &leps.at(lep2idx);
+	      genid1_  = ids.at(lep1idx);
+	      genid2_  = ids.at(lep2idx);
 	    }
 	    else{
 	      genlep1_ = &leps.at(lep2idx);
 	      genlep2_ = &leps.at(lep1idx);
+	      genid1_  = ids.at(lep2idx);
+	      genid2_  = ids.at(lep1idx);
 	    }
 	  }
 	}
@@ -4532,6 +4538,8 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("foundPair",       &foundPair_,        "foundPair/I");  
   outTree->Branch("reco1",           &reco1_,            "reco1/I");  
   outTree->Branch("reco2",           &reco2_,            "reco2/I");  
+  outTree->Branch("genid1",          &genid1_,           "genid1/I");  
+  outTree->Branch("genid2",          &genid2_,           "genid2/I");  
  
   outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
@@ -4977,6 +4985,33 @@ void ossusy_looper::lepEfficiencies( bool isData ){
 float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   
   if( isData ) return 0.;
+  
+  VofP4 genjets;
+  genjets.clear();
+
+  // get ht and njets
+  float ht    = 0.;
+  int   njets = 0;
+
+  for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
+    
+    if (cms2.genps_status().at(gidx) != 3)
+      continue;
+    
+    if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
+      continue;
+    
+    if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
+      continue;
+    
+    if (cms2.genps_p4().at(gidx).pt() < 30.)
+      continue;
+    
+    njets++;
+    ht += genps_p4().at(gidx).pt(); 
+    genjets.push_back(genps_p4().at(gidx));
+  }
+
 
   //---------------------------------------------
   // does this event pass the analysis selection?
@@ -4993,6 +5028,12 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
     float pt  = cms2.genps_p4().at(i).pt();
     float eta = cms2.genps_p4().at(i).eta();
 
+    bool jetOverlap = false;
+    for( unsigned int j = 0 ; j < genjets.size() ; ++j ){
+      if( dRbetweenVectors( genps_p4().at(i) , genjets.at(j) ) < 0.4 ) jetOverlap = true;
+    }
+    if( jetOverlap ) continue;
+    
     // require e, mu, or tau
     if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
 
@@ -5083,9 +5124,6 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   // cout << ids.at(lep2idx) << " " << Form("%.1f",leps.at(lep2idx).pt()) << endl;
   // cout << endl;
 
-  // get ht and njets
-  float ht    = 0.;
-  int   njets = 0;
 
   // for (size_t j = 0; j < cms2.genjets_p4().size(); ++j){
 
@@ -5103,25 +5141,6 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   //   ht += genjets_p4().at(j).pt();
     
   // }
-
-  for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
-    
-    if (cms2.genps_status().at(gidx) != 3)
-      continue;
-    
-    if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
-      continue;
-    
-    if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
-      continue;
-    
-    if (cms2.genps_p4().at(gidx).pt() < 30.)
-      continue;
-    
-    njets++;
-    ht += genps_p4().at(gidx).pt(); 
-  }
-
   // if( nGoodJet < 2 ) return 0.;
 
 
@@ -5146,33 +5165,33 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
 
   // lepton1 is electron
   if( lep1id == 11 ){
-    leperf->SetParameter(0,0.82);
-    leperf->SetParameter(1,0.40);
-    leperf->SetParameter(2,17.0);
+    leperf->SetParameter(0,0.78);
+    leperf->SetParameter(1,0.34);
+    leperf->SetParameter(2,18.0);
     lep1eff = leperf->Eval(pt1);
   }
 
   // lepton1 is muon
   else if( lep1id == 13 ){
     leperf->SetParameter(0,0.89);
-    leperf->SetParameter(1,0.68);
-    leperf->SetParameter(2,24.0);
+    leperf->SetParameter(1,0.62);
+    leperf->SetParameter(2,30.0);
     lep1eff = leperf->Eval(pt1);
   }
 
   // lepton2 is electron
   if( lep2id == 11 ){
-    leperf->SetParameter(0,0.82);
-    leperf->SetParameter(1,0.40);
-    leperf->SetParameter(2,17.0);
+    leperf->SetParameter(0,0.78);
+    leperf->SetParameter(1,0.34);
+    leperf->SetParameter(2,18.0);
     lep2eff = leperf->Eval(pt2);
   }
 
   // lepton2 is muon
   else if( lep2id == 13 ){
     leperf->SetParameter(0,0.89);
-    leperf->SetParameter(1,0.68);
-    leperf->SetParameter(2,24.0);
+    leperf->SetParameter(1,0.62);
+    leperf->SetParameter(2,30.0);
     lep2eff = leperf->Eval(pt2);
   }
   

@@ -114,6 +114,8 @@ class ossusy_looper
 	Int_t   foundPair_;
 	Int_t   reco1_;
 	Int_t   reco2_;
+	Int_t   genid1_;
+	Int_t   genid2_;
 	Float_t geff_;
 	Float_t geffmet_;
 	Float_t geffht_;
