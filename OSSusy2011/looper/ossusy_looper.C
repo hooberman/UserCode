@@ -54,7 +54,7 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 //mSUGRA scan parameters-----------------------------
 
-const bool  doGenSelection    = true;
+const bool  doGenSelection    = false;
 const bool  generalLeptonVeto = true;
 const int   nm0points         = 100;
 const float m0min             = 20.;
@@ -1015,8 +1015,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       */
 
       if( TString(prefix).Contains("LMscan") ){
-       	if( sparm_m12() > 700    ) continue;	
-       	if( sparm_m0()  > 2000.0 ) continue;
+       	if( sparm_m12() > 700                           ) continue;	
+       	if( sparm_m0()  > 2000.0 && sparm_m12() > 400.0 ) continue;
       }
 
       if(strcmp(prefix,"T2tt") == 0){
@@ -2018,9 +2018,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           m0  = sparm_m0();
           m12 = sparm_m12();
 
-	  ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012");
-	  ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Scale20_2012");
-	  ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Scale05_2012");
+	  //ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012");
+	  //ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Scale20_2012");
+	  //ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Scale05_2012");
+	  ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012final");
+	  ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Up_2012final");
+	  ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Dn_2012final");
 	  xsecsusy_  = cmssm_loxsec(m0,m12,"../data/msugra_tanb10_2012_LO.root");
 	  xsecsusy2_ = getMsugraCrossSection(m0,m12,10);
 
