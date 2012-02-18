@@ -111,6 +111,7 @@ class ossusy_looper
         LorentzVector*  jet2_; 
  
         // Baby ntuple variables
+	Int_t   subp_;
 	Int_t   foundPair_;
 	Int_t   reco1_;
 	Int_t   reco2_;

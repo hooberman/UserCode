@@ -20,6 +20,7 @@
 #include "ossusy_looper.h"
 #include "getMt2.C"
 #include "TTreeCache.h"
+#include "TDatabasePDG.h"
 #include "../CORE/CMS2.h"
 #include "../CORE/metSelections.h"
 #include "../CORE/trackSelections.h"
@@ -77,6 +78,59 @@ float returnSigma(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 
 //--------------------------------------------------------------------
+
+float susySubProcess(){
+
+  // determine the process
+  TDatabasePDG *pdg = new TDatabasePDG(); 
+  std::vector<int> interactions; 
+ 
+  for (unsigned int j=0; j<cms2.genps_id().size(); j++) { 
+    if (cms2.genps_status().at(j) != 3) continue; 
+    int ID = abs(cms2.genps_id().at(j)); 
+    int mID = abs(cms2.genps_id_mother().at(j)); 
+    if (ID > 1000000 && ID < 2000016 && (mID < 7 || mID ==21 || mID == 22 || mID == 23 || mID == 24)) { // kept the bosons in case of screw ups 
+ 
+      // Check the mother of the SM is a proton 
+      bool isProton = false;        
+      for (unsigned int k=0; k < j; k++) { 
+	int pID = abs(cms2.genps_id().at(k)); 
+	int mpID = abs(cms2.genps_id_mother().at(k)); 
+	if ((pID < 7 || pID ==21 || pID == 22 || pID == 23 || pID == 24)&&(mpID == 2212)) isProton = true;  
+      } 
+      //      if (!isProton) continue;   
+      if (!isProton) { 
+	dumpDocLines(); 
+	continue; 
+      } 
+      interactions.push_back(cms2.genps_id().at(j)); 
+ 
+      if (interactions.size() > 2)  
+	cout << setw(4) << left << j << " WARNING mcSUSYkfactor: Something is wrong with " 
+	     << setw(10) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " " 
+	     << setw(10) << left << cms2.genps_id().at(j) << " " 
+	     << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  " 
+	     << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  " 
+	     << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  " 
+	     << setw(4) << right << cms2.genps_status().at(j) << " " 
+	     << setw(10) << left << pdg->GetParticle(cms2.genps_id_mother().at(j))->GetName() 
+	     << " using k=1 " << endl; 
+    } 
+  } 
+ 
+  delete pdg; 
+  
+  int subprocess = -1;
+
+  if (interactions.size() == 2 ) { 
+    subprocess = sfinalState(interactions[0], interactions[1]);     
+  } else { 
+    subprocess = -2;
+  } 
+ 
+  return subprocess; 
+}
+
 
 void checkElectron( int elidx ){
 
@@ -2015,8 +2069,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	else if( TString(prefix).Contains("LMscan") ){
 
-          m0  = sparm_m0();
-          m12 = sparm_m12();
+	  subp_ = susySubProcess();
+          m0    = sparm_m0();
+          m12   = sparm_m12();
 
 	  //ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012");
 	  //ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Scale20_2012");
@@ -4369,6 +4424,7 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   //Set branch addresses
   //variables must be declared in ossusy_looper.h
+  outTree->Branch("subp",            &subp_,             "subp/I");
   outTree->Branch("geff",            &geff_,             "geff/F");
   outTree->Branch("geffmet",         &geffmet_,          "geffmet/F");
   outTree->Branch("geffht",          &geffht_,           "geffht/F");
