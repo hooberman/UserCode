@@ -314,8 +314,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML8      = 0;
   bool runLMscan   = 0; 
   bool runLMscanFall11      = 0; 
-  bool runLMscanFall11dil   = 1; 
-  bool runLMscanFall11dil1  = 0; 
+  bool runLMscanFall11dil   = 0; 
+  bool runLMscanFall11dil1  = 1; 
   bool runLMscanFall11dil2  = 0; 
   bool runLMscanFall11dil3  = 0; 
   bool runLMscanFall11dil4  = 0; 
@@ -1500,6 +1500,56 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      cout << "Processing LMscanFall11 dilepton filter" << endl;
 		      looper->ScanChain(chLMscanFall11dil, "LMscanFall11dil", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing LMscanFall11dil" << endl;
+		    }
+		    if (runLMscanFall11dil1) {
+		      cout << "Processing LMscanFall111 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil1, "LMscanFall11dil1", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil1" << endl;
+		    }
+		    if (runLMscanFall11dil2) {
+		      cout << "Processing LMscanFall112 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil2, "LMscanFall11dil2", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil2" << endl;
+		    }
+		    if (runLMscanFall11dil3) {
+		      cout << "Processing LMscanFall113 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil3, "LMscanFall11dil3", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil3" << endl;
+		    }
+		    if (runLMscanFall11dil4) {
+		      cout << "Processing LMscanFall114 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil4, "LMscanFall11dil4", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil4" << endl;
+		    }
+		    if (runLMscanFall11dil5) {
+		      cout << "Processing LMscanFall115 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil5, "LMscanFall11dil5", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil5" << endl;
+		    }
+		    if (runLMscanFall11dil6) {
+		      cout << "Processing LMscanFall116 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil6, "LMscanFall11dil6", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil6" << endl;
+		    }
+		    if (runLMscanFall11dil7) {
+		      cout << "Processing LMscanFall117 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil7, "LMscanFall11dil7", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil7" << endl;
+		    }
+		    if (runLMscanFall11dil8) {
+		      cout << "Processing LMscanFall118 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil8, "LMscanFall11dil8", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil8" << endl;
+		    }
+		    if (runLMscanFall11dil9) {
+		      cout << "Processing LMscanFall119 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil9, "LMscanFall11dil9", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil9" << endl;
+		    }
+		    if (runLMscanFall11dil10) {
+		      cout << "Processing LMscanFall1110 dilepton filter" << endl;
+		      looper->ScanChain(chLMscanFall11dil10, "LMscanFall11dil10", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LMscanFall11dil10" << endl;
 		    }
 		    if (runT1lh) {
 		      cout << "Processing T1lh" << endl;
