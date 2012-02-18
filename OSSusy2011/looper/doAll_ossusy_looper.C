@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-19";
+  const char* version   = "V00-02-20";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -313,8 +313,18 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  bool runLMscanFall11    = 0; 
-  bool runLMscanFall11dil = 1; 
+  bool runLMscanFall11      = 0; 
+  bool runLMscanFall11dil   = 1; 
+  bool runLMscanFall11dil1  = 0; 
+  bool runLMscanFall11dil2  = 0; 
+  bool runLMscanFall11dil3  = 0; 
+  bool runLMscanFall11dil4  = 0; 
+  bool runLMscanFall11dil5  = 0; 
+  bool runLMscanFall11dil6  = 0; 
+  bool runLMscanFall11dil7  = 0; 
+  bool runLMscanFall11dil8  = 0; 
+  bool runLMscanFall11dil9  = 0; 
+  bool runLMscanFall11dil10 = 0; 
   bool runT2tt     = 0;
   bool runT1lh     = 0;
   bool runZZZ      = 0;
@@ -821,10 +831,79 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLMscanFall11dil = new TChain("Events");
   if (runLMscanFall11dil) {
 
-    pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple*root");
+    //pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple*root");
 
-    //pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_147_1_sap.root");
+    pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_147_1_sap.root");
 
+  }
+
+  TChain *chLMscanFall11dil1 = new TChain("Events");
+  if (runLMscanFall11dil1) {
+    pickSkimIfExists(chLMscanFall11dil1,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_11*root"); //111
+    pickSkimIfExists(chLMscanFall11dil1,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_12*root"); //111
+    pickSkimIfExists(chLMscanFall11dil1,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_13*root"); //111
+  }
+
+  TChain *chLMscanFall11dil2 = new TChain("Events");
+  if (runLMscanFall11dil2) {
+    pickSkimIfExists(chLMscanFall11dil2,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_14*root"); //111
+    pickSkimIfExists(chLMscanFall11dil2,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_15*root"); //111
+    pickSkimIfExists(chLMscanFall11dil2,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_16*root"); //111
+  }
+
+  TChain *chLMscanFall11dil3 = new TChain("Events");
+  if (runLMscanFall11dil3) {
+    pickSkimIfExists(chLMscanFall11dil3,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_17*root"); //111
+    pickSkimIfExists(chLMscanFall11dil3,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_18*root"); //111
+    pickSkimIfExists(chLMscanFall11dil3,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_19*root"); //111
+  }
+
+  TChain *chLMscanFall11dil4 = new TChain("Events");
+  if (runLMscanFall11dil4) {
+    pickSkimIfExists(chLMscanFall11dil4,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_20*root"); //111
+    pickSkimIfExists(chLMscanFall11dil4,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_21*root"); //111
+    pickSkimIfExists(chLMscanFall11dil4,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_22*root"); //111
+  }
+
+  TChain *chLMscanFall11dil5 = new TChain("Events");
+  if (runLMscanFall11dil5) {
+    pickSkimIfExists(chLMscanFall11dil5,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_23*root"); //111
+    pickSkimIfExists(chLMscanFall11dil5,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_24*root"); //111
+    pickSkimIfExists(chLMscanFall11dil5,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_25*root"); //111
+  }
+
+  TChain *chLMscanFall11dil6 = new TChain("Events");
+  if (runLMscanFall11dil6) {
+    pickSkimIfExists(chLMscanFall11dil6,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_26*root"); //111
+    pickSkimIfExists(chLMscanFall11dil6,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_27*root"); //111
+    pickSkimIfExists(chLMscanFall11dil6,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_28*root"); //111
+  }
+
+  TChain *chLMscanFall11dil7 = new TChain("Events");
+  if (runLMscanFall11dil7) {
+    pickSkimIfExists(chLMscanFall11dil7,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_3*root"); //295
+  }
+
+  TChain *chLMscanFall11dil8 = new TChain("Events");
+  if (runLMscanFall11dil8) {
+    pickSkimIfExists(chLMscanFall11dil8,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_29*root"); //111
+    pickSkimIfExists(chLMscanFall11dil8,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_4*root"); //111
+    pickSkimIfExists(chLMscanFall11dil8,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_5*root"); //111
+  }
+
+  TChain *chLMscanFall11dil9 = new TChain("Events");
+  if (runLMscanFall11dil9) {
+    pickSkimIfExists(chLMscanFall11dil9,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_6*root"); //111
+    pickSkimIfExists(chLMscanFall11dil9,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_7*root"); //111
+    pickSkimIfExists(chLMscanFall11dil9,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_8*root"); //111
+  }
+
+  TChain *chLMscanFall11dil10 = new TChain("Events");
+  if (runLMscanFall11dil10) {
+    pickSkimIfExists(chLMscanFall11dil10,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_9*root"); //111
+    pickSkimIfExists(chLMscanFall11dil10,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_10*root"); //111
+    pickSkimIfExists(chLMscanFall11dil10,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_1_*root"); //1
+    pickSkimIfExists(chLMscanFall11dil10,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_2_*root"); //1
   }
 
   TChain *chLMscanFall11 = new TChain("Events");
