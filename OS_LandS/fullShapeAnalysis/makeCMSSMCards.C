@@ -64,16 +64,16 @@ void makeCMSSMCards(){
   
   TChain *ch = new TChain("t");
   ch->Add("output/V00-02-21/highpt/LMscanFall11dil_combined_smallTree.root");
-  char* version = "V00-00-09";
+  char* version = "V00-00-10";
   bool doSigCont = true;
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
+  //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
   //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale * ( 1 - sqrt(pow(ksusyup/ksusy-1,2)+0.2*0.2) )");
-  //TCut weightkup("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
+  TCut weight("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
   //TCut weightkdn("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusydn/ksusy");
   TCut presel("pfmet>50 && njets>=2 && ht>100 && !passz");
   TCut preselptll("pfmet>50 && njets>=2 && ht>100 && !passz && ( (leptype==2) || (leptype<2 && pfmet>75) )");
