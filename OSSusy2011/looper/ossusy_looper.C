@@ -1069,8 +1069,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       */
 
       if( TString(prefix).Contains("LMscan") ){
-       	if( sparm_m12() > 700                           ) continue;	
-       	if( sparm_m0()  > 2000.0 && sparm_m12() > 400.0 ) continue;
+	cout << "ERROR SPARM M0 and M12 branches turned off!!!!" << endl;
+	exit(0);
+       	//if( sparm_m12() > 700                           ) continue;	
+       	//if( sparm_m0()  > 2000.0 && sparm_m12() > 400.0 ) continue;
       }
 
       if(strcmp(prefix,"T2tt") == 0){
@@ -2070,8 +2072,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	else if( TString(prefix).Contains("LMscan") ){
 
 	  subp_ = susySubProcess();
-          m0    = sparm_m0();
-          m12   = sparm_m12();
+          m0    = -1;//sparm_m0();
+          m12   = -1;//sparm_m12();
 
 	  //ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012");
 	  //ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Scale20_2012");
@@ -2083,7 +2085,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  xsecsusy2_ = getMsugraCrossSection(m0,m12,10);
 
 	  fileff_ = 1;
-	  if( TString(prefix).Contains("dil") )  fileff_ = sparm_dilepfiltereff();
+	  if( TString(prefix).Contains("dil") )  fileff_ = -999; //sparm_dilepfiltereff();
 
 	  //cout << "m0 " << m0 << " m1/2 " << m12 << " LO xsec " << xsecsusy_ << " k " << ksusy_ << " kup " << ksusyup_ << " ksusydn " << ksusydn_ << endl << endl;
 	  weight = lumi * fileff_ * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
@@ -2095,9 +2097,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           weight = 1;
         }
 
-	else if(strcmp(prefix,"T2tt") == 0){
-	  mG_ = -9; //sparm_mG();
-	  mL_ = -9; //sparm_mL();
+	else if( TString(prefix).Contains("T2") ){
+	  mG_ = sparm_mG();
+	  mL_ = sparm_mL();
+	  mF_ = sparm_mf();
 	  
 	  weight = lumi * stopPairCrossSection(mG_) * (1000./50000.);
 	  if( doTenPercent )	  weight *= 10;
@@ -3133,10 +3136,10 @@ void ossusy_looper::BookHistos(char *prefix)
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
   
-  hel     = new TH1F("hel"     ,"",30,0,150);
-  hmu     = new TH1F("hmu"     ,"",30,0,150);
-  helpass = new TH1F("helpass" ,"",30,0,150);
-  hmupass = new TH1F("hmupass" ,"",30,0,150);
+  hel     = new TH1F(Form("%s_el"     , prefix),"",30,0,150);
+  hmu     = new TH1F(Form("%s_mu"     , prefix),"",30,0,150);
+  helpass = new TH1F(Form("%s_elpass" , prefix),"",30,0,150);
+  hmupass = new TH1F(Form("%s_mupass" , prefix),"",30,0,150);
 
   hyield = new TH1F(Form("%s_yield",prefix),Form("%s Event Yields",prefix),4,0,4);
   hyield->GetXaxis()->SetTitle("dil type");
@@ -4541,6 +4544,7 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("mg",              &mG_,               "mg/F");
   outTree->Branch("ml",              &mL_,               "ml/F");
+  outTree->Branch("mf",              &mF_,               "mf/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");
   outTree->Branch("id2",             &id2_,              "id2/I");

@@ -126,6 +126,7 @@ class ossusy_looper
 	Float_t mG_;
 	Float_t mlljj_;
 	Float_t mL_;
+	Float_t mF_;
 	Float_t ecalveto1_;
 	Float_t ecalveto2_;
 	Float_t hcalveto1_;

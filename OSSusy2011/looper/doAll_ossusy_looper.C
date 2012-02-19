@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-21";
+  const char* version   = "V00-02-22";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -315,7 +315,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLMscan   = 0; 
   bool runLMscanFall11      = 0; 
   bool runLMscanFall11dil   = 0; 
-  bool runLMscanFall11dil1  = 1; 
+  bool runLMscanFall11dil1  = 0; 
   bool runLMscanFall11dil2  = 0; 
   bool runLMscanFall11dil3  = 0; 
   bool runLMscanFall11dil4  = 0; 
@@ -326,6 +326,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLMscanFall11dil9  = 0; 
   bool runLMscanFall11dil10 = 0; 
   bool runT2tt     = 0;
+  bool runT2blnu   = 1;
   bool runT1lh     = 0;
   bool runZZZ      = 0;
   
@@ -965,6 +966,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     
   }
 
+  TChain *chT2blnu = new TChain("Events");
+  if (runT2blnu) {
+    
+    pickSkimIfExists(chT2blnu,
+     		     "/nfs-7/userdata/cms2/SMS-T2blnu_x-0p25to0p75_mStop-50to850_mLSP-50to800_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v2/VB04-02-29_Fastsim/merged*root");
+    // pickSkimIfExists(chT2blnu,
+    // 		     "/nfs-7/userdata/cms2/SMS-T2blnu_x-0p25to0p75_mStop-50to850_mLSP-50to800_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v2/VB04-02-29_Fastsim/merged_ntuple.root");
+    
+  }
+
   // LMscan
   TChain *chT1lh = new TChain("Events");
   if (runT1lh) {
@@ -1561,6 +1572,11 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      cout << "Processing T2tt" << endl;
 		      looper->ScanChain(chT2tt, "T2tt", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing T2tt" << endl;
+		    }
+		    if (runT2blnu) {
+		      cout << "Processing T2blnu" << endl;
+		      looper->ScanChain(chT2blnu, "T2blnu", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing T2blnu" << endl;
 		    }
 
 		    char* dir = "";
