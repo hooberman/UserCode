@@ -63,16 +63,16 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("t");
-  ch->Add("output/V00-02-12/highpt/LMscanFall11dil_smallTree.root");
-  char* version = "V00-00-08";
+  ch->Add("output/V00-02-21/highpt/LMscanFall11dil_combined_smallTree.root");
+  char* version = "V00-00-09";
   bool doSigCont = true;
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
-  TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale * ( 1 - sqrt(pow(ksusyup/ksusy-1,2)+0.2*0.2) )");
+  TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
+  //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale * ( 1 - sqrt(pow(ksusyup/ksusy-1,2)+0.2*0.2) )");
   //TCut weightkup("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
   //TCut weightkdn("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusydn/ksusy");
   TCut presel("pfmet>50 && njets>=2 && ht>100 && !passz");
@@ -113,9 +113,9 @@ void makeCMSSMCards(){
   // preselection and SR1,SR2,SR3 yields
   //---------------------------------------
 
-  const int   nm0points    = 100;
+  const int   nm0points    = 150;
   const float m0min        = 20.;
-  const float m0max        = 2020.;
+  const float m0max        = 3020.;
   const int   nm12points   = 38;
   const float m12min       = 20.;
   const float m12max       = 780.;
