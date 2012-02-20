@@ -1,207 +1,296 @@
-const unsigned int nNLO=20;
-Double_t xNLO[100],yNLO[100],xerr[100],yerr[100];
 
 
-TGraph* getObserved3p5_shape(){
+TGraph *observedLimit_OS2011(){
 
-  const unsigned int no = 9;
+  const unsigned int no = 21;
   float xo[no];
   float yo[no];
 
-  xo[0] = 60;   yo[0] = 410;
-  xo[1] = 250;  yo[1] = 290;
-  xo[2] = 530;  yo[2] = 290;
-  xo[3] = 570;  yo[3] = 260;
-  xo[4] = 760;  yo[4] = 260;
-  xo[5] = 800;  yo[5] = 210;
-  xo[6] = 1000; yo[6] = 210;
-  xo[7] = 1400; yo[7] = 210;
-  xo[8] = 2000; yo[8] = 150;
+  int i = -1;
 
-  // const unsigned int no = 6;
-  // float xo[no];
-  // float yo[no];
-
-  // xo[0] = 60;   yo[0] = 420;
-  // xo[1] = 220;  yo[1] = 310;
-  // xo[2] = 530;  yo[2] = 310;
-  // xo[3] = 530;  yo[3] = 270;
-  // xo[4] = 740;  yo[4] = 270;
-  // xo[5] = 870;  yo[5] = 200;
+  xo[++i] = 60;   yo[i] = 450;
+  xo[++i] = 100;  yo[i] = 450;
+  xo[++i] = 125;  yo[i] = 435;
+  xo[++i] = 150;  yo[i] = 420;
+  xo[++i] = 180;  yo[i] = 380;
+  xo[++i] = 190;  yo[i] = 350;
+  xo[++i] = 195;  yo[i] = 330;
+  xo[++i] = 210;  yo[i] = 320;
+  xo[++i] = 250;  yo[i] = 330;
+  xo[++i] = 300;  yo[i] = 340;
+  xo[++i] = 450;  yo[i] = 360;
+  xo[++i] = 580;  yo[i] = 360;
+  xo[++i] = 600;  yo[i] = 350;
+  xo[++i] = 620;  yo[i] = 300;
+  xo[++i] = 650;  yo[i] = 285;
+  xo[++i] = 700;  yo[i] = 275;
+  xo[++i] = 830;  yo[i] = 260; //
+  xo[++i] = 1000; yo[i] = 230;
+  xo[++i] = 1400; yo[i] = 210;
+  xo[++i] = 2000; yo[i] = 195;
+  xo[++i] = 3000; yo[i] = 190;
 
   TGraph* gro = new TGraph(no,xo,yo);
-  gro->SetLineWidth(3);
-  gro->SetLineColor(kGreen);
+  gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
+
+  return gro;
+}
+
+TGraph *expectedLimit_OS2011(){
+
+  const unsigned int no = 19;
+  float xo[no];
+  float yo[no];
+
+  int i = -1;
+
+  xo[++i] = 60;   yo[i] = 450;
+  xo[++i] = 100;  yo[i] = 450;
+  xo[++i] = 125;  yo[i] = 435;
+  xo[++i] = 150;  yo[i] = 420;
+  xo[++i] = 180;  yo[i] = 380;
+  xo[++i] = 190;  yo[i] = 350;
+  xo[++i] = 195;  yo[i] = 330;
+  xo[++i] = 210;  yo[i] = 320;
+  xo[++i] = 250;  yo[i] = 330;
+  xo[++i] = 300;  yo[i] = 340;
+  xo[++i] = 450;  yo[i] = 350;
+  xo[++i] = 570;  yo[i] = 360;
+  xo[++i] = 590;  yo[i] = 350;
+  xo[++i] = 580;  yo[i] = 300;
+  xo[++i] = 800;  yo[i] = 250;
+  xo[++i] = 1000; yo[i] = 220;
+  xo[++i] = 1400; yo[i] = 190;//
+  xo[++i] = 2000; yo[i] = 185;//
+  xo[++i] = 3000; yo[i] = 185;//
+
+  TGraph* gro = new TGraph(no,xo,yo);
+  gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
+
+  return gro;
+
+}
+  
+TGraph *expectedLimitP1_OS2011(){
+
+  const unsigned int no = 23;
+  float xo[no];
+  float yo[no];
+
+  int i = -1;
+
+  xo[++i] = 60;   yo[i] = 410;
+  xo[++i] = 80;   yo[i] = 410;
+  xo[++i] = 90;   yo[i] = 400;
+  xo[++i] = 100;  yo[i] = 390;
+  xo[++i] = 100;  yo[i] = 370;
+  xo[++i] = 120;  yo[i] = 365;
+  xo[++i] = 145;  yo[i] = 360;
+  xo[++i] = 180;  yo[i] = 350;
+  xo[++i] = 185;  yo[i] = 315;
+  xo[++i] = 190;  yo[i] = 280;
+  xo[++i] = 210;  yo[i] = 275;
+  xo[++i] = 240;  yo[i] = 280;
+  xo[++i] = 400;  yo[i] = 320;
+  xo[++i] = 460;  yo[i] = 320;
+  xo[++i] = 480;  yo[i] = 270;
+  xo[++i] = 550;  yo[i] = 245;
+  xo[++i] = 600;  yo[i] = 240;
+  xo[++i] = 750;  yo[i] = 230;
+  xo[++i] = 900;  yo[i] = 210;
+  xo[++i] = 1200; yo[i] = 150;
+  xo[++i] = 1600; yo[i] = 135;
+  xo[++i] = 2000; yo[i] = 130;
+  xo[++i] = 3000; yo[i] = 120;
+
+  TGraph* gro = new TGraph(no,xo,yo);
+  gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
+
+  return gro;
+}
+  
+TGraph *expectedLimitM1_OS2011(){
+
+  const unsigned int no = 19;
+  float xo[no];
+  float yo[no];
+
+  int i = -1;
+
+  xo[++i] = 60;   yo[i] = 450;
+  xo[++i] = 100;  yo[i] = 450;
+  xo[++i] = 200;  yo[i] = 420;
+  xo[++i] = 220;  yo[i] = 400;
+  xo[++i] = 225;  yo[i] = 360;
+  xo[++i] = 245;  yo[i] = 357;
+  xo[++i] = 265;  yo[i] = 355;
+  xo[++i] = 300;  yo[i] = 360;
+  xo[++i] = 400;  yo[i] = 370;
+  xo[++i] = 450;  yo[i] = 375;
+  xo[++i] = 550;  yo[i] = 377;
+  xo[++i] = 640;  yo[i] = 380;
+  xo[++i] = 730;  yo[i] = 300;
+  xo[++i] = 900;  yo[i] = 270;
+  xo[++i] = 1000; yo[i] = 250;
+  xo[++i] = 1200; yo[i] = 240;
+  xo[++i] = 1400; yo[i] = 230;
+  xo[++i] = 2000; yo[i] = 220;
+  xo[++i] = 3000; yo[i] = 210;
+
+  TGraph* gro = new TGraph(no,xo,yo);
+  gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
+
+  return gro;
+}
+
+TGraph *observedLimitTheoryUp_OS2011(){
+
+
+  const unsigned int no = 19;
+  float xo[no];
+  float yo[no];
+
+  int i = -1;
+
+  xo[++i] = 60;   yo[i] = 450;
+  xo[++i] = 100;  yo[i] = 450;
+  xo[++i] = 200;  yo[i] = 420;
+  xo[++i] = 220;  yo[i] = 400;
+  xo[++i] = 225;  yo[i] = 350;
+  xo[++i] = 245;  yo[i] = 347;
+  xo[++i] = 265;  yo[i] = 345;
+  xo[++i] = 300;  yo[i] = 350;
+  xo[++i] = 400;  yo[i] = 370;
+  xo[++i] = 450;  yo[i] = 375;
+  xo[++i] = 550;  yo[i] = 372;
+  xo[++i] = 640;  yo[i] = 370;
+  xo[++i] = 730;  yo[i] = 300;
+  xo[++i] = 900;  yo[i] = 270;
+  xo[++i] = 1000; yo[i] = 250;
+  xo[++i] = 1200; yo[i] = 230;
+  xo[++i] = 1500; yo[i] = 210;
+  xo[++i] = 2000; yo[i] = 200;
+  xo[++i] = 3000; yo[i] = 200;
+
+  for( int ip = 0 ; ip < 18 ; ip++ ) yo[ip] += 5;
+
+  TGraph* gro = new TGraph(no,xo,yo);
+  gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
 
   return gro;
 
 }
 
-TGraph* getExpected3p5_shape(){
+TGraph *observedLimitTheoryDown_OS2011(){
 
-  const unsigned int n = 11;
-  float x[n];
-  float y[n];
+  const unsigned int no = 21;
+  float xo[no];
+  float yo[no];
 
-  x[0]  = 60;   y[0]  = 460;
-  x[1]  = 250;  y[1]  = 330;
-  x[2]  = 530;  y[2]  = 330;
-  x[3]  = 570;  y[3]  = 270;
-  x[4]  = 780;  y[4]  = 270;
-  x[5]  = 870;  y[5]  = 230;
-  x[6]  = 1000; y[6]  = 230;
-  x[7]  = 1080; y[7]  = 230;
-  x[8]  = 1120; y[8]  = 210;
-  x[9]  = 1400; y[9]  = 210;
-  x[10] = 2000; y[10] = 150;
+  int i = -1;
 
-  // const unsigned int n = 6;
-  // float x[n];
-  // float y[n];
+  xo[++i] = 60;   yo[i] = 440;
+  xo[++i] = 100;  yo[i] = 440;
+  xo[++i] = 125;  yo[i] = 425;
+  xo[++i] = 150;  yo[i] = 400;
+  xo[++i] = 180;  yo[i] = 360;
+  xo[++i] = 190;  yo[i] = 330;
+  xo[++i] = 195;  yo[i] = 310;
+  xo[++i] = 210;  yo[i] = 300;
+  xo[++i] = 250;  yo[i] = 310;
+  xo[++i] = 300;  yo[i] = 320;
+  xo[++i] = 450;  yo[i] = 340;
+  xo[++i] = 550;  yo[i] = 340;
+  xo[++i] = 570;  yo[i] = 330;
+  xo[++i] = 620;  yo[i] = 280;
+  xo[++i] = 630;  yo[i] = 275;
+  xo[++i] = 700;  yo[i] = 265;
+  xo[++i] = 830;  yo[i] = 250;
+  xo[++i] = 1000; yo[i] = 220;
+  xo[++i] = 1400; yo[i] = 185;
+  xo[++i] = 2000; yo[i] = 175;
+  xo[++i] = 3000; yo[i] = 175;
 
-  // x[0] = 60;   y[0] = 430;
-  // x[1] = 220;  y[1] = 330;
-  // x[2] = 550;  y[2] = 330;
-  // x[3] = 550;  y[3] = 270;
-  // x[4] = 780;  y[4] = 270;
-  // x[5] = 870;  y[5] = 240;
+  TGraph* gro = new TGraph(no,xo,yo);
+  gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
 
-  TGraph* gr = new TGraph(n,x,y);
-  gr->SetLineWidth(3);
-  gr->SetLineColor(kMagenta);
-
-  return gr;
-}
+  return gro;
   
-void initialize(){
-
-  for( unsigned int ierr = 0 ; ierr < nNLO ; ++ierr ){
-    //xerr[ierr] = 0.;
-    //yerr[ierr] = 0.;
-    xNLO[ierr] = 0.;
-    yNLO[ierr] = 0.;
-  }
-
-  Int_t i = -1;
-
-  xNLO[++i]=0.;    yNLO[i]=460.; //0
-  xNLO[++i]=80;    yNLO[i]=410.; //1
-  xNLO[++i]=100;   yNLO[i]=365.; //2
-  xNLO[++i]=120;   yNLO[i]=360.; //3
-  xNLO[++i]=150;   yNLO[i]=355.; //4
-  xNLO[++i]=180;   yNLO[i]=325.; //5
-  xNLO[++i]=200;   yNLO[i]=290.; //6
-  xNLO[++i]=210;   yNLO[i]=285.; //7
-  xNLO[++i]=270;   yNLO[i]=300.; //8
-  xNLO[++i]=350;   yNLO[i]=310.; //9
-  xNLO[++i]=450;   yNLO[i]=310.; //10
-  xNLO[++i]=520;   yNLO[i]=320.; //11
-  xNLO[++i]=550;   yNLO[i]=280.; //12
-  xNLO[++i]=600;   yNLO[i]=265.; //13
-  xNLO[++i]=700;   yNLO[i]=250.; //14
-  xNLO[++i]=900;   yNLO[i]=230.; //15
-  xNLO[++i]=1000;  yNLO[i]=220.; //16
-  xNLO[++i]=1400;  yNLO[i]=180.; //17
-  xNLO[++i]=1800;  yNLO[i]=156.; //18
-  xNLO[++i]=1900;  yNLO[i]=150.; //19
 }
 
-TGraphErrors* getNLOobsTanbeta10( ){
 
-  initialize();
+TGraph *expectedLimitTheoryUp_OS2011(){
 
-  TGraphErrors* gr  = new TGraphErrors(nNLO,xNLO, yNLO,xerr,yerr);
-  gr->SetMarkerColor(kWhite);
-  return gr;
+  const unsigned int no = 19;
+  float xo[no];
+  float yo[no];
 
+  int i = -1;
+
+  xo[++i] = 60;   yo[i] = 450;
+  xo[++i] = 100;  yo[i] = 450;
+  xo[++i] = 180;  yo[i] = 420;
+  xo[++i] = 200;  yo[i] = 400;
+  xo[++i] = 205;  yo[i] = 350;
+  xo[++i] = 225;  yo[i] = 347;
+  xo[++i] = 245;  yo[i] = 345;
+  xo[++i] = 300;  yo[i] = 350;
+  xo[++i] = 400;  yo[i] = 370;
+  xo[++i] = 450;  yo[i] = 375;
+  xo[++i] = 550;  yo[i] = 372;
+  xo[++i] = 620;  yo[i] = 350;
+  xo[++i] = 650;  yo[i] = 310;
+  xo[++i] = 800;  yo[i] = 260;
+  xo[++i] = 1000; yo[i] = 240;
+  xo[++i] = 1200; yo[i] = 220;
+  xo[++i] = 1400; yo[i] = 200;
+  xo[++i] = 2000; yo[i] = 190;
+  xo[++i] = 3000; yo[i] = 190;
+
+  TGraph* gro = new TGraph(no,xo,yo);
+  gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
+
+  return gro;
 }
 
-TGraphErrors* getNLOexpTanbeta10( ){
-  
-  initialize();
+TGraph* expectedLimitTheoryDown_OS2011(){
+  const unsigned int no = 18;
+  float xo[no];
+  float yo[no];
 
-  for( int j = 0 ; j <= 100 ; ++j ){
-    xNLO[j] -= 10;
-    yNLO[j] -= 10;
-  }
+  int i = -1;
 
-  TGraphErrors* gr  = new TGraphErrors(nNLO,xNLO, yNLO,xerr,yerr);
-  gr->SetMarkerColor(kWhite);
-  return gr;
+  xo[++i] = 60;   yo[i] = 430;
+  xo[++i] = 100;  yo[i] = 420;
+  xo[++i] = 110;  yo[i] = 410;
+  xo[++i] = 120;  yo[i] = 390;
+  xo[++i] = 170;  yo[i] = 360;
+  xo[++i] = 190;  yo[i] = 320;
+  xo[++i] = 230;  yo[i] = 315;
+  xo[++i] = 320;  yo[i] = 324;
+  xo[++i] = 400;  yo[i] = 330;
+  xo[++i] = 490;  yo[i] = 330;
+  xo[++i] = 560;  yo[i] = 270;
+  xo[++i] = 620;  yo[i] = 260;
+  xo[++i] = 800;  yo[i] = 230;
+  xo[++i] = 1000; yo[i] = 200;
+  xo[++i] = 1200; yo[i] = 180;
+  xo[++i] = 1400; yo[i] = 170;
+  xo[++i] = 2000; yo[i] = 170;
+  xo[++i] = 3000; yo[i] = 170;
 
-}
+  TGraph* gro = new TGraph(no,xo,yo);
+  gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
 
-TGraphErrors* getNLOexpUpTanbeta10( ){
-  
-  initialize();
-
-  for( int j = 0 ; j <= 100 ; ++j ){
-    xNLO[j] += 10;
-    yNLO[j] += 10;
-  }
-
-  TGraphErrors* gr  = new TGraphErrors(nNLO,xNLO, yNLO,xerr,yerr);
-  gr->SetMarkerColor(kBlue);
-  gr->SetMarkerStyle(21);
-
-  return gr;
-
-}
-
-TGraphErrors* getNLOexpTanbeta10_band( ){
-  
-  initialize();
-  
-  Double_t x[100],y[100],ex[100],ey[100];
-  
-  for( unsigned int j = 0 ; j < nNLO ; ++j ){
-    x[j]  = xNLO[j] + 15;
-    y[j]  = yNLO[j] + 15;
-    ex[j] = 0;
-    ey[j] = 0;
-  }
-  
-  for( unsigned int j = 0 ; j < nNLO ; ++j ){
-    x[j+nNLO]  = xNLO[nNLO-j-1] - 30;
-    y[j+nNLO]  = yNLO[nNLO-j-1] - 30;
-    ex[j+nNLO] = 0;
-    ey[j+nNLO] = 0;
-  }
-  
-  TGraphErrors* gr  = new TGraphErrors(2*nNLO,x, y,ex,ey);
-  gr->SetMarkerColor(4);
-  gr->SetFillColor(4);
-  gr->SetMarkerStyle(21);
-  gr->SetFillStyle(3002); //med dots
-  //gr->SetFillStyle(3006); //vert stripe
-  //gr->SetFillStyle(3004); //diag stripe
-  //gr->SetFillStyle(3144); //diag stripe
-  gr->SetLineColor(4);
-  gr->SetLineWidth(2);
-
-  //gr->SetMarkerColor(kCyan);
-  //gr->SetFillColor(kCyan);
-  //gr->SetLineColor(kCyan);
-
-  return gr;
-
-}
-
-TGraphErrors* getNLOexpDownTanbeta10( ){
-  
-  initialize();
-
-  for( int j = 0 ; j <= 100 ; ++j ){
-    xNLO[j] -= 30;
-    yNLO[j] -= 30;
-  }
-
-
-  TGraphErrors* gr  = new TGraphErrors(nNLO,xNLO, yNLO,xerr,yerr);
-  gr->SetMarkerColor(kBlue);
-  gr->SetMarkerStyle(21);
-
-  return gr;
+  return gro;
 
 }
 
@@ -317,49 +406,6 @@ TGraphErrors* getNLOobsTanbeta10_2010( ){
 
   x[++i]=180.;
   y[i]=125.;
-  /*
-  x[++i]=190.;
-  y[i]=135.;
-  
-  x[++i]=200.;
-  y[i]=145.;
-
-  x[++i]=210.;
-  y[i]=155.;
-
-  x[++i]=220.;
-  y[i]=165.;
-
-  x[++i]=230.;
-  y[i]=160.;
-
-  x[++i]=240.;
-  y[i]=145.;
-
-  x[++i]=250.;
-  y[i]=155.;
-  
-  x[++i]=260.;
-  y[i]=170.;
-
-  x[++i]=270.;
-  y[i]=170.;
-
-  x[++i]=280.;
-  y[i]=170.;
-
-  x[++i]=280.;
-  y[i]=160.;
-
-  x[++i]=270.;
-  y[i]=150.;
-
-  x[++i]=260.;
-  y[i]=145.;
-
-  x[++i]=230.;
-  y[i]=125.;
-  */
   
   TGraphErrors* grtb10  = new TGraphErrors(n,x, y,xerr2,yerr2);
   grtb10->SetMarkerColor(kWhite);
@@ -372,3 +418,83 @@ TGraphErrors* getNLOobsTanbeta10_2010( ){
 
 
 
+
+  
+TGraph *expectedLimitBand_OS2011(){
+
+  const unsigned int no1 = 21;
+  float xo1[no1];
+  float yo1[no1];
+
+  int i = -1;
+
+  xo1[++i] = 60;   yo1[i] = 410;
+  xo1[++i] = 80;   yo1[i] = 410;
+  xo1[++i] = 90;   yo1[i] = 400;
+  xo1[++i] = 100;  yo1[i] = 390;
+  xo1[++i] = 100;  yo1[i] = 370;
+  xo1[++i] = 120;  yo1[i] = 365;
+  xo1[++i] = 145;  yo1[i] = 360;
+  xo1[++i] = 180;  yo1[i] = 350;
+  xo1[++i] = 185;  yo1[i] = 315;
+  xo1[++i] = 190;  yo1[i] = 280;
+  xo1[++i] = 210;  yo1[i] = 275;
+  xo1[++i] = 240;  yo1[i] = 280;
+  xo1[++i] = 400;  yo1[i] = 320;
+  xo1[++i] = 460;  yo1[i] = 320;
+  xo1[++i] = 480;  yo1[i] = 270;
+  xo1[++i] = 550;  yo1[i] = 245;
+  xo1[++i] = 600;  yo1[i] = 240;
+  xo1[++i] = 800;  yo1[i] = 210;
+  xo1[++i] = 1200; yo1[i] = 150;
+  xo1[++i] = 2000; yo1[i] = 140;
+
+  xo1[++i] = 200000; yo1[i] = 170;
+
+  const unsigned int no2 = 18;
+  float xo2[no2];
+  float yo2[no2];
+
+  i = -1;
+
+  xo2[++i] = 60;   yo2[i] = 450;
+  xo2[++i] = 100;  yo2[i] = 450;
+  xo2[++i] = 200;  yo2[i] = 420;
+  xo2[++i] = 220;  yo2[i] = 400;
+  xo2[++i] = 225;  yo2[i] = 350;
+  xo2[++i] = 245;  yo2[i] = 347;
+  xo2[++i] = 265;  yo2[i] = 345;
+  xo2[++i] = 300;  yo2[i] = 350;
+  xo2[++i] = 400;  yo2[i] = 370;
+  xo2[++i] = 450;  yo2[i] = 375;
+  xo2[++i] = 550;  yo2[i] = 372;
+  xo2[++i] = 640;  yo2[i] = 370;
+  xo2[++i] = 730;  yo2[i] = 300;
+  xo2[++i] = 900;  yo2[i] = 270;
+  xo2[++i] = 1000; yo2[i] = 250;
+  xo2[++i] = 1200; yo2[i] = 230;
+  xo2[++i] = 1400; yo2[i] = 220;
+  xo2[++i] = 2000; yo2[i] = 210;
+
+  const unsigned int no = no1 + no2;
+  float xo[no];
+  float yo[no];
+
+  for( unsigned int ip = 0 ; ip < no1 ; ip++ ){
+    xo[ip] = xo1[ip];
+    yo[ip] = yo1[ip];
+  }
+
+  for( unsigned int ip = 0 ; ip < no2 ; ip++ ){
+    xo[ip+no1] = xo2[no2-1-ip];
+    yo[ip+no1] = yo2[no2-1-ip];
+  }
+  
+
+  TGraph* gro = new TGraph(no,xo,yo);
+  gro->SetLineWidth(5);
+  gro->SetMarkerColor(2);
+  gro->SetFillColor(2);
+  
+  return gro;
+}
