@@ -1,8 +1,24 @@
-{
-
 #include "OSStuff.hh"
+#include "TCanvas.h"
+#include "TGraph.h"
+#include "TGraphErrors.h"
+#include "TLegend.h"
+#include "TLegendEntry.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TF1.h"
+#include "TLatex.h"
+#include "TPaveText.h"
+#include "TColor.h"
+#include "TStyle.h"
+#include "TROOT.h"
+#include "TMarker.h"
 
-  int plotmode = 1; // expected limit separate contours
+using namespace std;
+
+void GridTanb10_v1_OS(int plotmode = 1){
+
+  //int plotmode = 1; // expected limit separate contours
   //int plotmode = 2; // expected limit band
 
   int m12max = 600;
@@ -6020,7 +6036,7 @@
    gre->SetPoint(58,2999.5,172.5);
    gre->SetPointError(58,0,77.5);
 
-   TGraphErrors *grnoewsb = (TGraphErrors*) gre->Clone();
+   //TGraphErrors *grnoewsb = (TGraphErrors*) gre->Clone();
 
    TH1F *Graph1 = new TH1F("Graph1","Graph",100,2048,3086);
    Graph1->SetMinimum(79.5);
@@ -6169,7 +6185,7 @@
    gre->SetPoint(53,2949.5,275);
    gre->SetPointError(53,0,5);
 
-   TGraphErrors* grchipm = (TGraphErrors*) gre->Clone("grchipm");
+   //TGraphErrors* grchipm = (TGraphErrors*) gre->Clone("grchipm");
 
    TH1F *Graph2 = new TH1F("Graph2","Graph",100,0,3240);
    Graph2->SetMinimum(76.5);
@@ -9176,23 +9192,23 @@
    t->SetTextSize(0.038);
    t->DrawLatex(0.38,0.68,"CMS Preliminary    #sqrt{s} = 7 TeV,  #scale[0.6]{#int}L dt 4.7 fb^{-1} ");
 
-  TMarker* LM0 = new TMarker(200.,160.,20);
-  TMarker* LM1 = new TMarker(60.,250.,20);
-  TMarker* LM3 = new TMarker(330.,240.,20);
-  TMarker* LM6 = new TMarker(80.,400.,20);
+  // TMarker* LM0 = new TMarker(200.,160.,20);
+  // TMarker* LM1 = new TMarker(60.,250.,20);
+  // TMarker* LM3 = new TMarker(330.,240.,20);
+  // TMarker* LM6 = new TMarker(80.,400.,20);
     
-  LM0->SetMarkerSize(1.2);
-  LM1->SetMarkerSize(1.2);
+  // LM0->SetMarkerSize(1.2);
+  // LM1->SetMarkerSize(1.2);
     
-  TLatex* tLM0 = new TLatex(205.,160.," LM0");
-  TLatex* tLM1 = new TLatex(80.,245.,"LM1");
-  TLatex* tLM3 = new TLatex(350.,235.,"LM3");
-  TLatex* tLM6 = new TLatex(100.,395.,"LM6");
+  // TLatex* tLM0 = new TLatex(205.,160.," LM0");
+  // TLatex* tLM1 = new TLatex(80.,245.,"LM1");
+  // TLatex* tLM3 = new TLatex(350.,235.,"LM3");
+  // TLatex* tLM6 = new TLatex(100.,395.,"LM6");
 
-  tLM0->SetTextSize(0.035);
-  tLM1->SetTextSize(0.035);
-  tLM3->SetTextSize(0.035);
-  tLM6->SetTextSize(0.035);
+  // tLM0->SetTextSize(0.035);
+  // tLM1->SetTextSize(0.035);
+  // tLM3->SetTextSize(0.035);
+  // tLM6->SetTextSize(0.035);
   
   // LM1->Draw("same");
   // tLM1->Draw("same");
