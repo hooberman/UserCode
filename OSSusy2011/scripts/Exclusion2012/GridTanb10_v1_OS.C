@@ -6038,31 +6038,31 @@ void GridTanb10_v1_OS(int plotmode = 1){
 
    //TGraphErrors *grnoewsb = (TGraphErrors*) gre->Clone();
 
-   TH1F *Graph1 = new TH1F("Graph1","Graph",100,2048,3086);
-   Graph1->SetMinimum(79.5);
-   Graph1->SetMaximum(265.5);
-   Graph1->SetDirectory(0);
-   Graph1->SetStats(0);
-   Graph1->SetLineStyle(0);
-   Graph1->SetMarkerStyle(20);
-   Graph1->GetXaxis()->SetLabelFont(42);
-   Graph1->GetXaxis()->SetLabelOffset(0.007);
-   Graph1->GetXaxis()->SetLabelSize(0.05);
-   Graph1->GetXaxis()->SetTitleSize(0.06);
-   Graph1->GetXaxis()->SetTitleOffset(0.9);
-   Graph1->GetXaxis()->SetTitleFont(42);
-   Graph1->GetYaxis()->SetLabelFont(42);
-   Graph1->GetYaxis()->SetLabelOffset(0.007);
-   Graph1->GetYaxis()->SetLabelSize(0.05);
-   Graph1->GetYaxis()->SetTitleSize(0.06);
-   Graph1->GetYaxis()->SetTitleOffset(1.25);
-   Graph1->GetYaxis()->SetTitleFont(42);
-   Graph1->GetZaxis()->SetLabelFont(42);
-   Graph1->GetZaxis()->SetLabelOffset(0.007);
-   Graph1->GetZaxis()->SetLabelSize(0.05);
-   Graph1->GetZaxis()->SetTitleSize(0.06);
-   Graph1->GetZaxis()->SetTitleFont(42);
-   gre->SetHistogram(Graph1);
+   TH1F *Graph1b = new TH1F("Graph1b","Graph",100,2048,3086);
+   Graph1b->SetMinimum(79.5);
+   Graph1b->SetMaximum(265.5);
+   Graph1b->SetDirectory(0);
+   Graph1b->SetStats(0);
+   Graph1b->SetLineStyle(0);
+   Graph1b->SetMarkerStyle(20);
+   Graph1b->GetXaxis()->SetLabelFont(42);
+   Graph1b->GetXaxis()->SetLabelOffset(0.007);
+   Graph1b->GetXaxis()->SetLabelSize(0.05);
+   Graph1b->GetXaxis()->SetTitleSize(0.06);
+   Graph1b->GetXaxis()->SetTitleOffset(0.9);
+   Graph1b->GetXaxis()->SetTitleFont(42);
+   Graph1b->GetYaxis()->SetLabelFont(42);
+   Graph1b->GetYaxis()->SetLabelOffset(0.007);
+   Graph1b->GetYaxis()->SetLabelSize(0.05);
+   Graph1b->GetYaxis()->SetTitleSize(0.06);
+   Graph1b->GetYaxis()->SetTitleOffset(1.25);
+   Graph1b->GetYaxis()->SetTitleFont(42);
+   Graph1b->GetZaxis()->SetLabelFont(42);
+   Graph1b->GetZaxis()->SetLabelOffset(0.007);
+   Graph1b->GetZaxis()->SetLabelSize(0.05);
+   Graph1b->GetZaxis()->SetTitleSize(0.06);
+   Graph1b->GetZaxis()->SetTitleFont(42);
+   gre->SetHistogram(Graph1b);
    
    gre->Draw(" e3");
    
@@ -6187,31 +6187,31 @@ void GridTanb10_v1_OS(int plotmode = 1){
 
    //TGraphErrors* grchipm = (TGraphErrors*) gre->Clone("grchipm");
 
-   TH1F *Graph2 = new TH1F("Graph2","Graph",100,0,3240);
-   Graph2->SetMinimum(76.5);
-   Graph2->SetMaximum(298.5);
-   Graph2->SetDirectory(0);
-   Graph2->SetStats(0);
-   Graph2->SetLineStyle(0);
-   Graph2->SetMarkerStyle(20);
-   Graph2->GetXaxis()->SetLabelFont(42);
-   Graph2->GetXaxis()->SetLabelOffset(0.007);
-   Graph2->GetXaxis()->SetLabelSize(0.05);
-   Graph2->GetXaxis()->SetTitleSize(0.06);
-   Graph2->GetXaxis()->SetTitleOffset(0.9);
-   Graph2->GetXaxis()->SetTitleFont(42);
-   Graph2->GetYaxis()->SetLabelFont(42);
-   Graph2->GetYaxis()->SetLabelOffset(0.007);
-   Graph2->GetYaxis()->SetLabelSize(0.05);
-   Graph2->GetYaxis()->SetTitleSize(0.06);
-   Graph2->GetYaxis()->SetTitleOffset(1.25);
-   Graph2->GetYaxis()->SetTitleFont(42);
-   Graph2->GetZaxis()->SetLabelFont(42);
-   Graph2->GetZaxis()->SetLabelOffset(0.007);
-   Graph2->GetZaxis()->SetLabelSize(0.05);
-   Graph2->GetZaxis()->SetTitleSize(0.06);
-   Graph2->GetZaxis()->SetTitleFont(42);
-   gre->SetHistogram(Graph2);
+   TH1F *Graph2b = new TH1F("Graph2b","Graph",100,0,3240);
+   Graph2b->SetMinimum(76.5);
+   Graph2b->SetMaximum(298.5);
+   Graph2b->SetDirectory(0);
+   Graph2b->SetStats(0);
+   Graph2b->SetLineStyle(0);
+   Graph2b->SetMarkerStyle(20);
+   Graph2b->GetXaxis()->SetLabelFont(42);
+   Graph2b->GetXaxis()->SetLabelOffset(0.007);
+   Graph2b->GetXaxis()->SetLabelSize(0.05);
+   Graph2b->GetXaxis()->SetTitleSize(0.06);
+   Graph2b->GetXaxis()->SetTitleOffset(0.9);
+   Graph2b->GetXaxis()->SetTitleFont(42);
+   Graph2b->GetYaxis()->SetLabelFont(42);
+   Graph2b->GetYaxis()->SetLabelOffset(0.007);
+   Graph2b->GetYaxis()->SetLabelSize(0.05);
+   Graph2b->GetYaxis()->SetTitleSize(0.06);
+   Graph2b->GetYaxis()->SetTitleOffset(1.25);
+   Graph2b->GetYaxis()->SetTitleFont(42);
+   Graph2b->GetZaxis()->SetLabelFont(42);
+   Graph2b->GetZaxis()->SetLabelOffset(0.007);
+   Graph2b->GetZaxis()->SetLabelSize(0.05);
+   Graph2b->GetZaxis()->SetTitleSize(0.06);
+   Graph2b->GetZaxis()->SetTitleFont(42);
+   gre->SetHistogram(Graph2b);
    
    gre->Draw(" e3");
    
@@ -6418,31 +6418,31 @@ void GridTanb10_v1_OS(int plotmode = 1){
    gre->SetPoint(12,2999.5,267.5);
    gre->SetPointError(12,0,17.5);
    
-   TH1F *Graph3 = new TH1F("Graph3","Graph",100,1696,3118);
-   Graph3->SetMinimum(76);
-   Graph3->SetMaximum(304);
-   Graph3->SetDirectory(0);
-   Graph3->SetStats(0);
-   Graph3->SetLineStyle(0);
-   Graph3->SetMarkerStyle(20);
-   Graph3->GetXaxis()->SetLabelFont(42);
-   Graph3->GetXaxis()->SetLabelOffset(0.007);
-   Graph3->GetXaxis()->SetLabelSize(0.05);
-   Graph3->GetXaxis()->SetTitleSize(0.06);
-   Graph3->GetXaxis()->SetTitleOffset(0.9);
-   Graph3->GetXaxis()->SetTitleFont(42);
-   Graph3->GetYaxis()->SetLabelFont(42);
-   Graph3->GetYaxis()->SetLabelOffset(0.007);
-   Graph3->GetYaxis()->SetLabelSize(0.05);
-   Graph3->GetYaxis()->SetTitleSize(0.06);
-   Graph3->GetYaxis()->SetTitleOffset(1.25);
-   Graph3->GetYaxis()->SetTitleFont(42);
-   Graph3->GetZaxis()->SetLabelFont(42);
-   Graph3->GetZaxis()->SetLabelOffset(0.007);
-   Graph3->GetZaxis()->SetLabelSize(0.05);
-   Graph3->GetZaxis()->SetTitleSize(0.06);
-   Graph3->GetZaxis()->SetTitleFont(42);
-   gre->SetHistogram(Graph3);
+   TH1F *Graph3b = new TH1F("Graph3b","Graph",100,1696,3118);
+   Graph3b->SetMinimum(76);
+   Graph3b->SetMaximum(304);
+   Graph3b->SetDirectory(0);
+   Graph3b->SetStats(0);
+   Graph3b->SetLineStyle(0);
+   Graph3b->SetMarkerStyle(20);
+   Graph3b->GetXaxis()->SetLabelFont(42);
+   Graph3b->GetXaxis()->SetLabelOffset(0.007);
+   Graph3b->GetXaxis()->SetLabelSize(0.05);
+   Graph3b->GetXaxis()->SetTitleSize(0.06);
+   Graph3b->GetXaxis()->SetTitleOffset(0.9);
+   Graph3b->GetXaxis()->SetTitleFont(42);
+   Graph3b->GetYaxis()->SetLabelFont(42);
+   Graph3b->GetYaxis()->SetLabelOffset(0.007);
+   Graph3b->GetYaxis()->SetLabelSize(0.05);
+   Graph3b->GetYaxis()->SetTitleSize(0.06);
+   Graph3b->GetYaxis()->SetTitleOffset(1.25);
+   Graph3b->GetYaxis()->SetTitleFont(42);
+   Graph3b->GetZaxis()->SetLabelFont(42);
+   Graph3b->GetZaxis()->SetLabelOffset(0.007);
+   Graph3b->GetZaxis()->SetLabelSize(0.05);
+   Graph3b->GetZaxis()->SetTitleSize(0.06);
+   Graph3b->GetZaxis()->SetTitleFont(42);
+   gre->SetHistogram(Graph3b);
    
    gre->Draw(" e3");
    
@@ -9142,13 +9142,20 @@ void GridTanb10_v1_OS(int plotmode = 1){
    
    TPaveText *pt = new TPaveText(350,480,830,580,"BR");
    //pt->SetNDC();
-   pt->SetTextSize(0.04);
+   pt->SetTextSize(0.038);
    pt->SetBorderSize(0);
    pt->SetTextAlign(12);  pt->SetFillColor(kWhite);
-   text = pt->AddText("#font[42]{tan(#beta)=10}");
-   text = pt->AddText("#font[42]{A_{0} = 0 GeV}");
-   text = pt->AddText("#font[42]{#mu > 0}");
-   text = pt->AddText("#font[42]{m_{t} = 173.2 GeV}");
+
+   // text = pt->AddText("#font[42]{tan(#beta)=10}");
+   // text = pt->AddText("#font[42]{A_{0} = 0 GeV}");
+   // text = pt->AddText("#font[42]{#mu > 0}");
+   // text = pt->AddText("#font[42]{m_{t} = 173.2 GeV}");
+
+   pt->AddText("#font[42]{tan(#beta)=10}");
+   pt->AddText("#font[42]{A_{0} = 0 GeV}");
+   pt->AddText("#font[42]{#mu > 0}");
+   pt->AddText("#font[42]{m_{t} = 173.2 GeV}");
+
    pt->Draw();
    GridCanvas->Modified();
    GridCanvas->cd();
@@ -9180,8 +9187,8 @@ void GridTanb10_v1_OS(int plotmode = 1){
    }
    else if( plotmode == 2 ){
      myleg->AddEntry(observedLimit          , "observed","l");
-     myleg->AddEntry(hdummyleg              , "expected (#pm1#sigma stat)","lf");
      myleg->AddEntry(observedLimitTheoryUp  , "observed (#pm1#sigma theory)","l");
+     myleg->AddEntry(hdummyleg              , "expected (#pm1#sigma stat)","lf");
      myleg->AddEntry(observedLimit2010      , "observed 2010","l");
    }
    myleg->Draw();
@@ -9234,13 +9241,13 @@ void GridTanb10_v1_OS(int plotmode = 1){
     GridCanvas->Print("RA6_nominal.png");
     GridCanvas->Print("RA6_nominal.pdf");
     GridCanvas->Print("RA6_nominal.eps");
-    //gROOT->ProcessLine(".! ps2pdf RA6_nominal.eps RA6_nominal_ppt.pdf");
+    gROOT->ProcessLine(".! ps2pdf RA6_nominal.eps RA6_nominal_ppt.pdf");
   }
   else if( plotmode == 2 ){
     GridCanvas->Print("RA6_band.png");
     GridCanvas->Print("RA6_band.pdf");
     GridCanvas->Print("RA6_band.eps");
-    //gROOT->ProcessLine(".! ps2pdf RA6_band.eps RA6_band_ppt.pdf");
+    gROOT->ProcessLine(".! ps2pdf RA6_band.eps RA6_band_ppt.pdf");
   }
 
 }
