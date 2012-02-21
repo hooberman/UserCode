@@ -239,7 +239,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   text->SetNDC();
   text->SetTextSize(0.042);
   text->DrawLatex(0.60,0.48,"ee/#mu#mu + #geq2 jets");
-  text->DrawLatex(0.14,0.95,"CMS Preliminary,   #sqrt{s} = 7 TeV,   L_{int} = 4.7 fb^{-1}");
+  text->DrawLatex(0.14,0.95,"CMS                      #sqrt{s} = 7 TeV,   L_{int} = 4.7 fb^{-1}");
 
   //-----------------------------------------
   // make a TPad for the ratio histogram
@@ -362,7 +362,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
     TLine line;
     ratio->Draw("same");
     line.DrawLine(0,1,350,1);
-    ratio->GetYaxis()->SetTitle("ratio");
+    ratio->GetYaxis()->SetTitle("data/pred");
   }
 
   //-----------------------------------------
@@ -373,8 +373,9 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
     can->Print("metplot_2jets.gif");
     can->Print("metplot_2jets.png");
     can->Print("metplot_2jets.pdf");
-    //can->Print("metplot_2jets.ps");
-    //gROOT->ProcessLine(".! ps2pdf metplot_2jets.ps");
+    can->Print("metplot_2jets.C");
+    can->Print("metplot_2jets.ps");
+    gROOT->ProcessLine(".! ps2pdf metplot_2jets.ps metplot_2jets_ppt.pdf");
   }
 
 }
