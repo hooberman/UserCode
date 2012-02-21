@@ -29,7 +29,7 @@
 #include <iomanip>
 #include "tdrstyle_SUSY.C"
 
-void doPlot( TCanvas* can, TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_Z , TH1F* hist_QCD , TH1F* hist_data , bool residual = false , bool print = false );
+void doPlot( TCanvas* can, TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_Z , TH1F* hist_QCD , TH1F* hist_data , TH1F* hist_LM , bool residual = false , bool print = false );
 
 void makeZPlot_2jets( bool print = false ){
 
@@ -79,6 +79,13 @@ void makeZPlot_2jets( bool print = false ){
   //TH1F*  hist_QCD = (TH1F*) hist_photon->Clone("QCD");
 
   //------------------------------------------------------
+  // get LM8
+  //------------------------------------------------------
+
+  TFile* fileLM = new TFile("LM8_histos.root");
+  TH1F* hist_LM8 = (TH1F*) fileLM->Get("LM8_2jets");
+
+  //------------------------------------------------------
   // make the plot
   //------------------------------------------------------
 
@@ -100,12 +107,12 @@ void makeZPlot_2jets( bool print = false ){
   main_canvas->SetFrameFillStyle(0);
   main_canvas->SetFrameBorderMode(0);
 
-  doPlot( main_canvas , hist_VV , hist_OF , hist_photon , hist_QCD , hist_data , true , print );
+  doPlot( main_canvas , hist_VV , hist_OF , hist_photon , hist_QCD , hist_data , hist_LM8 , true , print );
 
 }
 
 
-void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , TH1F* hist_QCD , TH1F* hist_data , bool residual , bool print ){
+void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , TH1F* hist_QCD , TH1F* hist_data , TH1F* hist_LM , bool residual , bool print ){
 
   //-----------------------------------------
   // dummy check
@@ -117,6 +124,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   cout << "gjets  : " << hist_photon->Integral(bin,10000) << endl;
   cout << "OF     : " << hist_OF->Integral(bin,10000)     << endl;
   cout << "VV     : " << hist_VV->Integral(bin,10000)     << endl;
+  cout << "LM8    : " << hist_LM->Integral(bin,10000)     << endl;
 
   //-----------------------------------------
   // create a TPad for the main plot
@@ -187,6 +195,9 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   hist_photon->SetLineWidth(2);
   hist_QCD->SetLineWidth(2);
 
+  hist_LM->SetLineColor(kOrange+1);
+  hist_LM->SetLineWidth(2);
+
   //-----------------------------------------
   // make a stack of the prediction histos
   //-----------------------------------------
@@ -214,8 +225,10 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   hist_data->Draw("sameE1");
   hist_photon->Draw("samehist");
   //hist_QCD->Draw("samehist");
+  hist_LM->Draw("same");
   hist_data->Draw("sameaxis");
   hist_data->Draw("sameE1");
+
 
   //-----------------------------------------
   // make the legend
@@ -227,6 +240,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   //leg->AddEntry(hist_QCD    ,"total bkg (QCD)","l");
   leg->AddEntry(hist_VV   ,"WZ/ZZ prediction","f");
   leg->AddEntry(hist_OF   ,"OF prediction","f");
+  leg->AddEntry(hist_LM   ,"LM8","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->Draw();
@@ -239,7 +253,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   text->SetNDC();
   text->SetTextSize(0.042);
   text->DrawLatex(0.60,0.48,"ee/#mu#mu + #geq2 jets");
-  text->DrawLatex(0.14,0.95,"CMS                      #sqrt{s} = 7 TeV,   L_{int} = 4.7 fb^{-1}");
+  text->DrawLatex(0.14,0.95,"CMS Preliminary       #sqrt{s} = 7 TeV,   L_{int} = 4.7 fb^{-1}");
 
   //-----------------------------------------
   // make a TPad for the ratio histogram
