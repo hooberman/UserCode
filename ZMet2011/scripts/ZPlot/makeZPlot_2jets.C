@@ -79,11 +79,11 @@ void makeZPlot_2jets( bool print = false ){
   //TH1F*  hist_QCD = (TH1F*) hist_photon->Clone("QCD");
 
   //------------------------------------------------------
-  // get LM8
+  // get LM4/LM8
   //------------------------------------------------------
 
-  TFile* fileLM = new TFile("LM8_histos.root");
-  TH1F* hist_LM8 = (TH1F*) fileLM->Get("LM8_2jets");
+  TFile* fileLM = new TFile("LM4_histos.root");
+  TH1F* hist_LM4 = (TH1F*) fileLM->Get("LM4_2jets");
 
   //------------------------------------------------------
   // make the plot
@@ -107,7 +107,7 @@ void makeZPlot_2jets( bool print = false ){
   main_canvas->SetFrameFillStyle(0);
   main_canvas->SetFrameBorderMode(0);
 
-  doPlot( main_canvas , hist_VV , hist_OF , hist_photon , hist_QCD , hist_data , hist_LM8 , true , print );
+  doPlot( main_canvas , hist_VV , hist_OF , hist_photon , hist_QCD , hist_data , hist_LM4 , true , print );
 
 }
 
@@ -240,7 +240,7 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   //leg->AddEntry(hist_QCD    ,"total bkg (QCD)","l");
   leg->AddEntry(hist_VV   ,"WZ/ZZ prediction","f");
   leg->AddEntry(hist_OF   ,"OF prediction","f");
-  leg->AddEntry(hist_LM   ,"LM8","l");
+  leg->AddEntry(hist_LM   ,"LM4","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->Draw();
