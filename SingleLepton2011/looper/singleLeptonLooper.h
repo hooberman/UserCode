@@ -188,6 +188,18 @@ class singleLeptonLooper
 	Float_t t1metres10_;
 	Float_t t1metres20_;
 	Float_t t1metres30_;
+	Float_t t1met10phi_;
+	Float_t t1met20phi_;
+	Float_t t1met30phi_;
+	Float_t t1metres10phi_;
+	Float_t t1metres20phi_;
+	Float_t t1metres30phi_;
+	Float_t t1met10mt_;
+	Float_t t1met20mt_;
+	Float_t t1met30mt_;
+	Float_t t1metres10mt_;
+	Float_t t1metres20mt_;
+	Float_t t1metres30mt_;
 
 	// assorted p4's
 	LorentzVector*  t_;   
@@ -241,6 +253,7 @@ class singleLeptonLooper
 	Float_t qscale_;
         Float_t weight_;
         Float_t trgeff_;
+        Float_t mutrigweight_;
         Float_t pfmetsig_;
         Float_t smeff_;
         Float_t k_;

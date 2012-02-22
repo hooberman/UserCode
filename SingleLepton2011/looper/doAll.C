@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-03-02";
+  const char* version    = "V00-03-03";
   const char* jsonfile   = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
@@ -78,6 +78,7 @@ void doAll(bool skipFWLite = true)
   float kttall    = 1.;
   float kqcd      = 1.;  
   float kWjets    = 1.;  
+  float kVV       = 1.;
   float kDYtot    = 1.;  
   float ktW       = 1.;
 
@@ -85,26 +86,29 @@ void doAll(bool skipFWLite = true)
   int preqcd      = 1;
   int prettall    = 1;
   int preWjets    = 1;
+  int preVV       = 1;
   int preDYtot    = 1;
   int pretW       = 1;
  
   // flags for files to run over
   bool rundata     = 0;
-  bool runttall    = 0;
-  bool runWjets    = 0;
-  bool runQCD      = 0;
-  bool runtW       = 0;
+  bool runttall    = 1;
+  bool runWjets    = 1;
+  bool runVV       = 1;
+  bool runQCD      = 1;
+  bool runMuQCD    = 1;
+  bool runtW       = 1;
   bool runDYtot    = 1;
-  bool runT2tt     = 0; 
+  bool runT2tt     = 1; 
   bool runT2tt_few = 0;
-  bool runT2bw     = 0;
+  bool runT2bw     = 1;
 
-  bool rundatamay10   = 1;
-  bool rundataprv4    = 1;
-  bool rundataaug05   = 1;
-  bool rundataprv6    = 1;
-  bool rundata2011b33 = 1;
-  bool rundata2011b34 = 1;
+  bool rundatamay10   = 0;
+  bool rundataprv4    = 0;
+  bool rundataaug05   = 0;
+  bool rundataprv6    = 0;
+  bool rundata2011b33 = 0;
+  bool rundata2011b34 = 0;
 
   if( useMCSkims )  cout << "Using MC skims" << endl;
   else              cout << "Using full MC samples" << endl;
@@ -126,6 +130,35 @@ void doAll(bool skipFWLite = true)
   }
 
   //----------------------------------------
+  // Muon QCD
+  //----------------------------------------
+
+  TChain* chMuQCD = new  TChain("Events");
+
+  if(runMuQCD){
+
+    string skimdir = "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/";
+    string cms2dir = "/nfs-7/userdata/cms2/";
+
+    //SingleLeptonSkim ntuples
+    if( useMCSkims ){
+      pickSkimIfExists(chMuQCD, skimdir+"QCD_Pt-15to20_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S3_START42_V11-v2/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+      pickSkimIfExists(chMuQCD, skimdir+"QCD_Pt-20to30_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S3_START42_V11-v2/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+      pickSkimIfExists(chMuQCD, skimdir+"QCD_Pt-30to50_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S3_START42_V11-v2/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+      pickSkimIfExists(chMuQCD, skimdir+"QCD_Pt-50to80_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+      pickSkimIfExists(chMuQCD, skimdir+"QCD_Pt-80to120_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+    }
+    //full cms2 ntuples  
+    else{
+      pickSkimIfExists(chMuQCD, cms2dir+"QCD_Pt-15to20_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S3_START42_V11-v2/V04-02-29/merged*root");
+      pickSkimIfExists(chMuQCD, cms2dir+"QCD_Pt-20to30_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S3_START42_V11-v2/V04-02-29/merged*root");
+      pickSkimIfExists(chMuQCD, cms2dir+"QCD_Pt-30to50_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S3_START42_V11-v2/V04-02-29/merged*root");
+      pickSkimIfExists(chMuQCD, cms2dir+"QCD_Pt-50to80_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+      pickSkimIfExists(chMuQCD, cms2dir+"QCD_Pt-80to120_MuPt5Enriched_TuneZ2_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    }
+  }
+
+  //----------------------------------------
   // ttbar
   //----------------------------------------
 
@@ -143,6 +176,25 @@ void doAll(bool skipFWLite = true)
     pickSkimIfExists(chWjets,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndJets/merged*root");
   }
 
+  //----------------------------------------                                                                                                                                                                
+  // Diboson VV                                                                                                                                                                                             
+  //----------------------------------------                                                                                                                                                                
+
+  TChain* chVV = new  TChain("Events");
+  if(runVV){
+    pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WW_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    //    pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/ZZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // samples in multi-lepton decay modes
+    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WZTo3LNu_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v2/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/ZZJetsTo4L_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/ZZJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/ZZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+  }
+
   //----------------------------------------
   // DY
   //----------------------------------------
@@ -150,12 +202,12 @@ void doAll(bool skipFWLite = true)
   TChain* chDYtot = new  TChain("Events");
   if(runDYtot){
     string dypath = "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/";
-    pickSkimIfExists(chDYtot,dypath+"DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-29/SingleLeptonAndTwoJets/merged*root");
-    pickSkimIfExists(chDYtot,dypath+"DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
-    pickSkimIfExists(chDYtot,dypath+"DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
-    pickSkimIfExists(chDYtot,dypath+"DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
-    pickSkimIfExists(chDYtot,dypath+"DYToEE_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
-    pickSkimIfExists(chDYtot,dypath+"DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+    // pickSkimIfExists(chDYtot,dypath+"DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+    // pickSkimIfExists(chDYtot,dypath+"DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+    // pickSkimIfExists(chDYtot,dypath+"DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+    // pickSkimIfExists(chDYtot,dypath+"DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+    // pickSkimIfExists(chDYtot,dypath+"DYToEE_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+    // pickSkimIfExists(chDYtot,dypath+"DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
     pickSkimIfExists(chDYtot,dypath+"DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
   }
 
@@ -221,7 +273,7 @@ void doAll(bool skipFWLite = true)
     // May10
     pickSkimIfExists(chdatamay10,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdatamay10,"/nfs-7/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdatamay10,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+    pickSkimIfExists(chdatamay10,"/nfs-3/userdata/cms2/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
 
   }
 
@@ -238,7 +290,7 @@ void doAll(bool skipFWLite = true)
     // PRv4
     pickSkimIfExists(chdataprv4,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdataprv4,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdataprv4,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+    pickSkimIfExists(chdataprv4,"/nfs-3/userdata/cms2/SingleMu_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
   }
 
   //----------------------------------------
@@ -254,7 +306,7 @@ void doAll(bool skipFWLite = true)
     // Aug05
     pickSkimIfExists(chdataaug05,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdataaug05,"/nfs-7/userdata/cms2/MuHad_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdataaug05,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+    pickSkimIfExists(chdataaug05,"/nfs-3/userdata/cms2/SingleMu_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
 
   }
 
@@ -271,7 +323,7 @@ void doAll(bool skipFWLite = true)
     // PRv6
     pickSkimIfExists(chdataprv6,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdataprv6,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdataprv6,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+    pickSkimIfExists(chdataprv6,"/nfs-3/userdata/cms2/SingleMu_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
   }
 
   //----------------------------------------
@@ -287,7 +339,7 @@ void doAll(bool skipFWLite = true)
     // 2011B
     pickSkimIfExists(chdata2011b33,"/nfs-7/userdata/cms2/ElectronHad_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata2011b33,"/nfs-7/userdata/cms2/MuHad_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdata2011b33,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
+    pickSkimIfExists(chdata2011b33,"/nfs-3/userdata/cms2/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
 
   }
 
@@ -303,7 +355,7 @@ void doAll(bool skipFWLite = true)
     // 2011B
     pickSkimIfExists(chdata2011b34,"/nfs-7/userdata/cms2/ElectronHad_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata2011b34,"/nfs-7/userdata/cms2/MuHad_Run2011B-PromptReco-v1_AOD/V04-02-35/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdata2011b34,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndTwoJets/merged*root");
+    pickSkimIfExists(chdata2011b34,"/nfs-3/userdata/cms2/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndTwoJets/merged*root");
     
   }
 
@@ -322,31 +374,31 @@ void doAll(bool skipFWLite = true)
     // May10
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");   
+    pickSkimIfExists(chdata,"/nfs-3/userdata/cms2/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");   
     // PRv4
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    pickSkimIfExists(chdata,"/nfs-3/userdata/cms2/SingleMu_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
 
     // Aug05
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    pickSkimIfExists(chdata,"/nfs-3/userdata/cms2/SingleMu_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
 
     // PRv6
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    pickSkimIfExists(chdata,"/nfs-3/userdata/cms2/SingleMu_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
 
     // 2011B
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    pickSkimIfExists(chdata,"/nfs-3/userdata/cms2/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root");
 
     // 2011B
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011B-PromptReco-v1_AOD/V04-02-35/SingleLeptonAndJets/merged*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-34/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged*root");
+    pickSkimIfExists(chdata,"/nfs-3/userdata/cms2/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndTwoJets/merged*root");
   }
 
   
@@ -440,11 +492,23 @@ void doAll(bool skipFWLite = true)
 		    cout << "Done processing  QCD.. " << endl;
 		  }
 		  //--------------------------------------------------------------------
+                  if (runMuQCD) {
+                    cout << "Processing Mu QCD.. " << endl;
+                    looper->ScanChain(chMuQCD,"muqcd", kqcd, preqcd, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing  QCD.. " << endl;
+                  }
+		  //--------------------------------------------------------------------
 		  if (runWjets) {
 		    cout << "Processing Wjets.." << endl;
 		    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		    cout << "Done processing Wjets.." << endl;
 		  }
+                  //-------------------------------------------------------------------
+                  if (runVV) {
+                    cout << "Processing Diboson.." << endl;
+                    looper->ScanChain(chVV,"diboson", kVV, preVV, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing Diboson.." << endl;
+                  }
 		  //--------------------------------------------------------------------
 		  if (runtW) {
 		    cout << "Processing tW" << endl;

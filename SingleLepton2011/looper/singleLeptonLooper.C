@@ -233,6 +233,7 @@ int getIndexFromM12(float m12){
 
 void singleLeptonLooper::InitBaby(){
 
+  mutrigweight_ = 1.;
 
   jetid_	= 1;
   jetid30_	= 1;
@@ -467,6 +468,48 @@ float Type1PFMET( VofP4 jets_p4 , vector<float> cors , float minpt ){
 
 }
 
+float Type1PFMETPhi( VofP4 jets_p4 , vector<float> cors , float minpt ){
+
+  float metx = evt_pfmet() * cos( evt_pfmetPhi() );
+  float mety = evt_pfmet() * sin( evt_pfmetPhi() );
+
+  assert( jets_p4.size() == cors.size() );
+
+  for( unsigned int i = 0 ; i < jets_p4.size() ; ++i ){
+    if( jets_p4.at(i).pt() < minpt ) continue;
+    metx += jets_p4.at(i).px() - jets_p4.at(i).px() * cors.at(i);
+    mety += jets_p4.at(i).py() - jets_p4.at(i).py() * cors.at(i);
+  }
+
+  return atan2( mety, metx );
+
+}
+
+float getMT( float leppt , float lepphi , float met , float metphi ) {
+  float dphi = fabs( lepphi - metphi );
+      if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+      return sqrt( 2 * ( leppt * met * (1 - cos( dphi ) ) ) );
+}
+
+float getMuTriggerWeight( float pt, float eta ) {
+  //Trigger efficiency for single muon triggers averaged over full 2011 dataset
+  //From AN2011-456 Table 28
+  float trigweights[2][3] = {{0.9002, 0.8352, 0.8266},
+			     {0.9440, 0.8821, 0.8611}};
+  int i_pt = -1;
+  if ( pt > 30 && pt < 40 ) i_pt = 0;
+  else if ( pt > 40 ) i_pt = 1;
+  if ( i_pt < 0 ) return 1.;
+
+  int i_eta = -1;
+  if ( abs(eta) < 0.8 ) i_eta = 0;
+  else if ( abs(eta) >= 0.8 && abs(eta) < 1.5 ) i_eta = 1;
+  else if ( abs(eta) >= 1.5 && abs(eta) < 2.1 ) i_eta = 2;
+  if ( i_eta < 0 ) return 1.;
+
+  return trigweights[i_pt][i_eta];
+
+}
 
 //--------------------------------------------------------------------
 
@@ -1533,6 +1576,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       t1metres10_    = Type1PFMET( vpfrawjets_p4 , rescors  , 10.0 );
       t1metres20_    = Type1PFMET( vpfrawjets_p4 , rescors  , 20.0 );
       t1metres30_    = Type1PFMET( vpfrawjets_p4 , rescors  , 30.0 );
+      t1met10phi_    = Type1PFMETPhi( vpfrawjets_p4 , fullcors , 10.0 );
+      t1met20phi_    = Type1PFMETPhi( vpfrawjets_p4 , fullcors , 20.0 );
+      t1met30phi_    = Type1PFMETPhi( vpfrawjets_p4 , fullcors , 30.0 );
+      t1metres10phi_ = Type1PFMETPhi( vpfrawjets_p4 , rescors  , 10.0 );
+      t1metres20phi_ = Type1PFMETPhi( vpfrawjets_p4 , rescors  , 20.0 );
+      t1metres30phi_ = Type1PFMETPhi( vpfrawjets_p4 , rescors  , 30.0 );
 
       // store L1FastL2L3Residual pfjets
       sort(vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
@@ -1985,6 +2034,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       mt_ = sqrt( 2 * ( lep1_->pt() * pfmet_ * (1 - cos( dphilm_ ) ) ) );
 
+      //transverse mass for leading lepton & type1 mets
+      t1met10mt_    = getMT( lep1_->pt() , lep1_->phi() , t1met10_ , t1met10phi_ );
+      t1met20mt_    = getMT( lep1_->pt() , lep1_->phi() , t1met20_ , t1met20phi_ );
+      t1met30mt_    = getMT( lep1_->pt() , lep1_->phi() , t1met30_ , t1met30phi_ );
+      t1metres10mt_ = getMT( lep1_->pt() , lep1_->phi() , t1metres10_ , t1metres10phi_ );
+      t1metres20mt_ = getMT( lep1_->pt() , lep1_->phi() , t1metres20_ , t1metres20phi_ );
+      t1metres30mt_ = getMT( lep1_->pt() , lep1_->phi() , t1metres30_ , t1metres30phi_ );
+
       //dijet mass two bs highest pT b-tagged jets
       if (mediumBJets.size()>1) {
 	mbb_ = (mediumBJets.at(0)+mediumBJets.at(1)).M();
@@ -2086,6 +2143,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ltri_ = passSingleLep3JetSUSYTrigger2011( isData , leptype_ ) ? 1 : 0;
       smu_  = passSingleMuTrigger2011(          isData , leptype_ ) ? 1 : 0;
 
+      //set trigger weight
+      mutrigweight_ = getMuTriggerWeight( lep1_->pt() , lep1_->eta() );
+      
       outTree->Fill();
     
     } // entries
@@ -2580,6 +2640,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
+  outTree->Branch("mutrigweight",    &mutrigweight_,     "mutrigweight/F");
   outTree->Branch("trgeff",          &trgeff_,           "trgeff/F");
   outTree->Branch("pthat",           &pthat_,            "pthat/F");
   outTree->Branch("qscale",          &qscale_,           "qscale/F");
@@ -2658,6 +2719,18 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("t1metres10",      &t1metres10_,       "t1metres10/F");
   outTree->Branch("t1metres20",      &t1metres20_,       "t1metres20/F");
   outTree->Branch("t1metres30",      &t1metres30_,       "t1metres30/F");
+  outTree->Branch("t1met10phi",      &t1met10phi_,       "t1met10phi/F");
+  outTree->Branch("t1met20phi",      &t1met20phi_,       "t1met20phi/F");
+  outTree->Branch("t1met30phi",      &t1met30phi_,       "t1met30phi/F");
+  outTree->Branch("t1metres10phi",   &t1metres10phi_,    "t1metres10phi/F");
+  outTree->Branch("t1metres20phi",   &t1metres20phi_,    "t1metres20phi/F");
+  outTree->Branch("t1metres30phi",   &t1metres30phi_,    "t1metres30phi/F");
+  outTree->Branch("t1met10mt",       &t1met10mt_,       "t1met10mt/F");
+  outTree->Branch("t1met20mt",       &t1met20mt_,       "t1met20mt/F");
+  outTree->Branch("t1met30mt",       &t1met30mt_,       "t1met30mt/F");
+  outTree->Branch("t1metres10mt",    &t1metres10mt_,    "t1metres10mt/F");
+  outTree->Branch("t1metres20mt",    &t1metres20mt_,    "t1metres20mt/F");
+  outTree->Branch("t1metres30mt",    &t1metres30mt_,    "t1metres30mt/F");
   
   // pfjets Res
   outTree->Branch("npfresjets30",    &npfresjets30_,     "npfresjets30/I");
