@@ -39,14 +39,16 @@ TGraph* getGraph(bool do3jets,string type){
     x[2] =  925;  y[2] = 500;
     x[3] =  975;  y[3] = 850;
     x[4] =  925;  y[4] = 925;
-    npoints = 5;
+    x[6] =  100;  y[6] = 100;
+    npoints = 6;
   }
   else if( !do3jets && type == "down" ){
     x[0] = 500;   y[0] = 100;
     x[1] = 720;   y[1] = 300;
     x[2] = 825;   y[2] = 550;
-    x[3] = 825;   y[3] = 800;
-    npoints = 4;
+    x[3] = 825;   y[3] = 825;
+    x[4] = 100;   y[4] = 100;
+    npoints = 5;
   }
   else if( !do3jets && type == "up" ){
     x[0] = 800;   y[0] =  100;
@@ -54,7 +56,8 @@ TGraph* getGraph(bool do3jets,string type){
     x[2] = 1025;  y[2] =  400;
     x[3] = 1100;  y[3] = 1000;
     x[4] = 1000;  y[4] = 1000;
-    npoints = 5;
+    x[5] =  100;  y[5] =  100;
+    npoints = 6;
   }
   else if( do3jets && type == "nom" ){
     x[0] = 700;   y[0] = 100;
@@ -111,6 +114,47 @@ TGraph* getGraph_T5zzh(string type){
 
 }
 
+TGraph* getGraph_T5zz(string type){
+
+  float x[6];
+  float y[6];
+  int npoints = -1;
+
+  if( type == "nom" ){
+    x[0] =  925;  y[0] =  50;
+    x[1] =  900;  y[1] = 325;
+    x[2] =  850;  y[2] = 400;
+    x[3] =  825;  y[3] = 425;
+    x[4] =  625;  y[4] = 425;
+    x[5] =  625;  y[5] = 537.5;
+    x[6] =  125;  y[6] =  37.5;
+    npoints = 7;
+  }
+  else if( type == "up" ){
+    x[0] =  1050;  y[0] =  50;
+    x[1] =  1050;  y[1] = 375;
+    x[2] =  1000;  y[2] = 475;
+    x[3] =   950;  y[3] = 525;
+    x[4] =   725;  y[4] = 525;
+    x[5] =   725;  y[5] = 637.5;
+    x[6] =  125;   y[6] =  37.5;
+    npoints = 7;
+  }
+  else if( type == "down" ){
+    x[0] =  775;  y[0] =  50;
+    x[1] =  775;  y[1] = 150;
+    x[2] =  725;  y[2] = 300;
+    x[3] =  525;  y[3] = 300;
+    x[4] =  525;  y[4] = 437.5;
+    x[5] =  125;  y[5] =  37.5;
+    npoints = 6;
+  }
+
+  TGraph *gr = new TGraph(npoints,x,y);
+  return gr;
+
+}
+
 void smoothHist( TH2F* h ){
 
   vector<int> binx;
@@ -153,11 +197,12 @@ void smoothHist( TH2F* h ){
 }
 
 void combinePlots(bool print = false){
-
-  // char* version        = "V00-01-00";
-  // char* sample         = "T5zz";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  
+  char* version        = "V00-01-00";
+  char* sample         = "T5zz";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  float dm             = 182.0;
 
   // char* version        = "V00-01-01";
   // char* sample         = "T5zz";
@@ -178,6 +223,7 @@ void combinePlots(bool print = false){
   // char* sample         = "T5zzgmsb";
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g})";
+  // float dm             = 0.0;
 
   // char* version        = "V00-01-05";
   // char* sample         = "T5zzgmsb";
@@ -189,10 +235,10 @@ void combinePlots(bool print = false){
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g})";
 
-  char* version        = "V00-01-08";
-  char* sample         = "T5zzh";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
+  // char* version        = "V00-01-08";
+  // char* sample         = "T5zzh";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
@@ -278,7 +324,9 @@ void combinePlots(bool print = false){
     }
   }
 
-
+  TLine line;
+  line.SetLineStyle(2);
+  line.SetLineWidth(2);
 
   //-------------------------------
   // draw efficiency
@@ -312,9 +360,12 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.77,title);
   t->DrawLatex(0.2,0.71,"E_{T}^{miss} > 100 GeV");
   t->DrawLatex(0.2,0.65,njets);
+  t->DrawLatex(0.2,0.55,"E_{T}^{miss} templates");
   t->SetTextSize(0.035);
-  t->DrawLatex(0.18,0.92,"CMS                    #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
+  if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
+  else                                    line.DrawLine(50+dm,50,1200,1200-dm);
 
   //-------------------------------
   // cross section limit
@@ -349,26 +400,28 @@ void combinePlots(bool print = false){
     gr_excl_down = getGraph(do3jets,"down");
     gr_excl_up   = getGraph(do3jets,"up");
   }
-  // else if( TString(sample).Contains("T5zzh") ) {
-  //   gr_excl      = getGraph_T5zzh("nom");
-  //   gr_excl_down = getGraph_T5zzh("down");
-  //   gr_excl_up   = getGraph_T5zzh("up");
-  // }
+  else if( TString(sample).Contains("T5zz") ) {
+    gr_excl      = getGraph_T5zz("nom");
+    gr_excl_down = getGraph_T5zz("down");
+    gr_excl_up   = getGraph_T5zz("up");
+  }
   else{
     gr_excl      = getRefXsecGraph(hexcl, "T5zz", 1.0);
     gr_excl_down = getRefXsecGraph(hexcl, "T5zz", 1./3.);
     gr_excl_up   = getRefXsecGraph(hexcl, "T5zz", 3.);
   }
 
-  gr_excl->SetLineWidth(2);
-  gr_excl_up->SetLineWidth(2);
-  gr_excl_down->SetLineWidth(2);
+  gr_excl->SetLineWidth(2.5);
+  gr_excl_up->SetLineWidth(2.5);
+  gr_excl_down->SetLineWidth(2.5);
   gr_excl_up->SetLineStyle(2);
   gr_excl_down->SetLineStyle(3);
   gr_excl->Draw("same");
   gr_excl_up->Draw("same");
   gr_excl_down->Draw("same");
 
+  if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
+  else                                    line.DrawLine(50+dm,50,1200,1200-dm);
 
   TLegend *leg = new TLegend(0.2,0.53,0.45,0.67);
   leg->AddEntry(gr_excl,     "#sigma^{NLO-QCD}","l");
@@ -384,9 +437,10 @@ void combinePlots(bool print = false){
   else                                   t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
   t->DrawLatex(0.2,0.77,title);
   t->DrawLatex(0.2,0.71,njets);
+  t->DrawLatex(0.2,0.47,"E_{T}^{miss} templates");
   t->SetTextSize(0.035);
-  t->DrawLatex(0.18,0.92,"CMS                     #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
-
+  //t->DrawLatex(0.18,0.92,"CMS                     #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
   if( print ){
     can->Print(Form("cards/%s/plots/SMS.eps",version));
