@@ -76,6 +76,41 @@ TGraph* getGraph(bool do3jets,string type){
 
 }
 
+TGraph* getGraph_T5zzh(string type){
+
+  float x[5];
+  float y[5];
+  int npoints = -1;
+
+  if( type == "nom" ){
+    x[0] =  837;  y[0] =  50;
+    x[1] =  837;  y[1] = 300;
+    x[2] =  800;  y[2] = 350;
+    x[3] =  625;  y[3] = 350;
+    x[4] =  625;  y[4] = 550;
+    npoints = 5;
+  }
+  else if( type == "down" ){
+    x[0] = 500;   y[0] = 100;
+    x[1] = 720;   y[1] = 300;
+    x[2] = 825;   y[2] = 550;
+    x[3] = 825;   y[3] = 800;
+    npoints = 4;
+  }
+  else if( type == "up" ){
+    x[0] = 800;   y[0] =  100;
+    x[1] = 950;   y[1] =  200;
+    x[2] = 1025;  y[2] =  400;
+    x[3] = 1100;  y[3] = 1000;
+    x[4] = 1000;  y[4] = 1000;
+    npoints = 5;
+  }
+
+  TGraph *gr = new TGraph(npoints,x,y);
+  return gr;
+
+}
+
 void smoothHist( TH2F* h ){
 
   vector<int> binx;
@@ -278,7 +313,7 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.71,"E_{T}^{miss} > 100 GeV");
   t->DrawLatex(0.2,0.65,njets);
   t->SetTextSize(0.035);
-  t->DrawLatex(0.18,0.92,"CMS Preliminary      #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS                    #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
 
   //-------------------------------
@@ -313,7 +348,13 @@ void combinePlots(bool print = false){
     gr_excl      = getGraph(do3jets,"nom");
     gr_excl_down = getGraph(do3jets,"down");
     gr_excl_up   = getGraph(do3jets,"up");
-  }else{
+  }
+  // else if( TString(sample).Contains("T5zzh") ) {
+  //   gr_excl      = getGraph_T5zzh("nom");
+  //   gr_excl_down = getGraph_T5zzh("down");
+  //   gr_excl_up   = getGraph_T5zzh("up");
+  // }
+  else{
     gr_excl      = getRefXsecGraph(hexcl, "T5zz", 1.0);
     gr_excl_down = getRefXsecGraph(hexcl, "T5zz", 1./3.);
     gr_excl_up   = getRefXsecGraph(hexcl, "T5zz", 3.);
@@ -344,13 +385,14 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.77,title);
   t->DrawLatex(0.2,0.71,njets);
   t->SetTextSize(0.035);
-  t->DrawLatex(0.18,0.92,"CMS Preliminary      #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS                     #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
 
   if( print ){
     can->Print(Form("cards/%s/plots/SMS.eps",version));
     can->Print(Form("cards/%s/plots/SMS.pdf",version));
     can->Print(Form("cards/%s/plots/SMS.png",version));
+    can->Print(Form("cards/%s/plots/SMS.C",version));
 
     gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
   }
