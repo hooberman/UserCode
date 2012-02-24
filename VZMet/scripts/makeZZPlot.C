@@ -50,6 +50,25 @@ void makeZZPlot(){
   x[13]=390;  y1[13]=138  ;  y2[13]=  21;
   x[14]=410;  y1[14]=132  ;  y2[14]=  17;
 	   
+
+
+ // 27952 
+ //  2951 
+ //   993 
+ //   501 
+ //   348 
+ //   287 
+ //   240 
+ //   204 
+ //   197 
+ //   179 
+ //   164 
+ //   159 
+ //   152 
+ //   149 
+ //   142 
+
+
   TGraph* g1 = new TGraph(n,x,y2);
   TGraph* g2 = new TGraph(n,x,y1);
 
@@ -66,8 +85,9 @@ void makeZZPlot(){
   c1->cd();
   g1->SetLineColor(4);
   g2->SetLineColor(2);
-  g1->SetLineWidth(3);
-  g2->SetLineWidth(3);
+  g1->SetLineWidth(2);
+  g2->SetLineWidth(5);
+  g2->SetLineStyle(2);
 
   hdummy->GetXaxis()->SetTitle("m_{#chi} [GeV]");
   hdummy->GetYaxis()->SetTitle("#sigma #times BR [fb]");
@@ -87,14 +107,14 @@ void makeZZPlot(){
   hdummy->Draw("axissame");
   g1->SetMinimum(0);
   g1->SetMaximum(5000);
-  g1->Draw("samel");
+  g1->Draw("samec");
   g2->Draw("samel");
 
   //g1->Draw("Al");
   //g2->Draw("samel");
   
   
-  TLegend *leg = new TLegend(0.6,0.6,0.9,0.8);
+  TLegend *leg = new TLegend(0.5,0.6,0.9,0.8);
   leg->AddEntry(g2,"observed UL","l");
   leg->AddEntry(g1,"theory","l");
   leg->AddEntry(box,"excluded region","f");
