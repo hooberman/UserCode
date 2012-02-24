@@ -50,11 +50,12 @@ void makeZZPlot(){
   x[13]=390;  y1[13]=138  ;  y2[13]=  21;
   x[14]=410;  y1[14]=132  ;  y2[14]=  17;
 	   
-  TGraph* g1 = new TGraph(n,x,y1);
-  TGraph* g2 = new TGraph(n,x,y2);
+  TGraph* g1 = new TGraph(n,x,y2);
+  TGraph* g2 = new TGraph(n,x,y1);
 
   TCanvas *c1 = new TCanvas();
   gPad->SetTopMargin(0.1);
+  gPad->SetRightMargin(0.05);
   //gPad->SetLogy();
   gPad->SetGridx();
   gPad->SetGridy();
@@ -69,8 +70,9 @@ void makeZZPlot(){
   g2->SetLineWidth(3);
 
   hdummy->GetXaxis()->SetTitle("m_{#chi} [GeV]");
-  hdummy->GetYaxis()->SetTitle("#sigma #times BR [GeV]");
+  hdummy->GetYaxis()->SetTitle("#sigma #times BR [fb]");
   hdummy->GetYaxis()->SetLabelSize(0.04);
+  hdummy->GetXaxis()->SetLabelSize(0.04);
 
   TBox* box = new TBox();
   //box->SetBorderStyle(2);
@@ -93,8 +95,8 @@ void makeZZPlot(){
   
   
   TLegend *leg = new TLegend(0.6,0.6,0.9,0.8);
-  leg->AddEntry(g1,"theory","l");
   leg->AddEntry(g2,"observed UL","l");
+  leg->AddEntry(g1,"theory","l");
   leg->AddEntry(box,"excluded region","f");
   leg->SetBorderSize(1);
   leg->SetFillColor(0);
@@ -105,8 +107,9 @@ void makeZZPlot(){
   t->SetTextSize(0.04);
   t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
   t->SetTextSize(0.04);
-  t->DrawLatex(0.47,0.45,"GGMSB Z-enriched higgsino");
-  t->DrawLatex(0.47,0.4,"#chi^{0}#chi^{0} #rightarrow ZZ + E_{T}^{miss}");
+  t->DrawLatex(0.46,0.5,"#chi^{0}#chi^{0} #rightarrow ZZ + E_{T}^{miss}");
+  t->SetTextSize(0.038);
+  t->DrawLatex(0.46,0.45,"GGMSB Z-enriched higgsino");
 
   c1->Print("GMSB.pdf");
   c1->Print("GMSB.png");

@@ -29,18 +29,27 @@ using namespace std;
 
 void makeWZPlot(){
 
-  const unsigned int n = 5;
+  const unsigned int n = 12;
   float x[n];
   float y0[n];
   float y50[n];
   float yw[n];
   float yh[n];
 
-  x[0] = 200;  y0[0] =336;  y50[0] =399;  yw[0]=614; yh[0]=307;
-  x[1] = 225;  y0[1] =231;  y50[1] =269;  yw[1]=377; yh[1]=189;
-  x[2] = 250;  y0[2] =211;  y50[2] =231;  yw[2]=239; yh[2]=120;
-  x[3] = 275;  y0[3] =178;  y50[3] =192;  yw[3]=157; yh[3]=79;
-  x[4] = 300;  y0[4] =152;  y50[4] =167;  yw[4]=106; yh[4]=53;    
+  x[0]  = 125;  y0[0]  =5494;  y50[0]  =9999;  yw[0]=3960; yh[0]=1980;
+  x[1]  = 150;  y0[1]  =1449;  y50[1]  =6352;  yw[1]=1949; yh[1]=975;
+  x[2]  = 175;  y0[2]  =503;   y50[2]  =974;   yw[2]=1052; yh[2]=526;
+
+  x[3]  = 200;  y0[3]  =336;   y50[3]  =399;   yw[3]=614;  yh[3]=307;
+  x[4]  = 225;  y0[4]  =231;   y50[4]  =269;   yw[4]=377;  yh[4]=189;
+  x[5]  = 250;  y0[5]  =211;   y50[5]  =231;   yw[5]=239;  yh[5]=120;
+  x[6]  = 275;  y0[6]  =178;   y50[6]  =192;   yw[6]=157;  yh[6]=79;
+  x[7]  = 300;  y0[7]  =152;   y50[7]  =167;   yw[7]=106;  yh[7]=53;    
+
+  x[8]  = 325;  y0[8]  =131;   y50[8]  =143;   yw[8]=73;   yh[8]=36;
+  x[9]  = 350;  y0[9]  =134;   y50[9]  =140;   yw[9]=51;   yh[9]=26;
+  x[10] = 375;  y0[10] =147;   y50[10] =145;   yw[10]=37;  yh[10]=19;
+  x[11] = 400;  y0[11] =141;   y50[11] =130;   yw[11]=26;  yh[11]=13;    
 	   
   TGraph* g0  = new TGraph(n,x,y0);
   TGraph* g50 = new TGraph(n,x,y50);
@@ -53,7 +62,7 @@ void makeWZPlot(){
   gPad->SetGridx();
   gPad->SetGridy();
 
-  TH2F* hdummy = new TH2F("hdummy","",100,200,300,100,0,700);
+  TH2F* hdummy = new TH2F("hdummy","",100,125,400,100,0,5000);
   hdummy->Draw();
 
   c1->cd();
@@ -72,7 +81,7 @@ void makeWZPlot(){
   gh->SetLineStyle(2);
 
   hdummy->GetXaxis()->SetTitle("m_{#chi} [GeV]");
-  hdummy->GetYaxis()->SetTitle("#sigma #times BR [GeV]");
+  hdummy->GetYaxis()->SetTitle("#sigma #times BR [fb]");
   hdummy->GetYaxis()->SetLabelSize(0.04);
   hdummy->GetXaxis()->SetLabelSize(0.04);
 
@@ -121,8 +130,8 @@ void makeWZPlot(){
   //t->DrawLatex(0.47,0.45,"");
   t->DrawLatex(0.57,0.5,"#chi^{#pm}#chi^{0} #rightarrow WZ + E_{T}^{miss}");
 
-  c1->Print("WZ.pdf");
-  c1->Print("WZ.png");
-  c1->Print("WZ.eps");
-  gROOT->ProcessLine(".! ps2pdf WZ.eps WZ_ppt.pdf");
+  c1->Print("WZnew.pdf");
+  c1->Print("WZnew.png");
+  c1->Print("WZnew.eps");
+  gROOT->ProcessLine(".! ps2pdf WZnew.eps WZnew_ppt.pdf");
 }	   
