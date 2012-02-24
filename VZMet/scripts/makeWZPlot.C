@@ -72,10 +72,10 @@ void makeWZPlot(){
   gw->SetLineColor(4);
   gh->SetLineColor(4);
 
-  g0->SetLineWidth(3);
-  g50->SetLineWidth(3);
-  gw->SetLineWidth(3);
-  gh->SetLineWidth(3);
+  g0->SetLineWidth(4);
+  g50->SetLineWidth(4);
+  gw->SetLineWidth(2);
+  gh->SetLineWidth(2);
 
   g50->SetLineStyle(2);
   gh->SetLineStyle(2);
@@ -100,8 +100,8 @@ void makeWZPlot(){
 
   g0->Draw("samel");
   g50->Draw("samel");
-  gw->Draw("samel");
-  gh->Draw("samel");
+  gw->Draw("samec");
+  gh->Draw("samec");
 
   // g1->SetMinimum(0);
   // g1->SetMaximum(5000);
