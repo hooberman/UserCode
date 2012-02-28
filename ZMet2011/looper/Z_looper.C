@@ -232,6 +232,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     exit(0);
   }
 
+  TFile* file_C1N2 = TFile::Open("C1N2_referencexSec.root");
+  TFile* file_N1N2 = TFile::Open("N1N2_referencexSec.root");
+
+  TH1F*  xsec_C1N2 = (TH1F*) file_C1N2->Get("C1N2");
+  TH1F*  xsec_N1N2 = (TH1F*) file_N1N2->Get("N1N2");
 
   //-----------------------
   // make a baby ntuple
@@ -439,12 +444,24 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       ml_ = -1.; 
       x_  = -1.;
 
-      if(TString(prefix).Contains("T5zz")){
+      if(TString(prefix).Contains("T5zz") || TString(prefix).Contains("sms") || TString(prefix).Contains("gmsb") ){
 	mg_ = sparm_mG();
 	ml_ = sparm_mL();
 	x_  = sparm_mf();
 
-	weight_ = lumi * gluinoPairCrossSection(mg_) * (1000./105000.);
+	if     (TString(prefix).Contains("T5zz" ) ) weight_ = lumi * gluinoPairCrossSection(mg_) * (1000./105000.);
+	else if(TString(prefix).Contains("wzsms") ){
+	  int bin = xsec_C1N2->FindBin(mg_);
+	  weight_ = lumi * xsec_C1N2->GetBinContent(bin) * (1.0/100000.);
+	}
+	else if(TString(prefix).Contains("zzsms") ){
+	  int bin = xsec_N1N2->FindBin(mg_);
+	  weight_ = lumi * xsec_N1N2->GetBinContent(bin) * (1.0/52600.);
+	}
+	else if(TString(prefix).Contains("ggmsb") ){
+	  weight_ = -1;
+	}
+
       }
       
       // calomet, pfmet, genmet
