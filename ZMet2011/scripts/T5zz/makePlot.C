@@ -11,6 +11,7 @@
 #include "TFile.h"
 #include "TROOT.h"
 #include "TH1F.h"
+#include "TF1.h"
 #include "TH2F.h"
 #include "TMath.h"
 #include "TPad.h"
@@ -37,23 +38,28 @@ TH1F* smoothHist( TH1F* hin , int n ){
     exit(0);
   }
 
-  int firstbin = (n+1)/2;
-  int lastbin  = hin->GetXaxis()->GetNbins() - firstbin + 1;
+  //int firstbin = (n+1)/2;
+  //int lastbin  = hin->GetXaxis()->GetNbins() - firstbin + 1;
   int diff     = (n-1)/2;
 
   TH1F* hout = (TH1F*) hin->Clone(Form("%s_clone",hin->GetName()));
 
-  for( int ibin = firstbin ; ibin <= lastbin ; ++ibin ){
+  //for( int ibin = firstbin ; ibin <= lastbin ; ++ibin ){
+  for( int ibin = 1 ; ibin <= hin->GetXaxis()->GetNbins() ; ++ibin ){
     float ave = 0;
 
     float skip = false;
 
     for( int jbin = ibin-diff ; jbin <= ibin+diff ; ++jbin ){
-      if( hin->GetBinContent(jbin) < 1e-10 ) skip = true;
+      if( hin->GetBinContent(jbin) < 1e-10   ) skip = true;
+      if( jbin > hin->GetXaxis()->GetNbins() ) skip = true;
       ave += hin->GetBinContent(jbin);
     }
 
-    if( skip ) continue;
+    if( skip ){
+      hout->SetBinContent(ibin,0);
+      continue;
+    }
 
     ave = ave / (float) n;
 
@@ -140,33 +146,52 @@ void makePlot(){
   gPad->SetGridx();
   gPad->SetGridy();
 
+  //--------------------------------------
+  // smooth histograms
+  //--------------------------------------
 
+  TH1F* h100_smooth = smoothHist(h100,7);
+  TH1F* h200_smooth = smoothHist(h200,7);
+  TH1F* h300_smooth = smoothHist(h300,7);
+  TH1F* h400_smooth = smoothHist(h400,7);
+  TH1F* h500_smooth = smoothHist(h500,7);
 
-
-  // TGraph* g100 = new TGraph(h100);
-  // TGraph* g200 = new TGraph(h200);
-  // TGraph* g300 = new TGraph(h300);
+  //--------------------------------------
+  // convert: histograms to graphs
+  //--------------------------------------
 
   TGraph* gxsec = getGraph(hxsec);
-  TGraph* g100 = getGraph(h100);
-  TGraph* g200 = getGraph(h200);
-  TGraph* g300 = getGraph(h300);
-  TGraph* g400 = getGraph(h400);
-  TGraph* g500 = getGraph(h500);
+  // TGraph* g100 = getGraph(h100);
+  // TGraph* g200 = getGraph(h200);
+  // TGraph* g300 = getGraph(h300);
+  // TGraph* g400 = getGraph(h400);
+  // TGraph* g500 = getGraph(h500);
+  TGraph* g100 = getGraph(h100_smooth);
+  TGraph* g200 = getGraph(h200_smooth);
+  TGraph* g300 = getGraph(h300_smooth);
+  TGraph* g400 = getGraph(h400_smooth);
+  TGraph* g500 = getGraph(h500_smooth);
 
+  hxsec->SetLineWidth(3);
   gxsec->SetLineWidth(3);
 
-  g100->SetLineWidth(2);
-  g200->SetLineWidth(2);
-  g300->SetLineWidth(2);
-  g400->SetLineWidth(2);
-  g500->SetLineWidth(2);
+  g100->SetLineWidth(3);
+  g200->SetLineWidth(3);
+  g300->SetLineWidth(3);
+  g400->SetLineWidth(3);
+  g500->SetLineWidth(3);
 
   g100->SetLineColor(kGreen+2);
   g200->SetLineColor(2);
   g300->SetLineColor(4);
   g400->SetLineColor(4);
   g500->SetLineColor(2);
+
+  g100->SetLineStyle(2);
+  g200->SetLineStyle(4);
+  g300->SetLineStyle(3);
+  g400->SetLineStyle(3);
+  g500->SetLineStyle(4);
 
   h100->SetLineWidth(2);
   h200->SetLineWidth(2);
@@ -182,9 +207,12 @@ void makePlot(){
 
   gxsec->SetMinimum(0.001);
   gxsec->SetMaximum(10000);
+  gxsec->GetYaxis()->SetLabelSize(0.04);
+  gxsec->GetXaxis()->SetLabelSize(0.04);
   gxsec->GetYaxis()->SetTitle("#sigma #times BF [pb]");
   gxsec->GetXaxis()->SetTitle("gluino mass [GeV]");
-  gxsec->GetXaxis()->SetRangeUser(150,1200);
+  gxsec->GetXaxis()->SetRangeUser(200,1100);
+  //gxsec->GetXaxis()->SetLimits(200,1100);
 
   gxsec->Draw("Al");
   //gxsec->SetLineColor(2);
@@ -192,33 +220,24 @@ void makePlot(){
   //h100->Draw("same");
   //h200->Draw("same");
   //h300->Draw("same");
-  //g100->Draw("samel");
+  g100->Draw("samec");
   //g200->Draw("samel");
-  //g300->Draw("samel");
+  g300->Draw("samec");
   //g400->Draw("samel");
-  //g500->Draw("samel");
+  g500->Draw("samec");
   
-  h100->SetLineWidth(4);
-  h300->SetLineWidth(4);
-  h500->SetLineWidth(4);
-  h100->Draw("same");
-  h300->Draw("same");
-  h500->Draw("same");
+  // TF1* f100 = new TF1("f100","[0]*TMath::Exp(x/[1])",200,1100);
+  // f100->SetParameter(0,10);
+  // f100->SetParameter(1,200);
 
-  TH1F* h100_smooth = smoothHist(h100,5);
-  h100_smooth->SetLineColor(1);
-  h100_smooth->SetLineWidth(2);
-  h100_smooth->Draw("same");
+  // h100->SetLineWidth(4);
+  // h300->SetLineWidth(4);
+  // h500->SetLineWidth(4);
+  //h100->Fit(f100,"R");
 
-  TH1F* h300_smooth = smoothHist(h300,5);
-  h300_smooth->SetLineColor(1);
-  h300_smooth->SetLineWidth(2);
-  h300_smooth->Draw("same");
-
-  TH1F* h500_smooth = smoothHist(h500,5);
-  h500_smooth->SetLineColor(1);
-  h500_smooth->SetLineWidth(2);
-  h500_smooth->Draw("same");
+  //h100->Draw("same");
+  //h300->Draw("same");
+  //h500->Draw("same");
 
 
   TLegend *leg = new TLegend(0.45,0.68,0.9,0.88);
