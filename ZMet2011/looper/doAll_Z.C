@@ -18,8 +18,11 @@
   gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
 
   gROOT->ProcessLine(".L runZLooper.C+");
-
-  // runZLooper("data"                  , true  );
+  
+  runZLooper("wzsms"                 , false );
+  runZLooper("zzsms"                 , false );
+  runZLooper("ggmsb"                 , false );
+  runZLooper("data"                  , true  );
   // runZLooper("ttbar"                 , false );
   // runZLooper("zjets"                 , false );
   // runZLooper("zjetsS6_incomplete"    , false );
@@ -28,20 +31,23 @@
   // runZLooper("wz_summer11_madgraph"  , false );
   // runZLooper("zz_summer11_madgraph"  , false );
   // runZLooper("LM4"                   , false );
-  // runZLooper("LM4v2"                  , false );
+  // runZLooper("LM4v2"                 , false );
   // runZLooper("LM8"                   , false );
   // runZLooper("LM4v2"                 , false );
-  runZLooper("LM8v2"                  , false );
+  // runZLooper("LM8v2"                 , false );
   // runZLooper("LM9"                   , false );
   // runZLooper("singletop"             , false );
   // runZLooper("T5zzgmsb"              , false );
   // runZLooper("T5zzgmsb_hadoop"       , false );
   // runZLooper("T5zz"                  , false );
   // runZLooper("ZZZ"                   , false );
+  // runZLooper("T5zzh"                 , false );
   // runZLooper("T5zzl"                 , false );
   // runZLooper("wz_summer11_pythia"    , false );
   // runZLooper("zz_summer11_pythia"    , false );
 
-
 }
+
+
+
 
