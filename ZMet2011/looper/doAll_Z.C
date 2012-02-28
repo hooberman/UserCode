@@ -20,9 +20,9 @@
   gROOT->ProcessLine(".L runZLooper.C+");
   
   runZLooper("wzsms"                 , false );
-  // runZLooper("zzsms"                 , false );
+  runZLooper("zzsms"                 , false );
   // runZLooper("ggmsb"                 , false );
-  // runZLooper("data"                  , true  );
+  runZLooper("data"                  , true  );
   // runZLooper("ttbar"                 , false );
   // runZLooper("zjets"                 , false );
   // runZLooper("zjetsS6_incomplete"    , false );
