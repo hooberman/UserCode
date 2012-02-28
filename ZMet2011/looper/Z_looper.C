@@ -51,9 +51,9 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
-const bool  doGenSelection       = true;
+const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-05";
+const char* iter                 = "V00-02-07";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -631,6 +631,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       int index1 = -1;
       int index2 = -1;
       
+      ptll_ = hyp_ll_p4().at(hypIdx).pt();
+      ptlt_ = hyp_lt_p4().at(hypIdx).pt();
+
       if( hyp_ll_p4().at(hypIdx).pt() > hyp_lt_p4().at(hypIdx).pt() ){
 	
 	index1 = hyp_ll_index()[hypIdx];
@@ -765,10 +768,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
       
       if( abs( hyp_ll_id()[hypIdx] ) == 13 ){
+
 	int ipf_ll = mus_pfmusidx().at(hyp_ll_index().at(hypIdx));
 	if( ipf_ll >= pfmus_p4().size() || ipf_ll < 0 ){
 	  //cout << "Error, pfmuon ll index out of range " << ipf_ll << endl;
           //printEvent();
+	  ptll_pf_ = -1;
 	}else{
 	  ptll_pf_ = pfmus_p4().at(ipf_ll).pt();
 	  nmatchedpfmuons_ ++;
@@ -794,8 +799,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
 
       if( abs( hyp_lt_id()[hypIdx] ) == 13 ){
+
 	int ipf_lt = mus_pfmusidx()[hyp_lt_index()[hypIdx]];
 	if( ipf_lt >= pfmus_p4().size() || ipf_lt < 0 ){
+	  ptlt_pf_ = -1;
 	  //cout << "Error, pfmuon lt index out of range " << ipf_lt << endl;
           //printEvent();
 	}else{
@@ -1355,8 +1362,8 @@ void Z_looper::InitBabyNtuple (){
   //pfmuon stuff
   npfmuons_         = -999999;
   nmatchedpfmuons_  = -999999;
-  ptll_pf_   =  999999.;
-  ptlt_pf_   =  999999.;
+  ptll_pf_   =  -1.;
+  ptlt_pf_   =  -1.;
 
   // calomet stuff
   met_          = -999999.;
