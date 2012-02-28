@@ -1094,6 +1094,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       VofP4 goodJets;
       VofP4 goodBJets;
 
+      nbvz_ = 0;
+      
       //loop over pfjets pt > 30 GeV |eta| < 3.0
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
           
@@ -1138,6 +1140,15 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
         if( vjet.pt() < 30. )                    continue;
           
+	if( vjet.pt() < 100.0 ){
+	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 )  nbvz_++;
+	}
+
+	else{
+	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 )  nbvz_++;
+	}
+
+
 	goodJets.push_back(vjet);
 
         //find max jet pt
@@ -1190,6 +1201,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( goodBJets.size() > 2 ) bjet3_  = &(goodBJets.at(2));
       if( goodBJets.size() > 3 ) bjet4_  = &(goodBJets.at(3));
 
+      mjj_ = -1;
+
       if( goodJets.size() >= 2 ){
 	lljj_     = ( *lep1_ + *lep2_ + *jet1_ + *jet2_ ).mass();
 	jj_       = ( *jet1_ + *jet2_          ).mass();
@@ -1201,6 +1214,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	l2j2_     = ( *lep2_ + *jet2_          ).mass();
 	l1j2_     = ( *lep1_ + *jet2_          ).mass();
 	l2j1_     = ( *lep2_ + *jet1_          ).mass();
+	mjj_      = ( *jet1_ + *jet2_          ).mass();
       }
       
       //fill histos and ntuple----------------------------------------------------------- 
@@ -1590,6 +1604,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   //event stuff
   babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
+  babyTree_->Branch("nbvz",         &nbvz_,         "nbvz/I"         );
+  babyTree_->Branch("mjj",          &mjj_,          "mjj/F"          );
   babyTree_->Branch("nlep",         &nlep_,         "nlep/I"         );
   babyTree_->Branch("nel",          &nel_,          "nel/I"          );
   babyTree_->Branch("nmu",          &nmu_,          "nmu/I"          );

@@ -90,7 +90,8 @@ class Z_looper
   Int_t   nlep_;
   Int_t   nmu_;
   Int_t   nel_;
-
+  Int_t   nbvz_;
+  Float_t mjj_;
   Float_t ml_;
   Float_t mg_;
   Float_t x_;
