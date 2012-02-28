@@ -38,6 +38,7 @@
 //#include "../CORE/jetSelections.cc"
 #include "../CORE/triggerUtils.h"
 #include "../CORE/mcSelections.h"
+#include "../Tools/bTagEff_BTV.cc"
 
 using namespace tas;
 inline double fround(double n, double d){
@@ -1094,7 +1095,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       VofP4 goodJets;
       VofP4 goodBJets;
 
-      nbvz_ = 0;
+      nbvz_            = 0;
+      btagweight_      = 1;    
+      btagweightup_    = 1;
       
       //loop over pfjets pt > 30 GeV |eta| < 3.0
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
@@ -1170,6 +1173,32 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  goodBJets.push_back(vjet);
 	  nbm_++;
 	}
+
+
+	//weight (scale factor) branches
+
+	if( !isData ) {
+
+	  const float pt      = pfjets_p4().at(ijet).pt();
+	  const float eta     = fabs( pfjets_p4().at(ijet).eta() );
+	  const float sfscale = 1.04; //recommendation to increase SF
+
+	  if( eta < 2.4 ) { //can't be mistagged if outside
+
+	    //double getMisTagRate(double jet_pt, double jet_eta, string algo){
+	    const float mt  = getMisTagRate            ( pt, eta, pt < 100 ? "TCHEL" : "TCHEM" );
+	    const float mte = sfscale*getMisTagRate_Err( pt, eta, pt < 100 ? "TCHEL" : "TCHEM" );
+
+	    //double getMisTagSF(double jet_pt, double jet_eta, string algo){
+	    const float mtsf  = sfscale*getMisTagSF    ( pt, eta, pt < 100 ? "TCHEL" : "TCHEM" );
+	    const float mtsfe = sfscale*getMisTagSF_Err( pt, eta, pt < 100 ? "TCHEL" : "TCHEM" );
+
+	    btagweight_   *= (1-mt)/(1-mt/mtsf);                   //reset to 1 every event, so always just multiply
+	    btagweightup_ *= (1-mt-mte)/(1-(mt+mte)/(mtsf+mtsfe)); //add error to mistag and SF
+	    
+	  }
+	}
+
 
         if ( vjet.pt()   > 30. ) nJets_++;
         if ( vjet.pt()   > 40. ) nJets40_++;
@@ -1604,6 +1633,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   //event stuff
   babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
+  babyTree_->Branch("btagweight",   &btagweight_,   "btagweight/F"   );
+  babyTree_->Branch("btagweightup", &btagweightup_, "btagweightup/F" );
   babyTree_->Branch("nbvz",         &nbvz_,         "nbvz/I"         );
   babyTree_->Branch("mjj",          &mjj_,          "mjj/F"          );
   babyTree_->Branch("nlep",         &nlep_,         "nlep/I"         );
