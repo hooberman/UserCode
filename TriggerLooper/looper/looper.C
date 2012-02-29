@@ -67,6 +67,83 @@ int findTriggerIndex(TString trigName)
 
 //--------------------------------------------------------------------
 
+float getMinDeltaRBetweenObjects( TString trigname , int id1 , int id2 , bool verbose = false ){ 
+  
+  //-------------------------------------------------------------------------------------------
+  // this function returns the minimum deltaR between 2 triggers objects with ID's id1 and id2
+  //-------------------------------------------------------------------------------------------
+
+  //cout << "Checking trigger " << trigname << " " << passHLTTrigger(trigname) << endl;
+
+  // first, get p4 and ID vectors
+  int trigindex = findTriggerIndex(trigname);
+
+  if( trigindex < 0 ) return -1.0; //ERROR! didn't find this trigger
+
+  std::vector<int>           trigId = cms2.hlt_trigObjs_id()[findTriggerIndex(trigname)];
+  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
+
+  //cout << "number of objects " << trigId.size() << endl;
+
+  assert( trigId.size() == trigp4.size() );
+  if( trigId.size() == 0 ) return -2.0;
+
+  if( verbose ){
+    cout << endl;
+    cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+    cout << trigname << " pass? " << passHLTTrigger(trigname) << endl;
+    
+    cout << "|" << setw(12) << "index" << setw(4) 
+	 << "|" << setw(12) << "ID"    << setw(4) 
+	 << "|" << setw(12) << "pt"    << setw(4) 
+	 << "|" << setw(12) << "eta"   << setw(4) 
+	 << "|" << setw(12) << "phi"   << setw(4) 
+	 << "|" << endl;
+
+    for(unsigned int i = 0 ; i < trigId.size() ; ++i ){
+      
+      cout << "|" << setw(12) << i << setw(4) 
+	   << "|" << setw(12) << trigId.at(i) << setw(4) 
+	   << "|" << setw(12) << Form("%.2f",trigp4.at(i).pt())  << setw(4) 
+	   << "|" << setw(12) << Form("%.2f",trigp4.at(i).eta()) << setw(4) 
+	   << "|" << setw(12) << Form("%.2f",trigp4.at(i).phi()) << setw(4) 
+	   << "|" << endl;
+    }
+  }
+
+
+  // store p4's of objects with ID's id1 and id2  
+  VofP4 obs1;
+  VofP4 obs2;
+  
+  for (int i = 0; i < trigp4.size(); ++i){
+    if( trigId.at(i) == id1 ) obs1.push_back( trigp4.at(i) );
+    if( trigId.at(i) == id2 ) obs2.push_back( trigp4.at(i) );
+  }
+
+  // compute min deltaR between id1 and id2 objects
+  double drmin = 100.0;
+  int i1min = -1;
+  int i2min = -1;
+
+  for( unsigned int i1 = 0 ; i1 < obs1.size() ; i1++ ){
+    for( unsigned int i2 = 0 ; i2 < obs2.size() ; i2++ ){
+      float dr12 = dRbetweenVectors( obs1.at(i1) , obs2.at(i2) );
+      if( dr12 < drmin ){
+	drmin = dr12;
+	i1min = i1;
+	i2min = i2;
+      }
+    }
+  }
+
+  if( verbose ) cout << "i1min i2min dR " << i1min << " " << i2min << " " << drmin << endl;
+
+  return drmin;
+}
+
+
+
 bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector> &trigObjs, float pt) 
 {
 
@@ -470,7 +547,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
 
       //if( evt_run() < 178420 || evt_run() > 180291 ) continue;
-      if( evt_run() < 179959 || evt_run() > 180291 ) continue;
+      //if( evt_run() < 179959 || evt_run() > 180291 ) continue;
 
       //---------------------------------------------
       // event cleaning and good run list
@@ -698,7 +775,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
           
 	if( !passesPFJetID(ijet) )     continue;
 	if( fabs( vjet.eta() ) > 2.5 ) continue;
-	if( vjet.pt() < 20 )           continue;
+	if( vjet.pt() < 30 )           continue;
 
 	njets_++;
 	ht_ += vjet.pt();
@@ -814,6 +891,11 @@ int looper::ScanChain(TChain* chain, char *prefix){
       mudijet_      = passHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")                            		? 1 : 0; // 178420-180291
       mutrijet_     = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v")                           	? 1 : 0; // 178420-180291
       muquadjet_    = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_QuadCentralPFJet30_v")                          	? 1 : 0; // 178420-180291
+
+      ele8dijet30_  = passHLTTriggerPattern("HLT_Ele8_CaloIdT_TrkIdT_DiJet30_v") ? 1 : 0;
+
+      mindrej_ = getMinDeltaRBetweenObjects( triggerName("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30") , 82 , 85 ); // 82 = electron  85 = jet 
+      mindrmj_ = getMinDeltaRBetweenObjects( triggerName("HLT_IsoMu17_eta2p1_TriCentralPFJet30")                         , 83 , 85 ); // 83 = muon      85 = jet 
 
       // store pt of electron matched to electron-dijet trigger
       elptmatch_ = -1;
@@ -1015,6 +1097,9 @@ void looper::makeTree(char *prefix ){
 
   //Set branch addresses
   //variables must be declared in looper.h
+  outTree->Branch("ele8dijet30",     &ele8dijet30_,      "ele8dijet30/I");
+  outTree->Branch("mindrej",         &mindrej_,          "mindrej/F");
+  outTree->Branch("mindrmj",         &mindrmj_,          "mindrmj/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
   outTree->Branch("ncjets",          &ncjets_,           "ncjets/I");
   outTree->Branch("ht",              &ht_,               "ht/F");
