@@ -611,6 +611,14 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	ngoodlep_++;
       }
 
+      nosel_ = 0;
+
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 20 )                                                 continue;
+	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+	nosel_++;
+      }
+
           
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 10 )           continue;
@@ -886,6 +894,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       eletrijet_     = passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v")  	? 1 : 0; // 178420-180291 
       elequadjet_    = passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_QuadCentralPFJet30_v") 	? 1 : 0; // 178420-180291 
 
+      ele27dijet25_  = passHLTTriggerPattern("HLT_Ele27_CaloIdVT_TrkIdT_DiCentralPFJet25_v") ? 1 : 0;
+
       mudijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT15_v")         		? 1 : 0; // 178420-180291
       mudijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT25_v")         		? 1 : 0; // 178420-180291
       mudijet_      = passHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")                            		? 1 : 0; // 178420-180291
@@ -1099,6 +1109,7 @@ void looper::makeTree(char *prefix ){
   //variables must be declared in looper.h
   outTree->Branch("ele8dijet30",     &ele8dijet30_,      "ele8dijet30/I");
   outTree->Branch("mindrej",         &mindrej_,          "mindrej/F");
+  outTree->Branch("nosel",           &nosel_,            "nosel/I");
   outTree->Branch("mindrmj",         &mindrmj_,          "mindrmj/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
   outTree->Branch("ncjets",          &ncjets_,           "ncjets/I");
@@ -1121,6 +1132,7 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("eledijetmht15",   &eledijetmht15_,    "eledijetmht15/I");
   outTree->Branch("eledijetmht25",   &eledijetmht25_,    "eledijetmht25/I");
   outTree->Branch("eledijet",        &eledijet_,         "eledijet/I");
+  outTree->Branch("ele27dijet25",    &ele27dijet25_,     "ele27dijet25/I");
   outTree->Branch("eletrijet",       &eletrijet_,        "eletrijet/I");
   outTree->Branch("elequadjet",      &elequadjet_,       "elequadjet/I");
   outTree->Branch("mudijet",         &mudijet_,          "mudijet/I");

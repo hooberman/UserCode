@@ -90,12 +90,14 @@ class looper
 	Int_t   ngoodlep_;
 	Int_t   ngoodmu_;
 	Int_t   ngoodel_;
+	Int_t   nosel_;
 	Int_t   ndavtx_;
 	Int_t   nvtx_;
 	Int_t   eledijet_hg_;
 	Int_t   eledijetmht15_;
 	Int_t   eledijetmht25_;
 	Int_t   eledijet_;
+	Int_t   ele27dijet25_;
 	Int_t   eletrijet_;
 	Int_t   elequadjet_;
 	Int_t   eledijet_n82_;
