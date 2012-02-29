@@ -86,6 +86,7 @@ class looper
 	Float_t pfmet_;
 	Float_t pfmetphi_;
 	Float_t pfsumet_;
+	Int_t   ele8dijet30_;
 	Int_t   ngoodlep_;
 	Int_t   ngoodmu_;
 	Int_t   ngoodel_;
@@ -105,6 +106,8 @@ class looper
 	Int_t   mutrijet_n83_;
 	Int_t   mudijet_n85_;
 	Int_t   mutrijet_n85_;
+	Float_t mindrej_;
+	Float_t mindrmj_;
 	Float_t eledijet_trigmindr_ejet_;
 	Float_t eletrijet_trigmindr_ejet_;
 	Float_t mudijet_trigmindr_mujet_;
