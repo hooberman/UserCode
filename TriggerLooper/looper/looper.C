@@ -456,6 +456,11 @@ void looper::closeTree()
 
 int looper::ScanChain(TChain* chain, char *prefix){
 
+  cout << "-------------------------------------------------------------------------------" << endl;
+  cout << "SAVING ONLY EVENTS PASSING HLT_Ele27_CaloIdVT_TrkIdT_DiCentralPFJet25_v !!!!!!!" << endl;
+  cout << "-------------------------------------------------------------------------------" << endl;
+
+
   set_goodrun_file( g_json );
 
   bool isData = true;
@@ -545,6 +550,10 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	cout << evt_dataset() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 	cout << "-------------------------------------------------------"   << endl;
       }
+
+      ele27dijet25_  = passHLTTriggerPattern("HLT_Ele27_CaloIdVT_TrkIdT_DiCentralPFJet25_v") ? 1 : 0;
+
+      if( ele27dijet25_ == 0 ) continue;
 
       //if( evt_run() < 178420 || evt_run() > 180291 ) continue;
       //if( evt_run() < 179959 || evt_run() > 180291 ) continue;
