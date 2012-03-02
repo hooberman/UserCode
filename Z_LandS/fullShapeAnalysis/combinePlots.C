@@ -39,16 +39,16 @@ TGraph* getGraph(bool do3jets,string type){
     x[2] =  925;  y[2] = 500;
     x[3] =  975;  y[3] = 850;
     x[4] =  925;  y[4] = 925;
-    x[6] =  100;  y[6] = 100;
-    npoints = 6;
+    //x[6] =  100;  y[6] = 100;
+    npoints = 5;
   }
   else if( !do3jets && type == "down" ){
     x[0] = 500;   y[0] = 100;
     x[1] = 720;   y[1] = 300;
     x[2] = 825;   y[2] = 550;
     x[3] = 825;   y[3] = 825;
-    x[4] = 100;   y[4] = 100;
-    npoints = 5;
+    //x[4] = 100;   y[4] = 100;
+    npoints = 4;
   }
   else if( !do3jets && type == "up" ){
     x[0] = 800;   y[0] =  100;
@@ -56,8 +56,8 @@ TGraph* getGraph(bool do3jets,string type){
     x[2] = 1025;  y[2] =  400;
     x[3] = 1100;  y[3] = 1000;
     x[4] = 1000;  y[4] = 1000;
-    x[5] =  100;  y[5] =  100;
-    npoints = 6;
+    //x[5] =  100;  y[5] =  100;
+    npoints = 5;
   }
   else if( do3jets && type == "nom" ){
     x[0] = 700;   y[0] = 100;
@@ -94,18 +94,19 @@ TGraph* getGraph_T5zzh(string type){
     npoints = 5;
   }
   else if( type == "down" ){
-    x[0] = 500;   y[0] = 100;
-    x[1] = 720;   y[1] = 300;
-    x[2] = 825;   y[2] = 550;
-    x[3] = 825;   y[3] = 800;
-    npoints = 4;
+    x[0] = 600;   y[0] =  50;
+    x[1] = 600;   y[1] = 150;
+    x[2] = 525;   y[2] = 200;
+    x[3] = 475;   y[3] = 300;
+    x[4] = 525;   y[4] = 450;
+    npoints = 5;
   }
   else if( type == "up" ){
-    x[0] = 800;   y[0] =  100;
-    x[1] = 950;   y[1] =  200;
-    x[2] = 1025;  y[2] =  400;
-    x[3] = 1100;  y[3] = 1000;
-    x[4] = 1000;  y[4] = 1000;
+    x[0] = 1000;  y[0] =   50;
+    x[1] = 1000;  y[1] =  300;
+    x[2] =  950;  y[2] =  475;
+    x[3] = 712.5; y[3] =  475;
+    x[4] = 712.5; y[4] =  637.5;
     npoints = 5;
   }
 
@@ -125,10 +126,11 @@ TGraph* getGraph_T5zz(string type){
     x[1] =  900;  y[1] = 325;
     x[2] =  850;  y[2] = 400;
     x[3] =  825;  y[3] = 425;
-    x[4] =  625;  y[4] = 425;
-    x[5] =  625;  y[5] = 537.5;
+    x[4] =  775;  y[4] = 425;
+    x[5] =  625;  y[5] = 412.5;
+    x[6] =  625;  y[6] = 537.5;
     //x[6] =  125;  y[6] =  37.5;
-    npoints = 6;
+    npoints = 7;
   }
   else if( type == "up" ){
     x[0] =  1050;  y[0] =  50;
@@ -136,26 +138,24 @@ TGraph* getGraph_T5zz(string type){
     x[2] =  1000;  y[2] = 475;
     x[3] =   950;  y[3] = 525;
     x[4] =   900;  y[4] = 550;
-    x[5] =   850;  y[5] = 550;
-    x[6] =   825;  y[6] = 525;
-    x[7] =   725;  y[7] = 525;
-    x[8] =   725;  y[8] = 637.5;
+    //x[5] =   850;  y[5] = 550;
+    //x[6] =   825;  y[6] = 525;
+    x[5] =   725;  y[5] = 525;
+    x[6] =   725;  y[6] = 637.5;
     //x[6] =  125;   y[6] =  37.5;
-    npoints = 9;
+    npoints = 7;
   }
   else if( type == "down" ){
     x[0] =  775;  y[0] =  50;
     x[1] =  775;  y[1] = 150;
     x[2] =  725;  y[2] = 300;
-
-    x[3] =  675;  y[3] = 325;
-    x[4] =  650;  y[4] = 325;
-    x[5] =  625;  y[5] = 300;
-
-    x[6] =  525;  y[6] = 300;
-    x[7] =  525;  y[7] = 437.5;
+    x[3] =  700;  y[3] = 325;
+    //x[4] =  650;  y[4] = 325;
+    //x[5] =  625;  y[5] = 300;
+    x[4] =  525;  y[4] = 300;
+    x[5] =  525;  y[5] = 437.5;
     //x[5] =  125;  y[5] =  37.5;
-    npoints = 8;
+    npoints = 6;
   }
 
   TGraph *gr = new TGraph(npoints,x,y);
@@ -246,22 +246,22 @@ void smoothHist( TH2F* h ){
 
 void combinePlots(bool print = false){
   
-  // char* version        = "V00-01-00";
-  // char* sample         = "T5zz";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  // float dm             = 182.0;
+  char* version        = "V00-01-00";
+  char* sample         = "T5zz";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  float dm             = 182.0+25./2;
 
   // char* version        = "V00-01-01";
   // char* sample         = "T5zz";
   // bool  do3jets        = true;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
 
-  char* version        = "V00-01-02";
-  char* sample         = "T5zzl";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
-  float dm             = 120.0;
+  // char* version        = "V00-01-02";
+  // char* sample         = "T5zzl";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
+  // float dm             = 120.0;
 
   // char* version        = "V00-01-03";
   // char* sample         = "T5zzl";
@@ -455,6 +455,11 @@ void combinePlots(bool print = false){
     gr_excl_down = getGraph_T5zzl("down");
     gr_excl_up   = getGraph_T5zzl("up");
   }
+  else if( TString(sample).Contains("T5zzh") ) {
+    gr_excl      = getGraph_T5zzh("nom");
+    gr_excl_down = getGraph_T5zzh("down");
+    gr_excl_up   = getGraph_T5zzh("up");
+  }
   else if( TString(sample).Contains("T5zz") ) {
     gr_excl      = getGraph_T5zz("nom");
     gr_excl_down = getGraph_T5zz("down");
@@ -533,5 +538,15 @@ void combinePlots(bool print = false){
   gPad->SetGridy();
   hexcluded3->Draw("colz");
   gr_excl_up->Draw();
+
+  if( print ){
+    c2->Print(Form("cards/%s/plots/SMS_points.eps",version));
+    c2->Print(Form("cards/%s/plots/SMS_points.pdf",version));
+    c2->Print(Form("cards/%s/plots/SMS_points.png",version));
+    c2->Print(Form("cards/%s/plots/SMS_points.C",version));
+
+    gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS_points.eps cards/%s/plots/SMS_points_ppt.pdf",version,version));
+  }
+
 
 }
