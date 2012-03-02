@@ -116,8 +116,8 @@ TGraph* getGraph_T5zzh(string type){
 
 TGraph* getGraph_T5zz(string type){
 
-  float x[6];
-  float y[6];
+  float x[10];
+  float y[10];
   int npoints = -1;
 
   if( type == "nom" ){
@@ -127,26 +127,74 @@ TGraph* getGraph_T5zz(string type){
     x[3] =  825;  y[3] = 425;
     x[4] =  625;  y[4] = 425;
     x[5] =  625;  y[5] = 537.5;
-    x[6] =  125;  y[6] =  37.5;
-    npoints = 7;
+    //x[6] =  125;  y[6] =  37.5;
+    npoints = 6;
   }
   else if( type == "up" ){
     x[0] =  1050;  y[0] =  50;
     x[1] =  1050;  y[1] = 375;
     x[2] =  1000;  y[2] = 475;
     x[3] =   950;  y[3] = 525;
-    x[4] =   725;  y[4] = 525;
-    x[5] =   725;  y[5] = 637.5;
-    x[6] =  125;   y[6] =  37.5;
-    npoints = 7;
+    x[4] =   900;  y[4] = 550;
+    x[5] =   850;  y[5] = 550;
+    x[6] =   825;  y[6] = 525;
+    x[7] =   725;  y[7] = 525;
+    x[8] =   725;  y[8] = 637.5;
+    //x[6] =  125;   y[6] =  37.5;
+    npoints = 9;
   }
   else if( type == "down" ){
     x[0] =  775;  y[0] =  50;
     x[1] =  775;  y[1] = 150;
     x[2] =  725;  y[2] = 300;
-    x[3] =  525;  y[3] = 300;
-    x[4] =  525;  y[4] = 437.5;
-    x[5] =  125;  y[5] =  37.5;
+
+    x[3] =  675;  y[3] = 325;
+    x[4] =  650;  y[4] = 325;
+    x[5] =  625;  y[5] = 300;
+
+    x[6] =  525;  y[6] = 300;
+    x[7] =  525;  y[7] = 437.5;
+    //x[5] =  125;  y[5] =  37.5;
+    npoints = 8;
+  }
+
+  TGraph *gr = new TGraph(npoints,x,y);
+  return gr;
+
+}
+
+TGraph* getGraph_T5zzl(string type){
+
+  float x[10];
+  float y[10];
+  int npoints = -1;
+
+  if( type == "nom" ){
+    x[0] =  975;  y[0] =  50;
+    x[1] =  975;  y[1] = 325;
+    x[2] =  900;  y[2] = 500;
+    x[3] =  875;  y[3] = 525;
+    x[4] =  800;  y[4] = 525;
+    x[5] =  625;  y[5] = 500;
+    x[6] =  625;  y[6] = 537.5;
+    npoints = 7;
+  }
+  else if( type == "up" ){
+    x[0] =  1100;  y[0] =  50;
+    x[1] =  1100;  y[1] = 400;
+    x[2] =  1000;  y[2] = 650;
+    x[3] =   925;  y[3] = 650;
+    x[4] =   750;  y[4] = 600;
+    x[5] =   750;  y[5] = 662.5;
+    npoints = 6;
+  }
+  else if( type == "down" ){
+    x[0] =  825;  y[0] =  50;
+    x[1] =  825;  y[1] = 300;
+    x[2] =  750;  y[2] = 425;
+    x[3] =  650;  y[3] = 425;
+    x[4] =  525;  y[4] = 400;
+    x[5] =  525;  y[5] = 437.5;
     npoints = 6;
   }
 
@@ -198,21 +246,22 @@ void smoothHist( TH2F* h ){
 
 void combinePlots(bool print = false){
   
-  char* version        = "V00-01-00";
-  char* sample         = "T5zz";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  float dm             = 182.0;
+  // char* version        = "V00-01-00";
+  // char* sample         = "T5zz";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  // float dm             = 182.0;
 
   // char* version        = "V00-01-01";
   // char* sample         = "T5zz";
   // bool  do3jets        = true;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
 
-  // char* version        = "V00-01-02";
-  // char* sample         = "T5zzl";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
+  char* version        = "V00-01-02";
+  char* sample         = "T5zzl";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
+  float dm             = 120.0;
 
   // char* version        = "V00-01-03";
   // char* sample         = "T5zzl";
@@ -239,6 +288,7 @@ void combinePlots(bool print = false){
   // char* sample         = "T5zzh";
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
+  // float dm             = 360.0;
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
@@ -362,7 +412,7 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.65,njets);
   t->DrawLatex(0.2,0.55,"E_{T}^{miss} templates");
   t->SetTextSize(0.035);
-  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
 
   if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
   else                                    line.DrawLine(50+dm,50,1200,1200-dm);
@@ -399,6 +449,11 @@ void combinePlots(bool print = false){
     gr_excl      = getGraph(do3jets,"nom");
     gr_excl_down = getGraph(do3jets,"down");
     gr_excl_up   = getGraph(do3jets,"up");
+  }
+  else if( TString(sample).Contains("T5zzl") ) {
+    gr_excl      = getGraph_T5zzl("nom");
+    gr_excl_down = getGraph_T5zzl("down");
+    gr_excl_up   = getGraph_T5zzl("up");
   }
   else if( TString(sample).Contains("T5zz") ) {
     gr_excl      = getGraph_T5zz("nom");
@@ -440,7 +495,7 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.47,"E_{T}^{miss} templates");
   t->SetTextSize(0.035);
   //t->DrawLatex(0.18,0.92,"CMS                     #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
-  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
 
   if( print ){
     can->Print(Form("cards/%s/plots/SMS.eps",version));
