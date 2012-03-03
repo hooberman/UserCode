@@ -129,7 +129,6 @@ TGraph* getGraph_T5zz(string type){
     x[4] =  775;  y[4] = 425;
     x[5] =  625;  y[5] = 412.5;
     x[6] =  625;  y[6] = 537.5;
-    //x[6] =  125;  y[6] =  37.5;
     npoints = 7;
   }
   else if( type == "up" ){
@@ -138,11 +137,8 @@ TGraph* getGraph_T5zz(string type){
     x[2] =  1000;  y[2] = 475;
     x[3] =   950;  y[3] = 525;
     x[4] =   900;  y[4] = 550;
-    //x[5] =   850;  y[5] = 550;
-    //x[6] =   825;  y[6] = 525;
     x[5] =   725;  y[5] = 525;
     x[6] =   725;  y[6] = 637.5;
-    //x[6] =  125;   y[6] =  37.5;
     npoints = 7;
   }
   else if( type == "down" ){
@@ -150,11 +146,8 @@ TGraph* getGraph_T5zz(string type){
     x[1] =  775;  y[1] = 150;
     x[2] =  725;  y[2] = 300;
     x[3] =  700;  y[3] = 325;
-    //x[4] =  650;  y[4] = 325;
-    //x[5] =  625;  y[5] = 300;
     x[4] =  525;  y[4] = 300;
     x[5] =  525;  y[5] = 437.5;
-    //x[5] =  125;  y[5] =  37.5;
     npoints = 6;
   }
 
@@ -174,17 +167,17 @@ TGraph* getGraph_T5zzl(string type){
     x[1] =  975;  y[1] = 325;
     x[2] =  900;  y[2] = 500;
     x[3] =  875;  y[3] = 525;
-    x[4] =  800;  y[4] = 525;
-    x[5] =  625;  y[5] = 500;
+    x[4] =  825;  y[4] = 525;
+    x[5] =  625;  y[5] = 487.5;
     x[6] =  625;  y[6] = 537.5;
     npoints = 7;
   }
   else if( type == "up" ){
-    x[0] =  1100;  y[0] =  50;
-    x[1] =  1100;  y[1] = 400;
+    x[0] =  1112.5;  y[0] =  50;
+    x[1] =  1112.5;  y[1] = 400;
     x[2] =  1000;  y[2] = 650;
-    x[3] =   925;  y[3] = 650;
-    x[4] =   750;  y[4] = 600;
+    x[3] =   950;  y[3] = 650;
+    x[4] =   750;  y[4] = 575;
     x[5] =   750;  y[5] = 662.5;
     npoints = 6;
   }
@@ -192,8 +185,8 @@ TGraph* getGraph_T5zzl(string type){
     x[0] =  825;  y[0] =  50;
     x[1] =  825;  y[1] = 300;
     x[2] =  750;  y[2] = 425;
-    x[3] =  650;  y[3] = 425;
-    x[4] =  525;  y[4] = 400;
+    x[3] =  675;  y[3] = 425;
+    x[4] =  525;  y[4] = 387.5;
     x[5] =  525;  y[5] = 437.5;
     npoints = 6;
   }
@@ -246,11 +239,11 @@ void smoothHist( TH2F* h ){
 
 void combinePlots(bool print = false){
   
-  char* version        = "V00-01-00";
-  char* sample         = "T5zz";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  float dm             = 182.0+25./2;
+  // char* version        = "V00-01-00";
+  // char* sample         = "T5zz";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  // float dm             = 182.0+25./2;
 
   // char* version        = "V00-01-01";
   // char* sample         = "T5zz";
@@ -261,7 +254,7 @@ void combinePlots(bool print = false){
   // char* sample         = "T5zzl";
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
-  // float dm             = 120.0;
+  // float dm             = (4./3.)*91 + 25./2;
 
   // char* version        = "V00-01-03";
   // char* sample         = "T5zzl";
@@ -284,11 +277,11 @@ void combinePlots(bool print = false){
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g})";
 
-  // char* version        = "V00-01-08";
-  // char* sample         = "T5zzh";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
-  // float dm             = 360.0;
+  char* version        = "V00-01-08";
+  char* sample         = "T5zzh";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
+  float dm             = 4*91.0+25./2;
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
