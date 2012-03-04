@@ -30,6 +30,33 @@
 
 void doPlot( TCanvas* can, TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_Z , TH1F* hist_QCD , TH1F* hist_data , TH1F* hist_LM , bool residual = false , bool print = false );
 
+TH1F* smoothHist( TH1F* hin , int n ){
+						
+  if( n%2 == 0 ) cout << "Error! n = " << n << " must be odd" << endl;
+
+  TH1F* hout = (TH1F*) hin->Clone("hout");
+
+  int diff     = (n-1) / 2;
+  int firstbin = (n+1) / 2;
+  int lastbin  = hin->GetXaxis()->GetNbins() - firstbin;
+
+  for( int ibin = firstbin ; ibin <= lastbin ; ++ibin ){
+									
+    float ave = 0;
+
+    for( int jbin = ibin - diff ; jbin <= ibin + diff ; ++jbin ){
+      ave += hin->GetBinContent(jbin) / (float) n;
+    }
+
+    hout->SetBinContent(ibin,ave);
+
+  }
+  
+  return hout;
+
+}
+
+
 void makeZPlot_3jets( bool print = false ){
 
   setTDRStyle();
@@ -213,6 +240,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   hist_LM->SetLineColor(kOrange+1);
   hist_LM->SetLineWidth(2);
 
+  TH1* hist_LM_smooth = smoothHist(hist_LM,5);
+
   // hist_data->SetLineColor(1);
   // hist_data->SetMarkerColor(1);
   // hist_data->SetMarkerSize(1);
@@ -264,7 +293,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   hist_data->Draw("sameE1");
   hist_photon->Draw("samehist");
   hist_QCD->Draw("samehist");
-  hist_LM->Draw("same");
+  //hist_LM->Draw("same");
+  hist_LM_smooth->Draw("same");
   hist_data->Draw("sameaxis");
   hist_data->Draw("sameE1");
 
