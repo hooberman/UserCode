@@ -460,9 +460,9 @@ void looper::closeTree()
 
 int looper::ScanChain(TChain* chain, char *prefix){
 
-  // cout << "-------------------------------------------------------------------------------" << endl;
-  // cout << "SAVING ONLY EVENTS PASSING HLT_Ele27_CaloIdVT_TrkIdT_DiCentralPFJet25_v !!!!!!!" << endl;
-  // cout << "-------------------------------------------------------------------------------" << endl;
+  cout << "-------------------------------------------------------------------------------" << endl;
+  cout << "SAVING ONLY EVENTS PASSING HLT_Ele8_CaloIdT_TrkIdT_DiJet30_v                   " << endl;
+  cout << "-------------------------------------------------------------------------------" << endl;
 
 
   set_goodrun_file( g_json );
@@ -544,6 +544,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       tree->LoadTree(z);
 
       cms2.GetEntry(z);
+
+      if( !passHLTTriggerPattern("HLT_Ele8_CaloIdT_TrkIdT_DiJet30_v") ) continue;
 
       InitBaby();
 
