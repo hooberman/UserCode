@@ -395,6 +395,10 @@ void looper::InitBaby(){
   eletrijet_hltele_ = 0; 
   mudijet_hltmu_ = 0; 
   mutrijet_hltmu_ = 0; 
+  lep1_  = 0;
+  lep2_  = 0;
+  lep3_  = 0;
+  lep4_  = 0;
   pjet1_ = 0;
   pjet2_ = 0;
   pjet3_ = 0;
@@ -630,7 +634,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
           
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 10 )           continue;
+	if( mus_p4().at(imu).pt() < 5 )            continue;
 	if( !muonId( imu , OSGeneric_v3 ))         continue;
 	goodLeptons.push_back( mus_p4().at(imu) );
 	lepId.push_back( mus_charge().at(imu) * 13 );
@@ -638,6 +642,13 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	ngoodmu_++;
 	ngoodlep_++;
       }  
+
+      sort( goodLeptons.begin(), goodLeptons.end(), sortByPt);
+
+      if( ngoodlep_ > 0 ) 	lep1_ = &( goodLeptons.at(0) );
+      if( ngoodlep_ > 1 ) 	lep2_ = &( goodLeptons.at(1) );
+      if( ngoodlep_ > 2 ) 	lep3_ = &( goodLeptons.at(2) );
+      if( ngoodlep_ > 3 ) 	lep4_ = &( goodLeptons.at(3) );
 
       //std::vector<int> mutrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v5")];
       //std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele27_WP80_DiCentralPFJet25_v5")];
@@ -896,6 +907,10 @@ int looper::ScanChain(TChain* chain, char *prefix){
       // triggers
       //----------------------------------------
 
+      mmht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass8_HT150_v")                  ? 1 : 0;
+      emht150_       = passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_HT150_v")   ? 1 : 0;
+      eeht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_HT150_v") ? 1 : 0;
+
       eledijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v")            		? 1 : 0; // 178420-180291
       eledijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_Ele32_WP80_DiCentralPFJet25_PFMHT25_v")            		? 1 : 0; // 178420-180291
       eledijet_hg_   = passHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_v")                               		? 1 : 0; // 178420-180291
@@ -1125,6 +1140,9 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("ht",              &ht_,               "ht/F");
   outTree->Branch("htc",             &htc_,              "htc/F");
   outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
+  outTree->Branch("mmht150",         &mmht150_,          "mmht150/I");
+  outTree->Branch("eeht150",         &eeht150_,          "ht150/I");
+  outTree->Branch("emht150",         &emht150_,          "emht150/I");
   outTree->Branch("pfmetphi",        &pfmetphi_,         "pfmetphi/F");
   outTree->Branch("elptmatch",       &elptmatch_,        "elptmatch/F");
   outTree->Branch("pfsumet",         &pfsumet_,          "pfsumet/F");
@@ -1197,6 +1215,11 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("pjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet2_	);
   outTree->Branch("pjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet3_	);
   outTree->Branch("pjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet4_	);
+
+  outTree->Branch("lep1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
+  outTree->Branch("lep2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
+  outTree->Branch("lep3"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep3_	);
+  outTree->Branch("lep4"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep4_	);
 
 }
 
