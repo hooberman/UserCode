@@ -27,6 +27,20 @@
 
 using namespace std;
 
+TH2F* shiftHist(TH2F* hin){
+
+  TH2F* hout = new TH2F("hout","hout", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
+
+  for(int ibin = 1 ; ibin <= 48 ; ibin++ ){
+    for(int jbin = 1 ; jbin <= 48 ; jbin++ ){
+      hout->SetBinContent(ibin,jbin,hin->GetBinContent(ibin,jbin));
+    }
+  }
+
+  return hout;
+}
+
+
 TGraph* getGraph(bool do3jets,string type){
 
   float x[5];
@@ -74,6 +88,11 @@ TGraph* getGraph(bool do3jets,string type){
     npoints = 4;
   }
 
+  for( int i = 0 ; i < npoints ; ++i ){
+    x[i] -= 12.5;
+    y[i] -= 12.5;
+  }
+
   TGraph *gr = new TGraph(npoints,x,y);
   return gr;
 
@@ -108,6 +127,11 @@ TGraph* getGraph_T5zzh(string type){
     x[3] = 712.5; y[3] =  475;
     x[4] = 712.5; y[4] =  637.5;
     npoints = 5;
+  }
+
+  for( int i = 0 ; i < npoints ; ++i ){
+    x[i] -= 12.5;
+    y[i] -= 12.5;
   }
 
   TGraph *gr = new TGraph(npoints,x,y);
@@ -151,6 +175,11 @@ TGraph* getGraph_T5zz(string type){
     npoints = 6;
   }
 
+  for( int i = 0 ; i < npoints ; ++i ){
+    x[i] -= 12.5;
+    y[i] -= 12.5;
+  }
+
   TGraph *gr = new TGraph(npoints,x,y);
   return gr;
 
@@ -189,6 +218,11 @@ TGraph* getGraph_T5zzl(string type){
     x[4] =  525;  y[4] = 387.5;
     x[5] =  525;  y[5] = 437.5;
     npoints = 6;
+  }
+
+  for( int i = 0 ; i < npoints ; ++i ){
+    x[i] -= 12.5;
+    y[i] -= 12.5;
   }
 
   TGraph *gr = new TGraph(npoints,x,y);
@@ -239,11 +273,11 @@ void smoothHist( TH2F* h ){
 
 void combinePlots(bool print = false){
   
-  // char* version        = "V00-01-00";
-  // char* sample         = "T5zz";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  // float dm             = 182.0+25./2;
+  char* version        = "V00-01-00";
+  char* sample         = "T5zz";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  float dm             = 182.0;
 
   // char* version        = "V00-01-01";
   // char* sample         = "T5zz";
@@ -254,7 +288,7 @@ void combinePlots(bool print = false){
   // char* sample         = "T5zzl";
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
-  // float dm             = (4./3.)*91 + 25./2;
+  // float dm             = (4./3.)*91;
 
   // char* version        = "V00-01-03";
   // char* sample         = "T5zzl";
@@ -277,11 +311,11 @@ void combinePlots(bool print = false){
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g})";
 
-  char* version        = "V00-01-08";
-  char* sample         = "T5zzh";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
-  float dm             = 4*91.0+25./2;
+  // char* version        = "V00-01-08";
+  // char* sample         = "T5zzh";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
+  // float dm             = 4*91.0+25./2;
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
@@ -290,7 +324,12 @@ void combinePlots(bool print = false){
   if( TString(sample).Contains("gmsb") ) ymin = 100.;
 
   TFile *file = TFile::Open(Form("cards/%s/observed_limit.root",version));
-  TH2F* hexcl = (TH2F*) file->Get("hexcl");
+  //TH2F* hexcl = (TH2F*) file->Get("hexcl");
+
+  TH2F* hexcl_temp = (TH2F*) file->Get("hexcl");
+
+  TH2F* hexcl = shiftHist(hexcl_temp);
+
   //TH2F* hexcl = (TH2F*) file->Get("hexp");
   //cout << "USING EXPECTED LIMIT!!!!!!!!!!!!" << endl;
 
@@ -320,7 +359,8 @@ void combinePlots(bool print = false){
 
   cout << "Using selection: " << sel.GetTitle() << endl;
 
-  TH2F* heff = new TH2F("heff","heff", 48,0,1200,48,0,1200);
+  TH2F* heff = new TH2F("heff","heff", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
+  //TH2F* heff = new TH2F("heff","heff", 48,0,1200,48,0,1200);
   TCanvas *ctemp = new TCanvas();
   ch->Draw("ml:mg>>heff",sel);
   delete ctemp;
@@ -407,8 +447,8 @@ void combinePlots(bool print = false){
   t->SetTextSize(0.035);
   t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
 
-  if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
-  else                                    line.DrawLine(50+dm,50,1200,1200-dm);
+  if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
+  else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
 
   //-------------------------------
   // cross section limit
@@ -473,8 +513,11 @@ void combinePlots(bool print = false){
   gr_excl_up->Draw("same");
   gr_excl_down->Draw("same");
 
-  if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
-  else                                    line.DrawLine(50+dm,50,1200,1200-dm);
+  if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
+  else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
+
+  // if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
+  // else                                    line.DrawLine(50+dm,50,1200,1200-dm);
 
   TLegend *leg = new TLegend(0.2,0.53,0.45,0.67);
   leg->AddEntry(gr_excl,     "#sigma^{NLO-QCD}","l");
