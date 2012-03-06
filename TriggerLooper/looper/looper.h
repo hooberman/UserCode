@@ -75,6 +75,11 @@ class looper
         LorentzVector*  lep2_; 
         LorentzVector*  lep3_; 
         LorentzVector*  lep4_; 
+        LorentzVector*  fo1_; 
+        LorentzVector*  fo2_; 
+        LorentzVector*  fo3_; 
+        LorentzVector*  fo4_; 
+	Float_t dilmass_;
 	Float_t pjet1_L1Fast_;
 	Float_t pjet2_L1Fast_;
 	Float_t pjet3_L1Fast_;
@@ -98,6 +103,9 @@ class looper
 	Int_t   ngoodlep_;
 	Int_t   ngoodmu_;
 	Int_t   ngoodel_;
+	Int_t   nfolep_;
+	Int_t   nfomu_;
+	Int_t   nfoel_;
 	Int_t   nosel_;
 	Int_t   ndavtx_;
 	Int_t   nvtx_;
