@@ -316,7 +316,7 @@ void doAll(bool skipFWLite = true)
 
   TChain* chdataprv6     = new  TChain("Events");
 
-  if(rundata){
+  if(rundataprv6){
     
     cout << "adding ElectronHad, MuHad, SingleMu PRv6 data" << endl;
 

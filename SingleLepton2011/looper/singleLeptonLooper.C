@@ -898,7 +898,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // require trigger
       //--------------------------------
 
-      if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) ) continue;
+      int hypType = (leptype_==1) ? 0 : 3;//lepton type for dilepton triggers
+      if( !passSingleLepSUSYTrigger2011_v1( isData , leptype_ ) && !passSUSYTrigger2011_v1( isData , hypType , true ) ) continue;
 
       //-----------------------------------------------------------------
       // number of OS generic electrons *in addition to* primary lepton
@@ -2142,6 +2143,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ldi_  = passSingleLep2JetSUSYTrigger2011( isData , leptype_ ) ? 1 : 0;
       ltri_ = passSingleLep3JetSUSYTrigger2011( isData , leptype_ ) ? 1 : 0;
       smu_  = passSingleMuTrigger2011(          isData , leptype_ ) ? 1 : 0;
+      dil_  = passSUSYTrigger2011_v1(     isData , hypType , true ) ? 1 : 0;
 
       //set trigger weight
       mutrigweight_ = getMuTriggerWeight( lep1_->pt() , lep1_->eta() );
@@ -2666,6 +2668,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ldi",             &ldi_,              "ldi/I");
   outTree->Branch("ltri",            &ltri_,             "ltri/I");
   outTree->Branch("smu",             &smu_,              "smu/I");
+  outTree->Branch("dil",             &dil_,              "dil/I");
   outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
   outTree->Branch("multgen",         &multgen_,          "multgen/I");
   outTree->Branch("proc",            &proc_,             "proc/I");
