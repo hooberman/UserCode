@@ -649,7 +649,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 {
 
   cout << "-----------------------------------------------------------------------------------------" << endl;
-  cout << "REDUCE TRAILING LEPTON PT TO 5 GEV, MIN MASS 8 SAVING T1lh dm < 100 GeV!!!!!!!!!!!!!!!!!!" << endl;
+  cout << "REDUCE LEPTON PT TO 5 GEV, MIN MASS 8 SAVING T1lh dm < 100 GeV!!!!!!!!!!!!!!!!!!" << endl;
   cout << "-----------------------------------------------------------------------------------------" << endl;
 
   bool isData = false;
@@ -736,7 +736,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     cout << "Doing 20,10 selection" << endl;
     //minpt = 10.;
     minpt = 5.; //CHANGED
-    maxpt = 20.;
+    //maxpt = 20.;
+    maxpt = 5.; //CHANGED
     htcut = 100.;
     dir   = "highpt";
     highpt = true;
