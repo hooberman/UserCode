@@ -547,6 +547,9 @@ void combinePlots(bool print = false){
     gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
   }
 
+  TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
+  TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
+  TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
 
   TFile* fout = TFile::Open(Form("cards/%s/limit.root",version),"RECREATE");
   fout->cd();
@@ -557,23 +560,37 @@ void combinePlots(bool print = false){
   TCanvas *c2 = new TCanvas("c2","c2",1500,500);
   c2->Divide(3,1);
 
+  t->SetTextSize(0.07);
+
   c2->cd(1);
   gPad->SetGridx();
   gPad->SetGridy();
-  hexcluded13->Draw("colz");
+  //hexcluded13->Draw("colz");
+  hexcluded13_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
+  hexcluded13_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcluded13_shifted->Draw("colz");
   gr_excl_down->Draw();
+  t->DrawLatex(0.3,0.8,"1/3 #times #sigma^{NLO-QCD}");
 
   c2->cd(2);
   gPad->SetGridx();
   gPad->SetGridy();
-  hexcluded->Draw("colz");
+  //hexcluded->Draw("colz");
+  hexcluded_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
+  hexcluded_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcluded_shifted->Draw("colz");
   gr_excl->Draw();
+  t->DrawLatex(0.3,0.8,"#sigma^{NLO-QCD}");
 
   c2->cd(3);
   gPad->SetGridx();
   gPad->SetGridy();
-  hexcluded3->Draw("colz");
+  //hexcluded3->Draw("colz");
+  hexcluded3_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
+  hexcluded3_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcluded3_shifted->Draw("colz");
   gr_excl_up->Draw();
+  t->DrawLatex(0.3,0.8,"3 #times #sigma^{NLO-QCD}");
 
   if( print ){
     c2->Print(Form("cards/%s/plots/SMS_points.eps",version));
