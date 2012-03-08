@@ -980,13 +980,13 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chT1lh = new TChain("Events");
   if (runT1lh) {
     
-    // pickSkimIfExists(chT1lh,
-    //  		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged*root",
-    // 		     "T1lh");  
-
     pickSkimIfExists(chT1lh,
-     		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_3.root",
-		     "T1lh");  
+      		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged*root",
+     		     "T1lh");  
+
+    // pickSkimIfExists(chT1lh,
+    //  		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_3.root",
+    // 		     "T1lh");  
 
     // pickSkimIfExists(chT1lh,
     // 		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_4.root",
