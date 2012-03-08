@@ -648,10 +648,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                              JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 {
 
-  cout << "-----------------------------------------------------------------------------------------" << endl;
-  cout << "REDUCE LEPTON PT TO 5 GEV, MIN MASS 8 SAVING T1lh dm < 100 GeV!!!!!!!!!!!!!!!!!!" << endl;
-  cout << "-----------------------------------------------------------------------------------------" << endl;
-
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
     cout << "DATA!!!" << endl;
@@ -734,10 +730,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   else if( g_trig == e_highpt ){
     cout << "Doing 20,10 selection" << endl;
-    //minpt = 10.;
-    minpt = 5.; //CHANGED
-    //maxpt = 20.;
-    maxpt = 5.; //CHANGED
+    minpt = 10.;
+    maxpt = 20.;
     htcut = 100.;
     dir   = "highpt";
     highpt = true;
@@ -881,11 +875,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       cms2.GetEntry(z);
       InitBaby();
-
-      //CHANGED
-      if(strcmp(prefix,"T1lh") == 0){
-	if( sparm_mG() - sparm_mL() > 100 ) continue;
-      }
 
       if( doGenSelection ){
 
@@ -1222,8 +1211,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
           
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-          //if( mus_p4().at(imu).pt() < 10 )           continue;
-          if( mus_p4().at(imu).pt() < 5 )           continue; // CHANGED
+          if( mus_p4().at(imu).pt() < 10 )           continue;
           if( !muonId( imu , OSGeneric_v3 ))         continue;
           goodLeptons.push_back( mus_p4().at(imu) );
           ngoodmu_++;
@@ -1250,8 +1238,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )                               continue;
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < maxpt )   continue;
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < minpt )   continue;
-        //if( hyp_p4()[i].mass() < 12 )                                           continue;
-        if( hyp_p4()[i].mass() < 8 )                                            continue; //CHANGED
+        if( hyp_p4()[i].mass() < 12 )                                           continue;
 
         float FRweight = 1;
 
@@ -2144,7 +2131,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  mL_ = sparm_mL();
 	  mF_ = sparm_mf();
 	  
-	  weight = lumi * stopPairCrossSection(mG_) * (1000./50000.);
+	  weight = lumi * stopPairCrossSection(mG_) * (1000./10000.);
 	  if( doTenPercent )	  weight *= 10;
 	}
 

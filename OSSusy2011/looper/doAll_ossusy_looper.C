@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-23";
+  const char* version   = "V00-02-24";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -326,7 +326,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLMscanFall11dil9  = 0; 
   bool runLMscanFall11dil10 = 0; 
   bool runT2tt     = 0;
-  bool runT2blnu   = 0;
+  bool runT2blnu   = 1;
   bool runT1lh     = 1;
   bool runZZZ      = 0;
   
