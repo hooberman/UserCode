@@ -28,7 +28,7 @@
 
 using namespace std;
 
-char* version             = "V00-00-08";
+char* version             = "V00-00-11";
 //bool  writeExpectedLimits = false;
 
 bool fileInList(string thisfilename);
@@ -39,9 +39,9 @@ void extractLimits( bool print = false ){
   // create exclusion histogram
   //------------------------------------------
 
-  const int   nm0points    = 100;
+  const int   nm0points    = 150;
   const float m0min        = 20.;
-  const float m0max        = 2020.;
+  const float m0max        = 3020.;
   const int   nm12points   = 38;
   const float m12min       = 20.;
   const float m12max       = 780.;
@@ -77,9 +77,9 @@ void extractLimits( bool print = false ){
 
       hexcl->SetBinContent(m0bin,m12bin,0);
 
-      if( m0bin == 56 && m12bin == 5 ) continue;
-      if( m0bin == 71 && m12bin == 6 ) continue;
-      if( m0bin == 78 && m12bin == 6 ) continue;
+//       if( m0bin == 56 && m12bin == 5 ) continue;
+//       if( m0bin == 71 && m12bin == 6 ) continue;
+//       if( m0bin == 78 && m12bin == 6 ) continue;
 
       //if( m0bin>5 ) continue;
       //if( m0==80 && m12==400 ) cout << "FOUND LM6 " << endl;
