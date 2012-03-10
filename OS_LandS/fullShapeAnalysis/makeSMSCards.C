@@ -114,12 +114,12 @@ void makeSMSCards(){
   // preselection and SR1,SR2,SR3 yields
   //---------------------------------------
 
-  const int   nmgpoints    = 48;
+  const int   nmgpoints    = 50;
   const float mgmin        = 0.;
-  const float mgmax        = 1200;
-  const int   nmlpoints   = 48;
-  const float mlmin       = 0.;
-  const float mlmax       = 1200.;
+  const float mgmax        = 1250;
+  const int   nmlpoints    = 50;
+  const float mlmin        = 0.;
+  const float mlmax        = 1250.;
 
   const unsigned int nbins = 6;
 
@@ -335,8 +335,8 @@ void makeSMSCards(){
       }
 
       if( sigtotjdn < 1e-10 ) continue;
-      if( sigtot    < 2     ) continue;
-      if( sigtot    > 80    ) continue;
+      //if( sigtot    < 2     ) continue;
+      //if( sigtot    > 80    ) continue;
 
       //float sigtot = hall->GetBinContent(mgbin,mlbin);
 
