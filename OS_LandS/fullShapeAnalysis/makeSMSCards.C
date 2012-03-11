@@ -64,7 +64,7 @@ void makeSMSCards(){
   
   TChain *ch = new TChain("t");
   ch->Add("output/V00-02-24/highpt/T2blnu_smallTree.root");
-  char* version = "V00-00-16";
+  char* version = "V00-00-17";
   bool doSigCont = true;
   cout << "Doing version " << version << endl;
 
