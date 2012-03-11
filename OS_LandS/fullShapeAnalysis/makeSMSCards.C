@@ -64,7 +64,7 @@ void makeSMSCards(){
   
   TChain *ch = new TChain("t");
   ch->Add("output/V00-02-24/highpt/T1lh_smallTree.root");
-  char* version = "V00-00-13";
+  char* version = "V00-00-14";
   bool doSigCont = true;
 
   //---------------------------------------
@@ -342,9 +342,11 @@ void makeSMSCards(){
 
       counter++;
 
-      float Rapprox = 7.0 / h[2]->GetBinContent(mgbin,mlbin);
+      float Rapprox = 1.0;
+      if(      h[2]->GetBinContent(mgbin,mlbin) > 1.0e-10) Rapprox =  7.0 / h[2]->GetBinContent(mgbin,mlbin);
+      else if( hall->GetBinContent(mgbin,mlbin) > 1.0e-10) Rapprox = 40.0 / hall->GetBinContent(mgbin,mlbin);
 
-      char* fitoptions = Form("-M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [%f,%f,x1.2]",Rapprox/10,Rapprox*10);
+      char* fitoptions = Form("-M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [%f,%f,x1.1]",Rapprox/10,Rapprox*10);
       //char* fitoptions = "-M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -rMin 0 -rMax 100";
       //-M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100
 
