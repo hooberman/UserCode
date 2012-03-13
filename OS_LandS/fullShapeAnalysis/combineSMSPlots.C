@@ -42,38 +42,65 @@ TH2F* shiftHist(TH2F* hin){
 
 TGraph* getGraph_T1lh(string type){
 
-  float x[5];
-  float y[5];
+  float x[15];
+  float y[15];
   int npoints = -1;
 
   if( type == "nom" ){
-    x[0] =  837;  y[0] =  50;
-    x[1] =  837;  y[1] = 300;
-    x[2] =  800;  y[2] = 350;
-    x[3] =  625;  y[3] = 350;
-    x[4] =  625;  y[4] = 550;
-    npoints = 5;
+    x[0]  =  800;    y[0]  = 37.5;
+    x[1]  =  862.5;  y[1]  = 150;
+    x[2]  =  862.5;  y[2]  = 350;
+    x[3]  =  837.5;  y[3]  = 425;
+    x[4]  =  787.5;  y[4]  = 425;
+    x[5]  =  675;    y[5]  = 412.5;
+    x[6]  =  662.5;  y[6]  = 437.5;
+    x[7]  =  662.5;  y[7]  = 450;
+    x[8]  =  678.5;  y[8]  = 487.5;
+    x[9]  =  650;    y[9]  = 512.5;
+    x[10] =  575;    y[10] = 500;
+    x[11] =  137.5;  y[11] = 112.5;
+    x[12] =  137.5;  y[12] =  37.5;
+    npoints = 13;
+
+    for( int i = 0 ; i < npoints ; ++i ){
+      x[i]+=12.5;
+      y[i]+=12.5;
+    }
   }
   else if( type == "down" ){
-    x[0] = 600;   y[0] =  50;
-    x[1] = 600;   y[1] = 150;
-    x[2] = 525;   y[2] = 200;
-    x[3] = 475;   y[3] = 300;
-    x[4] = 525;   y[4] = 450;
-    npoints = 5;
+    x[0]  = 700;   y[0] =  50;
+    x[1]  = 725;   y[1] =  75;
+    x[2]  = 737.5; y[2] = 200;
+    x[3]  = 737.5; y[3] = 250;
+    x[4]  = 700;   y[4] = 300;
+    x[5]  = 600;   y[5] = 300;
+    x[6]  = 550;   y[6] = 350;
+    x[7]  = 575;   y[7] = 375;
+    x[8]  = 550;   y[8] = 400;
+    x[9]  = 450;   y[9] = 400;
+    x[10] = 150;   y[10] = 125;
+    x[11] = 150;   y[11] = 50;
+    npoints = 12;
   }
   else if( type == "up" ){
-    x[0] = 1000;  y[0] =   50;
-    x[1] = 1000;  y[1] =  300;
-    x[2] =  950;  y[2] =  475;
-    x[3] = 712.5; y[3] =  475;
-    x[4] = 712.5; y[4] =  637.5;
-    npoints = 5;
+    x[0] =  950;  y[0] =   50;
+    x[1] = 1025;  y[1] =  225;
+    x[2] = 1025;  y[2] =  450;
+    x[3] =  975;  y[3] =  550;
+    x[4] =  750;  y[4] =  550;
+    x[5] =  750;  y[5] =  560;
+    x[6] =  775;  y[6] =  575;
+    x[7] =  775;  y[7] =  600;
+    x[8] =  750;  y[8] =  615;
+    x[9] =  675;  y[9] =  600;
+    x[10]=  150;  y[10]=  125;
+    x[11]=  150;  y[11]=   50;
+    npoints = 12;
   }
 
   for( int i = 0 ; i < npoints ; ++i ){
-    x[i] -= 12.5;
-    y[i] -= 12.5;
+    x[i]-=12.5;
+    y[i]-=12.5;
   }
 
   TGraph *gr = new TGraph(npoints,x,y);
@@ -85,17 +112,17 @@ void smoothHist( TH2F* h ){
 
   vector<int> binx;
   vector<int> biny;
-  binx.push_back(19);    biny.push_back(8);
-  binx.push_back(33);    biny.push_back(7);
-  binx.push_back(35);    biny.push_back(7);
+  binx.push_back(8);    biny.push_back(4);
+  // binx.push_back(33);    biny.push_back(7);
+  // binx.push_back(35);    biny.push_back(7);
 
-  binx.push_back(28);    biny.push_back(26);
-  binx.push_back(34);    biny.push_back(30);
-  binx.push_back(34);    biny.push_back(31);
+  // binx.push_back(28);    biny.push_back(26);
+  // binx.push_back(34);    biny.push_back(30);
+  // binx.push_back(34);    biny.push_back(31);
 
-  binx.push_back(42);    biny.push_back(37);
-  binx.push_back(45);    biny.push_back(37);
-  binx.push_back(45);    biny.push_back(36);
+  // binx.push_back(42);    biny.push_back(37);
+  // binx.push_back(45);    biny.push_back(37);
+  // binx.push_back(45);    biny.push_back(36);
 
   const unsigned int npoints = binx.size();
 
@@ -104,17 +131,18 @@ void smoothHist( TH2F* h ){
 
       float val = h->GetBinContent(ibin,jbin);
 
-      if( val < 1e-10 ) continue;
+      //if( val < 1e-10 ) continue;
       //cout << ibin << " " << jbin << " " << val << endl;
 
       for(unsigned int ipoint = 0 ; ipoint < npoints ; ipoint++ ){
 	if( ibin == binx.at(ipoint) && jbin == biny.at(ipoint) ){
 
-	  float valup  = h->GetBinContent(ibin+1,jbin);
+	  float valup  = h->GetBinContent(ibin+1,jbin+1);
 	  float valdn  = h->GetBinContent(ibin-1,jbin);
 	  float valavg = 0.5 * (valup+valdn);
 
 	  h->SetBinContent(ibin,jbin,valavg);
+	  //h->SetBinContent(ibin,jbin,100000);
 	}
 	
       }
@@ -122,21 +150,104 @@ void smoothHist( TH2F* h ){
   }  
 }
 
+TH2F* fixupHist( TH2F* hin ){
+
+  TH2F* hclone = (TH2F*) hin->Clone("hfixup");
+
+  for( int i = 1 ; i <= 46 ; ++i ){
+    int ibin = i + 2;
+    int jbin = i;
+
+    float val = hclone->GetBinContent(ibin,jbin);
+    if( val < 1e-10){
+
+      float npoints = 0;
+      float tot     = 0;
+
+      if( hclone->GetBinContent(ibin+1,jbin+1) > 1e-10 ){
+	tot += hclone->GetBinContent(ibin+1,jbin+1);
+	npoints += 1.0;
+      }
+
+      if( hclone->GetBinContent(ibin-1,jbin-1) > 1e-10 ){
+	tot += hclone->GetBinContent(ibin-1,jbin-1);
+	npoints += 1.0;
+      }
+
+      if( npoints > 1e-10) hin->SetBinContent(ibin,jbin,tot/npoints);
+      //if( npoints > 1e-10 ) hin->SetBinContent(ibin,jbin,100000);
+
+    }
+  }
+
+  return hin;
+}
+
+TH2F* smoothAllHist( TH2F* hin ){
+
+  TH2F* hclone = (TH2F*) hin->Clone("hclone_smooth");
+
+  for( unsigned int ibin = 6 ; ibin <= 48 ; ++ibin ){
+    for( unsigned int jbin = 4 ; jbin <= 48 ; ++jbin ){
+      
+      float npoints = 0;
+      float tot     = 0;
+      
+      if( hclone->GetBinContent(ibin,jbin) > 1e-10 ){
+	tot += hclone->GetBinContent(ibin,jbin);
+	npoints += 1.0;
+      }
+      if( hclone->GetBinContent(ibin+1,jbin+1) > 1e-10 ){
+	tot += hclone->GetBinContent(ibin+1,jbin+1);
+	npoints += 1.0;
+      }
+      if( hclone->GetBinContent(ibin-1,jbin-1) > 1e-10 ){
+	tot += hclone->GetBinContent(ibin-1,jbin-1);
+	npoints += 1.0;
+      }
+      if( hclone->GetBinContent(ibin+1,jbin-1) > 1e-10 ){
+	tot += hclone->GetBinContent(ibin+1,jbin-1);
+	npoints += 1.0;
+      }
+      if( hclone->GetBinContent(ibin-1,jbin+1) > 1e-10 ){
+	tot += hclone->GetBinContent(ibin-1,jbin+1);
+	npoints += 1.0;
+      }
+      
+      if( npoints > 1e-10 ) hin->SetBinContent( ibin , jbin , tot/npoints );
+
+    }
+  }
+
+  return hin;
+
+}
+
 void combineSMSPlots(bool print = false){
   
-  char* version        = "V00-00-13";
+  char* version        = "V00-00-14";
   char* sample         = "T1lh";
   char* title          = "m(#tilde{q}) >> m(#tilde{g})";
   float dm             = 0.0;
+  bool  fixup          = true;
+  //bool  smooth         = true;
 
   float ymin = 50.;
   if( TString(sample).Contains("gmsb") ) ymin = 100.;
 
   TFile *file = TFile::Open(Form("cards/%s/observed_limit.root",version));
-  TH2F* hexcl = (TH2F*) file->Get("hexcl");
+  //TH2F* hexcl = (TH2F*) file->Get("hexcl");
 
-  //TH2F* hexcl_temp = (TH2F*) file->Get("hexcl");
-  //TH2F* hexcl = shiftHist(hexcl_temp);
+  TH2F* hexcl_temp = (TH2F*) file->Get("hexcl");
+  //TH2F* hexcl_temp = (TH2F*) file->Get("hexp");
+  TH2F* hexcl = shiftHist(hexcl_temp);
+  if( fixup  ) fixupHist    ( hexcl );
+  //if( smooth ) smoothAllHist( hexcl );
+  smoothHist( hexcl );
+
+  // TH2F* hexcl_temp  = (TH2F*) file->Get("hexcl");
+  // TH2F* hexcl_temp2 = shiftHist(hexcl_temp);
+  // TH2F* hexcl       = fixupHist(hexcl_temp2);
 
   //TH2F* hexcl = (TH2F*) file->Get("hexp");
   //cout << "USING EXPECTED LIMIT!!!!!!!!!!!!" << endl;
@@ -228,6 +339,7 @@ void combineSMSPlots(bool print = false){
   gPad->SetRightMargin(0.2);
 
   if( TString(sample).Contains("gmsb") ) smoothHist( heff );
+  if( fixup ) fixupHist(heff);
 
   heff->GetYaxis()->SetRangeUser(ymin,1200);
   heff->GetXaxis()->SetLabelSize(0.035);
@@ -235,7 +347,7 @@ void combineSMSPlots(bool print = false){
   heff->GetZaxis()->SetLabelSize(0.035);
   heff->GetYaxis()->SetTitle("#chi^{0}_{1} mass [GeV]");
   heff->GetXaxis()->SetTitle("gluino mass [GeV]");
-  heff->GetZaxis()->SetTitle("A #times #varepsilon (#geq1 Z(ll))");
+  heff->GetZaxis()->SetTitle("efficiency #times acceptance");
   heff->Draw("colz");
   heff->GetYaxis()->SetRangeUser(ymin,1200);
 
@@ -286,7 +398,7 @@ void combineSMSPlots(bool print = false){
   TGraph* gr_excl_down;
   TGraph* gr_excl_up;   
   
-  if( TString(sample).Contains("T1lhasdf") ) {
+  if( TString(sample).Contains("T1lh") ) {
     gr_excl      = getGraph_T1lh("nom");
     gr_excl_down = getGraph_T1lh("down");
     gr_excl_up   = getGraph_T1lh("up");
@@ -341,13 +453,13 @@ void combineSMSPlots(bool print = false){
     gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
   }
 
-  // TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
-  // TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
-  // TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
+  TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
+  TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
+  TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
 
-  TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
-  TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
-  TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
+  // TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
+  // TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
+  // TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
 
   TFile* fout = TFile::Open(Form("cards/%s/limit.root",version),"RECREATE");
   fout->cd();
