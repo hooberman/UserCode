@@ -16,6 +16,7 @@
   TCut met300("pfmet>300");
 
   TCut recoweight("trgeff * weight * 4.7");
+  //TCut recoweight("trgeff");
 
   chreco->Draw("0.5>>h",sel*recoweight);
   cout << "No MET cut: reco  " << Form("$%.0f \\pm %.1f$ ",h->Integral(),h->GetBinError(1)) << endl;
@@ -26,19 +27,20 @@
   chreco->Draw("0.5>>h",(sel+met300)*recoweight);
   cout << "MET > 300: reco  " << Form("$%.0f \\pm %.1f$ ",h->Integral(),h->GetBinError(1)) << endl;
 
-  // TCut effweight("weight * 4.7");
-  // TCut eff0("eff0");
-  // TCut eff100("eff100");
-  // TCut eff200("eff200");
-  // TCut eff300("eff300");
+  TCut effweight("weight * 4.7");
+  //TCut effweight("1");
+  TCut eff0("eff0");
+  TCut eff100("eff100");
+  TCut eff200("eff200");
+  TCut eff300("eff300");
 
-  chgen->Draw("0.5>>h","eff0 * weight * 4.7");
+  chgen->Draw("0.5>>h",eff0 * effweight);
   cout << "No MET cut: gen   " << Form("$%.0f \\pm %.1f$ ",h->Integral(),h->GetBinError(1)) << endl;
-  chgen->Draw("0.5>>h","eff100 * weight * 4.7");
+  chgen->Draw("0.5>>h",eff100 * effweight);
   cout << "MET > 100: gen   " << Form("$%.0f \\pm %.1f$ ",h->Integral(),h->GetBinError(1)) << endl;
-  chgen->Draw("0.5>>h","eff200 * weight * 4.7");
+  chgen->Draw("0.5>>h",eff200 * effweight);
   cout << "MET > 200: gen   " << Form("$%.0f \\pm %.1f$ ",h->Integral(),h->GetBinError(1)) << endl;
-  chgen->Draw("0.5>>h","eff300 * weight * 4.7");
+  chgen->Draw("0.5>>h",eff300 * effweight);
   cout << "MET > 300: gen   " << Form("$%.0f \\pm %.1f$ ",h->Integral(),h->GetBinError(1)) << endl;
 
 
