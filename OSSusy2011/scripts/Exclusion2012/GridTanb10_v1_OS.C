@@ -77,8 +77,10 @@ void GridTanb10_v1_OS(int plotmode = 1){
   expectedLimitBand->SetLineColor(7);
   expectedLimitBand->SetLineWidth(0);
 
-  observedLimit2010->SetLineWidth(2);
-  observedLimit2010->SetLineStyle(4);
+  observedLimit2010->SetFillColor(9);
+  observedLimit2010->SetLineColor(9);
+  observedLimit2010->SetLineWidth(0);
+  observedLimit2010->SetLineStyle(1);
 
 
 //=========Macro generated from canvas: GridCanvas/
@@ -3474,7 +3476,7 @@ void GridTanb10_v1_OS(int plotmode = 1){
    graph->Draw(" c");
 
    if( plotmode == 1 ){
-     observedLimit2010->Draw("c");
+     observedLimit2010->Draw("fill");
      observedLimit->Draw("samec");
      observedLimitTheoryUp->Draw("samec");
      observedLimitTheoryDown->Draw("samec");
@@ -3485,7 +3487,7 @@ void GridTanb10_v1_OS(int plotmode = 1){
      expectedLimitP1->Draw("samec");
    }
    else if( plotmode == 2 ){
-     observedLimit2010->Draw("c");
+     observedLimit2010->Draw("fill");
      expectedLimitBand->Draw("samefill");
      observedLimit->Draw("c");
      observedLimitTheoryUp->Draw("samec");
@@ -9141,16 +9143,9 @@ void GridTanb10_v1_OS(int plotmode = 1){
    GridNoEWSB__1->Draw("sameaxis");
    
    TPaveText *pt = new TPaveText(350,480,830,580,"BR");
-   //pt->SetNDC();
    pt->SetTextSize(0.038);
    pt->SetBorderSize(0);
    pt->SetTextAlign(12);  pt->SetFillColor(kWhite);
-
-   // text = pt->AddText("#font[42]{tan(#beta)=10}");
-   // text = pt->AddText("#font[42]{A_{0} = 0 GeV}");
-   // text = pt->AddText("#font[42]{#mu > 0}");
-   // text = pt->AddText("#font[42]{m_{t} = 173.2 GeV}");
-
    pt->AddText("#font[42]{tan(#beta)=10}");
    pt->AddText("#font[42]{A_{0} = 0 GeV}");
    pt->AddText("#font[42]{#mu > 0}");
@@ -9183,13 +9178,13 @@ void GridTanb10_v1_OS(int plotmode = 1){
      myleg->AddEntry(expectedLimit          , "expected","l");
      myleg->AddEntry(expectedLimitTheoryUp  , "expected (#pm1#sigma theory)","l");
      myleg->AddEntry(expectedLimitM1        , "expected (#pm1#sigma stat)","l");
-     myleg->AddEntry(observedLimit2010      , "observed 2010","l");
+     myleg->AddEntry(observedLimit2010      , "observed 2010","f");
    }
    else if( plotmode == 2 ){
      myleg->AddEntry(observedLimit          , "observed","l");
      myleg->AddEntry(observedLimitTheoryUp  , "observed (#pm1#sigma theory)","l");
      myleg->AddEntry(hdummyleg              , "expected (#pm1#sigma stat)","lf");
-     myleg->AddEntry(observedLimit2010      , "observed 2010","l");
+     myleg->AddEntry(observedLimit2010      , "observed 2010","f");
    }
    myleg->Draw();
 
