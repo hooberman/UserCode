@@ -19,9 +19,9 @@
 
   gROOT->ProcessLine(".L runZLooper.C+");
   
-  //runZLooper("wzsms"                 , false );
-  //runZLooper("zzsms"                 , false );
-  // runZLooper("ggmsb"                 , false );
+  runZLooper("wzsms"                 , false );
+  runZLooper("zzsms"                 , false );
+  runZLooper("ggmsb"                 , false );
   //runZLooper("data"                  , true  );
   // runZLooper("ttbar"                 , false );
   // runZLooper("zjets"                 , false );
@@ -39,7 +39,7 @@
   // runZLooper("singletop"             , false );
   // runZLooper("T5zzgmsb"              , false );
   // runZLooper("T5zzgmsb_hadoop"       , false );
-  runZLooper("T5zz"                  , false );
+  //runZLooper("T5zz"                  , false );
   // runZLooper("ZZZ"                   , false );
   // runZLooper("T5zzh"                 , false );
   // runZLooper("T5zzl"                 , false );

@@ -52,9 +52,9 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
-const bool  doGenSelection       = false;
+const bool  doGenSelection       = true;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-09";
+const char* iter                 = "V00-02-10";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -326,9 +326,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       cms2.GetEntry(event);
       ++nEventsTotal;
 
-      if( TString(prefix).Contains("T5zz") ){
-	if( sparm_mL() != 400 ) continue;
-      }
+      // if( TString(prefix).Contains("T5zz") ){
+      // 	if( sparm_mL() != 400 ) continue;
+      // }
 
       if( !isData ) sigma = cms2.evt_xsec_incl();
 
@@ -347,6 +347,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	eff100_ = GenWeight(isData,(char*)prefix,100);
 	eff200_ = GenWeight(isData,(char*)prefix,200);
 	eff300_ = GenWeight(isData,(char*)prefix,300);
+
+	if(TString(prefix).Contains("T5zz") || TString(prefix).Contains("sms") || TString(prefix).Contains("gmsb") ){
+	  mg_ = sparm_mG();
+	  ml_ = sparm_mL();
+	  x_  = sparm_mf();
+	}
+
 	FillBabyNtuple();
 	continue;
       }
@@ -2128,8 +2135,10 @@ float Z_looper::GenWeight( bool isData , char* prefix, int metcut ){
 
 
     float isodeg = 1.00;
+
     if     ( TString(prefix).Contains("LM4") ) isodeg = 0.95;
     else if( TString(prefix).Contains("LM8") ) isodeg = 0.90;
+    else if( TString(prefix).Contains("T5zz")) isodeg = 0.95;
     else{
       cout << "Error, unrecognized prefix " << prefix << ", quitting" << endl;
       exit(0);
