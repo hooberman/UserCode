@@ -47,9 +47,10 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
     //pickSkimIfExists(ch,"/nfs-7a/userdata/cms2/DoubleMu_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleMuTriggerSkim/skimmed_ntuple_173438_0.root");
     //pickSkimIfExists(ch,"/nfs-7a/userdata/cms2/DoubleMu_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleMuTriggerSkim/skimmed*root");
-    //pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed_ntuple_999999_9_1.root");
+    pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed_ntuple_999999_9_1.root");
     //pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skimmed_ntuple_999999_1.root");
 
+    /*
     //---------------------------
     // May10 rereco
     //---------------------------
@@ -93,7 +94,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleElectronTriggerSkim/skim*root");
     pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleMuTriggerSkim/skim*root");
     pickSkimIfExists(ch,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-34/SSignSkim/skim*root");
-
+    */
   }
   
   //----------------------------------------------------------------------------------------

@@ -19,31 +19,59 @@
 #include "Math/VectorUtil.h"
 #include "TProfile.h"
 #include "TTreeCache.h"
+#include "TDatabasePDG.h"
 #include <sstream>
 
-#include "../CORE/CMS2.h"
-#include "../CORE/metSelections.h"
-#include "../CORE/trackSelections.h"
-#include "../CORE/eventSelections.h"
-#include "../CORE/electronSelections.h"
-#include "../CORE/electronSelectionsParameters.h"
-#include "../CORE/muonSelections.h"
+// #include "../CORE/CMS2.h"
+// #include "../CORE/metSelections.h"
+// #include "../CORE/trackSelections.h"
+// #include "../CORE/eventSelections.h"
+// #include "../CORE/electronSelections.h"
+// #include "../CORE/electronSelectionsParameters.h"
+// #include "../CORE/muonSelections.h"
+// #include "../Tools/goodrun.cc"
+// #include "../Tools/vtxreweight.cc"
+// #include "../CORE/utilities.h"
+// #include "../CORE/ttbarSelections.h"
+// #include "../CORE/susySelections.h"
+// #include "../CORE/mcSUSYkfactor.h"
+
+// #include "../CORE/jetSelections.cc"
+// #include "../CORE/triggerUtils.h"
+// #include "../CORE/mcSelections.h"
+// #include "../Tools/bTagEff_BTV.cc"
+
+#include "../CORE/CMS2.cc"
+#ifndef __CINT__
+#include "../CORE/utilities.cc"
+#include "../CORE/ssSelections.cc"
+#include "../CORE/electronSelections.cc"
+#include "../CORE/electronSelectionsParameters.cc"
+#include "../CORE/MITConversionUtilities.cc"
+#include "../CORE/muonSelections.cc"
+#include "../CORE/eventSelections.cc"
+#include "../CORE/ttbarSelections.cc"
+#include "../CORE/trackSelections.cc"
+#include "../CORE/metSelections.cc"
+#include "../CORE/jetSelections.cc"
+#include "../CORE/photonSelections.cc"
+#include "../CORE/triggerUtils.cc"
+#include "../CORE/triggerSuperModel.cc"
+#include "../CORE/mcSelections.cc"
+#include "../CORE/susySelections.cc"
+#include "../CORE/mcSUSYkfactor.cc"
+#include "../CORE/SimpleFakeRate.cc"
 #include "../Tools/goodrun.cc"
 #include "../Tools/vtxreweight.cc"
-#include "../CORE/utilities.h"
-#include "../CORE/ttbarSelections.h"
-#include "../CORE/susySelections.h"
-#include "../CORE/mcSUSYkfactor.h"
-
-//#include "../CORE/jetSelections.cc"
-#include "../CORE/triggerUtils.h"
-#include "../CORE/mcSelections.h"
+#include "../Tools/msugraCrossSection.cc"
 #include "../Tools/bTagEff_BTV.cc"
 
+#endif
+
 using namespace tas;
-inline double fround(double n, double d){
-  return floor(n * pow(10., d) + .5) / pow(10., d);
-}
+// inline double fround(double n, double d){
+//   return floor(n * pow(10., d) + .5) / pow(10., d);
+// }
 
 enum metType   { e_tcmet = 0, e_tcmetNew = 1, e_pfmet = 2};
 enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
@@ -54,11 +82,11 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-10";
+const char* iter                 = "V00-02-11";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
-
+/*
 bool passesPFJetID(unsigned int pfJetIdx) {
 
   float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
@@ -87,7 +115,7 @@ bool passesPFJetID(unsigned int pfJetIdx) {
 
   return true;
 }  
-
+*/
 //--------------------------------------------------------------------
 
 pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, double rescale = 1.0 ){
@@ -216,6 +244,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   bookHistos();
   
+  // Jet Corrections
+  std::vector<std::string> jetcorr_pf_L2L3_filenames;
+  jetcorr_pf_L2L3_filenames.clear();
+
+  FactorizedJetCorrector *jet_pf_L2L3corrector;
+
+  jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START42_V13_AK5PF_L2L3Residual.txt");
+  jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
 
   //set stop cross section file
   gg_xsec_file = TFile::Open("reference_xSec.root");
@@ -641,7 +677,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // met up/downvars
       //--------------------------
 
-      pair<float, float> p_met = getMet( "pfMET"    , hypIdx);
+      // pair<float, float> p_met = getMet( "pfMET"    , hypIdx);
+      pair<float,float> p_met = make_pair( evt_pfmet() , evt_pfmetPhi() );
       pair<float, float> p_pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.075 );
       pair<float, float> p_pfmetDn   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.925 );
       pair<float, float> p_pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.000 );
@@ -948,8 +985,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       tcsumet_  = tcmetStruct.sumet;   
 
       //sanity check
-      pair<float,float> p_tcmet = getMet( "tcMET"    , hypIdx);
-      float mytcmet = p_tcmet.first;
+      ///pair<float,float> p_tcmet = getMet( "tcMET"    , hypIdx);
+      //float mytcmet = p_tcmet.first;
+      float mytcmet = evt_tcmet();
 
       if( fabs( tcmet_ - mytcmet ) > 0.1 ) cout << "Warning! tcmet mismatch " << tcmet_ << " " << mytcmet << endl; 
 
@@ -1230,6 +1268,44 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
         if ( vjet.pt()   > 30. ) nJets_++;
         if ( vjet.pt()   > 40. ) nJets40_++;
+      }
+       
+
+      nJetsRes_ = 0;
+      nbvzres_  = 0;
+
+      //loop over pfjets pt > 30 GeV |eta| < 3.0
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+	float         jet_cor = 1;
+	if( isData )  jet_cor = jetCorrection(cms2.pfjets_p4().at(ijet), jet_pf_L2L3corrector);
+	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * jet_cor * pfjets_p4().at(ijet);
+        LorentzVector vlt    = hyp_lt_p4()[hypIdx];
+        LorentzVector vll    = hyp_ll_p4()[hypIdx];
+
+        if( fabs( vjet.eta() ) > 3.0          ) continue;
+        if( vjet.pt() < 30.                   ) continue;
+        if( dRbetweenVectors(vjet, vll) < 0.4 ) continue;
+        if( dRbetweenVectors(vjet, vlt) < 0.4 ) continue;
+        if( !passesPFJetID(ijet)              ) continue;
+     
+        if( generalLeptonVeto ){
+          bool rejectJet = false;
+          for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+            if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+          }
+          if( rejectJet ) continue;
+        }
+
+	nJetsRes_ ++;
+
+	if( vjet.pt() < 100.0 ){
+	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 )  nbvzres_++;
+	}
+
+	else{
+	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 )  nbvzres_++;
+	}
       }
        
       jetmax_pt_ = -1;
@@ -1664,6 +1740,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("btagweight",   &btagweight_,   "btagweight/F"   );
   babyTree_->Branch("btagweightup", &btagweightup_, "btagweightup/F" );
   babyTree_->Branch("nbvz",         &nbvz_,         "nbvz/I"         );
+  babyTree_->Branch("nbvzres",      &nbvzres_,      "nbvzres/I"      );
   babyTree_->Branch("mjj",          &mjj_,          "mjj/F"          );
   babyTree_->Branch("nlep",         &nlep_,         "nlep/I"         );
   babyTree_->Branch("nel",          &nel_,          "nel/I"          );
@@ -1737,6 +1814,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //jet stuff
   babyTree_->Branch("njets",          &nJets_,            "njets/I"       );
+  babyTree_->Branch("njetsres",       &nJetsRes_,         "njetsRes/I"    );
   babyTree_->Branch("njetsup",        &nJetsUp_,          "njetsup/I"     );
   babyTree_->Branch("njetsdn",        &nJetsDn_,          "njetsdn/I"     );
   babyTree_->Branch("njpt",           &nJPT_,             "njpt/I"        );

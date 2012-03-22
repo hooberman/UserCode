@@ -91,6 +91,7 @@ class Z_looper
   Int_t   nmu_;
   Int_t   nel_;
   Int_t   nbvz_;
+  Int_t   nbvzres_;
   Float_t mjj_;
   Float_t ml_;
   Float_t mg_;
@@ -185,6 +186,7 @@ class Z_looper
   // jet stuff
   Int_t   failjetid_;
   Int_t   nJets_;
+  Int_t   nJetsRes_;
   Int_t   nJetsUp_;
   Int_t   nJetsDn_;
   Int_t   nJPT_;
