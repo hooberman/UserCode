@@ -69,7 +69,7 @@ void makeCMSSMCards(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-02-04/T5zz_baby.root");
-  char* version = "V00-01-09";
+  char* version = "V00-02-00";
 
   bool do3jets = false;
 
@@ -77,7 +77,7 @@ void makeCMSSMCards(){
   // selection
   //---------------------------------------
 
-  TCut weight   ("4.7 * davtxweight * 0.95 * (1000./105000.)");
+  TCut weight   ("4.98 * davtxweight * 0.95 * (1000./105000.)");
 
   TCut presel   ("dilmass>81 && dilmass<101 && njets>=2     && leptype<2");
   TCut preseljup("dilmass>81 && dilmass<101 && njetsup>=2   && leptype<2");
@@ -244,8 +244,8 @@ void makeCMSSMCards(){
       
       //signal regions                          met100    met200    met300
       int     data_yield[nbins]           = {     276   ,    14   ,    0 };
-      float   bkg_yield[nbins]            = {     276   ,  15.7   , 3.09 };
-      float   bkg_err[nbins]              = {      27   ,  2.60   ,  1.0 };
+      float   bkg_yield[nbins]            = {     278   ,    16   ,  3.2 };
+      float   bkg_err[nbins]              = {      28   ,   3.7   ,  1.0 };
 
       if( do3jets ){
 
