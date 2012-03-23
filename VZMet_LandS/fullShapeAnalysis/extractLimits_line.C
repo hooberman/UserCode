@@ -47,11 +47,12 @@ void extractLimits_line( bool print = false ){
 
   const unsigned int nbins = 12;
   
-  float mgval[nbins];
-  float exp0[nbins];
-  float obs0[nbins];
-  float exp50[nbins];
-  float obs50[nbins];
+  vector<float> mg0vec;
+  vector<float> mg50vec;
+  vector<float> exp0vec;
+  vector<float> exp50vec;
+  vector<float> obs0vec;
+  vector<float> obs50vec;
 
   int mlbin = 1;
 
@@ -63,7 +64,7 @@ void extractLimits_line( bool print = false ){
     for( int mgbin = 6 ; mgbin < 18 ; mgbin++ ){
 
       float mg  = ( mgbin - 1 ) * 25;
-      mgval[mgbin-6] = mg;
+      //mgval[mgbin-6] = mg;
 
       //------------------------------------------
       // open file, if available
@@ -87,12 +88,20 @@ void extractLimits_line( bool print = false ){
       else{
 
 	if( mlbin == 1 ){
-	  obs0[mgbin-6]  = mylimit.obs;
-	  exp0[mgbin-6]  = mylimit.exp;
+	  //obs0[mgbin-6]  = 1000 * mylimit.obs;
+	  //exp0[mgbin-6]  = 1000 * mylimit.exp;
+
+	  mg0vec.push_back(mg);
+	  exp0vec.push_back(1000 * mylimit.exp);
+	  obs0vec.push_back(1000 * mylimit.obs);
 	}
 	else if( mlbin == 3 ){
-	  obs50[mgbin-6] = mylimit.obs;
-	  exp50[mgbin-6] = mylimit.exp;
+	  //obs50[mgbin-6] = 1000 * mylimit.obs;
+	  //exp50[mgbin-6] = 1000 * mylimit.exp;
+
+	  mg50vec.push_back(mg);
+	  exp50vec.push_back(1000 * mylimit.exp);
+	  obs50vec.push_back(1000 * mylimit.obs);
 	}
 
 	cout << "---------------------------------------------------" << endl;
@@ -113,10 +122,54 @@ void extractLimits_line( bool print = false ){
   // save TGraphs
   //------------------------------------------
 
-  TGraph grobs0(nbins,mgval,obs0);
-  TGraph grexp0(nbins,mgval,exp0);
-  TGraph grobs50(nbins,mgval,obs50);
-  TGraph grexp50(nbins,mgval,exp50);
+  const unsigned int n0  = mg0vec.size();
+  const unsigned int n50 = mg50vec.size();
+
+  float mg0[n0];
+  float obs0[n0];
+  float exp0[n0];
+
+  float mg50[n50];
+  float obs50[n50];
+  float exp50[n50];
+
+  // float mgval[nbins];
+  // float exp0[nbins];
+  // float obs0[nbins];
+  // float exp50[nbins];
+  // float obs50[nbins];
+
+  for( int i0 = 0 ; i0 < n0 ; ++i0 ){
+    mg0[i0]    = mg0vec.at(i0);
+    exp0[i0]   = exp0vec.at(i0);
+    obs0[i0]   = obs0vec.at(i0);
+  }
+
+  for( int i50 = 0 ; i50 < n50 ; ++i50 ){
+    mg50[i50]  = mg50vec.at(i50);
+    exp50[i50] = exp50vec.at(i50);
+    obs50[i50] = obs50vec.at(i50);
+  }
+
+  // TGraph grobs0(nbins,mgval,obs0);    
+  // TGraph grexp0(nbins,mgval,exp0);
+  // TGraph grobs50(nbins,mgval,obs50);
+  // TGraph grexp50(nbins,mgval,exp50);
+
+  TGraph grobs0(n0,mg0,obs0);    
+  TGraph grexp0(n0,mg0,exp0);
+  TGraph grobs50(n50,mg50,obs50);    
+  TGraph grexp50(n50,mg50,exp50);
+
+  grobs0.SetName("grobs0");
+  grexp0.SetName("grexp0");
+  grobs50.SetName("grobs50");
+  grexp50.SetName("grexp50");
+
+  grobs0.SetTitle("grobs0");
+  grexp0.SetTitle("grexp0");
+  grobs50.SetTitle("grobs50");
+  grexp50.SetTitle("grexp50");
 
   TFile* outfile = TFile::Open(Form("cards/%s/observed_limit.root",version),"RECREATE");
   grobs0.Write();
