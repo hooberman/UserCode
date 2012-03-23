@@ -267,8 +267,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
 
   hist_VV->SetFillColor(kGreen-10);
   //hist_VV->SetFillColor(kGreen+2);
-  //hist_OF->SetFillColor(kMagenta+2);
-  hist_OF->SetFillColor(kMagenta-8);
+  hist_OF->SetFillColor(kMagenta+2);
+  //hist_OF->SetFillColor(kMagenta-8);
   hist_photon->SetLineColor(kRed);
   hist_QCD->SetLineColor(kBlue);
   hist_photon->SetFillColor(0);
