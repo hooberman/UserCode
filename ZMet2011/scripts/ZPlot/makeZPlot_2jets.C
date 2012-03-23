@@ -144,14 +144,52 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   // dummy check
   //-----------------------------------------
   
-  int bin = hist_VV->FindBin(100);
-  cout << "data   : " << hist_data->Integral(bin,10000)   << endl;
-  cout << "QCD    : " << hist_QCD->Integral(bin,10000)    << endl;
-  cout << "gjets  : " << hist_photon->Integral(bin,10000) << endl;
-  cout << "OF     : " << hist_OF->Integral(bin,10000)     << endl;
-  cout << "VV     : " << hist_VV->Integral(bin,10000)     << endl;
-  cout << "LM8    : " << hist_LM->Integral(bin,10000)     << endl;
+  int bin30  = hist_VV->FindBin(30);
+  int bin60  = hist_VV->FindBin(60);
+  int bin100 = hist_VV->FindBin(100);
+  int bin200 = hist_VV->FindBin(200);
+  int bin300 = hist_VV->FindBin(300);
 
+  cout << "MET > 30 GeV" << endl;
+  cout << "data   : " << hist_data->Integral(bin30,10000)   << endl;
+  cout << "QCD    : " << hist_QCD->Integral(bin30,10000)    << endl;
+  cout << "gjets  : " << hist_photon->Integral(bin30,10000) << endl;
+  cout << "OF     : " << hist_OF->Integral(bin30,10000)     << endl;
+  cout << "VV     : " << hist_VV->Integral(bin30,10000)     << endl;
+  cout << "LM8    : " << hist_LM->Integral(bin30,10000)     << endl << endl;
+  
+  cout << "MET > 60 GeV" << endl;
+  cout << "data   : " << hist_data->Integral(bin60,10000)   << endl;
+  cout << "QCD    : " << hist_QCD->Integral(bin60,10000)    << endl;
+  cout << "gjets  : " << hist_photon->Integral(bin60,10000) << endl;
+  cout << "OF     : " << hist_OF->Integral(bin60,10000)     << endl;
+  cout << "VV     : " << hist_VV->Integral(bin60,10000)     << endl;
+  cout << "LM8    : " << hist_LM->Integral(bin60,10000)     << endl << endl;
+  
+  cout << "MET > 100 GeV" << endl;
+  cout << "data   : " << hist_data->Integral(bin100,10000)   << endl;
+  cout << "QCD    : " << hist_QCD->Integral(bin100,10000)    << endl;
+  cout << "gjets  : " << hist_photon->Integral(bin100,10000) << endl;
+  cout << "OF     : " << hist_OF->Integral(bin100,10000)     << endl;
+  cout << "VV     : " << hist_VV->Integral(bin100,10000)     << endl;
+  cout << "LM8    : " << hist_LM->Integral(bin100,10000)     << endl << endl;
+  
+  cout << "MET > 200 GeV" << endl;
+  cout << "data   : " << hist_data->Integral(bin200,10000)   << endl;
+  cout << "QCD    : " << hist_QCD->Integral(bin200,10000)    << endl;
+  cout << "gjets  : " << hist_photon->Integral(bin200,10000) << endl;
+  cout << "OF     : " << hist_OF->Integral(bin200,10000)     << endl;
+  cout << "VV     : " << hist_VV->Integral(bin200,10000)     << endl;
+  cout << "LM8    : " << hist_LM->Integral(bin200,10000)     << endl << endl;
+  
+  cout << "MET > 300 GeV" << endl;
+  cout << "data   : " << hist_data->Integral(bin300,10000)   << endl;
+  cout << "QCD    : " << hist_QCD->Integral(bin300,10000)    << endl;
+  cout << "gjets  : " << hist_photon->Integral(bin300,10000) << endl;
+  cout << "OF     : " << hist_OF->Integral(bin300,10000)     << endl;
+  cout << "VV     : " << hist_VV->Integral(bin300,10000)     << endl;
+  cout << "LM8    : " << hist_LM->Integral(bin300,10000)     << endl << endl;
+    
   //-----------------------------------------
   // create a TPad for the main plot
   //-----------------------------------------
