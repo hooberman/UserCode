@@ -47,7 +47,7 @@ void printCard( char* name , float sigtot , char* version , bool do3jets ){
   *ofile << Form("process                      %s     bkg" , name )                                     << endl;
   *ofile <<      "process                              0       1"                                       << endl;
   if( !do3jets ){
-    *ofile << Form("rate                              %.1f   295" , sigtot)                             << endl;
+    *ofile << Form("rate                              %.1f   297" , sigtot)                             << endl;
   }else{
     *ofile << Form("rate                              %.1f   129" , sigtot)                             << endl;
   }
