@@ -77,7 +77,7 @@ void makeCMSSMCards(){
   // selection
   //---------------------------------------
 
-  TCut weight   ("4.98 * davtxweight * 0.95 * (1000./105000.)");
+  TCut weight   ("4.7 * davtxweight * 0.95 * (1000./105000.)");
 
   TCut presel   ("dilmass>81 && dilmass<101 && njets>=2     && leptype<2");
   TCut preseljup("dilmass>81 && dilmass<101 && njetsup>=2   && leptype<2");
