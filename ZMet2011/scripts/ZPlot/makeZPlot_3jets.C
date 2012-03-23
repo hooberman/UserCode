@@ -89,7 +89,7 @@ void makeZPlot_3jets( bool print = false ){
 
   TH1F* hist_VV = (TH1F*) hist_VV_2011A->Clone("VV");
   hist_VV->Add(hist_VV_2011B);
-  hist_VV->Scale(1.06);
+  hist_VV->Scale(1.07);
   //hist_VV->Add(hist_OF,-1);
 
   //------------------------------------------------------
@@ -119,7 +119,7 @@ void makeZPlot_3jets( bool print = false ){
 
   TFile* fileLM = new TFile("LM4_histos.root");
   TH1F* hist_LM4 = (TH1F*) fileLM->Get("LM4_3jets");
-  hist_LM4->Scale(1.06);
+  hist_LM4->Scale(1.07);
 
   //------------------------------------------------------
   // make the plot
