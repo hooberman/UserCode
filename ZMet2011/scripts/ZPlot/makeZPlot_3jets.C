@@ -89,6 +89,7 @@ void makeZPlot_3jets( bool print = false ){
 
   TH1F* hist_VV = (TH1F*) hist_VV_2011A->Clone("VV");
   hist_VV->Add(hist_VV_2011B);
+  hist_VV->Scale(1.06);
   //hist_VV->Add(hist_OF,-1);
 
   //------------------------------------------------------
@@ -118,6 +119,7 @@ void makeZPlot_3jets( bool print = false ){
 
   TFile* fileLM = new TFile("LM4_histos.root");
   TH1F* hist_LM4 = (TH1F*) fileLM->Get("LM4_3jets");
+  hist_LM4->Scale(1.06);
 
   //------------------------------------------------------
   // make the plot
@@ -227,7 +229,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
 
   hist_VV->SetFillColor(kGreen-10);
   //hist_VV->SetFillColor(kGreen+2);
-  hist_OF->SetFillColor(kMagenta+2);
+  //hist_OF->SetFillColor(kMagenta+2);
+  hist_OF->SetFillColor(kMagenta-8);
   hist_photon->SetLineColor(kRed);
   hist_QCD->SetLineColor(kBlue);
   hist_photon->SetFillColor(0);
@@ -330,7 +333,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   text->SetTextSize(0.042);
   text->DrawLatex(0.60,0.48,"ee/#mu#mu + #geq3 jets");
   //text->DrawLatex(0.14,0.95,"CMS                      #sqrt{s} = 7 TeV,   L_{int} = 4.7 fb^{-1}");
-  text->DrawLatex(0.14,0.95,"CMS Preliminary       #sqrt{s} = 7 TeV,   L_{int} = 4.7 fb^{-1}");
+  //text->DrawLatex(0.14,0.95,"CMS Preliminary       #sqrt{s} = 7 TeV,   L_{int} = 4.7 fb^{-1}");
+  text->DrawLatex(0.14,0.95,"CMS Preliminary     #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
 
   //-----------------------------------------
   // make a TPad for the ratio histogram
