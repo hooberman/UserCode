@@ -64,7 +64,6 @@ void extractLimits_line( bool print = false ){
     for( int mgbin = 6 ; mgbin < 18 ; mgbin++ ){
 
       float mg  = ( mgbin - 1 ) * 25;
-      //mgval[mgbin-6] = mg;
 
       //------------------------------------------
       // open file, if available
@@ -88,17 +87,11 @@ void extractLimits_line( bool print = false ){
       else{
 
 	if( mlbin == 1 ){
-	  //obs0[mgbin-6]  = 1000 * mylimit.obs;
-	  //exp0[mgbin-6]  = 1000 * mylimit.exp;
-
 	  mg0vec.push_back(mg);
 	  exp0vec.push_back(1000 * mylimit.exp);
 	  obs0vec.push_back(1000 * mylimit.obs);
 	}
 	else if( mlbin == 3 ){
-	  //obs50[mgbin-6] = 1000 * mylimit.obs;
-	  //exp50[mgbin-6] = 1000 * mylimit.exp;
-
 	  mg50vec.push_back(mg);
 	  exp50vec.push_back(1000 * mylimit.exp);
 	  obs50vec.push_back(1000 * mylimit.obs);
@@ -133,12 +126,6 @@ void extractLimits_line( bool print = false ){
   float obs50[n50];
   float exp50[n50];
 
-  // float mgval[nbins];
-  // float exp0[nbins];
-  // float obs0[nbins];
-  // float exp50[nbins];
-  // float obs50[nbins];
-
   for( int i0 = 0 ; i0 < n0 ; ++i0 ){
     mg0[i0]    = mg0vec.at(i0);
     exp0[i0]   = exp0vec.at(i0);
@@ -150,11 +137,6 @@ void extractLimits_line( bool print = false ){
     exp50[i50] = exp50vec.at(i50);
     obs50[i50] = obs50vec.at(i50);
   }
-
-  // TGraph grobs0(nbins,mgval,obs0);    
-  // TGraph grexp0(nbins,mgval,exp0);
-  // TGraph grobs50(nbins,mgval,obs50);
-  // TGraph grexp50(nbins,mgval,exp50);
 
   TGraph grobs0(n0,mg0,obs0);    
   TGraph grexp0(n0,mg0,exp0);
