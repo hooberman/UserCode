@@ -69,7 +69,7 @@ void makeCMSSMCards(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-02-04/T5zz_baby.root");
-  char* version = "V00-02-03";
+  char* version = "V00-02-04";
 
   bool do3jets = false;
 
@@ -245,7 +245,7 @@ void makeCMSSMCards(){
       //signal regions                          met100    met200    met300
       int     data_yield[nbins]           = {     276   ,    14   ,    0 };
       float   bkg_yield[nbins]            = {     278   ,    16   ,  3.2 };
-      float   bkg_err[nbins]              = {      28   ,   3.7   ,  1.0 };
+      float   bkg_err[nbins]              = {      28   ,   2.6   ,  1.0 };
 
       if( do3jets ){
 
