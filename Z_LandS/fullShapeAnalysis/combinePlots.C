@@ -315,7 +315,7 @@ void combinePlots(bool print = false){
   // char* sample         = "T5zzh";
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
-  // float dm             = 4*91.0+25./2;
+  // float dm             = 4*91.0;
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
