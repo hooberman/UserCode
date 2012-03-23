@@ -51,7 +51,7 @@ void printCard( char* name , float sigtot , char* version , bool do3jets ){
   }else{
     *ofile << Form("rate                              %.1f   129" , sigtot)                             << endl;
   }
-  *ofile <<      "lumi                       lnN   1.060       -"                                       << endl;
+  *ofile <<      "lumi                       lnN   1.022       -"                                       << endl;
   *ofile <<      "eff_leptons                lnN   1.050       -"                                       << endl;
   *ofile <<      "JES_shape                shape     1.0       -"                                       << endl;
   *ofile <<      "err                      shape       -     1.0"                                       << endl;
@@ -69,7 +69,7 @@ void makeCMSSMCards(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-02-04/T5zz_baby.root");
-  char* version = "V00-03-00";
+  char* version = "V00-03-01";
 
   bool do3jets = false;
 
