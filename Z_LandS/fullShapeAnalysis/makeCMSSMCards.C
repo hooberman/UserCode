@@ -69,7 +69,7 @@ void makeCMSSMCards(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-02-04/T5zz_baby.root");
-  char* version = "V00-02-01";
+  char* version = "V00-02-03";
 
   bool do3jets = false;
 
