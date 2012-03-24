@@ -240,7 +240,19 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   set_goodrun_file( jsonfilename );
 
-  set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
+  if( TString(prefix).Contains("sms") ){
+    set_vtxreweight_rootfile("vtxreweight_VZSMS_4p7fb_Zselection.root",true);
+    cout << "Setting vtxreweight file vtxreweight_VZSMS_4p7fb_Zselection.root" << endl;
+  }
+  else if( TString(prefix).Contains("ggmsb") ){
+    set_vtxreweight_rootfile("vtxreweight_GGMSB_4p7fb_Zselection.root",true);
+    cout << "Setting vtxreweight file vtxreweight_GGMSB_4p7fb_Zselection.root" << endl;
+  }
+  else{
+    set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
+    cout << "Setting vtxreweight file vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root" << endl;
+  }
+
 
   bookHistos();
   
