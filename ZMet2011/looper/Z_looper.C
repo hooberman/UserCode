@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-11";
+const char* iter                 = "V00-02-12";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -244,14 +244,37 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   bookHistos();
   
-  // Jet Corrections
-  std::vector<std::string> jetcorr_pf_L2L3_filenames;
-  jetcorr_pf_L2L3_filenames.clear();
+  // // Jet Corrections
+  // std::vector<std::string> jetcorr_pf_L2L3_filenames;
+  // jetcorr_pf_L2L3_filenames.clear();
 
-  FactorizedJetCorrector *jet_pf_L2L3corrector;
+  // FactorizedJetCorrector *jet_pf_L2L3corrector;
 
-  jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START42_V13_AK5PF_L2L3Residual.txt");
-  jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
+  // jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START42_V13_AK5PF_L2L3Residual.txt");
+  // jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
+
+  //------------------------------------------------------------------------------------------------------
+  // latest-and-greatest JEC
+  //------------------------------------------------------------------------------------------------------
+
+  std::vector<std::string> jetcorr_filenames_pfL1FastJetL2L3;
+  FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3;
+
+  jetcorr_filenames_pfL1FastJetL2L3.clear();
+
+  if ( TString(prefix).Contains("data") ) {
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L1FastJet.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L3Absolute.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2L3Residual.txt");
+  } 
+  else {
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L1FastJet.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L3Absolute.txt");
+  }
+
+  jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
 
   //set stop cross section file
   gg_xsec_file = TFile::Open("reference_xSec.root");
@@ -1167,10 +1190,27 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       //loop over pfjets pt > 30 GeV |eta| < 3.0
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+
+	// get L1FastL2L3Residual total correction
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+	double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
+
+	LorentzVector vjet   = corr * pfjets_p4().at(ijet);
+
+	float unc = 0.0;
+	if( vjet.eta() < 1.5 ) unc = 0.01;
+	else                   unc = 0.03;
+
+	LorentzVector vjetUp = corr * pfjets_p4().at(ijet) * ( 1 + unc );
+	LorentzVector vjetDn = corr * pfjets_p4().at(ijet) * ( 1 - unc );
           
-        LorentzVector vjet   = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-        LorentzVector vjetUp = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.075;
-        LorentzVector vjetDn = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.925;
+        // LorentzVector vjet   = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+        // LorentzVector vjetUp = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.075;
+        // LorentzVector vjetDn = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.925;
+
         LorentzVector vlt    = hyp_lt_p4()[hypIdx];
         LorentzVector vll    = hyp_ll_p4()[hypIdx];
 
@@ -1269,8 +1309,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if ( vjet.pt()   > 30. ) nJets_++;
         if ( vjet.pt()   > 40. ) nJets40_++;
       }
-       
 
+      nJetsRes_ = -99;
+      nbvzres_  = -99;
+       
+      /*
       nJetsRes_ = 0;
       nbvzres_  = 0;
 
@@ -1307,6 +1350,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 )  nbvzres_++;
 	}
       }
+      */
        
       jetmax_pt_ = -1;
 
