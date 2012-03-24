@@ -112,6 +112,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "wzsms" ) == 0 ){
+    //pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/*.root"); //'official'
     pickSkimIfExists(ch,"/hadoop/cms/store/user/fgolf/CMS2_VB04-02-29_Fastsim/TChiwz/*.root");
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/fgolf/CMS2_VB04-02-29_Fastsim/TChiwz/TChiwz_400_50To425_200.lhe_50000.root");
   }
@@ -119,6 +120,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zzsms" ) == 0 ){
+    //pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChizz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/*.root"); //'official'
     pickSkimIfExists(ch,"/hadoop/cms/store/user/fgolf/CMS2_VB04-02-29_Fastsim/TChizz/*.root");
   }
 
