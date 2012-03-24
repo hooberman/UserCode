@@ -242,15 +242,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   if( TString(prefix).Contains("sms") ){
     set_vtxreweight_rootfile("vtxreweight_VZSMS_4p7fb_Zselection.root",true);
-    cout << "Setting vtxreweight file vtxreweight_VZSMS_4p7fb_Zselection.root" << endl;
   }
   else if( TString(prefix).Contains("ggmsb") ){
-    set_vtxreweight_rootfile("vtxreweight_GGMSB_4p7fb_Zselection.root",true);
-    cout << "Setting vtxreweight file vtxreweight_GGMSB_4p7fb_Zselection.root" << endl;
+    set_vtxreweight_rootfile("vtxreweight_GMSB_4p7fb_Zselection.root",true);
   }
   else{
     set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
-    cout << "Setting vtxreweight file vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root" << endl;
   }
 
 
@@ -527,21 +524,35 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       x_  = -1.;
 
       if(TString(prefix).Contains("T5zz") || TString(prefix).Contains("sms") || TString(prefix).Contains("gmsb") ){
-	mg_ = sparm_mG();
-	ml_ = sparm_mL();
-	x_  = sparm_mf();
 
-	if     (TString(prefix).Contains("T5zz" ) ) weight_ = lumi * gluinoPairCrossSection(mg_) * (1000./105000.);
+	if     (TString(prefix).Contains("T5zz" ) ){
+	  weight_ = lumi * gluinoPairCrossSection(mg_) * (1000./105000.);
+	  mg_ = sparm_mG();
+	  ml_ = sparm_mL();
+	  x_  = sparm_mf();
+	}
+
 	else if(TString(prefix).Contains("wzsms") ){
 	  int bin = xsec_C1N2->FindBin(mg_);
 	  weight_ = lumi * xsec_C1N2->GetBinContent(bin) * (1.0/100000.);
+	  mg_ = sparm_mN();
+	  ml_ = sparm_mL();
+	  x_  = -999;
 	}
+
 	else if(TString(prefix).Contains("zzsms") ){
 	  int bin = xsec_N1N2->FindBin(mg_);
 	  weight_ = lumi * xsec_N1N2->GetBinContent(bin) * (1.0/52600.);
+	  mg_ = sparm_mN();
+	  ml_ = sparm_mL();
+	  x_  = -999;
 	}
+
 	else if(TString(prefix).Contains("ggmsb") ){
-	  weight_ = -1;
+	  weight_ = -999;
+	  mg_ = susyScan_Mmu();
+	  ml_ = -999;
+	  x_  = -999;
 	}
 
       }

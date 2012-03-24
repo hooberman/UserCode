@@ -48,9 +48,9 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     //pickSkimIfExists(ch,"/nfs-7a/userdata/cms2/DoubleMu_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleMuTriggerSkim/skimmed_ntuple_173438_0.root");
     //pickSkimIfExists(ch,"/nfs-7a/userdata/cms2/DoubleMu_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleMuTriggerSkim/skimmed*root");
     //pickSkimIfExists(ch,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skimmed_ntuple_999999_9_1.root");
-    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skimmed_ntuple_999999_1.root");
+    //pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skimmed_ntuple_999999_1.root");
 
-    /*
+
     //---------------------------
     // May10 rereco
     //---------------------------
@@ -94,7 +94,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleElectronTriggerSkim/skim*root");
     pickSkimIfExists(ch,"/nfs-6/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleMuTriggerSkim/skim*root");
     pickSkimIfExists(ch,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-34/SSignSkim/skim*root");
-    */
+
   }
   
   //----------------------------------------------------------------------------------------
@@ -106,12 +106,14 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
   
   else if( strcmp( prefix , "ggmsb" ) == 0 ){
+    //pickSkimIfExists(ch,"/nfs-6/userdata/cms2/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/VB04-02-29_FastSim_Rutgers/preprocessing/ntuple_449_0_4xX.root");
     pickSkimIfExists(ch,"/nfs-6/userdata/cms2/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/VB04-02-29_FastSim_Rutgers/preprocessing/*root");
   }
 
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "wzsms" ) == 0 ){
+    //pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_7_1_TNp.root"); //'official'
     pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/*.root"); //'official'
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/fgolf/CMS2_VB04-02-29_Fastsim/TChiwz/*.root");
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/fgolf/CMS2_VB04-02-29_Fastsim/TChiwz/TChiwz_400_50To425_200.lhe_50000.root");
@@ -120,6 +122,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zzsms" ) == 0 ){
+    //pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChizz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_9_2_bSh.root"); //'official'
     pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChizz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/*.root"); //'official'
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/fgolf/CMS2_VB04-02-29_Fastsim/TChizz/*.root");
   }
