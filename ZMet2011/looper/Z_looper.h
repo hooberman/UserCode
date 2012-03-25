@@ -126,6 +126,7 @@ class Z_looper
   Float_t l2j2_;
   Float_t l1j2_;
   Float_t l2j1_;
+  Float_t rho_;
 
   // genmet stuff
   Float_t genmet_;
