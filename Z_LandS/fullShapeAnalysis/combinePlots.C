@@ -94,10 +94,10 @@ TGraph* getGraph(bool do3jets,string type){
     npoints = 4;
   }
 
-  // for( int i = 0 ; i < npoints ; ++i ){
-  //   x[i] -= 12.5;
-  //   y[i] -= 12.5;
-  // }
+  for( int i = 0 ; i < npoints ; ++i ){
+    x[i] -= 12.5;
+    y[i] -= 12.5;
+  }
 
   TGraph *gr = new TGraph(npoints,x,y);
   return gr;
@@ -198,32 +198,35 @@ TGraph* getGraph_T5zzl(string type){
   int npoints = -1;
 
   if( type == "nom" ){
-    x[0] =  975;  y[0] =  50;
-    x[1] =  975;  y[1] = 325;
-    x[2] =  900;  y[2] = 500;
-    x[3] =  875;  y[3] = 525;
-    x[4] =  825;  y[4] = 525;
-    x[5] =  625;  y[5] = 487.5;
-    x[6] =  625;  y[6] = 537.5;
+    x[0] =  962.5;  y[0] =  50;
+    x[1] =  962.5;  y[1] = 325;
+    x[1] =  950;    y[1] = 425;
+    x[2] =  900;    y[2] = 500;
+    x[3] =  875;    y[3] = 525;
+    x[4] =  825;    y[4] = 525;
+    x[5] =  625;    y[5] = 487.5;
+    x[6] =  625;    y[6] = 537.5;
     npoints = 7;
   }
   else if( type == "up" ){
-    x[0] =  1112.5;  y[0] =  50;
-    x[1] =  1112.5;  y[1] = 400;
-    x[2] =  1000;  y[2] = 650;
-    x[3] =   950;  y[3] = 650;
-    x[4] =   750;  y[4] = 575;
-    x[5] =   750;  y[5] = 662.5;
-    npoints = 6;
+    x[0] =  1100;  y[0] =  50;
+    x[1] =  1087.5;y[1] = 400;
+    x[2] =  1075;  y[2] = 525;
+    x[3] =  1000;  y[3] = 650;
+    x[4] =   950;  y[4] = 650;
+    x[5] =   750;  y[5] = 575;
+    x[6] =   750;  y[6] = 662.5;
+    npoints = 7;
   }
   else if( type == "down" ){
-    x[0] =  825;  y[0] =  50;
-    x[1] =  825;  y[1] = 300;
-    x[2] =  750;  y[2] = 425;
-    x[3] =  675;  y[3] = 425;
-    x[4] =  525;  y[4] = 387.5;
-    x[5] =  525;  y[5] = 437.5;
-    npoints = 6;
+    x[0] =  837.5;  y[0] =  50;
+    x[1] =  837.5;  y[1] = 300;
+    x[2] =  810;    y[2] = 370;
+    x[3] =  750;    y[3] = 425;
+    x[4] =  675;    y[4] = 425;
+    x[5] =  525;    y[5] = 387.5;
+    x[6] =  525;    y[6] = 437.5;
+    npoints = 7;
   }
 
   for( int i = 0 ; i < npoints ; ++i ){
@@ -328,7 +331,7 @@ void combinePlots(bool print = false){
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
   // float dm             = 182.0;
-
+  
   // char* version        = "V00-03-02";
   // char* sample         = "T5zzl";
   // bool  do3jets        = false;
@@ -574,13 +577,13 @@ void combinePlots(bool print = false){
     gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
   }
 
-  // TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
-  // TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
-  // TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
+  TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
+  TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
+  TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
 
-  TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
-  TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
-  TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
+  // TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
+  // TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
+  // TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
 
   TFile* fout = TFile::Open(Form("cards/%s/limit.root",version),"RECREATE");
   fout->cd();
