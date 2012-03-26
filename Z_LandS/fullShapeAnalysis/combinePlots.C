@@ -29,7 +29,8 @@ using namespace std;
 
 TH2F* shiftHist(TH2F* hin){
 
-  TH2F* hout = new TH2F("hout","hout", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
+  //TH2F* hout = new TH2F("hout","hout", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
+  TH2F* hout = new TH2F(Form("%s_out",hin->GetName()),Form("%s_out",hin->GetName()), 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
 
   for(int ibin = 1 ; ibin <= 48 ; ibin++ ){
     for(int jbin = 1 ; jbin <= 48 ; jbin++ ){
@@ -273,11 +274,11 @@ void smoothHist( TH2F* h ){
 
 void combinePlots(bool print = false){
   
-  char* version        = "V00-01-00";
-  char* sample         = "T5zz";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  float dm             = 182.0;
+  // char* version        = "V00-01-00";
+  // char* sample         = "T5zz";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  // float dm             = 182.0;
 
   // char* version        = "V00-01-01";
   // char* sample         = "T5zz";
@@ -316,6 +317,24 @@ void combinePlots(bool print = false){
   // bool  do3jets        = false;
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
   // float dm             = 4*91.0;
+
+  // char* version        = "V00-03-01";
+  // char* sample         = "T5zz";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  // float dm             = 182.0;
+
+  // char* version        = "V00-03-02";
+  // char* sample         = "T5zzl";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
+  // float dm             = (4./3.)*91;
+
+  char* version        = "V00-03-03";
+  char* sample         = "T5zzgmsb";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g})";
+  float dm             = 0.0;
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
@@ -445,7 +464,7 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.65,njets);
   t->DrawLatex(0.2,0.55,"E_{T}^{miss} templates");
   t->SetTextSize(0.035);
-  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
 
   if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
   else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
@@ -536,7 +555,7 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.47,"E_{T}^{miss} templates");
   t->SetTextSize(0.035);
   //t->DrawLatex(0.18,0.92,"CMS                     #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
-  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
 
   if( print ){
     can->Print(Form("cards/%s/plots/SMS.eps",version));
