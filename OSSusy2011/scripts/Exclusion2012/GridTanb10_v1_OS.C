@@ -109,7 +109,8 @@ void GridTanb10_v1_OS(int plotmode = 1){
    TH2F* hdummy = new TH2F("hdummy","",100,40,3000,100,100,m12max);
    hdummy->Draw();
    
-   TH2F *GridNoEWSB = new TH2F("GridNoEWSB","",592,40,3000,180,100,m12max);
+   //TH2F *GridNoEWSB = new TH2F("GridNoEWSB","",592,40,3000,180,100,m12max); // CHANGED
+   TH2F *GridNoEWSB = new TH2F("GridNoEWSB","",592,40,3000,180,100,1000);
    GridNoEWSB->SetBinContent(1013,1);
    GridNoEWSB->SetBinContent(1014,1);
    GridNoEWSB->SetBinContent(1015,1);
@@ -2688,14 +2689,14 @@ void GridTanb10_v1_OS(int plotmode = 1){
    GridNoEWSB->SetFillColor(ci);
    GridNoEWSB->SetLineStyle(0);
    GridNoEWSB->SetMarkerStyle(20);
-   GridNoEWSB->GetXaxis()->SetTitle("m_{0} [GeV]");
+   GridNoEWSB->GetXaxis()->SetTitle("m_{0} (GeV)");
    GridNoEWSB->GetXaxis()->SetLabelFont(42);
    GridNoEWSB->GetXaxis()->SetLabelOffset(0.007);
    GridNoEWSB->GetXaxis()->SetLabelSize(0.05);
    GridNoEWSB->GetXaxis()->SetTitleSize(0.06);
    GridNoEWSB->GetXaxis()->SetTitleOffset(1.1);
    GridNoEWSB->GetXaxis()->SetTitleFont(42);
-   GridNoEWSB->GetYaxis()->SetTitle("m_{1/2} [GeV]");
+   GridNoEWSB->GetYaxis()->SetTitle("m_{1/2} (GeV)");
    GridNoEWSB->GetYaxis()->SetLabelFont(42);
    GridNoEWSB->GetYaxis()->SetLabelOffset(0.007);
    GridNoEWSB->GetYaxis()->SetLabelSize(0.05);
@@ -2707,7 +2708,7 @@ void GridTanb10_v1_OS(int plotmode = 1){
    GridNoEWSB->GetZaxis()->SetLabelSize(0.05);
    GridNoEWSB->GetZaxis()->SetTitleSize(0.06);
    GridNoEWSB->GetZaxis()->SetTitleFont(42);
-   GridNoEWSB->Draw("BOX");
+   GridNoEWSB->Draw("sameBOX");
    
 
 
@@ -3496,7 +3497,8 @@ void GridTanb10_v1_OS(int plotmode = 1){
    }
 
 
-   TH2F *GridStauLSP = new TH2F("GridStauLSP","",592,40,3000,180,100,m12max);
+   //TH2F *GridStauLSP = new TH2F("GridStauLSP","",592,40,3000,180,100,m12max); //CHANGED
+   TH2F *GridStauLSP = new TH2F("GridStauLSP","",592,40,3000,180,100,1000); 
    GridStauLSP->SetBinContent(25543,1);
    GridStauLSP->SetBinContent(26137,1);
    GridStauLSP->SetBinContent(26731,1);
@@ -5908,6 +5910,22 @@ void GridTanb10_v1_OS(int plotmode = 1){
    GridStauLSP->GetZaxis()->SetTitleSize(0.06);
    GridStauLSP->GetZaxis()->SetTitleFont(42);
    GridStauLSP->Draw("BOX same");
+
+
+   float xstau[20];
+   float ystau[20];
+
+   xstau[0] = 40;   ystau[0] = 1000;
+   xstau[1] = 212;  ystau[1] = 1000;
+   xstau[2] = 40;   ystau[2] =  306;
+
+   TGraph *GraphStauLSP = new TGraph(3,xstau,ystau);
+   // GraphStauLSP->SetLineColor(2);
+   // GraphStauLSP->SetMarkerColor(6);
+   // GraphStauLSP->SetFillColor(4);
+   // GraphStauLSP->Draw("sameL");
+   GraphStauLSP->SetFillColor(ci);
+   GraphStauLSP->Draw("sameF");
    
    TGraphErrors *gre = new TGraphErrors(59);
    gre->SetName("Graph");
@@ -6217,7 +6235,8 @@ void GridTanb10_v1_OS(int plotmode = 1){
    
    gre->Draw(" e3");
    
-   TH2F *GridSleptonLEP = new TH2F("GridSleptonLEP","",592,40,3000,180,100,m12max);
+   //TH2F *GridSleptonLEP = new TH2F("GridSleptonLEP","",592,40,3000,180,100,m12max); //CHANGEDD
+   TH2F *GridSleptonLEP = new TH2F("GridSleptonLEP","",592,40,3000,180,100,1000);
    GridSleptonLEP->SetBinContent(595,1);
    GridSleptonLEP->SetBinContent(596,1);
    GridSleptonLEP->SetBinContent(597,1);
@@ -6379,6 +6398,40 @@ void GridTanb10_v1_OS(int plotmode = 1){
    GridSleptonLEP->GetZaxis()->SetTitleSize(0.06);
    GridSleptonLEP->GetZaxis()->SetTitleFont(42);
    GridSleptonLEP->Draw("BOX same");
+
+   float xlep[20];
+   float ylep[20];
+
+   xlep[0] = 40;   ylep[0] =  100;
+   xlep[1] = 40;   ylep[1] =  217;
+   xlep[2] = 50;   ylep[2] =  205;
+   xlep[3] = 58;   ylep[3] =  190;
+   xlep[4] = 72;   ylep[4] =  160;
+   xlep[5] = 85;   ylep[5] =  100;
+
+   TGraph *GraphLep = new TGraph(6,xlep,ylep);
+   // GraphLep->SetLineColor(2);
+   // GraphLep->SetMarkerColor(6);
+   // GraphLep->SetFillColor(4);
+   // GraphLep->Draw("sameL");
+   GraphLep->SetFillColor(ci);
+   GraphLep->Draw("sameF");
+
+
+   // float xlep[20];
+   // float ylep[20];
+
+   // xlep[0] = 40;   ylep[0] =  100;
+   // xlep[1] = 40;   ylep[1] =  220;
+   // xlep[2] = 72;   ylep[2] =  160;
+   // xlep[3] = 85;   ylep[3] =  100;
+
+   // TGraph *GraphLep = new TGraph(4,xlep,ylep);
+   // //GraphLep->SetLineColor(ci);
+   // //GraphLep->SetMarkerColor(ci);
+   // GraphLep->SetFillColor(ci);
+   // //GraphLep->Draw("sameLP");
+   // GraphLep->Draw("sameF");
    
    gre = new TGraphErrors(13);
    gre->SetName("Graph");
@@ -6483,9 +6536,9 @@ void GridTanb10_v1_OS(int plotmode = 1){
    tex->SetTextAngle(40);
    tex->SetLineWidth(2);
    tex->Draw();
-      tex = new TLatex(150,500,"#font[42]{#tilde{#tau} = LSP}");
+      tex = new TLatex(220,510,"#font[42]{#tilde{#tau} = LSP}");
    tex->SetTextSize(0.04);
-   tex->SetTextAngle(84);
+   tex->SetTextAngle(87);
    tex->SetLineWidth(2);
    tex->Draw();
       tex = new TLatex(2300,125,"#font[42]{Non-Convergent RGE's}");
@@ -9192,32 +9245,46 @@ void GridTanb10_v1_OS(int plotmode = 1){
    TLatex *t = new TLatex();
    t->SetNDC();
    t->SetTextSize(0.038);
-   t->DrawLatex(0.38,0.68,"CMS Preliminary    #sqrt{s} = 7 TeV,  #scale[0.6]{#int}L dt 4.7 fb^{-1} ");
+   t->DrawLatex(0.38,0.68,"CMS Preliminary    #sqrt{s} = 7 TeV,  #scale[0.6]{#int}L dt 4.98 fb^{-1} ");
 
-  // TMarker* LM0 = new TMarker(200.,160.,20);
-  // TMarker* LM1 = new TMarker(60.,250.,20);
-  // TMarker* LM3 = new TMarker(330.,240.,20);
-  // TMarker* LM6 = new TMarker(80.,400.,20);
-    
-  // LM0->SetMarkerSize(1.2);
-  // LM1->SetMarkerSize(1.2);
-    
-  // TLatex* tLM0 = new TLatex(205.,160.," LM0");
-  // TLatex* tLM1 = new TLatex(80.,245.,"LM1");
-  // TLatex* tLM3 = new TLatex(350.,235.,"LM3");
-  // TLatex* tLM6 = new TLatex(100.,395.,"LM6");
-
-  // tLM0->SetTextSize(0.035);
-  // tLM1->SetTextSize(0.035);
-  // tLM3->SetTextSize(0.035);
-  // tLM6->SetTextSize(0.035);
+   // TMarker* LM0 = new TMarker(200.,160.,20);
+   TMarker* LM1 = new TMarker(60.,250.,20);
+   TMarker* LM3 = new TMarker(330.,240.,20);
+   TMarker* LM6 = new TMarker(85.,400.,20);
   
-  // LM1->Draw("same");
-  // tLM1->Draw("same");
-  // LM3->Draw("same");
-  // tLM3->Draw("same");
-  // LM6->Draw("same");
-  // tLM6->Draw("same");
+   LM1->SetMarkerSize(1.3);
+   LM3->SetMarkerSize(1.3);
+   LM6->SetMarkerSize(1.3);
+   LM1->SetMarkerColor(2);
+   LM3->SetMarkerColor(4);
+   LM1->SetMarkerStyle(22);
+   LM3->SetMarkerStyle(21);
+   //LM6->SetMarkerStyle(29);
+
+   //TLatex* tLM0 = new TLatex(205.,160.," LM0");
+   TLatex* tLM1 = new TLatex(80.,245.,"LM1");
+   TLatex* tLM3 = new TLatex(350.,235.,"LM3");
+   TLatex* tLM6 = new TLatex(105.,395.,"LM6");
+
+   //tLM0->SetTextSize(0.035);
+   tLM1->SetTextSize(0.035);
+   tLM3->SetTextSize(0.035);
+   tLM6->SetTextSize(0.035);
+  
+   LM1->Draw("same");
+   //tLM1->Draw("same");
+   LM3->Draw("same");
+   //tLM3->Draw("same");
+   LM6->Draw("same");
+   //tLM6->Draw("same");
+   
+   TLegend *LMleg = new TLegend(0.37,0.45,0.47,0.6);
+   LMleg->AddEntry(LM1,"LM1","p");
+   LMleg->AddEntry(LM3,"LM3","p");
+   LMleg->AddEntry(LM6,"LM6","p");
+   LMleg->SetFillColor(0);
+   LMleg->SetBorderSize(0);
+   LMleg->Draw();
 
   //-----------------------------------
   // redraw regions
