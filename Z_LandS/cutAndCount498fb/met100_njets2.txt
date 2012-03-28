@@ -16,7 +16,7 @@ observation 290
 bin             1      1
 process       signal  background 
 process         0      1
-rate            1    295
+rate            1    297
 ------------
 deltaS  lnN   1.00    -     uncertainty on signal
 deltaB  lnN     -   1.10    uncertainty on background 

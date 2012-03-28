@@ -16,7 +16,7 @@ observation 1169
 bin             1      1
 process       signal  background 
 process         0      1
-rate            1    1243
+rate            1    1249
 ------------
 deltaS  trG   0.00    -     uncertainty on signal
 deltaB  trG     -   0.14    uncertainty on background 
