@@ -43,10 +43,10 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
   *ofile << Form("process                        %s     Zbkg  OFbkg  VZbkg" , name )               << endl;
   *ofile <<      "process                              0        1      2      3"                        << endl;
   *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f" , sigtot,Ztot,OFtot,VZtot)              << endl;
-  *ofile <<      "lumi                       lnN   1.060       -       -      -"                        << endl;
+  *ofile <<      "lumi                       lnN   1.022       -       -      -"                        << endl;
   *ofile <<      "eff_leptons                lnN   1.050       -       -      -"                        << endl;
   *ofile <<      "JES_shape                shape     1.0       -       -      -"                        << endl;
-  *ofile <<      "err                      shape       -     0.5       -      -"                        << endl;
+  *ofile <<      "err                      shape       -     1.0       -      -"                        << endl;
   *ofile <<      "err                      shape       -       -     1.0      -"                        << endl;
   *ofile <<      "err                      shape       -       -       -    1.0"                        << endl;
   
@@ -62,14 +62,14 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-08/wzsms_baby.root");
-  char* version = (char*) "V00-00-02";
+  ch->Add("output/V00-02-13/wzsms_baby.root");
+  char* version = (char*) "V00-01-00";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("4.98 * trgeff * btagweight * (1000./100000.)");
+  TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./100000.)");
 
   TCut presel   ("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70 && mjj<110 && nlep==2 && njets>=2     && leptype<2");
   TCut preseljup("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70 && mjj<110 && nlep==2 && njetsup>=2   && leptype<2");
@@ -179,16 +179,16 @@ void makeSMSCards(){
   //---------------------------------------
       
   //signal regions                          60-80      80-100    100-150    150-200  >200
-  int     data_yield[nbins]           = {   54       , 8       , 6        , 2       , 0    };
+  int     data_yield[nbins]           = {   47       , 7       , 6        , 2       , 0    };
 
-  float   Zbkg_yield[nbins]           = {   37.0     , 5.1     , 2.0      , 0.46    , 0.13 };
-  float   Zbkg_err[nbins]             = {   12.4     , 1.7     , 0.7      , 0.20    , 0.07 };
+  float   Zbkg_yield[nbins]           = {   32.9     , 5.2     , 1.7      , 0.44    , 0.19 };
+  float   Zbkg_err[nbins]             = {   11.1     , 1.8     , 0.6      , 0.19    , 0.09 };
 
-  float   OFbkg_yield[nbins]          = {   6.1      , 4.3     , 4.7      , 0.72    , 0.06 };
-  float   OFbkg_err[nbins]            = {   1.4      , 0.7     , 1.8      , 0.41    , 0.07 };     
+  float   OFbkg_yield[nbins]          = {   6.6      , 4.6     , 4.6      , 0.75    , 0.06 };
+  float   OFbkg_err[nbins]            = {   1.4      , 1.1     , 1.7      , 0.42    , 0.07 };     
 
-  float   VZbkg_yield[nbins]          = {   3.5      , 2.0     , 2.2      , 0.69    , 0.36 };
-  float   VZbkg_err[nbins]            = {   1.8      , 1.0     , 1.1      , 0.34    , 0.20 };     
+  float   VZbkg_yield[nbins]          = {   3.6      , 2.1     , 2.3      , 0.74    , 0.40 };
+  float   VZbkg_err[nbins]            = {   1.8      , 1.0     , 1.2      , 0.37    , 0.22 };     
 
   int   data_tot  = 0;
   float Zbkg_tot  = 0;
@@ -341,16 +341,6 @@ void makeSMSCards(){
       histo_SMS_JES_shapeDown->Write();
       f->Close();
 
-      // delete histo_Data;
-      // delete histo_Zbkg;
-      // delete histo_Zbkg_errUp;
-      // delete histo_Zbkg_errDown;
-      // delete histo_OFbkg;
-      // delete histo_OFbkg_errUp;
-      // delete histo_OFbkg_errDown;
-      // delete histo_VZbkg;
-      // delete histo_VZbkg_errUp;
-      // delete histo_VZbkg_errDown;
       delete histo_SMS;
       delete histo_SMS_JES_shapeUp;
       delete histo_SMS_JES_shapeDown;
@@ -363,6 +353,8 @@ void makeSMSCards(){
   doScript_CLs2->close();
   doScript_CLs3->close();
   doScript_CLs4->close();
+  doScript_CLs_mL0->close();
+  doScript_CLs_mL50->close();
   filelist->close();
   filelist_CLs->close();
 
