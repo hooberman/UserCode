@@ -325,7 +325,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   text->SetNDC();
   text->SetTextSize(0.042);
   text->DrawLatex(0.60,0.48,"ee/#mu#mu + #geq2 jets");
-  text->DrawLatex(0.14,0.95,"CMS Preliminary     #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
+  text->DrawLatex(0.14,0.95,"          CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
+  //text->DrawLatex(0.14,0.95,"CMS Preliminary     #sqrt{s} = 7 TeV,  L_{int} = 4.7 fb^{-1}");
 
   //-----------------------------------------
   // make a TPad for the ratio histogram
