@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "temp";
+const char* iter                 = "V00-02-14";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -732,17 +732,17 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //--------------------------
 
       // pair<float, float> p_met = getMet( "pfMET"    , hypIdx);
-      pair<float,float> p_met = make_pair( evt_pfmet() , evt_pfmetPhi() );
-      pair<float, float> p_pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.075 );
-      pair<float, float> p_pfmetDn   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.925 );
-      pair<float, float> p_pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.000 );
+      // pair<float,float> p_met = make_pair( evt_pfmet() , evt_pfmetPhi() );
+      // pair<float, float> p_pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.075 );
+      // pair<float, float> p_pfmetDn   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.925 );
+      // pair<float, float> p_pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.000 );
 
       
-      pfmetUp_ = p_pfmetUp.first;
-      pfmetDn_ = p_pfmetDn.first;
+      // pfmetUp_ = p_pfmetUp.first;
+      // pfmetDn_ = p_pfmetDn.first;
   
-      float pfmetTest = p_pfmetTest.first;
-      if( fabs( pfmet_ - pfmetTest ) > 0.1 ) cout << "ERROR pfmets " << pfmet_ << " vs. " << pfmetTest << endl; 
+      // float pfmetTest = p_pfmetTest.first;
+      // if( fabs( pfmet_ - pfmetTest ) > 0.1 ) cout << "ERROR pfmets " << pfmet_ << " vs. " << pfmetTest << endl; 
 
       //--------------------------
       // leading lepton = ll
@@ -1228,6 +1228,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       rho_ = cms2.evt_ww_rho_vor();
 
+      float dmetx  = 0.0;
+      float dmety  = 0.0;
+      float jetptx = 0.0;
+      float jetpty = 0.0;
+
       //-----------------------------------------------------------------------------
       // loop over pfjets pt > 30 GeV |eta| < 3.0, dR > 0.4 overlap removal, PFJetID
       //-----------------------------------------------------------------------------
@@ -1302,6 +1307,18 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	// jet passes: now store various quantities
 	//---------------------------------------------------------------------------
 
+
+	//-------------------------------
+	// MET correction quantities
+	//-------------------------------
+
+	if( vjet.pt() > 10 ){
+	  dmetx  += vjetUp.px() - vjet.px();
+	  dmety  += vjetUp.py() - vjet.py();
+	  jetptx += vjet.px();
+	  jetpty += vjet.py();
+	}
+
         if ( vjet.pt() > 10. ){
           sumJetPt10_ += vjet.pt();
         }
@@ -1333,7 +1350,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	else{
 	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 )  nbvz_++;
 	}
-
 
 	goodJets.push_back(vjet);
 
@@ -1384,6 +1400,36 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if ( vjet.pt()   > 30. ) nJets_++;
         if ( vjet.pt()   > 40. ) nJets40_++;
       }
+
+
+      //---------------------------------------
+      // now calculate METup and METdown
+      //---------------------------------------
+
+      float pfmetx = evt_pfmet() * cos( evt_pfmetPhi() );
+      float pfmety = evt_pfmet() * sin( evt_pfmetPhi() );
+
+      // unclustered energy = -1 X ( MET + jets + leptons )
+      unclustered_x_ = -1 * ( pfmetx + jetptx );
+      unclustered_y_ = -1 * ( pfmety + jetpty );
+
+      for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	unclustered_x_ -= goodLeptons.at(ilep).px();
+	unclustered_y_ -= goodLeptons.at(ilep).py();
+      }
+
+      // now vary jets according to JEC uncertainty, vary unclustered energy by 10%
+
+      float pfmetx_up = pfmetx - dmetx - 0.1 * unclustered_x_; 
+      float pfmety_up = pfmety - dmety - 0.1 * unclustered_y_; 
+      pfmetUp_ = sqrt( pfmetx_up * pfmetx_up + pfmety_up * pfmety_up );
+
+      float pfmetx_dn = pfmetx + dmetx + 0.1 * unclustered_x_; 
+      float pfmety_dn = pfmety + dmety + 0.1 * unclustered_y_; 
+      pfmetDn_ = sqrt( pfmetx_dn * pfmetx_dn + pfmety_dn * pfmety_dn );
+
+      unclustered_ = sqrt( pow(unclustered_x_,2) + pow(unclustered_y_,2));
+
 
       nJetsRes_ = -99;
       nbvzres_  = -99;
@@ -1900,6 +1946,9 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("lumi",         &lumi_,         "lumi/I"         );
   babyTree_->Branch("event",        &event_,        "event/I"        );
   babyTree_->Branch("failjetid",    &failjetid_,    "failjetid/I"    );
+  babyTree_->Branch("unc",          &unclustered_,  "unc/F"          );
+  babyTree_->Branch("uncx",         &unclustered_y_,"uncx/F"         );
+  babyTree_->Branch("uncy",         &unclustered_y_,"uncy/F"         );
   babyTree_->Branch("maxemf",       &maxemf_,       "maxemf/F"       );
   babyTree_->Branch("trgeff",       &trgeff_,       "trgeff/F"       );
   babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I"         );

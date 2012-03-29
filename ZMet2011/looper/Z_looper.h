@@ -101,6 +101,9 @@ class Z_looper
   Float_t x_;
   Float_t btagweight_;
   Float_t btagweightup_;
+  Float_t unclustered_;
+  Float_t unclustered_x_;
+  Float_t unclustered_y_;
 
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
