@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-13";
+const char* iter                 = "temp";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -271,19 +271,27 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   jetcorr_filenames_pfL1FastJetL2L3.clear();
 
+  string pfUncertaintyFile;
+
   if ( TString(prefix).Contains("data") ) {
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L1FastJet.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2Relative.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L3Absolute.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2L3Residual.txt");
+
+    pfUncertaintyFile = "jetCorrections/GR_R_42_V23_AK5PF_Uncertainty.txt";
   } 
   else {
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L1FastJet.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L2Relative.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L3Absolute.txt");
+
+    pfUncertaintyFile = "jetCorrections/DESIGN42_V17_AK5PF_Uncertainty.txt";
   }
 
   jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
+
+  JetCorrectionUncertainty *pfUncertainty   = new JetCorrectionUncertainty( pfUncertaintyFile );
 
   //set stop cross section file
   gg_xsec_file = TFile::Open("reference_xSec.root");
@@ -1205,7 +1213,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
         
       VofP4 goodJets;
+      VofP4 goodJetsUp;
+      VofP4 goodJetsDn;
       VofP4 goodBJets;
+
+      goodJets.clear();
+      goodJetsUp.clear();
+      goodJetsDn.clear();
+      goodBJets.clear();
 
       nbvz_            = 0;
       btagweight_      = 1;    
@@ -1213,10 +1228,16 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       rho_ = cms2.evt_ww_rho_vor();
 
-      //loop over pfjets pt > 30 GeV |eta| < 3.0
+      //-----------------------------------------------------------------------------
+      // loop over pfjets pt > 30 GeV |eta| < 3.0, dR > 0.4 overlap removal, PFJetID
+      //-----------------------------------------------------------------------------
+
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
-	// get L1FastL2L3Residual total correction
+	//---------------------------------------------------------------------------
+	// get total correction: L1FastL2L3 for MC, L1FastL2L3Residual for data
+	//---------------------------------------------------------------------------
+
 	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
 	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
 	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
@@ -1225,17 +1246,33 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	LorentzVector vjet   = corr * pfjets_p4().at(ijet);
 
-	float unc = 0.0;
-	if( vjet.eta() < 1.5 ) unc = 0.01;
-	else                   unc = 0.03;
+	//---------------------------------------------------------------------------
+	// get JES uncertainty
+	//---------------------------------------------------------------------------
+	
+	pfUncertainty->setJetEta(vjet.eta());
+	pfUncertainty->setJetPt(vjet.pt());   // here you must use the CORRECTED jet pt
+	double unc = pfUncertainty->getUncertainty(true);
 
 	LorentzVector vjetUp = corr * pfjets_p4().at(ijet) * ( 1 + unc );
 	LorentzVector vjetDn = corr * pfjets_p4().at(ijet) * ( 1 - unc );
-          
-        // LorentzVector vjet   = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-        // LorentzVector vjetUp = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 1.075;
-        // LorentzVector vjetDn = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet) * 0.925;
 
+	//---------------------------------------------------------------------------
+	// store uncertainty vs. jet pt, for various bins (idiot check)
+	//---------------------------------------------------------------------------
+
+	float abseta = fabs( vjet.eta() );
+	if     ( abseta < 0.5                 ) hunc_eta1->Fill(vjet.pt(),unc);
+	else if( abseta > 0.5 && abseta < 1.0 ) hunc_eta2->Fill(vjet.pt(),unc);
+	else if( abseta > 1.0 && abseta < 1.5 ) hunc_eta3->Fill(vjet.pt(),unc);
+	else if( abseta > 1.5 && abseta < 2.0 ) hunc_eta4->Fill(vjet.pt(),unc);
+	else if( abseta > 2.0 && abseta < 2.5 ) hunc_eta5->Fill(vjet.pt(),unc);
+	else if( abseta > 2.5 && abseta < 3.0 ) hunc_eta6->Fill(vjet.pt(),unc);
+
+	//---------------------------------------------------------------------------
+	// lepton overlap removal
+	//---------------------------------------------------------------------------
+          
         LorentzVector vlt    = hyp_lt_p4()[hypIdx];
         LorentzVector vll    = hyp_ll_p4()[hypIdx];
 
@@ -1252,15 +1289,23 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( dRbetweenVectors(vjet, vll) < 0.4 ) continue;
         if( dRbetweenVectors(vjet, vlt) < 0.4 ) continue;
 
+	//---------------------------------------------------------------------------
+	// PFJetID
+	//---------------------------------------------------------------------------
 
         if( !passesPFJetID(ijet) ){
           failjetid_ = 1;
           continue;
         }
 
+	//---------------------------------------------------------------------------
+	// jet passes: now store various quantities
+	//---------------------------------------------------------------------------
+
         if ( vjet.pt() > 10. ){
           sumJetPt10_ += vjet.pt();
         }
+
         if ( vjet.pt() > 15. ){
           sumJetPt_ += vjet.pt();
           jetSystem += vjet;
@@ -1269,8 +1314,15 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           if( emfrac > maxemf_ ) maxemf_ = emfrac;
         }
 
-	if ( vjetUp.pt() > 30. ) nJetsUp_++;
-	if ( vjetDn.pt() > 30. ) nJetsDn_++;
+	if ( vjetUp.pt() > 30. ){
+	  nJetsUp_++;
+	  goodJetsUp.push_back( vjetUp );
+	}
+
+	if ( vjetDn.pt() > 30. ){
+	  nJetsDn_++;
+	  goodJetsDn.push_back( vjetDn );
+	}
 
         if( vjet.pt() < 30. )                    continue;
           
@@ -1305,7 +1357,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  nbm_++;
 	}
 
-
 	//weight (scale factor) branches
 
 	if( !isData ) {
@@ -1329,7 +1380,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	    
 	  }
 	}
-
 
         if ( vjet.pt()   > 30. ) nJets_++;
         if ( vjet.pt()   > 40. ) nJets40_++;
@@ -1390,8 +1440,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // variables for lljj mass bump
       //-------------------------------------------------------------
 
-      sort(goodJets.begin()  , goodJets.end()  , sortByPt);
-      sort(goodBJets.begin() , goodBJets.end() , sortByPt);
+      sort(goodJets.begin()    , goodJets.end()    , sortByPt);
+      sort(goodJetsUp.begin()  , goodJetsUp.end()  , sortByPt);
+      sort(goodJetsDn.begin()  , goodJetsDn.end()  , sortByPt);
+      sort(goodBJets.begin()   , goodBJets.end()   , sortByPt);
 
       if( goodJets.size()  > 0 ) jet1_   = &(goodJets.at(0));
       if( goodJets.size()  > 1 ) jet2_   = &(goodJets.at(1));
@@ -1419,6 +1471,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	mjj_      = ( *jet1_ + *jet2_          ).mass();
       }
       
+      mjjup_ = -1;
+      mjjdn_ = -1;
+
+      if( goodJetsUp.size() >= 2 ) mjjup_ = ( goodJetsUp.at(0) + goodJetsUp.at(1) ).mass();
+      if( goodJetsDn.size() >= 2 ) mjjdn_ = ( goodJetsDn.at(0) + goodJetsDn.at(1) ).mass();
+
       //fill histos and ntuple----------------------------------------------------------- 
 
       FillBabyNtuple();
@@ -1711,6 +1769,26 @@ void Z_looper::bookHistos(){
     hptz[iJ]->GetXaxis()->SetTitle("Z p_{T} (GeV)");
   }
 
+  hunc_eta1 = new TH2F("hunc_eta1","",100,0,100,200,0,0.2);
+  hunc_eta2 = new TH2F("hunc_eta2","",100,0,100,200,0,0.2);
+  hunc_eta3 = new TH2F("hunc_eta3","",100,0,100,200,0,0.2);
+  hunc_eta4 = new TH2F("hunc_eta4","",100,0,100,200,0,0.2);
+  hunc_eta5 = new TH2F("hunc_eta5","",100,0,100,200,0,0.2);
+  hunc_eta6 = new TH2F("hunc_eta6","",100,0,100,200,0,0.2);
+
+  hunc_eta1->GetXaxis()->SetTitle("jet p_{T} [GeV]");
+  hunc_eta1->GetYaxis()->SetTitle("uncertainty (|#eta| 0.0-0.5)");
+  hunc_eta2->GetXaxis()->SetTitle("jet p_{T} [GeV]");
+  hunc_eta2->GetYaxis()->SetTitle("uncertainty (|#eta| 0.5-1.0)");
+  hunc_eta3->GetXaxis()->SetTitle("jet p_{T} [GeV]");
+  hunc_eta3->GetYaxis()->SetTitle("uncertainty (|#eta| 1.0-1.5)");
+  hunc_eta4->GetXaxis()->SetTitle("jet p_{T} [GeV]");
+  hunc_eta4->GetYaxis()->SetTitle("uncertainty (|#eta| 1.5-2.0)");
+  hunc_eta5->GetXaxis()->SetTitle("jet p_{T} [GeV]");
+  hunc_eta5->GetYaxis()->SetTitle("uncertainty (|#eta| 2.0-2.5)");
+  hunc_eta6->GetXaxis()->SetTitle("jet p_{T} [GeV]");
+  hunc_eta6->GetYaxis()->SetTitle("uncertainty (|#eta| 2.5-3.0)");
+
   hgenmet_all  = new TH1F("hgenmet_all","",100,0,200);
   hgenmet_pass = new TH1F("hgenmet_pass","",100,0,200);
   hresponse    = new TProfile("hresponse","",100,0,200,0,2);
@@ -1812,6 +1890,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("nbvz",         &nbvz_,         "nbvz/I"         );
   babyTree_->Branch("nbvzres",      &nbvzres_,      "nbvzres/I"      );
   babyTree_->Branch("mjj",          &mjj_,          "mjj/F"          );
+  babyTree_->Branch("mjjup",        &mjjup_,        "mjjup/F"        );
+  babyTree_->Branch("mjjdn",        &mjjdn_,        "mjjdn/F"        );
   babyTree_->Branch("nlep",         &nlep_,         "nlep/I"         );
   babyTree_->Branch("nel",          &nel_,          "nel/I"          );
   babyTree_->Branch("nmu",          &nmu_,          "nmu/I"          );

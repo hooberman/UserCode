@@ -5,6 +5,7 @@
 #include "TTree.h"
 #include "TMath.h"
 #include "TH1.h"
+#include "TH2.h"
 #include "TProfile.h"
 #include <vector>
 #include <map>
@@ -93,6 +94,8 @@ class Z_looper
   Int_t   nbvz_;
   Int_t   nbvzres_;
   Float_t mjj_;
+  Float_t mjjup_;
+  Float_t mjjdn_;
   Float_t ml_;
   Float_t mg_;
   Float_t x_;
@@ -235,6 +238,13 @@ class Z_looper
   Int_t   beamhalo_;   
   Int_t   goodvtx_;    
   Int_t   goodtrks_;   
+
+  TH2F* hunc_eta1;
+  TH2F* hunc_eta2;
+  TH2F* hunc_eta3;
+  TH2F* hunc_eta4;
+  TH2F* hunc_eta5;
+  TH2F* hunc_eta6;
 
   TH1F* hgenmet_all;
   TH1F* hgenmet_pass;
