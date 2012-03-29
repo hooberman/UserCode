@@ -33,22 +33,22 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
 
   ofile->open(Form("cards/%s/%s.txt",version,name));
 
-  *ofile <<      "imax 1 number of channels"                                                            << endl;
-  *ofile <<      "jmax 3 number of background"                                                          << endl;
-  *ofile <<      "kmax * number of nuisance parameters"                                                 << endl;
-  *ofile << Form("Observation %i                                                           ",datatot)   << endl;
+  *ofile <<      "imax 1 number of channels"                                                                  << endl;
+  *ofile <<      "jmax 3 number of background"                                                                << endl;
+  *ofile <<      "kmax * number of nuisance parameters"                                                       << endl;
+  *ofile << Form("Observation %i                                                           ",datatot)         << endl;
   *ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
-  *ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )          << endl;
-  *ofile <<      "bin                                  1        1      1      1"                        << endl;
-  *ofile << Form("process                        %s     Zbkg  OFbkg  VZbkg" , name )               << endl;
-  *ofile <<      "process                              0        1      2      3"                        << endl;
-  *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f" , sigtot,Ztot,OFtot,VZtot)              << endl;
-  *ofile <<      "lumi                       lnN   1.022       -       -      -"                        << endl;
-  *ofile <<      "eff_leptons                lnN   1.050       -       -      -"                        << endl;
-  *ofile <<      "JES_shape                shape     1.0       -       -      -"                        << endl;
-  *ofile <<      "err                      shape       -     1.0       -      -"                        << endl;
-  *ofile <<      "err                      shape       -       -     1.0      -"                        << endl;
-  *ofile <<      "err                      shape       -       -       -    1.0"                        << endl;
+  *ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                << endl;
+  *ofile <<      "bin                                  1        1      1      1"                              << endl;
+  *ofile << Form("process                        %s     Zbkg  OFbkg  VZbkg" , name )                          << endl;
+  *ofile <<      "process                              0        1      2      3"                              << endl;
+  *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f" , sigtot,Ztot,OFtot,VZtot)   << endl;
+  *ofile <<      "lumi                       lnN   1.022       -       -      -"                              << endl;
+  *ofile <<      "eff_leptons                lnN   1.050       -       -      -"                              << endl;
+  *ofile <<      "JES_shape                shape     1.0       -       -      -"                              << endl;
+  *ofile <<      "err                      shape       -     1.0       -      -"                              << endl;
+  *ofile <<      "err                      shape       -       -     1.0      -"                              << endl;
+  *ofile <<      "err                      shape       -       -       -    1.0"                              << endl;
   
   ofile->close();
 
@@ -62,14 +62,15 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-13/wzsms_baby.root");
-  char* version = (char*) "V00-01-00";
+  ch->Add("output/V00-02-13/zzsms_baby.root");
+  char* version = (char*) "V00-01-01";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./100000.)");
+  //TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./100000.)");
+  TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./52600.)");
 
   TCut presel   ("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70 && mjj<110 && nlep==2 && njets>=2     && leptype<2");
   TCut preseljup("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70 && mjj<110 && nlep==2 && njetsup>=2   && leptype<2");
