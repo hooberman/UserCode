@@ -403,7 +403,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       ++nEventsTotal;
 
       // if( TString(prefix).Contains("T5zz") ){
-      // 	if( sparm_mL() != 400 ) continue;
+      //  	if( sparm_mG() < 500 || sparm_mG() > 1000 ) continue;
       // }
 
       if( !isData ) sigma = cms2.evt_xsec_incl();
