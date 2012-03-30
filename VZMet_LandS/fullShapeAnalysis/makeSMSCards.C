@@ -62,19 +62,19 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-13/zzsms_baby.root");
-  char* version = (char*) "V00-01-01";
+  ch->Add("output/V00-02-14/wzsms_baby.root");
+  char* version = (char*) "V00-02-00";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  //TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./100000.)");
-  TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./52600.)");
+  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./100000.)");
+  //TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./52600.)");
 
-  TCut presel   ("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70 && mjj<110 && nlep==2 && njets>=2     && leptype<2");
-  TCut preseljup("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70 && mjj<110 && nlep==2 && njetsup>=2   && leptype<2");
-  TCut preseljdn("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70 && mjj<110 && nlep==2 && njetsdn>=2   && leptype<2");
+  TCut presel   ("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
+  TCut preseljup("dilmass>81 && dilmass<101 && nbvz==0 && mjjup>70 && mjjup<110 && nlep==2 && njetsup>=2   && leptype<2");
+  TCut preseljdn("dilmass>81 && dilmass<101 && nbvz==0 && mjjdn>70 && mjjdn<110 && nlep==2 && njetsdn>=2   && leptype<2");
 
   //const unsigned int nbins = 6;
   //float metcuts[nbins+1] = {50,60,80,100,150,200,9999999};
