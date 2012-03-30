@@ -45,6 +45,7 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
   *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f" , sigtot,Ztot,OFtot,VZtot)   << endl;
   *ofile <<      "lumi                       lnN   1.022       -       -      -"                              << endl;
   *ofile <<      "eff_leptons                lnN   1.050       -       -      -"                              << endl;
+  *ofile <<      "btagerr                    lnN   1.040       -       -      -"                              << endl;
   *ofile <<      "JES_shape                shape     1.0       -       -      -"                              << endl;
   *ofile <<      "err                      shape       -     1.0       -      -"                              << endl;
   *ofile <<      "err                      shape       -       -     1.0      -"                              << endl;
@@ -62,15 +63,15 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-14/zzsms_baby.root");
-  char* version = (char*) "V00-02-01";
+  ch->Add("output/V00-02-14/wzsms_baby.root");
+  char* version = (char*) "V00-02-02";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  //TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./100000.)");
-  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./52600.)");
+  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./100000.)");
+  //TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./52600.)");
   //TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./52600.)");
 
   TCut presel   ("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
