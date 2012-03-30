@@ -193,6 +193,7 @@ class Z_looper
   // jet stuff
   Int_t   failjetid_;
   Int_t   nJets_;
+  Int_t   nJetsOld_;
   Int_t   nJetsRes_;
   Int_t   nJetsUp_;
   Int_t   nJetsDn_;

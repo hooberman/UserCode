@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-14";
+const char* iter                 = "V00-02-15";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -294,7 +294,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   JetCorrectionUncertainty *pfUncertainty   = new JetCorrectionUncertainty( pfUncertaintyFile );
 
   //set stop cross section file
-  gg_xsec_file = TFile::Open("reference_xSec.root");
+  gg_xsec_file = TFile::Open("reference_xSec_mg2TeV.root");
   
   if( !gg_xsec_file->IsOpen() ){
     cout << "Error, could not open gluino cross section TFile, quitting" << endl;
@@ -1169,6 +1169,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       nbtags_       = 0;
       nbm_          = 0;
       nbl_          = 0;
+      nJetsOld_     = 0;
 
       LorentzVector jetSystem(0.,0.,0.,0.);        
       float maxcosdphi  = -99;
@@ -1239,6 +1240,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
+        LorentzVector vjetold = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+
 	//---------------------------------------------------------------------------
 	// get total correction: L1FastL2L3 for MC, L1FastL2L3Residual for data
 	//---------------------------------------------------------------------------
@@ -1307,6 +1310,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	// jet passes: now store various quantities
 	//---------------------------------------------------------------------------
 
+	if( vjetold.pt() > 30 ) nJetsOld_++;
 
 	//-------------------------------
 	// MET correction quantities
@@ -2013,6 +2017,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //jet stuff
   babyTree_->Branch("njets",          &nJets_,            "njets/I"       );
+  babyTree_->Branch("njetsold",       &nJetsOld_,         "njetsold/I"    );
   babyTree_->Branch("njetsres",       &nJetsRes_,         "njetsRes/I"    );
   babyTree_->Branch("njetsup",        &nJetsUp_,          "njetsup/I"     );
   babyTree_->Branch("njetsdn",        &nJetsDn_,          "njetsdn/I"     );
