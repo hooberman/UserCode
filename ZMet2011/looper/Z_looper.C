@@ -262,8 +262,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   // jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START42_V13_AK5PF_L2L3Residual.txt");
   // jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
 
+  //----------------
+  // OFFICIAL JEC //
+  //----------------
+
   //------------------------------------------------------------------------------------------------------
-  // latest-and-greatest JEC
+  // load here the on-the-fly corrections/uncertainties L1FastL2L3 (MC) and L1FastL2L3Residual (DATA)
+  // corrections are stored in jet_corrected_pfL1FastJetL2L3
+  // uncertainties are stored in pfUncertainty
   //------------------------------------------------------------------------------------------------------
 
   std::vector<std::string> jetcorr_filenames_pfL1FastJetL2L3;
@@ -1242,6 +1248,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
         LorentzVector vjetold = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
 
+	//---------------
+	// OFFICIAL JEC
+	//---------------
+
 	//---------------------------------------------------------------------------
 	// get total correction: L1FastL2L3 for MC, L1FastL2L3Residual for data
 	//---------------------------------------------------------------------------
@@ -1312,9 +1322,16 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	if( vjetold.pt() > 30 ) nJetsOld_++;
 
-	//-------------------------------
+	//--------------------
+	// OFFICIAL JEC
+	//--------------------
+
+	//------------------------------------------------------------------------------------------------------------
 	// MET correction quantities
-	//-------------------------------
+	// here we store 2 quantities:
+	// the delta(METx/y) you get by varying the jet with pT > 10 GeV by their uncertainties (dmetx,dmety
+	// the vector sum of pT > 10 GeV selected jets (jetptx,jetpty) --> use this to calculate unclustered energy
+	//------------------------------------------------------------------------------------------------------------
 
 	if( vjet.pt() > 10 ){
 	  dmetx  += vjetUp.px() - vjet.px();
@@ -1322,6 +1339,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  jetptx += vjet.px();
 	  jetpty += vjet.py();
 	}
+
+
 
         if ( vjet.pt() > 10. ){
           sumJetPt10_ += vjet.pt();
@@ -1405,6 +1424,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if ( vjet.pt()   > 40. ) nJets40_++;
       }
 
+      //---------------
+      // OFFICIAL JEC
+      //---------------
 
       //---------------------------------------
       // now calculate METup and METdown
@@ -1413,7 +1435,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       float pfmetx = evt_pfmet() * cos( evt_pfmetPhi() );
       float pfmety = evt_pfmet() * sin( evt_pfmetPhi() );
 
+      //--------------------------------------------------------
+      // calculate unclustered energy x and y components
       // unclustered energy = -1 X ( MET + jets + leptons )
+      //--------------------------------------------------------
+
       unclustered_x_ = -1 * ( pfmetx + jetptx );
       unclustered_y_ = -1 * ( pfmety + jetpty );
 
@@ -1421,15 +1447,21 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	unclustered_x_ -= goodLeptons.at(ilep).px();
 	unclustered_y_ -= goodLeptons.at(ilep).py();
       }
-
+      
+      //------------------------------------------------------------------------------
       // now vary jets according to JEC uncertainty, vary unclustered energy by 10%
+      //------------------------------------------------------------------------------
 
       float pfmetx_up = pfmetx - dmetx - 0.1 * unclustered_x_; 
       float pfmety_up = pfmety - dmety - 0.1 * unclustered_y_; 
+
+      // pfmet DOWN
       pfmetUp_ = sqrt( pfmetx_up * pfmetx_up + pfmety_up * pfmety_up );
 
       float pfmetx_dn = pfmetx + dmetx + 0.1 * unclustered_x_; 
       float pfmety_dn = pfmety + dmety + 0.1 * unclustered_y_; 
+
+      // pfmet UP
       pfmetDn_ = sqrt( pfmetx_dn * pfmetx_dn + pfmety_dn * pfmety_dn );
 
       unclustered_ = sqrt( pow(unclustered_x_,2) + pow(unclustered_y_,2));
