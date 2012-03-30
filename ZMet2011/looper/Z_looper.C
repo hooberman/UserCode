@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-15";
+const char* iter                 = "V00-02-16";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -240,7 +240,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   set_goodrun_file( jsonfilename );
 
-  if( TString(prefix).Contains("sms") ){
+  if( TString(prefix).Contains("sms") || TString(prefix).Contains("T5") ){
     set_vtxreweight_rootfile("vtxreweight_VZSMS_4p7fb_Zselection.root",true);
   }
   else if( TString(prefix).Contains("ggmsb") ){
