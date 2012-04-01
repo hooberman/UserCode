@@ -172,12 +172,18 @@ TGraph* getGraph_T5zz(string type){
     npoints = 7;
   }
   else if( type == "down" ){
-    x[0] =  775;  y[0] =  50;
-    x[1] =  775;  y[1] = 150;
-    x[2] =  725;  y[2] = 300;
-    x[3] =  700;  y[3] = 325;
-    x[4] =  525;  y[4] = 300;
-    x[5] =  525;  y[5] = 437.5;
+    // x[0] =  775;  y[0] =  50;
+    // x[1] =  775;  y[1] = 150;
+    // x[2] =  725;  y[2] = 300;
+    // x[3] =  700;  y[3] = 325;
+    // x[4] =  525;  y[4] = 300;
+    // x[5] =  525;  y[5] = 437.5;
+    x[0] =  775;    y[0] =  50;
+    x[1] =  775;    y[1] = 150;
+    x[2] =  725;    y[2] = 300;
+    x[3] =  662.5;  y[3] = 312.5;
+    x[4] =  525;    y[4] = 300;
+    x[5] =  525;    y[5] = 437.5;
     npoints = 6;
   }
 
@@ -326,11 +332,11 @@ void combinePlots(bool print = false){
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
   // float dm             = 4*91.0;
 
-  // char* version        = "V00-03-01";
-  // char* sample         = "T5zz";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  // float dm             = 182.0;
+  char* version        = "V00-03-01";
+  char* sample         = "T5zz";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  float dm             = 182.0;
   
   // char* version        = "V00-03-02";
   // char* sample         = "T5zzl";
@@ -338,11 +344,11 @@ void combinePlots(bool print = false){
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
   // float dm             = (4./3.)*91;
 
-  char* version        = "V00-03-03";
-  char* sample         = "T5zzgmsb";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g})";
-  float dm             = 0.0;
+  // char* version        = "V00-03-03";
+  // char* sample         = "T5zzgmsb";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g})";
+  // float dm             = 0.0;
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
@@ -356,6 +362,8 @@ void combinePlots(bool print = false){
   TH2F* hexcl_temp = (TH2F*) file->Get("hexcl");
 
   TH2F* hexcl = shiftHist(hexcl_temp);
+
+  hexcl->Scale(1.05);
 
   //TH2F* hexcl = (TH2F*) file->Get("hexp");
   //cout << "USING EXPECTED LIMIT!!!!!!!!!!!!" << endl;
@@ -391,7 +399,7 @@ void combinePlots(bool print = false){
   TCanvas *ctemp = new TCanvas();
   ch->Draw("ml:mg>>heff",sel);
   delete ctemp;
-  heff->Scale(1./20000.);
+  heff->Scale(0.95/20000.);
 
   int bin = heff->FindBin(600,200);
   cout << "Efficiency for 600,200 " << heff->GetBinContent(bin) << endl;
@@ -456,6 +464,7 @@ void combinePlots(bool print = false){
   heff->GetXaxis()->SetLabelSize(0.035);
   heff->GetYaxis()->SetLabelSize(0.035);
   heff->GetZaxis()->SetLabelSize(0.035);
+  heff->SetMaximum(0.35);
   heff->GetYaxis()->SetTitle("#chi^{0}_{1} mass [GeV]");
   heff->GetXaxis()->SetTitle("gluino mass [GeV]");
   heff->GetZaxis()->SetTitle("A #times #varepsilon (#geq1 Z(ll))");
@@ -472,7 +481,7 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.65,njets);
   t->DrawLatex(0.2,0.55,"E_{T}^{miss} templates");
   t->SetTextSize(0.04);
-  t->DrawLatex(0.18,0.92,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
+  t->DrawLatex(0.18,0.93,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
 
   if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
   else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
@@ -566,7 +575,7 @@ void combinePlots(bool print = false){
   //t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
   //t->DrawLatex(0.18,0.92,"       CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
   t->SetTextSize(0.04);
-  t->DrawLatex(0.18,0.92,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
+  t->DrawLatex(0.18,0.93,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
 
   if( print ){
     can->Print(Form("cards/%s/plots/SMS.eps",version));
