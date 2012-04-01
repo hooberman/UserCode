@@ -172,12 +172,6 @@ TGraph* getGraph_T5zz(string type){
     npoints = 7;
   }
   else if( type == "down" ){
-    // x[0] =  775;  y[0] =  50;
-    // x[1] =  775;  y[1] = 150;
-    // x[2] =  725;  y[2] = 300;
-    // x[3] =  700;  y[3] = 325;
-    // x[4] =  525;  y[4] = 300;
-    // x[5] =  525;  y[5] = 437.5;
     x[0] =  775;    y[0] =  50;
     x[1] =  775;    y[1] = 150;
     x[2] =  725;    y[2] = 300;
@@ -218,7 +212,7 @@ TGraph* getGraph_T5zzl(string type){
     x[0] =  1100;  y[0] =  50;
     x[1] =  1087.5;y[1] = 400;
     x[2] =  1075;  y[2] = 525;
-    x[3] =  1000;  y[3] = 650;
+    x[3] =   975;  y[3] = 650;
     x[4] =   950;  y[4] = 650;
     x[5] =   750;  y[5] = 575;
     x[6] =   750;  y[6] = 662.5;
@@ -229,8 +223,8 @@ TGraph* getGraph_T5zzl(string type){
     x[1] =  837.5;  y[1] = 300;
     x[2] =  810;    y[2] = 370;
     x[3] =  750;    y[3] = 425;
-    x[4] =  675;    y[4] = 425;
-    x[5] =  525;    y[5] = 387.5;
+    x[4] =  687.5;  y[4] = 425;
+    x[5] =  525;    y[5] = 375;
     x[6] =  525;    y[6] = 437.5;
     npoints = 7;
   }
@@ -332,17 +326,17 @@ void combinePlots(bool print = false){
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
   // float dm             = 4*91.0;
 
-  char* version        = "V00-03-01";
-  char* sample         = "T5zz";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  float dm             = 182.0;
-  
-  // char* version        = "V00-03-02";
-  // char* sample         = "T5zzl";
+  // char* version        = "V00-03-01";
+  // char* sample         = "T5zz";
   // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
-  // float dm             = (4./3.)*91;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  // float dm             = 182.0;
+  
+  char* version        = "V00-03-02";
+  char* sample         = "T5zzl";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
+  float dm             = (4./3.)*91;
 
   // char* version        = "V00-03-03";
   // char* sample         = "T5zzgmsb";
