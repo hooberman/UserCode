@@ -63,8 +63,8 @@ TGraph* getGraph(bool do3jets,string type){
     x[1] = 675;   y[1] = 225;
     x[2] = 725;   y[2] = 300;
     x[3] = 825;   y[3] = 550;
-    x[4] = 860;   y[4] = 750;
-    x[5] = 840;   y[5] = 800;
+    x[4] = 850;   y[4] = 750;
+    x[5] = 825;   y[5] = 800;
     x[6] = 800;   y[6] = 800;
     //x[4] = 100;   y[4] = 100;
     npoints = 7;
@@ -332,17 +332,17 @@ void combinePlots(bool print = false){
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
   // float dm             = 182.0;
   
-  char* version        = "V00-03-02";
-  char* sample         = "T5zzl";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
-  float dm             = (4./3.)*91;
-
-  // char* version        = "V00-03-03";
-  // char* sample         = "T5zzgmsb";
+  // char* version        = "V00-03-02";
+  // char* sample         = "T5zzl";
   // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g})";
-  // float dm             = 0.0;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
+  // float dm             = (4./3.)*91;
+
+  char* version        = "V00-03-03";
+  char* sample         = "T5zzgmsb";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g})";
+  float dm             = 0.0;
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
