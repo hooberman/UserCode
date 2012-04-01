@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-16";
+const char* iter                 = "V00-02-17";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -1245,6 +1245,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //-----------------------------------------------------------------------------
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+
+	if( fabs( pfjets_p4().at(ijet).eta() ) > 5.0 ) continue;
 
         LorentzVector vjetold = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
 
