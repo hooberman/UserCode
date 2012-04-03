@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-17";
+const char* iter                 = "temp";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -137,6 +137,67 @@ pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, d
   pair<float, float> p_met2 = make_pair(sqrt(metNewx*metNewx + metNewy*metNewy), metNewPhi);
   return p_met2;
 }
+
+//--------------------------------------------------------------------
+
+float getGenMetCustom( const char* prefix ){
+
+  int LSPID = 1000022;
+  if( TString(prefix).Contains("ggmsb") ) LSPID = 1000039;
+
+  float metx = 0;
+  float mety = 0;
+
+  // cout << "------------------------------------------------" << endl;
+  // cout << "Calculating custom genmet" << endl;
+  // cout << "LSPID " << LSPID << endl;
+
+  int nLSP = 0;
+
+  for ( int i = 0; i < genps_id().size() ; i++) {
+
+    int id = abs( cms2.genps_id().at(i) );
+
+    //cout << "Particle " << i << " ID " << id << " pt " << genps_p4().at(i).pt() << endl;
+
+    if( id == 12 || id == 14 || id == 16 || id == LSPID ){
+
+      //cout << "INVISIBLE " << i << " ID " << id << " pt " << genps_p4().at(i).pt() << endl;
+
+      metx -= genps_p4().at(i).px();
+      mety -= genps_p4().at(i).py();
+
+      if( id == LSPID ) nLSP++;
+    }
+    
+    if( genps_lepdaughter_id()[i].size() > 0) {
+
+      for(unsigned int j = 0; j < cms2.genps_lepdaughter_id()[i].size(); j++) {
+
+	int iddau = abs( genps_lepdaughter_id().at(i).at(j) );
+
+	if( iddau == 12 || iddau == 14 || iddau == 16 ){
+
+	  //cout << "INVISIBLE " << i << " daughter " << j << " ID " << id << " pt " << genps_lepdaughter_p4().at(i).at(j).pt() << endl;
+
+	  metx -= genps_lepdaughter_p4().at(i).at(j).px();
+	  mety -= genps_lepdaughter_p4().at(i).at(j).py();
+	}
+      }
+    }
+  }
+
+  if( nLSP !=2 ){
+    cout << "ERROR!!!! FOUND " << nLSP << " LSP's <<<<---------------------------------" << endl;
+    exit(0);
+  }
+
+  //cout << "------------------------------------------------" << endl;
+
+  return sqrt( metx*metx + mety*mety );
+
+}
+
 
 //--------------------------------------------------------------------
 
@@ -408,6 +469,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       cms2.GetEntry(event);
       ++nEventsTotal;
 
+      // if( susyScan_Mmu() == 150 ){
+      // 	dumpDocLines();
+      // }
+      // else{
+      // 	continue;
+      // }
+
       // if( TString(prefix).Contains("T5zz") ){
       //  	if( sparm_mG() < 500 || sparm_mG() > 1000 ) continue;
       // }
@@ -537,6 +605,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       ml_ = -1.; 
       x_  = -1.;
 
+      genmetcustom_ = 0;
+
       if(TString(prefix).Contains("T5zz") || TString(prefix).Contains("sms") || TString(prefix).Contains("gmsb") ){
 
 	if     (TString(prefix).Contains("T5zz" ) ){
@@ -568,6 +638,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  ml_ = -999;
 	  x_  = -999;
 	}
+
+	genmetcustom_ = getGenMetCustom(prefix);
 
       }
       
@@ -2035,6 +2107,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("mujesmetphi",  &mujesmetphi_,  "mujesmetphi/F"   );
   babyTree_->Branch("mujessumet",   &mujessumet_,   "mujessumet/F"    );
   babyTree_->Branch("genmet",       &genmet_,       "genmet/F"   );
+  babyTree_->Branch("genmetcustom", &genmetcustom_, "genmetcustom/F"   );
   babyTree_->Branch("genmetphi",    &genmetphi_,    "genmetphi/F");
   babyTree_->Branch("gensumet",     &gensumet_,     "gensumet/F" );
   babyTree_->Branch("dphixmet",     &dphixmet_,     "dphixmet/F"    );

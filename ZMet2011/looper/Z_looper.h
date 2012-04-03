@@ -136,6 +136,7 @@ class Z_looper
 
   // genmet stuff
   Float_t genmet_;
+  Float_t genmetcustom_;
   Float_t genmetphi_;
   Float_t gensumet_;
 
