@@ -37,7 +37,7 @@ void SMS(bool print = false){
   //--------------------------------------------------
   
   const float denom    = 20000;
-  const float lumi     = 4700;
+  const float lumi     = 4980;
   const char* filename = "../../output/V00-02-04/T5zz_baby.root";
   bool do3jets = false;
 
@@ -57,7 +57,7 @@ void SMS(bool print = false){
   // read in reference cross section
   //--------------------------------------------------
 
-  TFile *xsecfile = TFile::Open("reference_xSec.root");
+  TFile *xsecfile = TFile::Open("reference_xSec_mg2TeV.root");
   TH1F* refxsec   = (TH1F*) xsecfile->Get("gluino");
 
   //--------------------------------------------------
@@ -86,14 +86,19 @@ void SMS(bool print = false){
   vector<TCut>    sigcuts;
   vector<string>  signames;
   vector<string>  labels;
-  vector<float>   ul;
+  //vector<float>   ul;
   vector<int>     cuts;
 
   //sigcuts.push_back(TCut(presel+met30));      signames.push_back("E_{T}^{miss} > 30 GeV");     ul.push_back(2518.);   labels.push_back("met030"); cuts.push_back(30);
-  //sigcuts.push_back(TCut(presel+met60));      signames.push_back("E_{T}^{miss} > 60 GeV");     ul.push_back(134.);    labels.push_back("met060"); cuts.push_back(60);
-  sigcuts.push_back(TCut(presel+met100));     signames.push_back("E_{T}^{miss} > 100 GeV");    ul.push_back(35.0);    labels.push_back("met100"); cuts.push_back(100);
-  sigcuts.push_back(TCut(presel+met200));     signames.push_back("E_{T}^{miss} > 200 GeV");    ul.push_back(7.2);     labels.push_back("met200"); cuts.push_back(200);
-  sigcuts.push_back(TCut(presel+met300));     signames.push_back("E_{T}^{miss} > 300 GeV");    ul.push_back(3.0);     labels.push_back("met300"); cuts.push_back(300);
+  //sigcuts.push_back(TCut(presel+met60));      signames.push_back("E_{T}^{miss} > 60 GeV");     ul.push_back(134.);    labels.push_back("met060"); cuts.push_back(60)
+  
+  // sigcuts.push_back(TCut(presel+met100));     signames.push_back("E_{T}^{miss} > 100 GeV");    ul.push_back(35.0);    labels.push_back("met100"); cuts.push_back(100);
+  // sigcuts.push_back(TCut(presel+met200));     signames.push_back("E_{T}^{miss} > 200 GeV");    ul.push_back(7.2);     labels.push_back("met200"); cuts.push_back(200);
+  // sigcuts.push_back(TCut(presel+met300));     signames.push_back("E_{T}^{miss} > 300 GeV");    ul.push_back(3.0);     labels.push_back("met300"); cuts.push_back(300);
+
+  sigcuts.push_back(TCut(presel+met100));     signames.push_back("E_{T}^{miss} > 100 GeV");     labels.push_back("met100"); cuts.push_back(100);
+  sigcuts.push_back(TCut(presel+met200));     signames.push_back("E_{T}^{miss} > 200 GeV");     labels.push_back("met200"); cuts.push_back(200);
+  sigcuts.push_back(TCut(presel+met300));     signames.push_back("E_{T}^{miss} > 300 GeV");     labels.push_back("met300"); cuts.push_back(300);
 
   const unsigned int nsig = sigcuts.size();
 
@@ -165,7 +170,7 @@ void SMS(bool print = false){
 	float djes   = 0.5 * (dup+ddn);
 	hjes[i]->SetBinContent(ibin,jbin,djes);
 
-	float toterr = sqrt( 0.06*0.06 + 0.05*0.05 + djes*djes );
+	float toterr = sqrt( 0.022*0.022 + 0.05*0.05 + djes*djes );
 
 	float this_ul = getObservedLimit( cuts.at(i) , toterr , do3jets );
 	float xsecul  = this_ul / ( lumi * eff * 0.19 );
@@ -312,9 +317,9 @@ void SMS(bool print = false){
       //gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.eps  ../plots/%s.pdf",labels.at(i).c_str(),labels.at(i).c_str()));
     }
 
-    //int bin = heff[i]->FindBin(600,200);
-    //cout << "efficiency (600,200) " << heff[i]->GetBinContent(bin) << endl;
-    int bin = heff[i]->FindBin(725,425);
+    int bin = heff[i]->FindBin(600,200);
+    cout << "efficiency (600,200) " << heff[i]->GetBinContent(bin) << endl;
+    bin = heff[i]->FindBin(725,425);
     cout << "efficiency (600,200) " << heff[i]->GetBinContent(bin) << endl;
     cout << "xsec UL              " << hxsec[i]->GetBinContent(bin) << endl;
     cout << "xsec UL exp          " << hxsec_exp[i]->GetBinContent(bin) << endl;
@@ -341,6 +346,9 @@ float getObservedLimit( int metcut , float seff , bool do3jets ){
   float ul = 999;
 
   if( do3jets ){
+    cout << "ERROR!!!! DOING 3 JET!!!" << endl;
+    exit(0);
+
     if( metcut == 100 ){
       if(seff >= 0.0 && seff < 0.1) ul = 42.2;
       if(seff >= 0.1 && seff < 0.2) ul = 45.3;
@@ -381,37 +389,76 @@ float getObservedLimit( int metcut , float seff , bool do3jets ){
   }
   else{
     if( metcut == 100 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 58.3;
-      if(seff >= 0.1 && seff < 0.2) ul = 61.4;
-      if(seff >= 0.2 && seff < 0.3) ul = 65.6;
-      if(seff >= 0.3 && seff < 0.4) ul = 69.4;
-      if(seff >= 0.4 && seff < 0.5) ul = 74.9;
-      if(seff >= 0.5 && seff < 0.6) ul = 82.4;
-      if(seff >= 0.6 && seff < 0.7) ul = 87.4;
-      if(seff >= 0.7 && seff < 0.8) ul = 95.3;
-      if(seff >= 0.8 && seff < 0.9) ul = 102.4;
+
+      // 4.7/fb results
+      // if(seff >= 0.0 && seff < 0.1) ul = 58.3;
+      // if(seff >= 0.1 && seff < 0.2) ul = 61.4;
+      // if(seff >= 0.2 && seff < 0.3) ul = 65.6;
+      // if(seff >= 0.3 && seff < 0.4) ul = 69.4;
+      // if(seff >= 0.4 && seff < 0.5) ul = 74.9;
+      // if(seff >= 0.5 && seff < 0.6) ul = 82.4;
+      // if(seff >= 0.6 && seff < 0.7) ul = 87.4;
+      // if(seff >= 0.7 && seff < 0.8) ul = 95.3;
+      // if(seff >= 0.8 && seff < 0.9) ul = 102.4;
+
+      // 4.98/fb results
+      if(seff >= 0.0 && seff < 0.1) ul = 57.6;
+      if(seff >= 0.1 && seff < 0.2) ul = 59.9;
+      if(seff >= 0.2 && seff < 0.3) ul = 64.5;
+      if(seff >= 0.3 && seff < 0.4) ul = 69.0;
+      if(seff >= 0.4 && seff < 0.5) ul = 74.5;
+      if(seff >= 0.5 && seff < 0.6) ul = 79.9;
+      if(seff >= 0.6 && seff < 0.7) ul = 86.1;
+      if(seff >= 0.7 && seff < 0.8) ul = 92.1;
+      if(seff >= 0.8 && seff < 0.9) ul = 101.2;
     }
     else if( metcut == 200 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 8.5;
-      if(seff >= 0.1 && seff < 0.2) ul = 8.5;
-      if(seff >= 0.2 && seff < 0.3) ul = 9.1;
-      if(seff >= 0.3 && seff < 0.4) ul = 9.4;
-      if(seff >= 0.4 && seff < 0.5) ul = 9.8;
-      if(seff >= 0.5 && seff < 0.6) ul = 10.4;
-      if(seff >= 0.6 && seff < 0.7) ul = 11.0;
-      if(seff >= 0.7 && seff < 0.8) ul = 11.9;
+
+      // 4.7/fb results
+      // if(seff >= 0.0 && seff < 0.1) ul = 8.5;
+      // if(seff >= 0.1 && seff < 0.2) ul = 8.5;
+      // if(seff >= 0.2 && seff < 0.3) ul = 9.1;
+      // if(seff >= 0.3 && seff < 0.4) ul = 9.4;
+      // if(seff >= 0.4 && seff < 0.5) ul = 9.8;
+      // if(seff >= 0.5 && seff < 0.6) ul = 10.4;
+      // if(seff >= 0.6 && seff < 0.7) ul = 11.0;
+      // if(seff >= 0.7 && seff < 0.8) ul = 11.9;
+      // if(seff >= 0.8 && seff < 0.9) ul = 12.3;
+
+      // 4.98/fb results
+      if(seff >= 0.0 && seff < 0.1) ul = 8.3;
+      if(seff >= 0.1 && seff < 0.2) ul = 8.9;
+      if(seff >= 0.2 && seff < 0.3) ul = 8.8;
+      if(seff >= 0.3 && seff < 0.4) ul = 9.5;
+      if(seff >= 0.4 && seff < 0.5) ul = 10.1;
+      if(seff >= 0.5 && seff < 0.6) ul = 10.7;
+      if(seff >= 0.6 && seff < 0.7) ul = 11.2;
+      if(seff >= 0.7 && seff < 0.8) ul = 11.6;
       if(seff >= 0.8 && seff < 0.9) ul = 12.3;
     }
     else if( metcut == 300 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 2.7;
+
+      // 4.7/fb results
+      // if(seff >= 0.0 && seff < 0.1) ul = 2.7;
+      // if(seff >= 0.1 && seff < 0.2) ul = 2.8;
+      // if(seff >= 0.2 && seff < 0.3) ul = 2.9;
+      // if(seff >= 0.3 && seff < 0.4) ul = 2.9;
+      // if(seff >= 0.4 && seff < 0.5) ul = 3.1;
+      // if(seff >= 0.5 && seff < 0.6) ul = 3.3;
+      // if(seff >= 0.6 && seff < 0.7) ul = 3.4;
+      // if(seff >= 0.7 && seff < 0.8) ul = 3.7;
+      // if(seff >= 0.8 && seff < 0.9) ul = 3.4;
+
+      // 4.98/fb results
+      if(seff >= 0.0 && seff < 0.1) ul = 2.8;
       if(seff >= 0.1 && seff < 0.2) ul = 2.8;
-      if(seff >= 0.2 && seff < 0.3) ul = 2.9;
-      if(seff >= 0.3 && seff < 0.4) ul = 2.9;
+      if(seff >= 0.2 && seff < 0.3) ul = 2.8;
+      if(seff >= 0.3 && seff < 0.4) ul = 3.0;
       if(seff >= 0.4 && seff < 0.5) ul = 3.1;
       if(seff >= 0.5 && seff < 0.6) ul = 3.3;
-      if(seff >= 0.6 && seff < 0.7) ul = 3.4;
-      if(seff >= 0.7 && seff < 0.8) ul = 3.7;
-      if(seff >= 0.8 && seff < 0.9) ul = 3.4;
+      if(seff >= 0.6 && seff < 0.7) ul = 3.5;
+      if(seff >= 0.7 && seff < 0.8) ul = 3.6;
+      if(seff >= 0.8 && seff < 0.9) ul = 3.6;
     }  
   }
 
@@ -430,6 +477,7 @@ float getExpectedLimit( int metcut , float seff , bool do3jets ){
 
   if( do3jets ){
     if( metcut == 100 ){
+      cout << "ERROR DOING 3 JETS!!!" << endl;
       if(seff >= 0.0 && seff < 0.1) ul = 36.0;
       if(seff >= 0.1 && seff < 0.2) ul = 38.4;
       if(seff >= 0.2 && seff < 0.3) ul = 40.6;
@@ -469,37 +517,73 @@ float getExpectedLimit( int metcut , float seff , bool do3jets ){
   }
   else{
     if( metcut == 100 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 61.0;
-      if(seff >= 0.1 && seff < 0.2) ul = 63.9;
+      // 4.7/fb results
+      // if(seff >= 0.0 && seff < 0.1) ul = 61.0;
+      // if(seff >= 0.1 && seff < 0.2) ul = 63.9;
+      // if(seff >= 0.2 && seff < 0.3) ul = 68.1;
+      // if(seff >= 0.3 && seff < 0.4) ul = 73.5;
+      // if(seff >= 0.4 && seff < 0.5) ul = 79.1;
+      // if(seff >= 0.5 && seff < 0.6) ul = 85.2;
+      // if(seff >= 0.6 && seff < 0.7) ul = 91.6;
+      // if(seff >= 0.7 && seff < 0.8) ul = 99.8;
+      // if(seff >= 0.8 && seff < 0.9) ul = 108.7;
+
+      // 4.98/fb results
+      if(seff >= 0.0 && seff < 0.1) ul = 61.3;
+      if(seff >= 0.1 && seff < 0.2) ul = 63.8;
       if(seff >= 0.2 && seff < 0.3) ul = 68.1;
-      if(seff >= 0.3 && seff < 0.4) ul = 73.5;
-      if(seff >= 0.4 && seff < 0.5) ul = 79.1;
-      if(seff >= 0.5 && seff < 0.6) ul = 85.2;
-      if(seff >= 0.6 && seff < 0.7) ul = 91.6;
-      if(seff >= 0.7 && seff < 0.8) ul = 99.8;
-      if(seff >= 0.8 && seff < 0.9) ul = 108.7;
+      if(seff >= 0.3 && seff < 0.4) ul = 73.6;
+      if(seff >= 0.4 && seff < 0.5) ul = 79.5;
+      if(seff >= 0.5 && seff < 0.6) ul = 86.3;
+      if(seff >= 0.6 && seff < 0.7) ul = 93.3;
+      if(seff >= 0.7 && seff < 0.8) ul = 100.3;
+      if(seff >= 0.8 && seff < 0.9) ul = 109.5;
     }
     else if( metcut == 200 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 11.1;
-      if(seff >= 0.1 && seff < 0.2) ul = 11.3;
-      if(seff >= 0.2 && seff < 0.3) ul = 11.6;
-      if(seff >= 0.3 && seff < 0.4) ul = 12.6;
-      if(seff >= 0.4 && seff < 0.5) ul = 13.9;
-      if(seff >= 0.5 && seff < 0.6) ul = 16.9;
-      if(seff >= 0.6 && seff < 0.7) ul = 16.6;
-      if(seff >= 0.7 && seff < 0.8) ul = 18.1;
-      if(seff >= 0.8 && seff < 0.9) ul = 16.4;
+      // 4.7/fb results
+      // if(seff >= 0.0 && seff < 0.1) ul = 11.1;
+      // if(seff >= 0.1 && seff < 0.2) ul = 11.3;
+      // if(seff >= 0.2 && seff < 0.3) ul = 11.6;
+      // if(seff >= 0.3 && seff < 0.4) ul = 12.6;
+      // if(seff >= 0.4 && seff < 0.5) ul = 13.9;
+      // if(seff >= 0.5 && seff < 0.6) ul = 16.9;
+      // if(seff >= 0.6 && seff < 0.7) ul = 16.6;
+      // if(seff >= 0.7 && seff < 0.8) ul = 18.1;
+      // if(seff >= 0.8 && seff < 0.9) ul = 16.4;
+
+      // 4.98/fb results
+      if(seff >= 0.0 && seff < 0.1) ul = 11.4;
+      if(seff >= 0.1 && seff < 0.2) ul = 11.8;
+      if(seff >= 0.2 && seff < 0.3) ul = 12.1;
+      if(seff >= 0.3 && seff < 0.4) ul = 13.5;
+      if(seff >= 0.4 && seff < 0.5) ul = 13.7;
+      if(seff >= 0.5 && seff < 0.6) ul = 14.8;
+      if(seff >= 0.6 && seff < 0.7) ul = 16.1;
+      if(seff >= 0.7 && seff < 0.8) ul = 17.2;
+      if(seff >= 0.8 && seff < 0.9) ul = 18.2;
     }
     else if( metcut == 300 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 4.7;
-      if(seff >= 0.1 && seff < 0.2) ul = 4.8;
-      if(seff >= 0.2 && seff < 0.3) ul = 5.0;
+      // 4.7/fb results
+      // if(seff >= 0.0 && seff < 0.1) ul = 4.7;
+      // if(seff >= 0.1 && seff < 0.2) ul = 4.8;
+      // if(seff >= 0.2 && seff < 0.3) ul = 5.0;
+      // if(seff >= 0.3 && seff < 0.4) ul = 5.3;
+      // if(seff >= 0.4 && seff < 0.5) ul = 5.5;
+      // if(seff >= 0.5 && seff < 0.6) ul = 5.8;
+      // if(seff >= 0.6 && seff < 0.7) ul = 6.3;
+      // if(seff >= 0.7 && seff < 0.8) ul = 6.6;
+      // if(seff >= 0.8 && seff < 0.9) ul = 6.8;
+
+      // 4.98/fb results
+      if(seff >= 0.0 && seff < 0.1) ul = 4.8;
+      if(seff >= 0.1 && seff < 0.2) ul = 4.9;
+      if(seff >= 0.2 && seff < 0.3) ul = 5.1;
       if(seff >= 0.3 && seff < 0.4) ul = 5.3;
-      if(seff >= 0.4 && seff < 0.5) ul = 5.5;
-      if(seff >= 0.5 && seff < 0.6) ul = 5.8;
+      if(seff >= 0.4 && seff < 0.5) ul = 5.7;
+      if(seff >= 0.5 && seff < 0.6) ul = 5.9;
       if(seff >= 0.6 && seff < 0.7) ul = 6.3;
-      if(seff >= 0.7 && seff < 0.8) ul = 6.6;
-      if(seff >= 0.8 && seff < 0.9) ul = 6.8;
+      if(seff >= 0.7 && seff < 0.8) ul = 6.8;
+      if(seff >= 0.8 && seff < 0.9) ul = 7.0;
     }  
     else{
       cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
