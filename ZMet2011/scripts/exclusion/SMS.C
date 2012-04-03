@@ -25,8 +25,8 @@
 #include <sstream>
 #include <iomanip>
 
-float getObservedLimit( int metcut , float seff );
-float getExpectedLimit( int metcut , float seff );
+float getObservedLimit( int metcut , float seff , bool do3jets );
+float getExpectedLimit( int metcut , float seff , bool do3jets );
 
 using namespace std;
 
@@ -38,11 +38,13 @@ void SMS(bool print = false){
   
   const float denom    = 20000;
   const float lumi     = 4700;
-  const char* filename = "../../output/V00-02-01/T5zz_baby.root";
+  const char* filename = "../../output/V00-02-04/T5zz_baby.root";
+  bool do3jets = false;
 
   cout << "Using file        " << filename << endl;
   cout << "Using denominator " << denom    << " events" << endl;
   cout << "Using lumi        " << lumi     << " pb-1" << endl;
+  cout << "Doing 3 jets?     " << do3jets  << endl;
 
   //--------------------------------------------------
   // read in TChain
@@ -64,6 +66,7 @@ void SMS(bool print = false){
 
   TCut zmass("dilmass>81 && dilmass<101");
   TCut njets2("njets >= 2");
+  TCut njets3("njets >= 3");
   TCut sf("leptype==0||leptype==1");
   TCut met30 ("pfmet>30");
   TCut met60 ("pfmet>60");
@@ -72,6 +75,7 @@ void SMS(bool print = false){
   TCut met300("pfmet>300");
 
   TCut presel  = zmass + njets2 + sf;
+  if( do3jets ) presel  = zmass + njets3 + sf;
 
   cout << "Using selection   " << presel.GetTitle() << endl;
 
@@ -136,13 +140,13 @@ void SMS(bool print = false){
     hjes[i]      = new TH2F(Form("hjes_%i",i)        , Form("hjes_%i",i)       , 48,0,1200,48,0,1200);
 
     ch->Draw(Form("ml:mg>>heff_%i",i),sigcuts.at(i));
-    heff[i]->Scale(1./denom);
+    heff[i]->Scale(0.95/denom);
 
     ch->Draw(Form("ml:mg>>heffup_%i",i),jesupcut);
-    heffup[i]->Scale(1./denom);
+    heffup[i]->Scale(0.95/denom);
 
     ch->Draw(Form("ml:mg>>heffdn_%i",i),jesdncut);
-    heffdn[i]->Scale(1./denom);
+    heffdn[i]->Scale(0.95/denom);
 
     for( unsigned int ibin = 1 ; ibin <= 48 ; ibin++ ){
       for( unsigned int jbin = 1 ; jbin <= 48 ; jbin++ ){
@@ -163,10 +167,10 @@ void SMS(bool print = false){
 
 	float toterr = sqrt( 0.06*0.06 + 0.05*0.05 + djes*djes );
 
-	float this_ul = getObservedLimit( cuts.at(i) , toterr );
+	float this_ul = getObservedLimit( cuts.at(i) , toterr , do3jets );
 	float xsecul  = this_ul / ( lumi * eff * 0.19 );
 
-	float this_ul_exp = getExpectedLimit( cuts.at(i) , toterr );
+	float this_ul_exp = getExpectedLimit( cuts.at(i) , toterr , do3jets );
 	float xsecul_exp  = this_ul_exp / ( lumi * eff * 0.19 );
 
 	if( eff > 0 ){
@@ -308,11 +312,14 @@ void SMS(bool print = false){
       //gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.eps  ../plots/%s.pdf",labels.at(i).c_str(),labels.at(i).c_str()));
     }
 
-    int bin = heff[i]->FindBin(600,200);
+    //int bin = heff[i]->FindBin(600,200);
+    //cout << "efficiency (600,200) " << heff[i]->GetBinContent(bin) << endl;
+    int bin = heff[i]->FindBin(725,425);
     cout << "efficiency (600,200) " << heff[i]->GetBinContent(bin) << endl;
     cout << "xsec UL              " << hxsec[i]->GetBinContent(bin) << endl;
     cout << "xsec UL exp          " << hxsec_exp[i]->GetBinContent(bin) << endl;
     cout << "JES                  " << hjes[i]->GetBinContent(bin) << endl;
+    cout << "tot err              " << sqrt(pow(hjes[i]->GetBinContent(bin),2)+0.06*0.06+0.05*0.05) << endl;
     cout << endl << endl;
   }
   
@@ -329,35 +336,83 @@ void SMS(bool print = false){
 
 
 
-float getObservedLimit( int metcut , float seff ){
+float getObservedLimit( int metcut , float seff , bool do3jets ){
 
   float ul = 999;
 
-  if( metcut == 100 ){
-    if(seff >= 0.0 && seff < 0.1) ul = 58.3;
-    if(seff >= 0.1 && seff < 0.2) ul = 61.4;
-    if(seff >= 0.2 && seff < 0.3) ul = 65.6;
-    if(seff >= 0.3 && seff < 0.4) ul = 69.4;
-    if(seff >= 0.4 && seff < 0.5) ul = 74.9;
+  if( do3jets ){
+    if( metcut == 100 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 42.2;
+      if(seff >= 0.1 && seff < 0.2) ul = 45.3;
+      if(seff >= 0.2 && seff < 0.3) ul = 48.6;
+      if(seff >= 0.3 && seff < 0.4) ul = 53.1;
+      if(seff >= 0.4 && seff < 0.5) ul = 57.4;
+      if(seff >= 0.5 && seff < 0.6) ul = 63.0;
+      if(seff >= 0.6 && seff < 0.7) ul = 68.1;
+      if(seff >= 0.7 && seff < 0.8) ul = 73.8;
+      if(seff >= 0.8 && seff < 0.9) ul = 80.7;
+    }
+    else if( metcut == 200 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 6.7;
+      if(seff >= 0.1 && seff < 0.2) ul = 7.3;
+      if(seff >= 0.2 && seff < 0.3) ul = 7.5;
+      if(seff >= 0.3 && seff < 0.4) ul = 7.5;
+      if(seff >= 0.4 && seff < 0.5) ul = 7.8;
+      if(seff >= 0.5 && seff < 0.6) ul = 8.6;
+      if(seff >= 0.6 && seff < 0.7) ul = 9.0;
+      if(seff >= 0.7 && seff < 0.8) ul = 9.9;
+      if(seff >= 0.8 && seff < 0.9) ul = 10.6;
+    }
+    else if( metcut == 300 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 2.8;
+      if(seff >= 0.1 && seff < 0.2) ul = 2.7;
+      if(seff >= 0.2 && seff < 0.3) ul = 2.8;
+      if(seff >= 0.3 && seff < 0.4) ul = 3.0;
+      if(seff >= 0.4 && seff < 0.5) ul = 3.2;
+      if(seff >= 0.5 && seff < 0.6) ul = 3.4;
+      if(seff >= 0.6 && seff < 0.7) ul = 3.7;
+      if(seff >= 0.7 && seff < 0.8) ul = 3.8;
+      if(seff >= 0.8 && seff < 0.9) ul = 4.2;
+    }  
+    else{
+      cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
+      exit(0);
+    }
   }
-  else if( metcut == 200 ){
-    if(seff >= 0.0 && seff < 0.1) ul = 7.9;
-    if(seff >= 0.1 && seff < 0.2) ul = 7.9;
-    if(seff >= 0.2 && seff < 0.3) ul = 8.3;
-    if(seff >= 0.3 && seff < 0.4) ul = 9.0;
-    if(seff >= 0.4 && seff < 0.5) ul = 9.2;
-  }
-  else if( metcut == 300 ){
-    if(seff >= 0.0 && seff < 0.1) ul = 2.7;
-    if(seff >= 0.1 && seff < 0.2) ul = 2.8;
-    if(seff >= 0.2 && seff < 0.3) ul = 2.9;
-    if(seff >= 0.3 && seff < 0.4) ul = 3.0;
-    if(seff >= 0.4 && seff < 0.5) ul = 3.2;
-    else if( seff >= 0.50 && seff < 1.00 ) ul = 3.2;
-  }  
   else{
-    cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
-    exit(0);
+    if( metcut == 100 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 58.3;
+      if(seff >= 0.1 && seff < 0.2) ul = 61.4;
+      if(seff >= 0.2 && seff < 0.3) ul = 65.6;
+      if(seff >= 0.3 && seff < 0.4) ul = 69.4;
+      if(seff >= 0.4 && seff < 0.5) ul = 74.9;
+      if(seff >= 0.5 && seff < 0.6) ul = 82.4;
+      if(seff >= 0.6 && seff < 0.7) ul = 87.4;
+      if(seff >= 0.7 && seff < 0.8) ul = 95.3;
+      if(seff >= 0.8 && seff < 0.9) ul = 102.4;
+    }
+    else if( metcut == 200 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 8.5;
+      if(seff >= 0.1 && seff < 0.2) ul = 8.5;
+      if(seff >= 0.2 && seff < 0.3) ul = 9.1;
+      if(seff >= 0.3 && seff < 0.4) ul = 9.4;
+      if(seff >= 0.4 && seff < 0.5) ul = 9.8;
+      if(seff >= 0.5 && seff < 0.6) ul = 10.4;
+      if(seff >= 0.6 && seff < 0.7) ul = 11.0;
+      if(seff >= 0.7 && seff < 0.8) ul = 11.9;
+      if(seff >= 0.8 && seff < 0.9) ul = 12.3;
+    }
+    else if( metcut == 300 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 2.7;
+      if(seff >= 0.1 && seff < 0.2) ul = 2.8;
+      if(seff >= 0.2 && seff < 0.3) ul = 2.9;
+      if(seff >= 0.3 && seff < 0.4) ul = 2.9;
+      if(seff >= 0.4 && seff < 0.5) ul = 3.1;
+      if(seff >= 0.5 && seff < 0.6) ul = 3.3;
+      if(seff >= 0.6 && seff < 0.7) ul = 3.4;
+      if(seff >= 0.7 && seff < 0.8) ul = 3.7;
+      if(seff >= 0.8 && seff < 0.9) ul = 3.4;
+    }  
   }
 
   if( ul > 998 ){
@@ -369,35 +424,87 @@ float getObservedLimit( int metcut , float seff ){
 
 
 
-float getExpectedLimit( int metcut , float seff ){
+float getExpectedLimit( int metcut , float seff , bool do3jets ){
 
   float ul = 999;
 
-  if( metcut == 100 ){
-    if(seff >= 0.0 && seff < 0.1) ul = 61.0;
-    if(seff >= 0.1 && seff < 0.2) ul = 63.9;
-    if(seff >= 0.2 && seff < 0.3) ul = 68.1;
-    if(seff >= 0.3 && seff < 0.4) ul = 73.5;
-    if(seff >= 0.4 && seff < 0.5) ul = 79.1;
+  if( do3jets ){
+    if( metcut == 100 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 36.0;
+      if(seff >= 0.1 && seff < 0.2) ul = 38.4;
+      if(seff >= 0.2 && seff < 0.3) ul = 40.6;
+      if(seff >= 0.3 && seff < 0.4) ul = 44.6;
+      if(seff >= 0.4 && seff < 0.5) ul = 48.4;
+      if(seff >= 0.5 && seff < 0.6) ul = 51.2;
+      if(seff >= 0.6 && seff < 0.7) ul = 57.3;
+      if(seff >= 0.7 && seff < 0.8) ul = 61.0;
+      if(seff >= 0.8 && seff < 0.9) ul = 66.7;
+    }
+    else if( metcut == 200 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 8.3;
+      if(seff >= 0.1 && seff < 0.2) ul = 9.3;
+      if(seff >= 0.2 && seff < 0.3) ul = 9.2;
+      if(seff >= 0.3 && seff < 0.4) ul = 10.1;
+      if(seff >= 0.4 && seff < 0.5) ul = 12.9;
+      if(seff >= 0.5 && seff < 0.6) ul = 12.2;
+      if(seff >= 0.6 && seff < 0.7) ul = 13.9;
+      if(seff >= 0.7 && seff < 0.8) ul = 14.9;
+      if(seff >= 0.8 && seff < 0.9) ul = 18.0;
+    }
+    else if( metcut == 300 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 4.0;
+      if(seff >= 0.1 && seff < 0.2) ul = 4.2;
+      if(seff >= 0.2 && seff < 0.3) ul = 4.3;
+      if(seff >= 0.3 && seff < 0.4) ul = 4.5;
+      if(seff >= 0.4 && seff < 0.5) ul = 4.8;
+      if(seff >= 0.5 && seff < 0.6) ul = 5.1;
+      if(seff >= 0.6 && seff < 0.7) ul = 5.3;
+      if(seff >= 0.7 && seff < 0.8) ul = 5.6;
+      if(seff >= 0.8 && seff < 0.9) ul = 5.9;
+    }  
+    else{
+      cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
+      exit(0);
+    }
   }
-  else if( metcut == 200 ){
-    if(seff >= 0.0 && seff < 0.1) ul = 10.3;
-    if(seff >= 0.1 && seff < 0.2) ul = 10.7;
-    if(seff >= 0.2 && seff < 0.3) ul = 11.3;
-    if(seff >= 0.3 && seff < 0.4) ul = 12.5;
-    if(seff >= 0.4 && seff < 0.5) ul = 13.7;
-  }
-  else if( metcut == 300 ){
-    if(seff >= 0.0 && seff < 0.1) ul = 4.7;
-    if(seff >= 0.1 && seff < 0.2) ul = 4.9;
-    if(seff >= 0.2 && seff < 0.3) ul = 5.1;
-    if(seff >= 0.3 && seff < 0.4) ul = 5.3;
-    if(seff >= 0.4 && seff < 0.5) ul = 5.7;
-    else if( seff >= 0.50 && seff < 1.00 ) ul = 8.0;
-  }  
   else{
-    cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
-    exit(0);
+    if( metcut == 100 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 61.0;
+      if(seff >= 0.1 && seff < 0.2) ul = 63.9;
+      if(seff >= 0.2 && seff < 0.3) ul = 68.1;
+      if(seff >= 0.3 && seff < 0.4) ul = 73.5;
+      if(seff >= 0.4 && seff < 0.5) ul = 79.1;
+      if(seff >= 0.5 && seff < 0.6) ul = 85.2;
+      if(seff >= 0.6 && seff < 0.7) ul = 91.6;
+      if(seff >= 0.7 && seff < 0.8) ul = 99.8;
+      if(seff >= 0.8 && seff < 0.9) ul = 108.7;
+    }
+    else if( metcut == 200 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 11.1;
+      if(seff >= 0.1 && seff < 0.2) ul = 11.3;
+      if(seff >= 0.2 && seff < 0.3) ul = 11.6;
+      if(seff >= 0.3 && seff < 0.4) ul = 12.6;
+      if(seff >= 0.4 && seff < 0.5) ul = 13.9;
+      if(seff >= 0.5 && seff < 0.6) ul = 16.9;
+      if(seff >= 0.6 && seff < 0.7) ul = 16.6;
+      if(seff >= 0.7 && seff < 0.8) ul = 18.1;
+      if(seff >= 0.8 && seff < 0.9) ul = 16.4;
+    }
+    else if( metcut == 300 ){
+      if(seff >= 0.0 && seff < 0.1) ul = 4.7;
+      if(seff >= 0.1 && seff < 0.2) ul = 4.8;
+      if(seff >= 0.2 && seff < 0.3) ul = 5.0;
+      if(seff >= 0.3 && seff < 0.4) ul = 5.3;
+      if(seff >= 0.4 && seff < 0.5) ul = 5.5;
+      if(seff >= 0.5 && seff < 0.6) ul = 5.8;
+      if(seff >= 0.6 && seff < 0.7) ul = 6.3;
+      if(seff >= 0.7 && seff < 0.8) ul = 6.6;
+      if(seff >= 0.8 && seff < 0.9) ul = 6.8;
+    }  
+    else{
+      cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
+      exit(0);
+    }
   }
 
   if( ul > 998 ){
