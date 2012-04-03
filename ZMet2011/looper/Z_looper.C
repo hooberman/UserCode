@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "temp";
+const char* iter                 = "V00-02-18";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -187,7 +187,7 @@ float getGenMetCustom( const char* prefix ){
     }
   }
 
-  if( nLSP !=2 ){
+  if( TString(prefix).Contains("ggmsb") || TString(prefix).Contains("sms") || TString(prefix).Contains("T5") && nLSP != 2 ){
     cout << "ERROR!!!! FOUND " << nLSP << " LSP's <<<<---------------------------------" << endl;
     exit(0);
   }
