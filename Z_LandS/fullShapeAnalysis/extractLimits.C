@@ -28,7 +28,7 @@
 
 using namespace std;
 
-char* version             = "V00-03-03";
+char* version             = "V00-03-02";
 
 bool fileInList(string thisfilename);
 
@@ -44,8 +44,8 @@ void extractLimits( bool print = false ){
   ofstream* doScript_failed = new ofstream();
   doScript_failed->open(Form("cards/%s/doLimits_failed.sh",version));
 
-  ofstream* doScript_weird = new ofstream();
-  doScript_weird->open(Form("cards/%s/doLimits_weird.sh",version));
+  //ofstream* doScript_weird = new ofstream();
+  //doScript_weird->open(Form("cards/%s/doLimits_weird.sh",version));
 
   //------------------------------------------
   // loop over CMSSM points
@@ -62,9 +62,12 @@ void extractLimits( bool print = false ){
       int ml = hexcl->GetXaxis()->GetBinCenter(mlbin);
       // if( mgbin < 45 ) continue;
       // if( mgbin > 44 ) continue;
-      if( ml < 600 || ml > 800 ) continue;
+      //if( ml < 600 || ml > 800 ) continue;
+      //if( mg < 800 ) continue;
+      //if( ml > 600 ) continue;
 
       hexcl->SetBinContent(mgbin,mlbin,0);
+      hexp->SetBinContent(mgbin,mlbin,0);
 
       //------------------------------------------
       // open file, if available
@@ -82,7 +85,7 @@ void extractLimits( bool print = false ){
       limitResult mylimit = run(filename,"plot");
 
       if( mylimit.obs < 1.e-10 ){
-	*doScript_failed << Form("../../../../test/lands.exe -d SMS_%i_%i.txt -M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [0.005,0.5,x1.1] -n SMS_%i_%i",mgbin,mlbin,mgbin,mlbin) << endl;
+	*doScript_failed << Form("../../../../test/lands.exe -d SMS_%i_%i.txt -M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [0.002,0.2,x1.1] -n SMS_%i_%i",mgbin,mlbin,mgbin,mlbin) << endl;
 
 	cout << "--------------------------------------------------------" << endl;
 	cout << "mg ml " << mgbin << " " << mlbin << "FAILED!!!"           << endl;
@@ -99,8 +102,8 @@ void extractLimits( bool print = false ){
 	cout << "expected : " << mylimit.exp                               << endl;
 	cout << "--------------------------------------------------------" << endl;
 
-	if( mylimit.obs > mylimit.exp ){
-	  *doScript_weird << Form("../../../../test/lands.exe -d SMS_%i_%i.txt -M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [0.005,0.5,x1.1] -n SMS_%i_%i",mgbin,mlbin,mgbin,mlbin) << endl;
+	if( mylimit.obs > 0.8 * mylimit.exp ){
+	  //*doScript_weird << Form("../../../../test/lands.exe -d SMS_%i_%i.txt -M Hybrid --freq  --nToysForCLsb 3000 --nToysForCLb 1000  --scanRs 1 -vR [0.002,0.2,x1.1] -n SMS_%i_%i",mgbin,mlbin,mgbin,mlbin) << endl;
 
 	  cout << "WEIRD!!" << endl;
 	}
@@ -111,7 +114,7 @@ void extractLimits( bool print = false ){
   }
 
   doScript_failed->close();
-  doScript_weird->close();
+  //doScript_weird->close();
   
   //------------------------------------------
   // draw exclusion histogram

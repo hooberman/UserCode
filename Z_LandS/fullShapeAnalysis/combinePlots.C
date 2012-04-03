@@ -281,7 +281,8 @@ void smoothHist( TH2F* h ){
 }
 
 void combinePlots(bool print = false){
-  
+
+  bool smooth = false;
   // char* version        = "V00-01-00";
   // char* sample         = "T5zz";
   // bool  do3jets        = false;
@@ -343,6 +344,7 @@ void combinePlots(bool print = false){
   bool  do3jets        = false;
   char* title          = "m(#tilde{q}) >> m(#tilde{g})";
   float dm             = 0.0;
+  smooth               = true;
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
@@ -398,6 +400,12 @@ void combinePlots(bool print = false){
   int bin = heff->FindBin(600,200);
   cout << "Efficiency for 600,200 " << heff->GetBinContent(bin) << endl;
 
+  bin = heff->FindBin(400,200);
+  cout << "Efficiency for 400,200 " << heff->GetBinContent(bin) << endl;
+
+  bin = heff->FindBin(800,300);
+  cout << "Efficiency for 800,300 " << heff->GetBinContent(bin) << endl;
+
   //-------------------------------
   // find excluded points
   //-------------------------------
@@ -422,6 +430,8 @@ void combinePlots(bool print = false){
 
       int   bin = refxsec->FindBin(mg);
       float xsec = refxsec->GetBinContent(bin);
+
+      //cout << ibin << " " << jbin << " " << mg << " " << ml << " " << xsecul << " " << xsec << " " << (xsec > xsecul) << endl;
 
       hexcluded->SetBinContent(ibin,jbin,0);
       if( xsec > xsecul )   hexcluded->SetBinContent(ibin,jbin,1);
@@ -452,7 +462,7 @@ void combinePlots(bool print = false){
   gPad->SetTopMargin(0.1);
   gPad->SetRightMargin(0.2);
 
-  if( TString(sample).Contains("gmsb") ) smoothHist( heff );
+  if( TString(sample).Contains("gmsb") && smooth ) smoothHist( heff );
 
   heff->GetYaxis()->SetRangeUser(ymin,1200);
   heff->GetXaxis()->SetLabelSize(0.035);
@@ -488,7 +498,7 @@ void combinePlots(bool print = false){
   gPad->SetTopMargin(0.1);
   gPad->SetRightMargin(0.2);
 
-  if( TString(sample).Contains("gmsb") ) smoothHist( hexcl );
+  if( TString(sample).Contains("gmsb") && smooth ) smoothHist( hexcl );
 
   hexcl->GetYaxis()->SetRangeUser(ymin,1200);
   //hexcl->GetXaxis()->SetRangeUser(0,950);
