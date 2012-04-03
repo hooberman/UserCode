@@ -187,7 +187,7 @@ float getGenMetCustom( const char* prefix ){
     }
   }
 
-  if( TString(prefix).Contains("ggmsb") || TString(prefix).Contains("sms") || TString(prefix).Contains("T5") && nLSP != 2 ){
+  if( ( TString(prefix).Contains("ggmsb") || TString(prefix).Contains("sms") || TString(prefix).Contains("T5") ) && nLSP != 2 ){
     cout << "ERROR!!!! FOUND " << nLSP << " LSP's <<<<---------------------------------" << endl;
     exit(0);
   }
