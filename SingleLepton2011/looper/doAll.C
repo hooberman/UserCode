@@ -41,26 +41,23 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-03-03";
+  const char* version    = "V00-04-00";
   const char* jsonfile   = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
 
-  gSystem->Load("libFWCoreFWLite.so");
-  AutoLibraryLoader::enable(); 
+  // Load Everything                                                                                                                                                                                                          
+  gSystem->Load("libTree.so");
+  gSystem->Load("libPhysics.so");
+  gSystem->Load("libEG.so");
+  gSystem->Load("libMathCore.so");
 
-  // Load various tools  
-  gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
-  //gROOT->ProcessLine(".L ../CORE/topmass/ttdilepsolve.cpp+"); 
-
-  // Load FWLite
   gSystem->Load("../Tools/MiniFWLite/libMiniFWLite.so");
+  gSystem->Load("libsingleLeptonCORE.so");
+  gSystem->Load("libsingleLeptonLooper.so");
 
-  // Load and compile the looping code
-  gSystem->CompileMacro("singleLeptonLooper.C","++k", "libsingleLeptonLooper");
-  
   singleLeptonLooper* looper = new singleLeptonLooper();
 
   //set looper parameters
@@ -92,16 +89,16 @@ void doAll(bool skipFWLite = true)
  
   // flags for files to run over
   bool rundata     = 0;
-  bool runttall    = 1;
-  bool runWjets    = 1;
+  bool runttall    = 0;
+  bool runWjets    = 0;
   bool runVV       = 1;
-  bool runQCD      = 1;
-  bool runMuQCD    = 1;
-  bool runtW       = 1;
-  bool runDYtot    = 1;
-  bool runT2tt     = 1; 
+  bool runQCD      = 0;
+  bool runMuQCD    = 0;
+  bool runtW       = 0;
+  bool runDYtot    = 0;
+  bool runT2tt     = 0; 
   bool runT2tt_few = 0;
-  bool runT2bw     = 1;
+  bool runT2bw     = 0;
 
   bool rundatamay10   = 0;
   bool rundataprv4    = 0;
@@ -164,6 +161,7 @@ void doAll(bool skipFWLite = true)
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
+    //    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple_35.root");
     pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root");
   }
 
@@ -173,7 +171,7 @@ void doAll(bool skipFWLite = true)
 
   TChain* chWjets = new  TChain("Events");
   if(runWjets){
-    pickSkimIfExists(chWjets,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndJets/merged*root");
+    pickSkimIfExists(chWjets,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
   }
 
   //----------------------------------------                                                                                                                                                                
@@ -182,17 +180,17 @@ void doAll(bool skipFWLite = true)
 
   TChain* chVV = new  TChain("Events");
   if(runVV){
-    pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WW_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
-    //    pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
-    pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/ZZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WW_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/ZZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
     // samples in multi-lepton decay modes
-    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
-    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
-    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
-    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/WZTo3LNu_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v2/V04-02-29/SingleLepton/merged*root");
-    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/ZZJetsTo4L_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
-    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/ZZJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
-    // pickSkimIfExists(chVV, "/nfs-7a/userdata/cms2/ZZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WZTo3LNu_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v2/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/ZZJetsTo4L_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/ZZJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/ZZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
   }
 
   //----------------------------------------
@@ -202,13 +200,14 @@ void doAll(bool skipFWLite = true)
   TChain* chDYtot = new  TChain("Events");
   if(runDYtot){
     string dypath = "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/";
+    pickSkimIfExists(chDYtot,dypath+"DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
+    // samples in specific decay modes
     // pickSkimIfExists(chDYtot,dypath+"DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-29/SingleLeptonAndTwoJets/merged*root");
     // pickSkimIfExists(chDYtot,dypath+"DYToTauTau_M-20_CT10_TuneZ2_7TeV-powheg-pythia-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
     // pickSkimIfExists(chDYtot,dypath+"DYToMuMu_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
     // pickSkimIfExists(chDYtot,dypath+"DYToMuMu_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
     // pickSkimIfExists(chDYtot,dypath+"DYToEE_M-10To20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
     // pickSkimIfExists(chDYtot,dypath+"DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
-    pickSkimIfExists(chDYtot,dypath+"DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root");
   }
 
   //----------------------------------------
@@ -407,164 +406,111 @@ void doAll(bool skipFWLite = true)
   //--------------------------------
 
   float lumi              = 1.0; 
-  bool  calculateTCMET    = false; //redo tcmet calculation on the fly
-
-  char* jetTypeStrings[3] = {"JPT", "calo","pfjet"};
-  char* metTypeStrings[4] = {"tcmet", "muon", "muonjes","pfmet"};
-  char* zvetoStrings[4]   = {"", "_allzveto", "_nozveto","_selectz"};
-  char* frmodeStrings[2]  = {"QCDType","WjetsType"}; //e_qcd = 0, e_wjets
-  bool doFakeApp          = false;
-
-  singleLeptonLooper::TrigEnum trig;
-
-  for (int jetTypeIdx = 2; jetTypeIdx < 3; ++jetTypeIdx)
-    {
-      for (int metTypeIdx = 3; metTypeIdx < 4; ++metTypeIdx)
-	{
-	  for (int zvetoIdx = 0; zvetoIdx < 1; ++zvetoIdx)
-	    {
-	      for (int frmodeIdx = 0; frmodeIdx < (2-(1*!doFakeApp)); ++frmodeIdx)
-		//for (int frmodeIdx = 0; frmodeIdx < 1; ++frmodeIdx)
-		{
-                  
-		  singleLeptonLooper::JetTypeEnum  jetType(jetTypeIdx);
-		  singleLeptonLooper::MetTypeEnum  metType(metTypeIdx);
-		  singleLeptonLooper::ZVetoEnum    zveto(zvetoIdx);
-		  singleLeptonLooper::FREnum       frmode(frmodeIdx);
-
-		  if( doFakeApp ){
-		    if( frmodeIdx == 0 ) cout << "Doing double fake estimate" << endl;
-		    if( frmodeIdx == 1 ) cout << "Doing single fake estimate" << endl;
-		  }
-
+  
+  //--------------------------------------------------------------------
+  if (rundatamay10) {
+    cout << "Processing datamay10" << endl;
+    looper->ScanChain(chdatamay10,"datamay10", 1, 1, lumi);
+    cout << "Done processing datamay10" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (rundataprv4) {
+    cout << "Processing dataprv4" << endl;
+    looper->ScanChain(chdataprv4,"dataprv4", 1, 1, lumi);
+    cout << "Done processing dataprv4" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (rundataaug05) {
+    cout << "Processing dataaug05" << endl;
+    looper->ScanChain(chdataaug05,"dataaug05", 1, 1, lumi);
+    cout << "Done processing dataaug05" << endl;
+  }
 		  //--------------------------------------------------------------------
-		  if (rundatamay10) {
-		    cout << "Processing datamay10" << endl;
-		    looper->ScanChain(chdatamay10,"datamay10", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing datamay10" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (rundataprv4) {
-		    cout << "Processing dataprv4" << endl;
-		    looper->ScanChain(chdataprv4,"dataprv4", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing dataprv4" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (rundataaug05) {
-		    cout << "Processing dataaug05" << endl;
-		    looper->ScanChain(chdataaug05,"dataaug05", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing dataaug05" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (rundataprv6) {
-		    cout << "Processing dataprv6" << endl;
-		    looper->ScanChain(chdataprv6,"dataprv6", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing dataprv6" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (rundata2011b33) {
-		    cout << "Processing data2011b33" << endl;
-		    looper->ScanChain(chdata2011b33,"data2011b33", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing data2011b33" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (rundata2011b34) {
-		    cout << "Processing data2011b34" << endl;
-		    looper->ScanChain(chdata2011b34,"data2011b34", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing data2011b34" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (runttall) {
-		    cout << "Processing ttbar all.. " << endl;
-		    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing ttbar all.. " << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (runDYtot) {
-		    cout << "Processing DY->all" << endl;
-		    looper->ScanChain(chDYtot,"DYtot", kDYtot, preDYtot, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done rocessing DY->ee" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (runQCD) {
-		    cout << "Processing QCD.. " << endl;
-		    looper->ScanChain(chQCD,"qcd", kqcd, preqcd, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing  QCD.. " << endl;
-		  }
-		  //--------------------------------------------------------------------
-                  if (runMuQCD) {
-                    cout << "Processing Mu QCD.. " << endl;
-                    looper->ScanChain(chMuQCD,"muqcd", kqcd, preqcd, lumi, jetType, metType, zveto,frmode, doFakeApp, calculateTCMET);
-                    cout << "Done processing  QCD.. " << endl;
+  if (rundataprv6) {
+    cout << "Processing dataprv6" << endl;
+    looper->ScanChain(chdataprv6,"dataprv6", 1, 1, lumi);
+    cout << "Done processing dataprv6" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (rundata2011b33) {
+    cout << "Processing data2011b33" << endl;
+    looper->ScanChain(chdata2011b33,"data2011b33", 1, 1, lumi);
+    cout << "Done processing data2011b33" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (rundata2011b34) {
+    cout << "Processing data2011b34" << endl;
+    looper->ScanChain(chdata2011b34,"data2011b34", 1, 1, lumi);
+    cout << "Done processing data2011b34" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runttall) {
+    cout << "Processing ttbar all.. " << endl;
+    looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi);
+    cout << "Done processing ttbar all.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runDYtot) {
+    cout << "Processing DY->all" << endl;
+    looper->ScanChain(chDYtot,"DYtot", kDYtot, preDYtot, lumi);
+    cout << "Done rocessing DY->ee" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runQCD) {
+    cout << "Processing QCD.. " << endl;
+    looper->ScanChain(chQCD,"qcd", kqcd, preqcd, lumi);
+    cout << "Done processing  QCD.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runMuQCD) {
+    cout << "Processing Mu QCD.. " << endl;
+    looper->ScanChain(chMuQCD,"muqcd", kqcd, preqcd, lumi);
+    cout << "Done processing  QCD.. " << endl;
                   }
-		  //--------------------------------------------------------------------
-		  if (runWjets) {
-		    cout << "Processing Wjets.." << endl;
-		    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing Wjets.." << endl;
-		  }
-                  //-------------------------------------------------------------------
-                  if (runVV) {
-                    cout << "Processing Diboson.." << endl;
-                    looper->ScanChain(chVV,"diboson", kVV, preVV, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-                    cout << "Done processing Diboson.." << endl;
-                  }
-		  //--------------------------------------------------------------------
-		  if (runtW) {
-		    cout << "Processing tW" << endl;
-		    looper->ScanChain(chtW,"tW", ktW, pretW, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing tW" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (runT2tt) {
-		    cout << "Processing T2tt" << endl;
-		    looper->ScanChain(chT2tt, "T2tt", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing T2tt" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (runT2tt_few) {
-		    cout << "Processing T2tt_few" << endl;
-		    looper->ScanChain(chT2tt_few, "T2tt_few", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing T2tt_few" << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (runT2bw) {
-		    cout << "Processing T2bw all.. " << endl;
-		    looper->ScanChain(chT2bw,"T2bw", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing T2bw all.. " << endl;
-		  }
-		  //--------------------------------------------------------------------
-		  if (rundata) {
-		    cout << "Processing data" << endl;
-		    looper->ScanChain(chdata,"data", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		    cout << "Done processing data" << endl;
-		  }
-		  //--------------------------------------------------------------------
-
-		  // save all the histograms
-		  const char* outFile;
-		  if(doFakeApp) {
-		    outFile = Form("../output/%s/singleLepton_%s_%s%s_%s_FakeApp.root", version,
-				   jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
-		  }
-		  else {
-		    outFile = Form("../output/%s/singleLepton_%s_%s%s.root", version,
-				   jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
-		  }
-                  
-		  //const char* outFile = Form("victory_baseline_genmetgt50_nosumjetptcut_%s_%s_pleasework_varbins.root", 
-		  //jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx]);
-		  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-		  rootdir->cd();
-		  saveHist(outFile);
-		  deleteHistos();
-                  
-		} // frmodeIdx
-	    }//zvetoIdx
-	} // metTypeIdx
-    } // jetTypeIdx
-  //}
-
+  //--------------------------------------------------------------------
+  if (runWjets) {
+    cout << "Processing Wjets.." << endl;
+    looper->ScanChain(chWjets,"wjets", kWjets, preWjets, lumi);
+    cout << "Done processing Wjets.." << endl;
+  }
+  //-------------------------------------------------------------------
+  if (runVV) {
+    cout << "Processing Diboson.." << endl;
+    looper->ScanChain(chVV,"diboson", kVV, preVV, lumi);
+    cout << "Done processing Diboson.." << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtW) {
+    cout << "Processing tW" << endl;
+    looper->ScanChain(chtW,"tW", ktW, pretW, lumi);
+    cout << "Done processing tW" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runT2tt) {
+    cout << "Processing T2tt" << endl;
+    looper->ScanChain(chT2tt, "T2tt", 1, 1, lumi);
+    cout << "Done processing T2tt" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runT2tt_few) {
+    cout << "Processing T2tt_few" << endl;
+    looper->ScanChain(chT2tt_few, "T2tt_few", 1, 1, lumi);
+    cout << "Done processing T2tt_few" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runT2bw) {
+    cout << "Processing T2bw all.. " << endl;
+    looper->ScanChain(chT2bw,"T2bw", 1, 1, lumi);
+    cout << "Done processing T2bw all.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (rundata) {
+    cout << "Processing data" << endl;
+    looper->ScanChain(chdata,"data", 1, 1, lumi);
+    cout << "Done processing data" << endl;
+  }
+  //--------------------------------------------------------------------
+  
   gSystem->Exit(0);
   
 }

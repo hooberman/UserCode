@@ -49,15 +49,10 @@ class singleLeptonLooper
 	
         int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., 
 		       int prescale = 1., float lumi = 1.,
-                       JetTypeEnum jetType = e_JPT, 
-                       MetTypeEnum metType = e_tcmet,
-                       ZVetoEnum zveto = e_standard,
                        FREnum frmode  = e_wjets,
-                       bool doFakeApp = false,
-                       bool calculateTCMET = false
+                       bool doFakeApp = false
                        );
         void BookHistos (char *prefix);
-        float smearMet( float met , float sumjetpt , float metscale );
 	void InitBaby();
 	float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx = 0 );
 	
@@ -73,7 +68,8 @@ class singleLeptonLooper
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
 	float stopPairCrossSection( float stopmass );
         void closeTree ();
-	float trackIso( int thisPf , float dz_thresh = 0.2 );
+	float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.2 );
+	std::vector<float> totalIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.2 );
 
 	bool initialized;
 	TH1D*   stop_xsec_hist;
@@ -99,6 +95,8 @@ class singleLeptonLooper
 	Int_t   mcndec2_; 
 	Float_t mctaudpt1_;
 	Float_t mctaudpt2_;
+	Int_t   mctaudid1_;    
+	Int_t   mctaudid2_;    
 	Float_t mcdr1_;    
 	Float_t mcdr2_;    
 
@@ -209,6 +207,8 @@ class singleLeptonLooper
 	LorentzVector*  mlep_;   
 	LorentzVector*  mclep1_;   
 	LorentzVector*  mclep2_;   
+	LorentzVector*  mctaud1_;   
+	LorentzVector*  mctaud2_;  
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
         LorentzVector*  dilep_;
