@@ -26,18 +26,18 @@
 
 using namespace std;
 
-TH2F* shiftHist(TH2F* hin){
+// TH2F* shiftHist(TH2F* hin){
 
-  TH2F* hout = new TH2F(Form("%s_out",hin->GetName()),Form("%s_out",hin->GetName()), 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
+//   TH2F* hout = new TH2F(Form("%s_out",hin->GetName()),Form("%s_out",hin->GetName()), 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
 
-  for(int ibin = 1 ; ibin <= 48 ; ibin++ ){
-    for(int jbin = 1 ; jbin <= 48 ; jbin++ ){
-      hout->SetBinContent(ibin,jbin,hin->GetBinContent(ibin,jbin));
-    }
-  }
+//   for(int ibin = 1 ; ibin <= 48 ; ibin++ ){
+//     for(int jbin = 1 ; jbin <= 48 ; jbin++ ){
+//       hout->SetBinContent(ibin,jbin,hin->GetBinContent(ibin,jbin));
+//     }
+//   }
 
-  return hout;
-}
+//   return hout;
+// }
 
 
 TGraph* getGraph_WZ(string type){
@@ -47,12 +47,11 @@ TGraph* getGraph_WZ(string type){
   int npoints = -1;
 
   if( type == "nom" ){
-    x[0] =  837;  y[0] =  50;
-    x[1] =  837;  y[1] = 300;
-    x[2] =  800;  y[2] = 350;
-    x[3] =  625;  y[3] = 350;
-    x[4] =  625;  y[4] = 550;
-    npoints = 5;
+    x[0] =  212.5;  y[0] = -12.5;
+    x[1] =  212.5;  y[1] =  37.5;
+    x[2] =  137.5;  y[2] =  37.5;
+    x[3] =  137.5;  y[3] = -12.5;
+    npoints = 4;
   }
   else if( type == "down" ){
     x[0] = 600;   y[0] =  50;
@@ -69,11 +68,6 @@ TGraph* getGraph_WZ(string type){
     x[3] = 712.5; y[3] =  475;
     x[4] = 712.5; y[4] =  637.5;
     npoints = 5;
-  }
-
-  for( int i = 0 ; i < npoints ; ++i ){
-    x[i] -= 12.5;
-    y[i] -= 12.5;
   }
 
   TGraph *gr = new TGraph(npoints,x,y);
@@ -131,24 +125,26 @@ void combinePlots(string version , bool print = false){
   char* xsectype;
   float denom;
 
-  if( version == "V00-02-03" ){
+  if( version == "V00-02-02" ){
     sample   = (char*) "wzsms";
-    title    = (char*) "#chi^{#pm}#chi^{0}#rightarrow WZ+E_{T}^{miss}";
+    title    = (char*) "pp#rightarrow #chi^{#pm}#chi^{0} #rightarrow WZ + E_{T}^{miss}";
     xsectype = (char*) "C1N2";
+    denom    = 100000.0;
   } 
 
-  else if( version == "V00-02-04" ){
+  else if( version == "V00-02-03" ){
     sample   = (char*) "zzsms";
-    title    = (char*) "#chi^{#pm}#chi^{0}#rightarrow WZ+E_{T}^{miss}";
+    title    = (char*) "pp#rightarrow #chi^{0}#chi^{0} #rightarrow ZZ + E_{T}^{miss}";
     xsectype = (char*) "N1N2";
+    denom    = 52600.0;
   } 
   
-  float ymin = 0.;
+  //float ymin = 0.;
 
   TFile *file = TFile::Open(Form("cards/%s/observed_limit.root",version.c_str()));
 
-  TH2F* hexcl_temp = (TH2F*) file->Get("hexcl");
-  TH2F* hexcl      = shiftHist(hexcl_temp);
+  TH2F* hexcl      = (TH2F*) file->Get("hexcl");
+  hexcl->Scale(1000.0); // pb --> fb
 
   TLatex *t = new TLatex();
   t->SetNDC();
@@ -172,16 +168,17 @@ void combinePlots(string version , bool print = false){
   TCut met100("pfmet>100");
   TCut weight("btagweight * davtxweight * trgeff");
 
-  TCut sel  = zmass + njets2 + bveto + mjj + nlep2 + rho + sf + met100;
+  TCut sel  = zmass + njets2 + bveto + mjj + nlep2 + sf + met100;
 
   cout << "Using selection: " << sel.GetTitle() << endl;
 
-  TH2F* heff = new TH2F("heff","heff", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
+  TH2F* heff = new TH2F("heff","heff", 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5);
 
   TCanvas *ctemp = new TCanvas();
   ch->Draw("ml:mg>>heff",sel);
   delete ctemp;
   heff->Scale(1.0/denom);
+  heff->Scale(100);
 
   int effbin = heff->FindBin(200,0);
   cout << "Efficiency for 200,0  " << heff->GetBinContent(effbin) << endl;
@@ -200,12 +197,12 @@ void combinePlots(string version , bool print = false){
   TFile *xsecfile = TFile::Open(Form("%s_referencexSec.root",xsectype));
   TH1F* refxsec   = (TH1F*) xsecfile->Get(xsectype);
 
-  TH2F* hexcluded   = new TH2F("hexcluded","hexcluded", 48,0,1200,48,0,1200);
-  TH2F* hexcluded13 = new TH2F("hexcluded13","hexcluded13", 48,0,1200,48,0,1200);
-  TH2F* hexcluded3  = new TH2F("hexcluded3","hexcluded3", 48,0,1200,48,0,1200);
+  TH2F* hexcluded   = new TH2F("hexcluded","hexcluded"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
+  TH2F* hexcluded13 = new TH2F("hexcluded13","hexcluded13", 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
+  TH2F* hexcluded3  = new TH2F("hexcluded3","hexcluded3"  , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
   
-  for( unsigned int ibin = 1 ; ibin <= 48 ; ibin++ ){
-    for( unsigned int jbin = 1 ; jbin <= 48 ; jbin++ ){
+  for( unsigned int ibin = 1 ; ibin <= 21 ; ibin++ ){
+    for( unsigned int jbin = 1 ; jbin <= 21 ; jbin++ ){
 
       float xsecul = hexcl->GetBinContent(ibin,jbin);
 
@@ -216,7 +213,7 @@ void combinePlots(string version , bool print = false){
 
       int   bin  = refxsec->FindBin(mg);
       float xsec = refxsec->GetBinContent(bin);
-
+      
       //cout << ibin << " " << jbin << " " << mg << " " << ml << " " << xsecul << " " << xsec << " " << (xsec > xsecul) << endl;
 
       hexcluded->SetBinContent(ibin,jbin,0);
@@ -250,30 +247,25 @@ void combinePlots(string version , bool print = false){
 
   if( TString(sample).Contains("gmsb") && smooth ) smoothHist( heff );
 
-  heff->GetYaxis()->SetRangeUser(ymin,1200);
+  //heff->GetYaxis()->SetRangeUser(ymin,1200);
   heff->GetXaxis()->SetLabelSize(0.035);
   heff->GetYaxis()->SetLabelSize(0.035);
   heff->GetZaxis()->SetLabelSize(0.035);
-  heff->SetMaximum(0.35);
-  heff->GetYaxis()->SetTitle("#chi^{0}_{1} mass [GeV]");
-  heff->GetXaxis()->SetTitle("gluino mass [GeV]");
-  heff->GetZaxis()->SetTitle("A #times #varepsilon (#geq1 Z(ll))");
+  //heff->SetMaximum(0.35);
+  heff->GetYaxis()->SetTitle("LSP mass [GeV]");
+  heff->GetXaxis()->SetTitle("#chi mass [GeV]");
+  heff->GetZaxis()->SetTitle("A #times #varepsilon (%)");
   heff->Draw("colz");
-  heff->GetYaxis()->SetRangeUser(ymin,1200);
+  //heff->GetYaxis()->SetRangeUser(ymin,1200);
 
   t->SetTextSize(0.04);
 
-  //if(TString(sample).Contains("gmsb") )  t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{1}^{0}, #chi_{1}^{0} #rightarrow Z G");
-  //else                                   t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
-
+  t->DrawLatex(0.2,0.83,"E_{T}^{miss} templates");
   t->DrawLatex(0.2,0.77,title);
   t->DrawLatex(0.2,0.71,"E_{T}^{miss} > 100 GeV");
-  t->DrawLatex(0.2,0.55,"E_{T}^{miss} templates");
-  t->SetTextSize(0.04);
-  t->DrawLatex(0.18,0.93,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
 
-  //if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
-  //else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
+  t->SetTextSize(0.04);
+  t->DrawLatex(0.15,0.93,"CMS Preliminary  #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
 
   //-------------------------------
   // cross section limit
@@ -285,19 +277,19 @@ void combinePlots(string version , bool print = false){
 
   if( TString(sample).Contains("gmsb") && smooth ) smoothHist( hexcl );
 
-  hexcl->GetYaxis()->SetRangeUser(ymin,1200);
+  //hexcl->GetYaxis()->SetRangeUser(ymin,1200);
   //hexcl->GetXaxis()->SetRangeUser(0,950);
   gPad->SetLogz();
   hexcl->GetXaxis()->SetLabelSize(0.035);
   hexcl->GetYaxis()->SetLabelSize(0.035);
   hexcl->GetZaxis()->SetLabelSize(0.035);
-  hexcl->GetYaxis()->SetTitle("#chi^{0}_{1} mass [GeV]");
-  hexcl->GetXaxis()->SetTitle("gluino mass [GeV]");
-  hexcl->GetZaxis()->SetTitle("95% CL upper limit on #sigma [pb]");
+  hexcl->GetYaxis()->SetTitle("LSP mass [GeV]");
+  hexcl->GetXaxis()->SetTitle("#chi mass [GeV]");
+  hexcl->GetZaxis()->SetTitle("95% CL upper limit on #sigma [fb]");
   hexcl->Draw("colz");
-  hexcl->SetMinimum(0.001);
-  hexcl->SetMaximum(10);
-  hexcl->GetYaxis()->SetRangeUser(ymin,1200);
+  //hexcl->SetMinimum(0.001);
+  //hexcl->SetMaximum(10);
+  //hexcl->GetYaxis()->SetRangeUser(ymin,1200);
 
   TGraph* gr_excl;      
   TGraph* gr_excl_down;
@@ -320,35 +312,23 @@ void combinePlots(string version , bool print = false){
   gr_excl_up->SetLineStyle(2);
   gr_excl_down->SetLineStyle(3);
   gr_excl->Draw("same");
-  gr_excl_up->Draw("same");
-  gr_excl_down->Draw("same");
-
-  //if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
-  //else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
-
-  // if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
-  // else                                    line.DrawLine(50+dm,50,1200,1200-dm);
+  //gr_excl_up->Draw("same");
+  //gr_excl_down->Draw("same");
 
   TLegend *leg = new TLegend(0.2,0.53,0.45,0.67);
   leg->AddEntry(gr_excl,     "#sigma^{NLO-QCD}","l");
-  leg->AddEntry(gr_excl_up,  "3 #times #sigma^{NLO-QCD}","l");
-  leg->AddEntry(gr_excl_down,"1/3 #times #sigma^{NLO-QCD}","l");
+  //leg->AddEntry(gr_excl_up,  "3 #times #sigma^{NLO-QCD}","l");
+  //leg->AddEntry(gr_excl_down,"1/3 #times #sigma^{NLO-QCD}","l");
   leg->SetFillColor(0);
   leg->SetBorderSize(0);
   leg->SetTextSize(0.04);
   leg->Draw();
   
   t->SetTextSize(0.04);
-  if(TString(sample).Contains("gmsb") )  t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{1}^{0}, #chi_{1}^{0} #rightarrow Z G");
-  else                                   t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
+  t->DrawLatex(0.2,0.83,"E_{T}^{miss} templates");
   t->DrawLatex(0.2,0.77,title);
-  t->DrawLatex(0.2,0.47,"E_{T}^{miss} templates");
-  //t->SetTextSize(0.035);
-  //t->DrawLatex(0.18,0.92,"CMS                     #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
-  //t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
-  //t->DrawLatex(0.18,0.92,"       CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
-  t->SetTextSize(0.04);
-  t->DrawLatex(0.18,0.93,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
+
+  t->DrawLatex(0.15,0.93,"CMS Preliminary  #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
 
   if( print ){
     can->Print(Form("cards/%s/plots/SMS.eps",version.c_str()));
@@ -359,13 +339,13 @@ void combinePlots(string version , bool print = false){
     gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version.c_str(),version.c_str()));
   }
 
-  TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
-  TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
-  TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
+  // TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
+  // TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
+  // TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
 
-  // TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
-  // TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
-  // TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
+  TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
+  TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
+  TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
 
   TFile* fout = TFile::Open(Form("cards/%s/limit.root",version.c_str()),"RECREATE");
   fout->cd();
