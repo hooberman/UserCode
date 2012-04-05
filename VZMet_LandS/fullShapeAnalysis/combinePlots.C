@@ -165,10 +165,10 @@ void combinePlots(string version , bool print = false){
   TCut nlep2("nlep==2");
   TCut rho("rho>0 && rho<40");
   TCut sf("leptype==0||leptype==1");
-  TCut met100("pfmet>100");
+  TCut met60("pfmet>60");
   TCut weight("btagweight * davtxweight * trgeff");
 
-  TCut sel  = zmass + njets2 + bveto + mjj + nlep2 + sf + met100;
+  TCut sel  = zmass + njets2 + bveto + mjj + nlep2 + sf + met60;
 
   cout << "Using selection: " << sel.GetTitle() << endl;
 
@@ -262,7 +262,7 @@ void combinePlots(string version , bool print = false){
 
   t->DrawLatex(0.2,0.83,"E_{T}^{miss} templates");
   t->DrawLatex(0.2,0.77,title);
-  t->DrawLatex(0.2,0.71,"E_{T}^{miss} > 100 GeV");
+  t->DrawLatex(0.2,0.71,"E_{T}^{miss} > 60 GeV");
 
   t->SetTextSize(0.04);
   t->DrawLatex(0.15,0.93,"CMS Preliminary  #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
@@ -287,8 +287,8 @@ void combinePlots(string version , bool print = false){
   hexcl->GetXaxis()->SetTitle("#chi mass [GeV]");
   hexcl->GetZaxis()->SetTitle("95% CL upper limit on #sigma [fb]");
   hexcl->Draw("colz");
-  //hexcl->SetMinimum(0.001);
-  //hexcl->SetMaximum(10);
+  hexcl->SetMinimum(99);
+  hexcl->SetMaximum(5000);
   //hexcl->GetYaxis()->SetRangeUser(ymin,1200);
 
   TGraph* gr_excl;      
@@ -315,13 +315,13 @@ void combinePlots(string version , bool print = false){
   //gr_excl_up->Draw("same");
   //gr_excl_down->Draw("same");
 
-  TLegend *leg = new TLegend(0.2,0.53,0.45,0.67);
-  leg->AddEntry(gr_excl,     "#sigma^{NLO-QCD}","l");
+  TLegend *leg = new TLegend(0.2,0.53,0.55,0.67);
+  leg->AddEntry(gr_excl,     "#sigma^{wino-like}","l");
   //leg->AddEntry(gr_excl_up,  "3 #times #sigma^{NLO-QCD}","l");
   //leg->AddEntry(gr_excl_down,"1/3 #times #sigma^{NLO-QCD}","l");
   leg->SetFillColor(0);
   leg->SetBorderSize(0);
-  leg->SetTextSize(0.04);
+  leg->SetTextSize(0.06);
   leg->Draw();
   
   t->SetTextSize(0.04);
