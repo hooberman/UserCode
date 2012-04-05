@@ -31,14 +31,12 @@ TAG="V00-04-00"
 ./writeConfig.sh /hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/ ${TAG}_ElectronHad2011B-PromptRecov1V33
 ./writeConfig.sh /hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/ ${TAG}_ElectronHad2011B-PromptRecov1V34
 # --- DOUBLE MU ---
-/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-34/DoubleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/
-/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/
-/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/
-/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/
-/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/DoubleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/
-/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/DoubleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_4_V04-02-20_merged/
-
-
+./writeConfig.sh /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-34/DoubleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/ ${TAG}_DoubleMu2011B_PromptRecov1V34
+./writeConfig.sh /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/ ${TAG}_DoubleMu2011B_PromptRecov1V30
+./writeConfig.sh /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/ ${TAG}_DoubleMu2011A_PromptRecov6V30
+./writeConfig.sh /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/ ${TAG}_DoubleMu2011A_05Aug2011v1V30
+./writeConfig.sh /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/DoubleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/ ${TAG}_DoubleMu2011A_PromptRecov4V20
+./writeConfig.sh /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/DoubleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/ ${TAG}_DoubleMu2011A_May10ReRecoV20
 
 #
 # TTBAR
