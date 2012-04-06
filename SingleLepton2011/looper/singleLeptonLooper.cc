@@ -21,7 +21,6 @@
 #include "TDatabasePDG.h"
 
 #include "../CORE/CMS2.h"
-#ifndef __CINT__
 #include "../CORE/utilities.h"
 #include "../CORE/ssSelections.h"
 #include "../CORE/electronSelections.h"
@@ -31,6 +30,7 @@
 #include "../CORE/eventSelections.h"
 #include "../CORE/trackSelections.h"
 #include "../CORE/metSelections.h"
+#include "../CORE/jetcorr/FactorizedJetCorrector.h"
 #include "../CORE/jetSelections.h"
 #include "../CORE/photonSelections.h"
 #include "../CORE/triggerUtils.h"
@@ -44,7 +44,6 @@
 #include "../Tools/msugraCrossSection.h"
 #include "BtagFuncs.h"
 //#include "../Tools/bTagEff_BTV.h"
-#endif
 
 bool verbose        = false;
 bool doTenPercent   = false;
