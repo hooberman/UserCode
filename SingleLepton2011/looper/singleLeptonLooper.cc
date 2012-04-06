@@ -42,6 +42,7 @@
 #include "../Tools/goodrun.h"
 #include "../Tools/vtxreweight.h"
 #include "../Tools/msugraCrossSection.h"
+#include "BtagFuncs.h"
 //#include "../Tools/bTagEff_BTV.h"
 #endif
 
@@ -123,6 +124,22 @@ double dRbetweenVectors(const LorentzVector &vec1,
   double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
   double deta = vec1.Eta() - vec2.Eta();
   return sqrt(dphi*dphi + deta*deta);
+}
+
+//--------------------------------------------------------------------
+
+bool isGenBMatched ( LorentzVector p4, float dR ) {
+
+  //For now only checking status 3 in dR
+    for (unsigned int igen = 0; igen < cms2.genps_p4().size(); igen++) {
+      
+      int id = cms2.genps_id().at(igen);
+      if( abs(id)!=5 ) continue;
+      
+      if( dRbetweenVectors( p4 , cms2.genps_p4().at(igen) ) < dR ) return true;
+
+    } 
+    return false;
 }
 
 //--------------------------------------------------------------------
@@ -243,6 +260,12 @@ void singleLeptonLooper::InitBaby(){
   nbtagscsvl_   = 0;
   nbtagscsvm_   = 0;
   nbtagscsvt_   = 0;
+  nbtagsssvcorr_    = 0;
+  nbtagstclcorr_    = 0;
+  nbtagstcmcorr_    = 0;
+  nbtagscsvlcorr_   = 0;
+  nbtagscsvmcorr_   = 0;
+  nbtagscsvtcorr_   = 0;
 
   // njets with JEC variation
   njetsUp_	= 0;
@@ -451,6 +474,8 @@ float singleLeptonLooper::stopPairCrossSection( float stopmass ){
   }
 }
 
+//--------------------------------------------------------------------
+
 pair<float,float> Type1PFMET( VofP4 jets_p4 , vector<float> cors , vector<float> l1cors , float minpt ){
 
   float metx = evt_pfmet() * cos( evt_pfmetPhi() );
@@ -470,11 +495,15 @@ pair<float,float> Type1PFMET( VofP4 jets_p4 , vector<float> cors , vector<float>
   return type1met;
 }
 
+//--------------------------------------------------------------------
+
 float getMT( float leppt , float lepphi , float met , float metphi ) {
   float dphi = fabs( lepphi - metphi );
       if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
       return sqrt( 2 * ( leppt * met * (1 - cos( dphi ) ) ) );
 }
+
+//--------------------------------------------------------------------
 
 float getMuTriggerWeight( float pt, float eta ) {
   //Trigger efficiency for single muon triggers averaged over full 2011 dataset
@@ -601,7 +630,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     exit(0);
   }
 
-  
   // instanciate topmass solver REPLACETOPMASS
   //ttdilepsolve * d_llsol = new ttdilepsolve;
 
@@ -1405,12 +1433,15 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       vpfresjets_p4.clear();
 
       vector<float> fullcors;
+      vector<float> l2l3cors;
       vector<float> rescors;
       vector<float> l1cors;
       fullcors.clear();
+      l2l3cors.clear();
       rescors.clear();
       l1cors.clear();
 
+      rhovor_ = cms2.evt_ww_rho_vor();
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
 	// get L1FastL2L3Residual total correction
@@ -1452,15 +1483,23 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  if( vjet.pt() > 30 && fabs( vjet.eta() ) < 2.5 ) jetid30_ = 0;
 	  continue;
 	}
-
+ 
         // store raw pfjet p4's and corrections for type1 pfmet
         // using corr jet pT > 10 GeV and adding |eta|<4.7 as in AN2011/459 to avoid problems with
         // erroneously large corrections
         if( vjet.pt() > 10 && abs(vjet.eta()) < 4.7 ){
+	  float l1cor = factors.at(0);
           vpfrawjets_p4.push_back( pfjets_p4().at(ijet) );
           fullcors.push_back( corr );
+	  l2l3cors.push_back( corr / l1cor );
           rescors.push_back( rescorr );
-          l1cors.push_back( factors.at(0) );
+          l1cors.push_back( l1cor );
+	  // cout<<"l1corr: "<<l1cor<<" (rho: "<<rhovor_
+	  //     <<", nvts: "<<ndavtx_
+	  //     <<") l2l3resi: "<<corr/l1cor
+	  //     <<" all: "<<corr
+	  //     <<" pt: "<<vjet.pt()<<" eta: "<<vjet.eta()
+	  //     <<endl;
         }
 
 	// store L1FastL2L3Residual jet p4's pt > 15 GeV
@@ -1536,37 +1575,93 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if(       vjet.pt()    < 30. )           continue;
 	if( fabs( vjet.eta() ) > 2.5 )           continue;
 
+	
+	//-------------------------------------
+	// b-tag counting
+	//-------------------------------------
+	
 	// btag variables: SSV
-	if( pfjets_simpleSecondaryVertexHighEffBJetTag().at(ijet) > 1.74 ){
-	  nbtagsssv_++;
-	}
+	float discrimssv = pfjets_simpleSecondaryVertexHighEffBJetTag().at(ijet);
+	bool isbtagssv = ( discrimssv > 1.74 ) ? true : false;
+	if (isbtagssv)     nbtagsssv_++;
 
 	// btag variables: TCHEL
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
-	  nbtagstcl_++;
-	}
+	float discrimtche = pfjets_trackCountingHighEffBJetTag().at(ijet);
+	bool isbtagtcl = ( discrimtche > 1.7 ) ? true: false;
+	if (isbtagtcl)     nbtagstcl_++;
 
 	// btag variables: TCHEM
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
-	  nbtagstcm_++;
-	}
+	bool isbtagtcm = ( discrimtche > 3.3 ) ? true: false;
+	if (isbtagtcm)     nbtagstcm_++;
 
 	// btag variables: CSVL
-	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.244 ){
-	  nbtagscsvl_++;
-	}
+	float discrimcsv = pfjets_combinedSecondaryVertexBJetTag().at(ijet);
+	bool isbtagcsvl = ( discrimcsv > 0.244 ) ? true: false;
+	if (isbtagcsvl)     nbtagscsvl_++;
 
 	// btag variables: CSVM
-	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.679 ){
-	  nbtagscsvm_++;
-	  mediumBJets.push_back(vjet);
-	}
+	bool isbtagcsvm = ( discrimcsv > 0.679 ) ? true: false;
+	if (isbtagcsvm)     nbtagscsvm_++;
 
 	// btag variables: CSVT
-	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.898 ){
-	  nbtagscsvt_++;
-	}
+	bool isbtagcsvt = ( discrimcsv > 0.898 ) ? true: false;
+	if (isbtagcsvt)     nbtagscsvt_++;
 
+	// in MC apply b-tagging corrections 
+	if ( !isData ) {
+
+	  //set seed for random number generator based on event number and jet phi
+	  int randseed = evt_event()+(int)(vjet.phi()*1000.);
+	  random3_->SetSeed(randseed);
+	  float rand = random3_->Uniform(1.);  
+	  
+	  bool isbmatched = isGenBMatched(vjet, 0.5);
+	  int pdgid = isbmatched ? 5 : 0;
+
+	  // btag variables: SSV
+	  float SFb_ssv  = getBtagSF(  vjet.pt(), vjet.eta(), "SSVHEM");
+	  float SFl_ssv  = getMistagSF(vjet.pt(), vjet.eta(), "SSVHEM");
+	  float Effl_ssv = getMistags( vjet.pt(), vjet.eta(), "SSVHEM");
+	  bool iscorrbtagssv = getCorrBtag(isbtagssv, pdgid, SFb_ssv, SFl_ssv, Effl_ssv, rand);
+	  if (iscorrbtagssv) nbtagsssvcorr_++;
+	  
+	  // btag variables: TCHEL
+	  float SFb_tcl  = getBtagSF(  vjet.pt(), vjet.eta(), "TCHEL");
+	  float SFl_tcl  = getMistagSF(vjet.pt(), vjet.eta(), "TCHEL");
+	  float Effl_tcl = getMistags( vjet.pt(), vjet.eta(), "TCHEL");
+	  bool iscorrbtagtcl = getCorrBtag(isbtagtcl, pdgid, SFb_tcl, SFl_tcl, Effl_tcl, rand);
+	  if (iscorrbtagtcl) nbtagstclcorr_++;
+
+	  // btag variables: TCHEM
+	  float SFb_tcm  = getBtagSF(  vjet.pt(), vjet.eta(), "TCHEM");
+	  float SFl_tcm  = getMistagSF(vjet.pt(), vjet.eta(), "TCHEM");
+	  float Effl_tcm = getMistags( vjet.pt(), vjet.eta(), "TCHEM");
+	  bool iscorrbtagtcm = getCorrBtag(isbtagtcm, pdgid, SFb_tcm, SFl_tcm, Effl_tcm, rand);
+	  if (iscorrbtagtcm) nbtagstcmcorr_++;
+
+	  // btag variables: CSVL
+	  float SFb_csvl  = getBtagSF(  vjet.pt(), vjet.eta(), "CSVL");
+	  float SFl_csvl  = getMistagSF(vjet.pt(), vjet.eta(), "CSVL");
+	  float Effl_csvl = getMistags( vjet.pt(), vjet.eta(), "CSVL");
+	  bool iscorrbtagcsvl = getCorrBtag(isbtagcsvl, pdgid, SFb_csvl, SFl_csvl, Effl_csvl, rand);
+	  if (iscorrbtagcsvl) nbtagscsvlcorr_++;
+
+	  // btag variables: CSVM
+	  float SFb_csvm  = getBtagSF(  vjet.pt(), vjet.eta(), "CSVM");
+	  float SFl_csvm  = getMistagSF(vjet.pt(), vjet.eta(), "CSVM");
+	  float Effl_csvm = getMistags( vjet.pt(), vjet.eta(), "CSVM");
+	  bool iscorrbtagcsvm = getCorrBtag(isbtagcsvm, pdgid, SFb_csvm, SFl_csvm, Effl_csvm, rand);
+	  if (iscorrbtagcsvm) nbtagscsvmcorr_++;
+	  
+	  // btag variables: CSVT
+	  float SFb_csvt  = getBtagSF(  vjet.pt(), vjet.eta(), "CSVT");
+	  float SFl_csvt  = getMistagSF(vjet.pt(), vjet.eta(), "CSVT");
+	  float Effl_csvt = getMistags( vjet.pt(), vjet.eta(), "CSVT");
+	  bool iscorrbtagcsvt = getCorrBtag(isbtagcsvt, pdgid, SFb_csvt, SFl_csvt, Effl_csvt, rand);
+	  if (iscorrbtagcsvt) nbtagscsvtcorr_++;
+
+	} 
+	
 	// store max jet pt
 	if( vjet.pt() > maxjetpt ){
 	  maxjetpt = vjet.pt();
@@ -1574,26 +1669,45 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
       }
 
+      // no b-tagging corrections in data, so make counts same
+      if (isData) {
+	nbtagsssvcorr_  = nbtagsssv_;
+	nbtagstclcorr_  = nbtagstcl_;
+	nbtagstcmcorr_  = nbtagstcm_;
+	nbtagscsvlcorr_ = nbtagscsvl_;
+	nbtagscsvmcorr_ = nbtagscsvm_;
+	nbtagscsvtcorr_ = nbtagscsvt_;
+      }
+
       // type1 met's
       vector<float> empty(0);
-      pair<float, float> p_t1met10    = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 10.0 );
-      pair<float, float> p_t1met20    = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 20.0 );
-      pair<float, float> p_t1met30    = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 30.0 );
-      pair<float, float> p_t1metres10 = Type1PFMET( vpfrawjets_p4 , rescors  , empty  , 10.0 );
-      pair<float, float> p_t1metres20 = Type1PFMET( vpfrawjets_p4 , rescors  , empty  , 20.0 );
-      pair<float, float> p_t1metres30 = Type1PFMET( vpfrawjets_p4 , rescors  , empty  , 30.0 );
-      t1met10_       = p_t1met10.first;
-      t1met20_       = p_t1met20.first;
-      t1met30_       = p_t1met30.first;
-      t1metres10_    = p_t1metres10.first;
-      t1metres20_    = p_t1metres20.first;
-      t1metres30_    = p_t1metres30.first;
-      t1met10phi_    = p_t1met10.second;
-      t1met20phi_    = p_t1met20.second;	  
-      t1met30phi_    = p_t1met30.second;	  
-      t1metres10phi_ = p_t1metres10.second;
-      t1metres20phi_ = p_t1metres20.second;
-      t1metres30phi_ = p_t1metres30.second;
+      pair<float, float> p_t1met10     = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 10.0 );
+      pair<float, float> p_t1met20     = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 20.0 );
+      pair<float, float> p_t1met30     = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 30.0 );
+      pair<float, float> p_t1nol1met10 = Type1PFMET( vpfrawjets_p4 , l2l3cors , empty  , 10.0 );
+      pair<float, float> p_t1nol1met20 = Type1PFMET( vpfrawjets_p4 , l2l3cors , empty  , 20.0 );
+      pair<float, float> p_t1nol1met30 = Type1PFMET( vpfrawjets_p4 , l2l3cors , empty  , 30.0 );
+      pair<float, float> p_t1metres10  = Type1PFMET( vpfrawjets_p4 , rescors  , empty  , 10.0 );
+      pair<float, float> p_t1metres20  = Type1PFMET( vpfrawjets_p4 , rescors  , empty  , 20.0 );
+      pair<float, float> p_t1metres30  = Type1PFMET( vpfrawjets_p4 , rescors  , empty  , 30.0 );
+      t1met10_        = p_t1met10.first;
+      t1met20_        = p_t1met20.first;
+      t1met30_        = p_t1met30.first;
+      t1nol1met10_    = p_t1nol1met10.first;
+      t1nol1met20_    = p_t1nol1met20.first;
+      t1nol1met30_    = p_t1nol1met30.first;
+      t1metres10_     = p_t1metres10.first;
+      t1metres20_     = p_t1metres20.first;
+      t1metres30_     = p_t1metres30.first;
+      t1met10phi_     = p_t1met10.second;
+      t1met20phi_     = p_t1met20.second;	  
+      t1met30phi_     = p_t1met30.second;	  
+      t1nol1met10phi_ = p_t1nol1met10.second;
+      t1nol1met20phi_ = p_t1nol1met20.second;	  
+      t1nol1met30phi_ = p_t1nol1met30.second;	  
+      t1metres10phi_  = p_t1metres10.second;
+      t1metres20phi_  = p_t1metres20.second;
+      t1metres30phi_  = p_t1metres30.second;
 
       // store L1FastL2L3Residual pfjets
       sort(vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
@@ -2048,12 +2162,15 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       mt_ = sqrt( 2 * ( lep1_->pt() * pfmet_ * (1 - cos( dphilm_ ) ) ) );
 
       //transverse mass for leading lepton & type1 mets
-      t1met10mt_    = getMT( lep1_->pt() , lep1_->phi() , t1met10_ , t1met10phi_ );
-      t1met20mt_    = getMT( lep1_->pt() , lep1_->phi() , t1met20_ , t1met20phi_ );
-      t1met30mt_    = getMT( lep1_->pt() , lep1_->phi() , t1met30_ , t1met30phi_ );
-      t1metres10mt_ = getMT( lep1_->pt() , lep1_->phi() , t1metres10_ , t1metres10phi_ );
-      t1metres20mt_ = getMT( lep1_->pt() , lep1_->phi() , t1metres20_ , t1metres20phi_ );
-      t1metres30mt_ = getMT( lep1_->pt() , lep1_->phi() , t1metres30_ , t1metres30phi_ );
+      t1met10mt_     = getMT( lep1_->pt() , lep1_->phi() , t1met10_     , t1met10phi_ );
+      t1met20mt_     = getMT( lep1_->pt() , lep1_->phi() , t1met20_     , t1met20phi_ );
+      t1met30mt_     = getMT( lep1_->pt() , lep1_->phi() , t1met30_     , t1met30phi_ );
+      t1nol1met10mt_ = getMT( lep1_->pt() , lep1_->phi() , t1nol1met10_ , t1nol1met10phi_ );
+      t1nol1met20mt_ = getMT( lep1_->pt() , lep1_->phi() , t1nol1met20_ , t1nol1met20phi_ );
+      t1nol1met30mt_ = getMT( lep1_->pt() , lep1_->phi() , t1nol1met30_ , t1nol1met30phi_ );
+      t1metres10mt_  = getMT( lep1_->pt() , lep1_->phi() , t1metres10_  , t1metres10phi_ );
+      t1metres20mt_  = getMT( lep1_->pt() , lep1_->phi() , t1metres20_  , t1metres20phi_ );
+      t1metres30mt_  = getMT( lep1_->pt() , lep1_->phi() , t1metres30_  , t1metres30phi_ );
 
       //dijet mass two bs highest pT b-tagged jets
       if (mediumBJets.size()>1) {
@@ -2653,6 +2770,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("npfjets35",       &npfjets35_,        "npfjets35/I");
   outTree->Branch("npfjets40",       &npfjets40_,        "npfjets40/I");
   outTree->Branch("npfjets45",       &npfjets45_,        "npfjets45/I");
+  //rho correction
+  outTree->Branch("rhovor",          &rhovor_,           "rhovor/F");
 
   outTree->Branch("htpf30",          &htpf30_,           "htpf30/F");
   outTree->Branch("htpf35",          &htpf35_,           "htpf35/F");
@@ -2663,21 +2782,30 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("t1met10",         &t1met10_,          "t1met10/F");
   outTree->Branch("t1met20",         &t1met20_,          "t1met20/F");
   outTree->Branch("t1met30",         &t1met30_,          "t1met30/F");
+  outTree->Branch("t1nol1met10",     &t1nol1met10_,      "t1nol1met10/F");
+  outTree->Branch("t1nol1met20",     &t1nol1met20_,      "t1nol1met20/F");
+  outTree->Branch("t1nol1met30",     &t1nol1met30_,      "t1nol1met30/F");
   outTree->Branch("t1metres10",      &t1metres10_,       "t1metres10/F");
   outTree->Branch("t1metres20",      &t1metres20_,       "t1metres20/F");
   outTree->Branch("t1metres30",      &t1metres30_,       "t1metres30/F");
   outTree->Branch("t1met10phi",      &t1met10phi_,       "t1met10phi/F");
   outTree->Branch("t1met20phi",      &t1met20phi_,       "t1met20phi/F");
   outTree->Branch("t1met30phi",      &t1met30phi_,       "t1met30phi/F");
+  outTree->Branch("t1nol1met10phi",  &t1nol1met10phi_,   "t1nol1met10phi/F");
+  outTree->Branch("t1nol1met20phi",  &t1nol1met20phi_,   "t1nol1met20phi/F");
+  outTree->Branch("t1nol1met30phi",  &t1nol1met30phi_,   "t1nol1met30phi/F");
   outTree->Branch("t1metres10phi",   &t1metres10phi_,    "t1metres10phi/F");
   outTree->Branch("t1metres20phi",   &t1metres20phi_,    "t1metres20phi/F");
   outTree->Branch("t1metres30phi",   &t1metres30phi_,    "t1metres30phi/F");
-  outTree->Branch("t1met10mt",       &t1met10mt_,       "t1met10mt/F");
-  outTree->Branch("t1met20mt",       &t1met20mt_,       "t1met20mt/F");
-  outTree->Branch("t1met30mt",       &t1met30mt_,       "t1met30mt/F");
-  outTree->Branch("t1metres10mt",    &t1metres10mt_,    "t1metres10mt/F");
-  outTree->Branch("t1metres20mt",    &t1metres20mt_,    "t1metres20mt/F");
-  outTree->Branch("t1metres30mt",    &t1metres30mt_,    "t1metres30mt/F");
+  outTree->Branch("t1met10mt",       &t1met10mt_,        "t1met10mt/F");
+  outTree->Branch("t1met20mt",       &t1met20mt_,        "t1met20mt/F");
+  outTree->Branch("t1met30mt",       &t1met30mt_,        "t1met30mt/F");
+  outTree->Branch("t1nol1met10mt",   &t1nol1met10mt_,    "t1nol1met10mt/F");
+  outTree->Branch("t1nol1met20mt",   &t1nol1met20mt_,    "t1nol1met20mt/F");
+  outTree->Branch("t1nol1met30mt",   &t1nol1met30mt_,    "t1nol1met30mt/F");
+  outTree->Branch("t1metres10mt",    &t1metres10mt_,     "t1metres10mt/F");
+  outTree->Branch("t1metres20mt",    &t1metres20mt_,     "t1metres20mt/F");
+  outTree->Branch("t1metres30mt",    &t1metres30mt_,     "t1metres30mt/F");
   
   // pfjets Res
   outTree->Branch("npfresjets30",    &npfresjets30_,     "npfresjets30/I");
@@ -2719,6 +2847,12 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nbtagscsvl",      &nbtagscsvl_,       "nbtagscsvl/I");
   outTree->Branch("nbtagscsvm",      &nbtagscsvm_,       "nbtagscsvm/I");
   outTree->Branch("nbtagscsvt",      &nbtagscsvt_,       "nbtagscsvt/I");
+  outTree->Branch("nbtagsssvcorr",   &nbtagsssvcorr_,    "nbtagsssvcorr/I");
+  outTree->Branch("nbtagstclcorr",   &nbtagstclcorr_,    "nbtagstclcorr/I");
+  outTree->Branch("nbtagstcmcorr",   &nbtagstcmcorr_,    "nbtagstcmcorr/I");
+  outTree->Branch("nbtagscsvlcorr",  &nbtagscsvlcorr_,   "nbtagscsvlcorr/I");
+  outTree->Branch("nbtagscsvmcorr",  &nbtagscsvmcorr_,   "nbtagscsvmcorr/I");
+  outTree->Branch("nbtagscsvtcott",  &nbtagscsvtcorr_,   "nbtagscsvtcorr/I");
 
   outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
   outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");

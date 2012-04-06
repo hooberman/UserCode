@@ -115,7 +115,13 @@ class singleLeptonLooper
 	Int_t   nbtagscsvl_;    
 	Int_t   nbtagscsvm_;    
 	Int_t   nbtagscsvt_;    
- 
+	Int_t   nbtagsssvcorr_;     
+	Int_t   nbtagstclcorr_;     
+	Int_t   nbtagstcmcorr_;     
+	Int_t   nbtagscsvlcorr_;    
+	Int_t   nbtagscsvmcorr_;    
+	Int_t   nbtagscsvtcorr_;    
+
 	// pfjet counters
 	Int_t   npfjets30_;
 	Int_t   npfjets35_;
@@ -125,6 +131,9 @@ class singleLeptonLooper
 	Int_t   npfresjets35_;
 	Int_t   npfresjets40_;
 	Int_t   npfresjets45_;
+
+	//rho correction
+	Float_t rhovor_;
 
 	// pfht vars
 	Float_t htpf30_;
@@ -184,18 +193,27 @@ class singleLeptonLooper
 	Float_t t1met10_;
 	Float_t t1met20_;
 	Float_t t1met30_;
+	Float_t t1nol1met10_;
+	Float_t t1nol1met20_;
+	Float_t t1nol1met30_;
 	Float_t t1metres10_;
 	Float_t t1metres20_;
 	Float_t t1metres30_;
 	Float_t t1met10phi_;
 	Float_t t1met20phi_;
 	Float_t t1met30phi_;
+	Float_t t1nol1met10phi_;
+	Float_t t1nol1met20phi_;
+	Float_t t1nol1met30phi_;
 	Float_t t1metres10phi_;
 	Float_t t1metres20phi_;
 	Float_t t1metres30phi_;
 	Float_t t1met10mt_;
 	Float_t t1met20mt_;
 	Float_t t1met30mt_;
+	Float_t t1nol1met10mt_;
+	Float_t t1nol1met20mt_;
+	Float_t t1nol1met30mt_;
 	Float_t t1metres10mt_;
 	Float_t t1metres20mt_;
 	Float_t t1metres30mt_;
@@ -279,8 +297,6 @@ class singleLeptonLooper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   ngenjets_;
-
-
         Int_t   njetsUp_;
         Int_t   npfjets25_;
         Int_t   njetsDown_;
@@ -396,7 +412,6 @@ class singleLeptonLooper
         double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
 
         // Lots and lots of histograms
-
         TH1F* h_PU_trkpt;
 };
 
