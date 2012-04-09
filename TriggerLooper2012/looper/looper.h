@@ -128,10 +128,8 @@ class looper
 	Float_t eletrijet_trigmindr_ejet_;
 	Float_t mudijet_trigmindr_mujet_;
 	Float_t mutrijet_trigmindr_mujet_;
-	Int_t   mudijet_;
 	Int_t   mudijetmht15_;
 	Int_t   mudijetmht25_;
-	Int_t   mutrijet_;
 	Int_t   muquadjet_;
 	Float_t elptmatch_;
 	Float_t eledijet_trigdr_pjet1_;
@@ -150,6 +148,94 @@ class looper
 	Float_t mutrijet_trigdr_pjet2_;
 	Float_t mutrijet_trigdr_pjet3_;
 	Float_t mutrijet_trigdr_pjet4_;
+
+	// top electron+jets triggers
+	Int_t eltrijet_;             
+	Int_t eltrijetbackup_;       
+	Int_t eldijet_;              
+	Int_t eljet_;                
+	Int_t elnoisotrijet_;        
+	Int_t elnoisotrijetbackup_;  
+
+	// top muon+jets triggers
+	Int_t mutrijet_;             
+	Int_t mutrijetbackup_;       
+	Int_t mudijet_;              
+	Int_t mujet_;                
+	Int_t munoisotrijet_;        
+	Int_t munoisotrijetbackup_;  
+
+	// non-isolated dilepton-HT triggers
+	Int_t eeht175_;              
+	Int_t eeht225_;              
+	Int_t mmht175_;              
+	Int_t mmht225_;              
+	Int_t emht175_;              
+	Int_t emht225_;              
+
+	// isolated dilepton-HT triggers
+	Int_t mmisoht175_;           
+	Int_t mmisoht225_;           
+	Int_t emisoht175_;           
+	Int_t emisoht225_;           
+
+	// isolated single muon triggers
+	Int_t isomu20_;              
+	Int_t isomu24_;              
+	Int_t isomu30_;              
+	Int_t isomu34_;              
+	Int_t isomu40_;              
+
+	// non-isolated single muon triggers
+	Int_t mu24_;                 
+	Int_t mu30_;                 
+	Int_t mu40_;                 
+	Int_t mu50_;                 
+	
+	// single-electron triggers
+	Int_t el27wp80_;             
+	Int_t el27wp70_;             
+	Int_t el27_;                 
+	Int_t el32_;                 
+
+	// multi-jet triggers
+	Int_t quadjet70_;            
+	Int_t quadjet80_;            
+	Int_t quadjet90_;            
+
+	// single photon triggers
+	Int_t photon20_;             
+	Int_t photon30_;             
+	Int_t photon50_;             
+	Int_t photon75_;             
+	Int_t photon90_;             
+	Int_t photon135_;            
+	Int_t photon150_;            
+	Int_t photon160_;            
+
+	// higgs single photon triggers
+	Int_t hphoton22_;            
+	Int_t hphoton36_;            
+	Int_t hphoton50_;            
+	Int_t hphoton75_;            
+	Int_t hphoton90_;            
+
+	// single electron utility triggers
+	Int_t el8_;                  
+	Int_t el8jet30_;             
+	Int_t el17_;                 
+	Int_t el17jet30_;            
+	Int_t el8vl_;                
+	Int_t el17vl_;               
+
+	// Higgs dilepton triggers
+	Int_t ee_;                   
+	Int_t mmtrk_;                
+	Int_t mm_;                   
+	Int_t em_;                   
+	Int_t me_;                   
+
+
 };
 
 #endif

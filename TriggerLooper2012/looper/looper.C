@@ -20,24 +20,6 @@
 #include "TTreeCache.h"
 #include "TDatabasePDG.h"
 
-// #include "../CORE/CMS2.h"
-// #include "../CORE/metSelections.h"
-// #include "../CORE/trackSelections.h"
-// #include "../CORE/eventSelections.h"
-// #include "../CORE/electronSelections.h"
-// #include "../CORE/electronSelectionsParameters.h"
-// #include "../CORE/mcSelections.h"
-// #include "../CORE/muonSelections.h"
-// #include "../Tools/goodrun.cc"
-// #include "../CORE/utilities.cc"
-// #include "../CORE/ttbarSelections.h"
-// #include "../CORE/susySelections.h"
-// #include "../CORE/mcSUSYkfactor.h"
-// #include "../CORE/triggerSuperModel.h"
-// #include "../CORE/triggerUtils.h"
-// #include "../Tools/vtxreweight.cc"
-// #include "../Tools/msugraCrossSection.cc"
-
 #include "../CORE/CMS2.cc"
 #ifndef __CINT__
 #include "../CORE/utilities.cc"
@@ -62,7 +44,6 @@
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 #include "../Tools/bTagEff_BTV.cc"
-
 #endif
 
 bool verbose        = false;
@@ -238,75 +219,6 @@ float getTriggerObjectPt(char* trigname, int id){
 }
 
 //--------------------------------------------------------------------
-/*
-TString triggerName(TString triggerPattern){
-
-  //-------------------------------------------------------
-  // get exact trigger name corresponding to given pattern
-  //-------------------------------------------------------
-
-  bool    foundTrigger  = false;
-  TString exact_hltname = "";
-
-  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
-    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
-      foundTrigger  = true;
-      exact_hltname = hlt_trigNames().at(itrig);
-      break;
-    }
-  }
-
-  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
-
-  return exact_hltname;
-
-}
-*/
-//--------------------------------------------------------------------
-/*
-bool passUnprescaledHLTTriggerPattern(const char* arg){
-
-  //---------------------------------------------
-  // Check if trigger is unprescaled and passes
-  //---------------------------------------------
-
-  TString HLTTriggerPattern(arg);
-  TString HLTTrigger = triggerName( HLTTriggerPattern );
-
-  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND")){
-    return false;
-  }
-  return passUnprescaledHLTTrigger( HLTTrigger );
-}
-*/
-//--------------------------------------------------------------------
-
-bool passHLTTriggerPattern(const char* arg){
-
-  //---------------------------------------------
-  // Check if trigger is unprescaled and passes
-  //---------------------------------------------
-
-  TString HLTTriggerPattern(arg);
-  TString HLTTrigger = triggerName( HLTTriggerPattern );
-
-  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND")){
-    return false;
-  }
-  return passHLTTrigger( HLTTrigger );
-}
-
-//--------------------------------------------------------------------
-
-bool passElDijetMHT(){
-
-
-
-  return false;
-}
-
-
-//--------------------------------------------------------------------
 
 looper::looper()
 {
@@ -316,64 +228,6 @@ looper::looper()
   random3_ = new TRandom3(1);
 }
 
-//--------------------------------------------------------------------
-/*
-bool passesCaloJetID (const LorentzVector &jetp4)
-{
-  int jet_idx = -1;
-  double minDR = 999;
-
-  for (unsigned int i = 0; i < cms2.jets_p4().size(); i++)
-    {
-      double deltaR = ROOT::Math::VectorUtil::DeltaR(jetp4, cms2.jets_p4()[i]);
-
-      if (deltaR < minDR)
-	{
-	  minDR = deltaR;
-	  jet_idx = i;
-	}
-    }
-
-  if (jet_idx < 0)
-    return false;
-
-  if (cms2.jets_emFrac()[jet_idx] < 0.01 || cms2.jets_fHPD()[jet_idx] > 0.98 || cms2.jets_n90Hits()[jet_idx] < 2)
-    return false;
-
-  return true;
-}
-
-//--------------------------------------------------------------------
-
-bool passesPFJetID(unsigned int pfJetIdx) {
-
-  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
-  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
-
-  if (pfjet_nef_ >= 0.99)
-    return false;
-  if (pfjet_nhf_ >= 0.99)
-    return false;
-  if (pfjet_mult_ < 2)
-    return false;
-
-  if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) < 2.4)
-    {
-      if (pfjet_chf_ < 1e-6)
-	return false;
-      if (pfjet_cm_ < 1)
-	return false;
-      if (pfjet_cef_ >= 0.99)
-	return false;
-    }
-
-  return true;
-}  
-*/
 //--------------------------------------------------------------------
 
 struct DorkyEventIdentifier {
@@ -689,8 +543,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( ngoodlep_ > 1 ) 	lep2_ = &( goodLeptons.at(1) );
       if( ngoodlep_ > 2 ) 	lep3_ = &( goodLeptons.at(2) );
       if( ngoodlep_ > 3 ) 	lep4_ = &( goodLeptons.at(3) );
-
-
 
       VofP4 goodElectronsNoIso;
       vector<int> elnoisoIndex;
@@ -1040,26 +892,101 @@ int looper::ScanChain(TChain* chain, char *prefix){
       // triggers
       //----------------------------------------
 
-      mmht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass8_HT150_v")                  ? 1 : 0;
-      emht150_       = passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_HT150_v")   ? 1 : 0;
-      eeht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_HT150_v") ? 1 : 0;
+      //-------------------------------------------
+      //  passTriggerPrescale functions returns:
+      // -1: no matching trigger found
+      //  0: trigger didn't pass
+      //  1: trigger passed, un-prescaled
+      //  N: trigger passed, prescale N
+      //-------------------------------------------
 
-      eledijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v")            		? 1 : 0; // 178420-180291
-      eledijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_Ele32_WP80_DiCentralPFJet25_PFMHT25_v")            		? 1 : 0; // 178420-180291
-      eledijet_hg_   = passHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_v")                               		? 1 : 0; // 178420-180291
-      eledijet_      = passHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralPFJet30_v")   		? 1 : 0; // 178420-180291 
-      eletrijet_     = passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v")  	? 1 : 0; // 178420-180291 
-      elequadjet_    = passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_QuadCentralPFJet30_v") 	? 1 : 0; // 178420-180291 
+      // top electron+jets triggers
+      eltrijet_             = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30");
+      eltrijetbackup_       = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet50_Jet40_Jet30");
+      eldijet_              = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralPFJet30");
+      eljet_                = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30");
+      elnoisotrijet_        = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30");
+      elnoisotrijetbackup_  = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet50_Jet40_Jet30");
 
-      ele27dijet25_  = passHLTTriggerPattern("HLT_Ele27_CaloIdVT_TrkIdT_DiCentralPFJet25_v") ? 1 : 0;
+      // top muon+jets triggers
+      mutrijet_             = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_TriCentralPFJet30");
+      mutrijetbackup_       = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_CentralPFJet50_Jet40_Jet30");
+      mudijet_              = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_DiCentralPFJet30");
+      mujet_                = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_CentralPFJet30");
+      munoisotrijet_        = passTriggerPrescale("HLT_Mu20_eta2p1_TriCentralPFJet30");
+      munoisotrijetbackup_  = passTriggerPrescale("HLT_Mu20_eta2p1_CentralPFJet50_Jet40_Jet30");
 
-      mudijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT15_v")         		? 1 : 0; // 178420-180291
-      mudijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT25_v")         		? 1 : 0; // 178420-180291
-      mudijet_      = passHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")                            		? 1 : 0; // 178420-180291
-      mutrijet_     = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v")                           	? 1 : 0; // 178420-180291
-      muquadjet_    = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_QuadCentralPFJet30_v")                          	? 1 : 0; // 178420-180291
+      // non-isolated dilepton-HT triggers
+      eeht175_              = passTriggerPrescale("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT175");
+      eeht225_              = passTriggerPrescale("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT225");
+      mmht175_              = passTriggerPrescale("HLT_DoubleMu8_Mass8_PFHT175");
+      mmht225_              = passTriggerPrescale("HLT_DoubleMu8_Mass8_PFHT225");
+      emht175_              = passTriggerPrescale("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175");
+      emht225_              = passTriggerPrescale("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225");
 
-      ele8dijet30_  = passHLTTriggerPattern("HLT_Ele8_CaloIdT_TrkIdT_DiJet30_v") ? 1 : 0;
+      // isolated dilepton-HT triggers
+      mmisoht175_           = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT175");
+      mmisoht225_           = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT225");
+      emisoht175_           = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175");
+      emisoht225_           = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225");
+
+      // isolated single muon triggers
+      isomu20_              = passTriggerPrescale("HLT_IsoMu20_eta2p1");
+      isomu24_              = passTriggerPrescale("HLT_IsoMu24_eta2p1");
+      isomu30_              = passTriggerPrescale("HLT_IsoMu30_eta2p1");
+      isomu34_              = passTriggerPrescale("HLT_IsoMu34_eta2p1");
+      isomu40_              = passTriggerPrescale("HLT_IsoMu40_eta2p1");
+
+      // non-isolated single muon triggers
+      mu24_                 = passTriggerPrescale("HLT_Mu24_eta2p1");
+      mu30_                 = passTriggerPrescale("HLT_Mu30_eta2p1");
+      mu40_                 = passTriggerPrescale("HLT_Mu40_eta2p1");
+      mu50_                 = passTriggerPrescale("HLT_Mu50_eta2p1");
+
+      // single-electron triggers
+      el27wp80_             = passTriggerPrescale("HLT_Ele27_WP80");
+      el27wp70_             = passTriggerPrescale("HLT_Ele27_WP70");
+      el27_                 = passTriggerPrescale("HLT_Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL");
+      el32_                 = passTriggerPrescale("HLT_Ele32_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL");
+
+      // multi-jet triggers
+      quadjet70_            = passTriggerPrescale("HLT_QuadJet70");
+      quadjet80_            = passTriggerPrescale("HLT_QuadJet80");
+      quadjet90_            = passTriggerPrescale("HLT_QuadJet90");
+
+      // single photon triggers
+      photon20_             = passTriggerPrescale("HLT_Photon20_CaloIdVL_IsoL");
+      photon30_             = passTriggerPrescale("HLT_Photon30_CaloIdVL_IsoL");
+      photon50_             = passTriggerPrescale("HLT_Photon50_CaloIdVL_IsoL");
+      photon75_             = passTriggerPrescale("HLT_Photon75_CaloIdVL_IsoL");
+      photon90_             = passTriggerPrescale("HLT_Photon90_CaloIdVL_IsoL");
+      photon135_            = passTriggerPrescale("HLT_Photon135");
+      photon150_            = passTriggerPrescale("HLT_Photon150");
+      photon160_            = passTriggerPrescale("HLT_Photon160");
+
+      // higgs single photon triggers
+      hphoton22_            = passTriggerPrescale("HLT_Photon22_R9Id90_HE10_Iso40");
+      hphoton36_            = passTriggerPrescale("HLT_Photon36_R9Id90_HE10_Iso40");
+      hphoton50_            = passTriggerPrescale("HLT_Photon50_R9Id90_HE10_Iso40");
+      hphoton75_            = passTriggerPrescale("HLT_Photon75_R9Id90_HE10_Iso40");
+      hphoton90_            = passTriggerPrescale("HLT_Photon90_R9Id90_HE10_Iso40");
+
+      // single electron utility triggers
+      el8_                  = passTriggerPrescale("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
+      el8jet30_             = passTriggerPrescale("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30");
+      el17_                 = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
+      el17jet30_            = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30");
+      el8vl_                = passTriggerPrescale("HLT_Ele8_CaloIdL_CaloIsoVL");
+      el17vl_               = passTriggerPrescale("HLT_Ele17_CaloIdL_CaloIsoVL");
+
+      // Higgs dilepton triggers
+      ee_                   = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
+      mmtrk_                = passTriggerPrescale("HLT_Mu17_TkMu8");
+      mm_                   = passTriggerPrescale("HLT_Mu17_Mu8");
+      em_                   = passTriggerPrescale("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
+      me_                   = passTriggerPrescale("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
+
+
 
       mindrej_ = getMinDeltaRBetweenObjects( triggerName("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30") , 82 , 85 ); // 82 = electron  85 = jet 
       mindrmj_ = getMinDeltaRBetweenObjects( triggerName("HLT_IsoMu17_eta2p1_TriCentralPFJet30")                         , 83 , 85 ); // 83 = muon      85 = jet 
