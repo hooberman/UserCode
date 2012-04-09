@@ -22,25 +22,6 @@
 #include "TDatabasePDG.h"
 #include <sstream>
 
-// #include "../CORE/CMS2.h"
-// #include "../CORE/metSelections.h"
-// #include "../CORE/trackSelections.h"
-// #include "../CORE/eventSelections.h"
-// #include "../CORE/electronSelections.h"
-// #include "../CORE/electronSelectionsParameters.h"
-// #include "../CORE/muonSelections.h"
-// #include "../Tools/goodrun.cc"
-// #include "../Tools/vtxreweight.cc"
-// #include "../CORE/utilities.h"
-// #include "../CORE/ttbarSelections.h"
-// #include "../CORE/susySelections.h"
-// #include "../CORE/mcSUSYkfactor.h"
-
-// #include "../CORE/jetSelections.cc"
-// #include "../CORE/triggerUtils.h"
-// #include "../CORE/mcSelections.h"
-// #include "../Tools/bTagEff_BTV.cc"
-
 #include "../CORE/CMS2.cc"
 #ifndef __CINT__
 #include "../CORE/utilities.cc"
@@ -65,13 +46,9 @@
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 #include "../Tools/bTagEff_BTV.cc"
-
 #endif
 
 using namespace tas;
-// inline double fround(double n, double d){
-//   return floor(n * pow(10., d) + .5) / pow(10., d);
-// }
 
 enum metType   { e_tcmet = 0, e_tcmetNew = 1, e_pfmet = 2};
 enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
@@ -82,40 +59,9 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-18";
+const char* iter                 = "V00-00-00";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
-//--------------------------------------------------------------------
-/*
-bool passesPFJetID(unsigned int pfJetIdx) {
-
-  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
-  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
-  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
-
-  if (pfjet_nef_ >= 0.99)
-	   return false;
-  if (pfjet_nhf_ >= 0.99)
-	   return false;
-  if (pfjet_mult_ < 2)
-	   return false;
-
-  if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) < 2.4)
-  {
-	   if (pfjet_chf_ < 1e-6)
-			return false;
-	   if (pfjet_cm_ < 1)
-			return false;
-	   if (pfjet_cef_ >= 0.99)
-			return false;
-  }
-
-  return true;
-}  
-*/
 //--------------------------------------------------------------------
 
 pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, double rescale = 1.0 ){
@@ -313,19 +259,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 
   bookHistos();
-  
-  // // Jet Corrections
-  // std::vector<std::string> jetcorr_pf_L2L3_filenames;
-  // jetcorr_pf_L2L3_filenames.clear();
-
-  // FactorizedJetCorrector *jet_pf_L2L3corrector;
-
-  // jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START42_V13_AK5PF_L2L3Residual.txt");
-  // jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
-
-  //----------------
-  // OFFICIAL JEC //
-  //----------------
 
   //------------------------------------------------------------------------------------------------------
   // load here the on-the-fly corrections/uncertainties L1FastL2L3 (MC) and L1FastL2L3Residual (DATA)
@@ -806,23 +739,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( leptype_ == 2 ) nGoodEM+=weight_;
 
       //--------------------------
-      // met up/downvars
-      //--------------------------
-
-      // pair<float, float> p_met = getMet( "pfMET"    , hypIdx);
-      // pair<float,float> p_met = make_pair( evt_pfmet() , evt_pfmetPhi() );
-      // pair<float, float> p_pfmetUp   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.075 );
-      // pair<float, float> p_pfmetDn   = ScaleMET( p_met , hyp_p4().at(hypIdx) , 0.925 );
-      // pair<float, float> p_pfmetTest = ScaleMET( p_met , hyp_p4().at(hypIdx) , 1.000 );
-
-      
-      // pfmetUp_ = p_pfmetUp.first;
-      // pfmetDn_ = p_pfmetDn.first;
-  
-      // float pfmetTest = p_pfmetTest.first;
-      // if( fabs( pfmet_ - pfmetTest ) > 0.1 ) cout << "ERROR pfmets " << pfmet_ << " vs. " << pfmetTest << endl; 
-
-      //--------------------------
       // leading lepton = ll
       //--------------------------
       
@@ -932,7 +848,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	if( goodExtraLeptons.size() > 0 ){
 	  LorentzVector* pfmet_p4 = new LorentzVector( pfmet_ * cos(pfmetphi_) , pfmet_ * sin(pfmetphi_) ,      0      , pfmet_     );
-	  w_ = &(*lep3_+*pfmet_p4);
+	  //w_ = &(*lep3_+*pfmet_p4);
 	}
       }
 
@@ -1539,49 +1455,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       pfmetDn_ = sqrt( pfmetx_dn * pfmetx_dn + pfmety_dn * pfmety_dn );
 
       unclustered_ = sqrt( pow(unclustered_x_,2) + pow(unclustered_y_,2));
-
-
-      nJetsRes_ = -99;
-      nbvzres_  = -99;
-       
-      /*
-      nJetsRes_ = 0;
-      nbvzres_  = 0;
-
-      //loop over pfjets pt > 30 GeV |eta| < 3.0
-      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
-	float         jet_cor = 1;
-	if( isData )  jet_cor = jetCorrection(cms2.pfjets_p4().at(ijet), jet_pf_L2L3corrector);
-	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * jet_cor * pfjets_p4().at(ijet);
-        LorentzVector vlt    = hyp_lt_p4()[hypIdx];
-        LorentzVector vll    = hyp_ll_p4()[hypIdx];
-
-        if( fabs( vjet.eta() ) > 3.0          ) continue;
-        if( vjet.pt() < 30.                   ) continue;
-        if( dRbetweenVectors(vjet, vll) < 0.4 ) continue;
-        if( dRbetweenVectors(vjet, vlt) < 0.4 ) continue;
-        if( !passesPFJetID(ijet)              ) continue;
-     
-        if( generalLeptonVeto ){
-          bool rejectJet = false;
-          for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-            if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-          }
-          if( rejectJet ) continue;
-        }
-
-	nJetsRes_ ++;
-
-	if( vjet.pt() < 100.0 ){
-	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 )  nbvzres_++;
-	}
-
-	else{
-	  if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 )  nbvzres_++;
-	}
-      }
-      */
        
       jetmax_pt_ = -1;
 
@@ -1693,30 +1566,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   cout << "em     : " << nGoodEM << endl;
   cout << "-------------------------------------------------------" << endl;
   cout << endl;
-
-  // cout << endl;
-  // cout << "nTot                " << nTot               << endl;
-
-  // cout << "Loose signal region-----------------------" << endl;
-  // cout << "nGenPass            " << nGenPass60         << endl;
-  // cout << "nGenPass X K        " << nGenPass60_K       << endl;
-  // cout << "nRecoPassGenPass    " << nRecoPassGenPass60 << endl;
-  // cout << "nRecoPassGenFail    " << nRecoPassGenFail60 << endl;
-  // cout << "Efficiency          " << nRecoPassGenPass60 / (float) nGenPass60 << endl;
-
-  // cout << "Tight signal region-----------------------"  << endl;
-  // cout << "nGenPass            " << nGenPass120         << endl;
-  // cout << "nGenPass X K        " << nGenPass120_K       << endl;
-  // cout << "nRecoPassGenPass    " << nRecoPassGenPass120 << endl;
-  // cout << "nRecoPassGenFail    " << nRecoPassGenFail120 << endl;
-  // cout << "Efficiency          " << nRecoPassGenPass120 / (float) nGenPass120 << endl;
-
-  // cout << "Cut flow----------------------------------" << endl;
-  // for( int icut = 0 ; icut < 8 ; icut++ ){
-  //   float eff = 1;
-  //   if( icut > 0 ) eff = nRecoPass_cut[icut] / (float) nRecoPass_cut[icut-1];
-  //   cout << "nRecoPass cut " << icut << " " << nRecoPass_cut[icut] << " " << Form("%.2f",eff) << endl;
-  // }
 
   CloseBabyNtuple();
 
