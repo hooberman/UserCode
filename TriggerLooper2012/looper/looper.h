@@ -72,6 +72,40 @@ class looper
 	Int_t munoiso3_mu24_;
 	Int_t munoiso4_mu24_;
 
+	Float_t elnoiso1_iso_;
+	Float_t elnoiso1_isofj_;
+	Float_t elnoiso1_isovtx_;
+	Float_t elnoiso1_isopf_;
+	Float_t elnoiso2_iso_;
+	Float_t elnoiso2_isofj_;
+	Float_t elnoiso2_isovtx_;
+	Float_t elnoiso2_isopf_;
+	Float_t elnoiso3_iso_;
+	Float_t elnoiso3_isofj_;
+	Float_t elnoiso3_isovtx_;
+	Float_t elnoiso3_isopf_;
+	Float_t elnoiso4_iso_;
+	Float_t elnoiso4_isofj_;
+	Float_t elnoiso4_isovtx_;
+	Float_t elnoiso4_isopf_;
+
+	Float_t munoiso1_iso_;
+	Float_t munoiso1_isofj_;
+	Float_t munoiso1_isovtx_;
+	Float_t munoiso1_isopf_;
+	Float_t munoiso2_iso_;
+	Float_t munoiso2_isofj_;
+	Float_t munoiso2_isovtx_;
+	Float_t munoiso2_isopf_;
+	Float_t munoiso3_iso_;
+	Float_t munoiso3_isofj_;
+	Float_t munoiso3_isovtx_;
+	Float_t munoiso3_isopf_;
+	Float_t munoiso4_iso_;
+	Float_t munoiso4_isofj_;
+	Float_t munoiso4_isovtx_;
+	Float_t munoiso4_isopf_;
+
         LorentzVector*  eledijet_hltele_; 
         LorentzVector*  eletrijet_hltele_; 
         LorentzVector*  mudijet_hltmu_; 
