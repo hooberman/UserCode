@@ -59,6 +59,19 @@ class looper
 	Int_t   emht150_;
 	Int_t   eeht150_;
 
+	Int_t elnoiso1_wp80_;
+	Int_t elnoiso1_top_;
+	Int_t elnoiso2_wp80_;
+	Int_t elnoiso2_top_;
+	Int_t elnoiso3_wp80_;
+	Int_t elnoiso3_top_;
+	Int_t elnoiso4_wp80_;
+	Int_t elnoiso4_top_;
+	Int_t munoiso1_mu24_;
+	Int_t munoiso2_mu24_;
+	Int_t munoiso3_mu24_;
+	Int_t munoiso4_mu24_;
+
         LorentzVector*  eledijet_hltele_; 
         LorentzVector*  eletrijet_hltele_; 
         LorentzVector*  mudijet_hltmu_; 
@@ -75,6 +88,14 @@ class looper
         LorentzVector*  lep2_; 
         LorentzVector*  lep3_; 
         LorentzVector*  lep4_; 
+        LorentzVector*  elnoiso1_; 
+        LorentzVector*  elnoiso2_; 
+        LorentzVector*  elnoiso3_; 
+        LorentzVector*  elnoiso4_; 
+        LorentzVector*  munoiso1_; 
+        LorentzVector*  munoiso2_; 
+        LorentzVector*  munoiso3_; 
+        LorentzVector*  munoiso4_; 
 	Float_t pjet1_res_;
 	Float_t pjet2_res_;
 	Float_t pjet3_res_;
