@@ -5,7 +5,7 @@
 #include <map>
 #include "Math/LorentzVector.h"
 #include "Math/PxPyPzE4D.h"
-
+#include "../CORE/jetSelections.h"
 //#include "../CORE/topmass/ttdilepsolve.h" REPLACETOPMASS
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
@@ -29,7 +29,7 @@ class looper
 	void InitBaby();
 	float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx = 0 );
 	float getMinDR( int type1, int type2, std::vector<int> hltid, std::vector<LorentzVector> hltobj );
-	int getJetIndex(LorentzVector jet);
+	int getJetIndex(LorentzVector jet, FactorizedJetCorrector* jet_corrector);
 	
         // Set globals
         void set_susybaseline (bool  b)    { g_susybaseline = b; }

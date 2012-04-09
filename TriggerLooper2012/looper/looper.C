@@ -512,8 +512,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
   jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
 
 
-
-
   set_goodrun_file( g_json );
 
   bool isData = true;
@@ -721,9 +719,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
 
 
-
-
-
       //std::vector<int> mutrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v5")];
       //std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele27_WP80_DiCentralPFJet25_v5")];
       // std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele100_CaloIdVT_TrkIdT_v3")];
@@ -906,7 +901,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( njets_ > 3 ) 	pjet4_ = &( vpfjets_p4.at(3) );
 
       if( njets_ > 0 ) {
-	int i_j1 = getJetIndex(vpfjets_p4.at(0));
+	int i_j1 = getJetIndex(vpfjets_p4.at(0),jet_corrector_pfL1FastJetL2L3);
 
 	// get L1Fast, L2, L3, Residual individual corrections
 	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
@@ -924,7 +919,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
 
       if( njets_ > 1 ) {
-	int i_j2 = getJetIndex(vpfjets_p4.at(1));
+	int i_j2 = getJetIndex(vpfjets_p4.at(1),jet_corrector_pfL1FastJetL2L3);
 
 	// get L1Fast, L2, L3, Residual individual corrections
 	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
@@ -942,7 +937,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
 
       if( njets_ > 2 ) {
-	int i_j3 = getJetIndex(vpfjets_p4.at(2));
+	int i_j3 = getJetIndex(vpfjets_p4.at(2),jet_corrector_pfL1FastJetL2L3);
 
 	// get L1Fast, L2, L3, Residual individual corrections
 	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
@@ -960,7 +955,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
 
       if( njets_ > 3 ) {
-	int i_j4 = getJetIndex(vpfjets_p4.at(3));
+	int i_j4 = getJetIndex(vpfjets_p4.at(3),jet_corrector_pfL1FastJetL2L3);
 
 	// get L1Fast, L2, L3, Residual individual corrections
 	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
@@ -1407,16 +1402,30 @@ float looper::getMinDR(int type1, int type2, std::vector<int> hltid, std::vector
 
 //--------------------------------------------------------------------
 
-int looper::getJetIndex(LorentzVector jet) {
+int looper::getJetIndex(LorentzVector jet, FactorizedJetCorrector* jet_corrector) {
 
   int matchindex = -1;
   for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
-    LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-    if (dRbetweenVectors( vjet , jet ) > 0.4 ) continue;
-    if ( abs(jet.pt()-vjet.pt()) > 5) continue;
+    jet_corrector->setRho   ( cms2.evt_ww_rho_vor()           );
+    jet_corrector->setJetA  ( cms2.pfjets_area().at(ijet)     );
+    jet_corrector->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+    jet_corrector->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+    double corr = jet_corrector->getCorrection();
+    
+    LorentzVector vjet   = corr * pfjets_p4().at(ijet);
+
+    //LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+    if ( dRbetweenVectors( vjet , jet ) > 0.001 ) continue;
+    if ( abs(jet.pt()-vjet.pt())        > 0.001)  continue;
+
     matchindex = ijet;
     break;
+  }
+
+  if( matchindex < 0 ){
+    cout << __FILE__ << " " << __LINE__ << " : ERROR! can't find matched jet, quitting" << endl;
+    exit(0);
   }
   
   return matchindex;
