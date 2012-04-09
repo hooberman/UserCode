@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-00-06";
+  const char* version    = "V00-00-00";
   const char* jsonfile   = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
@@ -49,25 +49,25 @@ void doAll(bool skipFWLite = true)
   cout << "json    : " << jsonfile    << endl;
 
   //Load CORE stuff
-  gROOT->ProcessLine(".L ../CORE/CMS2.cc+");
-  gROOT->ProcessLine(".L ../CORE/utilities.cc+");
-  gROOT->ProcessLine(".L ../CORE/trackSelections.cc+");
-  gROOT->ProcessLine(".L ../CORE/eventSelections.cc+");
-  gROOT->ProcessLine(".L ../CORE/MITConversionUtilities.cc+");
-  gROOT->ProcessLine(".L ../CORE/muonSelections.cc+");
-  gROOT->ProcessLine(".L ../CORE/electronSelectionsParameters.cc+");
-  gROOT->ProcessLine(".L ../CORE/electronSelections.cc+");
-  gROOT->ProcessLine(".L ../CORE/metSelections.cc+");
-  gROOT->ProcessLine(".L ../CORE/SimpleFakeRate.cc+");
-  gROOT->ProcessLine(".L ../CORE/mcSelections.cc+");
-  gROOT->ProcessLine(".L ../CORE/MT2/MT2.cc+");
-  gROOT->ProcessLine(".L ../CORE/triggerUtils.cc+");  
-  gROOT->ProcessLine(".L ../CORE/susySelections.cc+");
-  gROOT->ProcessLine(".L ../CORE/mcSUSYkfactor.cc+");
-  gROOT->ProcessLine(".L ../CORE/triggerSuperModel.cc+");
-  gROOT->ProcessLine(".L ../CORE/triggerUtils.cc+");
-  //gROOT->ProcessLine(".L ../CORE/jetSelections.cc+");
-  gROOT->ProcessLine(".L ../CORE/ttbarSelections.cc+");
+  // gROOT->ProcessLine(".L ../CORE/CMS2.cc+");
+  // gROOT->ProcessLine(".L ../CORE/utilities.cc+");
+  // gROOT->ProcessLine(".L ../CORE/trackSelections.cc+");
+  // gROOT->ProcessLine(".L ../CORE/eventSelections.cc+");
+  // gROOT->ProcessLine(".L ../CORE/MITConversionUtilities.cc+");
+  // gROOT->ProcessLine(".L ../CORE/muonSelections.cc+");
+  // gROOT->ProcessLine(".L ../CORE/electronSelectionsParameters.cc+");
+  // gROOT->ProcessLine(".L ../CORE/electronSelections.cc+");
+  // gROOT->ProcessLine(".L ../CORE/metSelections.cc+");
+  // gROOT->ProcessLine(".L ../CORE/SimpleFakeRate.cc+");
+  // gROOT->ProcessLine(".L ../CORE/mcSelections.cc+");
+  // gROOT->ProcessLine(".L ../CORE/MT2/MT2.cc+");
+  // gROOT->ProcessLine(".L ../CORE/triggerUtils.cc+");  
+  // gROOT->ProcessLine(".L ../CORE/susySelections.cc+");
+  // gROOT->ProcessLine(".L ../CORE/mcSUSYkfactor.cc+");
+  // gROOT->ProcessLine(".L ../CORE/triggerSuperModel.cc+");
+  // gROOT->ProcessLine(".L ../CORE/triggerUtils.cc+");
+  // //gROOT->ProcessLine(".L ../CORE/jetSelections.cc+");
+  // gROOT->ProcessLine(".L ../CORE/ttbarSelections.cc+");
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
@@ -96,7 +96,7 @@ void doAll(bool skipFWLite = true)
   //----------------------------------------
 
   bool runElHad     = 1;
-  bool runMuHad     = 1;
+  bool runMuHad     = 0;
 
   //----------------------------------------
   // add samples to TChains
@@ -113,11 +113,11 @@ void doAll(bool skipFWLite = true)
 
     //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple_179828*root");
 
-    //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple_179959_0.root");
+    pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple_179959_0.root");
 
 
-    pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple*root");
-    pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple*root");
+    //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple*root");
+    //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple*root");
 
   }
 

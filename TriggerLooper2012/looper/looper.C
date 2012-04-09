@@ -18,23 +18,52 @@
 #include "histtools.h"
 #include "looper.h"
 #include "TTreeCache.h"
-#include "../CORE/CMS2.h"
-#include "../CORE/metSelections.h"
-#include "../CORE/trackSelections.h"
-#include "../CORE/eventSelections.h"
-#include "../CORE/electronSelections.h"
-#include "../CORE/electronSelectionsParameters.h"
-#include "../CORE/mcSelections.h"
-#include "../CORE/muonSelections.h"
-#include "../Tools/goodrun.cc"
+#include "TDatabasePDG.h"
+
+// #include "../CORE/CMS2.h"
+// #include "../CORE/metSelections.h"
+// #include "../CORE/trackSelections.h"
+// #include "../CORE/eventSelections.h"
+// #include "../CORE/electronSelections.h"
+// #include "../CORE/electronSelectionsParameters.h"
+// #include "../CORE/mcSelections.h"
+// #include "../CORE/muonSelections.h"
+// #include "../Tools/goodrun.cc"
+// #include "../CORE/utilities.cc"
+// #include "../CORE/ttbarSelections.h"
+// #include "../CORE/susySelections.h"
+// #include "../CORE/mcSUSYkfactor.h"
+// #include "../CORE/triggerSuperModel.h"
+// #include "../CORE/triggerUtils.h"
+// #include "../Tools/vtxreweight.cc"
+// #include "../Tools/msugraCrossSection.cc"
+
+#include "../CORE/CMS2.cc"
+#ifndef __CINT__
 #include "../CORE/utilities.cc"
-#include "../CORE/ttbarSelections.h"
-#include "../CORE/susySelections.h"
-#include "../CORE/mcSUSYkfactor.h"
-#include "../CORE/triggerSuperModel.h"
-#include "../CORE/triggerUtils.h"
+#include "../CORE/ssSelections.cc"
+#include "../CORE/electronSelections.cc"
+#include "../CORE/electronSelectionsParameters.cc"
+#include "../CORE/MITConversionUtilities.cc"
+#include "../CORE/muonSelections.cc"
+#include "../CORE/eventSelections.cc"
+#include "../CORE/ttbarSelections.cc"
+#include "../CORE/trackSelections.cc"
+#include "../CORE/metSelections.cc"
+#include "../CORE/jetSelections.cc"
+#include "../CORE/photonSelections.cc"
+#include "../CORE/triggerUtils.cc"
+#include "../CORE/triggerSuperModel.cc"
+#include "../CORE/mcSelections.cc"
+#include "../CORE/susySelections.cc"
+#include "../CORE/mcSUSYkfactor.cc"
+#include "../CORE/SimpleFakeRate.cc"
+#include "../Tools/goodrun.cc"
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
+#include "../Tools/bTagEff_BTV.cc"
+
+#endif
 
 bool verbose        = false;
 bool doTenPercent   = false;
@@ -209,7 +238,7 @@ float getTriggerObjectPt(char* trigname, int id){
 }
 
 //--------------------------------------------------------------------
-
+/*
 TString triggerName(TString triggerPattern){
 
   //-------------------------------------------------------
@@ -232,9 +261,9 @@ TString triggerName(TString triggerPattern){
   return exact_hltname;
 
 }
-
+*/
 //--------------------------------------------------------------------
-
+/*
 bool passUnprescaledHLTTriggerPattern(const char* arg){
 
   //---------------------------------------------
@@ -249,7 +278,7 @@ bool passUnprescaledHLTTriggerPattern(const char* arg){
   }
   return passUnprescaledHLTTrigger( HLTTrigger );
 }
-
+*/
 //--------------------------------------------------------------------
 
 bool passHLTTriggerPattern(const char* arg){
@@ -288,7 +317,7 @@ looper::looper()
 }
 
 //--------------------------------------------------------------------
-
+/*
 bool passesCaloJetID (const LorentzVector &jetp4)
 {
   int jet_idx = -1;
@@ -344,7 +373,7 @@ bool passesPFJetID(unsigned int pfJetIdx) {
 
   return true;
 }  
-
+*/
 //--------------------------------------------------------------------
 
 struct DorkyEventIdentifier {
@@ -391,61 +420,65 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
 
 void looper::InitBaby(){
 
-  eledijet_hltele_ = 0; 
-  eletrijet_hltele_ = 0; 
-  mudijet_hltmu_ = 0; 
-  mutrijet_hltmu_ = 0; 
-  lep1_  = 0;
-  lep2_  = 0;
-  lep3_  = 0;
-  lep4_  = 0;
-  pjet1_ = 0;
-  pjet2_ = 0;
-  pjet3_ = 0;
-  pjet4_ = 0;
-  cjet1_ = 0;
-  cjet2_ = 0;
-  cjet3_ = 0;
-  cjet4_ = 0;
-  pjet1_L1Fast_ = -999.;
-  pjet2_L1Fast_ = -999.;
-  pjet3_L1Fast_ = -999.;
-  pjet4_L1Fast_ = -999.;
-  pjet1_L2L3_ = -999.;
-  pjet2_L2L3_ = -999.;
-  pjet3_L2L3_ = -999.;
-  pjet4_L2L3_ = -999.;
-  eledijet_n82_ = -9;
-  eletrijet_n82_ = -9;
-  eledijet_n85_ = -9;
-  eletrijet_n85_ = -9;
-  mudijet_n83_ = -9;
-  mutrijet_n83_ = -9;
-  mudijet_n85_ = -9;
-  mutrijet_n85_ = -9;
-  eledijet_trigmindr_ejet_ = 999.;
-  eletrijet_trigmindr_ejet_ = 999.;
-  mudijet_trigmindr_mujet_ = 999.;
-  mutrijet_trigmindr_mujet_ = 999.;
-  eledijet_trigdr_pjet1_ = 999.;
-  eledijet_trigdr_pjet2_ = 999.;
-  eledijet_trigdr_pjet3_ = 999.;
-  eledijet_trigdr_pjet4_ = 999.;
-  eletrijet_trigdr_pjet1_ = 999.;
-  eletrijet_trigdr_pjet2_ = 999.;
-  eletrijet_trigdr_pjet3_ = 999.;
-  eletrijet_trigdr_pjet4_ = 999.;
-  mudijet_trigdr_pjet1_ = 999.;
-  mudijet_trigdr_pjet2_ = 999.;
-  mudijet_trigdr_pjet3_ = 999.;
-  mudijet_trigdr_pjet4_ = 999.;
-  mutrijet_trigdr_pjet1_ = 999.;
-  mutrijet_trigdr_pjet2_ = 999.;
-  mutrijet_trigdr_pjet3_ = 999.;
-  mutrijet_trigdr_pjet4_ = 999.;
-  run_     = -999;
-  event_   = -999;
-  lumi_    = -999;
+  eledijet_hltele_		= 0; 
+  eletrijet_hltele_		= 0; 
+  mudijet_hltmu_		= 0; 
+  mutrijet_hltmu_		= 0; 
+  lep1_				= 0;
+  lep2_				= 0;
+  lep3_				= 0;
+  lep4_				= 0;
+  pjet1_			= 0;
+  pjet2_			= 0;
+  pjet3_			= 0;
+  pjet4_			= 0;
+  cjet1_			= 0;
+  cjet2_			= 0;
+  cjet3_			= 0;
+  cjet4_			= 0;
+  pjet1_res_			= -999.;
+  pjet2_res_			= -999.;
+  pjet3_res_			= -999.;
+  pjet4_res_			= -999.;
+  pjet1_L1Fast_			= -999.;
+  pjet2_L1Fast_			= -999.;
+  pjet3_L1Fast_			= -999.;
+  pjet4_L1Fast_			= -999.;
+  pjet1_L2L3_			= -999.;
+  pjet2_L2L3_			= -999.;
+  pjet3_L2L3_			= -999.;
+  pjet4_L2L3_			= -999.;
+  eledijet_n82_			= -9;
+  eletrijet_n82_		= -9;
+  eledijet_n85_			= -9;
+  eletrijet_n85_		= -9;
+  mudijet_n83_			= -9;
+  mutrijet_n83_			= -9;
+  mudijet_n85_			= -9;
+  mutrijet_n85_			= -9;
+  eledijet_trigmindr_ejet_	= 999.;
+  eletrijet_trigmindr_ejet_	= 999.;
+  mudijet_trigmindr_mujet_	= 999.;
+  mutrijet_trigmindr_mujet_	= 999.;
+  eledijet_trigdr_pjet1_	= 999.;
+  eledijet_trigdr_pjet2_	= 999.;
+  eledijet_trigdr_pjet3_	= 999.;
+  eledijet_trigdr_pjet4_	= 999.;
+  eletrijet_trigdr_pjet1_	= 999.;
+  eletrijet_trigdr_pjet2_	= 999.;
+  eletrijet_trigdr_pjet3_	= 999.;
+  eletrijet_trigdr_pjet4_	= 999.;
+  mudijet_trigdr_pjet1_		= 999.;
+  mudijet_trigdr_pjet2_		= 999.;
+  mudijet_trigdr_pjet3_		= 999.;
+  mudijet_trigdr_pjet4_		= 999.;
+  mutrijet_trigdr_pjet1_	= 999.;
+  mutrijet_trigdr_pjet2_	= 999.;
+  mutrijet_trigdr_pjet3_	= 999.;
+  mutrijet_trigdr_pjet4_	= 999.;
+  run_				= -999;
+  event_			= -999;
+  lumi_				= -999;
 }
 
 //--------------------------------------------------------------------
@@ -460,9 +493,25 @@ void looper::closeTree()
 
 int looper::ScanChain(TChain* chain, char *prefix){
 
-  cout << "-------------------------------------------------------------------------------" << endl;
-  cout << "SAVING ONLY EVENTS PASSING HLT_Ele8_CaloIdT_TrkIdT_DiJet30_v                   " << endl;
-  cout << "-------------------------------------------------------------------------------" << endl;
+  //------------------------------------------------------------------------------------------------------
+  // load here the on-the-fly corrections/uncertainties L1FastL2L3 (MC) and L1FastL2L3Residual (DATA)
+  // corrections are stored in jet_corrected_pfL1FastJetL2L3
+  // uncertainties are stored in pfUncertainty
+  //------------------------------------------------------------------------------------------------------
+
+  std::vector<std::string> jetcorr_filenames_pfL1FastJetL2L3;
+  FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3;
+
+  jetcorr_filenames_pfL1FastJetL2L3.clear();
+
+  jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L1FastJet.txt");
+  jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2Relative.txt");
+  jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L3Absolute.txt");
+  jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2L3Residual.txt");
+  
+  jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
+
+
 
 
   set_goodrun_file( g_json );
@@ -545,8 +594,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       cms2.GetEntry(z);
 
-      if( !passHLTTriggerPattern("HLT_Ele8_CaloIdT_TrkIdT_DiJet30_v") ) continue;
-
       InitBaby();
 
       if( verbose ){
@@ -556,13 +603,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	cout << evt_dataset() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 	cout << "-------------------------------------------------------"   << endl;
       }
-
-      //ele27dijet25_  = passHLTTriggerPattern("HLT_Ele27_CaloIdVT_TrkIdT_DiCentralPFJet25_v") ? 1 : 0;
-
-      //if( ele27dijet25_ == 0 ) continue;
-
-      //if( evt_run() < 178420 || evt_run() > 180291 ) continue;
-      //if( evt_run() < 179959 || evt_run() > 180291 ) continue;
 
       //---------------------------------------------
       // event cleaning and good run list
@@ -651,6 +691,38 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( ngoodlep_ > 1 ) 	lep2_ = &( goodLeptons.at(1) );
       if( ngoodlep_ > 2 ) 	lep3_ = &( goodLeptons.at(2) );
       if( ngoodlep_ > 3 ) 	lep4_ = &( goodLeptons.at(3) );
+
+
+
+      VofP4 goodElectronsNoIso;
+      vector<int> elnoisoIndex;
+
+      nelnoiso_ = 0;
+
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 10 )                                                       continue;
+	if( !pass_electronSelection( iel , electronSelection_el_OSV3_noiso , false , false ) ) continue;
+	goodElectronsNoIso.push_back( els_p4().at(iel) );
+	elnoisoIndex.push_back(iel);
+	nelnoiso_ ++;
+      }
+
+      VofP4 goodMuonsNoIso;
+      vector<int> munoisoIndex;
+
+      nmunoiso_ = 0;
+
+      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+	if( mus_p4().at(imu).pt() < 10 )                                   continue;
+	if( !muonIdNotIsolated( imu , OSGeneric_v3 ))                      continue;
+	goodMuonsNoIso.push_back( mus_p4().at(imu) );
+	munoisoIndex.push_back(imu);
+	nmunoiso_ ++;
+      }
+
+
+
+
 
       //std::vector<int> mutrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v5")];
       //std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele27_WP80_DiCentralPFJet25_v5")];
@@ -795,7 +867,19 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
-	LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
+	if( fabs( pfjets_p4().at(ijet).eta() ) > 5.0 ) continue;
+
+	//---------------------------------------------------------------------------
+	// get total correction: L1FastL2L3 for MC, L1FastL2L3Residual for data
+	//---------------------------------------------------------------------------
+
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+	double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
+
+	LorentzVector vjet   = corr * pfjets_p4().at(ijet);
 
 	bool rejectJet = false;
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
@@ -806,6 +890,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	if( !passesPFJetID(ijet) )     continue;
 	if( fabs( vjet.eta() ) > 2.5 ) continue;
 	if( vjet.pt() < 30 )           continue;
+        if( !passesPFJetID(ijet) )     continue;
 
 	njets_++;
 	ht_ += vjet.pt();
@@ -822,23 +907,74 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       if( njets_ > 0 ) {
 	int i_j1 = getJetIndex(vpfjets_p4.at(0));
-	pjet1_L1Fast_ = pfjets_corL1FastL2L3().at(i_j1)/pfjets_cor().at(i_j1);
-	pjet1_L2L3_ = pfjets_cor().at(i_j1);
+
+	// get L1Fast, L2, L3, Residual individual corrections
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(i_j1)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(i_j1).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(i_j1).eta() );
+	vector<float> factors = jet_corrector_pfL1FastJetL2L3->getSubCorrections();
+
+	if( factors.size() == 4 ){
+	  pjet1_L1Fast_ = factors.at(0);
+	  pjet1_L2L3_   = factors.at(2) / factors.at(0);
+	  pjet1_res_    = factors.at(3) / factors.at(2);
+	}
+
       }
+
       if( njets_ > 1 ) {
 	int i_j2 = getJetIndex(vpfjets_p4.at(1));
-	pjet2_L1Fast_ = pfjets_corL1FastL2L3().at(i_j2)/pfjets_cor().at(i_j2);
-	pjet2_L2L3_ = pfjets_cor().at(i_j2);
+
+	// get L1Fast, L2, L3, Residual individual corrections
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(i_j2)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(i_j2).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(i_j2).eta() );
+	vector<float> factors = jet_corrector_pfL1FastJetL2L3->getSubCorrections();
+
+	if( factors.size() == 4 ){
+	  pjet2_L1Fast_ = factors.at(0);
+	  pjet2_L2L3_   = factors.at(2) / factors.at(0);
+	  pjet2_res_    = factors.at(3) / factors.at(2);
+	}
+
       }
+
       if( njets_ > 2 ) {
 	int i_j3 = getJetIndex(vpfjets_p4.at(2));
-	pjet3_L1Fast_ = pfjets_corL1FastL2L3().at(i_j3)/pfjets_cor().at(i_j3);
-	pjet3_L2L3_ = pfjets_cor().at(i_j3);
+
+	// get L1Fast, L2, L3, Residual individual corrections
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(i_j3)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(i_j3).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(i_j3).eta() );
+	vector<float> factors = jet_corrector_pfL1FastJetL2L3->getSubCorrections();
+
+	if( factors.size() == 4 ){
+	  pjet3_L1Fast_ = factors.at(0);
+	  pjet3_L2L3_   = factors.at(2) / factors.at(0);
+	  pjet3_res_    = factors.at(3) / factors.at(2);
+	}
+
       }
+
       if( njets_ > 3 ) {
 	int i_j4 = getJetIndex(vpfjets_p4.at(3));
-	pjet4_L1Fast_ = pfjets_corL1FastL2L3().at(i_j4)/pfjets_cor().at(i_j4);
-	pjet4_L2L3_ = pfjets_cor().at(i_j4);
+
+	// get L1Fast, L2, L3, Residual individual corrections
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(i_j4)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(i_j4).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(i_j4).eta() );
+	vector<float> factors = jet_corrector_pfL1FastJetL2L3->getSubCorrections();
+
+	if( factors.size() == 4 ){
+	  pjet4_L1Fast_ = factors.at(0);
+	  pjet4_L2L3_   = factors.at(2) / factors.at(0);
+	  pjet4_res_    = factors.at(3) / factors.at(2);
+	}
+
       }
 
       //------------------------------------------
@@ -1169,6 +1305,10 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("mudijetmht25",    &mudijetmht25_,     "mudijetmht25/I");
   outTree->Branch("mutrijet",        &mutrijet_,         "mutrijet/I");
   outTree->Branch("muquadjet",       &muquadjet_,        "muquadjet/I");
+  outTree->Branch("pjet1_res",       &pjet1_res_,        "pjet1_res/F");
+  outTree->Branch("pjet2_res",       &pjet2_res_,        "pjet2_res/F");
+  outTree->Branch("pjet3_res",       &pjet3_res_,        "pjet3_res/F");
+  outTree->Branch("pjet4_res",       &pjet4_res_,        "pjet4_res/F");
   outTree->Branch("pjet1_L1Fast",    &pjet1_L1Fast_,     "pjet1_L1Fast/F");
   outTree->Branch("pjet2_L1Fast",    &pjet2_L1Fast_,     "pjet2_L1Fast/F");
   outTree->Branch("pjet3_L1Fast",    &pjet3_L1Fast_,     "pjet3_L1Fast/F");
