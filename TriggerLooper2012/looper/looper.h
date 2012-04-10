@@ -287,6 +287,8 @@ class looper
 	Int_t el17jet30_;            
 	Int_t el8vl_;                
 	Int_t el17vl_;               
+	Int_t el8noiso_;                  
+	Int_t el8noisojet30_;                  
 
 	// Higgs dilepton triggers
 	Int_t ee_;                   

@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-00-00";
+  const char* version    = "V00-00-01";
   const char* jsonfile   = "jsons/json_DCSONLY_Apr10_goodruns.txt";
   const bool  useMCSkims = true;
 
