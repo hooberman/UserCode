@@ -222,7 +222,7 @@ bool isMuMuEvent(){
 
 void printEvent(){
 
-  cout << evt_dataset() << endl;
+  cout << evt_dataset().at(0) << endl;
   cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 
 }
@@ -432,9 +432,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	eff300_ = GenWeight(isData,(char*)prefix,300);
 
 	if(TString(prefix).Contains("T5zz") || TString(prefix).Contains("sms") || TString(prefix).Contains("gmsb") ){
-	  mg_ = sparm_mG();
-	  ml_ = sparm_mL();
-	  x_  = sparm_mf();
+	  mg_ = -1;//;sparm_mG();
+	  ml_ = -1;//sparm_mL();
+	  x_  = -1;//sparm_mf();
 	}
 
 	FillBabyNtuple();
@@ -543,23 +543,23 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if(TString(prefix).Contains("T5zz") || TString(prefix).Contains("sms") || TString(prefix).Contains("gmsb") ){
 
 	if     (TString(prefix).Contains("T5zz" ) ){
-	  mg_ = sparm_mG();
-	  ml_ = sparm_mL();
-	  x_  = sparm_mf();
+	  mg_ = -1;//sparm_mG();
+	  ml_ = -1;//sparm_mL();
+	  x_  = -1;//sparm_mf();
 	  weight_ = lumi * gluinoPairCrossSection(mg_) * (1000./105000.);
 	}
 
 	else if(TString(prefix).Contains("wzsms") ){
-	  mg_ = sparm_mN();
-	  ml_ = sparm_mL();
+	  mg_ = -1;//sparm_mN();
+	  ml_ = -1;//sparm_mL();
 	  x_  = -999;
 	  int bin = xsec_C1N2->FindBin(mg_);
 	  weight_ = lumi * xsec_C1N2->GetBinContent(bin) * (1.0/100000.);
 	}
 
 	else if(TString(prefix).Contains("zzsms") ){
-	  mg_ = sparm_mN();
-	  ml_ = sparm_mL();
+	  mg_ = -1;//sparm_mN();
+	  ml_ = -1;//sparm_mL();
 	  x_  = -999;
 	  int bin = xsec_N1N2->FindBin(mg_);
 	  weight_ = lumi * xsec_N1N2->GetBinContent(bin) * (1.0/52600.);
@@ -567,7 +567,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	else if(TString(prefix).Contains("ggmsb") ){
 	  weight_ = -999;
-	  mg_ = susyScan_Mmu();
+	  mg_ = -1;//susyScan_Mmu();
 	  ml_ = -999;
 	  x_  = -999;
 	}
@@ -594,7 +594,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	qscale_ = genps_qScale();
 
 	//splice together the DY samples - if its madgraph, then we do nothing
-	if(TString(prefix).Contains("DY") && TString(evt_dataset()).Contains("madgraph") == false) {	
+	if(TString(prefix).Contains("DY") && TString(evt_dataset().at(0)).Contains("madgraph") == false) {	
 	  bool doNotContinue = false;
 	  for(unsigned int i = 0; i < genps_p4().size(); i++){
 	    if(abs(genps_id()[i]) == 23 && genps_p4()[i].M() > 50.)
@@ -620,11 +620,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       st_ = -1;
 
       if(TString(prefix).Contains("singletop")){
-	if     ( TString(evt_dataset()).Contains("TuneZ2_s-")  ) st_ = 0;
-	else if( TString(evt_dataset()).Contains("TuneZ2_t-")  ) st_ = 1;
-	else if( TString(evt_dataset()).Contains("TuneZ2_tW-") ) st_ = 2;
+	if     ( TString(evt_dataset().at(0)).Contains("TuneZ2_s-")  ) st_ = 0;
+	else if( TString(evt_dataset().at(0)).Contains("TuneZ2_t-")  ) st_ = 1;
+	else if( TString(evt_dataset().at(0)).Contains("TuneZ2_tW-") ) st_ = 2;
 	else{
-	  cout << "Unrecognized single top sample " << evt_dataset() << endl;
+	  cout << "Unrecognized single top sample " << evt_dataset().at(0) << endl;
 	}
       }
 
