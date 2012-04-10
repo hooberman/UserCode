@@ -48,6 +48,7 @@
 
 bool verbose        = false;
 bool doTenPercent   = false;
+bool debug          = false;
 
 using namespace std;
 using namespace tas;
@@ -172,8 +173,17 @@ bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector
 
 bool objectPassTrigger(const LorentzVector &obj, char* trigname, float ptmin, int id, float drmax){
 
-  std::vector<int>           trigId = cms2.hlt_trigObjs_id()[findTriggerIndex(trigname)];
-  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
+  TString exactTriggerName = triggerName( trigname );
+
+  if( !passHLTTrigger( exactTriggerName ) ) return false;
+
+  if( exactTriggerName.Contains("TRIGGER_NOT_FOUND") ){
+    cout << "Error in objectPassTrigger: couldn't find trigger matched to : " << trigname << endl;
+    return false;
+  }
+
+  std::vector<int>           trigId = cms2.hlt_trigObjs_id()[findTriggerIndex(exactTriggerName)];
+  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(exactTriggerName)];
 
   assert( trigId.size() == trigp4.size() );
   if( trigId.size() == 0 ) return false;
@@ -290,6 +300,14 @@ void looper::InitBaby(){
   cjet2_			= 0;
   cjet3_			= 0;
   cjet4_			= 0;
+  elnoiso1_                     = 0;
+  elnoiso2_                     = 0;
+  elnoiso3_                     = 0;
+  elnoiso4_                     = 0;
+  munoiso1_                     = 0;
+  munoiso2_                     = 0;
+  munoiso3_                     = 0;
+  munoiso4_                     = 0;
   pjet1_res_			= -999.;
   pjet2_res_			= -999.;
   pjet3_res_			= -999.;
@@ -347,6 +365,8 @@ void looper::closeTree()
 
 int looper::ScanChain(TChain* chain, char *prefix){
 
+  if( debug )  cout << __LINE__ << ": start ScanChain" << endl;
+
   //------------------------------------------------------------------------------------------------------
   // load here the on-the-fly corrections/uncertainties L1FastL2L3 (MC) and L1FastL2L3Residual (DATA)
   // corrections are stored in jet_corrected_pfL1FastJetL2L3
@@ -399,6 +419,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
   char* thisFile = "blah";
 
+  if( debug )  cout << __LINE__ << ": begin file loop" << endl;
+
   while((currentFile = (TChainElement*)fileIter.Next())) {
     TFile* f = new TFile(currentFile->GetTitle());
 
@@ -445,6 +467,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       tree->LoadTree(z);
 
       cms2.GetEntry(z);
+
+      if( debug )  cout << __LINE__ << ": got entry" << endl;
 
       InitBaby();
 
@@ -500,6 +524,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       // find leptons passing analysis selection
       //---------------------------------------------
 
+      if( debug )  cout << __LINE__ << ": do lepton selection" << endl;
+
       VofP4 goodLeptons;
       vector<int> lepId;
       vector<int> lepIndex;
@@ -507,7 +533,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       ngoodlep_ = 0;
       ngoodel_  = 0;
       ngoodmu_  = 0;
-            
+
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 	if( els_p4().at(iel).pt() < 10 )                                              continue;
 	if( !pass_electronSelection( iel , electronSelection_ssV5 , false , false ) ) continue;
@@ -543,6 +569,12 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( ngoodlep_ > 1 ) 	lep2_ = &( goodLeptons.at(1) );
       if( ngoodlep_ > 2 ) 	lep3_ = &( goodLeptons.at(2) );
       if( ngoodlep_ > 3 ) 	lep4_ = &( goodLeptons.at(3) );
+
+      dilmass_ = -1;
+
+      if( ngoodlep_ > 1 ){
+	dilmass_ = (*lep1_ + *lep2_).mass();	
+      }
 
       VofP4 goodElectronsNoIso;
       vector<int> elnoisoIndex;
@@ -582,7 +614,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
  	elnoiso3_        = &( goodElectronsNoIso.at(2) );
 	elnoiso3_wp80_   = objectPassTrigger( *elnoiso3_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
 	elnoiso3_top_    = objectPassTrigger( *elnoiso3_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso1_iso_    = electronIsolation_rel_v1      ( elnoisoIndex.at(2) , true );
+	elnoiso3_iso_    = electronIsolation_rel_v1      ( elnoisoIndex.at(2) , true );
 	elnoiso3_isofj_  = electronIsolation_rel_FastJet ( elnoisoIndex.at(2) , true );
 	elnoiso3_isovtx_ = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(2) , true );
 	elnoiso3_isopf_  = electronIsoValuePF            ( elnoisoIndex.at(2) , 0    );
@@ -641,130 +673,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
 
 
-      //std::vector<int> mutrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v5")];
-      //std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele27_WP80_DiCentralPFJet25_v5")];
-      // std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele100_CaloIdVT_TrkIdT_v3")];
-
-      // if( eltrigId.size()>0 ){
-      // 	for( unsigned int i = 0 ; i < eltrigId.size() ; i++ ){
-      // 	  cout << i << " " << eltrigId.at(i) << endl;
-      // 	}
-      // }
-
-      //------------------------------------------------
-      // trigger study: turn-on curve for jet triggers
-      //------------------------------------------------
-
-      /*
-      trgjet_  = 0;
-      passtrg_ = -1;
-
-      if( doTriggerStudy ){
-
-	// only consider muon events
-	if( abs(id1_) == 11 ) continue;
-
-	// run range for which HLT_Mu17_CentralJet30 is un-prescaled
-	if( evt_run() < 160329 || evt_run() > 163261 ) continue;
-
-	// require event passes HLT_Mu20_v1
-	if( !passUnprescaledHLTTrigger("HLT_Mu20_v1") ) continue;
- 
-	// require found trigger object
-	std::vector<LorentzVector> muonObj;
-	muonObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu20_v1")];
-
-	if( muonObj.size() == 0 ) continue;
-
-	// require offline muon matched to muon trigger object (dR < 0.1)
-	if( dRbetweenVectors( *lep1_ , muonObj.at(0) ) > 0.1 ) continue;
-
-	// now get trigger objects for HLT_Mu20_CentralJet30
-	std::vector<LorentzVector> muonJetObj;
-	if( evt_run() >= 160329 && evt_run() <= 161176 )
-	  muonJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu17_CentralJet30_v1")];
-	else if( evt_run() >= 161210 && evt_run() <= 163261 )
-	  muonJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_Mu17_CentralJet30_v2")];
-
-	// did event pass HLT_Mu17_CentralJet30?
-	passtrg_ = 0;
-	if( evt_run() >= 160329 && evt_run() <= 161176 )
-	  passtrg_ = passUnprescaledHLTTrigger("HLT_Mu17_CentralJet30_v1") ? 1 : 0;
-	else if( evt_run() >= 161210 && evt_run() <= 163261 )
-	  passtrg_ = passUnprescaledHLTTrigger("HLT_Mu17_CentralJet30_v2") ? 1 : 0;
-
-	// now find highest pt offline jet matched to HLT jet
-	int offlinejet = -1;
-	int njets      =  0;
-	float maxpt    = -1;
-
-        for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
-          
-          LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
-
-	  if( dRbetweenVectors( vjet , *lep1_ ) < 0.4 ) continue;
-	  //if( vjet.pt() < 20. )                                          continue;
-
-	  // if event passed trigger, require jet is matched to HLT object
-	  if( passtrg_ == 1 ){
-	    
-	    bool HLTmatch = false;
-
-	    for( unsigned int ihlt = 0 ; ihlt < muonJetObj.size() ; ++ihlt ){
-	      
-	      // exclude HLT muon object
-	      if( dRbetweenVectors( vjet , muonObj.at(0) ) < 0.1 )       continue;
-	    
-	      // dr match to HLT jet object
-	      if( dRbetweenVectors( vjet , muonJetObj.at(ihlt) ) > 0.4 ) continue;
-
-	      HLTmatch = true;
-	    }
-
-	    if( !HLTmatch ) continue;
-	  }
-
-	  njets++;
-
-	  if( vjet.pt() > maxpt ){
-	    maxpt      = vjet.pt();
-	    offlinejet = ijet;
-	  }
-
-        }
-
-	//if( passtrg_ == 0 ) cout << "FAIL TRIGGER" << endl;
-	if( offlinejet < 0 ) continue;
-	//if( njets > 1      ) continue;
-
-	// now store offline jet p4 and whether muon-jet trigger passed
-	trgjet_  = &(jets_p4().at(offlinejet) * jets_corL1FastL2L3().at(offlinejet));
-
-	outTree->Fill();
-	continue;
-
-	// cout << "muonJetObj.size() " << muonJetObj.size() << endl;
-	// cout << "muon trigger       : pt, eta, phi    " << muonObj.at(0).pt() << ", " << muonObj.at(0).eta() << ", " << muonObj.at(0).phi() << endl;
-
-	// if( muonJetObj.size() > 1 ){
-	//   cout << "muon-jet trigger 1 : pt, eta, phi    " << muonJetObj.at(0).pt() << ", " << muonJetObj.at(0).eta() << ", " << muonJetObj.at(0).phi() << endl;
-	//   cout << "muon-jet trigger 2 : pt, eta, phi    " << muonJetObj.at(1).pt() << ", " << muonJetObj.at(1).eta() << ", " << muonJetObj.at(1).phi() << endl;
-
-	//
-	//   float dr2 = dRbetweenVectors( muonObj.at(0) , muonJetObj.at(1) );
-
-	//   cout << "dr1 " << dr1 << " dr2 " << dr2 << endl;
-	// }
-
-
-
-	//cout << endl << endl;
-	//cout << "trigger objects " << muonObj.size() << endl;
-	//if( muonObj.size() > 0 ) cout << "pt, eta, phi    " << muonObj.at(0).pt() << ", " << muonObj.at(0).eta() << ", " << muonObj.at(0).phi() << endl;
-	//cout << "muon " << lep1_->pt() << ", " << lep1_->eta() << ", " << lep1_->phi() << endl;
-
-      }
-      */
+      if( debug )  cout << __LINE__ << ": do jet selection" << endl;
 
       //-------------------------------------
       // jet counting
@@ -781,7 +690,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       vector<int> goodjets;
       goodjets.clear();
-
+      
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
 	if( fabs( pfjets_p4().at(ijet).eta() ) > 5.0 ) continue;
@@ -797,7 +706,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
 
 	LorentzVector vjet   = corr * pfjets_p4().at(ijet);
-
+      
 	bool rejectJet = false;
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
 	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
@@ -814,17 +723,17 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
 	vpfjets_p4.push_back( vjet );
       }
-
+      
       sort( vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
 
       if( njets_ > 0 ) 	pjet1_ = &( vpfjets_p4.at(0) );
       if( njets_ > 1 ) 	pjet2_ = &( vpfjets_p4.at(1) );
       if( njets_ > 2 ) 	pjet3_ = &( vpfjets_p4.at(2) );
       if( njets_ > 3 ) 	pjet4_ = &( vpfjets_p4.at(3) );
-
+      
       if( njets_ > 0 ) {
 	int i_j1 = getJetIndex(vpfjets_p4.at(0),jet_corrector_pfL1FastJetL2L3);
-
+      
 	// get L1Fast, L2, L3, Residual individual corrections
 	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
 	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(i_j1)     );
@@ -839,7 +748,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	}
 
       }
-
+      
       if( njets_ > 1 ) {
 	int i_j2 = getJetIndex(vpfjets_p4.at(1),jet_corrector_pfL1FastJetL2L3);
 
@@ -857,7 +766,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	}
 
       }
-
+      
       if( njets_ > 2 ) {
 	int i_j3 = getJetIndex(vpfjets_p4.at(2),jet_corrector_pfL1FastJetL2L3);
 
@@ -875,7 +784,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	}
 
       }
-
+      
       if( njets_ > 3 ) {
 	int i_j4 = getJetIndex(vpfjets_p4.at(3),jet_corrector_pfL1FastJetL2L3);
 
@@ -893,7 +802,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	}
 
       }
-
+      
       //------------------------------------------
       // count calojets
       //------------------------------------------
@@ -921,7 +830,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	
 	vcalojets_p4.push_back(vjet);
       }
-
+      
       sort( vcalojets_p4.begin(), vcalojets_p4.end(), sortByPt);
 
       if( ncjets_ > 0 ) 	cjet1_ = &( vcalojets_p4.at(0) );
@@ -952,8 +861,9 @@ int looper::ScanChain(TChain* chain, char *prefix){
       for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
 	if(isGoodDAVertex(v)) ++ndavtx_;
       }
-
-      strcpy(dataset_, cms2.evt_dataset().Data());  //dataset name
+      
+      //strcpy(dataset_, cms2.evt_dataset().Data());  //dataset name
+      
       run_          = evt_run();                    //run
       lumi_         = evt_lumiBlock();              //lumi
       event_        = evt_event();                  //event
@@ -1056,11 +966,10 @@ int looper::ScanChain(TChain* chain, char *prefix){
       em_                   = passTriggerPrescale("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
       me_                   = passTriggerPrescale("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
 
-
-
+     
       mindrej_ = getMinDeltaRBetweenObjects( triggerName("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30") , 82 , 85 ); // 82 = electron  85 = jet 
       mindrmj_ = getMinDeltaRBetweenObjects( triggerName("HLT_IsoMu17_eta2p1_TriCentralPFJet30")                         , 83 , 85 ); // 83 = muon      85 = jet 
-
+      
       // store pt of electron matched to electron-dijet trigger
       elptmatch_ = -1;
 
@@ -1070,148 +979,11 @@ int looper::ScanChain(TChain* chain, char *prefix){
       else if( evt_run() >= 179959 && evt_run() <= 180291 ){
 	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v5" , 82);
       }
-
+      
       // now get trigger objects and store minimum jet dR
-      bool passtrig = (eledijet_==1 || eletrijet_==1 || mudijet_==1 || mutrijet_==1) ? true: false;
-      if ( passtrig ) {
-
-	std::vector<LorentzVector> muDiJetObj;
-	std::vector<LorentzVector> muTriJetObj;
-	std::vector<LorentzVector> eleDiJetObj;
-	std::vector<LorentzVector> eleTriJetObj;
-	std::vector<int>  muDiJetId;
-	std::vector<int>  muTriJetId;
-	std::vector<int>  eleDiJetId;
-	std::vector<int>  eleTriJetId;
-
-	//Need to find the exact triggers used for different runs
-	TString HLTTrigger_EleDiJet  = triggerName( "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralPFJet30_v" );
-	TString HLTTrigger_EleTriJet = triggerName( "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v" );
-	TString HLTTrigger_MuDiJet   = triggerName( "HLT_IsoMu17_eta2p1_DiCentralPFJet25_v" );
-	TString HLTTrigger_MuTriJet  = triggerName( "HLT_IsoMu17_eta2p1_TriCentralPFJet30_v" );
-	//	TString triggerName(TString triggerPattern)
-	eleDiJetObj  = cms2.hlt_trigObjs_p4()[findTriggerIndex(HLTTrigger_EleDiJet)];
-	eleTriJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex(HLTTrigger_EleTriJet)];
-	eleDiJetId   = cms2.hlt_trigObjs_id()[findTriggerIndex(HLTTrigger_EleDiJet)];
-	eleTriJetId  = cms2.hlt_trigObjs_id()[findTriggerIndex(HLTTrigger_EleTriJet)];
-	muDiJetObj  = cms2.hlt_trigObjs_p4()[findTriggerIndex(HLTTrigger_MuDiJet)];
-	muTriJetObj = cms2.hlt_trigObjs_p4()[findTriggerIndex(HLTTrigger_MuTriJet)];
-	muDiJetId   = cms2.hlt_trigObjs_id()[findTriggerIndex(HLTTrigger_MuDiJet)];
-	muTriJetId  = cms2.hlt_trigObjs_id()[findTriggerIndex(HLTTrigger_MuTriJet)];
-
-	// now find HLT jet matched to offline jet
-	//loop over selected jets 
-	for (unsigned int ijet = 0; ijet < vpfjets_p4.size(); ijet++) {
-	  
-	  LorentzVector vjet = vpfjets_p4.at(ijet);
-	  // dijet triggers
-	  if ( eledijet_==1 ) {
-	    eledijet_trigmindr_ejet_ = getMinDR(82, 85, eleDiJetId, eleDiJetObj);
-	    float minhltdr = 999.;
-	    eledijet_n82_ = 0;
-	    eledijet_n85_ = 0;
-	    for( unsigned int ihlt = 0 ; ihlt < eleDiJetObj.size() ; ++ihlt ){
-	      if ( eleDiJetId.at(ihlt)==82 ) {
-		eledijet_n82_++;
-		if (eledijet_n82_==1) eledijet_hltele_ = &( eleDiJetObj.at(ihlt) );
-		if ( (eleDiJetObj.at(ihlt)).pt() > eledijet_hltele_->pt() ) 
-		  eledijet_hltele_ = &( eleDiJetObj.at(ihlt) );
-	      }
-	      if ( eleDiJetId.at(ihlt)==85 ) eledijet_n85_++;
-	      //Only look for jet objects
-	      if ( eleDiJetId.at(ihlt)!=85 ) continue;
-	      // dr match to HLT jet object
-	      float hltdr = dRbetweenVectors( vjet , eleDiJetObj.at(ihlt) );
-	      if ( minhltdr > hltdr ) minhltdr = hltdr;
-	    } // end loop over trig objects
-
-	    if (ijet==0) eledijet_trigdr_pjet1_ = minhltdr;
-	    else if (ijet==1) eledijet_trigdr_pjet2_ = minhltdr;
-	    else if (ijet==2) eledijet_trigdr_pjet3_ = minhltdr;
-	    else if (ijet==3) eledijet_trigdr_pjet4_ = minhltdr;
-	  } 
-	  if ( mudijet_==1 ) {
-	    mudijet_trigmindr_mujet_ = getMinDR(83, 85, muDiJetId, muDiJetObj);
-	    float minhltdr = 999.;
-	    mudijet_n83_ = 0;
-	    mudijet_n85_ = 0;
-	    for( unsigned int ihlt = 0 ; ihlt < muDiJetObj.size() ; ++ihlt ){
-	      if ( muDiJetId.at(ihlt)==83 ) {
-		mudijet_n83_++;
-		if (mudijet_n83_==1) mudijet_hltmu_ = &( muDiJetObj.at(ihlt) );
-		if ( muDiJetObj.at(ihlt).pt() > mudijet_hltmu_->pt() )
-		  mudijet_hltmu_ = &( muDiJetObj.at(ihlt) );
-	      }
-	      if ( muDiJetId.at(ihlt)==85 ) mudijet_n85_++;
-	      //Only look for jet objects
-	      if ( muDiJetId.at(ihlt)!=85 ) continue;
-	      // dr match to HLT jet object
-	      float hltdr = dRbetweenVectors( vjet , muDiJetObj.at(ihlt) );
-	      if ( minhltdr > hltdr ) minhltdr = hltdr;
-	    } // end loop over trig objects
-
-	    if (ijet==0) mudijet_trigdr_pjet1_ = minhltdr;
-	    else if (ijet==1) mudijet_trigdr_pjet2_ = minhltdr;
-	    else if (ijet==2) mudijet_trigdr_pjet3_ = minhltdr;
-	    else if (ijet==3) mudijet_trigdr_pjet4_ = minhltdr;
-	  }// end dijet triggers
-	  
-	  // trijet triggers
-	  if ( eletrijet_==1 ) {
-	    eletrijet_trigmindr_ejet_ = getMinDR(82, 85, eleTriJetId, eleTriJetObj);
-	    float minhltdr = 999.;
-	    eletrijet_n82_ = 0;
-	    eletrijet_n85_ = 0;
-	    for( unsigned int ihlt = 0 ; ihlt < eleTriJetObj.size() ; ++ihlt ){
-	      if ( eleTriJetId.at(ihlt)==82 ) {
-		eletrijet_n82_++;
-		if (eletrijet_n82_==1) eletrijet_hltele_ = &( eleTriJetObj.at(ihlt) );
-		if ( eleTriJetObj.at(ihlt).pt() > eletrijet_hltele_->pt() )
-		  eletrijet_hltele_ = &( eleTriJetObj.at(ihlt) );
-	      }
-	      if ( eleTriJetId.at(ihlt)==85 ) eletrijet_n85_++;
-	      //Only look for jet objects
-	      if ( eleTriJetId.at(ihlt)!=85 ) continue;
-	      // dr match to HLT jet object
-	      float hltdr = dRbetweenVectors( vjet , eleTriJetObj.at(ihlt) );
-	      if ( minhltdr > hltdr ) minhltdr = hltdr;
-	    } // end loop over trig objects
-
-	    if (ijet==0) eletrijet_trigdr_pjet1_ = minhltdr;
-	    else if (ijet==1) eletrijet_trigdr_pjet2_ = minhltdr;
-	    else if (ijet==2) eletrijet_trigdr_pjet3_ = minhltdr;
-	    else if (ijet==3) eletrijet_trigdr_pjet4_ = minhltdr;
-	  } 
-	  if ( mutrijet_==1 ) {
-	    mutrijet_trigmindr_mujet_ = getMinDR(83, 85, muTriJetId, muTriJetObj);
-	    float minhltdr = 999.;
-	    mutrijet_n83_ = 0;
-	    mutrijet_n85_ = 0;
-	    for( unsigned int ihlt = 0 ; ihlt < muTriJetObj.size() ; ++ihlt ){
-	      if ( muTriJetId.at(ihlt)==83 ) {
-		mutrijet_n83_++;
-		if (mutrijet_n83_==1) mutrijet_hltmu_ = &( muTriJetObj.at(ihlt) );
-		if ( muTriJetObj.at(ihlt).pt() > mutrijet_hltmu_->pt() )
-		  mutrijet_hltmu_ = &( muTriJetObj.at(ihlt) );
-	      }
-	      if ( muTriJetId.at(ihlt)==85 ) mutrijet_n85_++;
-	      //Only look for jet objects
-	      if ( muTriJetId.at(ihlt)!=85 ) continue;
-	      // dr match to HLT jet object
-	      float hltdr = dRbetweenVectors( vjet , muTriJetObj.at(ihlt) );
-	      if ( minhltdr > hltdr ) minhltdr = hltdr;
-	    } // end loop over trig objects
-
-	    if (ijet==0) mutrijet_trigdr_pjet1_ = minhltdr;
-	    else if (ijet==1) mutrijet_trigdr_pjet2_ = minhltdr;
-	    else if (ijet==2) mutrijet_trigdr_pjet3_ = minhltdr;
-	    else if (ijet==3) mutrijet_trigdr_pjet4_ = minhltdr;
-	  }// end trijet triggers
-	} // end loop over jets
-      }// end check for pass trigger
 
       outTree->Fill();
-    
+      
     } // entries
 
     delete f;
@@ -1285,18 +1057,21 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
-  outTree->Branch("eledijet_hg",     &eledijet_hg_,      "eledijet_hg/I");
-  outTree->Branch("eledijetmht15",   &eledijetmht15_,    "eledijetmht15/I");
-  outTree->Branch("eledijetmht25",   &eledijetmht25_,    "eledijetmht25/I");
-  outTree->Branch("eledijet",        &eledijet_,         "eledijet/I");
-  outTree->Branch("ele27dijet25",    &ele27dijet25_,     "ele27dijet25/I");
-  outTree->Branch("eletrijet",       &eletrijet_,        "eletrijet/I");
-  outTree->Branch("elequadjet",      &elequadjet_,       "elequadjet/I");
-  outTree->Branch("mudijet",         &mudijet_,          "mudijet/I");
-  outTree->Branch("mudijetmht15",    &mudijetmht15_,     "mudijetmht15/I");
-  outTree->Branch("mudijetmht25",    &mudijetmht25_,     "mudijetmht25/I");
-  outTree->Branch("mutrijet",        &mutrijet_,         "mutrijet/I");
-  outTree->Branch("muquadjet",       &muquadjet_,        "muquadjet/I");
+  outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
+
+  // outTree->Branch("eledijet_hg",     &eledijet_hg_,      "eledijet_hg/I");
+  // outTree->Branch("eledijetmht15",   &eledijetmht15_,    "eledijetmht15/I");
+  // outTree->Branch("eledijetmht25",   &eledijetmht25_,    "eledijetmht25/I");
+  // outTree->Branch("eledijet",        &eledijet_,         "eledijet/I");
+  // outTree->Branch("ele27dijet25",    &ele27dijet25_,     "ele27dijet25/I");
+  // outTree->Branch("eletrijet",       &eletrijet_,        "eletrijet/I");
+  // outTree->Branch("elequadjet",      &elequadjet_,       "elequadjet/I");
+  // outTree->Branch("mudijet",         &mudijet_,          "mudijet/I");
+  // outTree->Branch("mudijetmht15",    &mudijetmht15_,     "mudijetmht15/I");
+  // outTree->Branch("mudijetmht25",    &mudijetmht25_,     "mudijetmht25/I");
+  // outTree->Branch("mutrijet",        &mutrijet_,         "mutrijet/I");
+  // outTree->Branch("muquadjet",       &muquadjet_,        "muquadjet/I");
+
   outTree->Branch("pjet1_res",       &pjet1_res_,        "pjet1_res/F");
   outTree->Branch("pjet2_res",       &pjet2_res_,        "pjet2_res/F");
   outTree->Branch("pjet3_res",       &pjet3_res_,        "pjet3_res/F");
@@ -1309,6 +1084,8 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("pjet2_L2L3",      &pjet2_L2L3_,       "pjet2_L2L3/F");
   outTree->Branch("pjet3_L2L3",      &pjet3_L2L3_,       "pjet3_L2L3/F");
   outTree->Branch("pjet4_L2L3",      &pjet4_L2L3_,       "pjet4_L2L3/F");
+
+  /*
   outTree->Branch("eledijet_n82",    &eledijet_n82_,     "eledijet_n82/I");
   outTree->Branch("eletrijet_n82",   &eletrijet_n82_,    "eletrijet_n82/I");
   outTree->Branch("mudijet_n83",     &mudijet_n83_,      "mudijet_n83/I");
@@ -1341,10 +1118,13 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("eletrijet_hltele"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &eletrijet_hltele_);
   outTree->Branch("mudijet_hltmu"       , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mudijet_hltmu_	);
   outTree->Branch("mutrijet_hltmu"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mutrijet_hltmu_  );
+  */
+  
   outTree->Branch("cjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet1_	);
   outTree->Branch("cjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet2_	);
   outTree->Branch("cjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet3_	);
   outTree->Branch("cjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet4_	);
+
   outTree->Branch("pjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet1_	);
   outTree->Branch("pjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet2_	);
   outTree->Branch("pjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet3_	);
@@ -1365,6 +1145,123 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso3" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &munoiso3_	);
   outTree->Branch("munoiso4" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &munoiso4_	);
 
+
+  // top electron+jets triggers
+  outTree->Branch("eltrijet"                 , &eltrijet_                ,  "eltrijet/I"              );             
+  outTree->Branch("eltrijetbackup"           , &eltrijetbackup_          ,  "eltrijetbackup/I"        );             
+  outTree->Branch("eldijet"                  , &eldijet_                 ,  "eldijet/I"               );             
+  outTree->Branch("eljet"                    , &eljet_                   ,  "eljet/I"                 );             
+  outTree->Branch("eltrijet"                 , &eltrijet_                ,  "eltrijet/I"              );             
+  outTree->Branch("elnoisotrijet"            , &elnoisotrijet_           ,  "elnoisotrijet/I"         );             
+  outTree->Branch("elnoisotrijetbackup"      , &elnoisotrijetbackup_     ,  "enoisoltrijetbackup/I"   );             
+					       
+  // top muon+jets triggers		       
+  outTree->Branch("mutrijet"                 , &mutrijet_                ,  "mutrijet/I"              );             
+  outTree->Branch("mutrijetbackup"           , &mutrijetbackup_          ,  "mutrijetbackup/I"        );             
+  outTree->Branch("mudijet"                  , &mudijet_                 ,  "mudijet/I"               );             
+  outTree->Branch("mujet"                    , &mujet_                   ,  "mujet/I"                 );             
+  outTree->Branch("mutrijet"                 , &mutrijet_                ,  "mutrijet/I"              );             
+  outTree->Branch("munoisotrijet"            , &munoisotrijet_           ,  "munoisotrijet/I"         );             
+  outTree->Branch("munoisotrijetbackup"      , &munoisotrijetbackup_     ,  "enoisoltrijetbackup/I"   );             
+					       
+  // non-isolated dilepton-HT triggers	       
+  outTree->Branch("eeht175"                  , &eeht175_                 ,  "eeht175/I"               );             
+  outTree->Branch("eeht225"                  , &eeht225_                 ,  "eeht225/I"               );             
+  outTree->Branch("mmht175"                  , &mmht175_                 ,  "mmht175/I"               );             
+  outTree->Branch("mmht225"                  , &mmht225_                 ,  "mmht225/I"               );             
+  outTree->Branch("emht175"                  , &emht175_                 ,  "emht175/I"               );             
+  outTree->Branch("emht225"                  , &emht225_                 ,  "emht225/I"               );             
+
+  // isolated dilepton-HT triggers
+  outTree->Branch("mmisoht175"               , &mmisoht175_              ,  "mmisoht175/I"            );             
+  outTree->Branch("mmisoht225"               , &mmisoht225_              ,  "mmisoht225/I"            );             
+  outTree->Branch("emisoht175"               , &emisoht175_              ,  "emisoht175/I"            );             
+  outTree->Branch("emisoht225"               , &emisoht225_              ,  "emisoht225/I"            );             
+					       
+  // isolated single muon triggers	       
+  outTree->Branch("isomu20"                  , &isomu20_                 ,  "isomu20/I"               );             
+  outTree->Branch("isomu24"                  , &isomu24_                 ,  "isomu24/I"               );             
+  outTree->Branch("isomu30"                  , &isomu30_                 ,  "isomu30/I"               );             
+  outTree->Branch("isomu34"                  , &isomu34_                 ,  "isomu34/I"               );             
+  outTree->Branch("isomu40"                  , &isomu40_                 ,  "isomu40/I"               );             
+					       
+  // non-isolated single muon triggers
+  outTree->Branch("mu24"                     , &mu24_                    ,  "mu24/I"                  );             
+  outTree->Branch("mu30"                     , &mu30_                    ,  "mu30/I"                  );             
+  outTree->Branch("mu40"                     , &mu40_                    ,  "mu40/I"                  );             
+  outTree->Branch("mu50"                     , &mu50_                    ,  "mu50/I"                  );             
+					       
+					       
+  // single-electron triggers		       
+  outTree->Branch("el27wp80"                 , &el27wp80_                ,  "el27wp80/I"              );             
+  outTree->Branch("el27wp70"                 , &el27wp70_                ,  "el27wp"                  );
+  outTree->Branch("el27"                     , &el27_                    ,  "el27/I"                  );             
+  outTree->Branch("el32"                     , &el32_                    ,  "el32/I"                  );             
+					       
+  // multi-jet triggers
+  outTree->Branch("quadjet70"                , &quadjet70_               ,  "quadjet70/I"             );             
+  outTree->Branch("quadjet80"                , &quadjet80_               ,  "quadjet80/I"             );             
+  outTree->Branch("quadjet90"                , &quadjet90_               ,  "quadjet90/I"             );             
+					       
+  // single photon triggers		       
+  outTree->Branch("photon20"                 , &photon20_                ,  "photon20/I"              );             
+  outTree->Branch("photon30"                 , &photon30_                ,  "photon30/I"              );             
+  outTree->Branch("photon50"                 , &photon50_                ,  "photon50/I"              );             
+  outTree->Branch("photon75"                 , &photon75_                ,  "photon75/I"              );             
+  outTree->Branch("photon90"                 , &photon90_                ,  "photon90/I"              );             
+  outTree->Branch("photon135"                , &photon135_               ,  "photon135/I"             );             
+  outTree->Branch("photon150"                , &photon150_               ,  "photon150/I"             );             
+  outTree->Branch("photon160"                , &photon160_               ,  "photon160/I"             );             
+					       
+  // higgs single photon triggers	       
+  outTree->Branch("hphoton22"                , &hphoton22_               ,  "hphoton22/I"             );             
+  outTree->Branch("hphoton36"                , &hphoton36_               ,  "hphoton36/I"             );             
+  outTree->Branch("hphoton50"                , &hphoton50_               ,  "hphoton50/I"             );             
+  outTree->Branch("hphoton75"                , &hphoton75_               ,  "hphoton75/I"             );             
+  outTree->Branch("hphoton90"                , &hphoton90_               ,  "hphoton90/I"             );             
+					       
+  // single electron utility triggers	       
+  outTree->Branch("el8"                      , &el8_                     ,  "el8/I"                   );             
+  outTree->Branch("el8jet30"                 , &el8jet30_                ,  "el8jet30/I"              );             
+  outTree->Branch("el17"                     , &el17_                    ,  "el17/I"                  );             
+  outTree->Branch("el17jet30"                , &el17jet30_               ,  "el17jet30/I"             );             
+  outTree->Branch("el8vl"                    , &el8vl_                   ,  "el8vl/I"                 );             
+  outTree->Branch("el17vl"                   , &el17vl_                  ,  "el17vl/I"                );             
+					       
+  // Higgs dilepton triggers		       
+  outTree->Branch("ee"                       , &ee_                      ,  "ee/I"                    );             
+  outTree->Branch("mm"                       , &mm_                      ,  "mm/I"                    );             
+  outTree->Branch("em"                       , &em_                      ,  "em/I"                    );             
+  outTree->Branch("me"                       , &me_                      ,  "me/I"                    );             
+  outTree->Branch("mmtrk"                    , &mmtrk_                   ,  "mmtrk/I"                 );             
+					       
+  outTree->Branch("elnoiso1_wp80"            , &elnoiso1_wp80_           ,  "elnoiso1_wp80/I"         );             
+  outTree->Branch("elnoiso1_top"             , &elnoiso1_top_            ,  "elnoiso1_top/I"          );             
+  outTree->Branch("elnoiso1_iso"             , &elnoiso1_iso_            ,  "elnoiso1_iso/F"          );             
+  outTree->Branch("elnoiso1_isofj"           , &elnoiso1_isofj_          ,  "elnoiso1_isofj/F"        );             
+  outTree->Branch("elnoiso1_isovtx"          , &elnoiso1_isovtx_         ,  "elnoiso1_isovtx/F"       );             
+  outTree->Branch("elnoiso1_isopf"           , &elnoiso1_isopf_          ,  "elnoiso1_isopf/F"        );             
+					       
+  outTree->Branch("elnoiso2_wp80"            , &elnoiso2_wp80_           ,  "elnoiso2_wp80/I"         );             
+  outTree->Branch("elnoiso2_top"             , &elnoiso2_top_            ,  "elnoiso2_top/I"          );             
+  outTree->Branch("elnoiso2_iso"             , &elnoiso2_iso_            ,  "elnoiso2_iso/F"          );             
+  outTree->Branch("elnoiso2_isofj"           , &elnoiso2_isofj_          ,  "elnoiso2_isofj/F"        );             
+  outTree->Branch("elnoiso2_isovtx"          , &elnoiso2_isovtx_         ,  "elnoiso2_isovtx/F"       );             
+  outTree->Branch("elnoiso2_isopf"           , &elnoiso2_isopf_          ,  "elnoiso2_isopf/F"        );             
+					       
+  outTree->Branch("munoiso1_mu24"            , &munoiso1_mu24_           ,  "munoiso1_mu24/I"         );             
+  outTree->Branch("munoiso1_iso"             , &munoiso1_iso_            ,  "munoiso1_iso/F"          );             
+  outTree->Branch("munoiso1_isofj"           , &munoiso1_isofj_          ,  "munoiso1_isofj/F"        );             
+  outTree->Branch("munoiso1_isovtx"          , &munoiso1_isovtx_         ,  "munoiso1_isovtx/F"       );             
+  outTree->Branch("munoiso1_isopf"           , &munoiso1_isopf_          ,  "munoiso1_isopf/F"        );             
+					       
+  outTree->Branch("munoiso2_mu24"            , &munoiso2_mu24_           ,  "munoiso2_mu24/I"         );             
+  outTree->Branch("munoiso2_iso"             , &munoiso2_iso_            ,  "munoiso2_iso/F"          );             
+  outTree->Branch("munoiso2_isofj"           , &munoiso2_isofj_          ,  "munoiso2_isofj/F"        );             
+  outTree->Branch("munoiso2_isovtx"          , &munoiso2_isovtx_         ,  "munoiso2_isovtx/F"       );             
+  outTree->Branch("munoiso2_isopf"           , &munoiso2_isopf_          ,  "munoiso2_isopf/F"        );             
+
+  
 }
 
 //--------------------------------------------------------------------
