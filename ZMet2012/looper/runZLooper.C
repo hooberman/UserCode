@@ -42,7 +42,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zjets" ) == 0 ){
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V05-02-04/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V5-v1/*root");
+    pickSkimIfExists(ch,"/nfs-3/userdata/cms2/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V5-v1/V05-02-04/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
