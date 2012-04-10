@@ -506,8 +506,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       InitBabyNtuple();
 
       // event stuff
-      //strcpy(dataset_, cms2.evt_dataset().Data());
-      //dataset_ = TString(cms2.evt_dataset().Data());
+      strcpy(dataset_, cms2.evt_dataset().at(0).Data());
       run_    = cms2.evt_run();
       lumi_   = cms2.evt_lumiBlock();
       event_  = cms2.evt_event();
@@ -1617,7 +1616,7 @@ void Z_looper::InitBabyNtuple (){
   // event stuff
   run_          = -999999;
   goodrun_      = -999999;
-  //memset(dataset_, '\0', 200);
+  memset(dataset_, '\0', 500);
   lumi_         = -999999;
   event_        = -999999;
   weight_       = -999999.;
@@ -1889,8 +1888,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //event stuff
   babyTree_->Branch("rho",          &rho_,          "rho/F"          );
-  //babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C" );
-  babyTree_->Branch("dataset",      &dataset_,      "dataset/S"      );
+  babyTree_->Branch("dataset",      &dataset_,      "dataset[500]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
   babyTree_->Branch("btagweight",   &btagweight_,   "btagweight/F"   );
   babyTree_->Branch("btagweightup", &btagweightup_, "btagweightup/F" );
