@@ -284,6 +284,7 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
 
 void looper::InitBaby(){
 
+  memset(dataset_, '\0', 500);
   eledijet_hltele_		= 0; 
   eletrijet_hltele_		= 0; 
   mudijet_hltmu_		= 0; 
@@ -476,7 +477,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	cout << "-------------------------------------------------------"   << endl;
 	cout << "Event " << z                                               << endl;
 	cout << "File  " << currentFile->GetTitle()                         << endl;
-	cout << evt_dataset() << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+	cout << evt_dataset().at(0) << " " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 	cout << "-------------------------------------------------------"   << endl;
       }
 
@@ -866,8 +867,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	if(isGoodDAVertex(v)) ++ndavtx_;
       }
       
-      //strcpy(dataset_, cms2.evt_dataset().Data());  //dataset name
-      
+      strcpy(dataset_, cms2.evt_dataset().at(0).Data());  //dataset name
       run_          = evt_run();                    //run
       lumi_         = evt_lumiBlock();              //lumi
       event_        = evt_event();                  //event

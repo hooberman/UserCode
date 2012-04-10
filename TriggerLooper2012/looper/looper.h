@@ -147,7 +147,7 @@ class looper
 	Float_t pjet2_L2L3_;
 	Float_t pjet3_L2L3_;
 	Float_t pjet4_L2L3_;
-        char    dataset_[200];
+        char    dataset_[500];
         UInt_t  run_;
         UInt_t  lumi_;
         UInt_t  event_;
