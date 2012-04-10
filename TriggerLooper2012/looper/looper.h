@@ -72,6 +72,10 @@ class looper
 	Int_t munoiso2_mu24_;
 	Int_t munoiso3_mu24_;
 	Int_t munoiso4_mu24_;
+	Int_t munoiso1_mu30_;
+	Int_t munoiso2_mu30_;
+	Int_t munoiso3_mu30_;
+	Int_t munoiso4_mu30_;
 
 	Float_t elnoiso1_iso_;
 	Float_t elnoiso1_isofj_;

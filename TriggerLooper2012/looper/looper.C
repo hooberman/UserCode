@@ -642,6 +642,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( nmunoiso_ > 0 ){
  	munoiso1_        = &( goodMuonsNoIso.at(0) );
 	munoiso1_mu24_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu24_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso1_mu30_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu30_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso1_iso_    = muonIsoValue         ( munoisoIndex.at(0) , false );
 	munoiso1_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(0) , false );
 	munoiso1_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(0) , false );
@@ -650,6 +651,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( nmunoiso_ > 1 ){
  	munoiso2_        = &( goodMuonsNoIso.at(1) );
 	munoiso2_mu24_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu24_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso2_mu30_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu30_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso2_iso_    = muonIsoValue         ( munoisoIndex.at(1) , false );
 	munoiso2_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(1) , false );
 	munoiso2_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(1) , false );
@@ -658,6 +660,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( nmunoiso_ > 2 ){
  	munoiso3_        = &( goodMuonsNoIso.at(2) );
 	munoiso3_mu24_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu24_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso3_mu30_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu30_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso3_iso_    = muonIsoValue         ( munoisoIndex.at(2) , false );
 	munoiso3_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(2) , false );
 	munoiso3_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(2) , false );
@@ -666,6 +669,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( nmunoiso_ > 3 ){
  	munoiso4_        = &( goodMuonsNoIso.at(3) );
 	munoiso4_mu24_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu24_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso4_mu30_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu30_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso4_iso_    = muonIsoValue         ( munoisoIndex.at(3) , false );
 	munoiso4_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(3) , false );
 	munoiso4_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(3) , false );
@@ -1235,6 +1239,9 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("me"                       , &me_                      ,  "me/I"                    );             
   outTree->Branch("mmtrk"                    , &mmtrk_                   ,  "mmtrk/I"                 );             
 					       
+  outTree->Branch("nelnoiso"                 , &nelnoiso_                ,  "nelnoiso/I"              );             
+  outTree->Branch("nmunoiso"                 , &nmunoiso_                ,  "nmunoiso/I"              );             
+
   outTree->Branch("elnoiso1_wp80"            , &elnoiso1_wp80_           ,  "elnoiso1_wp80/I"         );             
   outTree->Branch("elnoiso1_top"             , &elnoiso1_top_            ,  "elnoiso1_top/I"          );             
   outTree->Branch("elnoiso1_iso"             , &elnoiso1_iso_            ,  "elnoiso1_iso/F"          );             
@@ -1250,12 +1257,14 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("elnoiso2_isopf"           , &elnoiso2_isopf_          ,  "elnoiso2_isopf/F"        );             
 					       
   outTree->Branch("munoiso1_mu24"            , &munoiso1_mu24_           ,  "munoiso1_mu24/I"         );             
+  outTree->Branch("munoiso1_mu30"            , &munoiso1_mu30_           ,  "munoiso1_mu30/I"         );             
   outTree->Branch("munoiso1_iso"             , &munoiso1_iso_            ,  "munoiso1_iso/F"          );             
   outTree->Branch("munoiso1_isofj"           , &munoiso1_isofj_          ,  "munoiso1_isofj/F"        );             
   outTree->Branch("munoiso1_isovtx"          , &munoiso1_isovtx_         ,  "munoiso1_isovtx/F"       );             
   outTree->Branch("munoiso1_isopf"           , &munoiso1_isopf_          ,  "munoiso1_isopf/F"        );             
 					       
   outTree->Branch("munoiso2_mu24"            , &munoiso2_mu24_           ,  "munoiso2_mu24/I"         );             
+  outTree->Branch("munoiso2_mu30"            , &munoiso2_mu30_           ,  "munoiso2_mu30/I"         );             
   outTree->Branch("munoiso2_iso"             , &munoiso2_iso_            ,  "munoiso2_iso/F"          );             
   outTree->Branch("munoiso2_isofj"           , &munoiso2_isofj_          ,  "munoiso2_isofj/F"        );             
   outTree->Branch("munoiso2_isovtx"          , &munoiso2_isovtx_         ,  "munoiso2_isovtx/F"       );             
