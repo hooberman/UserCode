@@ -60,7 +60,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
 const char* iter                 = "V00-00-00";
-const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
+const char* jsonfilename         = "../jsons/json_DCSONLY_Apr10_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -506,7 +506,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       InitBabyNtuple();
 
       // event stuff
-      strcpy(dataset_, cms2.evt_dataset().Data());
+      //strcpy(dataset_, cms2.evt_dataset().Data());
+      //dataset_ = TString(cms2.evt_dataset().Data());
       run_    = cms2.evt_run();
       lumi_   = cms2.evt_lumiBlock();
       event_  = cms2.evt_event();
@@ -678,7 +679,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
 	if( debug ){
 	  cout << "hyp    " << hypIdx << endl;
-	  cout << "trig   " << passSUSYTrigger2011_v1( isData , hyp_type()[hypIdx] , true ) << endl;
+	  cout << "trig   " << passSUSYTrigger2012_v1( isData , hyp_type()[hypIdx] ) << endl;
 	  cout << "ptll   " << hyp_ll_p4()[hypIdx].pt() << endl;
 	  cout << "ptlt   " << hyp_lt_p4()[hypIdx].pt() << endl;
 	  cout << "mass   " << hyp_p4()[hypIdx].mass() << endl;
@@ -688,7 +689,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_el_OSV2  ) << endl;
 	}
 
-        if( !passSUSYTrigger2011_v1( isData , hyp_type()[hypIdx] , true ) ) continue;
+        if( !passSUSYTrigger2012_v1( isData , hyp_type()[hypIdx] ) ) continue;
       
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
@@ -1616,7 +1617,7 @@ void Z_looper::InitBabyNtuple (){
   // event stuff
   run_          = -999999;
   goodrun_      = -999999;
-  memset(dataset_, '\0', 200);
+  //memset(dataset_, '\0', 200);
   lumi_         = -999999;
   event_        = -999999;
   weight_       = -999999.;
@@ -1888,7 +1889,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //event stuff
   babyTree_->Branch("rho",          &rho_,          "rho/F"          );
-  babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C" );
+  //babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C" );
+  babyTree_->Branch("dataset",      &dataset_,      "dataset/S"      );
   babyTree_->Branch("run",          &run_,          "run/I"          );
   babyTree_->Branch("btagweight",   &btagweight_,   "btagweight/F"   );
   babyTree_->Branch("btagweightup", &btagweightup_, "btagweightup/F" );
