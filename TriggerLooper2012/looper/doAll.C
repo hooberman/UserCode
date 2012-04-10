@@ -42,32 +42,11 @@ void doAll(bool skipFWLite = true)
   //---------------------------------------------------------------
   
   const char* version    = "V00-00-00";
-  const char* jsonfile   = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
+  const char* jsonfile   = "jsons/json_DCSONLY_Apr10_goodruns.txt";
   const bool  useMCSkims = true;
 
   cout << "Version : " << version     << endl;
   cout << "json    : " << jsonfile    << endl;
-
-  //Load CORE stuff
-  // gROOT->ProcessLine(".L ../CORE/CMS2.cc+");
-  // gROOT->ProcessLine(".L ../CORE/utilities.cc+");
-  // gROOT->ProcessLine(".L ../CORE/trackSelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/eventSelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/MITConversionUtilities.cc+");
-  // gROOT->ProcessLine(".L ../CORE/muonSelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/electronSelectionsParameters.cc+");
-  // gROOT->ProcessLine(".L ../CORE/electronSelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/metSelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/SimpleFakeRate.cc+");
-  // gROOT->ProcessLine(".L ../CORE/mcSelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/MT2/MT2.cc+");
-  // gROOT->ProcessLine(".L ../CORE/triggerUtils.cc+");  
-  // gROOT->ProcessLine(".L ../CORE/susySelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/mcSUSYkfactor.cc+");
-  // gROOT->ProcessLine(".L ../CORE/triggerSuperModel.cc+");
-  // gROOT->ProcessLine(".L ../CORE/triggerUtils.cc+");
-  // //gROOT->ProcessLine(".L ../CORE/jetSelections.cc+");
-  // gROOT->ProcessLine(".L ../CORE/ttbarSelections.cc+");
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
@@ -95,60 +74,88 @@ void doAll(bool skipFWLite = true)
   // flags for files to run over
   //----------------------------------------
 
-  bool runElHad     = 1;
-  bool runMuHad     = 0;
+  bool runData          = 0;
+  bool runElData        = 1;
+  bool runMuData        = 1;
+  bool runPhotonData    = 0;
 
   //----------------------------------------
   // add samples to TChains
   //----------------------------------------
 
-  TChain* chElHad     = new  TChain("Events");
+  TChain* chData = new TChain("Events");
 
-  if(runElHad){
-    cout << "adding ElectronHad data" << endl;
+  if( runData ){
+    cout << "Adding all data" << endl;
 
-    //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple_180*.root");
-
-    //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple_180252_0.root");
-
-    //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple_179828*root");
-
-    //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple_179959_0.root");
-
-    pickSkimIfExists(chElHad,"merged_ntuple_179959_0.root");
-
-    //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-33/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple*root");
-    //pickSkimIfExists(chElHad,"/hadoop/cms/store/user/imacneill/CMSSW_4_2_7_patch1_V04-02-34/ElectronHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple*root");
-
+    pickSkimIfExists(chData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleMu_Run2012A-PromptReco-v1_AOD/unmerged/*root");  	  	 
+    pickSkimIfExists(chData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/unmerged/*root"); 	  	 
+    pickSkimIfExists(chData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/MuEG_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+    pickSkimIfExists(chData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/SingleElectron_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+    pickSkimIfExists(chData,"/hadoop/cms/store/user/macneill/CMSSW_5_2_3_patch3_V05-02-07/ElectronHad_Run2012A-PromptReco-v1_AOD/unmerged/*root");	 
+    pickSkimIfExists(chData,"/hadoop/cms/store/user/macneill/CMSSW_5_2_3_patch3_V05-02-07/Photon_Run2012A-PromptReco-v1_AOD/unmerged/*root");	 
+    pickSkimIfExists(chData,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_2_3_patch3_V05-02-07/MuHad_Run2012A-PromptReco-v1_AOD/unmerged/*root");	  	 
+    pickSkimIfExists(chData,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_2_3_patch3_V05-02-07/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/*root");
   }
 
-  TChain* chMuHad     = new  TChain("Events");
+  TChain* chElData = new TChain("Events");
 
-  if(runMuHad){
-    cout << "adding MuHad data" << endl;
+  if( runElData ){
+    cout << "Adding all electron data" << endl;
 
-    pickSkimIfExists(chMuHad,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-35/MuHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-35_merged/V04-02-35/merged_ntuple_180*root");
-
-    //pickSkimIfExists(chMuHad,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-35/MuHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-35_merged/V04-02-35/merged_ntuple_180252_0.root");
-
-    //pickSkimIfExists(chMuHad,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/MuHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_178*root");
-    //pickSkimIfExists(chMuHad,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-35/MuHad_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-35_merged/V04-02-35/merged*root");
+    pickSkimIfExists(chElData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/unmerged/*root"); 	  	 
+    pickSkimIfExists(chElData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/MuEG_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+    pickSkimIfExists(chElData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/SingleElectron_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+    pickSkimIfExists(chElData,"/hadoop/cms/store/user/macneill/CMSSW_5_2_3_patch3_V05-02-07/ElectronHad_Run2012A-PromptReco-v1_AOD/unmerged/*root");	 
   }
+
+  TChain* chMuData = new TChain("Events");
+
+  if( runMuData ){
+    cout << "Adding all muon data" << endl;
+
+    pickSkimIfExists(chMuData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleMu_Run2012A-PromptReco-v1_AOD/unmerged/*root");  	  	 
+    pickSkimIfExists(chMuData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/MuEG_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+    pickSkimIfExists(chMuData,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_2_3_patch3_V05-02-07/MuHad_Run2012A-PromptReco-v1_AOD/unmerged/*root");	  	 
+    pickSkimIfExists(chMuData,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_2_3_patch3_V05-02-07/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+  }
+
+  TChain* chPhotonData = new TChain("Events");
+
+  if( runPhotonData ){
+    cout << "Adding all photon data" << endl;
+
+    pickSkimIfExists(chPhotonData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+    pickSkimIfExists(chPhotonData,"/hadoop/cms/store/user/macneill/CMSSW_5_2_3_patch3_V05-02-07/Photon_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+  }
+
 
   //----------------------------------------
   // run on samples
   //----------------------------------------
 
-  if (runElHad) {
-    cout << "Processing ElHad data" << endl;
-    looper->ScanChain(chElHad,"elhad");
-    cout << "Done processing ElHad data" << endl;
+  if (runData) {
+    cout << "Processing all data" << endl;
+    looper->ScanChain(chData,"allData");
+    cout << "Done processing all data" << endl;
   }
 
-  if (runMuHad) {
-    cout << "Processing MuHad data" << endl;
-    looper->ScanChain(chMuHad,"muhad");
-    cout << "Done processing MuHadHad data" << endl;
+  if (runElData) {
+    cout << "Processing all electron data" << endl;
+    looper->ScanChain(chElData,"elData");
+    cout << "Done processing all electron data" << endl;
+  }
+
+  if (runMuData) {
+    cout << "Processing all muon data" << endl;
+    looper->ScanChain(chMuData,"muData");
+    cout << "Done processing all muon data" << endl;
+  }
+
+  if (runPhotonData) {
+    cout << "Processing all photon data" << endl;
+    looper->ScanChain(chPhotonData,"photonData");
+    cout << "Done processing all photon data" << endl;
   }
 
   //----------------------------------------
