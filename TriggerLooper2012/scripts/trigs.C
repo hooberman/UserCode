@@ -28,20 +28,29 @@
 
 using namespace std;
 
-TGraphAsymmErrors* getGraph(TChain* ch, char* var, TCut denom, TCut num){
+TGraphAsymmErrors* getGraph(TChain* ch, char* var, TCut denom, TCut num, int rebin = 1){
 
   TH1F* hall  = new TH1F("hall" ,"",20,0,1);
   TH1F* hpass = new TH1F("hpass","",20,0,1);
 
   TCanvas *ctemp = new TCanvas();
-  ch->Draw(Form("min(%s,0.99)>>hall"  , var ) , denom       );
-  ch->Draw(Form("min(%s,0.99)>>hpass" , var ) , denom + num );
+  ch->Draw(Form("max(%s,0.0001)>>hall"  , var ) , denom       );
+  ch->Draw(Form("max(%s,0.0001)>>hpass" , var ) , denom + num );
   delete ctemp;
 
+  cout << endl;
+  cout << "Variable    : " << var                        << endl;
   cout << "Numerator   : " << TCut(num).GetTitle()       << endl;
   cout << "Entries     : " << hpass->GetEntries()        << endl;
   cout << "Denominator : " << TCut(denom+num).GetTitle() << endl;
-  cout << "Entries     : " << hall->GetEntries()         << endl << endl;
+  cout << "Entries     : " << hall->GetEntries()         << endl;
+  cout << "Iso < 0.1   : " << hpass->Integral(1,2)/hall->Integral(1,2) << endl;
+  cout << "Iso < 0.15  : " << hpass->Integral(1,3)/hall->Integral(1,3) << endl << endl;
+
+  if( rebin > 1 ){
+    hall->Rebin(rebin);
+    hpass->Rebin(rebin);
+  }
 
   TGraphAsymmErrors* gr = new TGraphAsymmErrors();
   gr->BayesDivide(hpass,hall);
@@ -63,25 +72,11 @@ void trigs(){
 
   TCanvas *ctemp = new TCanvas();
   ctemp->cd();
-
-  //------------------------------
-  // single mu
-  //------------------------------
-
-  TH1F* hmuall  = new TH1F("hmuall" ,"",20,0,1);
-  TH1F* hmupass = new TH1F("hmupass","",20,0,1);
-
-  chmu->Draw("munoiso1_isopf>>hmuall" ,"mu24>0 && nmunoiso==1 && run>=190659");
-  chmu->Draw("munoiso1_isopf>>hmupass","mu24>0 && nmunoiso==1 && munoiso1_mu24==1 && isomu24==1 && run>=190659");
-
-  cout << "muall  " << hmuall->GetEntries() << endl;
-  cout << "mupass " << hmupass->GetEntries() << endl;
-
-  /*
+  
   //------------------------------
   // single e
   //------------------------------
-
+  /*
   TH1F* helall  = new TH1F("helall" ,"",20,0,1);
   TH1F* helpass = new TH1F("helpass","",20,0,1);
 
@@ -108,26 +103,98 @@ void trigs(){
 
   delete ctemp;
 
-  //------------------------------
-  // draw stuff
-  //------------------------------
   */
-  TGraphAsymmErrors* grmu2 = getGraph(chmu,"munoiso1_isopf",TCut("mu24>0 && nmunoiso==1 && run>=190659"),TCut("munoiso1_mu24==1 && isomu24==1"));
 
-  TCanvas *c1 = new TCanvas("c1","",1800,600);
-  c1->Divide(3,1);
+  //------------------------------
+  // single muon
+  //------------------------------
+
+  /*
+  TGraphAsymmErrors* grmu_iso    = getGraph(chmu,"munoiso1_iso"   , TCut("mu24>0 && nmunoiso==1 && run>=190659"),TCut("munoiso1_mu24==1 && isomu24==1"));
+  TGraphAsymmErrors* grmu_isovtx = getGraph(chmu,"munoiso1_isovtx", TCut("mu24>0 && nmunoiso==1 && run>=190659"),TCut("munoiso1_mu24==1 && isomu24==1"));
+  TGraphAsymmErrors* grmu_isopf  = getGraph(chmu,"munoiso1_isopf" , TCut("mu24>0 && nmunoiso==1 && run>=190659"),TCut("munoiso1_mu24==1 && isomu24==1"));
+  TGraphAsymmErrors* grmu_isofj  = getGraph(chmu,"munoiso1_isofj" , TCut("mu24>0 && nmunoiso==1 && run>=190659"),TCut("munoiso1_mu24==1 && isomu24==1"));
+
+  TCanvas *c1 = new TCanvas();
 
   c1->cd(1);
-  TGraphAsymmErrors* grmu = new TGraphAsymmErrors();
-  grmu->BayesDivide(hmupass,hmuall);
-  grmu->SetMarkerSize(3);
-  grmu->Draw("AP");
 
+  grmu_iso->SetLineColor(1);
+  grmu_iso->SetMarkerColor(1);
+  grmu_isopf->SetLineColor(2);
+  grmu_isopf->SetMarkerColor(2);
+  grmu_isopf->SetMarkerStyle(25);
+  grmu_isovtx->SetLineColor(4);
+  grmu_isovtx->SetMarkerColor(4);
+  grmu_isofj->SetLineColor(8);
+  grmu_isofj->SetMarkerColor(8);
+  grmu_isofj->SetMarkerStyle(26);
 
+  grmu_iso->GetXaxis()->SetTitle("reliso");
+  grmu_iso->Draw("AP");
+  //grmu_isovtx->Draw("sameP");
+  //grmu_isopf->Draw("sameP");
+  //grmu_isofj->Draw("sameP");
+  grmu_isopf->Draw("sameP");
 
-  grmu2->SetLineColor(2);
-  grmu2->SetMarkerColor(2);
-  grmu2->Draw("sameP");
+  TLegend *leg = new TLegend(0.5,0.7,0.9,0.9);
+  leg->AddEntry(grmu_iso,"det iso","lp");
+  //leg->AddEntry(grmu_isovtx,"det iso vtx corr","lp");
+  //leg->AddEntry(grmu_isofj,"det iso fast-jet","lp");
+  leg->AddEntry(grmu_isopf,"pf iso","lp");
+  leg->SetBorderSize(0);
+  leg->SetFillColor(0);
+  leg->Draw();
+
+  c1->Print("../plots/mu.pdf");
+  */
+
+  //------------------------------
+  // single electron
+  //------------------------------
+
+  /*
+  TCut eldenom("el8noiso>0 && nelnoiso==1 && elnoiso1.pt()>30");
+  TCut eldenom("el8noisojet30>0 && nelnoiso==1 && elnoiso1.pt()>30");
+  TCut eldenom("el8noiso>0 && nelnoiso==1 && elnoiso1.pt()>30");
+  TCut elnum("elnoiso1_wp80==1 && el27wp80==1");
+
+  TGraphAsymmErrors* grel_iso     = getGraph(chel,"elnoiso1_iso"    , eldenom , elnum , 2 );
+  TGraphAsymmErrors* grel_isofj   = getGraph(chel,"elnoiso1_isofj"  , eldenom , elnum , 2 );
+  TGraphAsymmErrors* grel_isovtx  = getGraph(chel,"elnoiso1_isovtx" , eldenom , elnum , 2 );
+  TGraphAsymmErrors* grel_isopf   = getGraph(chel,"elnoiso1_isopf"  , eldenom , elnum , 2 );
+
+  grel_iso->SetLineColor(1);
+  grel_iso->SetMarkerColor(1);
+  grel_isopf->SetLineColor(2);
+  grel_isopf->SetMarkerColor(2);
+  grel_isopf->SetMarkerStyle(25);
+  grel_isovtx->SetLineColor(4);
+  grel_isovtx->SetMarkerColor(4);
+  grel_isovtx->SetMarkerStyle(22);
+  grel_isofj->SetLineColor(8);
+  grel_isofj->SetMarkerColor(8);
+  grel_isofj->SetMarkerStyle(26);
+
+  TCanvas *c2 = new TCanvas();
+  c2->cd();
+
+  grel_iso->GetXaxis()->SetTitle("reliso");
+  grel_iso->Draw("AP");
+  grel_isovtx->Draw("sameP");
+  //grel_isofj->Draw("sameP");
+  //grel_isopf->Draw("sameP");
+
+  TLegend *leg = new TLegend(0.5,0.7,0.9,0.9);
+  leg->AddEntry(grel_iso    , "det iso"          , "lp" );
+  leg->AddEntry(grel_isovtx , "det iso vtx corr" , "lp" );
+  //leg->AddEntry(grel_isofj  , "det iso fast-jet" , "lp" );
+  //leg->AddEntry(grel_isopf  , "pf iso"           , "lp" );
+  leg->SetBorderSize(0);
+  leg->SetFillColor(0);
+  leg->Draw();
+  */
+
 
   /*
   c1->cd(2);
