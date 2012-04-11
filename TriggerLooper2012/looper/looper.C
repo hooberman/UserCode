@@ -584,7 +584,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 	if( els_p4().at(iel).pt() < 20 )                                                       continue;
-	if( !pass_electronSelection( iel , electronSelection_ssV5_noiso , false , false ) ) continue;
+	if( !pass_electronSelection( iel , electronSelection_ssV5_noIso , false , false ) ) continue;
 	goodElectronsNoIso.push_back( els_p4().at(iel) );
 	elnoisoIndex.push_back(iel);
 	nelnoiso_ ++;
