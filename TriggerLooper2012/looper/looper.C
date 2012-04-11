@@ -584,7 +584,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 	if( els_p4().at(iel).pt() < 20 )                                                       continue;
-	if( !pass_electronSelection( iel , electronSelection_el_OSV3_noiso , false , false ) ) continue;
+	if( !pass_electronSelection( iel , electronSelection_ssV5_noiso , false , false ) ) continue;
 	goodElectronsNoIso.push_back( els_p4().at(iel) );
 	elnoisoIndex.push_back(iel);
 	nelnoiso_ ++;
@@ -594,40 +594,48 @@ int looper::ScanChain(TChain* chain, char *prefix){
       vector<int> munoisoIndex;
 
       if( nelnoiso_ > 0 ){
- 	elnoiso1_        = &( goodElectronsNoIso.at(0) );
-	elnoiso1_wp80_   = objectPassTrigger( *elnoiso1_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso1_top_    = objectPassTrigger( *elnoiso1_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso1_iso_    = electronIsolation_rel_v1      ( elnoisoIndex.at(0) , true );
-	elnoiso1_isofj_  = electronIsolation_rel_FastJet ( elnoisoIndex.at(0) , true );
-	elnoiso1_isovtx_ = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(0) , true );
-	elnoiso1_isopf_  = electronIsoValuePF            ( elnoisoIndex.at(0) , 0    );
+ 	elnoiso1_           = &( goodElectronsNoIso.at(0) );
+	elnoiso1_wp80_      = objectPassTrigger( *elnoiso1_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso1_top_       = objectPassTrigger( *elnoiso1_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso1_iso_       = electronIsolation_rel_v1      ( elnoisoIndex.at(0) , true );
+	elnoiso1_isofj_     = electronIsolation_rel_FastJet ( elnoisoIndex.at(0) , true );
+	elnoiso1_isovtx_    = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(0) , true );
+	elnoiso1_isopf_     = electronIsoValuePF            ( elnoisoIndex.at(0) , 0    );
+	elnoiso1_isopffj03_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(0) , 0.3 , 0);
+	elnoiso1_isopffj04_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(0) , 0.4 , 0);
       }
       if( nelnoiso_ > 1 ){
- 	elnoiso2_        = &( goodElectronsNoIso.at(1) );
-	elnoiso2_wp80_   = objectPassTrigger( *elnoiso2_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso2_top_    = objectPassTrigger( *elnoiso2_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso2_iso_    = electronIsolation_rel_v1      ( elnoisoIndex.at(1) , true );
-	elnoiso2_isofj_  = electronIsolation_rel_FastJet ( elnoisoIndex.at(1) , true );
-	elnoiso2_isovtx_ = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(1) , true );
-	elnoiso2_isopf_  = electronIsoValuePF            ( elnoisoIndex.at(1) , 0    );
+ 	elnoiso2_           = &( goodElectronsNoIso.at(1) );
+	elnoiso2_wp80_      = objectPassTrigger( *elnoiso2_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso2_top_       = objectPassTrigger( *elnoiso2_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso2_iso_       = electronIsolation_rel_v1      ( elnoisoIndex.at(1) , true );
+	elnoiso2_isofj_     = electronIsolation_rel_FastJet ( elnoisoIndex.at(1) , true );
+	elnoiso2_isovtx_    = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(1) , true );
+	elnoiso2_isopf_     = electronIsoValuePF            ( elnoisoIndex.at(1) , 0    );
+	elnoiso2_isopffj03_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(1) , 0.3 , 0);
+	elnoiso2_isopffj04_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(1) , 0.4 , 0);
       }
       if( nelnoiso_ > 2 ){
- 	elnoiso3_        = &( goodElectronsNoIso.at(2) );
-	elnoiso3_wp80_   = objectPassTrigger( *elnoiso3_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso3_top_    = objectPassTrigger( *elnoiso3_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso3_iso_    = electronIsolation_rel_v1      ( elnoisoIndex.at(2) , true );
-	elnoiso3_isofj_  = electronIsolation_rel_FastJet ( elnoisoIndex.at(2) , true );
-	elnoiso3_isovtx_ = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(2) , true );
-	elnoiso3_isopf_  = electronIsoValuePF            ( elnoisoIndex.at(2) , 0    );
+ 	elnoiso3_           = &( goodElectronsNoIso.at(2) );
+	elnoiso3_wp80_      = objectPassTrigger( *elnoiso3_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso3_top_       = objectPassTrigger( *elnoiso3_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso3_iso_       = electronIsolation_rel_v1      ( elnoisoIndex.at(2) , true );
+	elnoiso3_isofj_     = electronIsolation_rel_FastJet ( elnoisoIndex.at(2) , true );
+	elnoiso3_isovtx_    = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(2) , true );
+	elnoiso3_isopf_     = electronIsoValuePF            ( elnoisoIndex.at(2) , 0    );
+	elnoiso3_isopffj03_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(2) , 0.3 , 0);
+	elnoiso3_isopffj04_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(2) , 0.4 , 0);
       }
       if( nelnoiso_ > 3 ){
- 	elnoiso4_        = &( goodElectronsNoIso.at(3) );
-	elnoiso4_wp80_   = objectPassTrigger( *elnoiso4_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso4_top_    = objectPassTrigger( *elnoiso4_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso4_iso_    = electronIsolation_rel_v1      ( elnoisoIndex.at(3) , true );
-	elnoiso4_isofj_  = electronIsolation_rel_FastJet ( elnoisoIndex.at(3) , true );
-	elnoiso4_isovtx_ = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(3) , true );
-	elnoiso4_isopf_  = electronIsoValuePF            ( elnoisoIndex.at(3) , 0    );
+ 	elnoiso4_           = &( goodElectronsNoIso.at(3) );
+	elnoiso4_wp80_      = objectPassTrigger( *elnoiso4_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso4_top_       = objectPassTrigger( *elnoiso4_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso4_iso_       = electronIsolation_rel_v1      ( elnoisoIndex.at(3) , true );
+	elnoiso4_isofj_     = electronIsolation_rel_FastJet ( elnoisoIndex.at(3) , true );
+	elnoiso4_isovtx_    = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(3) , true );
+	elnoiso4_isopf_     = electronIsoValuePF            ( elnoisoIndex.at(3) , 0    );
+	elnoiso4_isopffj03_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(3) , 0.3 , 0);
+	elnoiso4_isopffj04_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(3) , 0.4 , 0);
       }
       
       nmunoiso_ = 0;
@@ -1252,6 +1260,8 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("elnoiso1_isofj"           , &elnoiso1_isofj_          ,  "elnoiso1_isofj/F"        );             
   outTree->Branch("elnoiso1_isovtx"          , &elnoiso1_isovtx_         ,  "elnoiso1_isovtx/F"       );             
   outTree->Branch("elnoiso1_isopf"           , &elnoiso1_isopf_          ,  "elnoiso1_isopf/F"        );             
+  outTree->Branch("elnoiso1_isopffj03"       , &elnoiso1_isopffj03_      ,  "elnoiso1_isopffj03/F"    );             
+  outTree->Branch("elnoiso1_isopffj04"       , &elnoiso1_isopffj04_      ,  "elnoiso1_isopffj04/F"    );             
 					       
   outTree->Branch("elnoiso2_wp80"            , &elnoiso2_wp80_           ,  "elnoiso2_wp80/I"         );             
   outTree->Branch("elnoiso2_top"             , &elnoiso2_top_            ,  "elnoiso2_top/I"          );             
@@ -1259,6 +1269,8 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("elnoiso2_isofj"           , &elnoiso2_isofj_          ,  "elnoiso2_isofj/F"        );             
   outTree->Branch("elnoiso2_isovtx"          , &elnoiso2_isovtx_         ,  "elnoiso2_isovtx/F"       );             
   outTree->Branch("elnoiso2_isopf"           , &elnoiso2_isopf_          ,  "elnoiso2_isopf/F"        );             
+  outTree->Branch("elnoiso2_isopffj03"       , &elnoiso2_isopffj03_      ,  "elnoiso2_isopffj03/F"    );             
+  outTree->Branch("elnoiso2_isopffj04"       , &elnoiso2_isopffj04_      ,  "elnoiso2_isopffj04/F"    );             
 					       
   outTree->Branch("munoiso1_mu24"            , &munoiso1_mu24_           ,  "munoiso1_mu24/I"         );             
   outTree->Branch("munoiso1_mu30"            , &munoiso1_mu30_           ,  "munoiso1_mu30/I"         );             

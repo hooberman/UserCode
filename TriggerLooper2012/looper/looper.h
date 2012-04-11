@@ -81,18 +81,29 @@ class looper
 	Float_t elnoiso1_isofj_;
 	Float_t elnoiso1_isovtx_;
 	Float_t elnoiso1_isopf_;
+	Float_t elnoiso1_isopffj03_;
+	Float_t elnoiso1_isopffj04_;
+
 	Float_t elnoiso2_iso_;
 	Float_t elnoiso2_isofj_;
 	Float_t elnoiso2_isovtx_;
 	Float_t elnoiso2_isopf_;
+	Float_t elnoiso2_isopffj03_;
+	Float_t elnoiso2_isopffj04_;
+
 	Float_t elnoiso3_iso_;
 	Float_t elnoiso3_isofj_;
 	Float_t elnoiso3_isovtx_;
 	Float_t elnoiso3_isopf_;
+	Float_t elnoiso3_isopffj03_;
+	Float_t elnoiso3_isopffj04_;
+
 	Float_t elnoiso4_iso_;
 	Float_t elnoiso4_isofj_;
 	Float_t elnoiso4_isovtx_;
 	Float_t elnoiso4_isopf_;
+	Float_t elnoiso4_isopffj03_;
+	Float_t elnoiso4_isopffj04_;
 
 	Float_t munoiso1_iso_;
 	Float_t munoiso1_isofj_;
