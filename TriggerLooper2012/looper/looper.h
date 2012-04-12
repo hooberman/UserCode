@@ -63,6 +63,11 @@ class looper
 	Float_t elnoiso1_mt_;
 	Float_t munoiso1_mt_;
 
+	Float_t munoiso1_d0pv_;
+	Float_t munoiso1_d0bs_;
+	Float_t elnoiso1_d0pv_;
+	Float_t elnoiso1_d0bs_;
+
 	Int_t elnoiso1_wp80_;
 	Int_t elnoiso1_top_;
 	Int_t elnoiso2_wp80_;
