@@ -1019,7 +1019,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
   if(g_createTree) closeTree();
   
-  already_seen.clear();
+  //already_seen.clear();
 
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
