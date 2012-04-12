@@ -297,6 +297,10 @@ void looper::InitBaby(){
   pjet2_			= 0;
   pjet3_			= 0;
   pjet4_			= 0;
+  pjetnoiso1_			= 0;
+  pjetnoiso2_			= 0;
+  pjetnoiso3_			= 0;
+  pjetnoiso4_			= 0;
   cjet1_			= 0;
   cjet2_			= 0;
   cjet3_			= 0;
@@ -704,9 +708,15 @@ int looper::ScanChain(TChain* chain, char *prefix){
       //Add 2 jet corrections per jet
       //Min dR between e at HLT and jet object at HLT
       VofP4 vpfjets_p4;
+      vpfjets_p4.clear();
 
-      njets_ = 0.;
-      ht_    = 0.;
+      VofP4 vpfjetsnoiso_p4;
+      vpfjetsnoiso_p4.clear();
+
+      njets_      = 0.;
+      ht_         = 0.;
+      njetsnoiso_ = 0.;
+      htnoiso_    = 0.;
 
       int   imaxjet   = -1;
       float maxjetpt  = -1.;
@@ -745,6 +755,26 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	ht_ += vjet.pt();
 
 	vpfjets_p4.push_back( vjet );
+
+	//--------------------------------------------------------------------------
+	// overlap removal with non-isolated leptons
+	//--------------------------------------------------------------------------
+
+	rejectJet = false;
+	for( int ilep = 0 ; ilep < goodElectronsNoIso.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodElectronsNoIso.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	for( int ilep = 0 ; ilep < goodMuonsNoIso.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodMuonsNoIso.at(ilep) )     < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+
+	njetsnoiso_++;
+	ht_ += vjet.pt();
+
+	vpfjetsnoiso_p4.push_back( vjet );
+
+
       }
       
       sort( vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
@@ -753,6 +783,13 @@ int looper::ScanChain(TChain* chain, char *prefix){
       if( njets_ > 1 ) 	pjet2_ = &( vpfjets_p4.at(1) );
       if( njets_ > 2 ) 	pjet3_ = &( vpfjets_p4.at(2) );
       if( njets_ > 3 ) 	pjet4_ = &( vpfjets_p4.at(3) );
+
+      sort( vpfjetsnoiso_p4.begin(), vpfjetsnoiso_p4.end(), sortByPt);
+
+      if( njetsnoiso_ > 0 ) 	pjetnoiso1_ = &( vpfjetsnoiso_p4.at(0) );
+      if( njetsnoiso_ > 1 ) 	pjetnoiso2_ = &( vpfjetsnoiso_p4.at(1) );
+      if( njetsnoiso_ > 2 ) 	pjetnoiso3_ = &( vpfjetsnoiso_p4.at(2) );
+      if( njetsnoiso_ > 3 ) 	pjetnoiso4_ = &( vpfjetsnoiso_p4.at(3) );
       
       if( njets_ > 0 ) {
 	int i_j1 = getJetIndex(vpfjets_p4.at(0),jet_corrector_pfL1FastJetL2L3);
@@ -1154,6 +1191,11 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("pjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet2_	);
   outTree->Branch("pjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet3_	);
   outTree->Branch("pjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet4_	);
+
+  outTree->Branch("pjetnoiso1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjetnoiso1_	);
+  outTree->Branch("pjetnoiso2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjetnoiso2_	);
+  outTree->Branch("pjetnoiso3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjetnoiso3_	);
+  outTree->Branch("pjetnoiso4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjetnoiso4_	);
 
   outTree->Branch("lep1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);

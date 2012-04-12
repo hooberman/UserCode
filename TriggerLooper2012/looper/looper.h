@@ -142,6 +142,10 @@ class looper
         LorentzVector*  pjet2_; 
         LorentzVector*  pjet3_; 
         LorentzVector*  pjet4_; 
+        LorentzVector*  pjetnoiso1_; 
+        LorentzVector*  pjetnoiso2_; 
+        LorentzVector*  pjetnoiso3_; 
+        LorentzVector*  pjetnoiso4_; 
         LorentzVector*  lep1_; 
         LorentzVector*  lep2_; 
         LorentzVector*  lep3_; 
@@ -171,8 +175,10 @@ class looper
         UInt_t  lumi_;
         UInt_t  event_;
 	Int_t   njets_;
+	Int_t   njetsnoiso_;
 	Int_t   ncjets_;
 	Float_t ht_;
+	Float_t htnoiso_;
 	Float_t htc_;
 	Float_t pfmet_;
 	Float_t pfmetphi_;
