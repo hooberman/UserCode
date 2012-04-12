@@ -41,8 +41,8 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-00-03";
-  const char* jsonfile   = "jsons/json_DCSONLY_Apr11_1900_goodruns.txt";
+  const char* version    = "V00-00-04";
+  const char* jsonfile   = "jsons/json_DCSONLY_Apr12_1300_goodruns.txt";
   const bool  useMCSkims = true;
 
   cout << "Version : " << version     << endl;

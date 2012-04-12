@@ -972,6 +972,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       el17vl_               = passTriggerPrescale("HLT_Ele17_CaloIdL_CaloIsoVL");
       el8noiso_             = passTriggerPrescale("HLT_Ele8_CaloIdT_TrkIdVL");
       el8noisojet30_        = passTriggerPrescale("HLT_Ele8_CaloIdT_TrkIdVL_Jet30");
+      el30noiso_            = passTriggerPrescale("HLT_Ele30_CaloIdVT_TrkIdT");
 
       // Higgs dilepton triggers
       ee_                   = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
@@ -1243,7 +1244,8 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("el17vl"                   , &el17vl_                  ,  "el17vl/I"                );             
   outTree->Branch("el8noiso"                 , &el8noiso_                ,  "el8noiso/I"              );             
   outTree->Branch("el8noisojet30"            , &el8noisojet30_           ,  "el8noisojet30/I"         );             
-					       
+  outTree->Branch("el30noiso"                , &el30noiso_               ,  "el30noiso/I"             );             
+
   // Higgs dilepton triggers		       
   outTree->Branch("ee"                       , &ee_                      ,  "ee/I"                    );             
   outTree->Branch("mm"                       , &mm_                      ,  "mm/I"                    );             
