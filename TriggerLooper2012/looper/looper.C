@@ -438,8 +438,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
     TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
-    TTreeCache::SetLearnEntries(100);
-    tree->SetCacheSize(128*1024*1024);
+    //TTreeCache::SetLearnEntries(100);
+    //tree->SetCacheSize(128*1024*1024);
 
     cms2.Init(tree);
       
@@ -465,7 +465,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
 
       //Matevz
-      tree->LoadTree(z);
+      //tree->LoadTree(z);
 
       cms2.GetEntry(z);
 
@@ -605,7 +605,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	elnoiso1_isopf_     = electronIsoValuePF            ( elnoisoIndex.at(0) , 0    );
 	elnoiso1_isopffj03_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(0) , 0.3 , 0);
 	elnoiso1_isopffj04_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(0) , 0.4 , 0);
-	elnoiso1_mt_        = sqrt( 2 * evt_pfmet() * *elnoiso1_.pt() * ( 1 - cos( evt_pfmetPhi() - *elnoiso1_.eta() ) ) );
+	elnoiso1_mt_        = sqrt( 2 * evt_pfmet() * (*elnoiso1_).pt() * ( 1 - cos( evt_pfmetPhi() - (*elnoiso1_).eta() ) ) );
 	elnoiso1_d0pv_      = electron_d0PV_smurfV3( elnoisoIndex.at(0) );
 	elnoiso1_d0bs_      = els_d0corr().at(elnoisoIndex.at(0));
       }
@@ -663,7 +663,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso1_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(0) , false );
 	munoiso1_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(0) , false );
 	munoiso1_isopf_  = muonIsoValuePF       ( munoisoIndex.at(0) , 0     );
-	munoiso1_mt_     = sqrt( 2 * evt_pfmet() * *munoiso1_.pt() * ( 1 - cos( evt_pfmetPhi() - *munoiso1_.eta() ) ) );
+	munoiso1_mt_     = sqrt( 2 * evt_pfmet() * (*munoiso1_).pt() * ( 1 - cos( evt_pfmetPhi() - (*munoiso1_).eta() ) ) );
 	munoiso1_d0pv_   = mud0PV_smurfV3(munoisoIndex.at(0));
 	munoiso1_d0bs_   = mus_d0corr().at(munoisoIndex.at(0));
       }
