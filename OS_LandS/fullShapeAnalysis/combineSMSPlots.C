@@ -277,7 +277,8 @@ void combineSMSPlots(bool print = false){
   TH2F* heff = new TH2F("heff","heff", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
   //TH2F* heff = new TH2F("heff","heff", 48,0,1200,48,0,1200);
   TCanvas *ctemp = new TCanvas();
-  ch->Draw("ml:mg>>heff",sel);
+  ch->Draw("ml:mg>>heff",sel,"trgeff * lepscale & ndavtxweight * (1.0/1.07)");
+
   delete ctemp;
   heff->Scale(1./10000.);
 
@@ -365,7 +366,7 @@ void combineSMSPlots(bool print = false){
   //t->DrawLatex(0.2,0.65,njets);
   t->DrawLatex(0.2,0.55,"l^{+}l^{-} + E_{T}^{miss} + H_{T}");
   t->SetTextSize(0.035);
-  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
 
   if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
   else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
@@ -442,7 +443,7 @@ void combineSMSPlots(bool print = false){
   t->DrawLatex(0.2,0.48,"l^{+}l^{-} + E_{T}^{miss} + H_{T}");
   t->SetTextSize(0.035);
   //t->DrawLatex(0.18,0.92,"CMS                     #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
-  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
 
   if( print ){
     can->Print(Form("cards/%s/plots/SMS.eps",version));
@@ -460,11 +461,20 @@ void combineSMSPlots(bool print = false){
   // TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
   // TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
   // TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
+  gr_excl->SetName("graph");
+  gr_excl->SetTitle("graph");
+  gr_excl_up->SetName("graphup");
+  gr_excl_up->SetTitle("graphup");
+  gr_excl_down->SetName("graphdown");
+  gr_excl_down->SetTitle("graphdown");
 
-  TFile* fout = TFile::Open(Form("cards/%s/limit.root",version),"RECREATE");
+  TFile* fout = TFile::Open(Form("cards/%s/OS_shape_T1lh_limit.root",version),"RECREATE");
   fout->cd();
+  heff->Write();
   hexcl->Write();
   gr_excl->Write();
+  gr_excl_up->Write();
+  gr_excl_down->Write();
   fout->Close();
 
   TCanvas *c2 = new TCanvas("c2","c2",1500,500);

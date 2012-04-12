@@ -28,18 +28,18 @@
 
 using namespace std;
 
-char* version             = "V00-01-08";
+char* version             = "V00-00-14";
 
 bool fileInList(string thisfilename);
 
-void extractLimits( bool print = false ){
+void extractSMSLimits( bool print = false ){
 
   //------------------------------------------
   // create exclusion histogram
   //------------------------------------------
 
-  TH2F* hexcl    = new TH2F( "hexcl"    , "hexcl"    , 48,0,1200,48,0,1200);
-  TH2F* hexp     = new TH2F( "hexp"     , "hexp"     , 48,0,1200,48,0,1200);
+  TH2F* hexcl    = new TH2F( "hexcl"    , "hexcl"    , 50,0,1250,50,0,1250);
+  TH2F* hexp     = new TH2F( "hexp"     , "hexp"     , 50,0,1250,50,0,1250);
 
   ofstream* doScript_failed = new ofstream();
   doScript_failed->open(Form("cards/%s/doLimits_failed.sh",version));
@@ -58,6 +58,15 @@ void extractLimits( bool print = false ){
       // int mg  = hexcl->GetXaxis()->GetBinCenter(mgbin);
       // int ml = hexcl->GetXaxis()->GetBinCenter(mlbin);
       // if( mgbin < 45 ) continue;
+
+      // if( mgbin ==  7 && mlbin == 3 ) continue;
+      // if( mgbin ==  8 && mlbin == 3 ) continue;
+      // if( mgbin ==  9 && mlbin == 6 ) continue;
+      // if( mgbin ==  9 && mlbin == 7 ) continue;
+      // if( mgbin == 10 && mlbin == 7 ) continue;
+      // if( mgbin == 26 && mlbin == 22 ) continue;
+      // if( mgbin == 26 && mlbin == 23 ) continue;
+      // if( mgbin < 15 ) continue;
       // if( mgbin > 44 ) continue;
 
       hexcl->SetBinContent(mgbin,mlbin,0);
@@ -82,6 +91,13 @@ void extractLimits( bool print = false ){
       }
       
       else{
+	cout << "---------------------------------------------------------------" << endl;
+	cout << "Writing limits to histos: mgbin " << mgbin << " mlbin " << mlbin << endl;
+	cout << "Observed      " << mylimit.obs << endl;
+	cout << "Expected      " << mylimit.exp << endl;
+	cout << "---------------------------------------------------------------" << endl;
+
+
 	hexcl->SetBinContent(mgbin,mlbin,mylimit.obs);
 	hexp->SetBinContent(mgbin,mlbin,mylimit.exp);
       }
@@ -125,6 +141,7 @@ bool fileInList(string thisfilename){
 
   ifstream* ifile = new ifstream();
   ifile->open(Form("cards/%s/file_list_CLs.txt",version));
+  //ifile->open(Form("cards/%s/file_list_temp.txt",version));
 
   string filename;
 
