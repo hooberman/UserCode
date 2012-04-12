@@ -60,6 +60,9 @@ class looper
 	Int_t   eeht150_;
 
 	Float_t dilmass_;
+	Float_t elnoiso1_mt_;
+	Float_t munoiso1_mt_;
+
 	Int_t elnoiso1_wp80_;
 	Int_t elnoiso1_top_;
 	Int_t elnoiso2_wp80_;

@@ -593,6 +593,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       VofP4 goodMuonsNoIso;
       vector<int> munoisoIndex;
 
+      elnoiso1_mt_ = -1;
+
       if( nelnoiso_ > 0 ){
  	elnoiso1_           = &( goodElectronsNoIso.at(0) );
 	elnoiso1_wp80_      = objectPassTrigger( *elnoiso1_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
@@ -603,6 +605,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	elnoiso1_isopf_     = electronIsoValuePF            ( elnoisoIndex.at(0) , 0    );
 	elnoiso1_isopffj03_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(0) , 0.3 , 0);
 	elnoiso1_isopffj04_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(0) , 0.4 , 0);
+	elnoiso1_mt_        = sqrt( 2 * evt_pfmet() * *elnoiso1_.pt() * ( 1 - cos( evt_pfmetPhi() - *lnoiso1_.eta() ) ) );
       }
       if( nelnoiso_ > 1 ){
  	elnoiso2_           = &( goodElectronsNoIso.at(1) );
@@ -648,6 +651,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	nmunoiso_ ++;
       }
 
+      munoiso1_mt_ = -1;
+
       if( nmunoiso_ > 0 ){
  	munoiso1_        = &( goodMuonsNoIso.at(0) );
 	munoiso1_mu24_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu24_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
@@ -656,6 +661,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso1_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(0) , false );
 	munoiso1_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(0) , false );
 	munoiso1_isopf_  = muonIsoValuePF       ( munoisoIndex.at(0) , 0     );
+	munoiso1_mt_     = sqrt( 2 * evt_pfmet() * *munoiso1_.pt() * ( 1 - cos( evt_pfmetPhi() - *munoiso1_.eta() ) ) );
       }
       if( nmunoiso_ > 1 ){
  	munoiso2_        = &( goodMuonsNoIso.at(1) );
@@ -1160,6 +1166,8 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso3" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &munoiso3_	);
   outTree->Branch("munoiso4" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &munoiso4_	);
 
+  outTree->Branch("elnoiso1mt"               , &elnoiso1_mt_             ,  "elnoiso1mt/F"            );             
+  outTree->Branch("munoiso1mt"               , &munoiso1_mt_             ,  "munoiso1mt/F"            );             
 
   // top electron+jets triggers
   outTree->Branch("eltrijet"                 , &eltrijet_                ,  "eltrijet/I"              );             
