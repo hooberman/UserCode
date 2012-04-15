@@ -553,6 +553,13 @@ void combinePlots(bool print = false){
   gr_excl_up->Draw("same");
   gr_excl_down->Draw("same");
 
+  gr_excl->SetName("gr_excl");
+  gr_excl->SetTitle("gr_excl");
+  gr_excl_up->SetName("gr_excl_up");
+  gr_excl_up->SetTitle("gr_excl_up");
+  gr_excl_down->SetName("gr_excl_down");
+  gr_excl_down->SetTitle("gr_excl_down");
+
   if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
   else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
 
@@ -598,10 +605,13 @@ void combinePlots(bool print = false){
   // TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
   // TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
 
-  TFile* fout = TFile::Open(Form("cards/%s/limit.root",version),"RECREATE");
+  TFile* fout = TFile::Open(Form("cards/%s/%s_limit.root",version,sample),"RECREATE");
   fout->cd();
   hexcl->Write();
   gr_excl->Write();
+  gr_excl_up->Write();
+  gr_excl_down->Write();
+  heff->Write();
   fout->Close();
 
   TCanvas *c2 = new TCanvas("c2","c2",1500,500);
