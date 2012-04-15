@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-18";
+const char* iter                 = "V00-02-19";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -137,6 +137,34 @@ pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, d
   pair<float, float> p_met2 = make_pair(sqrt(metNewx*metNewx + metNewy*metNewy), metNewPhi);
   return p_met2;
 }
+
+float crossSectionGMSB( int m ){
+
+  float xsec = -1;
+
+  if     ( m == 130 ) xsec = 3057;
+  else if( m == 150 ) xsec = 1719;
+  else if( m == 170 ) xsec = 1035;
+  else if( m == 190 ) xsec =  656;
+  else if( m == 210 ) xsec =  433;
+  else if( m == 230 ) xsec =  293;
+  else if( m == 250 ) xsec =  205;
+  else if( m == 270 ) xsec =  146;
+  else if( m == 290 ) xsec =  105;
+  else if( m == 310 ) xsec =   77;
+  else if( m == 330 ) xsec =   57;
+  else if( m == 350 ) xsec =   43;
+  else if( m == 370 ) xsec =   33;
+  else if( m == 390 ) xsec =   25;
+  else if( m == 410 ) xsec =   20;
+  else{
+    cout << "ERROR! unrecognized GMSB mass " << m << endl;
+  }
+
+  return xsec;
+
+}
+
 
 //--------------------------------------------------------------------
 
@@ -633,8 +661,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	else if(TString(prefix).Contains("ggmsb") ){
-	  weight_ = -999;
 	  mg_ = susyScan_Mmu();
+	  weight_ = lumi * crossSectionGMSB(mg_) * (1.0/300000.0);
 	  ml_ = -999;
 	  x_  = -999;
 	}
