@@ -56,23 +56,21 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
 }
 
 
-void makeSMSCards(){
+void makeGMSBCards(){
 
   //---------------------------------------
   // load TChain
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-14/zzsms_baby.root");
-  char* version = (char*) "V00-02-03";
+  ch->Add("output/V00-02-14/ggmsb_baby.root");
+  char* version = (char*) "V00-02-04";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  //TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./100000.)");
-  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./52600.)");
-  //TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./52600.)");
+  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./300000.)");
 
   TCut presel   ("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
   TCut preseljup("dilmass>81 && dilmass<101 && nbvz==0 && mjjup>70 && mjjup<110 && nlep==2 && njetsup>=2   && leptype<2");
@@ -109,22 +107,22 @@ void makeSMSCards(){
   // preselection and signal region yields
   //---------------------------------------
 
-  TH2F* h[nbins];
-  TH2F* hjup[nbins];
-  TH2F* hjdn[nbins];
+  TH1F* h[nbins];
+  TH1F* hjup[nbins];
+  TH1F* hjdn[nbins];
 
   for( unsigned int i = 0 ; i < nbins ; ++i ){
-    h[i]        = new TH2F( Form("h_%i",i)        , Form("h_%i",i)           , 24,0,600,24,0,600);
-    hjup[i]     = new TH2F( Form("hjup_%i",i)     , Form("hjup_%i",i)        , 24,0,600,24,0,600);
-    hjdn[i]     = new TH2F( Form("hjdn_%i",i)     , Form("hjdn_%i",i)        , 24,0,600,24,0,600);
+    h[i]        = new TH1F( Form("h_%i",i)        , Form("h_%i",i)           , 15 , 120 , 420 );
+    hjup[i]     = new TH1F( Form("hjup_%i",i)     , Form("hjup_%i",i)        , 15 , 120 , 420 );
+    hjdn[i]     = new TH1F( Form("hjdn_%i",i)     , Form("hjdn_%i",i)        , 15 , 120 , 420 );
     
     h[i]    ->Sumw2();
     hjup[i] ->Sumw2();
     hjdn[i] ->Sumw2();
   }
   
-  TH2F* hall    = new TH2F( "hall"    , "hall"    , 24,0,600,24,0,600);
-  TH2F* hjdnall = new TH2F( "hjdnall" , "hjdnall" , 24,0,600,24,0,600);
+  TH1F* hall    = new TH1F( "hall"    , "hall"    , 15 , 120 , 420 );
+  TH1F* hjdnall = new TH1F( "hjdnall" , "hjdnall" , 15 , 120 , 420 );
   
   hall->Sumw2();
   
@@ -133,13 +131,13 @@ void makeSMSCards(){
 
   cout << "Filling histos..." << endl;
   for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-    ch->Draw(Form("ml:mg>>h_%i"    , ibin) , (presel    + sigcut[ibin]   ) * weight);
-    ch->Draw(Form("ml:mg>>hjup_%i" , ibin) , (preseljup + sigcutup[ibin] ) * weight);
-    ch->Draw(Form("ml:mg>>hjdn_%i" , ibin) , (preseljdn + sigcutdn[ibin] ) * weight);
+    ch->Draw(Form("mg>>h_%i"    , ibin) , (presel    + sigcut[ibin]   ) * weight);
+    ch->Draw(Form("mg>>hjup_%i" , ibin) , (preseljup + sigcutup[ibin] ) * weight);
+    ch->Draw(Form("mg>>hjdn_%i" , ibin) , (preseljdn + sigcutdn[ibin] ) * weight);
   }
 
-  ch->Draw("ml:mg>>hall"        , (presel    + sigall     ) * weight);
-  ch->Draw("ml:mg>>hjdnall"     , (preseljdn + sigalldn   ) * weight);
+  ch->Draw("mg>>hall"        , (presel    + sigall     ) * weight);
+  ch->Draw("mg>>hjdnall"     , (preseljdn + sigalldn   ) * weight);
 
   delete ctemp;
 
@@ -148,27 +146,6 @@ void makeSMSCards(){
 
   ofstream* doScript_CLs = new ofstream();
   doScript_CLs->open(Form("cards/%s/doLimits_CLs.sh",version));
-
-  ofstream* doScript_CLs1 = new ofstream();
-  doScript_CLs1->open(Form("cards/%s/doLimits_CLs1.sh",version));
-
-  ofstream* doScript_CLs2 = new ofstream();
-  doScript_CLs2->open(Form("cards/%s/doLimits_CLs2.sh",version));
-
-  ofstream* doScript_CLs3 = new ofstream();
-  doScript_CLs3->open(Form("cards/%s/doLimits_CLs3.sh",version));
-
-  ofstream* doScript_CLs4 = new ofstream();
-  doScript_CLs4->open(Form("cards/%s/doLimits_CLs4.sh",version));
-
-  ofstream* doScript_CLs_mL0 = new ofstream();
-  doScript_CLs_mL0->open(Form("cards/%s/doLimits_mL0.sh",version));
-
-  ofstream* doScript_CLs_mL50 = new ofstream();
-  doScript_CLs_mL50->open(Form("cards/%s/doLimits_mL50.sh",version));
-
-  ofstream* doScript_CLs_mL100 = new ofstream();
-  doScript_CLs_mL100->open(Form("cards/%s/doLimits_mL100.sh",version));
 
   ofstream* filelist = new ofstream();
   filelist->open(Form("cards/%s/file_list.txt",version));
@@ -255,109 +232,87 @@ void makeSMSCards(){
   int counter = 0;
 
   for( int mgbin = 1 ; mgbin <= hall->GetXaxis()->GetNbins() ; mgbin++ ){
-    for( int mlbin = 1 ; mlbin <= hall->GetYaxis()->GetNbins() ; mlbin++ ){
 
-      //if( !( mgbin == 17 && mlbin == 5 ) ) continue;
+    //if( !( mgbin == 17 && mlbin == 5 ) ) continue;
 
-      int mg  = hall->GetXaxis()->GetBinCenter(mgbin)-12.5;
-      int ml  = hall->GetXaxis()->GetBinCenter(mlbin)-12.5;
+    int mg  = hall->GetXaxis()->GetBinCenter(mgbin);
 
-      cout << "mg " << mg << " ml " << ml << endl;
+    cout << "mg " << mg << endl;
 
-      if( hjdnall->GetBinContent(mgbin,mlbin) < 1e-10 ) continue;
+    if( hjdnall->GetBinContent(mgbin) < 1e-10 ) continue;
 
-      float nom = hall->GetBinContent(mgbin,mlbin);
+    float nom = hall->GetBinContent(mgbin);
 
-      //---------------------------------------
-      // make signal histos
-      //---------------------------------------
+    //---------------------------------------
+    // make signal histos
+    //---------------------------------------
 
-      TH1F* histo_SMS               = new TH1F( Form("histo_SMS_%i_%i"              ,mgbin,mlbin) , Form("histo_SMS_%i_%i"              ,mgbin,mlbin) , nbins,0,nbins);
-      TH1F* histo_SMS_JES_shapeUp   = new TH1F( Form("histo_SMS_%i_%i_JES_shapeUp"  ,mgbin,mlbin) , Form("histo_SMS_%i_%i_JES_shapeUp"  ,mgbin,mlbin) , nbins,0,nbins);
-      TH1F* histo_SMS_JES_shapeDown = new TH1F( Form("histo_SMS_%i_%i_JES_shapeDown",mgbin,mlbin) , Form("histo_SMS_%i_%i_JES_shapeDown",mgbin,mlbin) , nbins,0,nbins);
+    TH1F* histo_SMS               = new TH1F( Form("histo_SMS_%i"              ,mgbin) , Form("histo_SMS_%i"              ,mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS_JES_shapeUp   = new TH1F( Form("histo_SMS_%i_JES_shapeUp"  ,mgbin) , Form("histo_SMS_%i_JES_shapeUp"  ,mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS_JES_shapeDown = new TH1F( Form("histo_SMS_%i_JES_shapeDown",mgbin) , Form("histo_SMS_%i_JES_shapeDown",mgbin) , nbins,0,nbins);
 
-      float sigtot    = 0;
-      float sigtotjdn = 0;
+    float sigtot    = 0;
+    float sigtotjdn = 0;
 
-      cout << "Signal yield" << endl;
-      for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-	float yieldnom = h[ibin]->GetBinContent(mgbin,mlbin);
-	float yieldjup = hjup[ibin]->GetBinContent(mgbin,mlbin);
-	float yieldjdn = hjdn[ibin]->GetBinContent(mgbin,mlbin);
+    cout << "Signal yield" << endl;
+    for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
+      float yieldnom = h[ibin]->GetBinContent(mgbin);
+      float yieldjup = hjup[ibin]->GetBinContent(mgbin);
+      float yieldjdn = hjdn[ibin]->GetBinContent(mgbin);
 
-	sigtot    += yieldnom;
-	sigtotjdn += yieldjdn;
+      sigtot    += yieldnom;
+      sigtotjdn += yieldjdn;
 
-	histo_SMS->SetBinContent              ( ibin + 1 , yieldnom );
-	histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , yieldjup );
-	histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , yieldjdn );
+      histo_SMS->SetBinContent              ( ibin + 1 , yieldnom );
+      histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , yieldjup );
+      histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , yieldjdn );
       
-	cout << "Bin " << ibin << " " << yieldnom << endl;
-      }
-
-      cout << "Total signal yield " << sigtot << endl;
-
-      if( sigtotjdn < 1e-10 ) continue;
-      //if( sigtot    < 2     ) continue;
-
-      counter++;
-
-      *doScript << Form("../../../../test/lands.exe -M Bayesian -d SMS_%i_%i.txt",mgbin,mlbin)         << endl;
-
-      *doScript_CLs << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
-
-      *filelist << Form("cards/%s/SMS_%i_%i.txt_Bayesian_bysObsLimit.root",version,mgbin,mlbin)        << endl;
-
-      *filelist_CLs << Form("cards/%s/SMS_%i_%i_m2lnQ2.root",version,mgbin,mlbin)        << endl;
-
-      if( counter%4 == 0 ) *doScript_CLs1 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
-
-      if( counter%4 == 1 ) *doScript_CLs2 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
-
-      if( counter%4 == 2 ) *doScript_CLs3 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
-
-      if( counter%4 == 3 ) *doScript_CLs4 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
-
-      if( mlbin==1 ) *doScript_CLs_mL0 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
-
-      if( mlbin==3 ) *doScript_CLs_mL50 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
-
-      if( mlbin==5 ) *doScript_CLs_mL100 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
-
-      printCard( Form("SMS_%i_%i",mgbin,mlbin) , sigtot , Zbkg_tot , OFbkg_tot , VZbkg_tot , data_tot , version );
-
-
-      TFile *f = TFile::Open( Form("rootfiles/%s/SMS_%i_%i.root",version,mgbin,mlbin) , "RECREATE");
-      f->cd();
-      histo_Data->Write();
-      histo_Zbkg->Write();
-      histo_Zbkg_errUp->Write();
-      histo_Zbkg_errDown->Write();
-      histo_OFbkg->Write();
-      histo_OFbkg_errUp->Write();
-      histo_OFbkg_errDown->Write();
-      histo_VZbkg->Write();
-      histo_VZbkg_errUp->Write();
-      histo_VZbkg_errDown->Write();
-      histo_SMS->Write();
-      histo_SMS_JES_shapeUp->Write();
-      histo_SMS_JES_shapeDown->Write();
-      f->Close();
-
-      delete histo_SMS;
-      delete histo_SMS_JES_shapeUp;
-      delete histo_SMS_JES_shapeDown;
+      cout << "Bin " << ibin << " " << yieldnom << endl;
     }
+
+    cout << "Total signal yield " << sigtot << endl;
+
+    if( sigtotjdn < 1e-10 ) continue;
+    //if( sigtot    < 2     ) continue;
+
+    counter++;
+
+    *doScript << Form("../../../../test/lands.exe -M Bayesian -d SMS_%i.txt",mgbin)         << endl;
+
+    *doScript_CLs << Form("../../../../test/lands.exe -d SMS_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i -rMin 0 -rMax 100",mgbin,mgbin) << endl;
+
+    *filelist << Form("cards/%s/SMS_%i.txt_Bayesian_bysObsLimit.root",version,mgbin)        << endl;
+
+    *filelist_CLs << Form("cards/%s/SMS_%i_m2lnQ2.root",version,mgbin)        << endl;
+
+    printCard( Form("SMS_%i",mgbin) , sigtot , Zbkg_tot , OFbkg_tot , VZbkg_tot , data_tot , version );
+
+
+    TFile *f = TFile::Open( Form("rootfiles/%s/SMS_%i.root",version,mgbin) , "RECREATE");
+    f->cd();
+    histo_Data->Write();
+    histo_Zbkg->Write();
+    histo_Zbkg_errUp->Write();
+    histo_Zbkg_errDown->Write();
+    histo_OFbkg->Write();
+    histo_OFbkg_errUp->Write();
+    histo_OFbkg_errDown->Write();
+    histo_VZbkg->Write();
+    histo_VZbkg_errUp->Write();
+    histo_VZbkg_errDown->Write();
+    histo_SMS->Write();
+    histo_SMS_JES_shapeUp->Write();
+    histo_SMS_JES_shapeDown->Write();
+    f->Close();
+
+    delete histo_SMS;
+    delete histo_SMS_JES_shapeUp;
+    delete histo_SMS_JES_shapeDown;
+
   }
 
   doScript->close();
   doScript_CLs->close();
-  doScript_CLs1->close();
-  doScript_CLs2->close();
-  doScript_CLs3->close();
-  doScript_CLs4->close();
-  doScript_CLs_mL0->close();
-  doScript_CLs_mL50->close();
   filelist->close();
   filelist_CLs->close();
 
