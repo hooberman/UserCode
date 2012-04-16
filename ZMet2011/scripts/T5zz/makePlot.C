@@ -27,9 +27,20 @@
 #include <sstream>
 #include <iomanip>
 
-
-
 using namespace std;
+
+TH2F* shiftHist(TH2F* hin){
+
+  TH2F* hout = new TH2F("hout","hout", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
+
+  for(int ibin = 1 ; ibin <= 48 ; ibin++ ){
+    for(int jbin = 1 ; jbin <= 48 ; jbin++ ){
+      hout->SetBinContent(ibin,jbin,hin->GetBinContent(ibin,jbin));
+    }
+  }
+
+  return hout;
+}
 
 TH1F* smoothHist( TH1F* hin , int n ){
 
@@ -57,7 +68,7 @@ TH1F* smoothHist( TH1F* hin , int n ){
     }
 
     if( skip ){
-      hout->SetBinContent(ibin,0);
+      //hout->SetBinContent(ibin,0);
       continue;
     }
 
@@ -102,11 +113,34 @@ void makePlot(){
 
   gStyle->SetPaintTextFormat(".1f");
 
+  //------------------
+  // 4.7 fb results
+  //------------------
   TFile *f = TFile::Open("histos.root");
-  TH2F* hist = (TH2F*) f->Get("h_T5zzgmsb");
+  //TH2F* hist = (TH2F*) f->Get("h_T5zzgmsb");
+  TH2F* hist_temp = (TH2F*) f->Get("h_T5zzgmsb");
+  TH2F* hist = shiftHist(hist_temp);
+
+  //------------------
+  // 4.98 fb results
+  //------------------
+  //TFile *f = TFile::Open("T5zzgmsb_limit.root");
+  //TH2F* hist = (TH2F*) f->Get("hexcl_out");
+
 
   TFile *fxsec = TFile::Open("reference_xSec_mg2TeV.root");
-  TH1F* hxsec = (TH1F*) fxsec->Get("gluino");
+  TH1F* hxsec_temp = (TH1F*) fxsec->Get("gluino");
+
+  TH1F* hxsec = new TH1F("hxsec","",81,0-12.5,2025-12.5);
+
+  for( int ibin = 1 ; ibin <= 81 ; ++ibin ){
+    hxsec->SetBinContent(ibin,hxsec_temp->GetBinContent(ibin));
+  }
+
+  TFile *fxsec_sanjay  = TFile::Open("gluino_xsec.root");
+  TH1F* hxsec_sanjay   = (TH1F*) fxsec_sanjay->Get("gluino");
+  TH1F* hxsecup_sanjay = (TH1F*) fxsec_sanjay->Get("gluinoup");
+  TH1F* hxsecdn_sanjay = (TH1F*) fxsec_sanjay->Get("gluinodn");
 
 
   TCanvas *c1 = new TCanvas();
@@ -123,10 +157,10 @@ void makePlot(){
   TH1F* h400 = (TH1F*) hist->ProjectionX("h400",17,17);
   TH1F* h500 = (TH1F*) hist->ProjectionX("h500",21,21);
 
-  // cout << "m(chi10) = 100 GeV" << endl;
-  // for(unsigned int ibin = 1 ; ibin <= h100->GetXaxis()->GetNbins() ; ibin++ ){
-  //   cout << ibin << " " << h100->GetBinCenter(ibin) << " " << h100->GetBinContent(ibin) << endl;
-  // }
+  cout << "m(chi10) = 100 GeV" << endl;
+  for(unsigned int ibin = 1 ; ibin <= h100->GetXaxis()->GetNbins() ; ibin++ ){
+    cout << ibin << " " << h100->GetBinCenter(ibin) << " " << h100->GetBinContent(ibin) << endl;
+  }
   // cout << "m(chi10) = 200 GeV" << endl;
   // for(unsigned int ibin = 1 ; ibin <= h100->GetXaxis()->GetNbins() ; ibin++ ){
   //   cout << ibin << " " << h100->GetBinCenter(ibin) << " " << h200->GetBinContent(ibin) << endl;
@@ -150,11 +184,18 @@ void makePlot(){
   // smooth histograms
   //--------------------------------------
 
-  TH1F* h100_smooth = smoothHist(h100,7);
-  TH1F* h200_smooth = smoothHist(h200,7);
-  TH1F* h300_smooth = smoothHist(h300,7);
-  TH1F* h400_smooth = smoothHist(h400,7);
-  TH1F* h500_smooth = smoothHist(h500,7);
+  int nsmooth = 5;
+
+  TH1F* h100_smooth = smoothHist(h100,nsmooth);
+  TH1F* h200_smooth = smoothHist(h200,nsmooth);
+  TH1F* h300_smooth = smoothHist(h300,nsmooth);
+  TH1F* h400_smooth = smoothHist(h400,nsmooth);
+  TH1F* h500_smooth = smoothHist(h500,nsmooth);
+
+  cout << "m(chi10) = 100 GeV SMOOTH" << endl;
+  for(unsigned int ibin = 1 ; ibin <= h100->GetXaxis()->GetNbins() ; ibin++ ){
+    cout << ibin << " " << h100_smooth->GetBinCenter(ibin) << " " << h100_smooth->GetBinContent(ibin) << endl;
+  }
 
   //--------------------------------------
   // convert: histograms to graphs
@@ -209,12 +250,20 @@ void makePlot(){
   gxsec->SetMaximum(10000);
   gxsec->GetYaxis()->SetLabelSize(0.04);
   gxsec->GetXaxis()->SetLabelSize(0.04);
-  gxsec->GetYaxis()->SetTitle("#sigma #times BF [pb]");
+  gxsec->GetYaxis()->SetTitle("#sigma [pb]");
   gxsec->GetXaxis()->SetTitle("gluino mass [GeV]");
   gxsec->GetXaxis()->SetRangeUser(200,1100);
   //gxsec->GetXaxis()->SetLimits(200,1100);
 
   gxsec->Draw("Al");
+  hxsec_sanjay->SetLineColor(2);
+  hxsecup_sanjay->SetLineColor(4);
+  hxsecdn_sanjay->SetLineColor(4);
+  // hxsec_sanjay->Draw("samehist");
+  // hxsecup_sanjay->Draw("samehist");
+  // hxsecdn_sanjay->Draw("samehist");
+
+
   //gxsec->SetLineColor(2);
   gxsec->Draw("samel");
   //h100->Draw("same");
@@ -259,7 +308,7 @@ void makePlot(){
 
   t->DrawLatex(0.45,0.62,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{1}^{0}, #chi_{1}^{0} #rightarrow Z G");
   t->DrawLatex(0.45,0.57,"m(#tilde{q})>>m(#tilde{g})");
-  t->DrawLatex(0.45,0.52,"n_{jets} #geq 2");
+  t->DrawLatex(0.45,0.52,"E_{T}^{miss} templates, n_{jets} #geq 2");
 
   c2->Print("makePlot.pdf");
   c2->Print("makePlot.eps");
