@@ -29,10 +29,17 @@ using namespace std;
 
 void makeGMSBPlot( bool printplots = false ){
 
+  // VZ+MET exclusion
   TFile *f = TFile::Open("cards/V00-02-04/observed_limit.root");
-
   TGraph* gul  = (TGraph*) f->Get("grobs");
   //TGraph* g = (TGraph*) f->Get("grexp");
+
+  // Rutgers exclusion
+  TFile *frutgers = TFile::Open("20120411_UCSD_GMSB_datacard/observed_limit.root ");
+  TGraph* gul2  = (TGraph*) frutgers->Get("grobs");
+  //TGraph* g = (TGraph*) f->Get("grexp");
+
+
 
   const unsigned int n = 15;
   float x[n];
@@ -71,6 +78,7 @@ void makeGMSBPlot( bool printplots = false ){
   g->SetLineColor(4);
 
   gul->SetLineWidth(4);
+  gul2->SetLineWidth(4);
   g->SetLineWidth(2);
 
   hdummy->GetXaxis()->SetTitle("m_{#chi} [GeV]");
@@ -92,6 +100,7 @@ void makeGMSBPlot( bool printplots = false ){
   */
 
   gul->Draw("samel");
+  gul2->Draw("samel");
   g->Draw("samec");
 
   // g1->SetMinimum(0);
@@ -110,22 +119,24 @@ void makeGMSBPlot( bool printplots = false ){
   //box->SetBorderSize(1);
   //box->SetFillColor(5);
   //box->SetFillStyle(3002);
-  box->DrawBox(xmin,0,xmax,5000);
+  //box->DrawBox(xmin,0,xmax,5000);
 
   TLine line;
-  line.DrawLine(xmin,0,xmin,5000);
-  line.DrawLine(xmax,0,xmax,5000);
+  //line.DrawLine(xmin,0,xmin,5000);
+  //line.DrawLine(xmax,0,xmax,5000);
 
   hdummy->Draw("axissame");
   g->SetMinimum(0);
   g->SetMaximum(5000);
   g->Draw("samec");
   gul->Draw("samel");
+  gul2->Draw("samel");
 
-  TLegend *leg = new TLegend(0.55,0.6,0.9,0.8);
-  leg->AddEntry(gul ,"observed UL","l");
+  TLegend *leg = new TLegend(0.35,0.6,0.9,0.8);
+  leg->AddEntry(gul  ,"observed UL (VZ+E_{T}^{miss})","l");
+  leg->AddEntry(gul2 ,"observed UL (multi-lepton)","l");
   leg->AddEntry(g,  "theory","l");
-  leg->AddEntry(box,"excluded region","f");
+  //leg->AddEntry(box,"excluded region","f");
   leg->SetBorderSize(1);
   leg->SetFillColor(0);
   leg->SetTextSize(0.03);
