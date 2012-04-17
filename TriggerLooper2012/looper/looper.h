@@ -77,6 +77,17 @@ class looper
 	Float_t munoiso2_ev_;
 	Float_t munoiso2_hv_;
 
+	Int_t elnoiso1_conv_;
+	Int_t elnoiso1_conv2_;
+	Int_t elnoiso1_hitp_;
+	Int_t elnoiso1_inner_;
+	Int_t elnoiso1_mit_;
+	Int_t elnoiso2_conv_;
+	Int_t elnoiso2_conv2_;
+	Int_t elnoiso2_hitp_;
+	Int_t elnoiso2_inner_;
+	Int_t elnoiso2_mit_;
+
 	Int_t mu8_;
 	Int_t mu17_;
 	Int_t elnoiso1_wp80_;

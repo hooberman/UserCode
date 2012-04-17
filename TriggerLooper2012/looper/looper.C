@@ -587,7 +587,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       nelnoiso_ = 0;
 
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 80 )                                                       continue;
+	if( els_p4().at(iel).pt() < 8 )                                                     continue;
 	if( !pass_electronSelection( iel , electronSelection_ssV5_noIso , false , false ) ) continue;
 	goodElectronsNoIso.push_back( els_p4().at(iel) );
 	elnoisoIndex.push_back(iel);
@@ -612,6 +612,11 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	elnoiso1_mt_        = sqrt( 2 * evt_pfmet() * (*elnoiso1_).pt() * ( 1 - cos( evt_pfmetPhi() - (*elnoiso1_).eta() ) ) );
 	elnoiso1_d0pv_      = electron_d0PV_smurfV3( elnoisoIndex.at(0) );
 	elnoiso1_d0bs_      = els_d0corr().at(elnoisoIndex.at(0));
+	elnoiso1_conv_      = isFromConversionPartnerTrack(elnoisoIndex.at(0)) ? 1 : 0;
+	elnoiso1_conv2_     = isFromConversionPartnerTrack_v2(elnoisoIndex.at(0)) ? 1 : 0;
+	elnoiso1_hitp_      = isFromConversionHitPattern(elnoisoIndex.at(0))   ? 1 : 0;
+	elnoiso1_inner_     = els_exp_innerlayers().at(elnoisoIndex.at(0));
+	elnoiso1_mit_       = isFromConversionMIT(elnoisoIndex.at(0)) ? 1 : 0;
       }
       if( nelnoiso_ > 1 ){
  	elnoiso2_           = &( goodElectronsNoIso.at(1) );
@@ -625,6 +630,11 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	elnoiso2_isopffj04_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(1) , 0.4 , 0);
 	elnoiso2_d0pv_      = electron_d0PV_smurfV3( elnoisoIndex.at(1) );
 	elnoiso2_d0bs_      = els_d0corr().at(elnoisoIndex.at(1));
+	elnoiso2_conv_      = isFromConversionPartnerTrack(elnoisoIndex.at(1)) ? 1 : 0;
+	elnoiso2_conv2_     = isFromConversionPartnerTrack_v2(elnoisoIndex.at(1)) ? 1 : 0;
+	elnoiso2_hitp_      = isFromConversionHitPattern(elnoisoIndex.at(1))   ? 1 : 0;
+	elnoiso2_inner_     = els_exp_innerlayers().at(elnoisoIndex.at(1));
+	elnoiso2_mit_       = isFromConversionMIT(elnoisoIndex.at(1)) ? 1 : 0;
       }
       if( nelnoiso_ > 2 ){
  	elnoiso3_           = &( goodElectronsNoIso.at(2) );
@@ -1246,6 +1256,18 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso1hv"               , &munoiso1_hv_             ,  "munoiso1hv/F"            );             
   outTree->Branch("munoiso2ev"               , &munoiso2_ev_             ,  "munoiso2ev/F"            );             
   outTree->Branch("munoiso2hv"               , &munoiso2_hv_             ,  "munoiso2hv/F"            );             
+
+  outTree->Branch("elnoiso1conv"             , &elnoiso1_conv_           ,  "elnoiso1conv/I"          );             
+  outTree->Branch("elnoiso1conv2"            , &elnoiso1_conv2_          ,  "elnoiso1conv2/I"         );             
+  outTree->Branch("elnoiso1hitp"             , &elnoiso1_hitp_           ,  "elnoiso1hitp/I"          );             
+  outTree->Branch("elnoiso1inner"            , &elnoiso1_inner_          ,  "elnoiso1inner/I"         );             
+  outTree->Branch("elnoiso1mit"              , &elnoiso1_mit_            ,  "elnoiso1mit/I"           );             
+
+  outTree->Branch("elnoiso2conv"             , &elnoiso2_conv_           ,  "elnoiso2conv/I"          );             
+  outTree->Branch("elnoiso2conv2"            , &elnoiso2_conv2_          ,  "elnoiso2conv2/I"         );             
+  outTree->Branch("elnoiso2hitp"             , &elnoiso2_hitp_           ,  "elnoiso2hitp/I"          );             
+  outTree->Branch("elnoiso2inner"            , &elnoiso2_inner_          ,  "elnoiso2inner/I"         );             
+  outTree->Branch("elnoiso2mit"              , &elnoiso2_mit_            ,  "elnoiso2mit/I"           );             
 
   // top electron+jets triggers
   outTree->Branch("eltrijet"                 , &eltrijet_                ,  "eltrijet/I"              );             
