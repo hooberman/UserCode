@@ -35,6 +35,8 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
 }
 
 void processBaby( TString outfileid = "merged_ntuple_35", TString infile = "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple_35.root" )
+//void processBaby( TString outfileid = "merged_ntuple_180296_0", TString infile = "/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-34/DoubleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34//merged_ntuple_180296_0.root")
+//void processBaby( TString outfileid = "merged_ntuple", TString infile = "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33//merged_ntuple_172620_0.root" )
 {
 
   //---------------------------------------------------------------
@@ -110,6 +112,12 @@ void processBaby( TString outfileid = "merged_ntuple_35", TString infile = "/nfs
   else if (infile.Contains("SingleMu_Run2011A-May10ReReco-v1_AOD") && infile.Contains("V04-02-33")) sample =  Form("SingleMu2011A-May10ReRecov1V33_%s", outfileid.Data());
   else if (infile.Contains("SingleMu_Run2011A-05Aug2011-v1_AOD") && infile.Contains("V04-02-33"))   sample =  Form("SingleMu2011A-05Aug2011v1V33_%s",   outfileid.Data());
   //dimuon
+  else if (infile.Contains("DoubleMu_Run2011A-PromptReco-v4_AOD") && infile.Contains("V04-02-20"))  sample =  Form("DoubleMu2011A_PromptRecov4V20_%s",  outfileid.Data());
+  else if (infile.Contains("DoubleMu_Run2011A-PromptReco-v6_AOD") && infile.Contains("V04-02-30"))  sample =  Form("DoubleMu2011A_PromptRecov6V30_%s",  outfileid.Data());
+  else if (infile.Contains("DoubleMu_Run2011B-PromptReco-v1_AOD") && infile.Contains("V04-02-30"))  sample =  Form("DoubleMu2011B_PromptRecov1V30_%s",  outfileid.Data());
+  else if (infile.Contains("DoubleMu_Run2011B-PromptReco-v1_AOD") && infile.Contains("V04-02-34"))  sample =  Form("DoubleMu2011B_PromptRecov1V34_%s",  outfileid.Data());
+  else if (infile.Contains("DoubleMu_Run2011A-May10ReReco-v1_AOD") && infile.Contains("V04-02-20")) sample =  Form("DoubleMu2011A-May10ReRecov1V20_%s", outfileid.Data());
+  else if (infile.Contains("DoubleMu_Run2011A-05Aug2011-v1_AOD") && infile.Contains("V04-02-30"))   sample =  Form("DoubleMu2011A-05Aug2011v1V30_%s",   outfileid.Data());
   //otherwise
   else sample = Form("boiade_%s", outfileid.Data());
   cout<<"sample is "<<sample<<endl;

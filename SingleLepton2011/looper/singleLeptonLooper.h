@@ -55,7 +55,9 @@ class singleLeptonLooper
         void BookHistos (char *prefix);
 	void InitBaby();
 	float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx = 0 );
-	
+	void weight3D_init( std::string WeightFileName );
+	double weight3D( int pv1, int pv2, int pv3 );
+
         // Set globals
         void set_susybaseline (bool  b)    { g_susybaseline = b; }
         void set_createTree   (bool  b)    { g_createTree   = b; }
@@ -74,6 +76,8 @@ class singleLeptonLooper
 	bool initialized;
 	TH1D*   stop_xsec_hist;
 	TFile*  stop_xsec_file;
+	//3D Vertex weight
+	double Weight3D[50][50][50];
 
     private:
 
@@ -107,6 +111,27 @@ class singleLeptonLooper
 	Float_t trkpt10_;
 	Float_t mleptrk10_;
 	Float_t trkreliso10_;
+	Float_t trkreliso10p4_;
+	Float_t trkreliso10p5_;
+	Float_t trkreliso10p7_;
+
+	//isolation variables including
+	//neutrals with pT > 1 GeV
+	Float_t totreliso10_;
+	Float_t totreliso10p4_;
+	Float_t totreliso10p5_;
+	Float_t totreliso10p7_;
+
+	//Store separate calo isolation 
+	//components for cones 0.3, 0.4, 0.5, 0.7
+	Float_t emreliso10_;
+	Float_t emreliso10p4_;
+	Float_t emreliso10p5_;
+	Float_t emreliso10p7_;
+	Float_t nhreliso10_;
+	Float_t nhreliso10p4_;
+	Float_t nhreliso10p5_;
+	Float_t nhreliso10p7_;
 
 	// btag variables
 	Int_t   nbtagsssv_;     
@@ -172,6 +197,13 @@ class singleLeptonLooper
 	Float_t mlepiso_;
 	Float_t mlepdr_;
 
+	Float_t pflepdr_;
+	Float_t pflepiso_;
+	Float_t pfleppt_;
+	Float_t pftauddr_;
+	Float_t pftaudiso_;
+	Float_t pftaudpt_;
+
 	// HLT variables
 	Int_t   ldi_;
 	Int_t   ltri_;
@@ -217,6 +249,8 @@ class singleLeptonLooper
 	Float_t t1metres10mt_;
 	Float_t t1metres20mt_;
 	Float_t t1metres30mt_;
+	Float_t lepmetpt_;
+	Float_t lept1met10pt_;
 
 	// assorted p4's
 	LorentzVector*  t_;   
@@ -277,6 +311,8 @@ class singleLeptonLooper
         Float_t smeff_;
         Float_t k_;
         Float_t mllgen_;
+        Float_t ptzgen_;
+        Float_t ptwgen_;
         Float_t dphijm_;
         Float_t costhetaweight_;
 	Int_t   njpt_;
@@ -314,6 +350,9 @@ class singleLeptonLooper
 	Float_t trkjetmetproj_;
         Float_t htUp_;
         Float_t htDown_;
+        Int_t   npu_;
+        Int_t   npuMinusOne_;
+        Int_t   npuPlusOne_;
         Int_t   nvtx_;
         Float_t dilmass_;
         Float_t topmass_;
@@ -395,10 +434,16 @@ class singleLeptonLooper
 	Int_t   ntaus_;
 	Int_t   nleps_;
 	Float_t ndavtxweight_;
+	Float_t n3dvtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
 	Float_t emjet10_;
 	Float_t emjet20_;
+
+	//recoil
+	Float_t dilrecoil_;
+	Float_t dilrecoilparl_;
+	Float_t dilrecoilperp_;
 
 	Float_t ksusy_;
 	Float_t ksusyup_;

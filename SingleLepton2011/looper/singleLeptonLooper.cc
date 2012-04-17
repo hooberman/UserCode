@@ -10,6 +10,7 @@
 #include "TFile.h"
 #include "TProfile.h"
 #include "TTree.h"
+#include "TVector2.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TMath.h"
@@ -75,6 +76,47 @@ void fillOverFlow(TH2F *h2, float xvalue, float yvalue, float weight = 1.);
 void fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsIdx);
 void fillHistos(TH2F *h2[4][4],float xvalue, float yvalue, float weight, int myType, int nJetsIdx);
 void fillHistos(TProfile *h2[4][4],float xvalue, float yvalue,  int myType, int nJetsIdx);
+
+//--------------------------------------------------------------------
+
+void singleLeptonLooper::weight3D_init( std::string WeightFileName ) { 
+
+  TFile *infile = new TFile(WeightFileName.c_str());
+  TH1F *WHist = (TH1F*)infile->Get("WHist");
+
+  // Check if the histogram exists           
+  if (!WHist) {
+    cout << "Error, could not find the histogram WHist in the file "
+	 << WeightFileName << ", quitting" << endl;
+    exit(0);
+  }
+
+  for (int i=0; i<50; i++) 
+    for(int j=0; j<50; j++)
+      for(int k=0; k<50; k++) {
+	Weight3D[i][j][k] = WHist->GetBinContent(i+1,j+1,k+1);
+      }
+
+  cout << " 3D Weight Matrix initialized! " << endl;
+
+  return;
+
+
+}
+
+//--------------------------------------------------------------------
+
+double singleLeptonLooper::weight3D( int pv1, int pv2, int pv3 ) {
+
+  using std::min;
+
+  int npm1 = min(pv1,49);
+  int np0 = min(pv2,49);
+  int npp1 = min(pv3,49);
+
+  return Weight3D[npm1][np0][npp1];
+
+}
 
 //--------------------------------------------------------------------
 
@@ -552,6 +594,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
     //set vtx reweighting hist
     set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
+    weight3D_init( "Weight3D.root" );
 
     //set msugra cross section file
     set_msugra_file("goodModelNames_tanbeta10.txt");
@@ -863,7 +906,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       id2_       = -999;
       lep2_      = 0;
       int index2 = -1;
-      dilmass_   = -999;
+      dilmass_       = -999;
+      dilpt_         = -999.;
+      dilrecoil_     = -999.;
+      dilrecoilparl_ = -999.;
+      dilrecoilperp_ = -999.;
 
       if( ngoodlep_ > 1 ){
 
@@ -888,6 +935,23 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	lep2_      = &goodLeptons.at(imaxpt2);
 	index2     = lepIndex.at(imaxpt2);
 	dilmass_   = sqrt((goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass2());
+
+        float metx = evt_pfmet() * cos( evt_pfmetPhi() );
+        float mety = evt_pfmet() * sin( evt_pfmetPhi() );
+        TVector2 met( metx, mety );
+
+        LorentzVector dilep = goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2);
+        TVector2 dilepv( dilep.X(), dilep.Y() );
+        dilpt_ = dilepv.Mod();
+
+        //axes
+        TVector2 ptaxis = dilepv/dilpt_;
+        TVector2 perpaxis = ptaxis.Rotate(TMath::Pi()/2.);
+        //hadronic recoil information
+        TVector2 hadrecoil = -1.*(met+dilepv);
+        dilrecoil_ = hadrecoil.Mod();
+        dilrecoilparl_ = hadrecoil*ptaxis;
+        dilrecoilperp_ = hadrecoil*perpaxis;
 
 	//cout << "2nd deading lepton: pt " << lep2_->pt() << " id " << id2_ << " mass " << dilmass_ << endl;
       }
@@ -934,6 +998,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       int nleps      =  0;
       float dilptgen = -1;
 
+      ptwgen_   = -1;
+      ptzgen_   = -1;
       ptttbar_  = -1;
       ptt_      = -1;
       pttbar_   = -1;
@@ -1001,6 +1067,13 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    ntops++;
 	  }
 
+	  // store W or Z pT 
+	  // ignoring cases where have more than 1 boson for now
+	  if ( abs(id) == 24 )
+	    ptwgen_ = genps_p4().at(igen).pt();
+	  if ( abs(id) == 23 )
+	    ptzgen_ = genps_p4().at(igen).pt();
+
 	  // skip lines up to t and tbar
 	  if( igen < 8 ) continue;
 
@@ -1036,7 +1109,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  mttbar_   = ttbar_->mass();
 	  etattbar_ = ttbar_->eta();
 	}
-
+	
 	if( nels + nmus == 2) dilptgen = vdilepton.pt();
         
 	if ( strcmp(prefix , "DYee"     ) == 0 &&  nels  != 2  ) continue;
@@ -1325,14 +1398,108 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
  	  }
  	}
       }
+
+      //------------------------------------------------------
+      // store closest pf cand information for 2nd lepton
+      //------------------------------------------------------
+
+      if ( nleps_ == 2 )  {
+	pflepdr_  =  999.;
+	pflepiso_ = -999.;
+	pfleppt_  = -999.;
+	pftauddr_  =  999.;
+	pftaudiso_ = -999.;
+	pftaudpt_  = -999.;
+	float pflepdr_out  =  999.;
+	float pflepiso_out = -999.;
+	float pfleppt_out  = -999.;
+	float pftauddr_out  =  999.;
+	float pftaudiso_out = -999.;
+	float pftaudpt_out  = -999.;
+	for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+	  
+	  //	  if( pfcands_p4().at(ipf).pt() < 5   ) continue;
+	  if( pfcands_charge().at(ipf) == 0   ) continue;
+	  
+	  int itrk = cms2.pfcands_trkidx().at(ipf);
+	  
+	  if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
+	    if( fabs( dz_trk_vtx(itrk,0) ) > 0.2 ) continue;
+	  }
+	  //Only remove leading lepton to see what happens to the sub-leading lepton
+	  // bool isGoodLepton = false;
+	  // for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  //   if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) 
+	  //     isGoodLepton = true;  
+	  // }
+	  // if( isGoodLepton ) continue;
+	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(imaxpt) ) < 0.1 ) continue;
+
+	  //Store highest pT track within match radius or if none is found closest pfcand
+	  float matchR = 0.15;
+	  float drpf = dRbetweenVectors( pfcands_p4().at(ipf) , *mclep2_ );
+	  float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
+	  if ( drpf < matchR && pfcands_p4().at(ipf).pt() > pfleppt_ ) {
+	    pflepdr_ = drpf;
+	    pfleppt_ = pfcands_p4().at(ipf).pt();
+	    pflepiso_ = iso; 
+	  } else if ( drpf > matchR && drpf < pflepdr_out ) {
+	    pflepdr_out = drpf;
+	    pfleppt_out = pfcands_p4().at(ipf).pt();
+	    pflepiso_out = iso;
+	  }
+	  //check for tau decay and store information for daughter
+	  if (mctaudid2_==-1) continue;
+	  float taudrpf = dRbetweenVectors( pfcands_p4().at(ipf) , *mctaud2_ );
+	  float tauiso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
+	  if ( taudrpf < matchR && pfcands_p4().at(ipf).pt() > pftaudpt_ ) {
+	    pftauddr_ = taudrpf;
+	    pftaudpt_ = pfcands_p4().at(ipf).pt();
+	    pftaudiso_ = tauiso;
+	  } else if ( taudrpf > matchR && taudrpf < pftauddr_out ) {
+	    pftauddr_out = taudrpf;
+	    pftaudpt_out = pfcands_p4().at(ipf).pt();
+	    pftaudiso_out = tauiso;
+	  }
+	}// end loop over pf cands
+
+	//If no match in cone is found, store closest track
+	if (pfleppt_<0) {
+	  pflepdr_ = pflepdr_out;
+	  pfleppt_ = pfleppt_out;
+	  pflepiso_ = pflepiso_out;
+	}
+	if (pftaudpt_<0) {
+	  pftauddr_ = pftauddr_out;
+	  pftaudpt_ = pftaudpt_out;
+	  pftaudiso_ = pftaudiso_out;
+	}
+      }// end check for second lepton
+
       //------------------------------------------------------
       // store pt and iso for most isolated track (pt>10 GeV)
       //------------------------------------------------------
 
       trkpt10_         = -1.0;
       trkreliso10_     = 1000.;
+      trkreliso10p4_   = 1000.;
+      trkreliso10p5_   = 1000.;
+      trkreliso10p7_   = 1000.;
+      totreliso10_     = 1000.;
+      totreliso10p4_   = 1000.;
+      totreliso10p5_   = 1000.;
+      totreliso10p7_   = 1000.;
+      emreliso10_      = 1000.;
+      emreliso10p4_    = 1000.;
+      emreliso10p5_    = 1000.;
+      emreliso10p7_    = 1000.;
+      nhreliso10_      = 1000.;
+      nhreliso10p4_    = 1000.;
+      nhreliso10p5_    = 1000.;
+      nhreliso10p7_    = 1000.;
       mleptrk10_       = -1.0;
       float miniso10   = 999;
+      int iminiso10    = -9;
 
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
 
@@ -1359,7 +1526,39 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  trkpt10_       = pfcands_p4().at(ipf).pt();
 	  mleptrk10_     = (*lep1_+pfcands_p4().at(ipf)).pt();
 	  trkreliso10_   = iso;
+	  iminiso10      = ipf;
 	}
+
+      }
+
+      // store all other isolation variables 
+      if (iminiso10>=0) {
+	  std::vector<float> iso10p3 = totalIso(iminiso10, 0.3);
+	  std::vector<float> iso10p4 = totalIso(iminiso10, 0.4);
+	  std::vector<float> iso10p5 = totalIso(iminiso10, 0.5);
+	  std::vector<float> iso10p7 = totalIso(iminiso10, 0.7);
+	  // charged component
+	  trkreliso10p4_ = iso10p4.at(0) / trkpt10_;
+	  trkreliso10p5_ = iso10p5.at(0) / trkpt10_;
+	  trkreliso10p7_ = iso10p7.at(0) / trkpt10_;
+	  // sum over everything
+	  float totiso10p3 = (iso10p3.at(0)+iso10p3.at(1)+iso10p3.at(2));
+	  float totiso10p4 = (iso10p4.at(0)+iso10p4.at(1)+iso10p4.at(2));
+	  float totiso10p5 = (iso10p5.at(0)+iso10p5.at(1)+iso10p5.at(2));
+	  float totiso10p7 = (iso10p7.at(0)+iso10p7.at(1)+iso10p7.at(2));
+	  totreliso10_   = totiso10p3 / trkpt10_;
+	  totreliso10p4_ = totiso10p4 / trkpt10_;
+	  totreliso10p5_ = totiso10p5 / trkpt10_;
+	  totreliso10p7_ = totiso10p7 / trkpt10_;
+	  //for various cones store the separate isolation components
+	  emreliso10_    = iso10p3.at(1) / trkpt10_;
+	  emreliso10p4_  = iso10p4.at(1) / trkpt10_;
+	  emreliso10p5_  = iso10p5.at(1) / trkpt10_;
+	  emreliso10p7_  = iso10p7.at(1) / trkpt10_;
+	  nhreliso10_    = iso10p3.at(2) / trkpt10_;
+	  nhreliso10p4_  = iso10p4.at(2) / trkpt10_;
+	  nhreliso10p5_  = iso10p5.at(2) / trkpt10_;
+	  nhreliso10p7_  = iso10p7.at(2) / trkpt10_;
       }
 
       //------------------------------------------------------
@@ -1415,6 +1614,20 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if(isGoodDAVertex(v)) ++ndavtx_;
       }
 
+      npu_ = 0;
+      npuMinusOne_ = 0;
+      npuPlusOne_ = 0;
+      if ( !isData ) {
+        //Information for out-of-time PU
+        for (unsigned int nbc=0;nbc<cms2.puInfo_nPUvertices().size();++nbc) {
+	  if (cms2.puInfo_bunchCrossing().at(nbc)==0) npu_ = cms2.puInfo_nPUvertices().at(nbc);
+	  else if (cms2.puInfo_bunchCrossing().at(nbc)==-1) npuMinusOne_ = cms2.puInfo_nPUvertices().at(nbc);
+	  else if (cms2.puInfo_bunchCrossing().at(nbc)==+1) npuPlusOne_ = cms2.puInfo_nPUvertices().at(nbc);
+	}
+	n3dvtxweight_ = weight3D( npuMinusOne_, npu_, npuPlusOne_ );
+      } else 
+	n3dvtxweight_ = 1.;
+      
       //-------------------------------------
       // jet counting
       //-------------------------------------
@@ -2171,6 +2384,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       t1metres20mt_  = getMT( lep1_->pt() , lep1_->phi() , t1metres20_  , t1metres20phi_ );
       t1metres30mt_  = getMT( lep1_->pt() , lep1_->phi() , t1metres30_  , t1metres30phi_ );
 
+      //pt of the leading lepton and met system
+      lepmetpt_ = sqrt( pow((lep1_->px() + pfmet_*cos(pfmetphi_)),2) 
+			+ pow((lep1_->py() + pfmet_*sin(pfmetphi_)),2) );
+      lept1met10pt_ = sqrt( pow((lep1_->px() + t1met10_*cos(t1met10phi_)),2) 
+			    + pow((lep1_->py() + t1met10_*sin(t1met10phi_)),2) );
       //dijet mass two bs highest pT b-tagged jets
       if (mediumBJets.size()>1) {
 	mbb_ = (mediumBJets.at(0)+mediumBJets.at(1)).M();
@@ -2716,6 +2934,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("smeff",           &smeff_,            "smeff/F");
   outTree->Branch("k",               &k_,                "k/F");
   outTree->Branch("mllgen",          &mllgen_,           "mllgen/F");
+  outTree->Branch("ptwgen",          &ptwgen_,           "ptwgen/F");
+  outTree->Branch("ptzgen",          &ptzgen_,           "ptzgen/F");
   outTree->Branch("nlep",            &nlep_,             "nlep/I");
   outTree->Branch("nosel",           &nosel_,            "nosel/I");
   outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
@@ -2735,10 +2955,13 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("leptype",         &leptype_,          "leptype/I");
   outTree->Branch("topmass",         &topmass_,          "topmass/F");
   outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
+  outTree->Branch("dilrecoil",       &dilrecoil_,        "dilrecoil/F");
+  outTree->Branch("dilrecoilparl",   &dilrecoilparl_,    "dilrecoilparl/F");
+  outTree->Branch("dilrecoilperp",   &dilrecoilperp_,    "dilrecoilperp/F");
   outTree->Branch("tcmet",           &tcmet_,            "tcmet/F");
   outTree->Branch("genmet",          &genmet_,           "genmet/F");
-  outTree->Branch("genmet",          &genmet_,           "genmet/F");
-  outTree->Branch("genmet",          &genmet_,           "genmet/F");
+  outTree->Branch("gensumet",        &gensumet_,         "gensumet/F");
+  outTree->Branch("genmetphi",       &genmetphi_,        "genmetphi/F");
   outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
   outTree->Branch("pfmetveto",       &pfmetveto_,        "pfmetveto/F");
   outTree->Branch("pfmetsig",        &pfmetsig_,         "pfmetsig/F");
@@ -2805,6 +3028,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("t1metres10mt",    &t1metres10mt_,     "t1metres10mt/F");
   outTree->Branch("t1metres20mt",    &t1metres20mt_,     "t1metres20mt/F");
   outTree->Branch("t1metres30mt",    &t1metres30mt_,     "t1metres30mt/F");
+  outTree->Branch("lepmetpt",        &lepmetpt_,         "lepmetpt/F");
+  outTree->Branch("lept1met10pt",    &lept1met10pt_,     "lept1met10pt/F");
   
   // pfjets Res
   outTree->Branch("npfresjets30",    &npfresjets30_,     "npfresjets30/I");
@@ -2857,9 +3082,13 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
   outTree->Branch("htUp",            &htUp_,             "htUp/F");
   outTree->Branch("htDown",          &htDown_,           "htDown/F");
+  outTree->Branch("npu",             &npu_,              "npu/I");
+  outTree->Branch("npuMinusOne",     &npuMinusOne_,      "npuMinusOne/I");
+  outTree->Branch("npuPlusOne",      &npuPlusOne_,       "npuPlusOne/I");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
   outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
+  outTree->Branch("n3dvtxweight",    &n3dvtxweight_,     "n3dvtxweight/F");
   outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
   outTree->Branch("pass",            &pass_,             "pass/I");
   outTree->Branch("passz",           &passz_,            "passz/I");
@@ -2925,6 +3154,12 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mleppassiso",     &mleppassiso_,      "mleppassiso/I");  
   outTree->Branch("mlepiso",         &mlepiso_,          "mlepiso/F");  
   outTree->Branch("mlepdr",          &mlepdr_,           "mlepdr/F");  
+  outTree->Branch("pflepiso",        &pflepiso_,         "pflepiso/F");  
+  outTree->Branch("pflepdr",         &pflepdr_,          "pflepdr/F");  
+  outTree->Branch("pfleppt",         &pfleppt_,          "pfleppt/F");  
+  outTree->Branch("pftaudiso",       &pftaudiso_,        "pftaudiso/F");  
+  outTree->Branch("pftauddr",        &pftauddr_,         "pftauddr/F");  
+  outTree->Branch("pftaudpt",        &pftaudpt_,         "pftaudpt/F");  
   outTree->Branch("emjet10",         &emjet10_,          "emjet10/F");  
   outTree->Branch("mjj",             &mjj_,              "mjj/F");  
   outTree->Branch("emjet20",         &emjet20_,          "emjet20/F");  
@@ -2934,6 +3169,21 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mleptrk10",       &mleptrk10_,        "mleptrk10/F");  
   outTree->Branch("trkreliso5",      &trkreliso5_,       "trkreliso5/F");  
   outTree->Branch("trkreliso10",     &trkreliso10_,      "trkreliso10/F");  
+  outTree->Branch("trkreliso10p4",   &trkreliso10p4_,    "trkreliso10p4/F");  
+  outTree->Branch("trkreliso10p5",   &trkreliso10p5_,    "trkreliso10p5/F");  
+  outTree->Branch("trkreliso10p7",   &trkreliso10p7_,    "trkreliso10p7/F");  
+  outTree->Branch("totreliso10",     &totreliso10_,      "totreliso10/F");  
+  outTree->Branch("totreliso10p4",   &totreliso10p4_,    "totreliso10p4/F");  
+  outTree->Branch("totreliso10p5",   &totreliso10p5_,    "totreliso10p5/F");  
+  outTree->Branch("totreliso10p7",   &totreliso10p7_,    "totreliso10p7/F");  
+  outTree->Branch("emreliso10",      &emreliso10_,       "emreliso10/F");  
+  outTree->Branch("emreliso10p4",    &emreliso10p4_,     "emreliso10p4/F");  
+  outTree->Branch("emreliso10p5",    &emreliso10p5_,     "emreliso10p5/F");  
+  outTree->Branch("emreliso10p7",    &emreliso10p7_,     "emreliso10p7/F");  
+  outTree->Branch("nhreliso10",      &nhreliso10_,       "nhreliso10/F");  
+  outTree->Branch("nhreliso10p4",    &nhreliso10p4_,     "nhreliso10p4/F");  
+  outTree->Branch("nhreliso10p5",    &nhreliso10p5_,     "nhreliso10p5/F");  
+  outTree->Branch("nhreliso10p7",    &nhreliso10p7_,     "nhreliso10p7/F");  
   outTree->Branch("mbb",             &mbb_,              "mbb/F");
 
   outTree->Branch("mlep"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
