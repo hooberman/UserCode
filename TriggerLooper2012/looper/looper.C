@@ -623,6 +623,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	elnoiso2_isopf_     = electronIsoValuePF            ( elnoisoIndex.at(1) , 0    );
 	elnoiso2_isopffj03_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(1) , 0.3 , 0);
 	elnoiso2_isopffj04_ = electronIsoValuePF2012_FastJetEffArea( elnoisoIndex.at(1) , 0.4 , 0);
+	elnoiso2_d0pv_      = electron_d0PV_smurfV3( elnoisoIndex.at(1) );
+	elnoiso2_d0bs_      = els_d0corr().at(elnoisoIndex.at(1));
       }
       if( nelnoiso_ > 2 ){
  	elnoiso3_           = &( goodElectronsNoIso.at(2) );
@@ -670,6 +672,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso1_mt_     = sqrt( 2 * evt_pfmet() * (*munoiso1_).pt() * ( 1 - cos( evt_pfmetPhi() - (*munoiso1_).eta() ) ) );
 	munoiso1_d0pv_   = mud0PV_smurfV3(munoisoIndex.at(0));
 	munoiso1_d0bs_   = mus_d0corr().at(munoisoIndex.at(0));
+	munoiso1_ev_     = mus_iso_ecalvetoDep().at(munoisoIndex.at(0));
+	munoiso1_hv_     = mus_iso_hcalvetoDep().at(munoisoIndex.at(0));
       }
       if( nmunoiso_ > 1 ){
  	munoiso2_        = &( goodMuonsNoIso.at(1) );
@@ -679,6 +683,10 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso2_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(1) , false );
 	munoiso2_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(1) , false );
 	munoiso2_isopf_  = muonIsoValuePF       ( munoisoIndex.at(1) , 0     );
+	munoiso2_d0pv_   = mud0PV_smurfV3(munoisoIndex.at(1));
+	munoiso2_d0bs_   = mus_d0corr().at(munoisoIndex.at(1));
+	munoiso2_ev_     = mus_iso_ecalvetoDep().at(munoisoIndex.at(1));
+	munoiso2_hv_     = mus_iso_hcalvetoDep().at(munoisoIndex.at(1));
       }
       if( nmunoiso_ > 2 ){
  	munoiso3_        = &( goodMuonsNoIso.at(2) );
@@ -688,6 +696,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso3_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(2) , false );
 	munoiso3_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(2) , false );
 	munoiso3_isopf_  = muonIsoValuePF       ( munoisoIndex.at(2) , 0     );
+	munoiso3_ev_     = mus_iso_ecalvetoDep().at(munoisoIndex.at(2));
+	munoiso3_hv_     = mus_iso_hcalvetoDep().at(munoisoIndex.at(2));
       }
       if( nmunoiso_ > 3 ){
  	munoiso4_        = &( goodMuonsNoIso.at(3) );
@@ -697,6 +707,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso4_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(3) , false );
 	munoiso4_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(3) , false );
 	munoiso4_isopf_  = muonIsoValuePF       ( munoisoIndex.at(3) , 0     );
+	munoiso4_ev_     = mus_iso_ecalvetoDep().at(munoisoIndex.at(3));
+	munoiso4_hv_     = mus_iso_hcalvetoDep().at(munoisoIndex.at(3));
       }
 
 
@@ -1224,6 +1236,16 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso1d0bs"             , &munoiso1_d0bs_           ,  "munoiso1d0ns/F"          );             
   outTree->Branch("elnoiso1d0pv"             , &elnoiso1_d0pv_           ,  "elnoiso1d0pv/F"          );             
   outTree->Branch("elnoiso1d0bs"             , &elnoiso1_d0bs_           ,  "elnoiso1d0ns/F"          );             
+
+  outTree->Branch("munoiso2d0pv"             , &munoiso2_d0pv_           ,  "munoiso2d0pv/F"          );             
+  outTree->Branch("munoiso2d0bs"             , &munoiso2_d0bs_           ,  "munoiso2d0ns/F"          );             
+  outTree->Branch("elnoiso2d0pv"             , &elnoiso2_d0pv_           ,  "elnoiso2d0pv/F"          );             
+  outTree->Branch("elnoiso2d0bs"             , &elnoiso2_d0bs_           ,  "elnoiso2d0ns/F"          );             
+
+  outTree->Branch("munoiso1ev"               , &munoiso1_ev_             ,  "munoiso1ev/F"            );             
+  outTree->Branch("munoiso1hv"               , &munoiso1_hv_             ,  "munoiso1hv/F"            );             
+  outTree->Branch("munoiso2ev"               , &munoiso2_ev_             ,  "munoiso2ev/F"            );             
+  outTree->Branch("munoiso2hv"               , &munoiso2_hv_             ,  "munoiso2hv/F"            );             
 
   // top electron+jets triggers
   outTree->Branch("eltrijet"                 , &eltrijet_                ,  "eltrijet/I"              );             
