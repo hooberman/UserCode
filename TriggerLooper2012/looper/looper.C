@@ -370,6 +370,10 @@ void looper::closeTree()
 
 int looper::ScanChain(TChain* chain, char *prefix){
 
+  cout << "------------------------------------------------------------------------------------------" << endl;
+  cout << "WARNING: d0 (muons) and conversion rejection (electrons) REMOVED FROM LEPTON SELECTIONS!!!" << endl;
+  cout << "------------------------------------------------------------------------------------------" << endl;
+
   if( debug )  cout << __LINE__ << ": start ScanChain" << endl;
 
   //------------------------------------------------------------------------------------------------------
