@@ -82,7 +82,7 @@ void doAll(bool skipFWLite = true)
   bool runElHadData     = 1;
   bool runDoubleElData  = 1;
   bool runDoubleMuData  = 1;
-  bool runMuHadData     = 0;
+  bool runMuHadData     = 1;
   bool runPhotonData    = 0;
 
   //----------------------------------------------------------------------------------------------------------
