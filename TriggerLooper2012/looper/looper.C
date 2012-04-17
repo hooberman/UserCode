@@ -710,8 +710,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso3_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(2) , false );
 	munoiso3_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(2) , false );
 	munoiso3_isopf_  = muonIsoValuePF       ( munoisoIndex.at(2) , 0     );
-	munoiso3_ev_     = mus_iso_ecalvetoDep().at(munoisoIndex.at(2));
-	munoiso3_hv_     = mus_iso_hcalvetoDep().at(munoisoIndex.at(2));
       }
       if( nmunoiso_ > 3 ){
  	munoiso4_        = &( goodMuonsNoIso.at(3) );
@@ -721,8 +719,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso4_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(3) , false );
 	munoiso4_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(3) , false );
 	munoiso4_isopf_  = muonIsoValuePF       ( munoisoIndex.at(3) , 0     );
-	munoiso4_ev_     = mus_iso_ecalvetoDep().at(munoisoIndex.at(3));
-	munoiso4_hv_     = mus_iso_hcalvetoDep().at(munoisoIndex.at(3));
       }
 
 
