@@ -940,93 +940,96 @@ int looper::ScanChain(TChain* chain, char *prefix){
       //-------------------------------------------
 
       // top electron+jets triggers
-      eltrijet_             = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30");
-      eltrijetbackup_       = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet50_Jet40_Jet30");
-      eldijet_              = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralPFJet30");
-      eljet_                = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30");
-      elnoisotrijet_        = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30");
-      elnoisotrijetbackup_  = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet50_Jet40_Jet30");
+      eltrijet_             = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v");
+      eltrijetbackup_       = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet50_Jet40_Jet30_v");
+      eldijet_              = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralPFJet30_v");
+      eljet_                = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v");
+      elnoisotrijet_        = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v");
+      elnoisotrijetbackup_  = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet50_Jet40_Jet30_v");
 
       // top muon+jets triggers
-      mutrijet_             = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_TriCentralPFJet30");
-      mutrijetbackup_       = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_CentralPFJet50_Jet40_Jet30");
-      mudijet_              = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_DiCentralPFJet30");
-      mujet_                = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_CentralPFJet30");
-      munoisotrijet_        = passTriggerPrescale("HLT_Mu20_eta2p1_TriCentralPFJet30");
-      munoisotrijetbackup_  = passTriggerPrescale("HLT_Mu20_eta2p1_CentralPFJet50_Jet40_Jet30");
+      mutrijet_             = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_TriCentralPFJet30_v");
+      mutrijetbackup_       = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_CentralPFJet50_Jet40_Jet30_v");
+      mudijet_              = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_DiCentralPFJet30_v");
+      mujet_                = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_CentralPFJet30_v");
+      munoisotrijet_        = passTriggerPrescale("HLT_Mu20_eta2p1_TriCentralPFJet30_v");
+      munoisotrijetbackup_  = passTriggerPrescale("HLT_Mu20_eta2p1_CentralPFJet50_Jet40_Jet30_v");
 
       // non-isolated dilepton-HT triggers
-      eeht175_              = passTriggerPrescale("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT175");
-      eeht225_              = passTriggerPrescale("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT225");
-      mmht175_              = passTriggerPrescale("HLT_DoubleMu8_Mass8_PFHT175");
-      mmht225_              = passTriggerPrescale("HLT_DoubleMu8_Mass8_PFHT225");
-      emht175_              = passTriggerPrescale("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175");
-      emht225_              = passTriggerPrescale("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225");
+      eeht175_              = passTriggerPrescale("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT175_v");
+      eeht225_              = passTriggerPrescale("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT225_v");
+      mmht175_              = passTriggerPrescale("HLT_DoubleMu8_Mass8_PFHT175_v");
+      mmht225_              = passTriggerPrescale("HLT_DoubleMu8_Mass8_PFHT225_v");
+      emht175_              = passTriggerPrescale("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v");
+      emht225_              = passTriggerPrescale("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225_v");
 
       // isolated dilepton-HT triggers
-      mmisoht175_           = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT175");
-      mmisoht225_           = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT225");
-      emisoht175_           = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175");
-      emisoht225_           = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225");
+      mmisoht175_           = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT175_v");
+      mmisoht225_           = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT225_v");
+      emisoht175_           = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v");
+      emisoht225_           = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225_v");
 
       // isolated single muon triggers
-      isomu20_              = passTriggerPrescale("HLT_IsoMu20_eta2p1");
-      isomu24_              = passTriggerPrescale("HLT_IsoMu24_eta2p1");
-      isomu30_              = passTriggerPrescale("HLT_IsoMu30_eta2p1");
-      isomu34_              = passTriggerPrescale("HLT_IsoMu34_eta2p1");
-      isomu40_              = passTriggerPrescale("HLT_IsoMu40_eta2p1");
+      isomu20_              = passTriggerPrescale("HLT_IsoMu20_eta2p1_v");
+      isomu24_              = passTriggerPrescale("HLT_IsoMu24_eta2p1_v");
+      isomu30_              = passTriggerPrescale("HLT_IsoMu30_eta2p1_v");
+      isomu34_              = passTriggerPrescale("HLT_IsoMu34_eta2p1_v");
+      isomu40_              = passTriggerPrescale("HLT_IsoMu40_eta2p1_v");
 
       // non-isolated single muon triggers
-      mu24_                 = passTriggerPrescale("HLT_Mu24_eta2p1");
-      mu30_                 = passTriggerPrescale("HLT_Mu30_eta2p1");
-      mu40_                 = passTriggerPrescale("HLT_Mu40_eta2p1");
-      mu50_                 = passTriggerPrescale("HLT_Mu50_eta2p1");
+      mu24_                 = passTriggerPrescale("HLT_Mu24_eta2p1_v");
+      mu30_                 = passTriggerPrescale("HLT_Mu30_eta2p1_v");
+      mu40_                 = passTriggerPrescale("HLT_Mu40_eta2p1_v");
+      mu50_                 = passTriggerPrescale("HLT_Mu50_eta2p1_v");
+
+      mu8_                  = passTriggerPrescale("HLT_Mu8_v");
+      mu17_                 = passTriggerPrescale("HLT_Mu17_v");
 
       // single-electron triggers
-      el27wp80_             = passTriggerPrescale("HLT_Ele27_WP80");
-      el27wp70_             = passTriggerPrescale("HLT_Ele27_WP70");
-      el27_                 = passTriggerPrescale("HLT_Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL");
-      el32_                 = passTriggerPrescale("HLT_Ele32_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL");
+      el27wp80_             = passTriggerPrescale("HLT_Ele27_WP80_v");
+      el27wp70_             = passTriggerPrescale("HLT_Ele27_WP70_v");
+      el27_                 = passTriggerPrescale("HLT_Ele27_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+      el32_                 = passTriggerPrescale("HLT_Ele32_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
 
       // multi-jet triggers
-      quadjet70_            = passTriggerPrescale("HLT_QuadJet70");
-      quadjet80_            = passTriggerPrescale("HLT_QuadJet80");
-      quadjet90_            = passTriggerPrescale("HLT_QuadJet90");
+      quadjet70_            = passTriggerPrescale("HLT_QuadJet70_v");
+      quadjet80_            = passTriggerPrescale("HLT_QuadJet80_v");
+      quadjet90_            = passTriggerPrescale("HLT_QuadJet90_v");
 
       // single photon triggers
-      photon20_             = passTriggerPrescale("HLT_Photon20_CaloIdVL_IsoL");
-      photon30_             = passTriggerPrescale("HLT_Photon30_CaloIdVL_IsoL");
-      photon50_             = passTriggerPrescale("HLT_Photon50_CaloIdVL_IsoL");
-      photon75_             = passTriggerPrescale("HLT_Photon75_CaloIdVL_IsoL");
-      photon90_             = passTriggerPrescale("HLT_Photon90_CaloIdVL_IsoL");
-      photon135_            = passTriggerPrescale("HLT_Photon135");
-      photon150_            = passTriggerPrescale("HLT_Photon150");
-      photon160_            = passTriggerPrescale("HLT_Photon160");
+      photon20_             = passTriggerPrescale("HLT_Photon20_CaloIdVL_IsoL_v");
+      photon30_             = passTriggerPrescale("HLT_Photon30_CaloIdVL_IsoL_v");
+      photon50_             = passTriggerPrescale("HLT_Photon50_CaloIdVL_IsoL_v");
+      photon75_             = passTriggerPrescale("HLT_Photon75_CaloIdVL_IsoL_v");
+      photon90_             = passTriggerPrescale("HLT_Photon90_CaloIdVL_IsoL_v");
+      photon135_            = passTriggerPrescale("HLT_Photon135_v");
+      photon150_            = passTriggerPrescale("HLT_Photon150_v");
+      photon160_            = passTriggerPrescale("HLT_Photon160_v");
 
       // higgs single photon triggers
-      hphoton22_            = passTriggerPrescale("HLT_Photon22_R9Id90_HE10_Iso40");
-      hphoton36_            = passTriggerPrescale("HLT_Photon36_R9Id90_HE10_Iso40");
-      hphoton50_            = passTriggerPrescale("HLT_Photon50_R9Id90_HE10_Iso40");
-      hphoton75_            = passTriggerPrescale("HLT_Photon75_R9Id90_HE10_Iso40");
-      hphoton90_            = passTriggerPrescale("HLT_Photon90_R9Id90_HE10_Iso40");
+      hphoton22_            = passTriggerPrescale("HLT_Photon22_R9Id90_HE10_Iso40_v");
+      hphoton36_            = passTriggerPrescale("HLT_Photon36_R9Id90_HE10_Iso40_v");
+      hphoton50_            = passTriggerPrescale("HLT_Photon50_R9Id90_HE10_Iso40_v");
+      hphoton75_            = passTriggerPrescale("HLT_Photon75_R9Id90_HE10_Iso40_v");
+      hphoton90_            = passTriggerPrescale("HLT_Photon90_R9Id90_HE10_Iso40_v");
 
       // single electron utility triggers
-      el8_                  = passTriggerPrescale("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
-      el8jet30_             = passTriggerPrescale("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30");
-      el17_                 = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
-      el17jet30_            = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30");
-      el8vl_                = passTriggerPrescale("HLT_Ele8_CaloIdL_CaloIsoVL");
-      el17vl_               = passTriggerPrescale("HLT_Ele17_CaloIdL_CaloIsoVL");
-      el8noiso_             = passTriggerPrescale("HLT_Ele8_CaloIdT_TrkIdVL");
-      el8noisojet30_        = passTriggerPrescale("HLT_Ele8_CaloIdT_TrkIdVL_Jet30");
-      el30noiso_            = passTriggerPrescale("HLT_Ele30_CaloIdVT_TrkIdT");
+      el8_                  = passTriggerPrescale("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+      el8jet30_             = passTriggerPrescale("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
+      el17_                 = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+      el17jet30_            = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v");
+      el8vl_                = passTriggerPrescale("HLT_Ele8_CaloIdL_CaloIsoVL_v");
+      el17vl_               = passTriggerPrescale("HLT_Ele17_CaloIdL_CaloIsoVL_v");
+      el8noiso_             = passTriggerPrescale("HLT_Ele8_CaloIdT_TrkIdVL_v");
+      el8noisojet30_        = passTriggerPrescale("HLT_Ele8_CaloIdT_TrkIdVL_Jet30_v");
+      el30noiso_            = passTriggerPrescale("HLT_Ele30_CaloIdVT_TrkIdT_v");
 
       // Higgs dilepton triggers
-      ee_                   = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
-      mmtrk_                = passTriggerPrescale("HLT_Mu17_TkMu8");
-      mm_                   = passTriggerPrescale("HLT_Mu17_Mu8");
-      em_                   = passTriggerPrescale("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
-      me_                   = passTriggerPrescale("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL");
+      ee_                   = passTriggerPrescale("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+      mmtrk_                = passTriggerPrescale("HLT_Mu17_TkMu8_v");
+      mm_                   = passTriggerPrescale("HLT_Mu17_Mu8_v");
+      em_                   = passTriggerPrescale("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+      me_                   = passTriggerPrescale("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
 
      
       mindrej_ = getMinDeltaRBetweenObjects( triggerName("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30") , 82 , 85 ); // 82 = electron  85 = jet 
@@ -1264,7 +1267,9 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("mu30"                     , &mu30_                    ,  "mu30/I"                  );             
   outTree->Branch("mu40"                     , &mu40_                    ,  "mu40/I"                  );             
   outTree->Branch("mu50"                     , &mu50_                    ,  "mu50/I"                  );             
-					       
+
+  outTree->Branch("mu8"                      , &mu8_                     ,  "mu8/I"                   );             
+  outTree->Branch("mu17"                     , &mu17_                    ,  "mu17/I"                  );             
 					       
   // single-electron triggers		       
   outTree->Branch("el27wp80"                 , &el27wp80_                ,  "el27wp80/I"              );             
