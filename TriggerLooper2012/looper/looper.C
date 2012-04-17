@@ -564,7 +564,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
           
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 5 )            continue;
-	if( !muonId( imu , OSGeneric_v3 ))         continue;
+	if( !muonId( imu , NominalSSv4 ))         continue;
 	goodLeptons.push_back( mus_p4().at(imu) );
 	lepId.push_back( mus_charge().at(imu) * 13 );
 	lepIndex.push_back(imu);
@@ -667,7 +667,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 5 )                                    continue;
-	if( !muonIdNotIsolated( imu , OSGeneric_v3 ))                      continue;
+	if( !muonIdNotIsolated( imu , NominalSSv4 ))                       continue;
 	goodMuonsNoIso.push_back( mus_p4().at(imu) );
 	munoisoIndex.push_back(imu);
 	nmunoiso_ ++;
