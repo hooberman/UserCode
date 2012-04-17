@@ -999,12 +999,15 @@ int looper::ScanChain(TChain* chain, char *prefix){
       isomu40_              = passTriggerPrescale("HLT_IsoMu40_eta2p1_v");
 
       // non-isolated single muon triggers
+      mu15_                 = passTriggerPrescale("HLT_Mu15_eta2p1_v");
       mu24_                 = passTriggerPrescale("HLT_Mu24_eta2p1_v");
       mu30_                 = passTriggerPrescale("HLT_Mu30_eta2p1_v");
       mu40_                 = passTriggerPrescale("HLT_Mu40_eta2p1_v");
       mu50_                 = passTriggerPrescale("HLT_Mu50_eta2p1_v");
 
+      mu5_                  = passTriggerPrescale("HLT_Mu5_v");
       mu8_                  = passTriggerPrescale("HLT_Mu8_v");
+      mu12_                 = passTriggerPrescale("HLT_Mu12_v");
       mu17_                 = passTriggerPrescale("HLT_Mu17_v");
 
       // single-electron triggers
@@ -1314,7 +1317,9 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("mu40"                     , &mu40_                    ,  "mu40/I"                  );             
   outTree->Branch("mu50"                     , &mu50_                    ,  "mu50/I"                  );             
 
+  outTree->Branch("mu5"                      , &mu5_                     ,  "mu5/I"                   );             
   outTree->Branch("mu8"                      , &mu8_                     ,  "mu8/I"                   );             
+  outTree->Branch("mu12"                     , &mu12_                    ,  "mu12/I"                  );             
   outTree->Branch("mu17"                     , &mu17_                    ,  "mu17/I"                  );             
 					       
   // single-electron triggers		       
