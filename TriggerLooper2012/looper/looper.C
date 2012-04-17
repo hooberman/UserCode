@@ -666,7 +666,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       nmunoiso_ = 0;
       
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 8 )                                    continue;
+	if( mus_p4().at(imu).pt() < 5 )                                    continue;
 	if( !muonIdNotIsolated( imu , OSGeneric_v3 ))                      continue;
 	goodMuonsNoIso.push_back( mus_p4().at(imu) );
 	munoisoIndex.push_back(imu);
