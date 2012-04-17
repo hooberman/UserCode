@@ -587,7 +587,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       nelnoiso_ = 0;
 
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 20 )                                                       continue;
+	if( els_p4().at(iel).pt() < 80 )                                                       continue;
 	if( !pass_electronSelection( iel , electronSelection_ssV5_noIso , false , false ) ) continue;
 	goodElectronsNoIso.push_back( els_p4().at(iel) );
 	elnoisoIndex.push_back(iel);
@@ -601,8 +601,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       if( nelnoiso_ > 0 ){
  	elnoiso1_           = &( goodElectronsNoIso.at(0) );
-	elnoiso1_wp80_      = objectPassTrigger( *elnoiso1_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso1_top_       = objectPassTrigger( *elnoiso1_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso1_wp80_      = objectPassTrigger( *elnoiso1_ , "HLT_Ele27_WP80_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso1_top_       = objectPassTrigger( *elnoiso1_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
 	elnoiso1_iso_       = electronIsolation_rel_v1      ( elnoisoIndex.at(0) , true );
 	elnoiso1_isofj_     = electronIsolation_rel_FastJet ( elnoisoIndex.at(0) , true );
 	elnoiso1_isovtx_    = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(0) , true );
@@ -615,8 +615,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nelnoiso_ > 1 ){
  	elnoiso2_           = &( goodElectronsNoIso.at(1) );
-	elnoiso2_wp80_      = objectPassTrigger( *elnoiso2_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso2_top_       = objectPassTrigger( *elnoiso2_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso2_wp80_      = objectPassTrigger( *elnoiso2_ , "HLT_Ele27_WP80_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso2_top_       = objectPassTrigger( *elnoiso2_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
 	elnoiso2_iso_       = electronIsolation_rel_v1      ( elnoisoIndex.at(1) , true );
 	elnoiso2_isofj_     = electronIsolation_rel_FastJet ( elnoisoIndex.at(1) , true );
 	elnoiso2_isovtx_    = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(1) , true );
@@ -626,8 +626,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nelnoiso_ > 2 ){
  	elnoiso3_           = &( goodElectronsNoIso.at(2) );
-	elnoiso3_wp80_      = objectPassTrigger( *elnoiso3_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso3_top_       = objectPassTrigger( *elnoiso3_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso3_wp80_      = objectPassTrigger( *elnoiso3_ , "HLT_Ele27_WP80_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso3_top_       = objectPassTrigger( *elnoiso3_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
 	elnoiso3_iso_       = electronIsolation_rel_v1      ( elnoisoIndex.at(2) , true );
 	elnoiso3_isofj_     = electronIsolation_rel_FastJet ( elnoisoIndex.at(2) , true );
 	elnoiso3_isovtx_    = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(2) , true );
@@ -637,8 +637,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nelnoiso_ > 3 ){
  	elnoiso4_           = &( goodElectronsNoIso.at(3) );
-	elnoiso4_wp80_      = objectPassTrigger( *elnoiso4_ , "HLT_Ele27_WP80" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-	elnoiso4_top_       = objectPassTrigger( *elnoiso4_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso4_wp80_      = objectPassTrigger( *elnoiso4_ , "HLT_Ele27_WP80_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	elnoiso4_top_       = objectPassTrigger( *elnoiso4_ , "HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
 	elnoiso4_iso_       = electronIsolation_rel_v1      ( elnoisoIndex.at(3) , true );
 	elnoiso4_isofj_     = electronIsolation_rel_FastJet ( elnoisoIndex.at(3) , true );
 	elnoiso4_isovtx_    = electronIsolation_cor_rel_v1  ( elnoisoIndex.at(3) , true );
@@ -650,7 +650,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       nmunoiso_ = 0;
       
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 20 )                                   continue;
+	if( mus_p4().at(imu).pt() < 8 )                                    continue;
 	if( !muonIdNotIsolated( imu , OSGeneric_v3 ))                      continue;
 	goodMuonsNoIso.push_back( mus_p4().at(imu) );
 	munoisoIndex.push_back(imu);
@@ -661,8 +661,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       if( nmunoiso_ > 0 ){
  	munoiso1_        = &( goodMuonsNoIso.at(0) );
-	munoiso1_mu24_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu24_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso1_mu30_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu30_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso1_mu24_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso1_mu30_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso1_iso_    = muonIsoValue         ( munoisoIndex.at(0) , false );
 	munoiso1_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(0) , false );
 	munoiso1_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(0) , false );
@@ -673,8 +673,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nmunoiso_ > 1 ){
  	munoiso2_        = &( goodMuonsNoIso.at(1) );
-	munoiso2_mu24_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu24_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso2_mu30_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu30_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso2_mu24_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso2_mu30_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso2_iso_    = muonIsoValue         ( munoisoIndex.at(1) , false );
 	munoiso2_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(1) , false );
 	munoiso2_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(1) , false );
@@ -682,8 +682,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nmunoiso_ > 2 ){
  	munoiso3_        = &( goodMuonsNoIso.at(2) );
-	munoiso3_mu24_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu24_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso3_mu30_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu30_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso3_mu24_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso3_mu30_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso3_iso_    = muonIsoValue         ( munoisoIndex.at(2) , false );
 	munoiso3_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(2) , false );
 	munoiso3_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(2) , false );
@@ -691,8 +691,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nmunoiso_ > 3 ){
  	munoiso4_        = &( goodMuonsNoIso.at(3) );
-	munoiso4_mu24_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu24_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso4_mu30_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu30_eta2p1" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso4_mu24_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso4_mu30_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso4_iso_    = muonIsoValue         ( munoisoIndex.at(3) , false );
 	munoiso4_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(3) , false );
 	munoiso4_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(3) , false );
@@ -770,7 +770,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	if( rejectJet ) continue;
 
 	njetsnoiso_++;
-	ht_ += vjet.pt();
+	htnoiso_ += vjet.pt();
 
 	vpfjetsnoiso_p4.push_back( vjet );
 
@@ -1103,8 +1103,10 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("nosel",           &nosel_,            "nosel/I");
   outTree->Branch("mindrmj",         &mindrmj_,          "mindrmj/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
+  outTree->Branch("njetsnoiso",      &njetsnoiso_,       "njetsnoiso/I");
   outTree->Branch("ncjets",          &ncjets_,           "ncjets/I");
   outTree->Branch("ht",              &ht_,               "ht/F");
+  outTree->Branch("htnoiso",         &htnoiso_,          "htnoiso/F");
   outTree->Branch("htc",             &htc_,              "htc/F");
   outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
   outTree->Branch("mmht150",         &mmht150_,          "mmht150/I");
