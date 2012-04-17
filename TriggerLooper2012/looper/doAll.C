@@ -42,7 +42,7 @@ void doAll(bool skipFWLite = true)
   //---------------------------------------------------------------
   
   const char* version    = "V00-00-06";
-  const char* jsonfile   = "jsons/json_DCSONLY_Apr17_1300_goodruns.txt";
+  const char* jsonfile   = "jsons/goodrunlist_golf.txt";
   const bool  useMCSkims = true;
 
   cout << "Version : " << version     << endl;
@@ -82,7 +82,7 @@ void doAll(bool skipFWLite = true)
   bool runElHadData     = 1;
   bool runDoubleElData  = 1;
   bool runDoubleMuData  = 1;
-  bool runMuHadData     = 1;
+  bool runMuHadData     = 0;
   bool runPhotonData    = 0;
 
   //----------------------------------------------------------------------------------------------------------
@@ -187,6 +187,7 @@ void doAll(bool skipFWLite = true)
   if( runDoubleMuData ){
     cout << "Adding double muon data" << endl;
     pickSkimIfExists(chDoubleMuData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleMu_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+    //pickSkimIfExists(chDoubleMuData,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleMu_Run2012A-PromptReco-v1_AOD/unmerged/store_data_Run2012A_DoubleMu_AOD_PromptReco-v1_000_191_090_7C2A77D9-2087-E111-877A-003048D2BC4C.root");
   }
 
   //----------------------------------------------------------------------------------------------------------
@@ -230,16 +231,16 @@ void doAll(bool skipFWLite = true)
     cout << "Done processing double muon data" << endl;
   }
 
-  if (runSingleElData) {
-    cout << "Processing single electron data" << endl;
-    looper->ScanChain(chSingleElData,"singleElData");
-    cout << "Done processing single electron data" << endl;
-  }
-
   if (runSingleMuData) {
     cout << "Processing single muon data" << endl;
     looper->ScanChain(chSingleMuData,"singleMuData");
     cout << "Done processing single muon data" << endl;
+  }
+
+  if (runSingleElData) {
+    cout << "Processing single electron data" << endl;
+    looper->ScanChain(chSingleElData,"singleElData");
+    cout << "Done processing single electron data" << endl;
   }
 
   if (runElHadData) {
