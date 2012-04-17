@@ -224,6 +224,12 @@ void doAll(bool skipFWLite = true)
     cout << "Done processing all data" << endl;
   }
 
+  if (runDoubleMuData) {
+    cout << "Processing double muon data" << endl;
+    looper->ScanChain(chDoubleMuData,"doubleMuData");
+    cout << "Done processing double muon data" << endl;
+  }
+
   if (runSingleElData) {
     cout << "Processing single electron data" << endl;
     looper->ScanChain(chSingleElData,"singleElData");
@@ -246,12 +252,6 @@ void doAll(bool skipFWLite = true)
     cout << "Processing double electron data" << endl;
     looper->ScanChain(chDoubleElData,"doubleElData");
     cout << "Done processing double electron data" << endl;
-  }
-
-  if (runDoubleMuData) {
-    cout << "Processing double muon data" << endl;
-    looper->ScanChain(chDoubleMuData,"doubleMuData");
-    cout << "Done processing double muon data" << endl;
   }
 
   if (runMuHadData) {
