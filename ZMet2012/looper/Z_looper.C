@@ -59,8 +59,8 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-00";
-const char* jsonfilename         = "../jsons/json_DCSONLY_Apr10_goodruns_190659_190703.txt";
+const char* iter                 = "V00-00-01";
+const char* jsonfilename         = "../jsons/goodrunlist_golf.txt";
 
 //--------------------------------------------------------------------
 
