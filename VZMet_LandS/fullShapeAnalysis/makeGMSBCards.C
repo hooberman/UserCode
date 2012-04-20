@@ -47,6 +47,7 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
   *ofile <<      "eff_leptons                lnN   1.050       -       -      -"                              << endl;
   *ofile <<      "btagerr                    lnN   1.040       -       -      -"                              << endl;
   *ofile <<      "JES_shape                shape     1.0       -       -      -"                              << endl;
+  *ofile <<      "stat_shape           shapeStat     1.0       -       -      -"                              << endl;
   *ofile <<      "err                      shape       -     1.0       -      -"                              << endl;
   *ofile <<      "err                      shape       -       -     1.0      -"                              << endl;
   *ofile <<      "err                      shape       -       -       -    1.0"                              << endl;
@@ -64,7 +65,7 @@ void makeGMSBCards(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-02-19/ggmsb_baby.root");
-  char* version = (char*) "V00-02-05";
+  char* version = (char*) "V00-02-06";
 
   //---------------------------------------
   // selection
@@ -111,15 +112,21 @@ void makeGMSBCards(){
   TH1F* h[nbins];
   TH1F* hjup[nbins];
   TH1F* hjdn[nbins];
+  TH1F* hstatup[nbins];
+  TH1F* hstatdn[nbins];
 
   for( unsigned int i = 0 ; i < nbins ; ++i ){
     h[i]        = new TH1F( Form("h_%i",i)        , Form("h_%i",i)           , 15 , 120 , 420 );
     hjup[i]     = new TH1F( Form("hjup_%i",i)     , Form("hjup_%i",i)        , 15 , 120 , 420 );
     hjdn[i]     = new TH1F( Form("hjdn_%i",i)     , Form("hjdn_%i",i)        , 15 , 120 , 420 );
+    hstatup[i]  = new TH1F( Form("hstatup_%i",i)  , Form("hstatup_%i",i)     , 15 , 120 , 420 );
+    hstatdn[i]  = new TH1F( Form("hstatdn_%i",i)  , Form("hstatdn_%i",i)     , 15 , 120 , 420 );
     
     h[i]    ->Sumw2();
     hjup[i] ->Sumw2();
     hjdn[i] ->Sumw2();
+    hstatup[i] ->Sumw2();
+    hstatdn[i] ->Sumw2();
   }
   
   TH1F* hall    = new TH1F( "hall"    , "hall"    , 15 , 120 , 420 );
@@ -248,9 +255,11 @@ void makeGMSBCards(){
     // make signal histos
     //---------------------------------------
 
-    TH1F* histo_SMS               = new TH1F( Form("histo_SMS_%i"              ,mgbin) , Form("histo_SMS_%i"              ,mgbin) , nbins,0,nbins);
-    TH1F* histo_SMS_JES_shapeUp   = new TH1F( Form("histo_SMS_%i_JES_shapeUp"  ,mgbin) , Form("histo_SMS_%i_JES_shapeUp"  ,mgbin) , nbins,0,nbins);
-    TH1F* histo_SMS_JES_shapeDown = new TH1F( Form("histo_SMS_%i_JES_shapeDown",mgbin) , Form("histo_SMS_%i_JES_shapeDown",mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS                = new TH1F( Form("histo_SMS_%i"               ,mgbin) , Form("histo_SMS_%i"               ,mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS_JES_shapeUp    = new TH1F( Form("histo_SMS_%i_JES_shapeUp"   ,mgbin) , Form("histo_SMS_%i_JES_shapeUp"   ,mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS_JES_shapeDown  = new TH1F( Form("histo_SMS_%i_JES_shapeDown" ,mgbin) , Form("histo_SMS_%i_JES_shapeDown" ,mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS_stat_shapeUp   = new TH1F( Form("histo_SMS_%i_stat_shapeUp"  ,mgbin) , Form("histo_SMS_%i_stat_shapeUp"  ,mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS_stat_shapeDown = new TH1F( Form("histo_SMS_%i_stat_shapeDown",mgbin) , Form("histo_SMS_%i_stat_shapeDown",mgbin) , nbins,0,nbins);
 
     float sigtot    = 0;
     float sigtotjdn = 0;
@@ -265,9 +274,14 @@ void makeGMSBCards(){
       sigtotjdn += yieldjdn;
 
       histo_SMS->SetBinContent              ( ibin + 1 , yieldnom );
-      histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , yieldjup );
+      histo_SMS_JES_shapeUp  ->SetBinContent( ibin + 1 , yieldjup );
       histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , yieldjdn );
       
+      float yielderr = h[ibin]->GetBinError(mgbin);
+
+      histo_SMS_stat_shapeUp  ->SetBinContent( ibin + 1 , yieldnom + yielderr );
+      histo_SMS_stat_shapeDown->SetBinContent( ibin + 1 , TMath::Max( yieldnom - yielderr , (float)0.0 ) );
+
       cout << "Bin " << ibin << " " << yieldnom << endl;
     }
 
@@ -304,6 +318,8 @@ void makeGMSBCards(){
     histo_SMS->Write();
     histo_SMS_JES_shapeUp->Write();
     histo_SMS_JES_shapeDown->Write();
+    histo_SMS_stat_shapeUp->Write();
+    histo_SMS_stat_shapeDown->Write();
     f->Close();
 
     delete histo_SMS;
