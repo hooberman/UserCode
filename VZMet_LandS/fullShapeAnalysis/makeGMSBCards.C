@@ -63,14 +63,15 @@ void makeGMSBCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-14/ggmsb_baby.root");
-  char* version = (char*) "V00-02-04";
+  ch->Add("output/V00-02-19/ggmsb_baby.root");
+  char* version = (char*) "V00-02-05";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./300000.)");
+  //TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./300000.)");
+  TCut weight   ("4.98 * trgeff * btagweight * davtxweight * weight");
 
   TCut presel   ("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
   TCut preseljup("dilmass>81 && dilmass<101 && nbvz==0 && mjjup>70 && mjjup<110 && nlep==2 && njetsup>=2   && leptype<2");
