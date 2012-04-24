@@ -48,9 +48,9 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
   *ofile <<      "btagerr                    lnN   1.040       -       -      -"                              << endl;
   *ofile <<      "Jes                      shape     1.0       -       -      -"                              << endl;
   *ofile <<      "stat_shape           shapeStat     1.0       -       -      -"                              << endl;
-  *ofile <<      "err                      shape       -     1.0       -      -"                              << endl;
-  *ofile <<      "err                      shape       -       -     1.0      -"                              << endl;
-  *ofile <<      "err                      shape       -       -       -    1.0"                              << endl;
+  *ofile <<      "errZ                     shape       -     1.0       -      -"                              << endl;
+  *ofile <<      "errOF                    shape       -       -     1.0      -"                              << endl;
+  *ofile <<      "BkgMCStat                shape       -       -       -    1.0"                              << endl;
   
   ofile->close();
 
@@ -203,17 +203,17 @@ void makeGMSBCards(){
 
   TH1F* histo_Data = new TH1F("histo_Data","histo_Data",nbins,0,nbins);
 
-  TH1F* histo_Zbkg               = new TH1F("histo_Zbkg"         ,"histo_Zbkg"         ,nbins,0,nbins);
-  TH1F* histo_Zbkg_errUp         = new TH1F("histo_Zbkg_errUp"   ,"histo_Zbkg_errUp"   ,nbins,0,nbins);
-  TH1F* histo_Zbkg_errDown       = new TH1F("histo_Zbkg_errDown" ,"histo_Zbkg_errDown" ,nbins,0,nbins);
+  TH1F* histo_Zbkg               = new TH1F("histo_Zbkg"               ,"histo_Zbkg"               ,nbins,0,nbins);
+  TH1F* histo_Zbkg_errUp         = new TH1F("histo_Zbkg_errZUp"        ,"histo_Zbkg_errZUp"        ,nbins,0,nbins);
+  TH1F* histo_Zbkg_errDown       = new TH1F("histo_Zbkg_errZDown"      ,"histo_Zbkg_errZDown"      ,nbins,0,nbins);
 
-  TH1F* histo_OFbkg              = new TH1F("histo_OFbkg"        ,"histo_OFbkg"        ,nbins,0,nbins);
-  TH1F* histo_OFbkg_errUp        = new TH1F("histo_OFbkg_errUp"  ,"histo_OFbkg_errUp"  ,nbins,0,nbins);
-  TH1F* histo_OFbkg_errDown      = new TH1F("histo_OFbkg_errDown","histo_OFbkg_errDown",nbins,0,nbins);
+  TH1F* histo_OFbkg              = new TH1F("histo_OFbkg"              ,"histo_OFbkg"              ,nbins,0,nbins);
+  TH1F* histo_OFbkg_errUp        = new TH1F("histo_OFbkg_errOFUp"      ,"histo_OFbkg_errOFUp"      ,nbins,0,nbins);
+  TH1F* histo_OFbkg_errDown      = new TH1F("histo_OFbkg_errOFDown"    ,"histo_OFbkg_errOFDown"    ,nbins,0,nbins);
 
-  TH1F* histo_VZbkg              = new TH1F("histo_VZbkg"        ,"histo_VZbkg"        ,nbins,0,nbins);
-  TH1F* histo_VZbkg_errUp        = new TH1F("histo_VZbkg_errUp"  ,"histo_VZbkg_errUp"  ,nbins,0,nbins);
-  TH1F* histo_VZbkg_errDown      = new TH1F("histo_VZbkg_errDown","histo_VZbkg_errDown",nbins,0,nbins);
+  TH1F* histo_VZbkg              = new TH1F("histo_VZbkg"              ,"histo_VZbkg"              ,nbins,0,nbins);
+  TH1F* histo_VZbkg_errUp        = new TH1F("histo_VZbkg_BkgMCStatUp"  ,"histo_VZbkg_BkgMCStatUp"  ,nbins,0,nbins);
+  TH1F* histo_VZbkg_errDown      = new TH1F("histo_VZbkg_BkgMCStatDown","histo_VZbkg_BkgMCStatDown",nbins,0,nbins);
       
   for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
 
