@@ -63,15 +63,15 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-14/zzsms_baby.root");
-  char* version = (char*) "V00-02-03";
+  ch->Add("output/V00-02-14/wzsms_baby.root");
+  char* version = (char*) "V00-02-09";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  //TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./100000.)");
-  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./52600.)");
+  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./100000.)");
+  //TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./52600.)");
   //TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./52600.)");
 
   TCut presel   ("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
@@ -180,18 +180,18 @@ void makeSMSCards(){
   //---------------------------------------
   // make and fill data and bkg histos
   //---------------------------------------
-      
+
   //signal regions                          60-80      80-100    100-150    150-200  >200
   int     data_yield[nbins]           = {   47       , 7       , 6        , 2       , 0    };
 
-  float   Zbkg_yield[nbins]           = {   32.9     , 5.2     , 1.7      , 0.44    , 0.19 };
-  float   Zbkg_err[nbins]             = {   11.1     , 1.8     , 0.6      , 0.19    , 0.09 };
+  float   Zbkg_yield[nbins]           = {   32.9     , 5.2     , 1.7      , 0.4     , 0.20 };
+  float   Zbkg_err[nbins]             = {   11.1     , 1.8     , 0.6      , 0.2     , 0.09 };
 
-  float   OFbkg_yield[nbins]          = {   6.6      , 4.6     , 4.6      , 0.75    , 0.06 };
-  float   OFbkg_err[nbins]            = {   1.4      , 1.1     , 1.7      , 0.42    , 0.07 };     
+  float   OFbkg_yield[nbins]          = {   6.6      , 4.6     , 4.6      , 0.8     , 0.06 };
+  float   OFbkg_err[nbins]            = {   1.6      , 1.2     , 1.2      , 0.3     , 0.07 };     
 
-  float   VZbkg_yield[nbins]          = {   3.6      , 2.1     , 2.3      , 0.74    , 0.40 };
-  float   VZbkg_err[nbins]            = {   1.8      , 1.0     , 1.2      , 0.37    , 0.22 };     
+  float   VZbkg_yield[nbins]          = {   3.9      , 2.2     , 2.5      , 0.7     , 0.4  };
+  float   VZbkg_err[nbins]            = {   2.0      , 1.1     , 1.3      , 0.4     , 0.2  };     
 
   int   data_tot  = 0;
   float Zbkg_tot  = 0;
