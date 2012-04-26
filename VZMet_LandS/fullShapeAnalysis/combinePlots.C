@@ -138,6 +138,20 @@ void combinePlots(string version , bool print = false){
     xsectype = (char*) "N1N2";
     denom    = 52600.0;
   } 
+
+  else if( version == "V00-02-09" ){
+    sample   = (char*) "wzsms";
+    title    = (char*) "pp#rightarrow #chi^{#pm}#chi^{0} #rightarrow WZ + E_{T}^{miss}";
+    xsectype = (char*) "C1N2";
+    denom    = 100000.0;
+  } 
+
+  else if( version == "V00-02-10" ){
+    sample   = (char*) "zzsms";
+    title    = (char*) "pp#rightarrow #chi^{0}#chi^{0} #rightarrow ZZ + E_{T}^{miss}";
+    xsectype = (char*) "N1N2";
+    denom    = 52600.0;
+  } 
   
   //float ymin = 0.;
 
@@ -175,7 +189,7 @@ void combinePlots(string version , bool print = false){
   TH2F* heff = new TH2F("heff","heff", 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5);
 
   TCanvas *ctemp = new TCanvas();
-  ch->Draw("ml:mg>>heff",sel);
+  ch->Draw("ml:mg>>heff",sel*weight);
   delete ctemp;
   heff->Scale(1.0/denom);
   heff->Scale(100);
@@ -287,42 +301,33 @@ void combinePlots(string version , bool print = false){
   hexcl->GetXaxis()->SetTitle("#chi mass [GeV]");
   hexcl->GetZaxis()->SetTitle("95% CL upper limit on #sigma [fb]");
   hexcl->Draw("colz");
-  hexcl->SetMinimum(99);
+  hexcl->SetMinimum(50);
   hexcl->SetMaximum(5000);
   //hexcl->GetYaxis()->SetRangeUser(ymin,1200);
 
-  TGraph* gr_excl;      
-  TGraph* gr_excl_down;
-  TGraph* gr_excl_up;   
+  TGraph* gr_excl      = getGraph_WZ("nom");
+  TGraph* gr_excl_down = getGraph_WZ("down");
+  TGraph* gr_excl_up   = getGraph_WZ("up");
   
   if( TString(sample).Contains("wzsms") ) {
-    gr_excl      = getGraph_WZ("nom");
-    gr_excl_down = getGraph_WZ("down");
-    gr_excl_up   = getGraph_WZ("up");
-  }
-  else if( TString(sample).Contains("zzsms") ) {
-    // gr_excl      = getGraph_T5zzl("nom");
-    // gr_excl_down = getGraph_T5zzl("down");
-    // gr_excl_up   = getGraph_T5zzl("up");
-  }
+    
+    gr_excl->SetLineWidth(2.5);
+    gr_excl_up->SetLineWidth(2.5);
+    gr_excl_down->SetLineWidth(2.5);
+    gr_excl_up->SetLineStyle(2);
+    gr_excl_down->SetLineStyle(3);
+    gr_excl->Draw("same");
 
-  gr_excl->SetLineWidth(2.5);
-  gr_excl_up->SetLineWidth(2.5);
-  gr_excl_down->SetLineWidth(2.5);
-  gr_excl_up->SetLineStyle(2);
-  gr_excl_down->SetLineStyle(3);
-  gr_excl->Draw("same");
-  //gr_excl_up->Draw("same");
-  //gr_excl_down->Draw("same");
+    //gr_excl_up->Draw("same");
+    //gr_excl_down->Draw("same");
 
-  TLegend *leg = new TLegend(0.2,0.53,0.55,0.67);
-  leg->AddEntry(gr_excl,     "#sigma^{wino-like}","l");
-  //leg->AddEntry(gr_excl_up,  "3 #times #sigma^{NLO-QCD}","l");
-  //leg->AddEntry(gr_excl_down,"1/3 #times #sigma^{NLO-QCD}","l");
-  leg->SetFillColor(0);
-  leg->SetBorderSize(0);
-  leg->SetTextSize(0.06);
-  leg->Draw();
+    TLegend *leg = new TLegend(0.2,0.53,0.55,0.67);
+    leg->AddEntry(gr_excl,     "#sigma^{wino-like}","l");
+    leg->SetFillColor(0);
+    leg->SetBorderSize(0);
+    leg->SetTextSize(0.06);
+    leg->Draw();
+  }
   
   t->SetTextSize(0.04);
   t->DrawLatex(0.2,0.83,"E_{T}^{miss} templates");
