@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void GridTanb10_v1_OS(int plotmode = 1){
+void GridTanb10_v1_OS(int plotmode = 1 , bool drawplots = false ){
 
   //int plotmode = 1; // expected limit separate contours
   //int plotmode = 2; // expected limit band
@@ -5894,14 +5894,14 @@ void GridTanb10_v1_OS(int plotmode = 1){
    GridStauLSP->SetFillColor(ci);
    GridStauLSP->SetLineStyle(0);
    GridStauLSP->SetMarkerStyle(20);
-   GridStauLSP->GetXaxis()->SetTitle("m_{0} [GeV]");
+   //GridStauLSP->GetXaxis()->SetTitle("m_{0} [GeV]");
    GridStauLSP->GetXaxis()->SetLabelFont(42);
    GridStauLSP->GetXaxis()->SetLabelOffset(0.007);
    GridStauLSP->GetXaxis()->SetLabelSize(0.05);
    GridStauLSP->GetXaxis()->SetTitleSize(0.06);
    GridStauLSP->GetXaxis()->SetTitleOffset(1.1);
    GridStauLSP->GetXaxis()->SetTitleFont(42);
-   GridStauLSP->GetYaxis()->SetTitle("m_{1/2} [GeV]");
+   //GridStauLSP->GetYaxis()->SetTitle("m_{1/2} [GeV]");
    GridStauLSP->GetYaxis()->SetLabelFont(42);
    GridStauLSP->GetYaxis()->SetLabelOffset(0.007);
    GridStauLSP->GetYaxis()->SetLabelSize(0.05);
@@ -6382,14 +6382,14 @@ void GridTanb10_v1_OS(int plotmode = 1){
    GridSleptonLEP->SetFillColor(ci);
    GridSleptonLEP->SetLineStyle(0);
    GridSleptonLEP->SetMarkerStyle(20);
-   GridSleptonLEP->GetXaxis()->SetTitle("m_{0} [GeV]");
+   //GridSleptonLEP->GetXaxis()->SetTitle("m_{0} [GeV]");
    GridSleptonLEP->GetXaxis()->SetLabelFont(42);
    GridSleptonLEP->GetXaxis()->SetLabelOffset(0.007);
    GridSleptonLEP->GetXaxis()->SetLabelSize(0.05);
    GridSleptonLEP->GetXaxis()->SetTitleSize(0.06);
    GridSleptonLEP->GetXaxis()->SetTitleOffset(1.1);
    GridSleptonLEP->GetXaxis()->SetTitleFont(42);
-   GridSleptonLEP->GetYaxis()->SetTitle("m_{1/2} [GeV]");
+   //GridSleptonLEP->GetYaxis()->SetTitle("m_{1/2} [GeV]");
    GridSleptonLEP->GetYaxis()->SetLabelFont(42);
    GridSleptonLEP->GetYaxis()->SetLabelOffset(0.007);
    GridSleptonLEP->GetYaxis()->SetLabelSize(0.05);
@@ -9178,14 +9178,14 @@ void GridTanb10_v1_OS(int plotmode = 1){
    GridNoEWSB__1->SetFillColor(ci);
    GridNoEWSB__1->SetLineStyle(0);
    GridNoEWSB__1->SetMarkerStyle(20);
-   GridNoEWSB__1->GetXaxis()->SetTitle("m_{0} [GeV]");
+   //GridNoEWSB__1->GetXaxis()->SetTitle("m_{0} [GeV]");
    GridNoEWSB__1->GetXaxis()->SetLabelFont(42);
    GridNoEWSB__1->GetXaxis()->SetLabelOffset(0.007);
    GridNoEWSB__1->GetXaxis()->SetLabelSize(0.05);
    GridNoEWSB__1->GetXaxis()->SetTitleSize(0.06);
    GridNoEWSB__1->GetXaxis()->SetTitleOffset(1.1);
    GridNoEWSB__1->GetXaxis()->SetTitleFont(42);
-   GridNoEWSB__1->GetYaxis()->SetTitle("m_{1/2} [GeV]");
+   //GridNoEWSB__1->GetYaxis()->SetTitle("m_{1/2} [GeV]");
    GridNoEWSB__1->GetYaxis()->SetLabelFont(42);
    GridNoEWSB__1->GetYaxis()->SetLabelOffset(0.007);
    GridNoEWSB__1->GetYaxis()->SetLabelSize(0.05);
@@ -9252,23 +9252,28 @@ void GridTanb10_v1_OS(int plotmode = 1){
    t->DrawLatex(0.38,0.68,"CMS Preliminary    #sqrt{s} = 7 TeV,  #scale[0.6]{#int}L dt 4.98 fb^{-1} ");
 
    // TMarker* LM0 = new TMarker(200.,160.,20);
-   TMarker* LM1 = new TMarker(60.,250.,20);
-   TMarker* LM3 = new TMarker(330.,240.,20);
-   TMarker* LM6 = new TMarker(85.,400.,20);
+   TMarker* LM1  = new TMarker(60.  , 250. , 20);
+   TMarker* LM3  = new TMarker(330. , 240. , 20);
+   TMarker* LM6  = new TMarker(85.  , 400. , 20);
+   TMarker* LM13 = new TMarker(270. , 218. , 20);
   
    LM1->SetMarkerSize(1.3);
    LM3->SetMarkerSize(1.3);
    LM6->SetMarkerSize(1.3);
+   LM13->SetMarkerSize(1.3);
    LM1->SetMarkerColor(2);
    LM3->SetMarkerColor(4);
+   LM13->SetMarkerColor(kGreen+2);
    LM1->SetMarkerStyle(22);
    LM3->SetMarkerStyle(21);
+   LM13->SetMarkerStyle(23);
    //LM6->SetMarkerStyle(29);
 
    //TLatex* tLM0 = new TLatex(205.,160.," LM0");
    TLatex* tLM1 = new TLatex(80.,245.,"LM1");
    TLatex* tLM3 = new TLatex(350.,235.,"LM3");
    TLatex* tLM6 = new TLatex(105.,395.,"LM6");
+   //TLatex* tLM13 = new TLatex(105.,395.,"LM6");
 
    //tLM0->SetTextSize(0.035);
    tLM1->SetTextSize(0.035);
@@ -9280,40 +9285,45 @@ void GridTanb10_v1_OS(int plotmode = 1){
    LM3->Draw("same");
    //tLM3->Draw("same");
    LM6->Draw("same");
+   LM13->Draw("same");
    //tLM6->Draw("same");
    
-   TLegend *LMleg = new TLegend(0.37,0.45,0.47,0.6);
+   //TLegend *LMleg = new TLegend(0.37,0.45,0.47,0.6);
+   TLegend *LMleg = new TLegend(0.82,0.45,0.88,0.6);
    LMleg->AddEntry(LM1,"LM1","p");
    LMleg->AddEntry(LM3,"LM3","p");
    LMleg->AddEntry(LM6,"LM6","p");
+   LMleg->AddEntry(LM13,"LM13","p");
    LMleg->SetFillColor(0);
-   LMleg->SetBorderSize(0);
+   LMleg->SetBorderSize(1);
    LMleg->Draw();
 
-  //-----------------------------------
-  // redraw regions
-  //-----------------------------------
-  /*
-  GridSleptonLEP->Draw("BOX same");
-  GridNoEWSB->Draw("BOX same");  
-  GridStauLSP->Draw("BOX same");
-  graph->Draw(" c");
-  GridNoEWSB__1->Draw("sameaxis");
-  grnoewsb->Draw("same E3");
-  grchipm->Draw("same E3");
+   //-----------------------------------
+   // redraw regions
+   //-----------------------------------
+   /*
+     GridSleptonLEP->Draw("BOX same");
+     GridNoEWSB->Draw("BOX same");  
+     GridStauLSP->Draw("BOX same");
+     graph->Draw(" c");
+     GridNoEWSB__1->Draw("sameaxis");
+     grnoewsb->Draw("same E3");
+     grchipm->Draw("same E3");
    */
 
-  if( plotmode == 1 ){
-    GridCanvas->Print("RA6_nominal.png");
-    GridCanvas->Print("RA6_nominal.pdf");
-    GridCanvas->Print("RA6_nominal.eps");
-    gROOT->ProcessLine(".! ps2pdf RA6_nominal.eps RA6_nominal_ppt.pdf");
-  }
-  else if( plotmode == 2 ){
-    GridCanvas->Print("RA6_band.png");
-    GridCanvas->Print("RA6_band.pdf");
-    GridCanvas->Print("RA6_band.eps");
-    gROOT->ProcessLine(".! ps2pdf RA6_band.eps RA6_band_ppt.pdf");
-  }
+   if( drawplots ){
+     if( plotmode == 1 ){
+       GridCanvas->Print("RA6_nominal.png");
+       GridCanvas->Print("RA6_nominal.pdf");
+       GridCanvas->Print("RA6_nominal.eps");
+       gROOT->ProcessLine(".! ps2pdf RA6_nominal.eps RA6_nominal_ppt.pdf");
+     }
+     else if( plotmode == 2 ){
+       GridCanvas->Print("RA6_band.png");
+       GridCanvas->Print("RA6_band.pdf");
+       GridCanvas->Print("RA6_band.eps");
+       gROOT->ProcessLine(".! ps2pdf RA6_band.eps RA6_band_ppt.pdf");
+     }
+   }
 
 }
