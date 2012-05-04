@@ -9289,7 +9289,7 @@ void GridTanb10_v1_OS(int plotmode = 1 , bool drawplots = false ){
    //tLM6->Draw("same");
    
    //TLegend *LMleg = new TLegend(0.37,0.45,0.47,0.6);
-   TLegend *LMleg = new TLegend(0.82,0.45,0.88,0.6);
+   TLegend *LMleg = new TLegend(0.82,0.43,0.9,0.6);
    LMleg->AddEntry(LM1,"LM1","p");
    LMleg->AddEntry(LM3,"LM3","p");
    LMleg->AddEntry(LM6,"LM6","p");
