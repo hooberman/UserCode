@@ -3272,7 +3272,7 @@ void GridTanb10_v1_OS_large(int plotmode = 1){
    fGluino2000->SetParameter(4,910);
    fGluino2000->SetParError(4,0);
    fGluino2000->SetParLimits(4,0,0);
-   fGluino2000->Draw("SAME C");
+   //fGluino2000->Draw("SAME C");
    
    TGraph *graph = new TGraph(10);
    graph->SetName("Graph");
@@ -5902,6 +5902,21 @@ void GridTanb10_v1_OS_large(int plotmode = 1){
    GridStauLSP->GetZaxis()->SetTitleSize(0.06);
    GridStauLSP->GetZaxis()->SetTitleFont(42);
    GridStauLSP->Draw("BOX same");
+
+   float xstau[20];
+   float ystau[20];
+
+   xstau[0] = 40;   ystau[0] = 1000;
+   xstau[1] = 212;  ystau[1] = 1000;
+   xstau[2] = 40;   ystau[2] =  306;
+
+   TGraph *GraphStauLSP = new TGraph(3,xstau,ystau);
+   GraphStauLSP->SetLineColor(2);
+   GraphStauLSP->SetMarkerColor(6);
+   GraphStauLSP->SetFillColor(4);
+   GraphStauLSP->Draw("sameL");
+   //GraphStauLSP->Draw("sameF");
+
    
    TGraphErrors *gre = new TGraphErrors(59);
    gre->SetName("Graph");
@@ -6369,6 +6384,24 @@ void GridTanb10_v1_OS_large(int plotmode = 1){
    GridSleptonLEP->GetZaxis()->SetTitleSize(0.06);
    GridSleptonLEP->GetZaxis()->SetTitleFont(42);
    GridSleptonLEP->Draw("BOX same");
+
+   float xlep[20];
+   float ylep[20];
+
+   xlep[0] = 40;   ylep[0] =  100;
+   xlep[1] = 40;   ylep[1] =  217;
+   xlep[2] = 50;   ylep[2] =  205;
+   xlep[3] = 58;   ylep[3] =  190;
+   xlep[4] = 72;   ylep[4] =  160;
+   xlep[5] = 85;   ylep[5] =  100;
+
+   TGraph *GraphLep = new TGraph(6,xlep,ylep);
+   GraphLep->SetLineColor(2);
+   GraphLep->SetMarkerColor(6);
+   GraphLep->SetFillColor(4);
+   GraphLep->Draw("sameL");
+   //GraphLep->Draw("sameF");
+
    
    gre = new TGraphErrors(13);
    gre->SetName("Graph");
@@ -9192,18 +9225,43 @@ void GridTanb10_v1_OS_large(int plotmode = 1){
    t->SetTextSize(0.038);
    t->DrawLatex(0.38,0.68,"CMS Preliminary    #sqrt{s} = 7 TeV,  #scale[0.6]{#int}L dt 4.7 fb^{-1} ");
 
+   // TMarker* LM0 = new TMarker(200.,160.,20);
+   TMarker* LM1 = new TMarker(60.,250.,20);
+   TMarker* LM3 = new TMarker(330.,240.,20);
+   TMarker* LM6 = new TMarker(85.,400.,20);
+  
+   //LM0->SetMarkerSize(1.2);
+   //LM1->SetMarkerSize(1.2);
+  
+   //TLatex* tLM0 = new TLatex(205.,160.," LM0");
+   TLatex* tLM1 = new TLatex(80.,245.,"LM1");
+   TLatex* tLM3 = new TLatex(350.,235.,"LM3");
+   TLatex* tLM6 = new TLatex(105.,395.,"LM6");
+
+   //tLM0->SetTextSize(0.035);
+   tLM1->SetTextSize(0.035);
+   tLM3->SetTextSize(0.035);
+   tLM6->SetTextSize(0.035);
+  
+   LM1->Draw("same");
+   tLM1->Draw("same");
+   LM3->Draw("same");
+   tLM3->Draw("same");
+   LM6->Draw("same");
+   tLM6->Draw("same");
+
 
   if( plotmode == 1 ){
-    GridCanvas->Print("RA6_nominal.png");
-    GridCanvas->Print("RA6_nominal.pdf");
-    GridCanvas->Print("RA6_nominal.eps");
-    gROOT->ProcessLine(".! ps2pdf RA6_nominal.eps RA6_nominal_ppt.pdf");
+    GridCanvas->Print("RA6_nominal_large.png");
+    GridCanvas->Print("RA6_nominal_large.pdf");
+    GridCanvas->Print("RA6_nominal_large.eps");
+    gROOT->ProcessLine(".! ps2pdf RA6_nominal_large.eps RA6_nominal_large_ppt.pdf");
   }
   else if( plotmode == 2 ){
-    GridCanvas->Print("RA6_band.png");
-    GridCanvas->Print("RA6_band.pdf");
-    GridCanvas->Print("RA6_band.eps");
-    gROOT->ProcessLine(".! ps2pdf RA6_band.eps RA6_band_ppt.pdf");
+    GridCanvas->Print("RA6_band_large.png");
+    GridCanvas->Print("RA6_band_large.pdf");
+    GridCanvas->Print("RA6_band_large.eps");
+    gROOT->ProcessLine(".! ps2pdf RA6_band_large.eps RA6_band_large_ppt.pdf");
   }
 
 }

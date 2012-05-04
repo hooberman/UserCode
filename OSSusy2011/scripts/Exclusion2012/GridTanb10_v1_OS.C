@@ -108,6 +108,10 @@ void GridTanb10_v1_OS(int plotmode = 1){
 
    TH2F* hdummy = new TH2F("hdummy","",100,40,3000,100,100,m12max);
    hdummy->Draw();
+   hdummy->GetXaxis()->SetTitle("m_{0} (GeV)");
+   hdummy->GetYaxis()->SetTitle("m_{1/2} (GeV)");
+   hdummy->GetXaxis()->SetTitleOffset(1.0);
+   hdummy->GetYaxis()->SetTitleOffset(1.0);
    
    //TH2F *GridNoEWSB = new TH2F("GridNoEWSB","",592,40,3000,180,100,m12max); // CHANGED
    TH2F *GridNoEWSB = new TH2F("GridNoEWSB","",592,40,3000,180,100,1000);
