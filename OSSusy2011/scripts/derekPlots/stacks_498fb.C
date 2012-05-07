@@ -31,6 +31,75 @@
 
 using namespace std;
 
+
+void drawPlots(char* xtitle, TH1F* hdata, TH1F* httdil, TH1F* htttau, TH1F* httotr,
+	      TH1F* hdy, TH1F* hww, TH1F* hwz, TH1F* hzz, TH1F* ht, 
+	      TH1F* hwjets, TH1F* hlm6){
+  
+   THStack *stack = new THStack();
+
+   TH1F* hvv = (TH1F*) hww->Clone();
+   hvv->Add(hwz);
+   hvv->Add(hzz);
+   hvv->SetFillColor(8);
+
+   TH1F* htt = (TH1F*) httdil->Clone();
+   htt->Add(htttau);
+   htt->Add(httotr);
+
+   hlm6->SetLineColor(2);
+   hlm6->SetLineWidth(2);
+
+   TH1F* hSM = (TH1F*) htt->Clone("h_pfmet_SM");
+   hSM->Add(hdy);
+   hSM->Add(hvv);
+   hSM->Add(ht);
+   hSM->Add(hwjets);
+   hlm6->Add(hSM,-1);
+   
+   hdata->Draw("E1");
+   hdata->GetXaxis()->SetTitle( xtitle );
+
+   stack->Add(hwjets,"f");
+   stack->Add(ht,"f");
+   stack->Add(hvv,"f");
+   stack->Add(hdy,"f");
+   stack->Add(htt,"f");
+   stack->Draw("samehist");
+
+   hlm6->Draw("samehist");
+   hdata->Draw("sameE1");
+   hdata->Draw("axissame");
+
+   TLegend *leg = new TLegend(0.6,0.4,0.9,0.85);
+   leg->AddEntry(hdata  ,"data","lp");
+   leg->AddEntry(htt    ,"t#bar{t}","f");
+   leg->AddEntry(hdy    ,"Drell Yan","f");  
+   leg->AddEntry(hvv    ,"VV","f");
+   leg->AddEntry(ht     ,"single top","f");
+   leg->AddEntry(hwjets ,"W+jets","f");
+   leg->AddEntry(hlm6   ,"LM6 #times 10","l");
+   leg->SetFillColor(0);
+   leg->SetBorderSize(0);
+   leg->Draw();
+
+   TLatex *t = new TLatex();
+   t->SetTextSize(0.055);
+   t->SetNDC();
+   t->DrawLatex(0.18,0.92,"CMS                   #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.98 fb^{-1}"); 
+
+   cout << "ttdil   " << httdil->Integral() << endl;
+   cout << "tttau   " << htttau->Integral() << endl;
+   cout << "ttotr   " << httotr->Integral() << endl;
+   cout << "DY      " << hdy->Integral()    << endl;
+   cout << "WW      " << hww->Integral()    << endl;
+   cout << "WZ      " << hwz->Integral()    << endl;
+   cout << "ZZ      " << hzz->Integral()    << endl;
+   cout << "t       " << ht->Integral()     << endl;
+   cout << "wjets   " << hwjets->Integral() << endl;
+
+}
+
 void stacks_498fb(){
 //=========Macro generated from canvas: c1_n2/c1_n2
 //=========  (Tue Jan 31 19:15:39 2012) by ROOT version5.27/06b
@@ -2585,6 +2654,20 @@ void stacks_498fb(){
    cout << "t       " << h_ee_pfmet_t->Integral()     << endl;
    cout << "wjets   " << h_ee_pfmet_wjets->Integral() << endl;
 
+   c2->cd(2);
+   gPad->SetTopMargin(0.1);
 
+   drawPlots( "E_{T}^{miss} (GeV)" , 
+	      h_ee_pfmet_data , 
+	      h_ee_pfmet_ttdil ,  
+	      h_ee_pfmet_tttau ,  
+	      h_ee_pfmet_ttotr ,
+	      h_ee_pfmet_dy , 
+	      h_ee_pfmet_ww , 
+	      h_ee_pfmet_wz , 
+	      h_ee_pfmet_zz , 
+	      h_ee_pfmet_t ,
+	      h_ee_pfmet_wjets , 
+	      h_ee_pfmet_lm6 );
 
 }
