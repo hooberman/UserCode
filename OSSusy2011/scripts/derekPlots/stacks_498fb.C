@@ -2591,72 +2591,6 @@ void stacks_498fb(){
 
    c2->cd(1);
    gPad->SetTopMargin(0.1);
-
-   THStack *stack1 = new THStack();
-
-   TH1F* h_pfmet_vv = (TH1F*) h_ee_pfmet_ww->Clone();
-   h_pfmet_vv->Add(h_ee_pfmet_wz);
-   h_pfmet_vv->Add(h_ee_pfmet_zz);
-   h_pfmet_vv->SetFillColor(8);
-
-   TH1F* h_pfmet_tt = (TH1F*) h_ee_pfmet_ttdil->Clone();
-   h_pfmet_tt->Add(h_ee_pfmet_tttau);
-   h_pfmet_tt->Add(h_ee_pfmet_ttotr);
-
-   h_ee_pfmet_lm6->SetLineColor(2);
-   h_ee_pfmet_lm6->SetLineWidth(2);
-
-   TH1F* h_pfmet_SM = (TH1F*) h_pfmet_tt->Clone("h_pfmet_SM");
-   h_pfmet_SM->Add(h_ee_pfmet_dy);
-   h_pfmet_SM->Add(h_pfmet_vv);
-   h_pfmet_SM->Add(h_ee_pfmet_t);
-   h_pfmet_SM->Add(h_ee_pfmet_wjets);
-   h_ee_pfmet_lm6->Add(h_pfmet_SM,-1);
-   
-
-   h_ee_pfmet_data->Draw("E1");
-   h_ee_pfmet_data->GetXaxis()->SetTitle("E_{T}^{miss} (GeV)");
-   stack1->Add(h_ee_pfmet_wjets,"f");
-   stack1->Add(h_ee_pfmet_t,"f");
-   stack1->Add(h_pfmet_vv,"f");
-   stack1->Add(h_ee_pfmet_dy,"f");
-   stack1->Add(h_pfmet_tt,"f");
-   stack1->Draw("samehist");
-   h_ee_pfmet_lm6->Draw("samehist");
-   h_ee_pfmet_data->Draw("sameE1");
-   h_ee_pfmet_data->Draw("axissame");
-
-   TLegend *leg1 = new TLegend(0.6,0.4,0.9,0.85);
-   leg1->AddEntry(h_ee_pfmet_data,"data","lp");
-   leg1->AddEntry(h_pfmet_tt,"t#bar{t}","f");
-   leg1->AddEntry(h_ee_pfmet_dy,"Drell Yan","f");  
-   leg1->AddEntry(h_pfmet_vv,"VV","f");
-   leg1->AddEntry(h_ee_pfmet_t,"single top","f");
-   leg1->AddEntry(h_ee_pfmet_wjets,"W+jets","f");
-   leg1->AddEntry(h_ee_pfmet_lm6,"LM6 #times 10","l");
-   leg1->SetFillColor(0);
-   leg1->SetBorderSize(0);
-   leg1->Draw();
-
-   TLatex *t = new TLatex();
-   t->SetTextSize(0.055);
-   t->SetNDC();
-   t->DrawLatex(0.18,0.92,"CMS                   #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.98 fb^{-1}"); 
-
-
-   cout << "ttdil   " << h_ee_pfmet_ttdil->Integral() << endl;
-   cout << "tttau   " << h_ee_pfmet_tttau->Integral() << endl;
-   cout << "ttotr   " << h_ee_pfmet_ttotr->Integral() << endl;
-   cout << "DY      " << h_ee_pfmet_dy->Integral()    << endl;
-   cout << "WW      " << h_ee_pfmet_ww->Integral()    << endl;
-   cout << "WZ      " << h_ee_pfmet_wz->Integral()    << endl;
-   cout << "ZZ      " << h_ee_pfmet_zz->Integral()    << endl;
-   cout << "t       " << h_ee_pfmet_t->Integral()     << endl;
-   cout << "wjets   " << h_ee_pfmet_wjets->Integral() << endl;
-
-   c2->cd(2);
-   gPad->SetTopMargin(0.1);
-
    drawPlots( "E_{T}^{miss} (GeV)" , 
 	      h_ee_pfmet_data , 
 	      h_ee_pfmet_ttdil ,  
@@ -2670,4 +2604,51 @@ void stacks_498fb(){
 	      h_ee_pfmet_wjets , 
 	      h_ee_pfmet_lm6 );
 
+   c2->cd(2);
+   gPad->SetTopMargin(0.1);
+   drawPlots( "H_{T} (GeV)" , 
+	      h_ee_ht_data , 
+	      h_ee_ht_ttdil ,  
+	      h_ee_ht_tttau ,  
+	      h_ee_ht_ttotr ,
+	      h_ee_ht_dy , 
+	      h_ee_ht_ww , 
+	      h_ee_ht_wz , 
+	      h_ee_ht_zz , 
+	      h_ee_ht_t ,
+	      h_ee_ht_wjets , 
+	      h_ee_ht_lm6 );
+
+   c2->cd(3);
+   gPad->SetTopMargin(0.1);
+   drawPlots( "p_{T}(ll) (GeV)" , 
+	      h_ee_ptll_data , 
+	      h_ee_ptll_ttdil ,  
+	      h_ee_ptll_tttau ,  
+	      h_ee_ptll_ttotr ,
+	      h_ee_ptll_dy , 
+	      h_ee_ptll_ww , 
+	      h_ee_ptll_wz , 
+	      h_ee_ptll_zz , 
+	      h_ee_ptll_t ,
+	      h_ee_ptll_wjets , 
+	      h_ee_ptll_lm6 );
+
+   c2->cd(4);
+   gPad->SetTopMargin(0.1);
+   drawPlots( "n_{jets}" , 
+	      h_ee_njets_data , 
+	      h_ee_njets_ttdil ,  
+	      h_ee_njets_tttau ,  
+	      h_ee_njets_ttotr ,
+	      h_ee_njets_dy , 
+	      h_ee_njets_ww , 
+	      h_ee_njets_wz , 
+	      h_ee_njets_zz , 
+	      h_ee_njets_t ,
+	      h_ee_njets_wjets , 
+	      h_ee_njets_lm6 );
+
+
+   c2->Print("stacks_498fb.pdf");
 }
