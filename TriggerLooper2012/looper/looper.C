@@ -78,6 +78,33 @@ int findTriggerIndex(TString trigName)
 
 //--------------------------------------------------------------------
 
+int goodEventInList(char* filename , int thisrun , int thislumi , int thisevent ){
+
+  ifstream ifile( filename );
+
+  int  run;
+  int  lumi;
+  long event;
+  int  pass;
+
+  //cout << "Looking for: " << thisrun << " " << thislumi << " " << thisevent << endl;
+  while( ifile.good() ){
+
+    ifile >> run >> lumi >> event;
+
+    //cout << run << " " << lumi << " " << event << endl;
+
+    if( run==thisrun && lumi==thislumi && event==thisevent ){
+      //cout << "Found! " << run << " " << lumi << " " << event << endl;
+      ifile.close();
+      return 1;
+    }
+
+  }
+
+  return 0;
+}
+
 float getMinDeltaRBetweenObjects( TString trigname , int id1 , int id2 , bool verbose = false ){ 
   
   //-------------------------------------------------------------------------------------------
@@ -226,6 +253,31 @@ float getTriggerObjectPt(char* trigname, int id){
   }
 
   return ptmax;
+}
+
+int numTrigObjects(char* trigname, int id){
+
+  int index = findTriggerIndex( triggerName(trigname) );
+
+  if( index < 0 ){
+    cout << "ERROR! can't find trigger " << trigname << " in run " << evt_run() << ", quitting" << endl;
+    exit(0);
+  }
+
+  std::vector<int>           trigId = cms2.hlt_trigObjs_id()[findTriggerIndex( triggerName(trigname))];
+  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex( triggerName(trigname))];
+
+  assert( trigId.size() == trigp4.size() );
+  if( trigId.size() == 0 ) return 0;
+
+  int nobjects = 0;
+
+  for (int i = 0; i < trigp4.size(); ++i){
+    if ( trigId[i] != id        ) continue;
+    nobjects++;
+  }
+
+  return nobjects;
 }
 
 //--------------------------------------------------------------------
@@ -570,7 +622,10 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       sort( goodLeptons.begin(), goodLeptons.end(), sortByPt);
 
-      if( ngoodlep_ > 0 ) 	lep1_ = &( goodLeptons.at(0) );
+      if( ngoodlep_ > 0 ){
+ 	lep1_      = &( goodLeptons.at(0) );
+	lep1_top_  = objectPassTrigger( *lep1_ , "HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+      }
       if( ngoodlep_ > 1 ) 	lep2_ = &( goodLeptons.at(1) );
       if( ngoodlep_ > 2 ) 	lep3_ = &( goodLeptons.at(2) );
       if( ngoodlep_ > 3 ) 	lep4_ = &( goodLeptons.at(3) );
@@ -957,6 +1012,12 @@ int looper::ScanChain(TChain* chain, char *prefix){
       //  N: trigger passed, prescale N
       //-------------------------------------------
 
+      // custom triggers
+      //eltrijetcaloisovl_    = goodEventInList("CaloIsoVL_191718.txt",evt_run(),evt_lumiBlock(),evt_event());
+      //eltrijettest_         = goodEventInList("Nominal_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
+      eltrijetcaloisovl_    = goodEventInList("CaloIsoVL_191830.txt",evt_run(),evt_lumiBlock(),evt_event());
+      eltrijettest_         = goodEventInList("Nominal_191830.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
+
       // top electron+jets triggers
       eltrijet_             = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v");
       eltrijetbackup_       = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet50_Jet40_Jet30_v");
@@ -964,6 +1025,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       eljet_                = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v");
       elnoisotrijet_        = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v");
       elnoisotrijetbackup_  = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet50_Jet40_Jet30_v");
+      
+      nelnoisotrijet_       = numTrigObjects("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v",82);
 
       // top muon+jets triggers
       mutrijet_             = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_TriCentralPFJet30_v");
@@ -1000,6 +1063,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       mu30_                 = passTriggerPrescale("HLT_Mu30_eta2p1_v");
       mu40_                 = passTriggerPrescale("HLT_Mu40_eta2p1_v");
       mu50_                 = passTriggerPrescale("HLT_Mu50_eta2p1_v");
+
+      nmu24_                = numTrigObjects("HLT_Mu24_eta2p1_v",83);
 
       mu5_                  = passTriggerPrescale("HLT_Mu5_v");
       mu8_                  = passTriggerPrescale("HLT_Mu8_v");
@@ -1238,6 +1303,8 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso3" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &munoiso3_	);
   outTree->Branch("munoiso4" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &munoiso4_	);
 
+  outTree->Branch("lep1top"                  , &lep1_top_                ,  "lep1top/I"               );             
+
   outTree->Branch("elnoiso1mt"               , &elnoiso1_mt_             ,  "elnoiso1mt/F"            );             
   outTree->Branch("munoiso1mt"               , &munoiso1_mt_             ,  "munoiso1mt/F"            );             
 
@@ -1270,12 +1337,16 @@ void looper::makeTree(char *prefix ){
 
   // top electron+jets triggers
   outTree->Branch("eltrijet"                 , &eltrijet_                ,  "eltrijet/I"              );             
+  outTree->Branch("eltrijetcaloisovl"        , &eltrijetcaloisovl_       ,  "eltrijetcalisovl/I"      );             
+  outTree->Branch("eltrijettest"             , &eltrijettest_            ,  "eltrijettest/I"          );             
   outTree->Branch("eltrijetbackup"           , &eltrijetbackup_          ,  "eltrijetbackup/I"        );             
   outTree->Branch("eldijet"                  , &eldijet_                 ,  "eldijet/I"               );             
   outTree->Branch("eljet"                    , &eljet_                   ,  "eljet/I"                 );             
   outTree->Branch("eltrijet"                 , &eltrijet_                ,  "eltrijet/I"              );             
   outTree->Branch("elnoisotrijet"            , &elnoisotrijet_           ,  "elnoisotrijet/I"         );             
   outTree->Branch("elnoisotrijetbackup"      , &elnoisotrijetbackup_     ,  "enoisoltrijetbackup/I"   );             
+
+  outTree->Branch("nelnoisotrijet"           , &nelnoisotrijet_          ,  "nelnoisotrijet/I"        );             
 					       
   // top muon+jets triggers		       
   outTree->Branch("mutrijet"                 , &mutrijet_                ,  "mutrijet/I"              );             
@@ -1312,6 +1383,8 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("mu30"                     , &mu30_                    ,  "mu30/I"                  );             
   outTree->Branch("mu40"                     , &mu40_                    ,  "mu40/I"                  );             
   outTree->Branch("mu50"                     , &mu50_                    ,  "mu50/I"                  );             
+
+  outTree->Branch("nmu24"                    , &nmu24_                   ,  "nmu24/I"                  );             
 
   outTree->Branch("mu5"                      , &mu5_                     ,  "mu5/I"                   );             
   outTree->Branch("mu8"                      , &mu8_                     ,  "mu8/I"                   );             
