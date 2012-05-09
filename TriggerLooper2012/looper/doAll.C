@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-00-07";
+  const char* version    = "V00-00-08";
   const char* jsonfile   = "jsons/json_DCSONLY_190389_191859_goodruns.txt";
   const bool  useMCSkims = true;
 
@@ -78,8 +78,8 @@ void doAll(bool skipFWLite = true)
   bool runElData        = 0;
   bool runMuData        = 0;
   bool runSingleElData  = 0;
-  bool runSingleMuData  = 0;
-  bool runElHadData     = 1;
+  bool runSingleMuData  = 1;
+  bool runElHadData     = 0;
   bool runDoubleElData  = 0;
   bool runDoubleMuData  = 0;
   bool runMuHadData     = 0;
@@ -153,7 +153,9 @@ void doAll(bool skipFWLite = true)
 
   if( runSingleMuData ){
     cout << "Adding single muon data" << endl;
-    pickSkimIfExists(chSingleMuData,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_2_3_patch3_V05-02-07/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+    //pickSkimIfExists(chSingleMuData,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_2_3_patch3_V05-02-07/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+    //pickSkimIfExists(chSingleMuData,"/tas/benhoob/testFiles/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/store_data_Run2012A_SingleMu_AOD_PromptReco-v1_000_191_718_1031CF12-DC8B-E111-9983-003048F117EC.root");
+    pickSkimIfExists(chSingleMuData,"/tas/benhoob/testFiles/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/store*root");
   }
 
   //----------------------------------------------------------------------------------------------------------

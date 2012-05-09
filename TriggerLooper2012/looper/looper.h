@@ -142,10 +142,14 @@ class looper
 	Float_t munoiso1_isofj_;
 	Float_t munoiso1_isovtx_;
 	Float_t munoiso1_isopf_;
+	Float_t munoiso1_isodb03_;
+	Float_t munoiso1_isodb04_;
 	Float_t munoiso2_iso_;
 	Float_t munoiso2_isofj_;
 	Float_t munoiso2_isovtx_;
 	Float_t munoiso2_isopf_;
+	Float_t munoiso2_isodb03_;
+	Float_t munoiso2_isodb04_;
 	Float_t munoiso3_iso_;
 	Float_t munoiso3_isofj_;
 	Float_t munoiso3_isovtx_;
@@ -301,6 +305,12 @@ class looper
 	Int_t isomu30_;              
 	Int_t isomu34_;              
 	Int_t isomu40_;              
+
+	// custom isomu triggers
+	Int_t isomu24test_;              
+	Int_t iso20mu24_;              
+	Int_t iso30mu24_;              
+	Int_t iso40mu24_;              
 
 	// non-isolated single muon triggers
 	Int_t mu24_;                 

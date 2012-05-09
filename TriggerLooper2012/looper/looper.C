@@ -23,7 +23,7 @@
 #include "../CORE/CMS2.cc"
 #ifndef __CINT__
 #include "../CORE/utilities.cc"
-#include "../CORE/ssSelections.cc"
+//#include "../CORE/ssSelections.cc"
 #include "../CORE/electronSelections.cc"
 #include "../CORE/electronSelectionsParameters.cc"
 #include "../CORE/MITConversionUtilities.cc"
@@ -41,7 +41,7 @@
 #include "../CORE/mcSUSYkfactor.cc"
 #include "../CORE/SimpleFakeRate.cc"
 #include "../Tools/goodrun.cc"
-#include "../Tools/vtxreweight.cc"
+//#include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 #include "../Tools/bTagEff_BTV.cc"
 #endif
@@ -728,12 +728,14 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       if( nmunoiso_ > 0 ){
  	munoiso1_        = &( goodMuonsNoIso.at(0) );
-	munoiso1_mu24_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso1_mu30_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso1_mu24_   = objectPassTrigger( *munoiso1_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso1_mu30_   = objectPassTrigger( *munoiso1_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso1_iso_    = muonIsoValue         ( munoisoIndex.at(0) , false );
 	munoiso1_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(0) , false );
 	munoiso1_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(0) , false );
 	munoiso1_isopf_  = muonIsoValuePF       ( munoisoIndex.at(0) , 0     );
+	munoiso1_isodb03_ = muonIsoValuePF2012_deltaBeta( munoisoIndex.at(0) );
+	munoiso1_isodb04_ = muonIsoValuePF2012_dR04_deltaBeta( munoisoIndex.at(0) );
 	munoiso1_mt_     = sqrt( 2 * evt_pfmet() * (*munoiso1_).pt() * ( 1 - cos( evt_pfmetPhi() - (*munoiso1_).eta() ) ) );
 	munoiso1_d0pv_   = mud0PV_smurfV3(munoisoIndex.at(0));
 	munoiso1_d0bs_   = mus_d0corr().at(munoisoIndex.at(0));
@@ -742,12 +744,14 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nmunoiso_ > 1 ){
  	munoiso2_        = &( goodMuonsNoIso.at(1) );
-	munoiso2_mu24_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso2_mu30_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso2_mu24_   = objectPassTrigger( *munoiso2_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso2_mu30_   = objectPassTrigger( *munoiso2_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso2_iso_    = muonIsoValue         ( munoisoIndex.at(1) , false );
 	munoiso2_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(1) , false );
 	munoiso2_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(1) , false );
 	munoiso2_isopf_  = muonIsoValuePF       ( munoisoIndex.at(1) , 0     );
+	munoiso2_isodb03_ = muonIsoValuePF2012_deltaBeta( munoisoIndex.at(1) );
+	munoiso2_isodb04_ = muonIsoValuePF2012_dR04_deltaBeta( munoisoIndex.at(1) );
 	munoiso2_d0pv_   = mud0PV_smurfV3(munoisoIndex.at(1));
 	munoiso2_d0bs_   = mus_d0corr().at(munoisoIndex.at(1));
 	munoiso2_ev_     = mus_iso_ecalvetoDep().at(munoisoIndex.at(1));
@@ -755,8 +759,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nmunoiso_ > 2 ){
  	munoiso3_        = &( goodMuonsNoIso.at(2) );
-	munoiso3_mu24_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso3_mu30_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso3_mu24_   = objectPassTrigger( *munoiso3_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso3_mu30_   = objectPassTrigger( *munoiso3_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso3_iso_    = muonIsoValue         ( munoisoIndex.at(2) , false );
 	munoiso3_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(2) , false );
 	munoiso3_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(2) , false );
@@ -764,8 +768,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nmunoiso_ > 3 ){
  	munoiso4_        = &( goodMuonsNoIso.at(3) );
-	munoiso4_mu24_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso4_mu30_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso4_mu24_   = objectPassTrigger( *munoiso4_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso4_mu30_   = objectPassTrigger( *munoiso4_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso4_iso_    = muonIsoValue         ( munoisoIndex.at(3) , false );
 	munoiso4_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(3) , false );
 	munoiso4_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(3) , false );
@@ -1056,6 +1060,11 @@ int looper::ScanChain(TChain* chain, char *prefix){
       isomu30_              = passTriggerPrescale("HLT_IsoMu30_eta2p1_v");
       isomu34_              = passTriggerPrescale("HLT_IsoMu34_eta2p1_v");
       isomu40_              = passTriggerPrescale("HLT_IsoMu40_eta2p1_v");
+
+      isomu24test_          = goodEventInList("IsoMu24_eta2p1_191718.txt"    ,evt_run(),evt_lumiBlock(),evt_event());
+      iso20mu24_            = goodEventInList("Iso20Mu24_eta2p1_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
+      iso30mu24_            = goodEventInList("Iso30Mu24_eta2p1_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
+      iso40mu24_            = goodEventInList("Iso40Mu24_eta2p1_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
 
       // non-isolated single muon triggers
       mu15_                 = passTriggerPrescale("HLT_Mu15_eta2p1_v");
@@ -1377,6 +1386,11 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("isomu30"                  , &isomu30_                 ,  "isomu30/I"               );             
   outTree->Branch("isomu34"                  , &isomu34_                 ,  "isomu34/I"               );             
   outTree->Branch("isomu40"                  , &isomu40_                 ,  "isomu40/I"               );             
+
+  outTree->Branch("isomu24test"              , &isomu24test_             ,  "isomu24test/I"           );             
+  outTree->Branch("iso20mu24"                , &iso20mu24_               ,  "iso20mu24/I"             );             
+  outTree->Branch("iso30mu24"                , &iso30mu24_               ,  "iso30mu24/I"             );             
+  outTree->Branch("iso40mu24"                , &iso40mu24_               ,  "iso40mu24/I"             );             
 					       
   // non-isolated single muon triggers
   outTree->Branch("mu24"                     , &mu24_                    ,  "mu24/I"                  );             
@@ -1465,6 +1479,8 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso1_isofj"           , &munoiso1_isofj_          ,  "munoiso1_isofj/F"        );             
   outTree->Branch("munoiso1_isovtx"          , &munoiso1_isovtx_         ,  "munoiso1_isovtx/F"       );             
   outTree->Branch("munoiso1_isopf"           , &munoiso1_isopf_          ,  "munoiso1_isopf/F"        );             
+  outTree->Branch("munoiso1_isodb03"         , &munoiso1_isodb03_        ,  "munoiso1_isodb03/F"      );             
+  outTree->Branch("munoiso1_isodb04"         , &munoiso1_isodb04_        ,  "munoiso1_isodb04/F"      );             
 					       
   outTree->Branch("munoiso2_mu24"            , &munoiso2_mu24_           ,  "munoiso2_mu24/I"         );             
   outTree->Branch("munoiso2_mu30"            , &munoiso2_mu30_           ,  "munoiso2_mu30/I"         );             
@@ -1472,6 +1488,8 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso2_isofj"           , &munoiso2_isofj_          ,  "munoiso2_isofj/F"        );             
   outTree->Branch("munoiso2_isovtx"          , &munoiso2_isovtx_         ,  "munoiso2_isovtx/F"       );             
   outTree->Branch("munoiso2_isopf"           , &munoiso2_isopf_          ,  "munoiso2_isopf/F"        );             
+  outTree->Branch("munoiso2_isodb03"         , &munoiso2_isodb03_        ,  "munoiso2_isodb03/F"      );             
+  outTree->Branch("munoiso2_isodb04"         , &munoiso2_isodb04_        ,  "munoiso2_isodb04/F"      );             
 
   
 }
