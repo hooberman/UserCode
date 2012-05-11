@@ -29,7 +29,8 @@
 #include <iomanip>
 #include "tdrstyle_SUSY.C"
 
-void doPlot( TCanvas* can, TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_Z , TH1F* hist_QCD , TH1F* hist_data , TH1F* hist_LM , bool residual = false , bool print = false );
+void doPlot( TCanvas* can, TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_Z , TH1F* hist_QCD , TH1F* hist_data , 
+	     TH1F* hist_LM4 , TH1F* hist_LM8 , bool residual = false , bool print = false );
 
 TH1F* smoothHist( TH1F* hin , int n ){
 						
@@ -109,9 +110,13 @@ void makeZPlot_2jets( bool print = false ){
   // get LM4/LM8
   //------------------------------------------------------
 
-  TFile* fileLM = new TFile("LM4_histos.root");
-  TH1F* hist_LM4 = (TH1F*) fileLM->Get("LM4_2jets");
+  TFile* fileLM4 = new TFile("LM4_histos.root");
+  TH1F* hist_LM4 = (TH1F*) fileLM4->Get("LM4_2jets");
   hist_LM4->Scale(1.07);
+
+  TFile* fileLM8 = new TFile("LM8_histos.root");
+  TH1F* hist_LM8 = (TH1F*) fileLM8->Get("LM8_2jets");
+  hist_LM8->Scale(1.07);
 
   //------------------------------------------------------
   // make the plot
@@ -135,12 +140,12 @@ void makeZPlot_2jets( bool print = false ){
   main_canvas->SetFrameFillStyle(0);
   main_canvas->SetFrameBorderMode(0);
 
-  doPlot( main_canvas , hist_VV , hist_OF , hist_photon , hist_QCD , hist_data , hist_LM4 , true , print );
+  doPlot( main_canvas , hist_VV , hist_OF , hist_photon , hist_QCD , hist_data , hist_LM4 , hist_LM8 , true , print );
 
 }
 
 
-void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , TH1F* hist_QCD , TH1F* hist_data , TH1F* hist_LM , bool residual , bool print ){
+void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , TH1F* hist_QCD , TH1F* hist_data , TH1F* hist_LM4 , TH1F* hist_LM8 , bool residual , bool print ){
 
   //-----------------------------------------
   // dummy check
@@ -158,7 +163,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   cout << "gjets  : " << hist_photon->Integral(bin30,10000) << endl;
   cout << "OF     : " << hist_OF->Integral(bin30,10000)     << endl;
   cout << "VV     : " << hist_VV->Integral(bin30,10000)     << endl;
-  cout << "LM8    : " << hist_LM->Integral(bin30,10000)     << endl << endl;
+  cout << "LM4    : " << hist_LM4->Integral(bin30,10000)    << endl;
+  cout << "LM8    : " << hist_LM8->Integral(bin30,10000)    << endl << endl;
   
   cout << "MET > 60 GeV" << endl;
   cout << "data   : " << hist_data->Integral(bin60,10000)   << endl;
@@ -166,7 +172,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   cout << "gjets  : " << hist_photon->Integral(bin60,10000) << endl;
   cout << "OF     : " << hist_OF->Integral(bin60,10000)     << endl;
   cout << "VV     : " << hist_VV->Integral(bin60,10000)     << endl;
-  cout << "LM8    : " << hist_LM->Integral(bin60,10000)     << endl << endl;
+  cout << "LM4    : " << hist_LM4->Integral(bin60,10000)    << endl;
+  cout << "LM8    : " << hist_LM8->Integral(bin60,10000)    << endl << endl;
   
   cout << "MET > 100 GeV" << endl;
   cout << "data   : " << hist_data->Integral(bin100,10000)   << endl;
@@ -174,7 +181,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   cout << "gjets  : " << hist_photon->Integral(bin100,10000) << endl;
   cout << "OF     : " << hist_OF->Integral(bin100,10000)     << endl;
   cout << "VV     : " << hist_VV->Integral(bin100,10000)     << endl;
-  cout << "LM8    : " << hist_LM->Integral(bin100,10000)     << endl << endl;
+  cout << "LM4    : " << hist_LM4->Integral(bin100,10000)    << endl;
+  cout << "LM8    : " << hist_LM8->Integral(bin100,10000)    << endl << endl;
   
   cout << "MET > 200 GeV" << endl;
   cout << "data   : " << hist_data->Integral(bin200,10000)   << endl;
@@ -182,7 +190,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   cout << "gjets  : " << hist_photon->Integral(bin200,10000) << endl;
   cout << "OF     : " << hist_OF->Integral(bin200,10000)     << endl;
   cout << "VV     : " << hist_VV->Integral(bin200,10000)     << endl;
-  cout << "LM8    : " << hist_LM->Integral(bin200,10000)     << endl << endl;
+  cout << "LM4    : " << hist_LM4->Integral(bin200,10000)    << endl;
+  cout << "LM8    : " << hist_LM8->Integral(bin200,10000)    << endl << endl;
   
   cout << "MET > 300 GeV" << endl;
   cout << "data   : " << hist_data->Integral(bin300,10000)   << endl;
@@ -190,7 +199,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   cout << "gjets  : " << hist_photon->Integral(bin300,10000) << endl;
   cout << "OF     : " << hist_OF->Integral(bin300,10000)     << endl;
   cout << "VV     : " << hist_VV->Integral(bin300,10000)     << endl;
-  cout << "LM8    : " << hist_LM->Integral(bin300,10000)     << endl << endl;
+  cout << "LM4    : " << hist_LM4->Integral(bin300,10000)    << endl;
+  cout << "LM8    : " << hist_LM8->Integral(bin300,10000)    << endl << endl;
     
   //-----------------------------------------
   // create a TPad for the main plot
@@ -263,10 +273,15 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   hist_photon->SetLineWidth(2);
   hist_QCD->SetLineWidth(2);
 
-  hist_LM->SetLineColor(kOrange+1);
-  hist_LM->SetLineWidth(2);
+  hist_LM4->SetLineColor(kOrange+1);
+  hist_LM4->SetLineWidth(2);
 
-  TH1F* hist_LM_smooth = smoothHist(hist_LM,5);
+  hist_LM8->SetLineColor(kGreen+2);
+  hist_LM8->SetLineWidth(2);
+  hist_LM8->SetLineStyle(2);
+
+  TH1F* hist_LM4_smooth = smoothHist(hist_LM4,5);
+  TH1F* hist_LM8_smooth = smoothHist(hist_LM8,5);
   //hist_LM_smooth->SetLineColor(1);
 
   //-----------------------------------------
@@ -297,7 +312,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   hist_photon->Draw("samehist");
   //hist_QCD->Draw("samehist");
   //hist_LM->Draw("same");
-  hist_LM_smooth->Draw("same");
+  hist_LM4_smooth->Draw("same");
+  hist_LM8_smooth->Draw("same");
   hist_data->Draw("sameaxis");
   hist_data->Draw("sameE1");
 
@@ -312,7 +328,8 @@ void doPlot( TCanvas *can , TH1F* hist_VV , TH1F* hist_OF , TH1F* hist_photon , 
   //leg->AddEntry(hist_QCD    ,"total bkg (QCD)","l");
   leg->AddEntry(hist_VV   ,"WZ/ZZ prediction","f");
   leg->AddEntry(hist_OF   ,"OF prediction","f");
-  leg->AddEntry(hist_LM   ,"LM4","l");
+  leg->AddEntry(hist_LM4  ,"LM4","l");
+  leg->AddEntry(hist_LM8  ,"LM8","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->Draw();
