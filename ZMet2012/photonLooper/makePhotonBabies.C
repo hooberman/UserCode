@@ -163,7 +163,33 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
                                   bool calculateTCMET, int nEvents, float kFactor){
 
   set_goodrun_file( jsonfilename );
-    
+  cout << "Using json " << jsonfilename << endl;
+
+  //------------------------------------------------------------------------------------------------------
+  // load here the on-the-fly corrections/uncertainties L1FastL2L3 (MC) and L1FastL2L3Residual (DATA)
+  // corrections are stored in jet_corrected_pfL1FastJetL2L3
+  // uncertainties are stored in pfUncertainty
+  //------------------------------------------------------------------------------------------------------
+
+  std::vector<std::string> jetcorr_filenames_pfL1FastJetL2L3;
+  FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3;
+
+  jetcorr_filenames_pfL1FastJetL2L3.clear();
+
+  if ( TString(prefix).Contains("data") ) {
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L1FastJet.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L3Absolute.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2L3Residual.txt");
+  } 
+  else {
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L1FastJet.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L3Absolute.txt");
+  }
+
+  jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
+
   bookHistos();
 
   int npass = 0;
@@ -237,11 +263,11 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       }
       
       //--------------------------
-      //good run+event selection
+      // good run+event selection
       //--------------------------
 
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      if( !cleaning_standardApril2011() )                            continue;
+      if( !cleaning_goodDAVertexApril2011() )                        continue;
 
       if(debug) cout << "Pass event selection" << endl;
 
@@ -299,19 +325,25 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       hlt30_  = passThisHLTTrigger( "HLT_Photon30_CaloIdVL_IsoL_v"  );
       hlt50_  = passThisHLTTrigger( "HLT_Photon50_CaloIdVL_IsoL_v"  );
       hlt75_  = passThisHLTTrigger( "HLT_Photon75_CaloIdVL_IsoL_v"  );      
-      hlt125_ = passThisHLTTrigger( "HLT_Photon125_NoSpikeFilter_v" );
+      hlt90_  = passThisHLTTrigger( "HLT_Photon90_CaloIdVL_IsoL_v"  );
+      hlt135_ = passThisHLTTrigger( "HLT_Photon135_v"               );
+      hlt150_ = passThisHLTTrigger( "HLT_Photon150_v"               );
+      hlt160_ = passThisHLTTrigger( "HLT_Photon160_v"               );
               
       //-------------------------
       // calomet, pfmet, genmet
       //-------------------------
 
-      met_       = cms2.evt_met();
-      metphi_    = cms2.evt_metPhi();
-      sumet_     = cms2.evt_sumet();
+      met_        = cms2.evt_met();
+      metphi_     = cms2.evt_metPhi();
+      sumet_      = cms2.evt_sumet();
 
-      pfmet_    = cms2.evt_pfmet();
-      pfmetphi_ = cms2.evt_pfmetPhi();
-      pfsumet_  = cms2.evt_pfsumet();
+      pfmet_      = cms2.evt_pfmet();
+      pfmetphi_   = cms2.evt_pfmetPhi();
+      pfsumet_    = cms2.evt_pfsumet();
+
+      pfmett1_    = cms2.evt_pfmet_type1cor();
+      pfmetphit1_ = cms2.evt_pfmetPhi_type1cor();
 
       if (!isData){
         genmet_     = cms2.gen_met();
@@ -327,21 +359,6 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       tcmetphi_  = evt_tcmetPhi();
       tcsumet_   = evt_tcsumet();
                                     
-      if( calculateTCMET ){
-        
-        metStruct tcmetNewStruct = correctedTCMET();
-        tcmetNew_     = tcmetNewStruct.met;
-        tcmetphiNew_  = tcmetNewStruct.metphi;
-        tcsumetNew_   = tcmetNewStruct.sumet;
-        
-      }else{
-        
-        tcmetNew_    = -9999;
-        tcmetphiNew_ = -9999;
-        tcsumetNew_  = -9999;
-       
-      }
-
       //------------------------
       // vertex stuff
       //------------------------
@@ -452,12 +469,12 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       //--------------------
 
       nJets_        = 0;
-      sumJetPt_     = 0.;
+      ht_           = 0.;
       nJets40_      = 0;
       nJets10_      = 0;
       nJets15_      = 0;
       nJets20_      = 0;
-      sumJetPt10_   = 0.;
+      ht10_         = 0.;
       nbtags_       = 0;
 
       LorentzVector jetSystem(0.,0.,0.,0.);        
@@ -466,10 +483,13 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       int   imaxjet     = -1;
       float maxpt       = -1;
 
-      VofP4         good_pfjets15_p4;
-      vector<float> good_pfjets15_cor;
-      VofP4         good_pfjets30_p4;
-      vector<float> good_pfjets30_cor;
+      // VofP4         good_pfjets15_p4;
+      // vector<float> good_pfjets15_cor;
+      // VofP4         good_pfjets30_p4;
+      // vector<float> good_pfjets30_cor;
+
+      VofP4 goodJets;
+      goodJets.clear();
 
       failjetid_ =  0;
       maxemf_    = -1;
@@ -479,23 +499,47 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       //-----------------------------------------
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-        
-        //skip jet matched to photon
+
+	//---------------------------------------------------------------------------
+        // skip jet matched to photon
+	//---------------------------------------------------------------------------
+
         if( (int)ijet == ijetg ) continue;
  
-        LorentzVector vjet      = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-        if( fabs( vjet.eta() ) > 3.0 )           continue;
+	if( fabs( pfjets_p4().at(ijet).eta() ) > 5.0 ) continue;
+
+	//---------------------------------------------------------------------------
+	// get total correction: L1FastL2L3 for MC, L1FastL2L3Residual for data
+	//---------------------------------------------------------------------------
+
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+	double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
+
+	LorentzVector vjet = corr * pfjets_p4().at(ijet);
+
+	//---------------------------------------------------------------------------
+        // PFJetID
+	//---------------------------------------------------------------------------
 
         if( !passesPFJetID(ijet) ){
           failjetid_ = 1;
           continue;
         }
 
+
+	//---------------------------------------------------------------------------
+        // HT variables
+	//---------------------------------------------------------------------------
+
         if ( vjet.pt() > 10. ){
-          sumJetPt10_ += vjet.pt();
+          ht10_ += vjet.pt();
         }
+
         if ( vjet.pt() > 15. ){
-          sumJetPt_ += vjet.pt();
+          ht_ += vjet.pt();
           jetSystem += vjet;
           good_pfjets15_p4.push_back ( pfjets_p4().at(ijet)  );
           good_pfjets15_cor.push_back( pfjets_cor().at(ijet) );
@@ -510,6 +554,8 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
               
         if( vjet.pt() < 30. )                    continue;
 
+
+	/*
         good_pfjets30_p4.push_back ( pfjets_p4().at(ijet)  );
         good_pfjets30_cor.push_back( pfjets_cor().at(ijet) );
         
@@ -549,78 +595,59 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
         if ( vjet.pt() > 30. ) nJets_++;
         if ( vjet.pt() > 40. ) nJets40_++;
-          
+	*/
       }
-                            
+          
+
+      /*
       jetmax_pt_ = -1;
 
       if( imaxjet > -1 ){
         jetmax_pt_       = pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet).pt();
         jetmax_dphimet_  = deltaPhi( pfjets_p4().at(imaxjet).phi() , tcmetphi_);
       }
+      */
 
       vecJetPt_ = jetSystem.pt();
 
 
-      VofP4         good_jpts15_p4;
-      vector<float> good_jpts15_cor;
-      VofP4         good_jpts30_p4;
-      vector<float> good_jpts30_cor;
-  
-      for (unsigned int ijet = 0; ijet < jpts_p4().size(); ijet++) {
 
-        //skip jet matched to photon
-        if( (int)ijet == ijetg ) continue;
-        
-        LorentzVector vjet = jpts_p4().at(ijet) * jpts_corL1FastL2L3().at(ijet); 
-        
-        if( fabs( vjet.eta() ) > 3.0 )         continue;
-        if( !passesCaloJetID( vjet ) )         continue;
-        
-        if ( vjet.pt() > 15. ){
-          good_jpts15_p4.push_back ( jpts_p4().at(ijet)  );
-          good_jpts15_cor.push_back( jpts_cor().at(ijet) );
-        }
-        if ( vjet.pt() > 30. ){
-          good_jpts30_p4.push_back ( jpts_p4().at(ijet)  );
-          good_jpts30_cor.push_back( jpts_cor().at(ijet) );
-        }
-      }
+
+
+
+      // //calculate type1 METs
       
+      // metStruct type1PFMET30 = customType1Met( evt_pfmet() * cos( evt_pfmetPhi() ) , 
+      //                                          evt_pfmet() * cos( evt_pfmetPhi() ) , 
+      //                                          evt_pfsumet() ,
+      //                                          good_pfjets30_p4 , 
+      //                                          good_pfjets30_cor );
 
-      //calculate type1 METs
+      // pfmet_type1_pt30_ = type1PFMET30.met;
+
+      // metStruct type1PFMET15 = customType1Met( evt_pfmet() * cos( evt_pfmetPhi() ) , 
+      //                                          evt_pfmet() * cos( evt_pfmetPhi() ) , 
+      //                                          evt_pfsumet() ,
+      //                                          good_pfjets15_p4 , 
+      //                                          good_pfjets15_cor );
       
-      metStruct type1PFMET30 = customType1Met( evt_pfmet() * cos( evt_pfmetPhi() ) , 
-                                               evt_pfmet() * cos( evt_pfmetPhi() ) , 
-                                               evt_pfsumet() ,
-                                               good_pfjets30_p4 , 
-                                               good_pfjets30_cor );
-
-      pfmet_type1_pt30_ = type1PFMET30.met;
-
-      metStruct type1PFMET15 = customType1Met( evt_pfmet() * cos( evt_pfmetPhi() ) , 
-                                               evt_pfmet() * cos( evt_pfmetPhi() ) , 
-                                               evt_pfsumet() ,
-                                               good_pfjets15_p4 , 
-                                               good_pfjets15_cor );
+      // pfmet_type1_pt15_ = type1PFMET15.met;
       
-      pfmet_type1_pt15_ = type1PFMET15.met;
-      
-      metStruct type1TCMET30 = customType1Met( tcmetNew_ * cos( tcmetphiNew_ ) , 
-                                               tcmetNew_ * sin( tcmetphiNew_ ) , 
-                                               tcsumetNew_ ,
-                                               good_jpts30_p4 , 
-                                               good_jpts30_cor );
+      // metStruct type1TCMET30 = customType1Met( tcmetNew_ * cos( tcmetphiNew_ ) , 
+      //                                          tcmetNew_ * sin( tcmetphiNew_ ) , 
+      //                                          tcsumetNew_ ,
+      //                                          good_jpts30_p4 , 
+      //                                          good_jpts30_cor );
 
-      tcmetNew_type1_pt30_ = type1TCMET30.met;
+      // tcmetNew_type1_pt30_ = type1TCMET30.met;
 
-      metStruct type1TCMET15 = customType1Met( tcmetNew_ * cos( tcmetphiNew_ )  , 
-                                               tcmetNew_ * sin( tcmetphiNew_ )  , 
-                                               tcsumetNew_ ,
-                                               good_jpts15_p4 , 
-                                               good_jpts15_cor );
+      // metStruct type1TCMET15 = customType1Met( tcmetNew_ * cos( tcmetphiNew_ )  , 
+      //                                          tcmetNew_ * sin( tcmetphiNew_ )  , 
+      //                                          tcsumetNew_ ,
+      //                                          good_jpts15_p4 , 
+      //                                          good_jpts15_cor );
       
-      tcmetNew_type1_pt15_ = type1TCMET15.met;
+      // tcmetNew_type1_pt15_ = type1TCMET15.met;
       
       //-------------------------
       // fill histos and ntuple
@@ -691,7 +718,10 @@ void makePhotonBabies::InitBabyNtuple (){
   hlt30_			= -9999;
   hlt50_			= -9999;
   hlt75_			= -9999;
-  hlt125_			= -9999;
+  hlt90_			= -9999;
+  hlt135_			= -9999;
+  hlt150_			= -9999;
+  hlt160_			= -9999;
 
   // event stuff
   run_				= -999999;
@@ -714,6 +744,8 @@ void makePhotonBabies::InitBabyNtuple (){
   pfmet_type1_pt15_		= -999999.;
   pfmetphi_			= -999999.;
   pfsumet_			= -999999.;
+  pfmett1_			= -999999.;
+  pfmetphit1_			= -999999.;
 
   // calomet stuff
   met_				= -999999.;
@@ -746,13 +778,13 @@ void makePhotonBabies::InitBabyNtuple (){
   tcmetphiNew_			= -999999.;
 
   nJets_			= -999999;
-  sumJetPt_			= -999999;
+  ht_			= -999999;
   vecJetPt_			= -999999;
   nJets40_			= -999999;
   nJets10_			= -999999;
   nJets15_			= -999999;
   nJets20_			= -999999;
-  sumJetPt10_			= -999999;
+  ht10_			= -999999;
 
   nbtags_			= -999999;
   dphijetmet_			= -999999;
@@ -888,13 +920,13 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("failjetid"	,	&failjetid_        ,	"failjetid/I"      );
   babyTree_->Branch("maxemf"	,       &maxemf_           ,	"maxemf/F"         );
 
-
-
   //met stuff
   babyTree_->Branch("pfmet"			,       &pfmet_                ,	 "pfmet/F"			);
+  babyTree_->Branch("pfmett1"			,       &pfmett1_              ,	 "pfmett1/F"			);
   babyTree_->Branch("pfmet_type1_pt30"		,       &pfmet_type1_pt30_     ,	 "pfmet_type1_pt30/F"		);
   babyTree_->Branch("pfmet_type1_pt15"		,       &pfmet_type1_pt15_     ,	 "pfmet_type1_pt15/F"		);
   babyTree_->Branch("pfmetphi"			,	&pfmetphi_             ,	 "pfmetphi/F"			);
+  babyTree_->Branch("pfmetphit1"		,	&pfmetphit1_           ,	 "pfmetphit1/F"			);
   babyTree_->Branch("pfsumet"			,	&pfsumet_              ,	 "pfsumet/F"			);
   babyTree_->Branch("met"			,       &met_                  ,	 "met/F"			);
   babyTree_->Branch("metphi"			,       &metphi_               ,	 "metphi/F"			);
@@ -926,8 +958,8 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("njets15"			,       &nJets15_              ,	 "njets15/I"		);
   babyTree_->Branch("njets20"			,       &nJets20_              ,	 "njets20/I"		);
   babyTree_->Branch("njets40"			,       &nJets40_              ,	 "njets40/I"		);
-  babyTree_->Branch("sumjetpt"			,       &sumJetPt_             ,	 "sumjetpt/F"		);
-  babyTree_->Branch("sumjetpt10"		,	&sumJetPt10_           ,	 "sumjetpt10/F"		);
+  babyTree_->Branch("ht"			,       &ht_                   ,	 "ht/F"		        );
+  babyTree_->Branch("ht10"	         	,	&ht10_                 ,	 "ht10/F"		);
   babyTree_->Branch("vecjetpt"			,       &vecJetPt_             ,	 "vecjetpt/F"		);
   babyTree_->Branch("nbtags"			,       &nbtags_               ,         "nbtags/I"		);
   babyTree_->Branch("ndphijetmet"		,	&dphijetmet_           ,	 "dphijetmet/F"		);
@@ -939,7 +971,10 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("hlt30"			,	&hlt30_  ,  "hlt30/I"    );  
   babyTree_->Branch("hlt50"			,	&hlt50_  ,  "hlt50/I"    );  
   babyTree_->Branch("hlt75"			,	&hlt75_  ,  "hlt60/I"    );  
-  babyTree_->Branch("hlt125"			,	&hlt125_ ,  "hlt125/I"   );  
+  babyTree_->Branch("hlt90"			,	&hlt90_  ,  "hlt90/I"    );  
+  babyTree_->Branch("hlt135"			,	&hlt135_ ,  "hlt135/I"   );  
+  babyTree_->Branch("hlt150"			,	&hlt150_ ,  "hlt150/I"   );  
+  babyTree_->Branch("hlt160"			,	&hlt160_ ,  "hlt160/I"   );  
 
   //photon stuff
   babyTree_->Branch("ng"			,	&nPhotons_, "ng/I"); 

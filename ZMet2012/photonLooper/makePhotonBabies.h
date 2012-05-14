@@ -46,13 +46,16 @@ class makePhotonBabies
   Int_t hlt30_;
   Int_t hlt50_;
   Int_t hlt75_;
-  Int_t hlt125_;
+  Int_t hlt90_;
+  Int_t hlt135_;
+  Int_t hlt150_;
+  Int_t hlt160_;
 
   // event stuff
   char    dataset_[200];
-  Int_t   run_;
-  Int_t   lumi_;
-  Int_t   event_;
+  UInt_t  run_;
+  UInt_t  lumi_;
+  UInt_t  event_;
   Int_t   leptype_;
   Int_t   nGoodVertex_;
   Int_t   nGoodDAVertex_;
@@ -69,6 +72,8 @@ class makePhotonBabies
   // pfmet stuff
   Float_t pfmet_;
   Float_t pfmetphi_;
+  Float_t pfmett1_;
+  Float_t pfmetphit1_;
   Float_t pfsumet_;
   Float_t pfmet_type1_pt30_;
   Float_t pfmet_type1_pt15_;
