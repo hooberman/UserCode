@@ -26,19 +26,78 @@
 
 using namespace std;
 
+bool plotExpected = false;
+bool plotObserved = true;
+bool logplot      = false;
 
 void makeGMSBPlot( bool printplots = false ){
 
   // VZ+MET exclusion
-  TFile *f = TFile::Open("cards/V00-02-04/observed_limit.root");
-  TGraph* gul  = (TGraph*) f->Get("grobs");
-  //TGraph* g = (TGraph*) f->Get("grexp");
+  TFile *f       = TFile::Open("cards/V00-02-08/observed_limit.root");
+  TGraph* gul    = (TGraph*) f->Get("grobs");
+  TGraph* gulexp = (TGraph*) f->Get("grexp");
 
   // Rutgers exclusion
-  TFile *frutgers = TFile::Open("20120411_UCSD_GMSB_datacard/observed_limit.root ");
-  TGraph* gul2  = (TGraph*) frutgers->Get("grobs");
-  //TGraph* g = (TGraph*) f->Get("grexp");
+  //TFile *frutgers = TFile::Open("20120411_UCSD_GMSB_datacard/observed_limit.root ");
+  //TFile *frutgers = TFile::Open("20120419_UCSD_GMSB_datacard/observed_limit.root ");
+  TFile *frutgers = TFile::Open("cards/20120420_UCSD_GMSB_datacard/observed_limit.root ");
+  TGraph* gul2    = (TGraph*) frutgers->Get("grobs");
+  TGraph* gul2exp = (TGraph*) frutgers->Get("grexp");
 
+  // VZ+MET exclusion
+  TFile *fc       = TFile::Open("cards/V00-02-08/observed_limit_combined.root");
+  TGraph* gulc    = (TGraph*) fc->Get("grobs");
+  TGraph* gulcexp = (TGraph*) fc->Get("grexp");
+
+
+  Double_t xp;
+  Double_t yp;
+
+  Double_t xp2;
+  Double_t yp2;
+
+  Double_t xpc;
+  Double_t ypc;
+
+  cout << setw(15) << "mass"        << setw(4) << "&"
+       << setw(15) << "\\wzzmet"    << setw(4) << "&"
+       << setw(15) << "mult-lepton" << setw(4) << "&"
+       << setw(15) << "combined"    << setw(4) << "&"
+       << setw(15) << "asdf"        << setw(4) << "\\\\" << endl;
+
+  for( int i = 0 ; i < 15 ; ++i ){
+
+    // gulexp->GetPoint ((Int_t) i,xp,yp);
+    // gul2exp->GetPoint((Int_t) i,xp2,yp2);
+    // gulcexp->GetPoint((Int_t) i,xpc,ypc);
+    // float exp = 1.0 / sqrt( 1.0/(yp*yp) + 1.0/(yp2*yp2) ); 
+
+    gul->GetPoint ((Int_t) i,xp,yp);
+    gul2->GetPoint((Int_t) i,xp2,yp2);
+    gulc->GetPoint((Int_t) i,xpc,ypc);
+    float exp = 1.0 / sqrt( 1.0/(yp*yp) + 1.0/(yp2*yp2) ); 
+
+
+    // gul->GetPoint ((Int_t) i,xp,yp);
+    // gul2->GetPoint((Int_t) i,xp2,yp2);
+    // gulc->GetPoint((Int_t) i,xpc,ypc);
+
+    cout << setw(15) << xp               << setw(4) << "&"
+	 << setw(15) << Form("%.0f",yp)  << setw(4) << "&"
+	 << setw(15) << Form("%.0f",yp2) << setw(4) << "&"
+	 << setw(15) << Form("%.0f",ypc) << setw(4) << "&"
+	 << setw(15) << Form("%.0f",exp) << setw(4) << "\\\\" << endl;
+    
+
+    // cout << "mass    " << Form("%.0f",xp) << endl;
+    // cout << "VZ+MET  " << Form("%.0f",yp) << endl;
+    // cout << "4l      " << Form("%.0f",yp2) << endl;
+    // cout << "combo   " << Form("%.0f",ypc) << endl;
+    // cout << "exp     " << Form("%.0f",exp) << endl << endl;    
+
+
+
+  }
 
 
   const unsigned int n = 15;
@@ -69,17 +128,42 @@ void makeGMSBPlot( bool printplots = false ){
   gPad->SetGridx();
   gPad->SetGridy();
 
-  TH2F* hdummy = new TH2F("hdummy","",100,130,410,100,0,5000);
+  float ymin = 0;
+  if( logplot ) ymin = 80;
+
+  TH2F* hdummy = new TH2F("hdummy","",100,130,300,100,ymin,3000);
   hdummy->Draw();
 
   c1->cd();
+  gPad->SetLogy();
+
+  g->SetLineColor(4);
+  g->SetLineWidth(2);
 
   gul->SetLineColor(2);
-  g->SetLineColor(4);
-
   gul->SetLineWidth(4);
+  gulexp->SetLineColor(2);
+  gulexp->SetLineWidth(4);
+
   gul2->SetLineWidth(4);
-  g->SetLineWidth(2);
+  gul2exp->SetLineWidth(4);
+
+  gulc->SetLineWidth(4);
+  gulc->SetLineColor(kGreen+2);
+  gulcexp->SetLineWidth(4);
+  gulcexp->SetLineColor(kGreen+2);
+
+  gul->SetLineStyle(2);
+  gulexp->SetLineStyle(2);
+  gul2->SetLineStyle(2);
+  gul2exp->SetLineStyle(2);
+
+  // gulexp->SetLineWidth(2);
+  // gulexp->SetLineStyle(2);
+  // gulexp->SetLineColor(2);  
+  // gul2exp->SetLineWidth(2);
+  // gul2exp->SetLineStyle(2);
+
 
   hdummy->GetXaxis()->SetTitle("m_{#chi} [GeV]");
   hdummy->GetYaxis()->SetTitle("#sigma [fb]");
@@ -99,9 +183,22 @@ void makeGMSBPlot( bool printplots = false ){
   hdummy->Draw("axissame");
   */
 
-  gul->Draw("samel");
-  gul2->Draw("samel");
+  if( plotObserved ){
+    gul->Draw("samel");
+    gul2->Draw("samel");
+    gulc->Draw("samel");
+  }
+
+  if( plotExpected ){
+    gulexp->Draw("samel");
+    gul2exp->Draw("samel");
+    gulcexp->Draw("samel");
+  }
+
   g->Draw("samec");
+
+  //gulexp->Draw("samel");
+  //gul2exp->Draw("samel");
 
   // g1->SetMinimum(0);
   // g1->SetMaximum(5000);
@@ -126,15 +223,24 @@ void makeGMSBPlot( bool printplots = false ){
   //line.DrawLine(xmax,0,xmax,5000);
 
   hdummy->Draw("axissame");
-  g->SetMinimum(0);
-  g->SetMaximum(5000);
-  g->Draw("samec");
-  gul->Draw("samel");
-  gul2->Draw("samel");
+  // g->SetMinimum(0);
+  // g->SetMaximum(3000);
+  // g->Draw("samec");
+  // gul->Draw("samel");
+  // gul2->Draw("samel");
 
-  TLegend *leg = new TLegend(0.35,0.6,0.9,0.8);
-  leg->AddEntry(gul  ,"observed UL (VZ+E_{T}^{miss})","l");
-  leg->AddEntry(gul2 ,"observed UL (multi-lepton)","l");
+  TLegend *leg = new TLegend(0.45,0.7,0.95,0.9);
+  if( plotObserved ){
+    leg->AddEntry(gul  ,"observed UL (VZ+E_{T}^{miss})","l");
+    leg->AddEntry(gul2 ,"observed UL (multi-lepton)","l");
+    leg->AddEntry(gulc ,"observed UL (combined)","l");
+  }
+  if( plotExpected ){
+    leg->AddEntry(gulexp  ,"expected UL (VZ+E_{T}^{miss})","l");
+    leg->AddEntry(gul2exp ,"expected UL (multi-lepton)","l");
+    leg->AddEntry(gulcexp ,"expected UL (combined)","l");
+  }
+
   leg->AddEntry(g,  "theory","l");
   //leg->AddEntry(box,"excluded region","f");
   leg->SetBorderSize(1);
@@ -148,7 +254,7 @@ void makeGMSBPlot( bool printplots = false ){
   t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.98 fb^{-1}");
   t->SetTextSize(0.04);
   //t->DrawLatex(0.47,0.45,"");
-  t->DrawLatex(0.57,0.5,"GMSB  ZZ + E_{T}^{miss}");
+  t->DrawLatex(0.57,0.63,"GMSB  ZZ + E_{T}^{miss}");
 
   if( printplots ){
     c1->Print("GMSB.pdf");
