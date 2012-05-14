@@ -34,9 +34,7 @@ void runMakePhotonBabies(char* prefix , bool isData = true, float kFactor = 1.){
   //-----------------------------------------------------------------------------------
 
   if( strcmp( prefix , "Photon" ) == 0 ){
-    pickSkimIfExists(ch,"/nfs-4/userdata/cms2/Photon_Run2011A-Apr22ReReco-v2_AOD/V04-01-05/merged*root");
-    pickSkimIfExists(ch,"/nfs-4/userdata/cms2/Photon_Run2011A-PromptReco-v1_AOD/V04-01-02/merged_160329_161312.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/imacneill/CMSSW_4_1_2_patch1_V04-01-03/Photon_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/merged*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/cwelke/CMSSW_5_2_3_patch3_V05-02-07/Photon_Run2012A-PromptReco-v1_AOD/merged/merged_ntuple_191277_3.root");
   }
 
   //-----------------------------------------------------------------------------------

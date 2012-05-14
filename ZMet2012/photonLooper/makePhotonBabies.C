@@ -4,7 +4,7 @@
 #include <vector>
 #include <math.h>
 #include <fstream>
-
+#include <set>
 
 #include "TChain.h"
 #include "TDirectory.h"
@@ -14,39 +14,47 @@
 #include "TH2F.h"
 #include "TMath.h"
 #include "TProfile.h"
+#include "TDatabasePDG.h"
 #include <sstream>
 
-#include "../CORE/CMS2.h"
-#include "../CORE/metSelections.h"
-#include "../CORE/trackSelections.h"
-#include "../CORE/eventSelections.h"
-#include "../CORE/electronSelections.h"
-#include "../CORE/electronSelectionsParameters.h"
-#include "../CORE/muonSelections.h"
-#include "../Tools/goodrun.cc"
-#include "histtools.h"
-#include "../CORE/ttbarSelections.h"
-#include "../CORE/triggerUtils.h"
-#include "../CORE/photonSelections.h"
-
+#include "../CORE/CMS2.cc"
+#ifndef __CINT__
 #include "../CORE/utilities.cc"
-#include "../CORE/jetSelections.h"
+//#include "../CORE/ssSelections.cc"
+#include "../CORE/electronSelections.cc"
+#include "../CORE/electronSelectionsParameters.cc"
+#include "../CORE/MITConversionUtilities.cc"
+#include "../CORE/muonSelections.cc"
+#include "../CORE/eventSelections.cc"
+#include "../CORE/ttbarSelections.cc"
+#include "../CORE/trackSelections.cc"
+#include "../CORE/metSelections.cc"
+#include "../CORE/jetSelections.cc"
+#include "../CORE/photonSelections.cc"
+#include "../CORE/triggerUtils.cc"
+#include "../CORE/triggerSuperModel.cc"
+#include "../CORE/mcSelections.cc"
+#include "../CORE/susySelections.cc"
+#include "../CORE/mcSUSYkfactor.cc"
+#include "../CORE/SimpleFakeRate.cc"
+#include "../Tools/goodrun.cc"
+#include "../Tools/vtxreweight.cc"
+#include "../Tools/msugraCrossSection.cc"
+#include "../Tools/bTagEff_BTV.cc"
+#endif
 
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
 using namespace tas;
-inline double fround(double n, double d){
-  return floor(n * pow(10., d) + .5) / pow(10., d);
-}
 
 //--------------------------------------------------------------------
 
 const bool debug                = false;
-const float lumi                = 0.153;
-const char* iter                = "V00-00-03";
-const char* jsonfilename        = "Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON_goodruns.txt";
+const float lumi                = 1.0;
+const char* iter                = "V00-00-00";
+const char* jsonfilename        = "../jsons/Cert_190456-191859_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -88,6 +96,16 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
   std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
     already_seen.insert(id);
   return !ret.second;
+}
+
+//--------------------------------------------------------------------
+
+double dRbetweenVectors(const LorentzVector &vec1, 
+			const LorentzVector &vec2 ){ 
+
+  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
+  double deta = vec1.Eta() - vec2.Eta();
+  return sqrt(dphi*dphi + deta*deta);
 }
 
 //--------------------------------------------------------------------
@@ -145,23 +163,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
                                   bool calculateTCMET, int nEvents, float kFactor){
 
   set_goodrun_file( jsonfilename );
-  
-  if( isData ){
-    ofile_tcmet.open(  Form( "../templates/%s/%s_tcmetprintout.txt" , iter , prefix  ) );
-    ofile_events.open( Form( "../templates/%s/%s_highmetevents.txt" , iter , prefix  ) );
-
-
-    ofile_events << "|" << setw(8)  << "run"          << setw(4) 
-                 << "|" << setw(6)  << "lumi"         << setw(4) 
-                 << "|" << setw(12) << "event"        << setw(4) 
-                 << "|" << setw(6)  << "njets"        << setw(4) 
-                 << "|" << setw(6)  << "nbtags"       << setw(4) 
-                 << "|" << setw(8)  << "tcmet"        << setw(4) 
-                 << "|" << setw(8)  << "pfmet"        << setw(4) 
-                 << "|" << setw(8)  << "dphi"         << setw(4) << "|" << endl; 
-  }
-
-  
+    
   bookHistos();
 
   int npass = 0;
@@ -170,7 +172,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
   // make a baby ntuple
   //---------------------
   
-  MakeBabyNtuple( Form("../templates/%s/%s_baby.root", iter , prefix ) );
+  MakeBabyNtuple( Form("../photon_output/%s/%s_baby.root", iter , prefix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -189,9 +191,18 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
   TIter fileIter(listOfFiles);
   TFile* currentFile = 0;
   while ((currentFile = (TFile*)fileIter.Next())){
-    
-    TFile f(currentFile->GetTitle());
-    TTree *tree = (TTree*)f.Get("Events");
+
+    cout << currentFile->GetTitle() << endl;
+
+    TFile* f = new TFile(currentFile->GetTitle());
+
+    if( !f || f->IsZombie() ) {
+      cout << "Skipping bad input file: " << currentFile->GetTitle() << endl;
+      continue; //exit(1);                                                                                             
+    }
+
+    TTree *tree = (TTree*)f->Get("Events");
+
     cms2.Init(tree);
 
     unsigned int nEvents = tree->GetEntries();
@@ -240,7 +251,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       // event stuff
       //----------------
 
-      strcpy(dataset_, cms2.evt_dataset().Data());
+      strcpy(dataset_, cms2.evt_dataset().at(0).Data());
       run_     = cms2.evt_run();
       lumi_    = cms2.evt_lumiBlock();
       event_   = cms2.evt_event();
@@ -618,21 +629,24 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       npass++;
       FillBabyNtuple();
       
-      if( isData && ( tcmet_ > 30 || pfmet_ > 30 ) ){
+      // if( isData && ( tcmet_ > 30 || pfmet_ > 30 ) ){
 
-        metStruct dummyStruct = correctedTCMET( true, ofile_tcmet );
+      //   metStruct dummyStruct = correctedTCMET( true, ofile_tcmet );
 
-        ofile_events << "|" << setw(8)  << evt_run()                   << setw(4) 
-                     << "|" << setw(6)  << evt_lumiBlock()             << setw(4) 
-                     << "|" << setw(12) << evt_event()                 << setw(4) 
-                     << "|" << setw(6)  << nJets_                      << setw(4) 
-                     << "|" << setw(6)  << nbtags_                     << setw(4) 
-                     << "|" << setw(8)  << fround(tcmet_,1)            << setw(4) 
-                     << "|" << setw(8)  << fround(pfmet_,1)            << setw(4) 
-                     << "|" << setw(8)  << fround(dphijetmet_,2)       << setw(4) << "|" << endl; 
+      //   ofile_events << "|" << setw(8)  << evt_run()                   << setw(4) 
+      //                << "|" << setw(6)  << evt_lumiBlock()             << setw(4) 
+      //                << "|" << setw(12) << evt_event()                 << setw(4) 
+      //                << "|" << setw(6)  << nJets_                      << setw(4) 
+      //                << "|" << setw(6)  << nbtags_                     << setw(4) 
+      //                << "|" << setw(8)  << fround(tcmet_,1)            << setw(4) 
+      //                << "|" << setw(8)  << fround(pfmet_,1)            << setw(4) 
+      //                << "|" << setw(8)  << fround(dphijetmet_,2)       << setw(4) << "|" << endl; 
        
-      }
+      // }
+
     } // end loop over events
+
+    delete f;
   } // end loop over files
 
   if (nEventsChain != nEventsTotal)
@@ -642,7 +656,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
   cout << "numEvents passing selection " << npass << endl;
 
-  deleteHistos();
+  //deleteHistos();
   
 } // end ScanChain
 
