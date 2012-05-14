@@ -331,7 +331,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       hlt160_ = passThisHLTTrigger( "HLT_Photon160_v"               );
               
       //-------------------------
-      // calomet, pfmet, genmet
+      // MET variables
       //-------------------------
 
       met_        = cms2.evt_met();
@@ -342,22 +342,18 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       pfmetphi_   = cms2.evt_pfmetPhi();
       pfsumet_    = cms2.evt_pfsumet();
 
-      pfmett1_    = cms2.evt_pfmet_type1cor();
-      pfmetphit1_ = cms2.evt_pfmetPhi_type1cor();
+      pfmett1_    = -99; //cms2.evt_pfmet_type1cor();
+      pfmetphit1_ = -99; //cms2.evt_pfmetPhi_type1cor();
+
+      tcmet_     = evt_tcmet();
+      tcmetphi_  = evt_tcmetPhi();
+      tcsumet_   = evt_tcsumet();
 
       if (!isData){
         genmet_     = cms2.gen_met();
         genmetphi_  = cms2.gen_metPhi();
         gensumet_   = cms2.gen_sumEt();
       }
-
-      //-------------------------      
-      //tcmet stuff
-      //-------------------------
-
-      tcmet_     = evt_tcmet();
-      tcmetphi_  = evt_tcmetPhi();
-      tcsumet_   = evt_tcsumet();
                                     
       //------------------------
       // vertex stuff
@@ -379,10 +375,11 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       // photon stuff
       //---------------------------------
 
-      int ijetg           = -1; //index of jet matched to photon
-      nPhotons_           =  0;
+      int   ijetg         = -1; //index of jet matched to photon
       float maxPhotonPt   = -1;
       int   igmax         = -1;
+
+      nPhotons_           =  0;
       
       if( photons_p4().size() == 0 ) continue;
       
@@ -468,25 +465,19 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       // jet stuff
       //--------------------
 
-      nJets_        = 0;
-      ht_           = 0.;
-      nJets40_      = 0;
       nJets10_      = 0;
       nJets15_      = 0;
       nJets20_      = 0;
+      nJets_        = 0;
+      nJets40_      = 0;
+      ht_           = 0.;
       ht10_         = 0.;
-      nbtags_       = 0;
+      nbl_          = 0;
+      nbm_          = 0;
+      nbt_          = 0;
 
       LorentzVector jetSystem(0.,0.,0.,0.);        
       float maxcosdphi  = -99;
-      //int   imaxcosdphi = -1;
-      int   imaxjet     = -1;
-      float maxpt       = -1;
-
-      // VofP4         good_pfjets15_p4;
-      // vector<float> good_pfjets15_cor;
-      // VofP4         good_pfjets30_p4;
-      // vector<float> good_pfjets30_cor;
 
       VofP4 goodJets;
       goodJets.clear();
@@ -495,7 +486,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       maxemf_    = -1;
       
       //-----------------------------------------
-      // loop over pfjets pt > 30 GeV |eta| < 2.5
+      // loop over pfjets pt > 30 GeV |eta| < 3.0
       //-----------------------------------------
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
@@ -510,6 +501,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
 	//---------------------------------------------------------------------------
 	// get total correction: L1FastL2L3 for MC, L1FastL2L3Residual for data
+	// and require |eta| < 3.0
 	//---------------------------------------------------------------------------
 
 	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
@@ -520,6 +512,8 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
 	LorentzVector vjet = corr * pfjets_p4().at(ijet);
 
+	if( fabs(vjet.eta()) > 3.0 ) continue;
+
 	//---------------------------------------------------------------------------
         // PFJetID
 	//---------------------------------------------------------------------------
@@ -529,125 +523,53 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
           continue;
         }
 
-
 	//---------------------------------------------------------------------------
         // HT variables
 	//---------------------------------------------------------------------------
 
         if ( vjet.pt() > 10. ){
+	  nJets10_++;
           ht10_ += vjet.pt();
-        }
+	}
 
         if ( vjet.pt() > 15. ){
+	  nJets15_++;
           ht_ += vjet.pt();
           jetSystem += vjet;
-          good_pfjets15_p4.push_back ( pfjets_p4().at(ijet)  );
-          good_pfjets15_cor.push_back( pfjets_cor().at(ijet) );
 
           float emfrac = pfjets_neutralEmE().at(ijet) / pfjets_p4().at(ijet).energy();
           if( emfrac > maxemf_ ) maxemf_ = emfrac;
-        }
+	}
 
-        if ( vjet.pt() > 10. ) nJets10_++;
-        if ( vjet.pt() > 15. ) nJets15_++;
         if ( vjet.pt() > 20. ) nJets20_++;
+        if ( vjet.pt() > 30. ) nJets_++;
+        if ( vjet.pt() > 40. ) nJets40_++;
               
         if( vjet.pt() < 30. )                    continue;
 
-
-	/*
-        good_pfjets30_p4.push_back ( pfjets_p4().at(ijet)  );
-        good_pfjets30_cor.push_back( pfjets_cor().at(ijet) );
-        
-        //find max jet pt
-        if( vjet.pt() > maxpt ){
-          maxpt   = vjet.pt();
-          imaxjet = ijet;
-        }
+	goodJets.push_back(vjet);
 
         //find jet (anti-)aligned with tcmet
-        if( fabs( cos( tcmetphi_ - vjet.phi() ) ) > maxcosdphi ){
-          maxcosdphi  = fabs( cos( tcmetphi_ - vjet.phi() ) );
-          dphijetmet_ = fabs( tcmetphi_ - vjet.phi() );
+        if( fabs( cos( evt_pfmetPhi() - vjet.phi() ) ) > maxcosdphi ){
+          maxcosdphi  = fabs( cos( evt_pfmetPhi() - vjet.phi() ) );
+          dphijetmet_ = fabs( evt_pfmetPhi() - vjet.phi() );
           if( dphijetmet_ > TMath::Pi() ) dphijetmet_ = TMath::TwoPi() - dphijetmet_;
         }
         
-        //find closest calojet to use btagging info
-        float dRmin    = 100;
-        int   iCaloJet = -1;
-          
-        for( unsigned int iC = 0 ; iC < jets_p4().size() ; iC++ ){
-            
-          LorentzVector vcalojet = jets_p4().at(iC);
-          if( vcalojet.pt() * jets_cor().at(iC) < 10 ) continue;
-            
-          float dR = dRbetweenVectors(vjet, vcalojet);
-          if( dR < dRmin ){
-            dRmin = dR;
-            iCaloJet = iC;
-          }
-        }
-                  
-        if( iCaloJet > -1 ){
-          if( jets_simpleSecondaryVertexHighEffBJetTag().at(iCaloJet) > 1.74 ) ++nbtags_;
-          //if( jets_trackCountingHighEffBJetTag().at(iCaloJet) > 1.7 ) ++nbtags_;
-        }
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.244 ) nbl_ ++;
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.679 ) nbm_ ++;
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.898 ) nbt_ ++;
 
-        if ( vjet.pt() > 30. ) nJets_++;
-        if ( vjet.pt() > 40. ) nJets40_++;
-	*/
       }
-          
-
-      /*
-      jetmax_pt_ = -1;
-
-      if( imaxjet > -1 ){
-        jetmax_pt_       = pfjets_corL1FastL2L3().at(imaxjet) * pfjets_p4().at(imaxjet).pt();
-        jetmax_dphimet_  = deltaPhi( pfjets_p4().at(imaxjet).phi() , tcmetphi_);
-      }
-      */
 
       vecJetPt_ = jetSystem.pt();
 
+      sort(goodJets.begin()    , goodJets.end()    , sortByPt);
 
-
-
-
-
-      // //calculate type1 METs
-      
-      // metStruct type1PFMET30 = customType1Met( evt_pfmet() * cos( evt_pfmetPhi() ) , 
-      //                                          evt_pfmet() * cos( evt_pfmetPhi() ) , 
-      //                                          evt_pfsumet() ,
-      //                                          good_pfjets30_p4 , 
-      //                                          good_pfjets30_cor );
-
-      // pfmet_type1_pt30_ = type1PFMET30.met;
-
-      // metStruct type1PFMET15 = customType1Met( evt_pfmet() * cos( evt_pfmetPhi() ) , 
-      //                                          evt_pfmet() * cos( evt_pfmetPhi() ) , 
-      //                                          evt_pfsumet() ,
-      //                                          good_pfjets15_p4 , 
-      //                                          good_pfjets15_cor );
-      
-      // pfmet_type1_pt15_ = type1PFMET15.met;
-      
-      // metStruct type1TCMET30 = customType1Met( tcmetNew_ * cos( tcmetphiNew_ ) , 
-      //                                          tcmetNew_ * sin( tcmetphiNew_ ) , 
-      //                                          tcsumetNew_ ,
-      //                                          good_jpts30_p4 , 
-      //                                          good_jpts30_cor );
-
-      // tcmetNew_type1_pt30_ = type1TCMET30.met;
-
-      // metStruct type1TCMET15 = customType1Met( tcmetNew_ * cos( tcmetphiNew_ )  , 
-      //                                          tcmetNew_ * sin( tcmetphiNew_ )  , 
-      //                                          tcsumetNew_ ,
-      //                                          good_jpts15_p4 , 
-      //                                          good_jpts15_cor );
-      
-      // tcmetNew_type1_pt15_ = type1TCMET15.met;
+      if( goodJets.size()  > 0 ) jet1_   = &(goodJets.at(0));
+      if( goodJets.size()  > 1 ) jet2_   = &(goodJets.at(1));
+      if( goodJets.size()  > 2 ) jet3_   = &(goodJets.at(2));
+      if( goodJets.size()  > 3 ) jet4_   = &(goodJets.at(3));
       
       //-------------------------
       // fill histos and ntuple
@@ -655,21 +577,6 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
               
       npass++;
       FillBabyNtuple();
-      
-      // if( isData && ( tcmet_ > 30 || pfmet_ > 30 ) ){
-
-      //   metStruct dummyStruct = correctedTCMET( true, ofile_tcmet );
-
-      //   ofile_events << "|" << setw(8)  << evt_run()                   << setw(4) 
-      //                << "|" << setw(6)  << evt_lumiBlock()             << setw(4) 
-      //                << "|" << setw(12) << evt_event()                 << setw(4) 
-      //                << "|" << setw(6)  << nJets_                      << setw(4) 
-      //                << "|" << setw(6)  << nbtags_                     << setw(4) 
-      //                << "|" << setw(8)  << fround(tcmet_,1)            << setw(4) 
-      //                << "|" << setw(8)  << fround(pfmet_,1)            << setw(4) 
-      //                << "|" << setw(8)  << fround(dphijetmet_,2)       << setw(4) << "|" << endl; 
-       
-      // }
 
     } // end loop over events
 
@@ -712,6 +619,12 @@ void makePhotonBabies::fillUnderOverFlow(TH1F *h1, float value, float weight){
 //--------------------------------------------------------------------
 
 void makePhotonBabies::InitBabyNtuple (){
+
+  // pfjets
+  jet1_                         = 0;
+  jet2_                         = 0;
+  jet3_                         = 0;
+  jet4_                         = 0;
 
   // trigger stuff
   hlt20_			= -9999;
@@ -778,15 +691,17 @@ void makePhotonBabies::InitBabyNtuple (){
   tcmetphiNew_			= -999999.;
 
   nJets_			= -999999;
-  ht_			= -999999;
+  ht_		        	= -999999;
   vecJetPt_			= -999999;
   nJets40_			= -999999;
   nJets10_			= -999999;
   nJets15_			= -999999;
   nJets20_			= -999999;
-  ht10_			= -999999;
+  ht10_	         		= -999999;
 
-  nbtags_			= -999999;
+  nbl_  			= -999999;
+  nbm_  			= -999999;
+  nbt_  			= -999999;
   dphijetmet_			= -999999;
 
   //leading jet stuff
@@ -961,7 +876,9 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ht"			,       &ht_                   ,	 "ht/F"		        );
   babyTree_->Branch("ht10"	         	,	&ht10_                 ,	 "ht10/F"		);
   babyTree_->Branch("vecjetpt"			,       &vecJetPt_             ,	 "vecjetpt/F"		);
-  babyTree_->Branch("nbtags"			,       &nbtags_               ,         "nbtags/I"		);
+  babyTree_->Branch("nbl"			,       &nbl_                  ,         "nbl/I"		);
+  babyTree_->Branch("nbm"			,       &nbm_                  ,         "nbm/I"		);
+  babyTree_->Branch("nbt"			,       &nbt_                  ,         "nbt/I"		);
   babyTree_->Branch("ndphijetmet"		,	&dphijetmet_           ,	 "dphijetmet/F"		);
   babyTree_->Branch("maxjetpt"			,       &jetmax_pt_            ,	 "maxjetpt/F"		);
   babyTree_->Branch("maxjetdphimet"		,	&jetmax_dphimet_       ,	 "maxjetdphimet/F"	);
@@ -1027,6 +944,11 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("jetnneutral"		,       &jet_nneu_,             "jetnneutral/I");
   babyTree_->Branch("jetdphimet"		,       &jet_dphimet_,          "jetdphimet/F");
   babyTree_->Branch("jetdpt"			,       &jet_dpt_,              "jetdpt/F");
+
+  babyTree_->Branch("jet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet1_	);
+  babyTree_->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
+  babyTree_->Branch("jet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet3_	);
+  babyTree_->Branch("jet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet4_	);
 
 }
 

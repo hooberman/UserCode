@@ -6,7 +6,9 @@
 #include "TH1.h"
 #include <vector>
 #include <fstream>
+#include "Math/LorentzVector.h"
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 class TChain;
 
@@ -114,10 +116,17 @@ class makePhotonBabies
   Int_t   nJets10_;
   Int_t   nJets15_;
   Int_t   nJets20_;
-  Float_t sumJetPt_;
-  Float_t sumJetPt10_;
+  Float_t ht_;
+  Float_t ht10_;
   Float_t vecJetPt_;
-  Int_t   nbtags_;
+  Int_t   nbl_;
+  Int_t   nbm_;
+  Int_t   nbt_;
+
+  LorentzVector*  jet1_; 
+  LorentzVector*  jet2_; 
+  LorentzVector*  jet3_; 
+  LorentzVector*  jet4_; 
 
   //leading jet stuff
   Float_t jetmax_pt_;
