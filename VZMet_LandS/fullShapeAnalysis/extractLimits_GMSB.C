@@ -28,9 +28,37 @@
 
 using namespace std;
 
-char* version             = (char*) "V00-02-04";
+char* version             = (char*) "V00-02-08";
+bool combined             = true;
 
 bool fileInList(string thisfilename);
+
+float crossSectionGMSB( int m ){
+
+  float xsec = -1;
+
+  if     ( m == 130 ) xsec = 3057;
+  else if( m == 150 ) xsec = 1719;
+  else if( m == 170 ) xsec = 1035;
+  else if( m == 190 ) xsec =  656;
+  else if( m == 210 ) xsec =  433;
+  else if( m == 230 ) xsec =  293;
+  else if( m == 250 ) xsec =  205;
+  else if( m == 270 ) xsec =  146;
+  else if( m == 290 ) xsec =  105;
+  else if( m == 310 ) xsec =   77;
+  else if( m == 330 ) xsec =   57;
+  else if( m == 350 ) xsec =   43;
+  else if( m == 370 ) xsec =   33;
+  else if( m == 390 ) xsec =   25;
+  else if( m == 410 ) xsec =   20;
+  else{
+    cout << "ERROR! unrecognized GMSB mass " << m << endl;
+  }
+
+  return xsec;
+
+}
 
 void extractLimits_GMSB(){
 
@@ -59,10 +87,13 @@ void extractLimits_GMSB(){
     // open file, if available
     //------------------------------------------
       
-    char* filename = Form("cards/%s/SMS_%i_m2lnQ2.root",version,mgbin);
-      
-    bool found = fileInList( filename );
-    if( !found ) continue;
+    char* filename = "";
+    
+    if( combined ) filename = Form("cards/%s/SMS_combined_%i_m2lnQ2.root" ,version,mgbin);
+    else           filename = Form("cards/%s/SMS_%i_m2lnQ.root"           ,version,mgbin);
+
+    //bool found = fileInList( filename );
+    //if( !found ) continue;
       
     //------------------------------------------
     // check if point is excluded
@@ -76,16 +107,38 @@ void extractLimits_GMSB(){
       
     else{
 
+      //----------------------
+      // normalized to xsec
+      //----------------------
+      
+      float xsec = crossSectionGMSB(mg);
       mgvec.push_back(mg);
-      expvec.push_back(1000 * mylimit.exp);
-      obsvec.push_back(1000 * mylimit.obs);
+      expvec.push_back(xsec * mylimit.exp);
+      obsvec.push_back(xsec * mylimit.obs);
       
       cout << "---------------------------------------------------" << endl;
+      cout << "filename    " << filename    << endl;
       cout << "mgbin       " << mgbin       << endl;
+      cout << "xsec        " << xsec        << endl;
       cout << "mg          " << mg          << endl;
-      cout << "Observed:   " << mylimit.obs << endl; 
-      cout << "Expected:   " << mylimit.exp << endl; 
+      cout << "Observed:   " << xsec * mylimit.obs << endl; 
+      cout << "Expected:   " << xsec * mylimit.exp << endl; 
       cout << "---------------------------------------------------" << endl;
+
+      //----------------------
+      // normalized to 1/pb
+      //----------------------
+
+      // mgvec.push_back(mg);
+      // expvec.push_back(1000 * mylimit.exp);
+      // obsvec.push_back(1000 * mylimit.obs);
+      
+      // cout << "---------------------------------------------------" << endl;
+      // cout << "mgbin       " << mgbin       << endl;
+      // cout << "mg          " << mg          << endl;
+      // cout << "Observed:   " << 1000 * mylimit.obs << endl; 
+      // cout << "Expected:   " << 1000 * mylimit.exp << endl; 
+      // cout << "---------------------------------------------------" << endl;
 
     }
   }
@@ -117,7 +170,11 @@ void extractLimits_GMSB(){
   grobs.SetTitle("grobs");
   grexp.SetTitle("grexp");
 
-  TFile* outfile = TFile::Open(Form("cards/%s/observed_limit.root",version),"RECREATE");
+  char* outfilename         = Form("cards/%s/observed_limit.root",version);
+  if( combined) outfilename = Form("cards/%s/observed_limit_combined.root",version);
+
+  TFile* outfile = TFile::Open(outfilename,"RECREATE");
+
   grobs.Write();
   grexp.Write();
   outfile->Close();

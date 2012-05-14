@@ -29,7 +29,7 @@ using namespace std;
 
 void makeWZPlot( bool printplots = false ){
 
-  TFile *f = TFile::Open("cards/V00-02-02/observed_limit.root");
+  TFile *f = TFile::Open("cards/V00-02-09/observed_limit_line.root");
 
   TGraph* g0  = (TGraph*) f->Get("grobs0");
   TGraph* g50 = (TGraph*) f->Get("grobs50");
