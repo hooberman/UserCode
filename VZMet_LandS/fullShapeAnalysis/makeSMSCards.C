@@ -39,8 +39,8 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
   *ofile << Form("Observation %i                                                           ",datatot)         << endl;
   //*ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
   //*ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                << endl;
-  *ofile << Form("shapes      *   * %s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
-  *ofile << Form("shapes data_obs * %s/%s.root  histo_Data" , version , name )                << endl;
+  *ofile << Form("shapes      *   * %s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" ,  name) << endl;
+  *ofile << Form("shapes data_obs * %s.root  histo_Data" ,  name )                << endl;
   *ofile <<      "bin                                  1        1      1      1"                              << endl;
   *ofile << Form("process                        %s     Zbkg  OFbkg  VZbkg" , name )                          << endl;
   *ofile <<      "process                              0        1      2      3"                              << endl;
