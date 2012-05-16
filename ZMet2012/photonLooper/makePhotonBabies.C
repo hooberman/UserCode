@@ -636,7 +636,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
     } // end loop over events
 
     delete f;
-    delete tree;
+
   } // end loop over files
 
   if (nEventsChain != nEventsTotal)
