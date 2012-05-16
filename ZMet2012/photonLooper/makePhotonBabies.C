@@ -229,6 +229,11 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
     TTree *tree = (TTree*)f->Get("Events");
 
+    if( tree == 0 ){
+      cout << "Can't get tree from file " << currentFile->GetTitle() << endl;
+      continue;
+    }
+
     cms2.Init(tree);
 
     unsigned int nEvents = tree->GetEntries();
@@ -631,6 +636,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
     } // end loop over events
 
     delete f;
+    delete tree;
   } // end loop over files
 
   if (nEventsChain != nEventsTotal)
