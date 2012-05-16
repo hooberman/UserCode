@@ -34,15 +34,15 @@ void runMakePhotonBabies(char* prefix , bool isData = true, float kFactor = 1.){
   //-----------------------------------------------------------------------------------
 
   if( strcmp( prefix , "Photon" ) == 0 ){
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/cwelke/CMSSW_5_2_3_patch3_V05-02-07/Photon_Run2012A-PromptReco-v1_AOD/merged/merged_ntuple_191277_3.root");
-    //pickSkimIfExists(ch,"/hadoop/cms/store/user/cwelke/CMSSW_5_2_3_patch3_V05-02-07/Photon_Run2012A-PromptReco-v1_AOD/merged/merged*root");
+    //pickSkimIfExists(ch,"/hadoop/cms/store/user/cwelke/CMSSW_5_2_3_patch3_V05-02-07/Photon_Run2012A-PromptReco-v1_AOD/merged/merged_ntuple_191277_3.root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/cwelke/CMSSW_5_2_3_patch3_V05-02-07/Photon_Run2012A-PromptReco-v1_AOD/merged/merged*root");
   }
 
   //-----------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "DoubleElectron" ) == 0 ){
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/merged_ntuple_191718_0_1.root");
-    //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/merged*root");
+    //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/merged_ntuple_191718_0_1.root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/merged*root");
   }
 
   //-----------------------------------------------------------------------------------
