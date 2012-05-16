@@ -42,6 +42,8 @@ class makePhotonBabies
   TTree *babyTree_;
     
   //histos
+  Float_t maxleppt_;
+  Int_t   elveto_;
 
   //triggers
   Int_t hlt20_;
@@ -165,6 +167,7 @@ class makePhotonBabies
   Float_t  photon_ntkIsoSolid04_;    
   Float_t  photon_sigmaEtaEta_;      
   Float_t  photon_sigmaIEtaIEta_;    
+  Float_t  photon_sigmaIPhiIPhi_;    
   Float_t  photon_tkisoHollow03_;    
   Float_t  photon_tkisoHollow04_;    
   Float_t  photon_tkisoSolid03_;     
@@ -172,6 +175,7 @@ class makePhotonBabies
 
   //photon-matched jet stuff
   Float_t jet_pt_;            
+  Float_t calojet_pt_;            
   Float_t jet_dr_;            
   Float_t jet_eta_;            
   Float_t jet_energy_;            

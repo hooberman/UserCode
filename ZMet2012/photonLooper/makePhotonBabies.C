@@ -329,6 +329,21 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       hlt135_ = passThisHLTTrigger( "HLT_Photon135_v"               );
       hlt150_ = passThisHLTTrigger( "HLT_Photon150_v"               );
       hlt160_ = passThisHLTTrigger( "HLT_Photon160_v"               );
+
+
+      maxleppt_ = 0;
+
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 10 )                                                 continue;
+	if( !pass_electronSelection( iel , electronSelection_el_OSV2 , false , false ) ) continue;
+	if( els_p4().at(iel).pt() > maxleppt_ ) maxleppt_ = els_p4().at(iel).pt();
+      }
+              
+      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+	if( mus_p4().at(imu).pt() < 10 )           continue;
+	if( !muonId( imu , OSZ_v4 ))               continue;
+	if( mus_p4().at(imu).pt() > maxleppt_ ) maxleppt_ = mus_p4().at(imu).pt();
+      }
               
       //-------------------------
       // MET variables
@@ -417,10 +432,12 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
         seed_       = scs_eSeed().at(scind) ;
         s4_         = swiss_ - seed_ ;
         r4_         = 1 - s4_ / seed_ ;
-      }else{
-        seed_ = -9999.;
-        s4_   = -9999.;
-        r4_   = -9999.;
+	photon_sigmaIPhiIPhi_ = scs_sigmaIPhiIPhi()[scind]; 
+     }else{
+        seed_                 = -9999.;
+        s4_                   = -9999.;
+        r4_                   = -9999.;
+	photon_sigmaIPhiIPhi_ = -9999.;
       }
       
       photon_scidx_            = photons_scindex().at(igmax);
@@ -443,8 +460,15 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       photon_tkisoHollow04_    = photons_tkIsoHollow04().at(igmax); 
       photon_tkisoSolid03_     = photons_tkIsoSolid03().at(igmax);   
       photon_tkisoSolid04_     = photons_tkIsoSolid04().at(igmax);  
+
+      elveto_ = 0;
+      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 10 )                                                 continue;
+	if( dRbetweenVectors( photons_p4().at(igmax) , els_p4().at(iel) ) > 0.2 )        continue;
+	elveto_ = 1;
+      }
       
-      LorentzVector myvjet = pfjets_corL1FastL2L3().at(ijetg) * pfjets_p4().at(ijetg);
+      LorentzVector myvjet = pfjets_p4().at(ijetg);
       LorentzVector myvg   = photons_p4().at(igmax);
       
       jet_dr_             = dRbetweenVectors(myvjet, myvg);
@@ -461,6 +485,24 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       jet_dphimet_        = deltaPhi( pfjets_p4().at(ijetg).phi() , tcmetphi_);
       jet_pfjetid_        = passesPFJetID( ijetg ) ? 1 : 0;
       
+
+      // get pt of closest calojet, within dr < 0.3
+      calojet_pt_          = -1;
+
+      float mindr = 100;
+
+      for( int ic = 0 ; ic < jets_p4().size() ; ic++ ){
+	float dr = dRbetweenVectors( myvg, jets_p4().at(ic) );
+
+	if( dr > 0.3 ) continue;
+
+	if( dr < mindr ){
+	  mindr = dr;
+	  calojet_pt_ = jets_p4().at(ic).pt();
+	}
+
+      }
+
       //--------------------
       // jet stuff
       //--------------------
@@ -742,6 +784,7 @@ void makePhotonBabies::InitBabyNtuple (){
   photon_ntkIsoSolid04_		= -999999.;
   photon_sigmaEtaEta_		= -999999.;
   photon_sigmaIEtaIEta_		= -999999.;
+  photon_sigmaIPhiIPhi_		= -999999.;
   photon_tkisoHollow03_		= -999999.;
   photon_tkisoHollow04_		= -999999.;
   photon_tkisoSolid03_		= -999999.;
@@ -751,6 +794,7 @@ void makePhotonBabies::InitBabyNtuple (){
   jet_eta_			= -999999.;  
   jet_energy_			= -999999.;  
   jet_pt_			= -999999.;  
+  calojet_pt_			= -999999.;  
   jet_chg_emfrac_		= -999999.;  
   jet_chg_hadfrac_		= -999999.;  
   jet_neu_emfrac_		= -999999.;  
@@ -834,6 +878,8 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("pthat"	,       &pthat_            ,	"pthat/F"          );
   babyTree_->Branch("failjetid"	,	&failjetid_        ,	"failjetid/I"      );
   babyTree_->Branch("maxemf"	,       &maxemf_           ,	"maxemf/F"         );
+  babyTree_->Branch("maxleppt"	,	&maxleppt_         ,	"maxleppt/F"       );
+  babyTree_->Branch("elveto"	,	&elveto_           ,	"elveto/I"         );
 
   //met stuff
   babyTree_->Branch("pfmet"			,       &pfmet_                ,	 "pfmet/F"			);
@@ -924,6 +970,7 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("photon_ntkIsoSolid04"	,	&photon_ntkIsoSolid04_,     "photon_ntkIsoSolid04/F");      
   babyTree_->Branch("photon_sigmaEtaEta"	,       &photon_sigmaEtaEta_,       "photon_sigmaEtaEta/F");        
   babyTree_->Branch("photon_sigmaIEtaIEta"	,	&photon_sigmaIEtaIEta_,     "photon_sigmaIEtaIEta/F");      
+  babyTree_->Branch("photon_sigmaIPhiIPhi"	,	&photon_sigmaIPhiIPhi_,     "photon_sigmaIPhiIPhi/F");      
   babyTree_->Branch("photon_tkisoHollow03"	,	&photon_tkisoHollow03_,     "photon_tkisoHollow03/F");      
   babyTree_->Branch("photon_tkisoHollow04"	,	&photon_tkisoHollow04_,     "photon_tkisoHollow04/F");      
   babyTree_->Branch("photon_tkisoSolid03"	,	&photon_tkisoSolid03_,      "photon_tkisoSolid03/F");      
@@ -932,6 +979,7 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   //photon-matched jet stuff
   babyTree_->Branch("jetdr"			,       &jet_dr_,               "jetdr/F");
   babyTree_->Branch("jetpt"			,       &jet_pt_,               "jetpt/F");
+  babyTree_->Branch("calojetpt"			,       &calojet_pt_,           "calojetpt/F");
   babyTree_->Branch("pfjetid"			,       &jet_pfjetid_,          "pfjetid/I");
   babyTree_->Branch("jeteta"			,       &jet_eta_,              "jeteta/F");
   babyTree_->Branch("jetenergy"			,       &jet_energy_,           "jetenergy/F");
