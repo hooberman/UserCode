@@ -330,6 +330,14 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       hlt150_ = passThisHLTTrigger( "HLT_Photon150_v"               );
       hlt160_ = passThisHLTTrigger( "HLT_Photon160_v"               );
 
+      hgg22_  = passThisHLTTrigger( "HLT_Photon22_R9Id90_HE10_Iso40_EBOnly_v" );
+      hgg36_  = passThisHLTTrigger( "HLT_Photon36_R9Id90_HE10_Iso40_EBOnly_v" );
+      hgg50_  = passThisHLTTrigger( "HLT_Photon50_R9Id90_HE10_Iso40_EBOnly_v" );
+      hgg75_  = passThisHLTTrigger( "HLT_Photon75_R9Id90_HE10_Iso40_EBOnly_v" );
+      hgg90_  = passThisHLTTrigger( "HLT_Photon90_R9Id90_HE10_Iso40_EBOnly_v" );
+
+      rho_ = evt_ww_rho_vor(); // TO BE REPLACED
+      //rho_ = evt_kt6pf_foregiso_rho();
 
       maxleppt_ = 0;
 
@@ -938,6 +946,14 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("hlt135"			,	&hlt135_ ,  "hlt135/I"   );  
   babyTree_->Branch("hlt150"			,	&hlt150_ ,  "hlt150/I"   );  
   babyTree_->Branch("hlt160"			,	&hlt160_ ,  "hlt160/I"   );  
+
+  babyTree_->Branch("hgg22"			,	&hgg22_  ,  "hgg22/I"    );  
+  babyTree_->Branch("hgg36"			,	&hgg36_  ,  "hgg36/I"    );  
+  babyTree_->Branch("hgg50"			,	&hgg50_  ,  "hgg50/I"    );  
+  babyTree_->Branch("hgg75"			,	&hgg75_  ,  "hgg75/I"    );  
+  babyTree_->Branch("hgg90"			,	&hgg90_  ,  "hgg90/I"    );  
+
+  babyTree_->Branch("rho"			,	&rho_    ,  "rho/F"      );  
 
   //photon stuff
   babyTree_->Branch("ng"			,	&nPhotons_, "ng/I"); 

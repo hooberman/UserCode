@@ -55,6 +55,14 @@ class makePhotonBabies
   Int_t hlt150_;
   Int_t hlt160_;
 
+  Int_t hgg22_;
+  Int_t hgg36_;
+  Int_t hgg50_;
+  Int_t hgg75_;
+  Int_t hgg90_;
+
+  Float_t rho_;
+
   // event stuff
   char    dataset_[200];
   UInt_t  run_;
