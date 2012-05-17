@@ -34,15 +34,31 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   if( strcmp( prefix , "data" ) == 0 ){
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleMu_Run2012A-PromptReco-v1_AOD/unmerged/*root");  	  	 
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/unmerged/*root"); 	  	 
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/MuEG_Run2012A-PromptReco-v1_AOD/unmerged/*root");
+
+    // /hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-14/DoubleMu_Run2012A-PromptReco-v1_AOD/merged/
+    //pickSkimIfExists(ch,"../cms2_ntuples/DoubleMu/merged_ntuple_191718*root");
+
+    // /hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-14/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/
+    pickSkimIfExists(ch,"../cms2_ntuples/DoubleElectron/merged*root");
+
+    // /hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-14/DoubleMu_Run2012A-PromptReco-v1_AOD/merged/
+    pickSkimIfExists(ch,"../cms2_ntuples/DoubleMu/merged*root");
+
+    // /hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-14/MuEG_Run2012A-PromptReco-v1_AOD/merged/
+    pickSkimIfExists(ch,"../cms2_ntuples/MuEG/merged*root");
+
   }
   
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zjets" ) == 0 ){
     pickSkimIfExists(ch,"/nfs-3/userdata/cms2/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V5-v1/V05-02-04/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "ttbar" ) == 0 ){
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/TTJets_TuneZ2star_8TeV-madgraph-tauola_Summer12-PU_S7_START52_V5-v1/V05-02-07/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
