@@ -59,7 +59,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-02";
+const char* iter                 = "V00-00-03";
 const char* jsonfilename         = "../jsons/Cert_190456-193557_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 589/pb
 
 //--------------------------------------------------------------------
@@ -782,6 +782,22 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       ptgen1_ = -1;
       ptgen2_ = -1;
+
+      eveto1_ = -1;
+      hveto1_ = -1;
+      eveto2_ = -1;
+      hveto2_ = -1;
+
+      if( abs(id1_) == 13 ){
+	eveto1_ = mus_iso_ecalvetoDep().at(index1);
+	hveto1_ = mus_iso_hcalvetoDep().at(index1);
+      }
+
+      if( abs(id2_) == 13 ){
+	eveto2_ = mus_iso_ecalvetoDep().at(index2);
+	hveto2_ = mus_iso_hcalvetoDep().at(index2);
+      }
+
 
       if( !isData ){
 	
@@ -1918,6 +1934,10 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("eff100",       &eff100_,       "eff100/F"       );
   babyTree_->Branch("eff200",       &eff200_,       "eff200/F"       );
   babyTree_->Branch("eff300",       &eff300_,       "eff300/F"       );
+  babyTree_->Branch("eveto1",       &eveto1_,       "eveto1/F"       );
+  babyTree_->Branch("hveto1",       &hveto1_,       "hveto1/F"       );
+  babyTree_->Branch("eveto2",       &eveto2_,       "eveto2/F"       );
+  babyTree_->Branch("hveto2",       &hveto2_,       "hveto2/F"       );
 
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
