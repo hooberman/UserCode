@@ -25,7 +25,7 @@
 #include "../CORE/CMS2.cc"
 #ifndef __CINT__
 #include "../CORE/utilities.cc"
-#include "../CORE/ssSelections.cc"
+//#include "../CORE/ssSelections.cc"
 #include "../CORE/electronSelections.cc"
 #include "../CORE/electronSelectionsParameters.cc"
 #include "../CORE/MITConversionUtilities.cc"
@@ -59,8 +59,8 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-01";
-const char* jsonfilename         = "../jsons/goodrunlist_golf.txt";
+const char* iter                 = "V00-00-02";
+const char* jsonfilename         = "../jsons/Cert_190456-191859_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 379/pb
 
 //--------------------------------------------------------------------
 
@@ -659,7 +659,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
               
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
           if( mus_p4().at(imu).pt() < 20 )           continue;
-          if( !muonId( imu , OSZ_v4 ))               continue;
+          if( !muonId( imu , ZMet2012_v1 ))          continue;
           goodLeptons.push_back( mus_p4().at(imu) );
 	  nlep_++;
 	  nmu_++;
@@ -682,8 +682,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  cout << "ptll   " << hyp_ll_p4()[hypIdx].pt() << endl;
 	  cout << "ptlt   " << hyp_lt_p4()[hypIdx].pt() << endl;
 	  cout << "mass   " << hyp_p4()[hypIdx].mass() << endl;
-	  if( abs(hyp_ll_id()[hypIdx]) == 13 )   cout << "muon ll " << muonId( hyp_ll_index()[hypIdx] , OSZ_v4 ) << endl;
-	  if( abs(hyp_lt_id()[hypIdx]) == 13 )   cout << "muon lt " << muonId( hyp_lt_index()[hypIdx] , OSZ_v4 ) << endl;
+	  if( abs(hyp_ll_id()[hypIdx]) == 13 )   cout << "muon ll " << muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 ) << endl;
+	  if( abs(hyp_lt_id()[hypIdx]) == 13 )   cout << "muon lt " << muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 ) << endl;
 	  if( abs(hyp_ll_id()[hypIdx]) == 11 )   cout << "ele ll  " << pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_el_OSV2  ) << endl;
 	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << pass_electronSelection( hyp_lt_index()[hypIdx] , electronSelection_el_OSV2  ) << endl;
 	}
@@ -697,8 +697,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
       
         //muon ID
-        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , OSZ_v4 )))   continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , OSZ_v4 )))   continue;
+        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 )))   continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
               
         //electron ID
         if (abs(hyp_ll_id()[hypIdx]) == 11  && (! pass_electronSelection( hyp_ll_index()[hypIdx] , electronSelection_el_OSV2  ))) continue;
@@ -1033,11 +1033,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       tcsumet_  = tcmetStruct.sumet;   
 
       //sanity check
-      ///pair<float,float> p_tcmet = getMet( "tcMET"    , hypIdx);
+      //pair<float,float> p_tcmet = getMet( "tcMET"    , hypIdx);
       //float mytcmet = p_tcmet.first;
-      float mytcmet = evt_tcmet();
+      //float mytcmet = evt_tcmet();
 
-      if( fabs( tcmet_ - mytcmet ) > 0.1 ) cout << "Warning! tcmet mismatch " << tcmet_ << " " << mytcmet << endl; 
+      //if( fabs( tcmet_ - mytcmet ) > 0.1 ) cout << "Warning! tcmet mismatch " << tcmet_ << " " << mytcmet << endl; 
 
       if( calculateTCMET ){
         
@@ -1067,19 +1067,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
 
       nGoodVertex_   = 0;
-      nGoodDAVertex_ = 0;
 
       for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
         if(isGoodVertex(v)) nGoodVertex_++;
       }
 
-      for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-        if(isGoodDAVertex(v)) nGoodDAVertex_++;
-      }
-
-      davtxweight_ = 1;
+      vtxweight_ = 1;
       if( !isData ){
-	davtxweight_ = vtxweight();
+	vtxweight_ = vtxweight();
       }
 
       // electron energy scale stuff
@@ -1621,10 +1616,8 @@ void Z_looper::InitBabyNtuple (){
   event_        = -999999;
   weight_       = -999999.;
   vtxweight_    = -999999.;
-  davtxweight_  = -999999.;
   pthat_        = -999999.;
   nGoodVertex_  = -999999;
-  nGoodDAVertex_= -999999;
   leptype_      = -999999;
   ecaltype_     = -999999;
 
@@ -1911,10 +1904,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("maxemf",       &maxemf_,       "maxemf/F"       );
   babyTree_->Branch("trgeff",       &trgeff_,       "trgeff/F"       );
   babyTree_->Branch("nvtx",         &nGoodVertex_,  "nvtx/I"         );
-  babyTree_->Branch("ndavtx",       &nGoodDAVertex_,"ndavtx/I"       );
   babyTree_->Branch("weight",       &weight_,       "weight/F"       );
   babyTree_->Branch("vtxweight",    &vtxweight_,    "vtxweight/F"    );
-  babyTree_->Branch("davtxweight",  &davtxweight_,  "davtxweight/F"  );
   babyTree_->Branch("pthat",        &pthat_,        "pthat/F"        );
   babyTree_->Branch("mllgen",       &mllgen_,       "mllgen/F"       );
   babyTree_->Branch("qscale",       &qscale_,       "qscale/F"       );
