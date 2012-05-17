@@ -70,7 +70,6 @@ class makePhotonBabies
   UInt_t  event_;
   Int_t   leptype_;
   Int_t   nGoodVertex_;
-  Int_t   nGoodDAVertex_;
   Float_t weight_;
   Float_t pthat_;
   Int_t   failjetid_;

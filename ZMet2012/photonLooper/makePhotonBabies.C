@@ -272,7 +272,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       //--------------------------
 
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      if( !cleaning_goodDAVertexApril2011() )                        continue;
+      if( !cleaning_goodVertexApril2011() )                          continue;
 
       if(debug) cout << "Pass event selection" << endl;
 
@@ -391,12 +391,6 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
       for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
         if(isGoodVertex(v)) nGoodVertex_++;
-      }
-
-      nGoodDAVertex_ = 0;
-
-      for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-        if(isGoodDAVertex(v)) nGoodDAVertex_++;
       }
 
       //---------------------------------
@@ -887,7 +881,6 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("lumi"	,       &lumi_             ,	"lumi/I"           );
   babyTree_->Branch("event"	,       &event_            ,	"event/I"          );
   babyTree_->Branch("nvtx"	,       &nGoodVertex_      ,	"nvtx/I"           );
-  babyTree_->Branch("ndavtx"	,       &nGoodDAVertex_    ,	"ndavtx/I"         );
   babyTree_->Branch("weight"	,       &weight_           ,	"weight/F"         );
   babyTree_->Branch("pthat"	,       &pthat_            ,	"pthat/F"          );
   babyTree_->Branch("failjetid"	,	&failjetid_        ,	"failjetid/I"      );
