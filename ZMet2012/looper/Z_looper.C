@@ -59,8 +59,8 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-03";
-const char* jsonfilename         = "../jsons/Cert_190456-193557_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 589/pb
+const char* iter                 = "V00-00-04";
+const char* jsonfilename         = "../jsons/Cert_190456-194076_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 955/pb
 
 //--------------------------------------------------------------------
 

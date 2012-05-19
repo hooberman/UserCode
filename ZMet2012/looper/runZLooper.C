@@ -39,13 +39,15 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     //pickSkimIfExists(ch,"../cms2_ntuples/DoubleMu/merged_ntuple_191718*root");
 
     // /hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-14/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/
-    pickSkimIfExists(ch,"../cms2_ntuples/DoubleElectron/merged*root");
+    //pickSkimIfExists(ch,"../cms2_ntuples/DoubleElectron/merged*root");
 
     // /hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-14/DoubleMu_Run2012A-PromptReco-v1_AOD/merged/
-    pickSkimIfExists(ch,"../cms2_ntuples/DoubleMu/merged*root");
+    //pickSkimIfExists(ch,"../cms2_ntuples/DoubleMu/merged*root");
 
     // /hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-14/MuEG_Run2012A-PromptReco-v1_AOD/merged/
-    pickSkimIfExists(ch,"../cms2_ntuples/MuEG/merged*root");
+    //pickSkimIfExists(ch,"../cms2_ntuples/MuEG/merged*root");
+
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012A-PromptReco-v1_AOD/unmerged/store*root");
 
   }
   
