@@ -1,11 +1,11 @@
 #include "TChain.h"
 #include "makePhotonTemplates.C"
 
-void runPhotonTemplates( char* iter ){
+void runPhotonTemplates( char* iter , char* sample ){
 
   TChain* ch = new TChain("T1");
 
-  string file = Form("../templates/%s/Photon_baby.root",iter);
+  string file = Form("../photon_output/%s/%s_baby.root",iter,sample);
 
   cout << "Adding " << file << endl;
 
@@ -13,7 +13,7 @@ void runPhotonTemplates( char* iter ){
 
   makePhotonTemplates* myLooper = new makePhotonTemplates();
   
-  myLooper->ScanChain( ch , iter );
+  myLooper->ScanChain( ch , iter , sample );
   
 }
 
