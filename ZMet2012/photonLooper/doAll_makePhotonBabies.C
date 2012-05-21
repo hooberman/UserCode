@@ -3,6 +3,6 @@
   gROOT->ProcessLine(".L runMakePhotonBabies.C+");
   
   //--photon+jets---
-  //runMakePhotonBabies("Photon"                , true  );   // Photon data
   runMakePhotonBabies("DoubleElectron"        , true  );   // DoubleElectron data
+  runMakePhotonBabies("Photon"                , true  );   // Photon data
 }
