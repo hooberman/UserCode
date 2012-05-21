@@ -5,9 +5,8 @@
   gROOT->ProcessLine(".L runZLooper.C+");
 
   runZLooper("data"                  , true  );
-  //runZLooper("zjets"                 , false );  
-  //runZLooper("ttbar"                 , false );  
-
+  runZLooper("zjets"                 , false );  
+  runZLooper("ttbar"                 , false );  
 
 }
 
