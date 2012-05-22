@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-24";
+  const char* version   = "V00-02-25";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -288,14 +288,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runtW       = 0;
   bool runVQQ      = 0;
   bool runLM0      = 0;
-  bool runLM1      = 0;
+  bool runLM1      = 1;
   bool runLM1v2    = 0;
   bool runLM2      = 0;
-  bool runLM3      = 0;
+  bool runLM3      = 1;
   bool runLM3v2    = 0;
   bool runLM4      = 0;
   bool runLM5      = 0;
-  bool runLM6      = 0;
+  bool runLM6      = 1;
   bool runLM6v2    = 0;
   bool runLM7      = 0;
   bool runLM8      = 0;
@@ -304,6 +304,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLM11     = 0;
   bool runLM12     = 0;
   bool runLM13     = 0;
+  bool runLM13_v2  = 0;
   bool runML1      = 0;
   bool runML2      = 0;
   bool runML3      = 0;
@@ -326,8 +327,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLMscanFall11dil9  = 0; 
   bool runLMscanFall11dil10 = 0; 
   bool runT2tt     = 0;
-  bool runT2blnu   = 1;
-  bool runT1lh     = 1;
+  bool runT2blnu   = 0;
+  bool runT1lh     = 0;
   bool runZZZ      = 0;
   
   char* dir = "";
@@ -761,8 +762,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM13 = new TChain("Events");
   if (runLM13) {
     pickSkimIfExists(chLM13, 
-                     "cms2/LM13_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
+		     "/nfs-7/userdata/cms2/LM13_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
                      "SUSY_LM13");
+  }
+  
+  // LM13
+  TChain *chLM13_v2 = new TChain("Events");
+  if (runLM13_v2) {
+    pickSkimIfExists(chLM13_v2, 
+		     "/nfs-7/userdata/cms2/LM13_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root",
+                     "SUSY_LM13v2");
   }
   
   // ML1
@@ -1455,6 +1464,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chLM13, "LM13", kLM13, preLM13, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing LM13" << endl;
 		      hist::color("LM13", kOrange-7);
+		    }
+		    if (runLM13_v2) {
+		      cout << "Processing LM13v2" << endl;
+		      looper->ScanChain(chLM13_v2, "LM13v2", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+		      cout << "Done processing LM13v2" << endl;
+		      hist::color("LM13v2", kOrange-7);
 		    }
 		    if (runML1) {
 		      cout << "Processing ML1" << endl;
