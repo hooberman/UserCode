@@ -53,7 +53,8 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zjets" ) == 0 ){
-    pickSkimIfExists(ch,"/nfs-3/userdata/cms2/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V5-v1/V05-02-04/merged*root");
+    //pickSkimIfExists(ch,"/nfs-3/userdata/cms2/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V5-v1/V05-02-04/merged*root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V9-v2//V05-02-27/postprocessing/ntuple*root");
   }
 
   //----------------------------------------------------------------------------------------

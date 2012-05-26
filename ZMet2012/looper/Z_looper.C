@@ -58,8 +58,9 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
+      bool  doTenPercent         = true;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-07";
+const char* iter                 = "V00-00-08";
 const char* jsonfilename         = "../jsons/Cert_190456-194076_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 955/pb
 
 //--------------------------------------------------------------------
@@ -245,6 +246,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   cout << "version : " << iter         << endl;
   cout << "json    : " << jsonfilename << endl;
 
+  if( isData  ) doTenPercent = false;
+
+  if( doTenPercent ) cout << "Processing 10% of MC" << endl;
+
+
   set_goodrun_file( jsonfilename );
 
   if( TString(prefix).Contains("sms") || TString(prefix).Contains("T5") ){
@@ -320,8 +326,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
   //stringstream babyfilename;
   //babyfilename << prefix << "_baby.root";
-  if( doGenSelection ) MakeBabyNtuple( Form("../output/%s/%s_gen_baby.root"  , iter , prefix ) );
-  else                 MakeBabyNtuple( Form("../output/%s/%s_baby.root"      , iter , prefix ) );
+  char* tpsuffix = "";
+  if( doTenPercent ) tpsuffix = "_tenPercent";
+
+  if( doGenSelection ) MakeBabyNtuple( Form("../output/%s/%s_gen_baby%s.root"  , iter , prefix , tpsuffix ) );
+  else                 MakeBabyNtuple( Form("../output/%s/%s_baby%s.root"      , iter , prefix , tpsuffix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -402,6 +411,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       cms2.GetEntry(event);
       ++nEventsTotal;
 
+      if( doTenPercent ){
+	if( !(nEventsTotal%10==0) ) continue;
+      }
+
       // if( susyScan_Mmu() == 150 ){
       // 	dumpDocLines();
       // }
@@ -422,7 +435,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	InitBabyNtuple();
 
 	weight_ = cms2.evt_scale1fb();
-	  	
+	  
+	if( doTenPercent )	  weight_ *= 10;
+	
 	if( TString(prefix).Contains("LM4") ) weight_ *= kfactorSUSY( "lm4" );
 	if( TString(prefix).Contains("LM8") ) weight_ *= kfactorSUSY( "lm8" );
 
@@ -518,6 +533,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	weight_ = cms2.evt_scale1fb() * kFactor * lumi;
 	  
+	if( doTenPercent )	  weight_ *= 10;
+
 	if( TString(prefix).Contains("LM") ){
 	  if( TString(prefix).Contains("LM0") ) weight_ *= kfactorSUSY( "lm0" );
 	  if( TString(prefix).Contains("LM1") ) weight_ *= kfactorSUSY( "lm1" );
@@ -571,6 +588,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  ml_ = -999;
 	  x_  = -999;
 	}
+
+	if( doTenPercent )	  weight_ *= 10;
 
 	genmetcustom_ = getGenMetCustom(prefix);
 
