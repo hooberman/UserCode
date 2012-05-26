@@ -109,12 +109,15 @@ class Z_looper
 
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
+  LorentzVector*  pflep1_;
+  LorentzVector*  pflep2_;
   LorentzVector*  lep3_;
   LorentzVector*  lep4_;
   LorentzVector*  lep5_;
   LorentzVector*  lep6_;
   LorentzVector*  w_;
   LorentzVector*  dilep_;
+  LorentzVector*  dileppf_;
   LorentzVector*  jet1_; 
   LorentzVector*  jet2_; 
   LorentzVector*  jet3_; 
@@ -124,6 +127,8 @@ class Z_looper
   LorentzVector*  bjet3_; 
   LorentzVector*  bjet4_; 
 
+  Int_t   el1tv_;
+  Int_t   el2tv_;
   Float_t lljj_;
   Float_t jj_;
   Float_t l1jj_;

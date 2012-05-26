@@ -60,7 +60,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = true;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-08";
+const char* iter                 = "V00-00-10";
 const char* jsonfilename         = "../jsons/Cert_190456-194076_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 955/pb
 
 //--------------------------------------------------------------------
@@ -796,7 +796,90 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	
       }
 
+      //----------------------------
+      // matched PFMuons/PFElectrons
+      //----------------------------
+
+      el1tv_ = 0;
+      el2tv_ = 0;
+
+      int nmatched = 0;
+
+      if( abs(id1_) == 13 ){
+
+	int ipf1 = mus_pfmusidx().at(index1);
+
+	if( ipf1 >= (int)pfmus_p4().size() ){
+	  cout << __FILE__ << " " << __LINE__ << " ERROR! matched pfmuon index " 
+	       << ipf1 << " #PFMuons " << pfmus_p4().size() << endl;
+	  continue;
+	}
+
+	if( ipf1 >= 0 ){
+	  pflep1_ = &(pfmus_p4().at(ipf1));
+	  nmatched++;
+	}
+      }
+
+      else if( abs(id1_) == 11 ){
+
+	int ipf1 = els_pfelsidx().at(index1);
+
+	if( ipf1 >= (int) pfels_p4().size() ){
+	  cout << __FILE__ << " " << __LINE__ << " ERROR! matched pfelectron index " 
+	       << ipf1 << " #PFElectrons " << pfels_p4().size() << endl;
+	  continue;
+	}
+
+	if( ipf1 >= 0 ){
+	  pflep1_ = &(pfels_p4().at(ipf1));
+	  nmatched++;
+	}
+
+	if( fabs(cms2.els_etaSC().at(index1)) >= 1.4442 && fabs(cms2.els_etaSC().at(index1)) <= 1.566 ) el1tv_ = 1;
+      }
+
+      if( abs(id2_) == 13 ){
+
+	int ipf2 = mus_pfmusidx().at(index2);
+
+	if( ipf2 >= (int)pfmus_p4().size() ){
+	  cout << __FILE__ << " " << __LINE__ << " ERROR! matched pfmuon index " 
+	       << ipf2 << " #PFMuons " << pfmus_p4().size() << endl;
+	  continue;
+	}
+
+	if( ipf2 >= 0 ){
+	  pflep2_ = &(pfmus_p4().at(ipf2));
+	  nmatched++;
+	}
+      }
+
+      else if( abs(id2_) == 11 ){
+
+	int ipf2 = els_pfelsidx().at(index2);
+
+	if( ipf2 >= (int)pfels_p4().size() ){
+	  cout << __FILE__ << " " << __LINE__ << " ERROR! matched pfelectron index " 
+	       << ipf2 << " #PFElectrons " << pfels_p4().size() << endl;
+	  continue;
+	}
+
+	if( ipf2 >= 0 ){
+	  pflep2_ = &(pfels_p4().at(ipf2));
+	  nmatched++;
+	}
+
+	if( fabs(cms2.els_etaSC().at(index2)) >= 1.4442 && fabs(cms2.els_etaSC().at(index2)) <= 1.566 ) el2tv_ = 1;
+      }
+
+
       dilep_   = &hyp_p4().at(hypIdx);
+
+      if( nmatched == 2 ){
+	LorentzVector dileppf_temp = *pflep1_ + *pflep2_;
+	dileppf_ = &dileppf_temp;
+      }
 
       float dilmass = hyp_p4().at(hypIdx).mass();
 
@@ -1769,6 +1852,7 @@ void Z_looper::InitBabyNtuple (){
   l1j2_		= -1;
   l2j1_		= -1;
   dilep_	= 0;
+  dileppf_	= 0;
   jet1_		= 0;
   jet2_		= 0;
   jet3_		= 0;
@@ -1779,6 +1863,8 @@ void Z_looper::InitBabyNtuple (){
   bjet4_       	= 0;
   lep1_		= 0;
   lep2_		= 0;
+  pflep1_	= 0;
+  pflep2_	= 0;
   lep3_         = 0;
   lep4_         = 0;
   lep5_         = 0;
@@ -1969,6 +2055,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   babyTree_->Branch("id1",          &id1_,          "id1/I"         );
   babyTree_->Branch("id2",          &id2_,          "id2/I"         );
+  babyTree_->Branch("el1tv",        &el1tv_,        "el1tv/I"       );
+  babyTree_->Branch("el2tv",        &el2tv_,        "el2tv/I"       );
 
 
   //met stuff
@@ -2068,6 +2156,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("l2j1",                 &l2j1_,                 "l2j1/F");  
 
   babyTree_->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
+  babyTree_->Branch("dileppf" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dileppf_	);
   babyTree_->Branch("w"       , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &w_ 	);
 
   babyTree_->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
@@ -2076,6 +2165,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("lep4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep4_	);
   babyTree_->Branch("lep5"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep5_	);
   babyTree_->Branch("lep6"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep6_	);
+  babyTree_->Branch("pflep1"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pflep1_	);
+  babyTree_->Branch("pflep2"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pflep2_	);
 
   babyTree_->Branch("jet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet1_	);
   babyTree_->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
