@@ -2089,7 +2089,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	mG_ = -9999;
 	mL_ = -9999;
 
-        if(strcmp(prefix,"T1lh") == 0){
+	if( TString(prefix).Contains("T1") ){
 	  mG_ = sparm_mG();
 	  mL_ = sparm_mL();
 	  mF_ = sparm_mf();
