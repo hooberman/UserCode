@@ -115,7 +115,8 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( elveto_ == 1 )                                                      continue; // remove photons with nearby electrons
       if( maxleppt_ > 20.0 )                                                  continue; // veto leptons pt > 20 GeV
       if( acos( cos( phig_ - pfmetphi_ ) ) < 0.14 )                           continue; // kill photons aligned with MET
-
+      //if( nbm_ < 1 )                                                          continue; // >=2 b-jets
+      
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
 
@@ -150,6 +151,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( h90 > 0 ){
         templateWeight = h90;
         iTrigBin = 4;
+	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -158,6 +160,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h75 > 0 ){
         templateWeight = h75;
         iTrigBin = 3;
+	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -166,6 +169,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h50 > 0 ){
         templateWeight = h50;
         iTrigBin = 2;
+	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -174,6 +178,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h30 > 0 ){
         templateWeight = h30;
         iTrigBin = 1;
+	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -182,6 +187,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h20 > 0 ){
         templateWeight = h20;
         iTrigBin = 0;
+	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -275,6 +281,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
     hphotonPt50->Write();
     hphotonPt70->Write();
     hphotonPt90->Write();
+    hphotonAll->Write();
     fout->Close();
   
 } // end ScanChain
@@ -302,8 +309,9 @@ void makePhotonTemplates::bookHistos(){
   hphotonPt50  = new TH1F("hphotonPt50", "",500,0,500);
   hphotonPt70  = new TH1F("hphotonPt70", "",500,0,500);
   hphotonPt90  = new TH1F("hphotonPt90", "",500,0,500);
+  hphotonAll   = new TH1F("hphotonAll" , "",500,0,500);
 
-  int maxmet = 100;
+  int maxmet = 400;
 
   for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
     for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
@@ -403,6 +411,9 @@ void makePhotonTemplates::setBranches (TTree* tree){
   tree->SetBranchAddress("pfmet"	       ,        &pfmet_                 );
   tree->SetBranchAddress("pfmetphi"	       ,        &pfmetphi_              );
   tree->SetBranchAddress("njets"	       ,        &nJets_                 );
+  tree->SetBranchAddress("nbl"	               ,        &nbl_                   );
+  tree->SetBranchAddress("nbm"	               ,        &nbm_                   );
+  tree->SetBranchAddress("nbt"	               ,        &nbt_                   );
   tree->SetBranchAddress("ht"	               ,        &ht_                    );
   tree->SetBranchAddress("nvtx"		       ,        &nvtx_                  );
   tree->SetBranchAddress("jetpt"	       ,        &jet_pt_                );
