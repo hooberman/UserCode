@@ -25,7 +25,8 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
-bool debug          = true;
+const bool debug          = true;
+const bool vtxreweight    = true;
 
 using namespace std;
 
@@ -36,12 +37,14 @@ inline double fround(double n, double d){
 void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample ){
 
   bool useHGGTriggers = false;
-  
   if( TString(sample).Contains("DoubleElectron") ) useHGGTriggers = true;
 
   cout << "Sample : " << sample << endl;
   if( useHGGTriggers ) cout << "Using H->gg triggers" << endl;
   else                 cout << "Using standard triggers" << endl;
+
+  if( vtxreweight ) cout << "Doing vtx reweighting" << endl;
+  else              cout << "NO vtx reweighting"    << endl;
 
   int npass = 0;
   bookHistos();
@@ -55,6 +58,17 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
   unsigned int nEventsTotal = 0;
 
   if(debug) cout << "Begin file loop" << endl;
+
+  TH1F* reweightHist[5];
+
+  if( vtxreweight ){ 
+    TFile *reweightFile = reweightFile = TFile::Open("vtxreweight_920pb.root");
+    reweightHist[0] = (TH1F*) reweightFile->Get("hratio20");
+    reweightHist[1] = (TH1F*) reweightFile->Get("hratio30");
+    reweightHist[2] = (TH1F*) reweightFile->Get("hratio50");
+    reweightHist[3] = (TH1F*) reweightFile->Get("hratio70");
+    reweightHist[4] = (TH1F*) reweightFile->Get("hratio90");
+  }
 
   // file loop
   TIter fileIter(listOfFiles);
@@ -89,6 +103,15 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
         }
       }
 
+      int vtxbin = -1;
+      if( nvtx_ < 5 )                 vtxbin = 1;
+      if( nvtx_ >=  5 && nvtx_ < 10 ) vtxbin = 2;
+      if( nvtx_ >= 10 && nvtx_ < 15 ) vtxbin = 3;
+      if( nvtx_ >= 15 && nvtx_ < 20 ) vtxbin = 4;
+      if( nvtx_ >= 20 && nvtx_ < 25 ) vtxbin = 5;
+      if( nvtx_ >= 25 && nvtx_ < 30 ) vtxbin = 6;
+      if( nvtx_ >= 30 )               vtxbin = 7;
+
       int h20 = hlt20_;
       int h30 = hlt30_;
       int h50 = hlt50_;
@@ -104,18 +127,18 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       }
 
       // event selection 
-      if( nJets_ < 2 )                                                        continue; // >=2 jets
-      if( etg_ <  20 )                                                        continue; // photon pt  > 20 GeV
-      if( fabs( etag_ ) > 2 )                                                 continue; // photon eta < 2
-      if( hoe_ > 0.1 )                                                        continue; // H/E < 0.1
-      if( photon_pixelseed_ == 1 )                                            continue; // veto pixel match
-      if( jetneutralemfrac_ < 0.7 )                                           continue; // jet neutral EM fraction cut
-      if( jet_pt_     - etg_ < -5 )                                           continue; // pfjet cleaning
-      if( calojet_pt_ - etg_ < -5 )                                           continue; // calojet cleaning
-      if( elveto_ == 1 )                                                      continue; // remove photons with nearby electrons
-      if( maxleppt_ > 20.0 )                                                  continue; // veto leptons pt > 20 GeV
-      if( acos( cos( phig_ - pfmetphi_ ) ) < 0.14 )                           continue; // kill photons aligned with MET
-      //if( nbm_ < 1 )                                                          continue; // >=2 b-jets
+      if( nJets_ < 2 )                                      continue; // >=2 jets
+      if( etg_ <  20 )                                      continue; // photon pt  > 20 GeV
+      if( fabs( etag_ ) > 2 )                               continue; // photon eta < 2
+      if( hoe_ > 0.1 )                                      continue; // H/E < 0.1
+      if( photon_pixelseed_ == 1 )                          continue; // veto pixel match
+      if( jetneutralemfrac_ < 0.7 )                         continue; // jet neutral EM fraction cut
+      if( jet_pt_     - etg_ < -5 )                         continue; // pfjet cleaning
+      if( calojet_pt_ - etg_ < -5 )                         continue; // calojet cleaning
+      if( elveto_ == 1 )                                    continue; // remove photons with nearby electrons
+      if( maxleppt_ > 20.0 )                                continue; // veto leptons pt > 20 GeV
+      if( acos( cos( phig_ - pfmetphi_ ) ) < 0.14 )         continue; // kill photons aligned with MET
+      //if( nbm_ < 1 )                                        continue; // >=2 b-jets
       
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
@@ -126,6 +149,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       int iVtxBin          = getVtxBin       ( nvtx_     );
       float templateWeight = 1;
 
+      /*
       //fill templates binned by njets, sumjetpt, boson pt        
       fillUnderOverFlow( tcmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ]    ,  tcmet_    , templateWeight );
       fillUnderOverFlow( pfmetTemplate[ iJetBin ][ iSumJetPtBin ][ iBosonPtBin ]    ,  pfmet_    , templateWeight );
@@ -137,6 +161,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       //fill templates binned by njets, sumjetpt
       fillUnderOverFlow( tcmetTemplate_combined[ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
       fillUnderOverFlow( pfmetTemplate_combined[ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+      */
 
       ++npass;
 
@@ -151,9 +176,14 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( h90 > 0 ){
         templateWeight = h90;
         iTrigBin = 4;
+
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt90  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
+
+	if( vtxreweight ) templateWeight *= reweightHist[4]->GetBinContent(vtxbin);
+
+	cout << "nvtx vtxbin weight " << nvtx_ << " " << vtxbin << " " << reweightHist[4]->GetBinContent(vtxbin) << endl;
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -162,9 +192,12 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h75 > 0 ){
         templateWeight = h75;
         iTrigBin = 3;
+
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt70  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
+
+	if( vtxreweight ) templateWeight *= reweightHist[3]->GetBinContent(vtxbin);
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -173,9 +206,12 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h50 > 0 ){
         templateWeight = h50;
         iTrigBin = 2;
+
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt50  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
+
+	if( vtxreweight ) templateWeight *= reweightHist[2]->GetBinContent(vtxbin);
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -184,9 +220,12 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h30 > 0 ){
         templateWeight = h30;
         iTrigBin = 1;
+
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt30  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
+
+	if( vtxreweight ) templateWeight *= reweightHist[1]->GetBinContent(vtxbin);
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -195,9 +234,12 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h20 > 0 ){
         templateWeight = h20;
         iTrigBin = 0;
+
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt20  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
+
+	if( vtxreweight ) templateWeight *= reweightHist[0]->GetBinContent(vtxbin);
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -280,19 +322,25 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
     // make histos rootfile
     TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
     rootdir->cd();
-    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates.root",iter,sample) << endl;
-    saveHist(Form("../photon_output/%s/%s_templates.root",iter,sample));
+
+    char* vtxchar = "";
+    if( vtxreweight ) vtxchar = "_vtxreweight";
+
+    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s.root",iter,sample,vtxchar) << endl;
+    saveHist(Form("../photon_output/%s/%s_templates%s.root",iter,sample,vtxchar));
+
+
     //deleteHistos();
 
-    TFile* fout = TFile::Open(Form("../photon_output/%s/%s_templateHistos.root",iter,sample),"RECREATE");
-    fout->cd();
-    hphotonPt20->Write();
-    hphotonPt30->Write();
-    hphotonPt50->Write();
-    hphotonPt70->Write();
-    hphotonPt90->Write();
-    hphotonAll->Write();
-    fout->Close();
+    // TFile* fout = TFile::Open(Form("../photon_output/%s/%s_templateHistos.root",iter,sample),"RECREATE");
+    // fout->cd();
+    // hphotonPt20->Write();
+    // hphotonPt30->Write();
+    // hphotonPt50->Write();
+    // hphotonPt70->Write();
+    // hphotonPt90->Write();
+    // hphotonAll->Write();
+    // fout->Close();
   
 } // end ScanChain
 
