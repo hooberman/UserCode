@@ -151,7 +151,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( h90 > 0 ){
         templateWeight = h90;
         iTrigBin = 4;
-	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
+	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
+	fillUnderOverFlow( hnvtxPt90  , nvtx_ , templateWeight );
+	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -160,7 +162,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h75 > 0 ){
         templateWeight = h75;
         iTrigBin = 3;
-	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
+	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
+	fillUnderOverFlow( hnvtxPt70  , nvtx_ , templateWeight );
+	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -169,7 +173,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h50 > 0 ){
         templateWeight = h50;
         iTrigBin = 2;
-	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
+	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
+	fillUnderOverFlow( hnvtxPt50  , nvtx_ , templateWeight );
+	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -178,7 +184,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h30 > 0 ){
         templateWeight = h30;
         iTrigBin = 1;
-	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
+	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
+	fillUnderOverFlow( hnvtxPt30  , nvtx_ , templateWeight );
+	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -187,7 +195,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       else if( h20 > 0 ){
         templateWeight = h20;
         iTrigBin = 0;
-	fillUnderOverFlow( hphotonAll , etg_ , templateWeight );
+	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
+	fillUnderOverFlow( hnvtxPt20  , nvtx_ , templateWeight );
+	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -310,6 +320,13 @@ void makePhotonTemplates::bookHistos(){
   hphotonPt70  = new TH1F("hphotonPt70", "",500,0,500);
   hphotonPt90  = new TH1F("hphotonPt90", "",500,0,500);
   hphotonAll   = new TH1F("hphotonAll" , "",500,0,500);
+
+  hnvtxPt20  = new TH1F("hnvtxPt20", "",50,0,50);
+  hnvtxPt30  = new TH1F("hnvtxPt30", "",50,0,50);
+  hnvtxPt50  = new TH1F("hnvtxPt50", "",50,0,50);
+  hnvtxPt70  = new TH1F("hnvtxPt70", "",50,0,50);
+  hnvtxPt90  = new TH1F("hnvtxPt90", "",50,0,50);
+  hnvtxAll   = new TH1F("hnvtxAll" , "",50,0,50);
 
   int maxmet = 400;
 
