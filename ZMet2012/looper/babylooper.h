@@ -219,11 +219,15 @@ class babylooper
 	LorentzVector*  pflep1_;
 	LorentzVector*  pflep2_;
 
+	Int_t el1tv_;
+	Int_t el2tv_;
 
         //leading jet stuff
         Float_t jetmax_pt_;
         Float_t jetmax_dphimet_;
       
+	TH1F* hpfdilmassee;
+	TH1F* hpfdilmassmm;
         TH1F* hyield_0j;
         TH1F* hyield_1j;
         TH1F* hyield_2j;
@@ -282,6 +286,11 @@ class babylooper
         TH1F* htcmet[4][4];
         TH1F* htcmetNew[4][4];
         TH1F* hpfmet[4][4];
+
+	TH1F* hpfmet_ebeb;
+	TH1F* hpfmet_ebee;
+	TH1F* hpfmet_eeeep;
+	TH1F* hpfmet_eeeem;
 
         TH1F* metPredicted_njets[11];
         TH1F* metObserved_njets[11];
