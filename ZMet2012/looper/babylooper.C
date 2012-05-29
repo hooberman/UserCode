@@ -31,17 +31,21 @@ enum templateType { e_njets_ht = 0, e_njets_ht_nvtx = 1, e_njets_ht_vecjetpt };
 //USER PARAMS
 //------------------------------------------------
 bool           debug              = false;
-bool           reweight           = false;   //reweight for photon vs. Z pt
-bool           doVtxReweight      = false;   //reweight templates for nVertices
+
+bool           doVtxReweight      = true;    //reweight templates for nVertices
 bool           setTemplateErrors  = true; 
 metType        myMetType          = e_pfmet;
-//templateSource myTemplateSource   = e_PhotonJet;
 templateSource myTemplateSource   = e_PhotonJetStitched;
-//templateSource myTemplateSource   = e_QCD;
 templateType   myTemplateType     = e_njets_ht;
+bool           reweight           = false;   //reweight for photon vs. Z pt
+char*          iter               = "njetsgeq2";
+
+
 //templateType   myTemplateType     = e_njets_ht_nvtx;
 //templateType   myTemplateType     = e_njets_ht_vecjetpt;
-char*          iter               = "njetsgeq2";
+//templateSource myTemplateSource   = e_QCD;
+//templateSource myTemplateSource   = e_PhotonJet;
+
 
 //------------------------------------------------
 
@@ -76,50 +80,44 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   string  metTemplateString = "";
   char*   templateFileName  = "";
 
-  TH1F* reweightHist[3];
   TRandom3 rand;
-  TH1F* vtxReweightHist;
 
-  if( reweight ){
-  
-    TFile *reweightFile;
-    reweightFile = TFile::Open("reweight.root");
-    reweightHist[0] = (TH1F*) reweightFile->Get("ratio_1jet");
-    reweightHist[1] = (TH1F*) reweightFile->Get("ratio_2jet");
-    reweightHist[2] = (TH1F*) reweightFile->Get("ratio_3jet");
- 
-    //     TCanvas *c1=new TCanvas("c1","",1200,400);
-    //     c1->Divide(3,1);
-    //     c1->cd(1);
-    //     reweightHist[0]->Draw();
-    //     c1->cd(2);
-    //     reweightHist[1]->Draw();
-    //     c1->cd(3);
-    //     reweightHist[2]->Draw();
-  }
+  // TH1F* reweightHist[5];
+  // TH1F* vtxReweightHist;
+
+  // if( reweight ){ 
+  //   TFile *reweightFile;
+  //   reweightFile = TFile::Open("vtxreweight_920pb.root");
+  //   reweightHist[0] = (TH1F*) reweightFile->Get("hratio20");
+  //   reweightHist[1] = (TH1F*) reweightFile->Get("hratio30");
+  //   reweightHist[2] = (TH1F*) reweightFile->Get("hratio50");
+  //   reweightHist[3] = (TH1F*) reweightFile->Get("hratio70");
+  //   reweightHist[4] = (TH1F*) reweightFile->Get("hratio90");
+  // }
 
   //select templates
   if( isData ){
     
-    if( myTemplateSource == e_QCD ){
-      cout << "NO QCD TEMPLATES" << endl;
-      exit(0);
-      templateFileName = Form("qcd-mini-ntuple/victor_templates_overlap.root");
-      cout << "Using template file " << templateFileName << endl;
-      metTemplateString = "_victorTemplate";
-      metTemplateFile = TFile::Open( templateFileName );
-    }
+    // if( myTemplateSource == e_QCD ){
+    //   cout << "NO QCD TEMPLATES" << endl;
+    //   exit(0);
+    //   templateFileName = Form("qcd-mini-ntuple/victor_templates_overlap.root");
+    //   cout << "Using template file " << templateFileName << endl;
+    //   metTemplateString = "_victorTemplate";
+    //   metTemplateFile = TFile::Open( templateFileName );
+    // }
       
-    else if( myTemplateSource == e_PhotonJet ){
-      templateFileName = Form("../templates/%s/photon_templates.root",template_version);
-      cout << "Using template file " << templateFileName << endl;
-      metTemplateString = "_EGTemplate";
-      metTemplateFile = TFile::Open( templateFileName );
-    }
+    // else if( myTemplateSource == e_PhotonJet ){
+    //   templateFileName = Form("../templates/%s/photon_templates.root",template_version);
+    //   cout << "Using template file " << templateFileName << endl;
+    //   metTemplateString = "_EGTemplate";
+    //   metTemplateFile = TFile::Open( templateFileName );
+    // }
 
-    else if( myTemplateSource == e_PhotonJetStitched ){
+    if( myTemplateSource == e_PhotonJetStitched ){
       //templateFileName = Form("../templates/%s/photon_templates.root",template_version);
-      templateFileName = Form("../photon_output/%s/DoubleElectron_templates.root",template_version);
+      if( doVtxReweight ) templateFileName = Form("../photon_output/%s/DoubleElectron_templates_vtxreweight.root",template_version);
+      else                templateFileName = Form("../photon_output/%s/DoubleElectron_templates.root",template_version);
       cout << "Using template file " << templateFileName << endl;
       metTemplateString = "_PhotonStitchedTemplate";
       metTemplateFile = TFile::Open( templateFileName );
@@ -217,8 +215,9 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
     unsigned int nEvents = tree->GetEntries();
  
     for (unsigned int event = 0 ; event < nEvents; ++event){
-        
+
       tree->GetEntry(event);
+
       ++nEventsTotal;
 
       // progress feedback to user
@@ -239,7 +238,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
       fillUnderOverFlow( hgenps_pthat  , pthat_ , mcweight );
       fillUnderOverFlow( hphotonpt     , etg_   , mcweight );
-
+ 
       float theMet = -1;
       if     ( myMetType == e_tcmet    ) theMet = tcmet_;
       else if( myMetType == e_tcmetNew ) theMet = tcmetNew_;
@@ -306,15 +305,32 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         //event selection
         //------------------------------------------------------------
 
-	if( leptype_ == 0 ){
-	  if( jetpt_ll_ - ptll_ < -5  ) continue; 
-	  if( jetpt_lt_ - ptlt_ < -5  ) continue; 
-	}
-	if( leptype_ == 1 && npfmuons_ < 2 ) continue;
-	if( leptype_ == 2 && npfmuons_ < 1 ) continue;
+	if( nJets_ < 2 )                                                     continue; //>=2 jets
 
-	//jetselection
-        if( nJets_ < 2 )                                                     continue; //>=2 jets
+	//if( fabs( lep1_->eta() ) > 1.479 ) continue;
+	//if( fabs( lep2_->eta() ) > 1.479 ) continue;
+	
+	// if( leptype_ == 0 ){
+	//   if( jetpt_ll_ - ptll_ < -5  ) continue; 
+	//   if( jetpt_lt_ - ptlt_ < -5  ) continue; 
+	// }
+	// if( leptype_ == 1 ){
+	//   if( fabs( ptllpf_ - ptll_ ) > 1  ) continue; 
+	//   if( fabs( ptltpf_ - ptlt_ ) > 1  ) continue; 
+	// }
+
+	//if( fabs( lep1_->pt() - pflep1_->pt() ) > 1.0 ) continue;
+	//if( fabs( lep2_->pt() - pflep2_->pt() ) > 1.0 ) continue;
+
+	if( pflep1_->pt() < 20 ) continue;
+	if( pflep2_->pt() < 20 ) continue;
+
+	if( lep3_->pt() > 10 ) continue;
+	//if( leptype_ == 1 && npfmuons_ < 2 ) continue;
+	//if( leptype_ == 2 && npfmuons_ < 1 ) continue;
+
+	// //jetselection
+        // if( nJets_ < 2 )                                                     continue; //>=2 jets
 
 	//------------------------------
 	//fill histos before Z-veto
@@ -326,13 +342,19 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	}
 	if( leptype_ == 2) fillUnderOverFlow( metObserved_df_nozveto , theMet , mcweight  );
 
-	//Zmass
-	if( leptype_ == 1 ){
-	  if( dilmasspf_ < 81. || dilmasspf_ > 101. )                          continue; 
-	}else{
-	  if( dilmass_ < 81. || dilmass_ > 101. )                              continue; 
-	}
+	// //Zmass
+	// if( leptype_ == 1 ){
+	//   if( dilmasspf_ < 81. || dilmasspf_ > 101. )                          continue; 
+	// }else{
+	//   if( dilmass_ < 81. || dilmass_ > 101. )                              continue; 
+	// }
  
+	float pfdilmass = (*pflep1_ + *pflep2_).mass();
+
+	cout << dilmass_ << " " << pfdilmass << endl;
+	//if( dilmass_ < 81. || dilmass_ > 101. )                              continue; 
+	if( pfdilmass < 81. || pfdilmass > 101. )                              continue; 
+
 	hresponse->Fill( genmet_ , pfmet_ / genmet_ );
 	hgenmet_all->Fill( genmet_ );
 	if( pfmet_ > 60 ) hgenmet_pass->Fill( genmet_ );
@@ -340,16 +362,16 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         //------------------------------------------------------------
         //reweighting procedure for photon vs. Z pt
         //------------------------------------------------------------
-        if( reweight ){
-          int iJetBin   = getJetBin( nJets_ );
-          int bin       = reweightHist[iJetBin]->FindBin( dilpt_ );
-          float ratio   = reweightHist[iJetBin]->GetBinContent( bin );
-          float randnum = rand.Uniform(0,1);
+        // if( reweight ){
+        //   int iJetBin   = getJetBin( nJets_ );
+        //   int bin       = reweightHist[iJetBin]->FindBin( dilpt_ );
+        //   float ratio   = reweightHist[iJetBin]->GetBinContent( bin );
+        //   float randnum = rand.Uniform(0,1);
 
-          //cout << iJetBin << " " << dilpt_ << " " << bin << " " << ratio << " " << randnum << endl;
-          if( randnum > ratio ) continue;
-          //cout << "pass" << endl;
-        }
+        //   //cout << iJetBin << " " << dilpt_ << " " << bin << " " << ratio << " " << randnum << endl;
+        //   if( randnum > ratio ) continue;
+        //   //cout << "pass" << endl;
+        // }
             
         fillHistos( htcmet            , tcmet_           , mcweight , leptype_ , nJets_ );
         fillHistos( htcmetNew         , tcmetNew_        , mcweight , leptype_ , nJets_ );
@@ -1085,6 +1107,8 @@ void babylooper::setBranches (TTree* tree){
   
     tree->SetBranchAddress("ptll",                 &ptll_                 );  
     tree->SetBranchAddress("ptlt",                 &ptlt_                 ); 
+    tree->SetBranchAddress("ptllpf",               &ptllpf_               );  
+    tree->SetBranchAddress("ptltpf",               &ptltpf_               ); 
     tree->SetBranchAddress("etall",                &etall_                );  
     tree->SetBranchAddress("etalt",                &etalt_                ); 
     tree->SetBranchAddress("phill",                &phill_                );  
@@ -1096,7 +1120,11 @@ void babylooper::setBranches (TTree* tree){
     tree->SetBranchAddress("flagll",               &flagll_               );  
     tree->SetBranchAddress("flaglt",               &flaglt_               ); 
     tree->SetBranchAddress("leptype",              &leptype_              );
-
+    tree->SetBranchAddress("lep1",                 &lep1_                 );
+    tree->SetBranchAddress("lep2",                 &lep2_                 );
+    tree->SetBranchAddress("lep3",                 &lep3_                 );
+    tree->SetBranchAddress("pflep1",               &pflep1_               );
+    tree->SetBranchAddress("pflep2",               &pflep2_               );
 
   }
 

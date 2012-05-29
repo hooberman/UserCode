@@ -7,7 +7,9 @@
 #include "TProfile.h"
 #include <vector>
 #include <fstream>
+#include "Math/LorentzVector.h"
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 class TChain;
 
@@ -198,6 +200,8 @@ class babylooper
         Int_t   leptype_;
         Float_t ptll_;
         Float_t ptlt_;
+        Float_t ptllpf_;
+        Float_t ptltpf_;
         Float_t etall_;
         Float_t etalt_;
         Float_t phill_;
@@ -208,6 +212,13 @@ class babylooper
         Float_t dilmasspf_;
         Float_t dilmasscor_;
         Float_t dilpt_;
+
+	LorentzVector*  lep1_;
+	LorentzVector*  lep2_;
+	LorentzVector*  lep3_;
+	LorentzVector*  pflep1_;
+	LorentzVector*  pflep2_;
+
 
         //leading jet stuff
         Float_t jetmax_pt_;
