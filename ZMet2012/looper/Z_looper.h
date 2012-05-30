@@ -149,6 +149,8 @@ class Z_looper
 
   // pfmet stuff
   Float_t pfmet_;
+  Float_t pfmett1_;
+  Float_t pfmett1phi_;
   Float_t pfmetUp_;
   Float_t pfmetDn_;
   Float_t pfmetphi_;

@@ -60,7 +60,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = true;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-10";
+const char* iter                 = "V00-00-11";
 const char* jsonfilename         = "../jsons/Cert_190456-194076_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 955/pb
 
 //--------------------------------------------------------------------
@@ -604,6 +604,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       pfmetphi_ = cms2.evt_pfmetPhi();
       pfsumet_  = cms2.evt_pfsumet();
       
+      pfmett1_     = cms2.evt_pfmet_type1cor();
+      pfmett1phi_  = cms2.evt_pfmetPhi_type1cor();
 
       if (!isData){
         genmet_     = cms2.gen_met();
@@ -876,9 +878,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       dilep_   = &hyp_p4().at(hypIdx);
 
+      dilmasspf_ = -1;
+
       if( nmatched == 2 ){
 	LorentzVector dileppf_temp = *pflep1_ + *pflep2_;
 	dileppf_ = &dileppf_temp;
+	dilmasspf_ = (*pflep1_ + *pflep2_).mass();
       }
 
       float dilmass = hyp_p4().at(hypIdx).mass();
@@ -1068,12 +1073,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	int ipf_ll = mus_pfmusidx().at(hyp_ll_index().at(hypIdx));
 	int ipf_lt = mus_pfmusidx().at(hyp_lt_index().at(hypIdx));
 	
-	dilmasspf_ = -9999;
+	//dilmasspf_ = -9999;
 	
 	if( ipf_lt >= pfmus_p4().size() || ipf_ll >= pfmus_p4().size() ){
 	  cout << "Error, pfmuon out of range: SHOULDN'T GET HERE!!" << endl;
 	}else{
-	  dilmasspf_ = ( pfmus_p4().at(ipf_ll) + pfmus_p4().at(ipf_lt) ).mass();
+	  //dilmasspf_ = ( pfmus_p4().at(ipf_ll) + pfmus_p4().at(ipf_lt) ).mass();
 	}
       }
 
@@ -2060,14 +2065,16 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
 
   //met stuff
-  babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"   );
-  babyTree_->Branch("pfmetup",      &pfmetUp_,      "pfmetup/F" );
-  babyTree_->Branch("pfmetdn",      &pfmetDn_,      "pfmetdn/F" );
-  babyTree_->Branch("pfmetphi",     &pfmetphi_,     "pfmetphi/F");
-  babyTree_->Branch("pfsumet",      &pfsumet_,      "pfsumet/F" );
-  babyTree_->Branch("met",          &met_,          "met/F"      );
-  babyTree_->Branch("metphi",       &metphi_,       "metphi/F"   );
-  babyTree_->Branch("sumet",        &sumet_,        "sumet/F"    );
+  babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"      );
+  babyTree_->Branch("pfmett1",      &pfmett1_,      "pfmett1/F"    );
+  babyTree_->Branch("pfmett1phi",   &pfmett1phi_,   "pfmett1phi/F" );
+  babyTree_->Branch("pfmetup",      &pfmetUp_,      "pfmetup/F"    );
+  babyTree_->Branch("pfmetdn",      &pfmetDn_,      "pfmetdn/F"    );
+  babyTree_->Branch("pfmetphi",     &pfmetphi_,     "pfmetphi/F"   );
+  babyTree_->Branch("pfsumet",      &pfsumet_,      "pfsumet/F"    );
+  babyTree_->Branch("met",          &met_,          "met/F"        );
+  babyTree_->Branch("metphi",       &metphi_,       "metphi/F"     );
+  babyTree_->Branch("sumet",        &sumet_,        "sumet/F"      );
   babyTree_->Branch("mumet",        &mumet_,        "mumet/F"      );
   babyTree_->Branch("mumetphi",     &mumetphi_,     "mumetphi/F"   );
   babyTree_->Branch("musumet",      &musumet_,      "musumet/F"    );
