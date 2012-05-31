@@ -318,5 +318,5 @@ void jetEfficiencies( bool printplots = false ){
   leg4->SetFillColor(0);
   leg4->Draw();
   
-
+  if( printplots ) c4->Print("btag2.pdf");
 }
