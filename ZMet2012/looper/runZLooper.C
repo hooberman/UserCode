@@ -46,16 +46,14 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/MuEG_Run2012B-PromptReco-v1_AOD/unmerged/store*root");
 
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012A-PromptReco-v1_AOD/unmerged/store_data_Run2012A_DoubleElectron_AOD_PromptReco-v1_000_191_718_DEC58B7F-F58B-E111-ABDA-003048F11C58.root");
-
-      //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012B-PromptReco-v1_AOD/unmerged/store_data_Run2012B_DoubleMu_AOD_PromptReco-v1_000_194_050_F486F365-A99E-E111-9055-BCAEC518FF7A.root");
+    //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012B-PromptReco-v1_AOD/unmerged/store_data_Run2012B_DoubleMu_AOD_PromptReco-v1_000_194_050_F486F365-A99E-E111-9055-BCAEC518FF7A.root");
+    //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012B-PromptReco-v1_AOD/unmerged/store_data_Run2012B_DoubleMu_AOD_PromptReco-v1_000_194_702_7C3AE673-F2A5-E111-ADA2-003048D2BEAA.root");
+    //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012B-PromptReco-v1_AOD/unmerged/store_data_Run2012B_DoubleElectron_AOD_PromptReco-v1_000_194_702_384458CE-ECA5-E111-9FC1-E0CB4E4408E3.root");
 
     // pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012B-PromptReco-v1_AOD/merged/merged*root");
     // pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012B-PromptReco-v1_AOD/merged/merged*root");
     // pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/MuEG_Run2012B-PromptReco-v1_AOD/merged/merged*root");
 
-    //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012B-PromptReco-v1_AOD/unmerged/store_data_Run2012B_DoubleMu_AOD_PromptReco-v1_000_194_702_7C3AE673-F2A5-E111-ADA2-003048D2BEAA.root");
-
-    //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012B-PromptReco-v1_AOD/unmerged/store_data_Run2012B_DoubleElectron_AOD_PromptReco-v1_000_194_702_384458CE-ECA5-E111-9FC1-E0CB4E4408E3.root");
   }
   
   //----------------------------------------------------------------------------------------
