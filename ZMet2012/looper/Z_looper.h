@@ -253,6 +253,13 @@ class Z_looper
   Int_t   goodvtx_;    
   Int_t   goodtrks_;   
 
+  Int_t mm_;
+  Int_t mmtk_;
+  Int_t me_;
+  Int_t em_;
+  Int_t mu_;
+  Int_t ee_;
+
   TH2F* hunc_eta1;
   TH2F* hunc_eta2;
   TH2F* hunc_eta3;

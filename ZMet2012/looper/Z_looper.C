@@ -60,7 +60,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = true;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-11";
+const char* iter                 = "V00-00-12";
 const char* jsonfilename         = "../jsons/Cert_190456-194076_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 955/pb
 
 //--------------------------------------------------------------------
@@ -700,7 +700,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
 	if( debug ){
 	  cout << "hyp    " << hypIdx << endl;
-	  cout << "trig   " << passSUSYTrigger2012_v1( isData , hyp_type()[hypIdx] ) << endl;
+	  cout << "trig   " << passSUSYTrigger2012_v2( isData , hyp_type()[hypIdx] ) << endl;
 	  cout << "ptll   " << hyp_ll_p4()[hypIdx].pt() << endl;
 	  cout << "ptlt   " << hyp_lt_p4()[hypIdx].pt() << endl;
 	  cout << "mass   " << hyp_p4()[hypIdx].mass() << endl;
@@ -710,7 +710,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << passElectronSelection_ZMet2012_v1(hyp_lt_index()[hypIdx]) << endl;
 	}
 
-        if( !passSUSYTrigger2012_v1( isData , hyp_type()[hypIdx] ) ) continue;
+        if( !passSUSYTrigger2012_v2( isData , hyp_type()[hypIdx] ) ) continue;
       
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
@@ -737,6 +737,17 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if(debug) cout << "Found good hyp" << endl;
 
       unsigned int hypIdx = selectBestZHyp(v_goodHyps);
+
+      //-----------------------------
+      // triggers
+      //-----------------------------
+
+      mm_    = passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v")                                     ? 1 : 0;
+      mmtk_  = passUnprescaledHLTTriggerPattern("HLT_Mu17_TkMu8_v")                                   ? 1 : 0;
+      me_    = passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ? 1 : 0;
+      em_    = passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ? 1 : 0;
+      mu_    = passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v")                                      ? 1 : 0;
+      ee_    = passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ? 1 : 0;
 
       if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[2]++;
 
@@ -2049,6 +2060,13 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("hveto1",       &hveto1_,       "hveto1/F"       );
   babyTree_->Branch("eveto2",       &eveto2_,       "eveto2/F"       );
   babyTree_->Branch("hveto2",       &hveto2_,       "hveto2/F"       );
+
+  babyTree_->Branch("mm"       ,    &mm_       ,    "mm/I"          );
+  babyTree_->Branch("mmtk"     ,    &mmtk_     ,    "mmtk/I"        );
+  babyTree_->Branch("me"       ,    &me_       ,    "me/I"          );
+  babyTree_->Branch("em"       ,    &em_       ,    "em/I"          );
+  babyTree_->Branch("mu"       ,    &mu_       ,    "mu/I"          );
+  babyTree_->Branch("ee"       ,    &ee_       ,    "ee/I"          );
 
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
