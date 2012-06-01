@@ -61,7 +61,7 @@ const bool  doGenSelection       = false;
       bool  doTenPercent         = true;
 const float lumi                 = 1.0; 
 const char* iter                 = "V00-00-12";
-const char* jsonfilename         = "../jsons/Cert_190456-194076_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 955/pb
+const char* jsonfilename         = "../jsons/Cert_190456-195016_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 2.4/fb
 
 //--------------------------------------------------------------------
 
@@ -700,7 +700,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
 	if( debug ){
 	  cout << "hyp    " << hypIdx << endl;
-	  cout << "trig   " << passSUSYTrigger2012_v2( isData , hyp_type()[hypIdx] ) << endl;
+	  cout << "trig   " << passSUSYTrigger2012_v2( isData ) << endl;
 	  cout << "ptll   " << hyp_ll_p4()[hypIdx].pt() << endl;
 	  cout << "ptlt   " << hyp_lt_p4()[hypIdx].pt() << endl;
 	  cout << "mass   " << hyp_p4()[hypIdx].mass() << endl;
@@ -710,7 +710,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << passElectronSelection_ZMet2012_v1(hyp_lt_index()[hypIdx]) << endl;
 	}
 
-        if( !passSUSYTrigger2012_v2( isData , hyp_type()[hypIdx] ) ) continue;
+        if( !passSUSYTrigger2012_v2( isData ) ) continue;
       
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
