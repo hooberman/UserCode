@@ -72,7 +72,8 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "wz" ) == 0 ){
-    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/WZTo3LNu_TuneZ2star_8TeV_pythia6_tauola_Summer12-PU_S7_START52_V9-v1/V05-02-27/merged*root");
+    //pickSkimIfExists(ch,"/nfs-6/userdata/cms2/WZTo3LNu_TuneZ2star_8TeV_pythia6_tauola_Summer12-PU_S7_START52_V9-v1/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/WZTo3LNu_TuneZ2star_8TeV_pythia6_tauola_Summer12-PU_S7_START52_V9-v1/V05-02-27/merged*root"):
   }
 
   //----------------------------------------------------------------------------------------
