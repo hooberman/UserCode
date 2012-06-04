@@ -66,7 +66,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "ttbar" ) == 0 ){
-    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/TTJets_TuneZ2star_8TeV-madgraph-tauola_Summer12-PU_S7_START52_V5-v1/V05-02-07/merged*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/TTJets_TuneZ2star_8TeV-madgraph-tauola_Summer12-PU_S7_START52_V9-v1/V05-02-27/postprocessing/ntuple*root");
   }
 
   //----------------------------------------------------------------------------------------
