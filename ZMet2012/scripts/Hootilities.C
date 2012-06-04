@@ -361,7 +361,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayData, float x1, float y1, float x2, float y2){
 
   //int colors[]={6,2,7,4,5,8,9,15,12};
-  int colors[]={kBlue-6,kRed+2,7,5,5,8,9,15,12};
+  int colors[]={5,kRed+2,7,5,5,8,9,15,12};
   
   TLegend *leg = new TLegend(x1,y1,x2,y2);
 
@@ -479,7 +479,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   cout << "Plotting var " << myvar << " flavor " << flavor << endl;
 
   //int colors[]={6,2,7,4,5,8,9,15,12};
-  int colors[]={kBlue-6,kRed+2,7,5,5,8,9,15,12};
+  int colors[]={5,kRed+2,7,5,5,8,9,15,12};
 
   assert( chmc.size() == labels.size() );
   const unsigned int nmc = chmc.size();
@@ -564,14 +564,14 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   TLatex *text = new TLatex();
   text->SetNDC();
   text->SetTextSize(0.05);
-  text->DrawLatex(0.2,0.88,"CMS Preliminary");
+  //text->DrawLatex(0.2,0.88,"CMS Preliminary");
   //text->DrawLatex(0.2,0.83,"0.98 fb^{-1} at #sqrt{s} = 7 TeV");
-  text->DrawLatex(0.2,0.83,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.3 fb^{-1}");
+  //text->DrawLatex(0.2,0.83,"#sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.3 fb^{-1}");
 
-  if     ( TString(flavor).Contains("ee")  ) text->DrawLatex(0.2,0.78,"Events with ee");
-  else if( TString(flavor).Contains("mm")  ) text->DrawLatex(0.2,0.78,"Events with #mu#mu");
-  else if( TString(flavor).Contains("em")  ) text->DrawLatex(0.2,0.78,"Events with e#mu");
-  else if( TString(flavor).Contains("all") ) text->DrawLatex(0.2,0.78,"Events with ee/#mu#mu/e#mu");
+  // if     ( TString(flavor).Contains("ee")  ) text->DrawLatex(0.2,0.78,"Events with ee");
+  // else if( TString(flavor).Contains("mm")  ) text->DrawLatex(0.2,0.78,"Events with #mu#mu");
+  // else if( TString(flavor).Contains("em")  ) text->DrawLatex(0.2,0.78,"Events with e#mu");
+  // else if( TString(flavor).Contains("all") ) text->DrawLatex(0.2,0.78,"Events with ee/#mu#mu/e#mu");
 
   if( residual ){
     fullpad->cd();
@@ -590,7 +590,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     ratio->GetYaxis()->SetNdivisions(5);
     ratio->GetYaxis()->SetLabelSize(0.2);
     //ratio->GetYaxis()->SetRangeUser(0.5,1.5);
-    ratio->GetYaxis()->SetRangeUser(0.,2.);
+    ratio->GetYaxis()->SetRangeUser(0.5,1.5);
     ratio->GetYaxis()->SetTitle("data/MC  ");
     ratio->GetXaxis()->SetLabelSize(0);
     ratio->GetXaxis()->SetTitleSize(0);

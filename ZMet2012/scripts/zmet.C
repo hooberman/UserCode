@@ -66,15 +66,16 @@ void initialize(char* path){
   cout << "Loading babies at       : " << path << endl;
   
   data->Add(Form("%s/data_baby.root",path));
-  tt->Add(Form("%s/ttbar_baby.root",path));
-  //zjets->Add(Form("%s/zjets_baby_geq2jets.root",path));
   zjets->Add(Form("%s/zjets_baby.root",path));
-  wz->Add(Form("%s/wz_summer11_madgraph_baby.root",path));
-  zz->Add(Form("%s/zz_summer11_madgraph_baby.root",path));
+
+  //tt->Add(Form("%s/ttbar_baby.root",path));
+  //zjets->Add(Form("%s/zjets_baby_geq2jets.root",path));
+  //wz->Add(Form("%s/wz_summer11_madgraph_baby.root",path));
+  //zz->Add(Form("%s/zz_summer11_madgraph_baby.root",path));
   //wz->Add(Form("%s/wz_summer11_pythia_baby.root",path));
   //zz->Add(Form("%s/zz_summer11_pythia_baby.root",path));
 
-  mc.push_back(tt);     mclabels.push_back("tt");
+  //mc.push_back(tt);     mclabels.push_back("tt");
   mc.push_back(zjets);  mclabels.push_back("zjets");
   //mc.push_back(zz);     mclabels.push_back("zz");
   //mc.push_back(wz);     mclabels.push_back("wz");
@@ -87,64 +88,21 @@ void initialize(char* path){
 
 TCut selection_TCut(){
 
-  TCut njets0("njets == 0");
-  TCut njets1("njets == 1");
-  TCut njets2("njets >= 2");
-  TCut njets3("njets >= 3");
-  TCut njets4("njets >= 4");
-  TCut btags1("nbm >= 1");
-  TCut btags2("nbm >= 2");
-  TCut nlep3("nlep==3");
-  TCut nlep4("nlep==4");
-  TCut zpass("dilmass>81.0 && dilmass<101.0");
-  TCut met30("pfmet > 30.0");
-  TCut met60("pfmet > 60.0");
-  TCut met120("pfmet > 120.0");
-  TCut ht200("sumjetpt > 200.0");
-  TCut mmtype("leptype==1");
-  TCut eetype("leptype==0");
-  TCut sf("leptype==0 || leptype==1");
-  TCut leadjet120("jet1.pt()>120");
-  TCut mll50("dilmass>50");
-  TCut zveto("dilmass<70 || dilmass>100");
-  TCut pt2520("lep1.pt()>25 && lep2.pt()>20");
-  TCut pt3020("lep1.pt()>30 && lep2.pt()>20");
-  TCut nbtags1("nbm>=1");
-  TCut iso1("iso1<0.15");
-  TCut iso2("iso2<0.15");
-  TCut id1("passid1==1");
-  TCut id2("passid2==1");
-  
-  TCut sel;
-  // sel += sf;
-  sel += zpass;
-  sel += njets2;
-  // sel += mmtype;
-  // sel += nlep3;
-  // sel += met30;
-  // sel += met60;
-  // sel += nlep4;
-  // sel += btags1;
-  // sel += btags2;
+  TCut pfleptons("pflep1.pt() > 20 && pflep2.pt() > 20");
+  TCut transveto("el1tv==0 && el2tv==0");
+  TCut Zmass("dilmasspf>81 && dilmasspf<101");
+  TCut njets2("njets>=2");
+  TCut ee("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5");
+  TCut mm("leptype==1");
+  TCut em("leptype==2");
+  TCut sf = ee||mm;
 
-  //TCut sel = "njets>1";
-  //TCut sel = zpass;
-  //TCut sel = zpass + njets2 + ht200 + met60;
-
-  //--------------------------------
-  // lljj selection
-  //--------------------------------
-  /*
   TCut sel;
-  //sel += pt2520;
-  sel += pt3020;
-  sel += njets2;
-  sel += leadjet120;
-  sel += mll50;
-  sel += zveto;
-  sel += nbtags1;
-  //sel += mmtype;
-  */
+  //sel += njets2;
+  sel += pfleptons;
+  sel += transveto;
+  //sel += Zmass;
+  sel += (ee||mm||em);
 
   cout << "Using selection         : " << sel.GetTitle() << endl;
 
@@ -152,9 +110,7 @@ TCut selection_TCut(){
 }
 TCut weight_TCut(){
 
-  TCut weight("weight * 4.65");
-  //TCut weight("weight * davtxweight");
-  //TCut weight("1");
+  TCut weight("weight * 0.92 * vtxweight");
   
   cout << "Using weight            : " << weight.GetTitle() << endl;
   return weight;
@@ -203,8 +159,8 @@ void printYieldTable( char* path , bool latex = false ){
 
 void makePlots( char* path , bool printgif = false ){
 
-  bool combine     = false;
-  int  nplots      = 3;
+  bool combine     = true;
+  int  nplots      = 2;
   bool residual    = true;
   bool log         = false;
   bool overlayData = true;
@@ -221,13 +177,14 @@ void makePlots( char* path , bool printgif = false ){
   vector<float> xf;
   vector<char*> flavor;
 
-  //vars.push_back("dilmass");       xt.push_back("pfmet (GeV)");        n.push_back(150); xi.push_back(0.);   xf.push_back(300.);    flavor.push_back("ee");
-  //vars.push_back("dilmass");       xt.push_back("pfmet (GeV)");        n.push_back(150); xi.push_back(0.);   xf.push_back(300.);    flavor.push_back("mm");
-  vars.push_back("lljj");          xt.push_back("M(lljj) (GeV)");      n.push_back(25);  xi.push_back(350.); xf.push_back(1850.);   flavor.push_back("ee");
+  vars.push_back("dilmasspf");       xt.push_back("M(ee) (GeV)");          n.push_back(100);  xi.push_back(0.);   xf.push_back(200.);    flavor.push_back("ee");
+  vars.push_back("dilmasspf");       xt.push_back("M(#mu#mu) (GeV)");      n.push_back(100);  xi.push_back(0.);   xf.push_back(200.);    flavor.push_back("mm");
+  //vars.push_back("lljj");          xt.push_back("M(lljj) (GeV)");      n.push_back(25);  xi.push_back(350.); xf.push_back(1850.);   flavor.push_back("ee");
   //vars.push_back("lljj");          xt.push_back("M(lljj) (GeV)");      n.push_back(25);  xi.push_back(350.); xf.push_back(1850.);   flavor.push_back("mm");
-  //vars.push_back("njets");         xt.push_back("njets");              n.push_back(6);   xi.push_back(0);    xf.push_back(6);
-  //vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");        n.push_back(10);  xi.push_back(0.);   xf.push_back(300.);
-  //vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");        n.push_back(10);  xi.push_back(0.);   xf.push_back(100.);
+  //vars.push_back("njets");         xt.push_back("njets");              n.push_back(6);   xi.push_back(0);    xf.push_back(6);       flavor.push_back("ee");
+  //vars.push_back("njets");         xt.push_back("njets");              n.push_back(6);   xi.push_back(0);    xf.push_back(6);       flavor.push_back("mm");
+  //vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");        n.push_back(50);  xi.push_back(0.);   xf.push_back(100.);  flavor.push_back("ee");
+  //vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");        n.push_back(50);  xi.push_back(0.);   xf.push_back(100.);  flavor.push_back("mm");
   //vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");      n.push_back(10);  xi.push_back(0);    xf.push_back(400);
   //vars.push_back("w.pt()");        xt.push_back("W p_{T} (GeV)");      n.push_back(10);  xi.push_back(0);    xf.push_back(400);
 
@@ -242,13 +199,15 @@ void makePlots( char* path , bool printgif = false ){
 
   for( unsigned int ivar = 0 ; ivar < nvars ; ++ivar ){     
     
-    if( TString(vars.at(ivar)).Contains("met") ) log = true;
-    else                                         log = false;
+    //if( TString(vars.at(ivar)).Contains("met") ) log = true;
+    //else                                         log = false;
+
+    //log = false;
 
     if( combine ){
       if( ivar % nplots == 0 ){
 	canCounter++;
-	can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1800,600);
+	can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1200,600);
 	//can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1400,1200);
 	//can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),2000,1200);
 	
@@ -271,7 +230,7 @@ void makePlots( char* path , bool printgif = false ){
 
 	//plotpad[canCounter]->Divide(3,2);
 	//plotpad[canCounter]->Divide(2,2);
-	plotpad[canCounter]->Divide(3,1);
+	plotpad[canCounter]->Divide(2,1);
 	plotpad[canCounter]->cd(1);
 
       }else{
