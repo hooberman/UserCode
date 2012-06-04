@@ -105,6 +105,8 @@ class Z_looper
   Float_t unclustered_x_;
   Float_t unclustered_y_;
 
+  LorentzVector*  glep1_;
+  LorentzVector*  glep2_;
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
   LorentzVector*  lep3_;
@@ -121,6 +123,12 @@ class Z_looper
   LorentzVector*  bjet2_; 
   LorentzVector*  bjet3_; 
   LorentzVector*  bjet4_; 
+
+  Int_t   gid1_;
+  Int_t   gid2_;
+  Int_t   gmatch1_;
+  Int_t   gmatch2_;
+  Int_t   ngenjets_;
 
   Float_t lljj_;
   Float_t jj_;
@@ -251,12 +259,32 @@ class Z_looper
   TH2F* hunc_eta5;
   TH2F* hunc_eta6;
 
+  TH1F* hjetpt_all;
+  TH1F* hjetpt_q_all;
+  TH1F* hjetpt_c_all;
+  TH1F* hjetpt_b_all;
+  TH1F* hjetpt_g_all;
+  TH1F* hjetpt_pass02;
+  TH1F* hjetpt_pass03;
+  TH1F* hjetpt_pass04;
+  TH1F* hjetpt_pass05;
+
   TH1F* hgenmet_all;
   TH1F* hgenmet_pass;
   TProfile* hresponse;  
   TH1F*   hgenps_pthat;
   TH1F*   hphotonpt;
 
+  TH1F* hbtag_q_pass;
+  TH1F* hbtag_q_all;
+  TH1F* hbtag_c_pass;
+  TH1F* hbtag_c_all;
+  TH1F* hbtag_b_pass;
+  TH1F* hbtag_b_all;
+  TH1F* hbtag_g_pass;
+  TH1F* hbtag_g_all;
+  TH1F* hbtag_b_pass_eta;
+  TH1F* hbtag_b_all_eta;
 
   TH1F* hptz[5];
   TH1F* htcmet[4][4];
