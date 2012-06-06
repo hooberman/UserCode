@@ -213,6 +213,11 @@ class babylooper
         Float_t dilmasscor_;
         Float_t dilpt_;
 
+	Int_t   ee_;
+	Int_t   mm_;
+	Int_t   em_;
+	Int_t   me_;
+
 	LorentzVector*  lep1_;
 	LorentzVector*  lep2_;
 	LorentzVector*  lep3_;
@@ -291,6 +296,7 @@ class babylooper
 	TH1F* hpfmet_ebee;
 	TH1F* hpfmet_eeeep;
 	TH1F* hpfmet_eeeem;
+	TH1F* hpfmet_mm;
 
         TH1F* metPredicted_njets[11];
         TH1F* metObserved_njets[11];
