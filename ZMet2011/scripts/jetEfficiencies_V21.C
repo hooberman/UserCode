@@ -41,7 +41,8 @@ void jetEfficiencies_V21( bool printplots = false ){
 
   gStyle->SetOptFit(0);
 
-  TFile* f = TFile::Open("../output/V00-02-21/wz_summer11_madgraph.root");
+  TFile* f     = TFile::Open("../output/V00-02-21/wz_summer11_madgraph.root");
+  TFile* ftt   = TFile::Open("../output/V00-02-21/ttbar.root");
 
   //TChain *ch = new TChain("T1");
   //ch->Add("../output/V00-02-20/wzsms_gen_baby.root");
@@ -57,28 +58,28 @@ void jetEfficiencies_V21( bool printplots = false ){
   TH1F* hjetpt_all      = (TH1F*) f->Get("hjetpt_all");
   TH1F* hjetpt_q_all    = (TH1F*) f->Get("hjetpt_q_all");
   TH1F* hjetpt_c_all    = (TH1F*) f->Get("hjetpt_c_all");
-  TH1F* hjetpt_b_all    = (TH1F*) f->Get("hjetpt_b_all");
+  TH1F* hjetpt_b_all    = (TH1F*) ftt->Get("hjetpt_b_all");
   TH1F* hjetpt_g_all    = (TH1F*) f->Get("hjetpt_g_all");
 
   TH1F* hjetpt_pass     = (TH1F*) f->Get("hjetpt_pass");
   TH1F* hjetpt_q_pass   = (TH1F*) f->Get("hjetpt_q_pass");
   TH1F* hjetpt_c_pass   = (TH1F*) f->Get("hjetpt_c_pass");
-  TH1F* hjetpt_b_pass   = (TH1F*) f->Get("hjetpt_b_pass");
+  TH1F* hjetpt_b_pass   = (TH1F*) ftt->Get("hjetpt_b_pass");
   TH1F* hjetpt_g_pass   = (TH1F*) f->Get("hjetpt_g_pass");
 
   TH1F* hbtag_q_all     = (TH1F*) f->Get("hbtag_q_all");
   TH1F* hbtag_c_all     = (TH1F*) f->Get("hbtag_c_all");
-  TH1F* hbtag_b_all     = (TH1F*) f->Get("hbtag_b_all");
+  TH1F* hbtag_b_all     = (TH1F*) ftt->Get("hbtag_b_all");
   TH1F* hbtag_g_all     = (TH1F*) f->Get("hbtag_g_all");
 
   TH1F* hbtag_q_passL   = (TH1F*) f->Get("hbtag_q_passL");
   TH1F* hbtag_c_passL   = (TH1F*) f->Get("hbtag_c_passL");
-  TH1F* hbtag_b_passL   = (TH1F*) f->Get("hbtag_b_passL");
+  TH1F* hbtag_b_passL   = (TH1F*) ftt->Get("hbtag_b_passL");
   TH1F* hbtag_g_passL   = (TH1F*) f->Get("hbtag_g_passL");
 
   TH1F* hbtag_q_passM   = (TH1F*) f->Get("hbtag_q_passM");
   TH1F* hbtag_c_passM   = (TH1F*) f->Get("hbtag_c_passM");
-  TH1F* hbtag_b_passM   = (TH1F*) f->Get("hbtag_b_passM");
+  TH1F* hbtag_b_passM   = (TH1F*) ftt->Get("hbtag_b_passM");
   TH1F* hbtag_g_passM   = (TH1F*) f->Get("hbtag_g_passM");
 
   int rebin = 5;
@@ -175,10 +176,14 @@ void jetEfficiencies_V21( bool printplots = false ){
   TGraphAsymmErrors* grbtag_gM = new TGraphAsymmErrors();
   grbtag_gM->BayesDivide(hbtag_g_passM,hbtag_g_all);
 
+  TLine line;
+  line.SetLineWidth(2);
+  line.SetLineStyle(2);
+
   //---------------------------------------------
   // jet reco
   //---------------------------------------------
-  /*
+
   TCanvas *c1 = new TCanvas();
   c1->cd();
 
@@ -188,7 +193,7 @@ void jetEfficiencies_V21( bool printplots = false ){
 
   grjet->SetMaximum(1.05);
   grjet->SetMarkerColor(1);
-  grjet->SetMarkerSize(1);
+  grjet->SetMarkerSize(1.5);
   grjet->SetLineColor(1);
   grjet_b->SetMarkerColor(2);
   grjet_b->SetLineColor(2);
@@ -202,7 +207,7 @@ void jetEfficiencies_V21( bool printplots = false ){
   TF1*  fit_jet = new TF1("fit_jet", fitf, 20, 200, 7);
   fit_jet->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
   fit_jet->FixParameter(6,0);
-  fit_jet->SetLineWidth(3);
+  fit_jet->SetLineWidth(4);
   fit_jet->SetLineColor(1);
 
   grjet->Fit(fit_jet);
@@ -211,10 +216,10 @@ void jetEfficiencies_V21( bool printplots = false ){
   grjet->GetXaxis()->SetTitle("parton p_{T} [GeV]");
   grjet->GetYaxis()->SetTitle("jet reco efficiency");
   grjet->Draw("AP");
-  // grjet_b->Draw("sameP");
-  // grjet_c->Draw("sameP");
-  // grjet_q->Draw("sameP");
-  // grjet_g->Draw("sameP");
+  grjet_b->Draw("sameP");
+  grjet_c->Draw("sameP");
+  grjet_q->Draw("sameP");
+  grjet_g->Draw("sameP");
 
   TLegend *leg = new TLegend(0.5,0.3,0.7,0.6);
   leg->AddEntry(grjet,"all","lp");
@@ -226,17 +231,15 @@ void jetEfficiencies_V21( bool printplots = false ){
   leg->SetBorderSize(1);
   leg->Draw();
 
-  TLine line;
-  line.SetLineWidth(2);
-  line.SetLineStyle(2);
   line.DrawLine(30,0,30,1.05);
 
   if( printplots ) c1->Print("../plots/jetreco.pdf");
-  */
+  
 
   //---------------------------------
   // b-tagging (loose)
   //---------------------------------
+
 
   TCanvas *c2 = new TCanvas();
   c2->cd();
@@ -284,32 +287,38 @@ void jetEfficiencies_V21( bool printplots = false ){
   fit_gL->SetLineColor(6);
   fit_gL->SetLineWidth(2);
 
+  cout << endl << "loose uds fit" << endl;
   grbtag_qL->Fit(fit_qL,"R");
+  cout << endl << "loose b fit" << endl;
   grbtag_bL->Fit(fit_bL,"R");
+  cout << endl << "loose c fit" << endl;
   grbtag_cL->Fit(fit_cL,"R");
+  cout << endl << "loose g fit" << endl;
   grbtag_gL->Fit(fit_gL,"R");
 
+  //grbtag_qL->GetXaxis()->SetRangeUser(30,200);
   grbtag_qL->Draw("AP");
   grbtag_cL->Draw("sameP");
   grbtag_bL->Draw("sameP");
   grbtag_gL->Draw("sameP");
 
-  TLegend *leg2 = new TLegend(0.5,0.3,0.7,0.6);
+  TLegend *leg2 = new TLegend(0.35,0.52,0.5,0.72);
   leg2->AddEntry(grbtag_qL,"uds","lp");
   leg2->AddEntry(grbtag_cL,"c","lp");
   leg2->AddEntry(grbtag_bL,"b","lp");
   leg2->AddEntry(grbtag_gL,"g","lp");
   leg2->SetFillColor(0);
   leg2->SetBorderSize(1);
-  //leg2->Draw();
+  leg2->Draw();
   
-  if( printplots ) c2->Print("../plots/btagL.pdf");
+  line.DrawLine(30,0,30,1.0);
 
+  if( printplots ) c2->Print("../plots/btagL.pdf");
 
   //---------------------------------
   // b-tagging (medium)
   //---------------------------------
-  /*
+
   TCanvas *c3 = new TCanvas();
   c3->cd();
 
@@ -333,8 +342,10 @@ void jetEfficiencies_V21( bool printplots = false ){
   grbtag_qM->SetMaximum(1.0);
 
   TF1*  fit_cM = new TF1("fit_cM", fitf, 30, 200, 7);
-  fit_cM->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
+  //fit_cM->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
+  fit_cM->SetParameters( 60 , 60 , 150 , 2 , 0.1 , 0.1 , 0 );
   fit_cM->FixParameter(6,0);
+  fit_cM->SetParLimits(5,0,10);
   fit_cM->SetLineColor(4);
   fit_cM->SetLineWidth(2);
 
@@ -345,35 +356,34 @@ void jetEfficiencies_V21( bool printplots = false ){
   fit_bM->SetLineWidth(2);
 
   TF1*  fit_qM = new TF1("fit_qM", fitf, 30, 200, 7);
-  fit_qM->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
+  fit_qM->SetParameters( 60 , 10 , 100 , 100 , 0.01 , 0.1 , 0 );
   fit_qM->FixParameter(6,0);
   fit_qM->SetLineColor(kGreen+2);
   fit_qM->SetLineWidth(2);
 
   TF1*  fit_gM = new TF1("fit_gM", fitf, 30, 200, 7);
-  fit_gM->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
+  //fit_gM->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
+  fit_gM->SetParameters( 100 , 100 , 60 , 150 , 0.2 , 0.02 , 0 );
   fit_gM->FixParameter(6,0);
   fit_gM->SetLineColor(6);
   fit_gM->SetLineWidth(2);
 
+  cout << endl << "medium q fit" << endl;
   grbtag_qM->Fit(fit_qM,"R");
+  cout << endl << "medium b fit" << endl;
   grbtag_bM->Fit(fit_bM,"R");
+  cout << endl << "medium c fit" << endl;
   grbtag_cM->Fit(fit_cM,"R");
+  cout << endl << "medium g fit" << endl;
   grbtag_gM->Fit(fit_gM,"R");
 
   grbtag_qM->Draw("AP");
   grbtag_cM->Draw("sameP");
   grbtag_bM->Draw("sameP");
   grbtag_gM->Draw("sameP");
+
+  line.DrawLine(30,0,30,1.0);
   
   if( printplots ) c3->Print("../plots/btagM.pdf");
-*/
-
-
-
-
-  // grbtag_c->Fit(fit_c);
-  // grbtag_b->Fit(fit_b);
-  // grbtag_q->Fit(fit_q);
 
 }
