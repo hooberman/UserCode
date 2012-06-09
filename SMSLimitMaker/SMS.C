@@ -120,6 +120,7 @@ void SMS(){
   ofstream ofile_btag[nsig];
   ofstream ofile_ulexp[nsig];
   ofstream ofile_ulobs[nsig];
+  ofstream ofile_combined[nsig];
 
   TCanvas *ctemp = new TCanvas();
   ctemp->cd();
@@ -130,12 +131,13 @@ void SMS(){
     // initialize text files
     //----------------------------------------------------------
 
-    ofile_acc[i].     open(Form("%s/%s/%s_acc.txt"      ,outpath,sample,labels.at(i).c_str()),ios::trunc);
-    ofile_sigcont[i]. open(Form("%s/%s/%s_sigcont.txt"  ,outpath,sample,labels.at(i).c_str()),ios::trunc);
-    ofile_jetmet[i].  open(Form("%s/%s/%s_jetmet.txt"   ,outpath,sample,labels.at(i).c_str()),ios::trunc);
-    ofile_btag[i].    open(Form("%s/%s/%s_btag.txt"     ,outpath,sample,labels.at(i).c_str()),ios::trunc);
-    ofile_ulexp[i].   open(Form("%s/%s/%s_ulexp.txt"    ,outpath,sample,labels.at(i).c_str()),ios::trunc);
-    ofile_ulobs[i].   open(Form("%s/%s/%s_ulobs.txt"    ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_acc[i].     open(Form("%s/%s/%s_acc.txt"             ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_sigcont[i]. open(Form("%s/%s/%s_sigcont.txt"         ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_jetmet[i].  open(Form("%s/%s/%s_jetmet.txt"          ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_btag[i].    open(Form("%s/%s/%s_btag.txt"            ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_ulexp[i].   open(Form("%s/%s/%s_ulexp.txt"           ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_ulobs[i].   open(Form("%s/%s/%s_ulobs.txt"           ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_combined[i].open(Form("%s/%s/merged/%s_combined.txt" ,outpath,sample,labels.at(i).c_str()),ios::trunc);
     
     //----------------------------------------------------------
     // calculate JES uncertainty by varying njets and pfmet
@@ -239,8 +241,9 @@ void SMS(){
 	// note: for now, setting signal contamination and btagging to 0
 	//--------------------------------------------------------------
 
-	float sigcont = 0.0;
-	float btagerr = 0.0;
+	float sigcont      = 0.0;
+	float btagerr      = 0.0;
+	float this_toterr  = sqrt(djes*djes+btagerr*btagerr);
 
 	// cout << mg << " " << ml << " " << eff         << endl;  
 	// cout << mg << " " << ml << " " << sigcont     << endl;  
@@ -249,12 +252,13 @@ void SMS(){
 	// cout << mg << " " << ml << " " << this_ul     << endl;  
 	// cout << mg << " " << ml << " " << this_ul_exp << endl;  
 
-	ofile_acc[i]     << mg << "    " << ml << "    " << eff         << endl;  
-	ofile_sigcont[i] << mg << "    " << ml << "    " << sigcont     << endl;  
-	ofile_jetmet[i]  << mg << "    " << ml << "    " << djes        << endl;  
-	ofile_btag[i]    << mg << "    " << ml << "    " << btagerr     << endl;  
-	ofile_ulexp[i]   << mg << "    " << ml << "    " << this_ul     << endl;  
-	ofile_ulobs[i]   << mg << "    " << ml << "    " << this_ul_exp << endl;  
+	ofile_acc[i]      << mg << "    " << ml << "    " << eff         << endl;  
+	ofile_sigcont[i]  << mg << "    " << ml << "    " << sigcont     << endl;  
+	ofile_jetmet[i]   << mg << "    " << ml << "    " << djes        << endl;  
+	ofile_btag[i]     << mg << "    " << ml << "    " << btagerr     << endl;  
+	ofile_ulexp[i]    << mg << "    " << ml << "    " << this_ul     << endl;  
+	ofile_ulobs[i]    << mg << "    " << ml << "    " << this_ul_exp << endl;  
+	ofile_combined[i] << mg << "    " << ml << "    " << eff - sigcont << "    " << this_toterr << "    " << this_ul << "    " << this_ul_exp << endl;
 
       }
     }
