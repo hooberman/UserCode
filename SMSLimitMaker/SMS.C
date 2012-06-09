@@ -29,21 +29,26 @@ float getExpectedLimit( int metcut , float seff );
 
 using namespace std;
 
-void SMS( bool print = false){
+void SMS(){
 
   //--------------------------------------------------
   // input parameters
   //--------------------------------------------------
   
-  const float denom    = 20000;   // number of generated events per point
-  const float lumi     = 4980;    // lumi, in pb
-  const char* sample   = "T5zz";  // name of sample
-  const char* path     = "./";    // path to babies
+  const float denom    = 20000;    // number of generated events per point
+  const float lumi     = 4980;     // lumi, in pb
+  const char* sample   = "T5zz";   // name of sample
+  const char* path     = "./";     // path to babies
+  const char* outpath  = "output"; // path to output text files
   const char* filename = Form("%s/%s_baby.root",path,sample); // input filename
 
   cout << "Using file        " << filename << endl;
   cout << "Using denominator " << denom    << " events" << endl;
   cout << "Using lumi        " << lumi     << " pb-1" << endl;
+  cout << "Writing to path   " << outpath  << endl;
+
+  gROOT->ProcessLine(Form(".! mkdir %s/%s"       ,outpath,sample)); // make layer1 dir
+  gROOT->ProcessLine(Form(".! mkdir %s/%s/merged",outpath,sample)); // make layer2 dir
 
   //--------------------------------------------------
   // read in TChain
@@ -75,7 +80,12 @@ void SMS( bool print = false){
 
   TCut presel  = zmass + njets2 + sf;
 
-  cout << "Using selection   " << presel.GetTitle() << endl;
+  cout << "Using preselection  " << presel.GetTitle() << endl;
+
+  // this is the per event weight, in this case just using 95% trig efficiency
+  TCut weight("0.95"); 
+
+  cout << "Using weight        " << weight.GetTitle() << endl;
 
   //--------------------------------------------------
   // signal regions: store the signal region cuts in vector<TCut> sigcuts
@@ -104,11 +114,29 @@ void SMS( bool print = false){
   TH2F* hexcl[nsig];
   TH2F* hjes[nsig];
   
+  ofstream ofile_acc[nsig];
+  ofstream ofile_sigcont[nsig];
+  ofstream ofile_jetmet[nsig];
+  ofstream ofile_btag[nsig];
+  ofstream ofile_ulexp[nsig];
+  ofstream ofile_ulobs[nsig];
+
   TCanvas *ctemp = new TCanvas();
   ctemp->cd();
 
   for( unsigned int i = 0 ; i < nsig ; ++i ){
 
+    //----------------------------------------------------------
+    // initialize text files
+    //----------------------------------------------------------
+
+    ofile_acc[i].     open(Form("%s/%s/%s_acc.txt"      ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_sigcont[i]. open(Form("%s/%s/%s_sigcont.txt"  ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_jetmet[i].  open(Form("%s/%s/%s_jetmet.txt"   ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_btag[i].    open(Form("%s/%s/%s_btag.txt"     ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_ulexp[i].   open(Form("%s/%s/%s_ulexp.txt"    ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    ofile_ulobs[i].   open(Form("%s/%s/%s_ulobs.txt"    ,outpath,sample,labels.at(i).c_str()),ios::trunc);
+    
     //----------------------------------------------------------
     // calculate JES uncertainty by varying njets and pfmet
     //----------------------------------------------------------
@@ -143,14 +171,14 @@ void SMS( bool print = false){
     // store the efficiency across 2D SMS space, nominal, JES up, JES down
     //--------------------------------------------------------------------------
     
-    ch->Draw(Form("ml:mg>>heff_%i",i),sigcuts.at(i));
-    heff[i]->Scale(0.95/denom);
+    ch->Draw(Form("ml:mg>>heff_%i",i),sigcuts.at(i)*weight);
+    heff[i]->Scale(1.0/denom);
 
-    ch->Draw(Form("ml:mg>>heffup_%i",i),jesupcut);
-    heffup[i]->Scale(0.95/denom);
+    ch->Draw(Form("ml:mg>>heffup_%i",i),jesupcut*weight);
+    heffup[i]->Scale(1.0/denom);
 
-    ch->Draw(Form("ml:mg>>heffdn_%i",i),jesdncut);
-    heffdn[i]->Scale(0.95/denom);
+    ch->Draw(Form("ml:mg>>heffdn_%i",i),jesdncut*weight);
+    heffdn[i]->Scale(1.0/denom);
 
     //----------------------------------------------------------------------
     // at this point we have the efficiency for each bin the SMS space
@@ -178,7 +206,7 @@ void SMS( bool print = false){
 	//total uncertainty: JES, lumi, and leptons
 	float toterr = sqrt( 0.022*0.022 + 0.05*0.05 + djes*djes );
 
-	// get observed yield UL, 3 inputes:
+	// get observed yield UL, 2 inputes:
 	// cuts.at(i) : this is just the MET cut defining the signal region
 	// toterr     : total signal efficiency uncertainty
 	float this_ul = getObservedLimit( cuts.at(i) , toterr );
@@ -205,9 +233,40 @@ void SMS( bool print = false){
 	hexcl[i]->SetBinContent(ibin,jbin,0);
 	if( xsec > xsecul )   hexcl[i]->SetBinContent(ibin,jbin,1); // point is excluded
 
-	//cout << "ibin jbin mg xsec " << ibin << " " << jbin << " " << mg << " " << xsec << endl;
+
+	//--------------------------------------------------------------
+	// store stuff in text files
+	// note: for now, setting signal contamination and btagging to 0
+	//--------------------------------------------------------------
+
+	float sigcont = 0.0;
+	float btagerr = 0.0;
+
+	// cout << mg << " " << ml << " " << eff         << endl;  
+	// cout << mg << " " << ml << " " << sigcont     << endl;  
+	// cout << mg << " " << ml << " " << djes        << endl;  
+	// cout << mg << " " << ml << " " << btagerr     << endl;  
+	// cout << mg << " " << ml << " " << this_ul     << endl;  
+	// cout << mg << " " << ml << " " << this_ul_exp << endl;  
+
+	ofile_acc[i]     << mg << "    " << ml << "    " << eff         << endl;  
+	ofile_sigcont[i] << mg << "    " << ml << "    " << sigcont     << endl;  
+	ofile_jetmet[i]  << mg << "    " << ml << "    " << djes        << endl;  
+	ofile_btag[i]    << mg << "    " << ml << "    " << btagerr     << endl;  
+	ofile_ulexp[i]   << mg << "    " << ml << "    " << this_ul     << endl;  
+	ofile_ulobs[i]   << mg << "    " << ml << "    " << this_ul_exp << endl;  
+
       }
     }
+
+
+    ofile_acc[i].close();
+    ofile_sigcont[i].close();
+    ofile_jetmet[i].close();  
+    ofile_btag[i].close();   
+    ofile_ulexp[i].close();
+    ofile_ulobs[i].close();
+
   }
 
   delete ctemp;
@@ -217,9 +276,9 @@ void SMS( bool print = false){
   //-----------------------------------------------------------------------
   // make root file
   // store observed and expected limits and signal efficiency TH2's
-  //-----------------------------------------------------
+  //-----------------------------------------------------------------------
 
-  TFile *outfile = TFile::Open(Form("%s_histos.root",sample),"RECREATE");
+  TFile *outfile = TFile::Open(Form("%s/%s/histos.root",outpath,sample),"RECREATE");
   outfile->cd();
   for( unsigned int i = 0 ; i < nsig ; ++i ){
     hxsec[i]->Write();
