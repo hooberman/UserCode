@@ -150,9 +150,16 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   else if( strcmp( prefix , "wzsms" ) == 0 ){
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_7_1_TNp.root"); //'official'
 
-    //pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_13_1_E7O.root"); //'official'
-    //pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_38_1_MvY.root"); //'official'
+    // 200/0 points
+    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_13_1_E7O.root"); //'official'
+    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_38_1_MvY.root"); //'official'
+    
+    // // 500/0 points
+    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_50*root"); //'official'
+    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_51*root"); //'official'
+    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_73*root"); //'official'
 
+    // all events
     pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/*.root"); //'official'
 
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/fgolf/CMS2_VB04-02-29_Fastsim/TChiwz/*.root");
