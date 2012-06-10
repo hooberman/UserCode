@@ -80,7 +80,7 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 
 const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
-const bool  doGenSelection       = true;
+const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
 const char* iter                 = "V00-02-21";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
@@ -536,6 +536,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	met60eff_  = 0.0;
 	met100eff_ = 0.0;
 	met200eff_ = 0.0;
+	drjets_    = 100.0;
 	
 	SetVZGenWeights(isData);
 
@@ -2100,9 +2101,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( goodJetsUp.size() >= 2 ) mjjup_ = ( goodJetsUp.at(0) + goodJetsUp.at(1) ).mass();
       if( goodJetsDn.size() >= 2 ) mjjdn_ = ( goodJetsDn.at(0) + goodJetsDn.at(1) ).mass();
 
-      mjjmatch_ = 0;
+      mjjmatch_ =    0;
+      wpt_      = -1.0;
+      int nw = 0;
 
-      
       if( goodJets.size() >=2 && !isData ){
 
 	float mindr1  = 1000;
@@ -2113,6 +2115,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
 
 	  int motherid = abs(genps_id_mother().at(gidx));
+
+	  if( abs( cms2.genps_id().at(gidx) ) == 24 ){
+	    nw++;
+	    wpt_ = cms2.genps_p4().at(gidx).pt();
+	  }
 
 	  if (cms2.genps_status().at(gidx) != 3)	
 	    continue;
@@ -2136,6 +2143,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	    mindr2  = dr2;
 	    mother2 = motherid;
 	  }
+	}
+
+	if( nw != 1 ){
+	  cout << "Error, found " << nw << " W's" << endl;
+	  dumpDocLines();
 	}
 
 	if( mother1 == 23 && mother2 == 23 ) mjjmatch_ = 1;
@@ -2266,6 +2278,22 @@ void Z_looper::fillUnderOverFlow(TH1F *h1, float value, float weight){
 //--------------------------------------------------------------------
 
 void Z_looper::InitBabyNtuple (){
+
+  glep1_   = 0;
+  glep2_   = 0;
+  gid1_    = -1;
+  gid2_    = -1;
+  gmatch1_ = -1;
+  gmatch2_ = -1;
+
+  passgen_   =   0;
+  lepeff_    = 0.0;
+  dijeteff_  = 0.0;
+  bvetoeff_  = 1.0;
+  met60eff_  = 0.0;
+  met100eff_ = 0.0;
+  met200eff_ = 0.0;
+  drjets_    = 100.0;
 
   //electron-matched jet stuff
   drjet_ll_       = -999999.;
@@ -2589,6 +2617,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyFile_->cd();
   babyTree_ = new TTree("T1", "A Baby Ntuple");
 
+
   //event stuff
   babyTree_->Branch("rho",          &rho_,          "rho/F"          );
   babyTree_->Branch("dataset",      &dataset_,      "dataset[200]/C" );
@@ -2637,6 +2666,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("gmatch1",      &gmatch1_,      "gmatch1/I"      );
   babyTree_->Branch("gmatch2",      &gmatch2_,      "gmatch2/I"      );
 
+  babyTree_->Branch("wpt",          &wpt_,          "wpt/F"          );
+
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
   babyTree_->Branch("jetptll",      &jetpt_ll_,     "jetptll/F"     );
@@ -2651,6 +2682,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("passgen"  ,    &passgen_   ,   "passgen/I "    );
   babyTree_->Branch("lefeff"   ,    &lepeff_    ,   "lepeff/F"      );
   babyTree_->Branch("dijeteff" ,    &dijeteff_  ,   "dijeteff/F"    );
+  babyTree_->Branch("drjets"   ,    &drjets_    ,   "drjets/F"      );
   babyTree_->Branch("bvetoeff" ,    &bvetoeff_  ,   "bvetoeff/F"    );
   babyTree_->Branch("met60eff" ,    &met60eff_  ,   "met60eff/F"    );
   babyTree_->Branch("met100eff",    &met100eff_ ,   "met100eff/F"   );
@@ -2705,7 +2737,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ndphijetmet",    &dphijetmet_,       "dphijetmet/F");
   babyTree_->Branch("maxjetpt",       &jetmax_pt_,        "maxjetpt/F");
   babyTree_->Branch("maxjetdphimet",  &jetmax_dphimet_,   "maxjetdphimet/F");
-                         
+
   //Z stuff
   babyTree_->Branch("leptype",               &leptype_,               "leptype/I");
   babyTree_->Branch("ecaltype",              &ecaltype_,              "ecaltype/I");
@@ -3315,6 +3347,7 @@ void Z_looper::SetVZGenWeights( bool isData ){
     int nGoodJet   = 0;
 
     vector<float> partonpt;
+    VofP4 partonp4;
 
     for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
 
@@ -3334,6 +3367,7 @@ void Z_looper::SetVZGenWeights( bool isData ){
       
       nGoodJet++;
       partonpt.push_back(cms2.genps_p4().at(gidx).pt());
+      partonp4.push_back(cms2.genps_p4().at(gidx));
     }
 
     if( nGoodJet < 2 ) return;
@@ -3366,6 +3400,7 @@ void Z_looper::SetVZGenWeights( bool isData ){
     if( partonpt2 < 100 ) jet2eff = fjet->Eval(partonpt2);
 
     dijeteff_ = jet1eff * jet2eff;
+    drjets_   = dRbetweenVectors(partonp4.at(0),partonp4.at(1));
 
     //----------------------------------
     // b-veto eff

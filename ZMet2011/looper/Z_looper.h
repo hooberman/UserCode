@@ -106,6 +106,7 @@ class Z_looper
   Float_t unclustered_;
   Float_t unclustered_x_;
   Float_t unclustered_y_;
+  Float_t wpt_;
 
   LorentzVector*  glep1_;
   LorentzVector*  glep2_;
@@ -251,6 +252,7 @@ class Z_looper
   Int_t   passgen_;
   Float_t lepeff_;
   Float_t dijeteff_;
+  Float_t drjets_;
   Float_t bvetoeff_;
   Float_t met60eff_;
   Float_t met100eff_;
