@@ -60,8 +60,8 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-12";
-const char* jsonfilename         = "../jsons/Cert_190456-195016_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 2.4/fb
+const char* iter                 = "V00-00-13";
+const char* jsonfilename         = "../jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
