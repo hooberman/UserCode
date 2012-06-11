@@ -32,6 +32,7 @@ enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt
 //------------------------------------------------
 bool           debug              = false;                  // debug printout statements
 bool           doVtxReweight      = true;                   // reweight templates for nVertices
+bool           bveto              = false;                  // b-veto
 bool           setTemplateErrors  = true;                   // calculate template errors
 metType        myMetType          = e_pfmet;                // MET type
 templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templates
@@ -75,8 +76,18 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   //  if( isData ){
 
   if( myTemplateSource == e_PhotonJetStitched ){
-    if( doVtxReweight ) templateFileName = Form("../photon_output/%s/DoubleElectron_templates_vtxreweight.root",template_version);
-    else                templateFileName = Form("../photon_output/%s/DoubleElectron_templates.root",template_version);
+
+    char* vtxchar = "";
+    if( doVtxReweight ) vtxchar = "_vtxreweight";
+
+    char* bvetochar = "";
+    if( bveto ) bvetochar = "_bveto";
+
+    templateFileName =  Form("../photon_output/%s/DoubleElectron_templates%s%s.root",template_version,vtxchar,bvetochar);
+
+    //if( doVtxReweight ) templateFileName = Form("../photon_output/%s/DoubleElectron_templates_vtxreweight.root",template_version);
+    //else                templateFileName = Form("../photon_output/%s/DoubleElectron_templates.root",template_version);
+
     cout << "Using template file " << templateFileName << endl;
     metTemplateString = "_PhotonStitchedTemplate";
     metTemplateFile = TFile::Open( templateFileName );
@@ -251,6 +262,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	if( pflep1_->pt() < 20 )           continue; // PF lepton 1 pt > 20 GeV
 	if( pflep2_->pt() < 20 )           continue; // PF lepton 2 pt > 20 GeV
 	if( el1tv_ == 1 || el2tv_ == 1 )   continue; // veto transition region electrons
+	if( bveto && nbm_ > 0 )            continue; // do b-veto
+
 	//if( lep3_->pt() > 10 )             continue; // 3rd lepton veto
 
 	// if( leptype_ == 0 ){
@@ -375,7 +388,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	//cout << dilmass_ << " " << pfdilmass << endl;
 	//if( dilmass_ < 81. || dilmass_ > 101. )                              continue; 
 	if( dilmasspf_ < 81. || dilmasspf_ > 101. )                              continue; 
-	//if( pfdilmass < 86. || pfdilmass > 96. )                              continue; 
+	//if( dilmass_ < 86. || dilmasspf_ > 96. )                              continue; 
 
 	hresponse->Fill( genmet_ , pfmet_ / genmet_ );
 	hgenmet_all->Fill( genmet_ );
@@ -1201,6 +1214,10 @@ void babylooper::setBranches (TTree* tree){
     tree->SetBranchAddress("mm",                   &mm_                   );
     tree->SetBranchAddress("em",                   &em_                   );
     tree->SetBranchAddress("me",                   &me_                   );
+
+    tree->SetBranchAddress("nbl",                  &nbl_                  );
+    tree->SetBranchAddress("nbm",                  &nbm_                  );
+    //tree->SetBranchAddress("nbt",                  &nbt_                  );
 
   }
 

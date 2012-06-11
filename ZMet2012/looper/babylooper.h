@@ -70,6 +70,10 @@ class babylooper
         Float_t davtxweight_;
         Float_t pthat_;
 
+	Int_t   nbl_;
+	Int_t   nbm_;
+	Int_t   nbt_;
+
 	// genmet stuff
 	Float_t genmet_;
 	Float_t genmetphi_;
