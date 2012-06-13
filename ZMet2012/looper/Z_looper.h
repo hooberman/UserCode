@@ -106,6 +106,10 @@ class Z_looper
   Float_t unclustered_;
   Float_t unclustered_x_;
   Float_t unclustered_y_;
+  Int_t   ngenels_;
+  Int_t   ngenmus_;
+  Int_t   ngentaus_;
+  Int_t   ngenleps_;
 
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;

@@ -548,6 +548,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if( TString(prefix).Contains("LM9") ) weight_ *= kfactorSUSY( "lm9" );
 	}
 
+	int nleps = leptonGenpCount(nels, nmus, ntaus);
+
+	ngenels_  = nels;
+	ngenmus_  = nmus;
+	ngentaus_ = ntaus;
+	ngenleps_ = nels + nmus + ntaus;
+
 	pthat_  = cms2.genps_pthat();	
       }
       
@@ -2060,6 +2067,10 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("hveto1",       &hveto1_,       "hveto1/F"       );
   babyTree_->Branch("eveto2",       &eveto2_,       "eveto2/F"       );
   babyTree_->Branch("hveto2",       &hveto2_,       "hveto2/F"       );
+  babyTree_->Branch("ngenels",      &ngenels_,      "ngenels/I"      );
+  babyTree_->Branch("ngenmus",      &ngenmus_,      "ngenmus/I"      );
+  babyTree_->Branch("ngentaus",     &ngentaus_,     "ngentaus/I"     );
+  babyTree_->Branch("ngenleps",     &ngenleps_,     "ngenleps/I"     );
 
   babyTree_->Branch("mm"       ,    &mm_       ,    "mm/I"          );
   babyTree_->Branch("mmtk"     ,    &mmtk_     ,    "mmtk/I"        );
