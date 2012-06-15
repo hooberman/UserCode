@@ -1,2 +1,0 @@
-scp lxplus.cern.ch:CMSSW_3_2_7/src/Alignment/OfflineValidation/test/rootfiles/deco.root /uscms/home/benhoob/CMSSW_3_2_7/src/Alignment/OfflineValidation/test/rootfiles/.
-scp lxplus.cern.ch:CMSSW_3_2_7/src/Alignment/OfflineValidation/test/rootfiles/peak.root /uscms/home/benhoob/CMSSW_3_2_7/src/Alignment/OfflineValidation/test/rootfiles/.
