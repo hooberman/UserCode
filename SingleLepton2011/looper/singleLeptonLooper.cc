@@ -353,8 +353,9 @@ void singleLeptonLooper::InitBaby(){
   // njets with JEC variation
   njetsUp_	= 0;
   njetsDown_	= 0;
-  htUp_		= 0.;
-  htDown_	= 0.;
+  ht_           = -999.;
+  htUp_		= -999.;
+  htDown_	= -999.;
 
   // pfjet vars
   npfjets30_	= 0;
@@ -491,11 +492,17 @@ void singleLeptonLooper::InitBaby(){
 
   lep1_		= 0;
   lep2_		= 0;
+  pflep1_	= 0;
+  pflep2_	= 0;
+  leppfjet1_	= 0;
+  leppfjet2_	= 0;
   pflep_        = 0;
   pftaud_       = 0;
   mbb_		= -9999.;
   pflepmindrj_   = 9999.;
   pftaudmindrj_  = 9999.;
+  lep1pfjetdr_   = 9999.;
+  lep2pfjetdr_   = 9999.;
 
   pfcand5_        = 0;
   pfcand10_       = 0;
@@ -683,8 +690,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     set_goodrun_file( g_json );
 
     //set vtx reweighting hist
-    set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
-    weight3D_init( "Weight3D.root" );
+    set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
+    weight3D_init( "vtxreweight/Weight3D.root" );
 
     //set msugra cross section file
     set_msugra_file("goodModelNames_tanbeta10.txt");
@@ -902,7 +909,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //-------------------------------------
       // skip events with bad els_conv_dist
       //-------------------------------------
- 
+
       bool skipEvent = false;
       for( unsigned int iEl = 0 ; iEl < els_conv_dist().size() ; ++iEl ){
         if( els_conv_dist().at(iEl) != els_conv_dist().at(iEl) ){
@@ -963,7 +970,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //---------------------------------------------
       // find leading lepton
       //---------------------------------------------
-
       float maxpt   = -1;
       int   imaxpt  = -1;
       int   imaxpt2 = -1;
@@ -986,6 +992,34 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       id1_       = lepId.at(imaxpt);
       lep1_      = &goodLeptons.at(imaxpt);
       int index1 = lepIndex.at(imaxpt);
+
+      // Matching lepton with pfjet
+      LorentzVector minvjet1;
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+	
+	LorentzVector vjet = pfjets_p4().at(ijet);
+
+	if( vjet.pt()  < 10  )             continue;
+	if( fabs(vjet.eta()) > 3.0 )       continue;
+        
+	float dr = dRbetweenVectors( vjet, *lep1_ );
+
+	if( dr < lep1pfjetdr_ ){
+	  lep1pfjetdr_    = dr;
+	  minvjet1         = vjet;
+	}
+      }
+      if (lep1pfjetdr_<9998.) 
+	leppfjet1_ = &minvjet1;
+
+      // Matching lepton with pflepton
+      if( abs(id1_) == 13 ) {
+        int ipf1 = mus_pfmusidx().at(index1);
+        if( ipf1 >= 0 ) pflep1_ = &(pfmus_p4().at(ipf1));
+      } else if( abs(id1_) == 11 ) {
+        int ipf1 = els_pfelsidx().at(index1);
+        if( ipf1 >= 0 ) pflep1_ = &(pfels_p4().at(ipf1));
+      }
 
       //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
 
@@ -1025,6 +1059,37 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	lep2_      = &goodLeptons.at(imaxpt2);
 	index2     = lepIndex.at(imaxpt2);
 	dilmass_   = sqrt((goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass2());
+
+	// Matching lepton with pfjet
+	LorentzVector minvjet2;
+	for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+	  
+	  LorentzVector vjet = pfjets_p4().at(ijet);
+	  
+	  if( vjet.pt()  < 10  )             continue;
+	  if( fabs(vjet.eta()) > 3.0 )       continue;
+	  
+	  float dr = dRbetweenVectors( vjet, *lep2_ );
+	  
+	  if( dr < lep2pfjetdr_ ){
+	    lep2pfjetdr_    = dr;
+	    minvjet2        = vjet;
+	  }
+	}
+	if (lep2pfjetdr_<9998.)
+	  leppfjet2_      = &minvjet2;      
+
+      //---------------------------------------------
+      // Matching sub-leading lepton with pflepton
+      //---------------------------------------------
+
+      if( abs(id2_) == 13 ) {
+        int ipf2 = mus_pfmusidx().at(index2);
+        if( ipf2 >= 0 ) pflep2_ = &(pfmus_p4().at(ipf2));
+      } else if( abs(id2_) == 11 ) {
+        int ipf2 = els_pfelsidx().at(index2);
+        if( ipf2 >= 0 ) pflep2_ = &(pfels_p4().at(ipf2));
+      }
 
         float metx = evt_pfmet() * cos( evt_pfmetPhi() );
         float mety = evt_pfmet() * sin( evt_pfmetPhi() );
@@ -1793,6 +1858,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       int   imaxjet   = -1;
       float maxjetpt  = -1.;
+      float ht_ = 0.;
 
       VofP4 vpfjets_p4;
       VofP4 vpfrawjets_p4;
@@ -1940,6 +2006,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  npfjets45_ ++;
 	  htpf45_ += vjet.pt();
 	}
+
+	ht_ += vjet.pt();
 
 	if(       vjet.pt()    < 30. )           continue;
 	if( fabs( vjet.eta() ) > 2.5 )           continue;
@@ -2535,7 +2603,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
  	}
       }
 
-      else if(strcmp(prefix,"LMscan") == 0){
+      else if(strcmp(prefix,"LMscan") == 0){ 
 
 	m0_  = sparm_m0();
 	m12_ = sparm_m12();
@@ -3427,49 +3495,55 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nhreliso10p5",    &nhreliso10p5_,     "nhreliso10p5/F");  
   outTree->Branch("nhreliso10p7",    &nhreliso10p7_,     "nhreliso10p7/F");  
   outTree->Branch("mbb",             &mbb_,              "mbb/F");
+  outTree->Branch("lep1pfjetdr",     &lep1pfjetdr_,      "lep1pfjetdr/F");  
+  outTree->Branch("lep2pfjetdr",     &lep2pfjetdr_,      "lep2pfjetdr/F");  
 
-  outTree->Branch("mlep"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
-  outTree->Branch("lep1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
-  outTree->Branch("lep2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
-  outTree->Branch("mclep1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep1_	);
-  outTree->Branch("mclep2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep2_	);
-  outTree->Branch("mctaud1"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mctaud1_	);
-  outTree->Branch("mctaud2"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mctaud2_	);
+  outTree->Branch("mlep"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
+  outTree->Branch("lep1"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
+  outTree->Branch("lep2"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
+  outTree->Branch("pflep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pflep1_	);
+  outTree->Branch("pflep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pflep2_	);
+  outTree->Branch("leppfjet1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &leppfjet1_	);
+  outTree->Branch("leppfjet2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &leppfjet2_	);
+  outTree->Branch("mclep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep1_	);
+  outTree->Branch("mclep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep2_	);
+  outTree->Branch("mctaud1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mctaud1_	);
+  outTree->Branch("mctaud2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mctaud2_	);
   outTree->Branch("mctaudvis1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mctaudvis1_	);
   outTree->Branch("mctaudvis2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mctaudvis2_	);
-  outTree->Branch("pflep"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pflep_	);
-  outTree->Branch("pftaud"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pftaud_	);
-  outTree->Branch("pfcand5"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcand5_	);
-  outTree->Branch("pfcand10" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcand10_	);
-  outTree->Branch("jet"	     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
+  outTree->Branch("pflep"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pflep_	);
+  outTree->Branch("pftaud"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pftaud_	);
+  outTree->Branch("pfcand5"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcand5_	);
+  outTree->Branch("pfcand10"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcand10_	);
+  outTree->Branch("jet"	      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
 
-  outTree->Branch("cjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet1_	);
-  outTree->Branch("cjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet2_	);
-  outTree->Branch("cjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet3_	);
-  outTree->Branch("cjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet4_	);
+  outTree->Branch("cjet1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet1_	);
+  outTree->Branch("cjet2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet2_	);
+  outTree->Branch("cjet3"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet3_	);
+  outTree->Branch("cjet4"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet4_	);
 
-  outTree->Branch("pfjet1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet1_	);
-  outTree->Branch("pfjet2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet2_	);
-  outTree->Branch("pfjet3"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet3_	);
-  outTree->Branch("pfjet4"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet4_	);
-  outTree->Branch("pfjet5"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet5_	);
-  outTree->Branch("pfjet6"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet6_	);
+  outTree->Branch("pfjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet1_	);
+  outTree->Branch("pfjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet2_	);
+  outTree->Branch("pfjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet3_	);
+  outTree->Branch("pfjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet4_	);
+  outTree->Branch("pfjet5"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet5_	);
+  outTree->Branch("pfjet6"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet6_	);
 
-  outTree->Branch("cresjet1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet1_	);
-  outTree->Branch("cresjet2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet2_	);
-  outTree->Branch("cresjet3" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet3_	);
-  outTree->Branch("cresjet4" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet4_	);
+  outTree->Branch("cresjet1"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet1_	);
+  outTree->Branch("cresjet2"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet2_	);
+  outTree->Branch("cresjet3"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet3_	);
+  outTree->Branch("cresjet4"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet4_	);
 
-  outTree->Branch("pfresjet1", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet1_	);
-  outTree->Branch("pfresjet2", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet2_	);
-  outTree->Branch("pfresjet3", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet3_	);
-  outTree->Branch("pfresjet4", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet4_	);
-
-  outTree->Branch("nonisoel" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisoel_	);
-  outTree->Branch("nonisomu" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisomu_	);
-  outTree->Branch("t"        , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &t_   	);
-  outTree->Branch("tbar"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &tbar_   	);
-  outTree->Branch("ttbar"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &ttbar_   	);
+  outTree->Branch("pfresjet1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet1_	);
+  outTree->Branch("pfresjet2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet2_	);
+  outTree->Branch("pfresjet3" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet3_	);
+  outTree->Branch("pfresjet4" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet4_	);
+			      
+  outTree->Branch("nonisoel"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisoel_	);
+  outTree->Branch("nonisomu"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisomu_	);
+  outTree->Branch("t"         , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &t_   	);
+  outTree->Branch("tbar"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &tbar_   	);
+  outTree->Branch("ttbar"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &ttbar_   	);
 
 
 }
@@ -3655,3 +3729,4 @@ std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , floa
   isos.push_back(nhiso);
   return isos;
 }
+

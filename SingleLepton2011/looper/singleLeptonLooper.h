@@ -217,6 +217,10 @@ class singleLeptonLooper
 	Float_t pftaudiso_;
 	Float_t pftaudpt_;
 	Float_t pftaudmindrj_;
+	
+	//lepton jet matching variable
+	Float_t lep1pfjetdr_;
+	Float_t lep2pfjetdr_;
 
 	// HLT variables
 	Int_t   ldi_;
@@ -283,6 +287,10 @@ class singleLeptonLooper
         LorentzVector*  pfcand10_;
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
+        LorentzVector*  pflep1_;
+        LorentzVector*  pflep2_;
+        LorentzVector*  leppfjet1_;
+        LorentzVector*  leppfjet2_;
         LorentzVector*  dilep_;
         LorentzVector*  jet_; 
 

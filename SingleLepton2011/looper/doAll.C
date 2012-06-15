@@ -89,9 +89,9 @@ void doAll(bool skipFWLite = true)
  
   // flags for files to run over
   bool rundata     = 0;
-  bool runttall    = 0;
+  bool runttall    = 1;
   bool runWjets    = 0;
-  bool runVV       = 1;
+  bool runVV       = 0;
   bool runQCD      = 0;
   bool runMuQCD    = 0;
   bool runtW       = 0;
