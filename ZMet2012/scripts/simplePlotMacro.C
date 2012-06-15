@@ -30,7 +30,8 @@ using namespace std;
 
 const bool  doKscaling =   true;
 const float K          =   0.14;
-const float Rem        =   1.25;   
+const float Rem        =   1.24;   // OR of all triggers
+//const float Rem        =   1.20;   // specific triggers
 const int   rebin      =     10;
 
 float histError( TH1F* hist , int lowbin ){
@@ -51,10 +52,10 @@ void simplePlotMacro( bool printplots = false ){
   // data/MC files
   //-----------------------------------
   
-  char* iter = "V00-00-12";
+  char* iter = "V00-00-13";
 
   TFile *f   = TFile::Open(Form("../output/%s/babylooper_data_PhotonStitchedTemplatenjetsgeq2.root",iter));
-  TFile *fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplatenjetsgeq2.root",iter));
+  TFile *fwz = TFile::Open(Form("../output/%s/babylooper_wzmg_PhotonStitchedTemplatenjetsgeq2.root",iter));
   TFile *fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2.root",iter));
 
   //-----------------------------------
@@ -82,8 +83,8 @@ void simplePlotMacro( bool printplots = false ){
   vector<char*> predictedHisto;
 
   observedHisto.push_back((char*)"metObserved");        predictedHisto.push_back((char*)"metPredicted");
-  //observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
-  //observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
+  observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
+  observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
 
   //-----------------------------------
   // define histos, canvas, pads
@@ -124,30 +125,20 @@ void simplePlotMacro( bool printplots = false ){
     // scale OF prediction for ee vs. mm
     //------------------------------------------
 
-    char* title = (char*) "ee/#mu#mu events";
+    char* title     = (char*) "ee/#mu#mu events";
+    bool  ee_and_mm = true;
 
     if( TString(observedHisto.at(i)).Contains("ee") ){
       h_ofpred[i]->Scale(0.5/Rem);
-      title = (char*) "ee events";
+      title     = (char*) "ee events";
+      ee_and_mm = false;
     }
 
     else if( TString(observedHisto.at(i)).Contains("mm") ){
       h_ofpred[i]->Scale(0.5*Rem);
-      title = (char*) "#mu#mu events";
+      title     = (char*) "#mu#mu events";
+      ee_and_mm = false;
     }
-
-    
-
-    // TH1F* h_sf    = (TH1F*) f->Get("metObserved");
-    // TH1F* h_gjets = (TH1F*) f->Get("metPredicted");
-
-    // TH1F* h_sf    = (TH1F*) f->Get("metObserved_mm");
-    // TH1F* h_gjets = (TH1F*) f->Get("metPredicted_mm");
-    // h_of->Scale(0.5*Rem); 
-
-    // TH1F* h_sf    = (TH1F*) f->Get("metObserved_ee");
-    // TH1F* h_gjets = (TH1F*) f->Get("metPredicted_ee");
-    // h_of->Scale(0.5/Rem);
 
     h_ofpred[i]->Rebin(rebin);
     h_sf[i]->Rebin(rebin);
@@ -178,7 +169,6 @@ void simplePlotMacro( bool printplots = false ){
     mainpad[i]->SetLeftMargin(0.15);
     mainpad[i]->SetRightMargin(0.05);    
     mainpad[i]->SetLogy();
-
 
     h_sf[i]->GetXaxis()->SetTitle("E_{T}^{miss} [GeV]");
     h_sf[i]->GetYaxis()->SetTitle("entries / 10 GeV");
@@ -247,7 +237,7 @@ void simplePlotMacro( bool printplots = false ){
 
     //int bins[nbins]={0,30,60,100,150,200,300};
     int bins[nbins]={0,30,60,100,200,300};
-    int width1 = 18;
+    int width1 = 16;
     int width2 =  2;
 
     cout << endl;
@@ -301,8 +291,13 @@ void simplePlotMacro( bool printplots = false ){
 
       // syst uncertainties
       ngjets_syst[ibin] = 0.3 * h_gjets[i]->Integral(bin,1000);
-      float ofsyst = 0.1;
-      if( doKscaling && bins[ibin] >= 200 ) ofsyst = 0.25;
+
+      //float ofsyst = 0.1;
+      //if( doKscaling && bins[ibin] >= 200 ) ofsyst = 0.25;
+
+      float ofsyst = 0.15;
+      if( !ee_and_mm ) ofsyst = 0.2;
+
       nof_syst[ibin]    = ofsyst * h_ofpred[i]->Integral(bin,1000);
       nwz_syst[ibin]    = 0.5 * h_wz[i]->Integral(bin,1000);
       nzz_syst[ibin]    = 0.5 * h_zz[i]->Integral(bin,1000);
