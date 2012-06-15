@@ -96,7 +96,11 @@ class singleLeptonLooper
 	Int_t	mcdecay1_; 
 	Int_t   mcdecay2_; 
 	Int_t	mcndec1_; 
-	Int_t   mcndec2_; 
+	Int_t   mcndec2_;
+	Int_t	mcndeckls1_; 
+	Int_t   mcndeckls2_; 
+	Int_t	mcndecem1_; 
+	Int_t   mcndecem2_;  
 	Float_t mctaudpt1_;
 	Float_t mctaudpt2_;
 	Int_t   mctaudid1_;    
@@ -132,6 +136,14 @@ class singleLeptonLooper
 	Float_t nhreliso10p4_;
 	Float_t nhreliso10p5_;
 	Float_t nhreliso10p7_;
+
+	// extra pfcand vars 
+        Float_t pfcandiso5_;     
+        Float_t pfcandiso10_;     
+        Float_t pfcandpt5_;
+        Float_t pfcandpt10_;
+        Float_t pfcandmindrj5_;
+        Float_t pfcandmindrj10_;
 
 	// btag variables
 	Int_t   nbtagsssv_;     
@@ -200,9 +212,11 @@ class singleLeptonLooper
 	Float_t pflepdr_;
 	Float_t pflepiso_;
 	Float_t pfleppt_;
+	Float_t pflepmindrj_;
 	Float_t pftauddr_;
 	Float_t pftaudiso_;
 	Float_t pftaudpt_;
+	Float_t pftaudmindrj_;
 
 	// HLT variables
 	Int_t   ldi_;
@@ -261,6 +275,12 @@ class singleLeptonLooper
 	LorentzVector*  mclep2_;   
 	LorentzVector*  mctaud1_;   
 	LorentzVector*  mctaud2_;  
+	LorentzVector*  mctaudvis1_;   
+	LorentzVector*  mctaudvis2_;  
+        LorentzVector*  pflep_;
+        LorentzVector*  pftaud_;
+        LorentzVector*  pfcand5_;
+        LorentzVector*  pfcand10_;
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
         LorentzVector*  dilep_;
@@ -275,6 +295,26 @@ class singleLeptonLooper
         LorentzVector*  pfjet2_; 
         LorentzVector*  pfjet3_; 
         LorentzVector*  pfjet4_; 
+        LorentzVector*  pfjet5_; 
+        LorentzVector*  pfjet6_; 
+        Int_t bjet1_; 
+        Int_t bjet2_; 
+        Int_t bjet3_; 
+        Int_t bjet4_; 
+        Int_t bjet5_; 
+        Int_t bjet6_; 
+        Int_t lepjet1_; 
+        Int_t lepjet2_; 
+        Int_t lepjet3_; 
+        Int_t lepjet4_; 
+        Int_t lepjet5_; 
+        Int_t lepjet6_; 
+        Int_t qgjet1_; 
+        Int_t qgjet2_; 
+        Int_t qgjet3_; 
+        Int_t qgjet4_; 
+        Int_t qgjet5_; 
+        Int_t qgjet6_; 
         LorentzVector*  cresjet1_; 
         LorentzVector*  cresjet2_; 
         LorentzVector*  cresjet3_; 
