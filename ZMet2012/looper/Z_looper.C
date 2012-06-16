@@ -548,12 +548,32 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if( TString(prefix).Contains("LM9") ) weight_ *= kfactorSUSY( "lm9" );
 	}
 
+	int nels;
+	int nmus;
+	int ntaus;
 	int nleps = leptonGenpCount(nels, nmus, ntaus);
 
-	ngenels_  = nels;
-	ngenmus_  = nmus;
-	ngentaus_ = ntaus;
-	ngenleps_ = nels + nmus + ntaus;
+	ngenels_  = 0;
+	ngenmus_  = 0;
+	ngentaus_ = 0;
+	ngenleps_ = 0;
+	ngennue_  = 0;
+	ngennum_  = 0;
+	ngennut_  = 0;
+	ngennu_   = 0;
+
+	int size = cms2.genps_id().size(); 
+	for (int jj=0; jj<size; jj++) { 
+	  if (abs(cms2.genps_id().at(jj)) == 11) ngenels_++; 
+	  if (abs(cms2.genps_id().at(jj)) == 13) ngenmus_++; 
+	  if (abs(cms2.genps_id().at(jj)) == 15) ngentaus_++; 
+	  if (abs(cms2.genps_id().at(jj)) == 12) ngennue_++; 
+	  if (abs(cms2.genps_id().at(jj)) == 14) ngennum_++; 
+	  if (abs(cms2.genps_id().at(jj)) == 16) ngennut_++; 
+	}
+  
+	ngenleps_ = ngenels_ + ngenmus_ + ngentaus_;
+	ngennu_   = ngennue_ + ngennum_ + ngennut_;
 
 	pthat_  = cms2.genps_pthat();	
       }
@@ -2071,6 +2091,11 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ngenmus",      &ngenmus_,      "ngenmus/I"      );
   babyTree_->Branch("ngentaus",     &ngentaus_,     "ngentaus/I"     );
   babyTree_->Branch("ngenleps",     &ngenleps_,     "ngenleps/I"     );
+
+  babyTree_->Branch("ngennue",      &ngennue_,      "ngennue/I"      );
+  babyTree_->Branch("ngennum",      &ngennum_,      "ngennum/I"      );
+  babyTree_->Branch("ngennut",      &ngennut_,      "ngennut/I"      );
+  babyTree_->Branch("ngennu",       &ngennu_,       "ngennu/I"       );
 
   babyTree_->Branch("mm"       ,    &mm_       ,    "mm/I"          );
   babyTree_->Branch("mmtk"     ,    &mmtk_     ,    "mmtk/I"        );

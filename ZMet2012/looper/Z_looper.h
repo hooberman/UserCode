@@ -110,6 +110,10 @@ class Z_looper
   Int_t   ngenmus_;
   Int_t   ngentaus_;
   Int_t   ngenleps_;
+  Int_t   ngennue_;
+  Int_t   ngennum_;
+  Int_t   ngennut_;
+  Int_t   ngennu_;
 
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
