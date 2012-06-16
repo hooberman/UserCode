@@ -8,9 +8,10 @@
   //runZLooper("zjets"                 , false );  
   //runZLooper("ttbar"                 , false );  
   //runZLooper("wzmg"                    , false );  
-  runZLooper("zz"                      , false );  
-  runZLooper("t"                       , false );  
-  runZLooper("ww"                      , false );  
+  //runZLooper("zz"                      , false );  
+  //runZLooper("t"                       , false );  
+  //runZLooper("ww"                      , false );  
+  runZLooper("testfilter"                , true );  
 }
 
 
