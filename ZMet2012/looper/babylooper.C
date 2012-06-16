@@ -32,14 +32,16 @@ enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt
 //------------------------------------------------
 bool           debug              = false;                  // debug printout statements
 bool           doVtxReweight      = true;                   // reweight templates for nVertices
-bool           bveto              = false;                  // b-veto
+bool           bveto              = true;                   // b-veto
+bool           mjjcut             = false;                  // dijet mass requirement
+bool           nlep2              = false;                  // 3rd lepton veto
 bool           setTemplateErrors  = true;                   // calculate template errors
 metType        myMetType          = e_pfmet;                // MET type
 templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templates
 templateType   myTemplateType     = e_njets_ht;             // bin templates in njets and HT
 bool           reweight           = false;                  // reweight for photon vs. Z pt
 char*          iter               = "njetsgeq2";            // label for output file
-float          lumi               = 2.4;                    // luminosity
+float          lumi               = 2.866;                  // luminosity
 //------------------------------------------------
 
 using namespace std;
@@ -54,6 +56,15 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   int npass = 0;
   selection_    = mySelectionType;
   makeTemplate_ = makeTemplate;
+
+  if ( bveto ) cout << "Doing b-veto" << endl;
+  else         cout << "NO b-veto"    << endl;
+
+  if ( mjjcut )cout << "Requiring mjj mass cut" << endl;
+  else         cout << "NO mjj mas cut"         << endl;
+
+  if ( nlep2 ) cout << "Third lepton veto"      << endl;
+  else         cout << "NO third lepton veto"   << endl;
 
   // if( !isData && myTemplateSource == e_PhotonJetStitched ){
   //   myTemplateSource = e_PhotonJet;
@@ -259,10 +270,12 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         //event selection
         //------------------------------------------------------------
 
-	if( pflep1_->pt() < 20 )           continue; // PF lepton 1 pt > 20 GeV
-	if( pflep2_->pt() < 20 )           continue; // PF lepton 2 pt > 20 GeV
-	if( el1tv_ == 1 || el2tv_ == 1 )   continue; // veto transition region electrons
-	if( bveto && nbm_ > 0 )            continue; // do b-veto
+	if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
+	if( pflep2_->pt() < 20 )                        continue; // PF lepton 2 pt > 20 GeV
+	if( el1tv_ == 1 || el2tv_ == 1 )                continue; // veto transition region electrons
+	if( bveto && nbm_ > 0 )                         continue; // do b-veto
+	if( mjjcut && ( mjj_ < 70.0 || mjj_ > 110.0 ) ) continue; // mjj requirement
+	if( nlep2 && nlep_ > 2 )                        continue; // 3rd lepton veto
 
 	//if( lep3_->pt() > 10 )             continue; // 3rd lepton veto
 
@@ -642,7 +655,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
   
-  saveHist( Form("../output/%s/babylooper_%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter ) );
+  if( bveto ) saveHist( Form("../output/%s/babylooper_%s%s%s_bveto.root"   , Z_version , prefix , metTemplateString.c_str() , iter ) );
+  else        saveHist( Form("../output/%s/babylooper_%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter ) );
   deleteHistos();
   
 } // end ScanChain
@@ -1051,6 +1065,8 @@ void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("pthat",        &pthat_        );
   tree->SetBranchAddress("lumi",         &lumi_         );
   tree->SetBranchAddress("event",        &event_        );
+  tree->SetBranchAddress("mjj",          &mjj_          );
+  tree->SetBranchAddress("nlep",         &nlep_         );
 
   tree->SetBranchAddress("nvtx",         &nvtx_         );
   tree->SetBranchAddress("npfmuons",     &npfmuons_     );

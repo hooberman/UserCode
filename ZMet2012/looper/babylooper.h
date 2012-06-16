@@ -69,6 +69,7 @@ class babylooper
         Float_t vtxweight_;
         Float_t davtxweight_;
         Float_t pthat_;
+	Float_t mjj_;
 
 	Int_t   nbl_;
 	Int_t   nbm_;
@@ -126,6 +127,7 @@ class babylooper
         Float_t  r4_;
         Float_t  s4_;
         Float_t  drel_;
+	Int_t    nlep_;
 
         Int_t    photon_pixelseed_;        
 	Float_t  photon_e15_;              
