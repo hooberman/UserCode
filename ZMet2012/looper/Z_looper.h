@@ -118,6 +118,11 @@ class Z_looper
   Float_t pfmett1new_;
   Float_t pfmett1newphi_;
 
+  Int_t   el1nomu_;
+  Int_t   el2nomu_;
+  Int_t   el1nomuss_;
+  Int_t   el2nomuss_;
+
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
   LorentzVector*  pflep1_;

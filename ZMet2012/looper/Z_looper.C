@@ -858,8 +858,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // matched PFMuons/PFElectrons
       //----------------------------
 
-      el1tv_ = 0;
-      el2tv_ = 0;
+      el1tv_     = 0;
+      el2tv_     = 0;
+      el1nomu_   = 1;
+      el2nomu_   = 1;
+      el1nomuss_ = 1;
+      el2nomuss_ = 1;
 
       int nmatched = 0;
 
@@ -895,6 +899,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	if( fabs(cms2.els_etaSC().at(index1)) >= 1.4442 && fabs(cms2.els_etaSC().at(index1)) <= 1.566 ) el1tv_ = 1;
+
+	if (!electronId_noMuon(index1)    ) el1nomu_   = 0; 
+	if (!electronId_noMuon_SS(index1) ) el1nomuss_ = 0; 
+
       }
 
       if( abs(id2_) == 13 ){
@@ -929,6 +937,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	if( fabs(cms2.els_etaSC().at(index2)) >= 1.4442 && fabs(cms2.els_etaSC().at(index2)) <= 1.566 ) el2tv_ = 1;
+
+	if (!electronId_noMuon(index2)    ) el2nomu_   = 0; 
+	if (!electronId_noMuon_SS(index2) ) el2nomuss_ = 0; 
       }
 
 
@@ -2134,6 +2145,11 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("id2",          &id2_,          "id2/I"         );
   babyTree_->Branch("el1tv",        &el1tv_,        "el1tv/I"       );
   babyTree_->Branch("el2tv",        &el2tv_,        "el2tv/I"       );
+
+  babyTree_->Branch("el1nomu",      &el1nomu_,      "el1nomu/I"     );
+  babyTree_->Branch("el2nomu",      &el2nomu_,      "el2nomu/I"     );
+  babyTree_->Branch("el1nomuss",    &el1nomuss_,    "el1nomuss/I"   );
+  babyTree_->Branch("el2nomuss",    &el2nomuss_,    "el2nomuss/I"   );
 
 
   //met stuff
