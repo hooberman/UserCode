@@ -531,7 +531,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //-----------------------------
 
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      if( !cleaning_standardApril2011() )                            continue;
+      if( !cleaning_goodVertexApril2011() )                          continue;
 
       if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[1]++;
       
@@ -1470,7 +1470,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         LorentzVector vlt    = hyp_lt_p4()[hypIdx];
         LorentzVector vll    = hyp_ll_p4()[hypIdx];
 
-        if( fabs( vjet.eta() ) > 3.0 ) continue;
+        if( fabs( vjet.eta() ) > 2.5 ) continue;
      
         if( generalLeptonVeto ){
           bool rejectJet = false;
