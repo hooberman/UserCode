@@ -756,11 +756,44 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
         if( !passSUSYTrigger2012_v2( isData ) ) continue;
-      
+
+
+	// reco lepton pT's
+	float ptll = cms2.hyp_ll_p4()[hypIdx].pt();
+	float ptlt = cms2.hyp_lt_p4()[hypIdx].pt();
+
+	// get PF lepton pT's
+	float ptllpf = 0;
+	float ptltpf = 0;
+
+	if (abs(hyp_ll_id()[hypIdx]) == 13){
+	  int ipfmu = mus_pfmusidx()[hyp_ll_index()[hypIdx]];
+	  if( ipfmu >= 0 ) ptllpf = pfmus_p4()[ipfmu].pt();
+	}
+
+	else if (abs(hyp_ll_id()[hypIdx]) == 11){
+	  int ipfel = els_pfelsidx()[hyp_ll_index()[hypIdx]];
+	  if( ipfel >= 0 ) ptllpf = pfels_p4()[ipfel].pt();
+	}
+
+	if (abs(hyp_lt_id()[hypIdx]) == 13){
+	  int ipfmu = mus_pfmusidx()[hyp_lt_index()[hypIdx]];
+	  if( ipfmu >= 0 ) ptltpf = pfmus_p4()[ipfmu].pt();
+	}
+
+	else if (abs(hyp_lt_id()[hypIdx]) == 11){
+	  int ipfel = els_pfelsidx()[hyp_lt_index()[hypIdx]];
+	  if( ipfel >= 0 ) ptltpf = pfels_p4()[ipfel].pt();
+	}
+
+	if( ptll < 20.0 && ptllpf < 20.0 ) continue;
+	if( ptlt < 20.0 && ptltpf < 20.0 ) continue;
+	
+
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
-        if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
-        if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
+        //if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
+        //if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
       
         //muon ID
