@@ -288,22 +288,33 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   char* mcJEC   = "START52_V9B";
 
   if ( TString(prefix).Contains("data") ) {
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L1FastJet.txt"    , dataJEC ));
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L2Relative.txt"   , dataJEC ));
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L3Absolute.txt"   , dataJEC ));
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L2L3Residual.txt" , dataJEC ));
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L1FastJet.txt"    , dataJEC ));
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L2Relative.txt"   , dataJEC ));
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L3Absolute.txt"   , dataJEC ));
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L2L3Residual.txt" , dataJEC ));
+    // pfUncertaintyFile = Form("jetCorrections/%s_AK5PF_Uncertainty.txt",dataJEC );
 
-    pfUncertaintyFile = Form("jetCorrections/%s_AK5PF_Uncertainty.txt",dataJEC );
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L1FastJet_AK5PF.txt"    , dataJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L2Relative_AK5PF.txt"   , dataJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L3Absolute_AK5PF.txt"   , dataJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L2L3Residual_AK5PF.txt" , dataJEC ));
+    pfUncertaintyFile = Form("jetCorrections/%s_Uncertainty_AK5PF.txt",dataJEC );
   } 
   else {
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L1FastJet.txt"  , mcJEC ));
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L2Relative.txt" , mcJEC ));
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L3Absolute.txt" , mcJEC ));
-    
-    pfUncertaintyFile = Form("jetCorrections/%s_AK5PF_Uncertainty.txt",mcJEC );
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L1FastJet.txt"  , mcJEC ));
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L2Relative.txt" , mcJEC ));
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_AK5PF_L3Absolute.txt" , mcJEC ));    
+    // pfUncertaintyFile = Form("jetCorrections/%s_AK5PF_Uncertainty.txt",mcJEC );
+
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L1FastJet_AK5PF.txt"  , mcJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L2Relative_AK5PF.txt" , mcJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L3Absolute_AK5PF.txt" , mcJEC ));    
+    pfUncertaintyFile = Form("jetCorrections/%s_Uncertainty_AK5PF.txt",mcJEC );
   }
 
   jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
+
+  MetCorrector* myMetCorrector = new MetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
 
   JetCorrectionUncertainty *pfUncertainty   = new JetCorrectionUncertainty( pfUncertaintyFile );
 
@@ -636,6 +647,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       pfmett1_     = cms2.evt_pfmet_type1cor();
       pfmett1phi_  = cms2.evt_pfmetPhi_type1cor();
+
+      std::pair<float, float> Type1PFMetPair = myMetCorrector->getCorrectedMET();
+      pfmett1new_     = Type1PFMetPair.first;
+      pfmett1newphi_  = Type1PFMetPair.second;
 
       if (!isData){
         genmet_     = cms2.gen_met();
@@ -2122,6 +2137,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
 
   //met stuff
+  babyTree_->Branch("pfmett1new",      &pfmett1new_,      "pfmett1new/F"    );
+  babyTree_->Branch("pfmett1newphi",   &pfmett1newphi_,   "pfmett1newphi/F" );
   babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"      );
   babyTree_->Branch("pfmett1",      &pfmett1_,      "pfmett1/F"    );
   babyTree_->Branch("pfmett1phi",   &pfmett1phi_,   "pfmett1phi/F" );

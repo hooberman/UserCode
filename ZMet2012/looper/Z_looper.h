@@ -115,6 +115,9 @@ class Z_looper
   Int_t   ngennut_;
   Int_t   ngennu_;
 
+  Float_t pfmett1new_;
+  Float_t pfmett1newphi_;
+
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
   LorentzVector*  pflep1_;
