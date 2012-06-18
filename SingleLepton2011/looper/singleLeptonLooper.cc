@@ -2835,7 +2835,8 @@ void singleLeptonLooper::BookHistos(char *prefix)
   rootdir->cd();
 
   h_PU_trkpt = new TH1F(Form("%s_PU_trkpt",prefix),"track pt from PU interactions",100,0,100);
-
+  h_dz_vtx_trk = new TH1F(Form("%s_dz_vtx_trk",prefix),"dZ between vtx and tracks",200,-0.1,0.1);
+ 
   cout << "End book histos..." << endl;
 }// CMS2::BookHistos()
 
@@ -3594,27 +3595,29 @@ float singleLeptonLooper::trackIso( int thisPf , float coneR , float dz_thresh )
     // find closest PV and dz w.r.t. that PV
     //----------------------------------------
     
-    float mindz = 999.;
-    int vtxi    = -1;
+    // float mindz = 999.;
+    // int vtxi    = -1;
       
-    for (unsigned int ivtx = 0; ivtx < cms2.davtxs_position().size(); ivtx++) {
+    // for (unsigned int ivtx = 0; ivtx < cms2.davtxs_position().size(); ivtx++) {
 	
-      if(!isGoodDAVertex(ivtx)) continue;
+    //   if(!isGoodDAVertex(ivtx)) continue;
 
-      float mydz = dz_trk_vtx(itrk,ivtx);
-      
-      if (fabs(mydz) < fabs(mindz)) {
-	mindz = mydz;
-	vtxi = ivtx;
-      }
+    //   float mydz = dz_trk_vtx(itrk,ivtx);
+    //   fillOverFlow( h_dz_vtx_trk , mydz );
+
+    //   if (fabs(mydz) < fabs(mindz)) {
+    // 	mindz = mydz;
+    // 	vtxi = ivtx;
+    //   }
          
-    }
+    // }
     
     //----------------------------------------------------------------------------
     // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
     //----------------------------------------------------------------------------
     
-    if ( vtxi != 0               )     continue;
+    // if ( vtxi != 0               )     continue;
+    float mindz = dz_trk_vtx(itrk,0);
     if ( fabs(mindz) > dz_thresh )     continue;
 
     //---------------------------------------
@@ -3627,6 +3630,48 @@ float singleLeptonLooper::trackIso( int thisPf , float coneR , float dz_thresh )
 
   return iso;
 }
+
+// std::vector<float> trackIsoPtRanges( int thisPf , float coneR , float dz_thresh ){
+
+//   float iso[10];
+//   for (int i=0; i<10; ++i) iso[i] = 0.0;
+  
+//   for (int ipf = 0; ipf < (int)cms2.pfcands_p4().size(); ipf++) {
+
+//     if( ipf == thisPf                 ) continue; // skip this PFCandidate
+//     if( cms2.pfcands_charge().at(ipf) == 0 ) continue; // skip neutrals
+
+//     if( dRbetweenVectors( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) ) > coneR ) continue;
+
+//     int itrk = cms2.pfcands_trkidx().at(ipf);
+    
+//     if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ){
+//       //note: this should only happen for electrons which do not have a matched track
+//       //currently we are just ignoring these guys
+//       continue;
+//     }
+    
+//     float mindz = dz_trk_vtx(itrk,0);
+//     if ( fabs(mindz) > dz_thresh )     continue;
+
+//     //---------------------------------------
+//     // passes cuts, add up isolation value
+//     //---------------------------------------
+    
+//     //figure out which pT threshold this track passes
+//     float pfcandpt = cms2.pfcands_p4().at(ipf).pt();
+//     for int (i=0; i<10; ++i) {
+// 	if ( pfcandpt > 0.1*i+0.1 ) 
+// 	  iso[i] += pfcandpt;	  
+//       }
+//   } 
+
+//   std::vector<float> isovec;
+//   for (int i=0; i<10; ++i) isovec.push_back(iso[i]);
+  
+//   return isovec;
+
+// }
 
 std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , float dz_thresh ){
 
@@ -3686,27 +3731,28 @@ std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , floa
       // find closest PV and dz w.r.t. that PV
       //----------------------------------------
     
-      float mindz = 999.;
-      int vtxi    = -1;
+      // float mindz = 999.;
+      // int vtxi    = -1;
       
-      for (unsigned int ivtx = 0; ivtx < cms2.davtxs_position().size(); ivtx++) {
+      // for (unsigned int ivtx = 0; ivtx < cms2.davtxs_position().size(); ivtx++) {
 	
-	if(!isGoodDAVertex(ivtx)) continue;
+      // 	if(!isGoodDAVertex(ivtx)) continue;
 
-	float mydz = dz_trk_vtx(itrk,ivtx);
+      // 	float mydz = dz_trk_vtx(itrk,ivtx);
       
-	if (fabs(mydz) < fabs(mindz)) {
-	  mindz = mydz;
-	  vtxi = ivtx;
-	}
+      // 	if (fabs(mydz) < fabs(mindz)) {
+      // 	  mindz = mydz;
+      // 	  vtxi = ivtx;
+      // 	}
          
-      }
+      // }
     
       //----------------------------------------------------------------------------
       // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
       //----------------------------------------------------------------------------
     
-      if ( vtxi != 0               )     continue;
+      // if ( vtxi != 0               )     continue;
+      float mindz = dz_trk_vtx(itrk,0);
       if ( fabs(mindz) > dz_thresh )     continue;
 
       //---------------------------------------

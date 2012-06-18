@@ -70,8 +70,9 @@ class singleLeptonLooper
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
 	float stopPairCrossSection( float stopmass );
         void closeTree ();
-	float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.2 );
-	std::vector<float> totalIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.2 );
+	float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
+	std::vector<float> trackIsoPtRanges( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
+	std::vector<float> totalIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
 
 	bool initialized;
 	TH1D*   stop_xsec_hist;
@@ -506,6 +507,7 @@ class singleLeptonLooper
 
         // Lots and lots of histograms
         TH1F* h_PU_trkpt;
+        TH1F* h_dz_vtx_trk;
 };
 
 #endif
