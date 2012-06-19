@@ -65,9 +65,9 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/MuEG_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
 
     // 2012B
-    //pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleElectron_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
-    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleMu_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
-    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/MuEG_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleElectron_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleMu_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/MuEG_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
   }
   
   //----------------------------------------------------------------------------------------
