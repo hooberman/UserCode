@@ -56,13 +56,13 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 //--------------------------------------------------------------------
 
 const bool  generalLeptonVeto    = true;
-const bool  vetoTransition       = false;
+const bool  vetoTransition       = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-15";
-const char* jsonfilename         = "../jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; //2.9/fb golden json
+const char* iter                 = "V00-00-16";
+const char* jsonfilename         = "../jsons/Cert_190456-195947_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 3.93/fb
 
 //--------------------------------------------------------------------
 
@@ -243,6 +243,8 @@ float Z_looper::gluinoPairCrossSection( float gluinomass ){
 
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, int my_nEvents, float kFactor){
+
+  isdata_ = isData ? 1 : 0;
 
   cout << "version : " << iter         << endl;
   cout << "json    : " << jsonfilename << endl;
@@ -2289,6 +2291,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("dilpt",                 &dilpt_,                 "dilpt/F");  
   babyTree_->Branch("flagll",                &flagll_,                "flagll/I");  
   babyTree_->Branch("flaglt",                &flaglt_,                "flaglt/I");  
+  babyTree_->Branch("isdata",                &isdata_,                "isdata/I");  
 
   babyTree_->Branch("lljj",                 &lljj_,                 "lljj/F");  
   babyTree_->Branch("jj"  ,                 &jj_  ,                 "jj/F"  );  
