@@ -57,6 +57,20 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   }
   
   //----------------------------------------------------------------------------------------
+  else if( strcmp( prefix , "dataskim" ) == 0 ){    
+
+    // 2012A
+    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleElectron_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleMu_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/MuEG_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
+
+    // 2012B
+    //pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleElectron_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleMu_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/MuEG_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
+  }
+  
+  //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zjets" ) == 0 ){
     //pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V9-v2/V05-02-27/merged*root");

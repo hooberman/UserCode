@@ -5,7 +5,7 @@
   gROOT->ProcessLine(".L runZLooper.C+");
 
   //runZLooper("data"                  , true  );
-  runZLooper("zjets"                 , false );  
+  //runZLooper("zjets"                 , false );  
   //runZLooper("ttbar"                 , false );  
   //runZLooper("wzmg"                    , false );  
   //runZLooper("zz"                      , false );  
@@ -14,6 +14,7 @@
   //runZLooper("testfilter_newJEC"         , true );  
   //runZLooper("RelValZEE"         , false );  
   //runZLooper("RelValZMM"         , false );  
+  runZLooper("dataskim"                , true  );
 }
 
 
