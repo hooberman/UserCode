@@ -56,12 +56,13 @@ enum templateSource { e_QCD = 0, e_PhotonJet = 1 };
 //--------------------------------------------------------------------
 
 const bool  generalLeptonVeto    = true;
+const bool  vetoTransition       = false;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-14";
-const char* jsonfilename         = "../jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
+const char* iter                 = "V00-00-15";
+const char* jsonfilename         = "../jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; //2.9/fb golden json
 
 //--------------------------------------------------------------------
 
@@ -715,9 +716,15 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( generalLeptonVeto ){
               
         for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-          if( els_p4().at(iel).pt() < 20 )                         continue;
-	  if( ! passElectronSelection_ZMet2012_v1(iel,true,true) ) continue;
 
+	  // if( nEventsTotal <= 100 ){
+	  //   printf("RelValZEE:   %u\t%u\t%u\t%4.3f\t%4.3f\t%4.3f\t%u\t%4.3f\t%4.3f\t%4.3f\t%4.3f\n", 
+	  // 	   evt_run() , evt_lumiBlock(), evt_event(), els_p4().at(iel).pt(), els_p4().at(iel).eta(), els_p4().at(iel).phi(), 
+	  // 	   passElectronSelection_ZMet2012_v1_NoIso(iel,true,true) , electronIsoValuePF2012_FastJetEffArea(iel) , 0.0 , 0.0, 0.0 );
+	  // }
+
+          if( els_p4().at(iel).pt() < 20 )                                             continue;
+	  if( ! passElectronSelection_ZMet2012_v1(iel,vetoTransition,vetoTransition) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
 	  nlep_++;
 	  nel_++;
@@ -725,6 +732,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         }
               
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+
+	  // if( nEventsTotal <= 100 ){
+	  //   printf("RelValZMM:   %u\t%u\t%u\t%4.3f\t%4.3f\t%4.3f\t%u\t%4.3f\t%4.3f\t%4.3f\t%4.3f\n", 
+	  // 	   evt_run() , evt_lumiBlock(), evt_event(), mus_p4().at(imu).pt(), mus_p4().at(imu).eta(), mus_p4().at(imu).phi(), 
+	  // 	   muonIdNotIsolated( imu , ZMet2012_v1 ) , muonIsoValuePF2012_deltaBeta(imu) , 0.0 , 0.0, 0.0 );
+	  // }
+
           if( mus_p4().at(imu).pt() < 20 )           continue;
           if( !muonId( imu , ZMet2012_v1 ))          continue;
           goodLeptons.push_back( mus_p4().at(imu) );
@@ -751,13 +765,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  cout << "mass   " << hyp_p4()[hypIdx].mass() << endl;
 	  if( abs(hyp_ll_id()[hypIdx]) == 13 )   cout << "muon ll " << muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 ) << endl;
 	  if( abs(hyp_lt_id()[hypIdx]) == 13 )   cout << "muon lt " << muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 ) << endl;
-	  if( abs(hyp_ll_id()[hypIdx]) == 11 )   cout << "ele ll  " << passElectronSelection_ZMet2012_v1(hyp_ll_index()[hypIdx],true,true) << endl;
-	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << passElectronSelection_ZMet2012_v1(hyp_lt_index()[hypIdx],true,true) << endl;
+	  if( abs(hyp_ll_id()[hypIdx]) == 11 )   cout << "ele ll  " << passElectronSelection_ZMet2012_v1(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition) << endl;
+	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << passElectronSelection_ZMet2012_v1(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition) << endl;
 	}
 
         if( !passSUSYTrigger2012_v2( isData ) ) continue;
 
-
+	/*
 	// reco lepton pT's
 	float ptll = cms2.hyp_ll_p4()[hypIdx].pt();
 	float ptlt = cms2.hyp_lt_p4()[hypIdx].pt();
@@ -788,12 +802,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	if( ptll < 20.0 && ptllpf < 20.0 ) continue;
 	if( ptlt < 20.0 && ptltpf < 20.0 ) continue;
-	
+	*/
 
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
-        //if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
-        //if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
+        if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
+        if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
       
         //muon ID
@@ -801,8 +815,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
               
         //electron ID
-        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v1(hyp_ll_index()[hypIdx],true,true)) ) continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v1(hyp_lt_index()[hypIdx],true,true)) ) continue;
+        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v1(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition)) ) continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v1(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition)) ) continue;
         
         nHypPass++;
 	
@@ -1726,6 +1740,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( goodJetsDn.size() >= 2 ) mjjdn_ = ( goodJetsDn.at(0) + goodJetsDn.at(1) ).mass();
 
       //fill histos and ntuple----------------------------------------------------------- 
+
+
+
 
       FillBabyNtuple();
 
