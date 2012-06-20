@@ -283,7 +283,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   // make smurf ntuples
   gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
+  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-00/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
   assert(fSmurf);
   LeptonTree leptonTree;
   leptonTree.CreateTree();
