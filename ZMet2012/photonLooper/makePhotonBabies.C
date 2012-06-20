@@ -53,8 +53,8 @@ using namespace tas;
 
 const bool debug                = false;
 const float lumi                = 1.0;
-const char* iter                = "V00-00-10";
-const char* jsonfilename        = "../jsons/Cert_190456-195947_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
+const char* iter                = "V00-00-11";
+const char* jsonfilename        = "../jsons/Cert_190456-195947_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 3.9/fb json
 
 //--------------------------------------------------------------------
 
@@ -176,19 +176,40 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
   jetcorr_filenames_pfL1FastJetL2L3.clear();
 
+  // 42X ported to 52X
+  //char* dataJEC = "GR_R_42_V23";
+  //char* mcJEC   = "DESIGN42_V17";
+
+  // new 52X
+  char* dataJEC = "GR_R_52_V9";
+  char* mcJEC   = "START52_V9B";
+
   if ( TString(prefix).Contains("data") ) {
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L1FastJet.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2Relative.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L3Absolute.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2L3Residual.txt");
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L1FastJet.txt");
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2Relative.txt");
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L3Absolute.txt");
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2L3Residual.txt");
+
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L1FastJet_AK5PF.txt"    , dataJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L2Relative_AK5PF.txt"   , dataJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L3Absolute_AK5PF.txt"   , dataJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L2L3Residual_AK5PF.txt" , dataJEC ));
+    // pfUncertaintyFile = Form("jetCorrections/%s_Uncertainty_AK5PF.txt",dataJEC );
   } 
   else {
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L1FastJet.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L2Relative.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L3Absolute.txt");
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L1FastJet.txt");
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L2Relative.txt");
+    // jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L3Absolute.txt");
+
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L1FastJet_AK5PF.txt"  , mcJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L2Relative_AK5PF.txt" , mcJEC ));
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  (Form("jetCorrections/%s_L3Absolute_AK5PF.txt" , mcJEC ));    
+    // pfUncertaintyFile = Form("jetCorrections/%s_Uncertainty_AK5PF.txt",mcJEC );
   }
 
   jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
+
+  MetCorrector* myMetCorrector = new MetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
 
   bookHistos();
 
@@ -375,8 +396,12 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       pfmetphi_   = cms2.evt_pfmetPhi();
       pfsumet_    = cms2.evt_pfsumet();
 
-      pfmett1_    = -99; //cms2.evt_pfmet_type1cor();
-      pfmetphit1_ = -99; //cms2.evt_pfmetPhi_type1cor();
+      pfmett1_     = cms2.evt_pfmet_type1cor();
+      pfmett1phi_  = cms2.evt_pfmetPhi_type1cor();
+
+      std::pair<float, float> Type1PFMetPair = myMetCorrector->getCorrectedMET();
+      pfmett1new_     = Type1PFMetPair.first;
+      pfmett1newphi_  = Type1PFMetPair.second;
 
       tcmet_     = evt_tcmet();
       tcmetphi_  = evt_tcmetPhi();
@@ -713,7 +738,9 @@ void makePhotonBabies::InitBabyNtuple (){
   pfmetphi_			= -999999.;
   pfsumet_			= -999999.;
   pfmett1_			= -999999.;
-  pfmetphit1_			= -999999.;
+  pfmett1phi_			= -999999.;
+  pfmett1new_			= -999999.;
+  pfmett1newphi_		= -999999.;
 
   // calomet stuff
   met_				= -999999.;
@@ -896,10 +923,12 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   //met stuff
   babyTree_->Branch("pfmet"			,       &pfmet_                ,	 "pfmet/F"			);
   babyTree_->Branch("pfmett1"			,       &pfmett1_              ,	 "pfmett1/F"			);
+  babyTree_->Branch("pfmett1new"		,       &pfmett1new_           ,	 "pfmett1new/F"			);
   babyTree_->Branch("pfmet_type1_pt30"		,       &pfmet_type1_pt30_     ,	 "pfmet_type1_pt30/F"		);
   babyTree_->Branch("pfmet_type1_pt15"		,       &pfmet_type1_pt15_     ,	 "pfmet_type1_pt15/F"		);
   babyTree_->Branch("pfmetphi"			,	&pfmetphi_             ,	 "pfmetphi/F"			);
-  babyTree_->Branch("pfmetphit1"		,	&pfmetphit1_           ,	 "pfmetphit1/F"			);
+  babyTree_->Branch("pfmett1phi"		,	&pfmett1phi_           ,	 "pfmett1phi/F"			);
+  babyTree_->Branch("pfmett1newphi"		,	&pfmett1newphi_        ,	 "pfmett1newphi/F"		);
   babyTree_->Branch("pfsumet"			,	&pfsumet_              ,	 "pfsumet/F"			);
   babyTree_->Branch("met"			,       &met_                  ,	 "met/F"			);
   babyTree_->Branch("metphi"			,       &metphi_               ,	 "metphi/F"			);
