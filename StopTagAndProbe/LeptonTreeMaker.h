@@ -105,19 +105,29 @@ class LeptonTreeMaker {
         ElectronIDMVA *electronIdMVA_;
 
 
-		unsigned int HLT_Ele17_Ele8_tag_;
-		unsigned int HLT_Ele17_Ele8_probe_;
-		unsigned int HLT_Ele27_WP80_tag_;
-		unsigned int HLT_Ele27_WP80_probe_;
+	Float_t drprobe_;
+	Float_t tkiso_old_;
+	Float_t tkiso_new_;
+	Float_t tkiso_new_pt1_;
+	Float_t tkiso_new_pt2_;
+	Float_t tkiso_new_pt3_;
+	Float_t tkiso_new_pt4_;
+	Float_t tkiso_new_pt5_;
+	Float_t vtxweight_;
+
+	unsigned int HLT_Ele17_Ele8_tag_;
+	unsigned int HLT_Ele17_Ele8_probe_;
+	unsigned int HLT_Ele27_WP80_tag_;
+	unsigned int HLT_Ele27_WP80_probe_;
 		
-		unsigned int HLT_IsoMu30_eta2p1_tag_;
-		unsigned int HLT_IsoMu30_eta2p1_probe_;
-		unsigned int HLT_IsoMu24_eta2p1_tag_;
-		unsigned int HLT_IsoMu24_eta2p1_probe_;
-		unsigned int HLT_Mu17_TkMu8_tag_;
-		unsigned int HLT_Mu17_TkMu8_probe_;
-		unsigned int HLT_Mu17_Mu8_tag_;
-		unsigned int HLT_Mu17_Mu8_probe_;
+	unsigned int HLT_IsoMu30_eta2p1_tag_;
+	unsigned int HLT_IsoMu30_eta2p1_probe_;
+	unsigned int HLT_IsoMu24_eta2p1_tag_;
+	unsigned int HLT_IsoMu24_eta2p1_probe_;
+	unsigned int HLT_Mu17_TkMu8_tag_;
+	unsigned int HLT_Mu17_TkMu8_probe_;
+	unsigned int HLT_Mu17_Mu8_tag_;
+	unsigned int HLT_Mu17_Mu8_probe_;
 
 };
 
