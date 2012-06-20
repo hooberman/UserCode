@@ -62,7 +62,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
   TH1F* reweightHist[5];
 
   if( vtxreweight ){ 
-    TFile *reweightFile = reweightFile = TFile::Open("vtxreweight_920pb.root");
+    TFile *reweightFile = reweightFile = TFile::Open("vtxreweight_24fb.root");
     reweightHist[0] = (TH1F*) reweightFile->Get("hratio20");
     reweightHist[1] = (TH1F*) reweightFile->Get("hratio30");
     reweightHist[2] = (TH1F*) reweightFile->Get("hratio50");
@@ -183,7 +183,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
 	if( vtxreweight ) templateWeight *= reweightHist[4]->GetBinContent(vtxbin);
 
-	cout << "nvtx vtxbin weight " << nvtx_ << " " << vtxbin << " " << reweightHist[4]->GetBinContent(vtxbin) << endl;
+	//cout << "nvtx vtxbin weight " << nvtx_ << " " << vtxbin << " " << reweightHist[4]->GetBinContent(vtxbin) << endl;
 
         fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
         fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
@@ -376,7 +376,7 @@ void makePhotonTemplates::bookHistos(){
   hnvtxPt90  = new TH1F("hnvtxPt90", "",50,0,50);
   hnvtxAll   = new TH1F("hnvtxAll" , "",50,0,50);
 
-  int maxmet = 400;
+  int maxmet = 300;
 
   for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
     for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){

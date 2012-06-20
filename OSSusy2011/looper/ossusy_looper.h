@@ -66,10 +66,7 @@ class ossusy_looper
 	float dz_trk_vtx(const unsigned int trkidx, const unsigned int vtxidx);
 	float beta_jet_vtx( int ijet , int vtxIdx , int beta_exponent );
 	bool jetFromSignalPV( int ijet , int vtxIdx , int beta_exponent );
-	
-        std::pair<float,float> PFCandidateMET(const unsigned int vtxIdx, const unsigned int hypIdx, vector<int> goodjets, 
-                                              float dz_thresh, float pt_thresh, float etacut , bool usePFCandidatePt , bool correctJets );
-	
+	  
         // Set globals
         void set_susybaseline (bool  b)    { g_susybaseline = b; }
         void set_createTree   (bool  b)    { g_createTree   = b; }
@@ -79,18 +76,8 @@ class ossusy_looper
         void set_trigger      (TrigEnum t) { g_trig         = t; } 
 
         // Baby ntuple methods
-        void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
+        void makeTree (char *prefix);
         void closeTree ();
-	int PassGenSelectionOS( bool isData , float metcut , float htcut , float ycut );
-	float GenWeight( bool isData , int metcut, int htcut );
-	void lepEfficiencies( bool isData );
-
-	float stopPairCrossSection( float stopmass );
-	float gluinoPairCrossSection( float gluinomass );
-	TH1D*   stop_xsec_hist;
-	TFile*  stop_xsec_file;
-	TH1D*   gg_xsec_hist;
-	TFile*  gg_xsec_file;
 
 	bool initialized;
 
@@ -107,43 +94,15 @@ class ossusy_looper
 
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
-        LorentzVector*  genlep1_;
-        LorentzVector*  genlep2_;
         LorentzVector*  dilep_;
         LorentzVector*  jet_; 
-        LorentzVector*  jet2_; 
  
         // Baby ntuple variables
-	Int_t   subp_;
-	Int_t   foundPair_;
-	Int_t   reco1_;
-	Int_t   reco2_;
-	Int_t   genid1_;
-	Int_t   genid2_;
-	Float_t geff_;
-	Float_t geffmet_;
-	Float_t geffht_;
-	Float_t gefftight_;
-	Float_t fileff_;
-	Float_t lepscale_;
-	Float_t mG_;
-	Float_t mlljj_;
-	Float_t mL_;
-	Float_t mF_;
-	Float_t ecalveto1_;
-	Float_t ecalveto2_;
-	Float_t hcalveto1_;
-	Float_t hcalveto2_;
         TFile  *outFile;
         TTree  *outTree;
-	Int_t   acc_2010_;
-	Int_t   acc_highmet_;
-	Int_t   acc_highht_;
 	Float_t pthat_;
 	Float_t qscale_;
         Float_t weight_;
-        Float_t trgeff_;
-        Float_t pfmetsig_;
         Float_t smeff_;
         Float_t k_;
         Float_t mllgen_;
@@ -151,9 +110,6 @@ class ossusy_looper
         Float_t costhetaweight_;
 	Int_t   njpt_;
 	Float_t htjpt_;
-        Int_t   hbhe_;
-	Int_t   jetid_;
-	Int_t   jetid30_;
         Int_t   mull_;
         Int_t   json_;
         Int_t   mult_;
@@ -166,8 +122,6 @@ class ossusy_looper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
-        Int_t   lepid1_;
-        Int_t   lepid2_;
         Int_t   ngenjets_;
         Int_t   npfjets_;
         Int_t   npfjets40_;
@@ -175,24 +129,10 @@ class ossusy_looper
         Int_t   njetsUp_;
         Int_t   npfjets25_;
         Int_t   njetsDown_;
-	Float_t trkmet_;
-	Float_t trkmetphi_;
-	Float_t trkmetproj_;
-	Float_t trkmet4_;
-	Float_t trkmet4phi_;
-	Float_t trkmet4proj_;
-	Float_t trkmet8_;
-	Float_t trkmet8phi_;
-	Float_t trkmet8proj_;
-	Float_t trkjetmet_;
-	Float_t trkjetmetphi_;
-	Float_t trkjetmetproj_;
         Float_t htUp_;
         Float_t htDown_;
         Int_t   nvtx_;
         Int_t   nbtags_;
-        Int_t   nbtagstcl_;
-        Int_t   nbtagstcm_;
         Float_t dilmass_;
         Float_t topmass_;
         Float_t tcmet_;
@@ -206,9 +146,6 @@ class ossusy_looper
         Float_t mucormet_;
         Float_t mucorjesmet_;
         Float_t pfmet_;
-        Float_t pfmetveto_;
-        Float_t pfmeteveto_;
-        Float_t pfmethveto_;
         Float_t pfmetphi_;
         Float_t tcmet_35X_;
         Float_t tcmet_event_;
@@ -240,10 +177,8 @@ class ossusy_looper
 	Int_t   w2_;
 	Float_t iso1_;
 	Float_t isont1_;
-	Float_t isopf1_;
 	Float_t iso2_;
 	Float_t isont2_;
-	Float_t isopf2_;
         Float_t ptl2_;
         Float_t ptj1_;
         Float_t ptj2_;
@@ -254,9 +189,9 @@ class ossusy_looper
         Float_t meff_;
         Float_t mt_;
         char    dataset_[200];
-        UInt_t  run_;
-        UInt_t  lumi_;
-        UInt_t  event_;
+        Int_t   run_;
+        Int_t   lumi_;
+        Int_t   event_;
 	Float_t y_;
 	Float_t ht_;
 	Float_t htoffset_;
@@ -264,7 +199,6 @@ class ossusy_looper
 	Int_t   njetsuncor_;
 	Int_t   njetsoffset_;
 	Float_t htgen_;
-	Float_t htgen2_;
 	Float_t htpf_;
 	Float_t htpf40_;
 	Float_t htpf25_;
@@ -280,26 +214,12 @@ class ossusy_looper
 	Int_t   nmus_;
 	Int_t   ntaus_;
 	Float_t ndavtxweight_;
-	Float_t etasc1_;
-	Float_t etasc2_;
-	Float_t ptt_;
-	Float_t pttbar_;
-	Float_t ptttbar_;
-	Float_t ksusy_;
-	Float_t ksusyup_;
-	Float_t ksusydn_;
-	Float_t xsecsusy_;
-	Float_t xsecsusy2_;
 
         // for fakeRates
-        double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
+        bool isFakeableMuon (int index);
+        double getFRWeight(const int hypIdx, string elFRversion, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
 
         // Lots and lots of histograms
-
-	TH1F* hel;
-	TH1F* hmu;
-	TH1F* helpass;
-	TH1F* hmupass;
 
         //Z histos
         TH1F* hdilMass_Z[4][4];
@@ -342,20 +262,6 @@ class ossusy_looper
         //TH2F* hsumJetPt_tcmetpowtcsumet_th2[4][4][101];
         //TH2F*     hsumJetPt_tcmetpowtcsumet_th2[101];
         //TProfile* hsumJetPt_tcmetpowtcsumet_prof[101];
-
-	TH2F* msugra_highmet;
-	TH2F* msugra_highht;
-	TH2F* msugra_all;
-
-	TH2F* msugra_highmet_kup;
-	TH2F* msugra_highmet_kdn;
-	TH2F* msugra_highmet_jup;
-	TH2F* msugra_highmet_jdn;
-
-	TH2F* msugra_highht_kup;
-	TH2F* msugra_highht_kdn;
-	TH2F* msugra_highht_jup;
-	TH2F* msugra_highht_jdn;
 
         TH2F* hsumJetPt_tcmet[4][4];
         TH2F* hsumJetPt_tcmetsqrtsumet[4][4]; 

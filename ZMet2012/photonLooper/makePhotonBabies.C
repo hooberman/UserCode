@@ -53,8 +53,8 @@ using namespace tas;
 
 const bool debug                = false;
 const float lumi                = 1.0;
-const char* iter                = "V00-00-06";
-const char* jsonfilename        = "../jsons/Cert_190456-194076_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 955/pb
+const char* iter                = "V00-00-10";
+const char* jsonfilename        = "../jsons/Cert_190456-195947_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
 
@@ -340,6 +340,11 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       hgg50_  = passThisHLTTrigger( "HLT_Photon50_R9Id90_HE10_Iso40_EBOnly_v" );
       hgg75_  = passThisHLTTrigger( "HLT_Photon75_R9Id90_HE10_Iso40_EBOnly_v" );
       hgg90_  = passThisHLTTrigger( "HLT_Photon90_R9Id90_HE10_Iso40_EBOnly_v" );
+
+      // require at least 1 trigger to pass
+      if( hlt20_ < 1 && hlt30_ <1 && hlt50_ < 1 && hlt75_ < 1 && hlt90_ < 1 && hlt135_ < 1 && hlt150_ < 1 && hlt160_ < 1 && 
+	  hgg22_ < 1 && hgg36_ <1 && hgg50_ < 1 && hgg75_ < 1 && hgg90_ < 1 ) continue;
+
 
       rho_ = evt_ww_rho_vor(); // TO BE REPLACED
       //rho_ = evt_kt6pf_foregiso_rho();
