@@ -10,6 +10,8 @@
 #include "processLeptonTree.h"
 #include <stdlib.h>
 
+using namespace std;
+
 int main(int argc, char *argv[])
 {
 
@@ -30,33 +32,47 @@ int main(int argc, char *argv[])
   // ------------------------------------------------------------------------
   //  	For local submission
   // ------------------------------------------------------------------------
-  bool dodata = true;
-  bool domc   = true;
 
-  // 
-  // Data
-  //
-  if(dodata){
-    // TString goodrunlist = "Cert_190456-194479_8TeV_PromptReco_Collisions12_JSON_cms2.txt";
-    // processLeptonTree("test", SmurfTree::data, "/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/SingleElectron_Run2012B-PromptReco-v1_AOD/merged/merged_ntuple_195552_0.root", true, goodrunlist);
-    
-    // /hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/  
-    // /hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/  
-    // /hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/  
-    // /hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-34/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/  
-    // /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/ 
-    // /hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/   
+  TString goodrunlist = "Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
-    TString goodrunlist = "Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
-    processLeptonTree("test", SmurfTree::data, "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-34/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged_ntuple_180072_0.root", true, goodrunlist);
+  int ijob     = atoi(argv[1]);
+  int prescale = 10;
+
+  if( ijob == 1 ){
+    cout << "Processing May10 data" << endl;
+    processLeptonTree("May10", SmurfTree::data, "/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root", true, goodrunlist,prescale);
+  }
+  
+  else if( ijob == 2 ){
+    cout << "Processing PRv4 data" << endl;
+    processLeptonTree("PRv4", SmurfTree::data, "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root", true, goodrunlist,prescale);
   }
 
-  // 
-  // MC
-  // 
-  if(domc){
-    processLeptonTree("test", SmurfTree::dymm, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root", false, "");
+  else if( ijob == 3 ){
+    cout << "Processing Aug05 data" << endl;
+    processLeptonTree("Aug05", SmurfTree::data, "/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root", true, goodrunlist,prescale);
   }
+
+  else if( ijob == 4 ){
+    cout << "Processing PRv6 data" << endl;
+    processLeptonTree("PRv6", SmurfTree::data, "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 5 ){
+    cout << "Processing 2011B-V33 data" << endl;
+    processLeptonTree("2011B-V33", SmurfTree::data, "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 6 ){
+    cout << "Processing 2011B-V34 data" << endl;
+    processLeptonTree("2011B-V34", SmurfTree::data, "/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-34/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/merged*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 7 ){
+    cout << "Processing DYJets MC" << endl;
+    processLeptonTree("test", SmurfTree::dymm, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root", false, "",prescale);
+  }
+
 
   return 0; 
 }
