@@ -157,6 +157,11 @@ int objectPassTrigger(const LorentzVector &obj, char* trigname, float ptmin = 0,
 
   TString exact_trigname = triggerName(trigname);
 
+  if( exact_trigname.Contains("TRIGGER_NOT_FOUND") ){
+    cout << "ERROR! no trigger matching pattern " << trigname << endl;
+    return 0;
+  }
+
   std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(exact_trigname)];
 
   // cout << "Trigger pattern " << trigname       << endl;
@@ -252,10 +257,6 @@ LeptonTreeMaker::~LeptonTreeMaker() {
   //if (electronIdMVA_ != 0) delete electronIdMVA_;
   if (jet_corrector_pfL1FastJetL2L3_ != 0) delete jet_corrector_pfL1FastJetL2L3_;
 }
-
-//
-// process data 
-//
 
 void LeptonTreeMaker::ScanChain(TString outfileid,
 				TChain* chain, 
@@ -374,6 +375,8 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
     //        printf("current file: %s (%s), %s\n", currentFile->GetName(), 
     // 	      currentFile->GetTitle(), currentFile->IsA()->GetName());
+
+    cout << currentFile->GetTitle() << endl;
 
     TFile *f = TFile::Open(currentFile->GetTitle()); 
     assert(f);
@@ -766,10 +769,19 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       leptonTree.tagAndProbeMass_ = (cms2.mus_p4()[probe] + cms2.mus_p4()[tag]).M();
 
       // 2011: REWRITE MATCHING OBJECT TO MUON
-      HLT_IsoMu30_eta2p1_tag_        	=	isData ? objectPassTrigger( cms2.mus_p4()[tag]   , (char*) "HLT_IsoMu30_eta2p1_v" ) : 1;
-      HLT_IsoMu30_eta2p1_probe_ 	=	isData ? objectPassTrigger( cms2.mus_p4()[probe] , (char*) "HLT_IsoMu30_eta2p1_v" ) : 1;
-      HLT_IsoMu24_eta2p1_tag_        	=	isData ? objectPassTrigger( cms2.mus_p4()[tag]   , (char*) "HLT_IsoMu24_eta2p1_v" ) : 1;
-      HLT_IsoMu24_eta2p1_probe_ 	=	isData ? objectPassTrigger( cms2.mus_p4()[probe] , (char*) "HLT_IsoMu24_eta2p1_v" ) : 1;
+      if( cms2.evt_run() >= 173212 ){
+	HLT_IsoMu30_eta2p1_tag_        	=	isData ? objectPassTrigger( cms2.mus_p4()[tag]   , (char*) "HLT_IsoMu30_eta2p1_v" ) : 1;
+	HLT_IsoMu30_eta2p1_probe_ 	=	isData ? objectPassTrigger( cms2.mus_p4()[probe] , (char*) "HLT_IsoMu30_eta2p1_v" ) : 1;
+	HLT_IsoMu24_eta2p1_tag_        	=	isData ? objectPassTrigger( cms2.mus_p4()[tag]   , (char*) "HLT_IsoMu24_eta2p1_v" ) : 1;
+	HLT_IsoMu24_eta2p1_probe_ 	=	isData ? objectPassTrigger( cms2.mus_p4()[probe] , (char*) "HLT_IsoMu24_eta2p1_v" ) : 1;
+      }
+      else{
+	HLT_IsoMu30_eta2p1_tag_        	=	isData ? objectPassTrigger( cms2.mus_p4()[tag]   , (char*) "HLT_IsoMu30_v" ) : 1;
+	HLT_IsoMu30_eta2p1_probe_ 	=	isData ? objectPassTrigger( cms2.mus_p4()[probe] , (char*) "HLT_IsoMu30_v" ) : 1;
+	HLT_IsoMu24_eta2p1_tag_        	=	isData ? objectPassTrigger( cms2.mus_p4()[tag]   , (char*) "HLT_IsoMu24_v" ) : 1;
+	HLT_IsoMu24_eta2p1_probe_ 	=	isData ? objectPassTrigger( cms2.mus_p4()[probe] , (char*) "HLT_IsoMu24_v" ) : 1;
+      }
+
       // HLT_Mu17_TkMu8_tag_		=	cms2.mus_HLT_Mu17_TkMu8()[tag];
       // HLT_Mu17_TkMu8_probe_		=	cms2.mus_HLT_Mu17_TkMu8()[probe];
       // HLT_Mu17_Mu8_tag_		     = 	cms2.mus_HLT_Mu17_Mu8()[tag];
@@ -827,10 +839,8 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       tkiso_new_pt4_   = trackIso(pfindex, 0.3, 0.05, false , 0.4);
       tkiso_new_pt5_   = trackIso(pfindex, 0.3, 0.05, false , 0.5);
 
-
       // fill it
       leptonTree.tree_->Fill();
-
     }
 
   }
