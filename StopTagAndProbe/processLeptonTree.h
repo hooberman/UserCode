@@ -10,5 +10,5 @@
 #include "LeptonTreeMaker.h"
 #include "SmurfDataTypes.h"
  
-void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TString file, bool realData, TString goodrunlist);
+void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TString file, bool realData, TString goodrunlist, int prescale = 1);
 

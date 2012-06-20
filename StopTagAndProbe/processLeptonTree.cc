@@ -11,7 +11,7 @@
 #include "SmurfDataTypes.h"
 #include "processLeptonTree.h"
  
-void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TString file, bool realData, TString goodrunlist)
+void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TString file, bool realData, TString goodrunlist, int prescale)
 {
 
 //    gSystem->Load("libTree.so");
@@ -28,10 +28,10 @@ void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TStri
     //
 
     const bool lockToCoreSelectors 	= false;
-    const bool useLHeleId 			= false;
-    const bool useMVAeleId 			= false;
-    const bool doDYNNLOw 			= false;
-    const unsigned int prescale 	= 1;
+    const bool useLHeleId 		= false;
+    const bool useMVAeleId 		= false;
+    const bool doDYNNLOw 		= false;
+    //const unsigned int prescale 	= 1;
     const double integratedLumi 	= 1000.0; // pb^1  
 
     //
