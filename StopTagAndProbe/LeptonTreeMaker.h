@@ -2,6 +2,7 @@
 #define WW_LeptonTreeMaker_h
 
 #include "Math/LorentzVector.h"
+#include "Math/PxPyPzE4D.h"
 #include "Rtypes.h"
 #include <vector>
 #include <set>
@@ -20,7 +21,9 @@
 
 
 class TChain;
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVectorD;
+//typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVectorD;
+//typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+//typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 class LeptonTreeMaker {
 
@@ -78,6 +81,9 @@ class LeptonTreeMaker {
 
         void SetCommonTreeVariables(LeptonTree &leptonTree, const double &weight, SmurfTree::DataType sample);
 
+	//VofP4 getStopJets();
+	//VofP4 getGoodLeptons();
+
         //
         // data members 
         //
@@ -93,6 +99,8 @@ class LeptonTreeMaker {
         // jet correction
         FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3_;
 
+
+
         // ID MVAas
         ElectronIDMVA *electronIdMVA_;
 
@@ -102,6 +110,8 @@ class LeptonTreeMaker {
 		unsigned int HLT_Ele27_WP80_tag_;
 		unsigned int HLT_Ele27_WP80_probe_;
 		
+		unsigned int HLT_IsoMu30_eta2p1_tag_;
+		unsigned int HLT_IsoMu30_eta2p1_probe_;
 		unsigned int HLT_IsoMu24_eta2p1_tag_;
 		unsigned int HLT_IsoMu24_eta2p1_probe_;
 		unsigned int HLT_Mu17_TkMu8_tag_;

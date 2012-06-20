@@ -77,7 +77,7 @@ void tnpScale() {
 	// cuts
 	//
 	TString tnpcut 	= "abs(tagAndProbeMass-91)<15&&(eventSelection&1)==1&&HLT_Ele27_WP80_tag>0&&qProbe*qTag<0"; 
-	TString mufo 	= "(leptonSelection&32768)==32768";  // mu id 
+	TString mufo 	= "(leptonSelection&32768)==32768";  // mu fo
 	TString muid 	= "(leptonSelection&65536)==65536";  // mu id 
 	TString muiso 	= "(leptonSelection&131072)==131072";  // mu iso 
 	TString elfo 	= "(leptonSelection&4)==4";  // ele fo 
