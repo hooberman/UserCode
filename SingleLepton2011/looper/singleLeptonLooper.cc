@@ -331,6 +331,13 @@ int getIndexFromM12(float m12){
 
 void singleLeptonLooper::InitBaby(){
 
+  //pdf variables
+  pdfid1_ = -999;
+  pdfid2_ = -999;
+  pdfQ_   = -99999.;
+  pdfx1_  = -99999.;
+  pdfx2_  = -99999.;
+
   mutrigweight_ = 1.;
 
   jetid_	= 1;
@@ -357,15 +364,29 @@ void singleLeptonLooper::InitBaby(){
   htUp_		= -999.;
   htDown_	= -999.;
 
+  // Type1 pfmet
+  t1met10_	=-999.;
+  t1met20_	=-999.;
+  t1met30_	=-999.;
+  t1met10phi_	=-999.;
+  t1met20phi_	=-999.;
+  t1met30phi_	=-999.;
+  t1met10mt_	=-999.;
+  t1met20mt_	=-999.;
+  t1met30mt_	=-999.;
+  lepmetpt_	=-999.;
+  lept1met10pt_	=-999.;
+  
+  //phi corrected type1 mets
+  t1metphicorr_	   =-999.;
+  t1metphicorrphi_ =-999.;
+  t1metphicorrmt_  =-999.;
+  
   // pfjet vars
   npfjets30_	= 0;
   npfjets35_	= 0;
   npfjets40_	= 0;
   npfjets45_	= 0;
-  npfresjets30_	= 0;
-  npfresjets35_	= 0;
-  npfresjets40_	= 0;
-  npfresjets45_	= 0;
 
   htpf30_	= 0.;
   htpf35_	= 0.;
@@ -376,24 +397,17 @@ void singleLeptonLooper::InitBaby(){
   htpfres40_	= 0.;
   htpfres45_	= 0.;
 
-  // calojet vars
-  ncjets30_	= 0;
-  ncjets35_	= 0;
-  ncjets40_	= 0;
-  ncjets45_	= 0;
-  ncresjets30_	= 0;
-  ncresjets35_	= 0;
-  ncresjets40_	= 0;
-  ncresjets45_	= 0;
-
-  htc30_	= 0.;
-  htc35_	= 0.;
-  htc40_	= 0.;
-  htc45_	= 0.;
-  htcres30_	= 0.;
-  htcres35_	= 0.;
-  htcres40_	= 0.;
-  htcres45_	= 0.;
+  //iso trk vars
+  trkpt5_ 	    = -999.;
+  mleptrk5_ 	    = -999.;
+  trkreliso5_ 	    = -999.;
+  trkpt10_ 	    = -999.;
+  mleptrk10_ 	    = -999.;
+  trkreliso10_ 	    = -999.;
+  trkpt5loose_ 	    = -999.;
+  trkreliso5loose_  = -999.;
+  trkpt10loose_     = -999.;
+  trkreliso10loose_ = -999.;
 
   // MC truth info
   mcid1_	= -1;
@@ -449,11 +463,6 @@ void singleLeptonLooper::InitBaby(){
   jet_		= 0;
 
   // jet p4's
-  cjet1_	= 0;
-  cjet2_	= 0;
-  cjet3_	= 0;
-  cjet4_	= 0;
-
   pfjet1_	= 0;
   pfjet2_	= 0;
   pfjet3_	= 0;
@@ -479,16 +488,6 @@ void singleLeptonLooper::InitBaby(){
   qgjet4_     = -1; 
   qgjet5_     = -1; 
   qgjet6_     = -1; 
-
-  cresjet1_	= 0;
-  cresjet2_	= 0;
-  cresjet3_	= 0;
-  cresjet4_	= 0;
-
-  pfresjet1_	= 0;
-  pfresjet2_	= 0;
-  pfresjet3_	= 0;
-  pfresjet4_	= 0;
 
   lep1_		= 0;
   lep2_		= 0;
@@ -691,7 +690,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
     //set vtx reweighting hist
     set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
-    weight3D_init( "vtxreweight/Weight3D.root" );
+    //    weight3D_init( "vtxreweight/Weight3D.root" );
 
     //set msugra cross section file
     set_msugra_file("goodModelNames_tanbeta10.txt");
@@ -707,11 +706,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   std::vector<std::string> jetcorr_filenames_pfL1FastJetL2L3;
   FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3;
 
-  std::vector<std::string> jetcorr_filenames_caloL1OffsetL2L3;
-  FactorizedJetCorrector *jet_corrector_caloL1OffsetL2L3;
-
   jetcorr_filenames_pfL1FastJetL2L3.clear();
-  jetcorr_filenames_caloL1OffsetL2L3.clear();
   
   //string pfUncertaintyFile;
   //string caloUncertaintyFile;
@@ -724,12 +719,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
     //pfUncertaintyFile = "jetCorrections/GR_R_42_V23_AK5PF_Uncertainty.txt";
 
-    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L1Offset.txt");
-    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L2Relative.txt");
-    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L3Absolute.txt");
-    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/GR_R_42_V23_AK5Calo_L2L3Residual.txt");
-
-    //caloUncertaintyFile = "jetCorrections/GR_R_42_V23_AK5Calo_Uncertainty.txt";
   } 
   else {
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L1FastJet.txt");
@@ -738,18 +727,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     
     //pfUncertaintyFile = "jetCorrections/DESIGN42_V17_AK5PF_Uncertainty.txt";
 
-    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/DESIGN42_V17_AK5Calo_L1Offset.txt");
-    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/DESIGN42_V17_AK5Calo_L2Relative.txt");
-    jetcorr_filenames_caloL1OffsetL2L3.push_back ("jetCorrections/DESIGN42_V17_AK5Calo_L3Absolute.txt");
-
-    //caloUncertaintyFile = "jetCorrections/DESIGN42_V17_AK5Calo_Uncertainty.txt";
   }
 
   jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
-  jet_corrector_caloL1OffsetL2L3 = makeJetCorrector(jetcorr_filenames_caloL1OffsetL2L3);
 
   //JetCorrectionUncertainty *pfUncertainty   = new JetCorrectionUncertainty( pfUncertaintyFile   );
-  //JetCorrectionUncertainty *caloUncertainty = new JetCorrectionUncertainty( caloUncertaintyFile );
 
   //------------------------------------------------
   // set stop cross section file
@@ -1686,29 +1668,21 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       }// end check for second lepton
 
       //------------------------------------------------------
+      // track isolation variable definition
+      //------------------------------------------------------
+      float dz_cut = 0.05;
+      float dz_cut_loose = 0.2;
+
+      //------------------------------------------------------
       // store pt and iso for most isolated track (pt>10 GeV)
       //------------------------------------------------------
 
-      trkpt10_         = -1.0;
-      trkreliso10_     = 1000.;
-      trkreliso10p4_   = 1000.;
-      trkreliso10p5_   = 1000.;
-      trkreliso10p7_   = 1000.;
-      totreliso10_     = 1000.;
-      totreliso10p4_   = 1000.;
-      totreliso10p5_   = 1000.;
-      totreliso10p7_   = 1000.;
-      emreliso10_      = 1000.;
-      emreliso10p4_    = 1000.;
-      emreliso10p5_    = 1000.;
-      emreliso10p7_    = 1000.;
-      nhreliso10_      = 1000.;
-      nhreliso10p4_    = 1000.;
-      nhreliso10p5_    = 1000.;
-      nhreliso10p7_    = 1000.;
-      mleptrk10_       = -1.0;
-      float miniso10   = 999;
-      int iminiso10    = -9;
+      trkpt10_           = -1.0;
+      trkreliso10_       = 1000.;
+      mleptrk10_         = -1.0;
+      float miniso10     = 999;
+      trkpt10loose_      = -1.0;
+      trkreliso10loose_  = 1000.;
 
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
 
@@ -1717,10 +1691,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
  	int itrk = cms2.pfcands_trkidx().at(ipf);
 	
- 	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
- 	  if( fabs( dz_trk_vtx(itrk,0) ) > 0.2 ) continue;
- 	}
-
 	bool isGoodLepton = false;
 	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
 	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) 
@@ -1728,14 +1698,30 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 	bool isLeadLepton = ( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(imaxpt) ) < 0.1 ) ? true : false;
 
-	float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
+	//store loose definition to compare with previous results
+	float iso = trackIso(ipf, 0.3, dz_cut_loose, true) / pfcands_p4().at(ipf).pt();
+
+ 	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > dz_cut_loose ) continue;
+ 	}
+
+	if( iso < trkreliso10loose_ && !isGoodLepton ){
+	  trkpt10loose_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10loose_   = iso;
+	}
+
+	//tighten dz cut
+ 	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > dz_cut ) continue;
+ 	}
+
+	iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
 
 	if( iso < miniso10 && !isGoodLepton ){
 	  miniso10       = iso;
 	  trkpt10_       = pfcands_p4().at(ipf).pt();
 	  mleptrk10_     = (*lep1_+pfcands_p4().at(ipf)).pt();
 	  trkreliso10_   = iso;
-	  iminiso10      = ipf;
 	}
 
 	if( iso < pfcandiso10_ && !isLeadLepton ){
@@ -1746,36 +1732,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       }
 
-      // store all other isolation variables 
-      if (iminiso10>=0) {
-	  std::vector<float> iso10p3 = totalIso(iminiso10, 0.3);
-	  std::vector<float> iso10p4 = totalIso(iminiso10, 0.4);
-	  std::vector<float> iso10p5 = totalIso(iminiso10, 0.5);
-	  std::vector<float> iso10p7 = totalIso(iminiso10, 0.7);
-	  // charged component
-	  trkreliso10p4_ = iso10p4.at(0) / trkpt10_;
-	  trkreliso10p5_ = iso10p5.at(0) / trkpt10_;
-	  trkreliso10p7_ = iso10p7.at(0) / trkpt10_;
-	  // sum over everything
-	  float totiso10p3 = (iso10p3.at(0)+iso10p3.at(1)+iso10p3.at(2));
-	  float totiso10p4 = (iso10p4.at(0)+iso10p4.at(1)+iso10p4.at(2));
-	  float totiso10p5 = (iso10p5.at(0)+iso10p5.at(1)+iso10p5.at(2));
-	  float totiso10p7 = (iso10p7.at(0)+iso10p7.at(1)+iso10p7.at(2));
-	  totreliso10_   = totiso10p3 / trkpt10_;
-	  totreliso10p4_ = totiso10p4 / trkpt10_;
-	  totreliso10p5_ = totiso10p5 / trkpt10_;
-	  totreliso10p7_ = totiso10p7 / trkpt10_;
-	  //for various cones store the separate isolation components
-	  emreliso10_    = iso10p3.at(1) / trkpt10_;
-	  emreliso10p4_  = iso10p4.at(1) / trkpt10_;
-	  emreliso10p5_  = iso10p5.at(1) / trkpt10_;
-	  emreliso10p7_  = iso10p7.at(1) / trkpt10_;
-	  nhreliso10_    = iso10p3.at(2) / trkpt10_;
-	  nhreliso10p4_  = iso10p4.at(2) / trkpt10_;
-	  nhreliso10p5_  = iso10p5.at(2) / trkpt10_;
-	  nhreliso10p7_  = iso10p7.at(2) / trkpt10_;
-      }
-
       //------------------------------------------------------
       // store pt and iso for most isolated track (pt>5 GeV)
       //------------------------------------------------------
@@ -1784,6 +1740,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       trkreliso5_      = 1000.;
       mleptrk5_        = -1.0;
       float miniso5    = 999;
+      trkpt5loose_     = -1.0;
+      trkreliso5loose_ = 1000.;
 
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
 
@@ -1792,17 +1750,29 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
  	int itrk = cms2.pfcands_trkidx().at(ipf);
 	
- 	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
- 	  if( fabs( dz_trk_vtx(itrk,0) ) > 0.2 ) continue;
- 	}
-
 	bool isGoodLepton = false;
 	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
 	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
 	}
 	bool isLeadLepton = ( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(imaxpt) ) < 0.1 ) ? true : false;
 
-	float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
+ 	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > dz_cut_loose ) continue;
+ 	}
+
+	float iso = trackIso(ipf, 0.3, dz_cut_loose, true) / pfcands_p4().at(ipf).pt();
+
+	if( iso < trkreliso5loose_ && !isGoodLepton ){
+	  trkpt5loose_     = pfcands_p4().at(ipf).pt();
+	  trkreliso5loose_ = iso;
+	}
+
+	//tighten dz cut
+ 	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > dz_cut ) continue;
+ 	}
+ 
+	iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
 
 	if( iso < miniso5 && !isGoodLepton ){
 	  miniso5     = iso;
@@ -1846,10 +1816,21 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  else if (cms2.puInfo_bunchCrossing().at(nbc)==-1) npuMinusOne_ = cms2.puInfo_nPUvertices().at(nbc);
 	  else if (cms2.puInfo_bunchCrossing().at(nbc)==+1) npuPlusOne_ = cms2.puInfo_nPUvertices().at(nbc);
 	}
-	n3dvtxweight_ = weight3D( npuMinusOne_, npu_, npuPlusOne_ );
+	//remove 3d-vtx reweighting for the moment, can do on the fly
+	//	n3dvtxweight_ = weight3D( npuMinusOne_, npu_, npuPlusOne_ );
+	n3dvtxweight_ = 0.;
       } else 
 	n3dvtxweight_ = 1.;
       
+      //----------------------------------------
+      // PDF Information
+      //----------------------------------------
+      pdfid1_ = int(cms2.pdfinfo_id1());
+      pdfid2_ = int(cms2.pdfinfo_id2());
+      pdfQ_   = cms2.pdfinfo_scale();
+      pdfx1_  = cms2.pdfinfo_x1();
+      pdfx2_  = cms2.pdfinfo_x2();
+
       //-------------------------------------
       // jet counting
       //-------------------------------------
@@ -1862,10 +1843,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       VofP4 vpfjets_p4;
       VofP4 vpfrawjets_p4;
-      VofP4 vpfresjets_p4;
       vpfjets_p4.clear();
       vpfrawjets_p4.clear();
-      vpfresjets_p4.clear();
 
       vector<float> fullcors;
       vector<float> l2l3cors;
@@ -1901,7 +1880,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 
 	LorentzVector vjet      = corr    * pfjets_p4().at(ijet);
-	LorentzVector vresjet   = rescorr * pfjets_p4().at(ijet);
 	LorentzVector vjetUp    = corr    * pfjets_p4().at(ijet) * 1.075; // over-estimate...
 	LorentzVector vjetDown  = corr    * pfjets_p4().at(ijet) * 0.925; // over-estimate...
 
@@ -1942,11 +1920,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  vpfjets_p4.push_back( vjet );
 	}
 
-	// store Residual jet p4's pt > 15 GeV
-	if( vresjet.pt() > 15 && fabs( vresjet.eta() ) < 2.5 ){
-	  vpfresjets_p4.push_back( vresjet );
-	}
-
 	// njets JEC up
 	if( vjetUp.pt() > 30. && fabs( vjetUp.eta() ) < 2.5 ){
 	  njetsUp_++;
@@ -1957,30 +1930,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( vjetDown.pt() > 30. && fabs( vjetDown.eta() ) < 2.5 ){
 	  njetsDown_++;
 	  htDown_ += vjetDown.pt();
-	}
-
-	// njets: residual only, pt > 30 GeV
-	if( vresjet.pt() > 30 && fabs( vresjet.eta() ) < 2.5 ){
-	  npfresjets30_ ++;
-	  htpfres30_ += vresjet.pt();
-	}
-
-	// njets: residual only, pt > 35 GeV
-	if( vresjet.pt() > 35 && fabs( vresjet.eta() ) < 2.5 ){
-	  npfresjets35_ ++;
-	  htpfres35_ += vresjet.pt();
-	}
-
-	// njets: residual only, pt > 40 GeV
-	if( vresjet.pt() > 40 && fabs( vresjet.eta() ) < 2.5 ){
-	  npfresjets40_ ++;
-	  htpfres40_ += vresjet.pt();
-	}
-
-	// njets: residual only, pt > 45 GeV
-	if( vresjet.pt() > 45 && fabs( vresjet.eta() ) < 2.5 ){
-	  npfresjets45_ ++;
-	  htpfres45_ += vresjet.pt();
 	}
 
 	// njets: L1FastL2L3Residual, pt > 30 GeV
@@ -2120,34 +2069,20 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       }
 
       // type1 met's
-      vector<float> empty(0);
       pair<float, float> p_t1met10     = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 10.0 );
       pair<float, float> p_t1met20     = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 20.0 );
       pair<float, float> p_t1met30     = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 30.0 );
-      pair<float, float> p_t1nol1met10 = Type1PFMET( vpfrawjets_p4 , l2l3cors , empty  , 10.0 );
-      pair<float, float> p_t1nol1met20 = Type1PFMET( vpfrawjets_p4 , l2l3cors , empty  , 20.0 );
-      pair<float, float> p_t1nol1met30 = Type1PFMET( vpfrawjets_p4 , l2l3cors , empty  , 30.0 );
-      pair<float, float> p_t1metres10  = Type1PFMET( vpfrawjets_p4 , rescors  , empty  , 10.0 );
-      pair<float, float> p_t1metres20  = Type1PFMET( vpfrawjets_p4 , rescors  , empty  , 20.0 );
-      pair<float, float> p_t1metres30  = Type1PFMET( vpfrawjets_p4 , rescors  , empty  , 30.0 );
       t1met10_        = p_t1met10.first;
       t1met20_        = p_t1met20.first;
       t1met30_        = p_t1met30.first;
-      t1nol1met10_    = p_t1nol1met10.first;
-      t1nol1met20_    = p_t1nol1met20.first;
-      t1nol1met30_    = p_t1nol1met30.first;
-      t1metres10_     = p_t1metres10.first;
-      t1metres20_     = p_t1metres20.first;
-      t1metres30_     = p_t1metres30.first;
       t1met10phi_     = p_t1met10.second;
       t1met20phi_     = p_t1met20.second;	  
       t1met30phi_     = p_t1met30.second;	  
-      t1nol1met10phi_ = p_t1nol1met10.second;
-      t1nol1met20phi_ = p_t1nol1met20.second;	  
-      t1nol1met30phi_ = p_t1nol1met30.second;	  
-      t1metres10phi_  = p_t1metres10.second;
-      t1metres20phi_  = p_t1metres20.second;
-      t1metres30phi_  = p_t1metres30.second;
+
+      //phi-corrected type1 met
+      pair<float, float> p_t1metphicorr = getPhiCorrMET( t1met10_, t1met10phi_, evt_pfsumet(), !isData);
+      t1metphicorr_    = p_t1metphicorr.first;
+      t1metphicorrphi_ = p_t1metphicorr.second;
 
       // store L1FastL2L3Residual pfjets
       // check if jet is b-tagged
@@ -2200,13 +2135,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  qgjet6_ = isGenQGMatched( vpfjets_p4.at(5), 0.4 );
 	}
       }
-
-      // store Residual pfjets
-      sort(vpfresjets_p4.begin(), vpfresjets_p4.end(), sortByPt);
-      if( vpfresjets_p4.size() > 0 ) pfresjet1_  = &vpfresjets_p4.at(0);
-      if( vpfresjets_p4.size() > 1 ) pfresjet2_  = &vpfresjets_p4.at(1);
-      if( vpfresjets_p4.size() > 2 ) pfresjet3_  = &vpfresjets_p4.at(2);
-      if( vpfresjets_p4.size() > 3 ) pfresjet4_  = &vpfresjets_p4.at(3);
 
       //store distance to closest jet for pfcand
       if ( nleps_ == 2 ) {
@@ -2263,133 +2191,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( emfrac > emjet20_ ) emjet20_ = emfrac;
 
       }
-
-      //------------------------------------------
-      // count calojets
-      //------------------------------------------
-
-      //VofP4 goodCaloJets;
-
-
-      VofP4 vcjets_p4;     
-      VofP4 vcresjets_p4;   
-
-      vcjets_p4.clear();
-      vcresjets_p4.clear();
-
-      for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
-
-	// get total L1OffsetL2L3Residual corrections
-	jet_corrector_caloL1OffsetL2L3->setNPV   ( ndavtx_                           );
-	jet_corrector_caloL1OffsetL2L3->setJetE  ( cms2.jets_p4().at(ijet).energy()  );
-	jet_corrector_caloL1OffsetL2L3->setJetPt ( cms2.jets_p4().at(ijet).pt()      );
-	jet_corrector_caloL1OffsetL2L3->setJetEta( cms2.jets_p4().at(ijet).eta()     );
-	double corr = jet_corrector_caloL1OffsetL2L3->getCorrection();
-
-	// get individual L1Offset, L2, L3, Residual corrections
-	jet_corrector_caloL1OffsetL2L3->setNPV   ( ndavtx_                           );
-	jet_corrector_caloL1OffsetL2L3->setJetE  ( cms2.jets_p4().at(ijet).energy()  );
-	jet_corrector_caloL1OffsetL2L3->setJetPt ( cms2.jets_p4().at(ijet).pt()      );
-	jet_corrector_caloL1OffsetL2L3->setJetEta( cms2.jets_p4().at(ijet).eta()     );
-	vector<float> factors = jet_corrector_caloL1OffsetL2L3->getSubCorrections();
-
-	// get residual correction only
-	float rescorr = 1;
-	if( isData ){
-	  if( factors.size() == 4 ) rescorr = factors.at(3) / factors.at(2);
-	  else                      cout << "ERROR! " << factors.size() << " jetSubCorrections" << endl;
-	}
-
-	LorentzVector vjet    = jets_p4().at(ijet) * corr;
-	LorentzVector vresjet = jets_p4().at(ijet) * rescorr;
-
-	// jet-lepton overlap removal
-	bool rejectJet = false;
-	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	}
-	if( rejectJet ) continue;
-
-	// jet ID
-	if( !passesCaloJetID( vjet ) )         continue;	
-
-	// store L1FastL2L3Residual jet p4's pt > 15 GeV
-	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 2.5 ){
-	  vcjets_p4.push_back( vjet );
-	}
-
-	// store Residual jet p4's pt > 15 GeV
-	if( vresjet.pt() > 15 && fabs( vresjet.eta() ) < 2.5 ){
-	  vcresjets_p4.push_back( vresjet );
-	}
-
-	// njets: residual only, pt > 30 GeV
-	if( vresjet.pt() > 30 && fabs( vresjet.eta() ) < 2.5 ){
-	  ncresjets30_ ++;
-	  htcres30_ += vresjet.pt();
-	}
-
-	// njets: residual only, pt > 35 GeV
-	if( vresjet.pt() > 35 && fabs( vresjet.eta() ) < 2.5 ){
-	  ncresjets35_ ++;
-	  htcres35_ += vresjet.pt();
-	}
-
-	// njets: residual only, pt > 40 GeV
-	if( vresjet.pt() > 40 && fabs( vresjet.eta() ) < 2.5 ){
-	  ncresjets40_ ++;
-	  htcres40_ += vresjet.pt();
-	}
-
-	// njets: residual only, pt > 45 GeV
-	if( vresjet.pt() > 45 && fabs( vresjet.eta() ) < 2.5 ){
-	  ncresjets45_ ++;
-	  htcres45_ += vresjet.pt();
-	}
-
-	// njets: L1FastL2L3Residual, pt > 30 GeV
-	if( vjet.pt() > 30 && fabs( vjet.eta() ) < 2.5 ){
-	  ncjets30_ ++;
-	  htc30_ += vjet.pt();
-	}
-
-	// njets: L1FastL2L3Residual, pt > 35 GeV
-	if( vjet.pt() > 35 && fabs( vjet.eta() ) < 2.5 ){
-	  ncjets35_ ++;
-	  htc35_ += vjet.pt();
-	}
-
-	// njets: L1FastL2L3Residual, pt > 40 GeV
-	if( vjet.pt() > 40 && fabs( vjet.eta() ) < 2.5 ){
-	  ncjets40_ ++;
-	  htc40_ += vjet.pt();
-	}
-
-	// njets: L1FastL2L3Residual, pt > 45 GeV
-	if( vjet.pt() > 45 && fabs( vjet.eta() ) < 2.5 ){
-	  ncjets45_ ++;
-	  htc45_ += vjet.pt();
-	}
-
-	// // store non-b jets
-	// if( jets_trackCountingHighEffBJetTag().at(ijet) < 3.3 ){
-	//   goodCaloJets.push_back(vjet);
-	// }
-      }
-
-      // store L1FastL2L3Residual cjets
-      sort(vcjets_p4.begin(), vcjets_p4.end(), sortByPt);
-      if( vcjets_p4.size() > 0 ) cjet1_  = &vcjets_p4.at(0);
-      if( vcjets_p4.size() > 1 ) cjet2_  = &vcjets_p4.at(1);
-      if( vcjets_p4.size() > 2 ) cjet3_  = &vcjets_p4.at(2);
-      if( vcjets_p4.size() > 3 ) cjet4_  = &vcjets_p4.at(3);
-
-      // store Residual cjets
-      sort(vcresjets_p4.begin(), vcresjets_p4.end(), sortByPt);
-      if( vcresjets_p4.size() > 0 ) cresjet1_  = &vcresjets_p4.at(0);
-      if( vcresjets_p4.size() > 1 ) cresjet2_  = &vcresjets_p4.at(1);
-      if( vcresjets_p4.size() > 2 ) cresjet3_  = &vcresjets_p4.at(2);
-      if( vcresjets_p4.size() > 3 ) cresjet4_  = &vcresjets_p4.at(3);
 
       //--------------------------------
       // get non-isolated leptons
@@ -2658,12 +2459,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       t1met10mt_     = getMT( lep1_->pt() , lep1_->phi() , t1met10_     , t1met10phi_ );
       t1met20mt_     = getMT( lep1_->pt() , lep1_->phi() , t1met20_     , t1met20phi_ );
       t1met30mt_     = getMT( lep1_->pt() , lep1_->phi() , t1met30_     , t1met30phi_ );
-      t1nol1met10mt_ = getMT( lep1_->pt() , lep1_->phi() , t1nol1met10_ , t1nol1met10phi_ );
-      t1nol1met20mt_ = getMT( lep1_->pt() , lep1_->phi() , t1nol1met20_ , t1nol1met20phi_ );
-      t1nol1met30mt_ = getMT( lep1_->pt() , lep1_->phi() , t1nol1met30_ , t1nol1met30phi_ );
-      t1metres10mt_  = getMT( lep1_->pt() , lep1_->phi() , t1metres10_  , t1metres10phi_ );
-      t1metres20mt_  = getMT( lep1_->pt() , lep1_->phi() , t1metres20_  , t1metres20phi_ );
-      t1metres30mt_  = getMT( lep1_->pt() , lep1_->phi() , t1metres30_  , t1metres30phi_ );
+      //phi-corrected met
+      t1metphicorrmt_ = getMT( lep1_->pt() , lep1_->phi() , t1metphicorr_ , t1metphicorrphi_ );
 
       //pt of the leading lepton and met system
       lepmetpt_ = sqrt( pow((lep1_->px() + pfmet_*cos(pfmetphi_)),2) 
@@ -3274,6 +3071,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("npfjets35",       &npfjets35_,        "npfjets35/I");
   outTree->Branch("npfjets40",       &npfjets40_,        "npfjets40/I");
   outTree->Branch("npfjets45",       &npfjets45_,        "npfjets45/I");
+
   //rho correction
   outTree->Branch("rhovor",          &rhovor_,           "rhovor/F");
 
@@ -3286,215 +3084,169 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("t1met10",         &t1met10_,          "t1met10/F");
   outTree->Branch("t1met20",         &t1met20_,          "t1met20/F");
   outTree->Branch("t1met30",         &t1met30_,          "t1met30/F");
-  outTree->Branch("t1nol1met10",     &t1nol1met10_,      "t1nol1met10/F");
-  outTree->Branch("t1nol1met20",     &t1nol1met20_,      "t1nol1met20/F");
-  outTree->Branch("t1nol1met30",     &t1nol1met30_,      "t1nol1met30/F");
-  outTree->Branch("t1metres10",      &t1metres10_,       "t1metres10/F");
-  outTree->Branch("t1metres20",      &t1metres20_,       "t1metres20/F");
-  outTree->Branch("t1metres30",      &t1metres30_,       "t1metres30/F");
   outTree->Branch("t1met10phi",      &t1met10phi_,       "t1met10phi/F");
   outTree->Branch("t1met20phi",      &t1met20phi_,       "t1met20phi/F");
   outTree->Branch("t1met30phi",      &t1met30phi_,       "t1met30phi/F");
-  outTree->Branch("t1nol1met10phi",  &t1nol1met10phi_,   "t1nol1met10phi/F");
-  outTree->Branch("t1nol1met20phi",  &t1nol1met20phi_,   "t1nol1met20phi/F");
-  outTree->Branch("t1nol1met30phi",  &t1nol1met30phi_,   "t1nol1met30phi/F");
-  outTree->Branch("t1metres10phi",   &t1metres10phi_,    "t1metres10phi/F");
-  outTree->Branch("t1metres20phi",   &t1metres20phi_,    "t1metres20phi/F");
-  outTree->Branch("t1metres30phi",   &t1metres30phi_,    "t1metres30phi/F");
   outTree->Branch("t1met10mt",       &t1met10mt_,        "t1met10mt/F");
   outTree->Branch("t1met20mt",       &t1met20mt_,        "t1met20mt/F");
   outTree->Branch("t1met30mt",       &t1met30mt_,        "t1met30mt/F");
-  outTree->Branch("t1nol1met10mt",   &t1nol1met10mt_,    "t1nol1met10mt/F");
-  outTree->Branch("t1nol1met20mt",   &t1nol1met20mt_,    "t1nol1met20mt/F");
-  outTree->Branch("t1nol1met30mt",   &t1nol1met30mt_,    "t1nol1met30mt/F");
-  outTree->Branch("t1metres10mt",    &t1metres10mt_,     "t1metres10mt/F");
-  outTree->Branch("t1metres20mt",    &t1metres20mt_,     "t1metres20mt/F");
-  outTree->Branch("t1metres30mt",    &t1metres30mt_,     "t1metres30mt/F");
   outTree->Branch("lepmetpt",        &lepmetpt_,         "lepmetpt/F");
   outTree->Branch("lept1met10pt",    &lept1met10pt_,     "lept1met10pt/F");
-  
-  // pfjets Res
-  outTree->Branch("npfresjets30",    &npfresjets30_,     "npfresjets30/I");
-  outTree->Branch("npfresjets35",    &npfresjets35_,     "npfresjets35/I");
-  outTree->Branch("npfresjets40",    &npfresjets40_,     "npfresjets40/I");
-  outTree->Branch("npfresjets45",    &npfresjets45_,     "npfresjets45/I");
 
-  outTree->Branch("htpfres30",       &htpfres30_,        "htpfres30/F");
-  outTree->Branch("htpfres35",       &htpfres35_,        "htpfres35/F");
-  outTree->Branch("htpfres40",       &htpfres40_,        "htpfres40/F");
-  outTree->Branch("htpfres45",       &htpfres45_,        "htpfres45/F");
+  //met variables with phi correction
+  outTree->Branch("t1metphicorr",    &t1metphicorr_,     "t1metphicorr/F");
+  outTree->Branch("t1metphicorrphi", &t1metphicorrphi_,  "t1metphicorrphi/F");
+  outTree->Branch("t1metphicorrmt",  &t1metphicorrmt_,   "t1metphicorrmt/F");
 
-  /// calojets L1OffsetL2L3Res
-  outTree->Branch("ncjets30",        &ncjets30_,         "ncjets30/I");
-  outTree->Branch("ncjets35",        &ncjets35_,         "ncjets35/I");
-  outTree->Branch("ncjets40",        &ncjets40_,         "ncjets40/I");
-  outTree->Branch("ncjets45",        &ncjets45_,         "ncjets45/I");
+  outTree->Branch("htpfres30",        &htpfres30_,        "htpfres30/F");
+  outTree->Branch("htpfres35",        &htpfres35_,        "htpfres35/F");
+  outTree->Branch("htpfres40",        &htpfres40_,        "htpfres40/F");
+  outTree->Branch("htpfres45",        &htpfres45_,        "htpfres45/F");
+				      
+  // btag variables		      
+  outTree->Branch("nbtagsssv",        &nbtagsssv_,        "nbtagsssv/I");
+  outTree->Branch("nbtagstcl",        &nbtagstcl_,        "nbtagstcl/I");
+  outTree->Branch("nbtagstcm",        &nbtagstcm_,        "nbtagstcm/I");
+  outTree->Branch("nbtagscsvl",       &nbtagscsvl_,       "nbtagscsvl/I");
+  outTree->Branch("nbtagscsvm",       &nbtagscsvm_,       "nbtagscsvm/I");
+  outTree->Branch("nbtagscsvt",       &nbtagscsvt_,       "nbtagscsvt/I");
+  outTree->Branch("nbtagsssvcorr",    &nbtagsssvcorr_,    "nbtagsssvcorr/I");
+  outTree->Branch("nbtagstclcorr",    &nbtagstclcorr_,    "nbtagstclcorr/I");
+  outTree->Branch("nbtagstcmcorr",    &nbtagstcmcorr_,    "nbtagstcmcorr/I");
+  outTree->Branch("nbtagscsvlcorr",   &nbtagscsvlcorr_,   "nbtagscsvlcorr/I");
+  outTree->Branch("nbtagscsvmcorr",   &nbtagscsvmcorr_,   "nbtagscsvmcorr/I");
+  outTree->Branch("nbtagscsvtcott",   &nbtagscsvtcorr_,   "nbtagscsvtcorr/I");
+  outTree->Branch("bjet1",            &bjet1_,            "bjet1/I");
+  outTree->Branch("bjet2",            &bjet2_,            "bjet2/I");
+  outTree->Branch("bjet3",            &bjet3_,            "bjet3/I");
+  outTree->Branch("bjet4",            &bjet4_,            "bjet4/I");
+  outTree->Branch("bjet5",            &bjet5_,            "bjet5/I");
+  outTree->Branch("bjet6",            &bjet6_,            "bjet6/I");
+  outTree->Branch("lepjet1",          &lepjet1_,          "lepjet1/I");
+  outTree->Branch("lepjet2",          &lepjet2_,          "lepjet2/I");
+  outTree->Branch("lepjet3",          &lepjet3_,          "lepjet3/I");
+  outTree->Branch("lepjet4",          &lepjet4_,          "lepjet4/I");
+  outTree->Branch("lepjet5",          &lepjet5_,          "lepjet5/I");
+  outTree->Branch("lepjet6",          &lepjet6_,          "lepjet6/I");
+  outTree->Branch("qgjet1",           &qgjet1_,           "qgjet1/I");
+  outTree->Branch("qgjet2",           &qgjet2_,           "qgjet2/I");
+  outTree->Branch("qgjet3",           &qgjet3_,           "qgjet3/I");
+  outTree->Branch("qgjet4",           &qgjet4_,           "qgjet4/I");
+  outTree->Branch("qgjet5",           &qgjet5_,           "qgjet5/I");
+  outTree->Branch("qgjet6",           &qgjet6_,           "qgjet6/I");
+  outTree->Branch("njetsUp",          &njetsUp_,          "njetsUp/I");
+  outTree->Branch("njetsDown",        &njetsDown_,        "njetsDown/I");
+  outTree->Branch("htUp",             &htUp_,             "htUp/F");
+  outTree->Branch("htDown",           &htDown_,           "htDown/F");
+  outTree->Branch("npu",              &npu_,              "npu/I");
+  outTree->Branch("npuMinusOne",      &npuMinusOne_,      "npuMinusOne/I");
+  outTree->Branch("npuPlusOne",       &npuPlusOne_,       "npuPlusOne/I");
+  outTree->Branch("nvtx",             &nvtx_,             "nvtx/I");
+  outTree->Branch("ndavtx",           &ndavtx_,           "ndavtx/I");
+  outTree->Branch("ndavtxweight",     &ndavtxweight_,     "ndavtxweight/F");
+  outTree->Branch("n3dvtxweight",     &n3dvtxweight_,     "n3dvtxweight/F");
+  outTree->Branch("pdfid1",           &pdfid1_,           "pdfid1/I");
+  outTree->Branch("pdfid2",           &pdfid2_,           "pdfid2/I");
+  outTree->Branch("pdfx1",            &pdfx1_,            "pdfx1/F");
+  outTree->Branch("pdfx2",            &pdfx2_,            "pdfx2/F");
+  outTree->Branch("pdfQ",             &pdfQ_,             "pdfQ/F");
+  outTree->Branch("vecjetpt",         &vecjetpt_,         "vecjetpt/F");
+  outTree->Branch("pass",             &pass_,             "pass/I");
+  outTree->Branch("passz",            &passz_,            "passz/I");
+  outTree->Branch("m0",               &m0_,               "m0/F");
+  outTree->Branch("mg",               &mG_,               "mg/F");
+  outTree->Branch("ml",               &mL_,               "ml/F");
+  outTree->Branch("x",                &x_,                "x/F");
+  outTree->Branch("m12",              &m12_,              "m12/F");
+  outTree->Branch("id1",              &id1_,              "id1/I");
+  outTree->Branch("id2",              &id2_,              "id2/I");
+  outTree->Branch("w1",               &w1_,               "w1/I");
+  outTree->Branch("w2",               &w2_,               "w2/I");
+  outTree->Branch("iso1",             &iso1_,             "iso1/F");
+  outTree->Branch("isont1",           &isont1_,           "isont1/F");
+  outTree->Branch("etasc1",           &etasc1_,           "etasc1/F");
+  outTree->Branch("etasc2",           &etasc2_,           "etasc2/F");
+  outTree->Branch("iso2",             &iso2_,             "iso2/F");
+  outTree->Branch("ecalveto1",        &ecalveto1_,        "ecalveto1/F");
+  outTree->Branch("ecalveto2",        &ecalveto2_,        "ecalveto2/F");
+  outTree->Branch("hcalveto1",        &hcalveto1_,        "hcalveto1/F");
+  outTree->Branch("hcalveto2",        &hcalveto2_,        "hcalveto2/F");
+  outTree->Branch("isont2",           &isont2_,           "isont2/F");
+  outTree->Branch("ptl1",             &ptl1_,             "ptl1/F");
+  outTree->Branch("ptl2",             &ptl2_,             "ptl2/F");
+  outTree->Branch("etal1",            &etal1_,            "etal1/F");
+  outTree->Branch("etal2",            &etal2_,            "etal2/F");
+  outTree->Branch("phil1",            &phil1_,            "phil1/F");
+  outTree->Branch("phil2",            &phil2_,            "phil2/F");
+  outTree->Branch("meff",             &meff_,             "meff/F");
+  outTree->Branch("mt",               &mt_,               "mt/F");
+  outTree->Branch("dataset",          &dataset_,          "dataset[200]/C");
+  outTree->Branch("run",              &run_,              "run/I");
+  outTree->Branch("lumi",             &lumi_,             "lumi/I");
+  outTree->Branch("event",            &event_,            "event/I");
+  outTree->Branch("y",                &y_,                "y/F");  
+  outTree->Branch("ht",               &ht_,               "ht/F");  
+  outTree->Branch("htgen",            &htgen_,            "htgen/F");  
+  outTree->Branch("htjpt",            &htjpt_,            "htjpt/F");  
+  outTree->Branch("nels",             &nels_,             "nels/I");  
+  outTree->Branch("nmus",             &nmus_,             "nmus/I");  
+  outTree->Branch("ntaus",            &ntaus_,            "ntaus/I");  
+  outTree->Branch("nleps",            &nleps_,            "nleps/I");  
+  outTree->Branch("dphijm",           &dphijm_,           "dphijm/F");  
+  outTree->Branch("ptjetraw",         &ptjetraw_,         "ptjetraw/F");  
+  outTree->Branch("ptjet23",          &ptjet23_,          "ptjet23/F");  
+  outTree->Branch("ptjetF23",         &ptjetF23_,         "ptjetF23/F");  
+  outTree->Branch("ptjetO23",         &ptjetO23_,         "ptjetO23/F");  
+  //outTree->Branch("cosphijz",         &cosphijz_,         "cosphijz/F");  
+  outTree->Branch("mcid1",            &mcid1_,            "mcid1/I");  
+  outTree->Branch("mcdr1",            &mcdr1_,            "mcdr1/F");  
+  outTree->Branch("mcdecay1",         &mcdecay1_,         "mcdecay1/I");  
+  outTree->Branch("mcndec1",          &mcndec1_,          "mcndec1/I");  
+  outTree->Branch("mcndec2",          &mcndec2_,          "mcndec2/I");  
+  outTree->Branch("mcndeckls1",       &mcndeckls1_,       "mcndeckls1/I");  
+  outTree->Branch("mcndeckls2",       &mcndeckls2_,       "mcndeckls2/I");  
+  outTree->Branch("mcndecem1",        &mcndecem1_,        "mcndecem1/I");  
+  outTree->Branch("mcndecem2",        &mcndecem2_,        "mcndecem2/I");  
+  outTree->Branch("mcid2",            &mcid2_,            "mcid2/I");  
+  outTree->Branch("mcdr2",            &mcdr2_,            "mcdr2/F");  
+  outTree->Branch("mcdecay2",         &mcdecay2_,         "mcdecay2/I");  
+  outTree->Branch("mctaudpt1",        &mctaudpt1_,        "mctaudpt1/F");  
+  outTree->Branch("mctaudpt2",        &mctaudpt2_,        "mctaudpt2/F");  
+  outTree->Branch("mctaudid1",        &mctaudid1_,        "mctaudid1/I");  
+  outTree->Branch("mctaudid2",        &mctaudid2_,        "mctaudid2/I");  
+  outTree->Branch("mlepid",           &mlepid_,           "mlepid/I");  
+  outTree->Branch("mleppassid",       &mleppassid_,       "mleppassid/I");  
+  outTree->Branch("mleppassiso",      &mleppassiso_,      "mleppassiso/I");  
+  outTree->Branch("mlepiso",          &mlepiso_,          "mlepiso/F");  
+  outTree->Branch("mlepdr",           &mlepdr_,           "mlepdr/F");  
+  outTree->Branch("pflepiso",         &pflepiso_,         "pflepiso/F");  
+  outTree->Branch("pflepdr",          &pflepdr_,          "pflepdr/F");  
+  outTree->Branch("pfleppt",          &pfleppt_,          "pfleppt/F");  
+  outTree->Branch("pflepmindrj",      &pflepmindrj_,      "pflepmindrj/F");  
+  outTree->Branch("pftaudiso",        &pftaudiso_,        "pftaudiso/F");  
+  outTree->Branch("pftauddr",         &pftauddr_,         "pftauddr/F");  
+  outTree->Branch("pftaudpt",         &pftaudpt_,         "pftaudpt/F");  
+  outTree->Branch("pftaudmindrj",     &pftaudmindrj_,     "pftaudmindrj/F");  
+  outTree->Branch("pfcandiso5",       &pfcandiso5_,       "pfcandiso5/F");  
+  outTree->Branch("pfcandpt5",        &pfcandpt5_,        "pfcandpt5/F");  
+  outTree->Branch("pfcandmindrj5",    &pfcandmindrj5_,    "pfcandmindrj5/F");  
+  outTree->Branch("pfcandiso10",      &pfcandiso10_,      "pfcandiso10/F");  
+  outTree->Branch("pfcandpt10",       &pfcandpt10_,       "pfcandpt10/F");  
+  outTree->Branch("pfcandmindrj10",   &pfcandmindrj10_,   "pfcandmindrj10/F");  
+  outTree->Branch("emjet10",          &emjet10_,          "emjet10/F");  
+  outTree->Branch("mjj",              &mjj_,              "mjj/F");  
+  outTree->Branch("emjet20",          &emjet20_,          "emjet20/F");  
+  outTree->Branch("trkpt5",           &trkpt5_,           "trkpt5/F");  
+  outTree->Branch("trkpt10",          &trkpt10_,          "trkpt10/F");  
+  outTree->Branch("mleptrk5",         &mleptrk5_,         "mleptrk5/F");  
+  outTree->Branch("mleptrk10",        &mleptrk10_,        "mleptrk10/F");  
+  outTree->Branch("trkreliso5",       &trkreliso5_,       "trkreliso5/F");  
+  outTree->Branch("trkreliso10",      &trkreliso10_,      "trkreliso10/F");  
+  outTree->Branch("trkpt5loose",      &trkpt5loose_,      "trkpt5loose/F");  
+  outTree->Branch("trkpt10loose",     &trkpt10loose_,     "trkpt10loose/F");  
+  outTree->Branch("trkreliso5loose",  &trkreliso5loose_,  "trkreliso5loose/F");  
+  outTree->Branch("trkreliso10loose", &trkreliso10loose_, "trkreliso10loose/F");  
 
-  outTree->Branch("htc30",           &htc30_,            "htc30/F");
-  outTree->Branch("htc35",           &htc35_,            "htc35/F");
-  outTree->Branch("htc40",           &htc40_,            "htc40/F");
-  outTree->Branch("htc45",           &htc45_,            "htc45/F");
-
-  /// calojets Res
-  outTree->Branch("ncresjets30",     &ncresjets30_,      "ncresjets30/I");
-  outTree->Branch("ncresjets35",     &ncresjets35_,      "ncresjets35/I");
-  outTree->Branch("ncresjets40",     &ncresjets40_,      "ncresjets40/I");
-  outTree->Branch("ncresjets45",     &ncresjets45_,      "ncresjets45/I");
-
-  outTree->Branch("htcres30",        &htcres30_,         "htcres30/F");
-  outTree->Branch("htcres35",        &htcres35_,         "htcres35/F");
-  outTree->Branch("htcres40",        &htcres40_,         "htcres40/F");
-  outTree->Branch("htcres45",        &htcres45_,         "htcres45/F");
-
-  // btag variables
-  outTree->Branch("nbtagsssv",       &nbtagsssv_,        "nbtagsssv/I");
-  outTree->Branch("nbtagstcl",       &nbtagstcl_,        "nbtagstcl/I");
-  outTree->Branch("nbtagstcm",       &nbtagstcm_,        "nbtagstcm/I");
-  outTree->Branch("nbtagscsvl",      &nbtagscsvl_,       "nbtagscsvl/I");
-  outTree->Branch("nbtagscsvm",      &nbtagscsvm_,       "nbtagscsvm/I");
-  outTree->Branch("nbtagscsvt",      &nbtagscsvt_,       "nbtagscsvt/I");
-  outTree->Branch("nbtagsssvcorr",   &nbtagsssvcorr_,    "nbtagsssvcorr/I");
-  outTree->Branch("nbtagstclcorr",   &nbtagstclcorr_,    "nbtagstclcorr/I");
-  outTree->Branch("nbtagstcmcorr",   &nbtagstcmcorr_,    "nbtagstcmcorr/I");
-  outTree->Branch("nbtagscsvlcorr",  &nbtagscsvlcorr_,   "nbtagscsvlcorr/I");
-  outTree->Branch("nbtagscsvmcorr",  &nbtagscsvmcorr_,   "nbtagscsvmcorr/I");
-  outTree->Branch("nbtagscsvtcott",  &nbtagscsvtcorr_,   "nbtagscsvtcorr/I");
-  outTree->Branch("bjet1",           &bjet1_,            "bjet1/I");
-  outTree->Branch("bjet2",           &bjet2_,            "bjet2/I");
-  outTree->Branch("bjet3",           &bjet3_,            "bjet3/I");
-  outTree->Branch("bjet4",           &bjet4_,            "bjet4/I");
-  outTree->Branch("bjet5",           &bjet5_,            "bjet5/I");
-  outTree->Branch("bjet6",           &bjet6_,            "bjet6/I");
-  outTree->Branch("lepjet1",         &lepjet1_,          "lepjet1/I");
-  outTree->Branch("lepjet2",         &lepjet2_,          "lepjet2/I");
-  outTree->Branch("lepjet3",         &lepjet3_,          "lepjet3/I");
-  outTree->Branch("lepjet4",         &lepjet4_,          "lepjet4/I");
-  outTree->Branch("lepjet5",         &lepjet5_,          "lepjet5/I");
-  outTree->Branch("lepjet6",         &lepjet6_,          "lepjet6/I");
-  outTree->Branch("qgjet1",          &qgjet1_,           "qgjet1/I");
-  outTree->Branch("qgjet2",          &qgjet2_,           "qgjet2/I");
-  outTree->Branch("qgjet3",          &qgjet3_,           "qgjet3/I");
-  outTree->Branch("qgjet4",          &qgjet4_,           "qgjet4/I");
-  outTree->Branch("qgjet5",          &qgjet5_,           "qgjet5/I");
-  outTree->Branch("qgjet6",          &qgjet6_,           "qgjet6/I");
-  outTree->Branch("njetsUp",         &njetsUp_,          "njetsUp/I");
-  outTree->Branch("njetsDown",       &njetsDown_,        "njetsDown/I");
-  outTree->Branch("htUp",            &htUp_,             "htUp/F");
-  outTree->Branch("htDown",          &htDown_,           "htDown/F");
-  outTree->Branch("npu",             &npu_,              "npu/I");
-  outTree->Branch("npuMinusOne",     &npuMinusOne_,      "npuMinusOne/I");
-  outTree->Branch("npuPlusOne",      &npuPlusOne_,       "npuPlusOne/I");
-  outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
-  outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
-  outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
-  outTree->Branch("n3dvtxweight",    &n3dvtxweight_,     "n3dvtxweight/F");
-  outTree->Branch("vecjetpt",        &vecjetpt_,         "vecjetpt/F");
-  outTree->Branch("pass",            &pass_,             "pass/I");
-  outTree->Branch("passz",           &passz_,            "passz/I");
-  outTree->Branch("m0",              &m0_,               "m0/F");
-  outTree->Branch("mg",              &mG_,               "mg/F");
-  outTree->Branch("ml",              &mL_,               "ml/F");
-  outTree->Branch("x",               &x_,                "x/F");
-  outTree->Branch("m12",             &m12_,              "m12/F");
-  outTree->Branch("id1",             &id1_,              "id1/I");
-  outTree->Branch("id2",             &id2_,              "id2/I");
-  outTree->Branch("w1",              &w1_,               "w1/I");
-  outTree->Branch("w2",              &w2_,               "w2/I");
-  outTree->Branch("iso1",            &iso1_,             "iso1/F");
-  outTree->Branch("isont1",          &isont1_,           "isont1/F");
-  outTree->Branch("etasc1",          &etasc1_,           "etasc1/F");
-  outTree->Branch("etasc2",          &etasc2_,           "etasc2/F");
-  outTree->Branch("iso2",            &iso2_,             "iso2/F");
-  outTree->Branch("ecalveto1",       &ecalveto1_,        "ecalveto1/F");
-  outTree->Branch("ecalveto2",       &ecalveto2_,        "ecalveto2/F");
-  outTree->Branch("hcalveto1",       &hcalveto1_,        "hcalveto1/F");
-  outTree->Branch("hcalveto2",       &hcalveto2_,        "hcalveto2/F");
-  outTree->Branch("isont2",          &isont2_,           "isont2/F");
-  outTree->Branch("ptl1",            &ptl1_,             "ptl1/F");
-  outTree->Branch("ptl2",            &ptl2_,             "ptl2/F");
-  outTree->Branch("etal1",           &etal1_,            "etal1/F");
-  outTree->Branch("etal2",           &etal2_,            "etal2/F");
-  outTree->Branch("phil1",           &phil1_,            "phil1/F");
-  outTree->Branch("phil2",           &phil2_,            "phil2/F");
-  outTree->Branch("meff",            &meff_,             "meff/F");
-  outTree->Branch("mt",              &mt_,               "mt/F");
-  outTree->Branch("dataset",         &dataset_,          "dataset[200]/C");
-  outTree->Branch("run",             &run_,              "run/I");
-  outTree->Branch("lumi",            &lumi_,             "lumi/I");
-  outTree->Branch("event",           &event_,            "event/I");
-  outTree->Branch("y",               &y_,                "y/F");  
-  outTree->Branch("ht",              &ht_,               "ht/F");  
-  outTree->Branch("htgen",           &htgen_,            "htgen/F");  
-  outTree->Branch("htjpt",           &htjpt_,            "htjpt/F");  
-  outTree->Branch("nels",            &nels_,             "nels/I");  
-  outTree->Branch("nmus",            &nmus_,             "nmus/I");  
-  outTree->Branch("ntaus",           &ntaus_,            "ntaus/I");  
-  outTree->Branch("nleps",           &nleps_,            "nleps/I");  
-  outTree->Branch("dphijm",          &dphijm_,           "dphijm/F");  
-  outTree->Branch("ptjetraw",        &ptjetraw_,         "ptjetraw/F");  
-  outTree->Branch("ptjet23",         &ptjet23_,          "ptjet23/F");  
-  outTree->Branch("ptjetF23",        &ptjetF23_,         "ptjetF23/F");  
-  outTree->Branch("ptjetO23",        &ptjetO23_,         "ptjetO23/F");  
-  //outTree->Branch("cosphijz",        &cosphijz_,         "cosphijz/F");  
-  outTree->Branch("mcid1",           &mcid1_,            "mcid1/I");  
-  outTree->Branch("mcdr1",           &mcdr1_,            "mcdr1/F");  
-  outTree->Branch("mcdecay1",        &mcdecay1_,         "mcdecay1/I");  
-  outTree->Branch("mcndec1",         &mcndec1_,          "mcndec1/I");  
-  outTree->Branch("mcndec2",         &mcndec2_,          "mcndec2/I");  
-  outTree->Branch("mcndeckls1",      &mcndeckls1_,       "mcndeckls1/I");  
-  outTree->Branch("mcndeckls2",      &mcndeckls2_,       "mcndeckls2/I");  
-  outTree->Branch("mcndecem1",       &mcndecem1_,        "mcndecem1/I");  
-  outTree->Branch("mcndecem2",       &mcndecem2_,        "mcndecem2/I");  
-  outTree->Branch("mcid2",           &mcid2_,            "mcid2/I");  
-  outTree->Branch("mcdr2",           &mcdr2_,            "mcdr2/F");  
-  outTree->Branch("mcdecay2",        &mcdecay2_,         "mcdecay2/I");  
-  outTree->Branch("mctaudpt1",       &mctaudpt1_,        "mctaudpt1/F");  
-  outTree->Branch("mctaudpt2",       &mctaudpt2_,        "mctaudpt2/F");  
-  outTree->Branch("mctaudid1",       &mctaudid1_,        "mctaudid1/I");  
-  outTree->Branch("mctaudid2",       &mctaudid2_,        "mctaudid2/I");  
-  outTree->Branch("mlepid",          &mlepid_,           "mlepid/I");  
-  outTree->Branch("mleppassid",      &mleppassid_,       "mleppassid/I");  
-  outTree->Branch("mleppassiso",     &mleppassiso_,      "mleppassiso/I");  
-  outTree->Branch("mlepiso",         &mlepiso_,          "mlepiso/F");  
-  outTree->Branch("mlepdr",          &mlepdr_,           "mlepdr/F");  
-  outTree->Branch("pflepiso",        &pflepiso_,         "pflepiso/F");  
-  outTree->Branch("pflepdr",         &pflepdr_,          "pflepdr/F");  
-  outTree->Branch("pfleppt",         &pfleppt_,          "pfleppt/F");  
-  outTree->Branch("pflepmindrj",     &pflepmindrj_,      "pflepmindrj/F");  
-  outTree->Branch("pftaudiso",       &pftaudiso_,        "pftaudiso/F");  
-  outTree->Branch("pftauddr",        &pftauddr_,         "pftauddr/F");  
-  outTree->Branch("pftaudpt",        &pftaudpt_,         "pftaudpt/F");  
-  outTree->Branch("pftaudmindrj",    &pftaudmindrj_,     "pftaudmindrj/F");  
-  outTree->Branch("pfcandiso5",      &pfcandiso5_,       "pfcandiso5/F");  
-  outTree->Branch("pfcandpt5",       &pfcandpt5_,        "pfcandpt5/F");  
-  outTree->Branch("pfcandmindrj5",   &pfcandmindrj5_,    "pfcandmindrj5/F");  
-  outTree->Branch("pfcandiso10",     &pfcandiso10_,      "pfcandiso10/F");  
-  outTree->Branch("pfcandpt10",      &pfcandpt10_,       "pfcandpt10/F");  
-  outTree->Branch("pfcandmindrj10",  &pfcandmindrj10_,   "pfcandmindrj10/F");  
-  outTree->Branch("emjet10",         &emjet10_,          "emjet10/F");  
-  outTree->Branch("mjj",             &mjj_,              "mjj/F");  
-  outTree->Branch("emjet20",         &emjet20_,          "emjet20/F");  
-  outTree->Branch("trkpt5",          &trkpt5_,           "trkpt5/F");  
-  outTree->Branch("trkpt10",         &trkpt10_,          "trkpt10/F");  
-  outTree->Branch("mleptrk5",        &mleptrk5_,         "mleptrk5/F");  
-  outTree->Branch("mleptrk10",       &mleptrk10_,        "mleptrk10/F");  
-  outTree->Branch("trkreliso5",      &trkreliso5_,       "trkreliso5/F");  
-  outTree->Branch("trkreliso10",     &trkreliso10_,      "trkreliso10/F");  
-  outTree->Branch("trkreliso10p4",   &trkreliso10p4_,    "trkreliso10p4/F");  
-  outTree->Branch("trkreliso10p5",   &trkreliso10p5_,    "trkreliso10p5/F");  
-  outTree->Branch("trkreliso10p7",   &trkreliso10p7_,    "trkreliso10p7/F");  
-  outTree->Branch("totreliso10",     &totreliso10_,      "totreliso10/F");  
-  outTree->Branch("totreliso10p4",   &totreliso10p4_,    "totreliso10p4/F");  
-  outTree->Branch("totreliso10p5",   &totreliso10p5_,    "totreliso10p5/F");  
-  outTree->Branch("totreliso10p7",   &totreliso10p7_,    "totreliso10p7/F");  
-  outTree->Branch("emreliso10",      &emreliso10_,       "emreliso10/F");  
-  outTree->Branch("emreliso10p4",    &emreliso10p4_,     "emreliso10p4/F");  
-  outTree->Branch("emreliso10p5",    &emreliso10p5_,     "emreliso10p5/F");  
-  outTree->Branch("emreliso10p7",    &emreliso10p7_,     "emreliso10p7/F");  
-  outTree->Branch("nhreliso10",      &nhreliso10_,       "nhreliso10/F");  
-  outTree->Branch("nhreliso10p4",    &nhreliso10p4_,     "nhreliso10p4/F");  
-  outTree->Branch("nhreliso10p5",    &nhreliso10p5_,     "nhreliso10p5/F");  
-  outTree->Branch("nhreliso10p7",    &nhreliso10p7_,     "nhreliso10p7/F");  
   outTree->Branch("mbb",             &mbb_,              "mbb/F");
   outTree->Branch("lep1pfjetdr",     &lep1pfjetdr_,      "lep1pfjetdr/F");  
   outTree->Branch("lep2pfjetdr",     &lep2pfjetdr_,      "lep2pfjetdr/F");  
@@ -3518,11 +3270,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pfcand10"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcand10_	);
   outTree->Branch("jet"	      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
 
-  outTree->Branch("cjet1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet1_	);
-  outTree->Branch("cjet2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet2_	);
-  outTree->Branch("cjet3"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet3_	);
-  outTree->Branch("cjet4"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cjet4_	);
-
   outTree->Branch("pfjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet1_	);
   outTree->Branch("pfjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet2_	);
   outTree->Branch("pfjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet3_	);
@@ -3530,16 +3277,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pfjet5"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet5_	);
   outTree->Branch("pfjet6"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet6_	);
 
-  outTree->Branch("cresjet1"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet1_	);
-  outTree->Branch("cresjet2"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet2_	);
-  outTree->Branch("cresjet3"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet3_	);
-  outTree->Branch("cresjet4"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &cresjet4_	);
-
-  outTree->Branch("pfresjet1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet1_	);
-  outTree->Branch("pfresjet2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet2_	);
-  outTree->Branch("pfresjet3" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet3_	);
-  outTree->Branch("pfresjet4" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfresjet4_	);
-			      
   outTree->Branch("nonisoel"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisoel_	);
   outTree->Branch("nonisomu"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisomu_	);
   outTree->Branch("t"         , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &t_   	);
@@ -3572,7 +3309,7 @@ float singleLeptonLooper::dz_trk_vtx( const unsigned int trkidx, const unsigned 
   
 }
 
-float singleLeptonLooper::trackIso( int thisPf , float coneR , float dz_thresh ){
+float singleLeptonLooper::trackIso( int thisPf , float coneR , float dz_thresh , bool dovtxcut ){
 
   float iso = 0.0;
 
@@ -3595,29 +3332,32 @@ float singleLeptonLooper::trackIso( int thisPf , float coneR , float dz_thresh )
     // find closest PV and dz w.r.t. that PV
     //----------------------------------------
     
-    // float mindz = 999.;
-    // int vtxi    = -1;
+    float mindz = 999.;
+    int vtxi    = -1;
       
-    // for (unsigned int ivtx = 0; ivtx < cms2.davtxs_position().size(); ivtx++) {
+    if (dovtxcut) {
+      for (unsigned int ivtx = 0; ivtx < cms2.davtxs_position().size(); ivtx++) {
 	
-    //   if(!isGoodDAVertex(ivtx)) continue;
-
-    //   float mydz = dz_trk_vtx(itrk,ivtx);
-    //   fillOverFlow( h_dz_vtx_trk , mydz );
-
-    //   if (fabs(mydz) < fabs(mindz)) {
-    // 	mindz = mydz;
-    // 	vtxi = ivtx;
-    //   }
-         
-    // }
+	if(!isGoodDAVertex(ivtx)) continue;
+	
+	float mydz = dz_trk_vtx(itrk,ivtx);
+	fillOverFlow( h_dz_vtx_trk , mydz );
+	
+	if (fabs(mydz) < fabs(mindz)) {
+	  mindz = mydz;
+	  vtxi = ivtx;
+	}
+	
+      }
     
     //----------------------------------------------------------------------------
     // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
     //----------------------------------------------------------------------------
     
-    // if ( vtxi != 0               )     continue;
-    float mindz = dz_trk_vtx(itrk,0);
+      if ( vtxi != 0 )     continue;
+    } else {
+      mindz = dz_trk_vtx(itrk,0);
+    }
     if ( fabs(mindz) > dz_thresh )     continue;
 
     //---------------------------------------
@@ -3776,3 +3516,35 @@ std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , floa
   return isos;
 }
 
+pair<float,float> singleLeptonLooper::getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool is8TeV ){
+
+  //using met phi correction values from location
+  //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/Type1MET/python/pfMETsysShiftCorrections_cfi.py?revision=1.3&view=markup
+
+  float metx = met * cos( metphi );
+  float mety = met * sin( metphi );
+  
+  float shiftx = 0.;
+  float shifty = 0.;
+
+  //use correction for data vs. mc and 7 TeV vs. 8 TeV
+  if (is8TeV) {
+    cout<<"RUNNING WITH 8 TEV SETTINGS! This is a check that you are paying attention! Comment out line "
+	<<__LINE__<<" and rerun"<<endl;
+    shiftx = ismc ? (+1.77344e-01 - 1.34333e-03*sumet)
+      : (-7.67892e-01 + 5.76983e-03*sumet);
+    shifty = ismc ? (+8.08402e-01 - 2.84264e-03*sumet)
+      : (+5.54005e-01 - 2.94046e-03*sumet);
+  } else {
+    shiftx = ismc ? (-4.53909e-02 - 2.55863e-05*sumet)
+      : (-5.65217e-01 + 5.42436e-03*sumet);
+    shifty = ismc ? (+1.27947e-01 - 3.62604e-03*sumet)
+      : (+4.54054e-01 - 6.73607e-03*sumet);
+  }
+
+  metx -= shiftx;
+  mety -= shifty;
+
+  pair<float, float> phicorrmet = make_pair( sqrt( metx*metx + mety*mety ), atan2( mety , metx ) );
+  return phicorrmet;
+}

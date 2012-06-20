@@ -70,9 +70,10 @@ class singleLeptonLooper
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
 	float stopPairCrossSection( float stopmass );
         void closeTree ();
-	float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
+	float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut = false );
 	std::vector<float> trackIsoPtRanges( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
 	std::vector<float> totalIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
+	pair<float,float> getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool is8TeV = false);
 
 	bool initialized;
 	TH1D*   stop_xsec_hist;
@@ -90,6 +91,13 @@ class singleLeptonLooper
 	char* g_json;      
 	TrigEnum g_trig;
         TRandom3 *random3_;
+
+	//PDF information
+        Float_t pdfQ_;
+        Float_t pdfx1_; 
+	Float_t pdfx2_;
+        Int_t pdfid1_; 
+	Int_t pdfid2_;
 
 	// MC truth lepton info
 	Int_t   mcid1_;    
@@ -116,27 +124,11 @@ class singleLeptonLooper
 	Float_t trkpt10_;
 	Float_t mleptrk10_;
 	Float_t trkreliso10_;
-	Float_t trkreliso10p4_;
-	Float_t trkreliso10p5_;
-	Float_t trkreliso10p7_;
 
-	//isolation variables including
-	//neutrals with pT > 1 GeV
-	Float_t totreliso10_;
-	Float_t totreliso10p4_;
-	Float_t totreliso10p5_;
-	Float_t totreliso10p7_;
-
-	//Store separate calo isolation 
-	//components for cones 0.3, 0.4, 0.5, 0.7
-	Float_t emreliso10_;
-	Float_t emreliso10p4_;
-	Float_t emreliso10p5_;
-	Float_t emreliso10p7_;
-	Float_t nhreliso10_;
-	Float_t nhreliso10p4_;
-	Float_t nhreliso10p5_;
-	Float_t nhreliso10p7_;
+	Float_t trkpt5loose_;
+	Float_t trkreliso5loose_;
+	Float_t trkpt10loose_;
+	Float_t trkreliso10loose_;
 
 	// extra pfcand vars 
         Float_t pfcandiso5_;     
@@ -183,26 +175,6 @@ class singleLeptonLooper
 	Float_t htpfres40_;
 	Float_t htpfres45_;
 
-	// calojet counters
-	Int_t   ncjets30_;
-	Int_t   ncjets35_;
-	Int_t   ncjets40_;
-	Int_t   ncjets45_;
-	Int_t   ncresjets30_;
-	Int_t   ncresjets35_;
-	Int_t   ncresjets40_;
-	Int_t   ncresjets45_;
-
-	// caloht vars
-	Float_t htc30_;
-	Float_t htc35_;
-	Float_t htc40_;
-	Float_t htc45_;
-	Float_t htcres30_;
-	Float_t htcres35_;
-	Float_t htcres40_;
-	Float_t htcres45_;
-
 	// matched lepton vars
 	Int_t   mlepid_;
 	Int_t   mleppassid_;
@@ -244,32 +216,19 @@ class singleLeptonLooper
 	Float_t t1met10_;
 	Float_t t1met20_;
 	Float_t t1met30_;
-	Float_t t1nol1met10_;
-	Float_t t1nol1met20_;
-	Float_t t1nol1met30_;
-	Float_t t1metres10_;
-	Float_t t1metres20_;
-	Float_t t1metres30_;
 	Float_t t1met10phi_;
 	Float_t t1met20phi_;
 	Float_t t1met30phi_;
-	Float_t t1nol1met10phi_;
-	Float_t t1nol1met20phi_;
-	Float_t t1nol1met30phi_;
-	Float_t t1metres10phi_;
-	Float_t t1metres20phi_;
-	Float_t t1metres30phi_;
 	Float_t t1met10mt_;
 	Float_t t1met20mt_;
 	Float_t t1met30mt_;
-	Float_t t1nol1met10mt_;
-	Float_t t1nol1met20mt_;
-	Float_t t1nol1met30mt_;
-	Float_t t1metres10mt_;
-	Float_t t1metres20mt_;
-	Float_t t1metres30mt_;
 	Float_t lepmetpt_;
 	Float_t lept1met10pt_;
+
+	//phi corrected type1 mets
+	Float_t t1metphicorr_;
+	Float_t t1metphicorrphi_;
+	Float_t t1metphicorrmt_;
 
 	// assorted p4's
 	LorentzVector*  t_;   
@@ -296,10 +255,6 @@ class singleLeptonLooper
         LorentzVector*  jet_; 
 
 	// jet p4's
-        LorentzVector*  cjet1_; 
-        LorentzVector*  cjet2_; 
-        LorentzVector*  cjet3_; 
-        LorentzVector*  cjet4_; 
         LorentzVector*  pfjet1_; 
         LorentzVector*  pfjet2_; 
         LorentzVector*  pfjet3_; 
@@ -324,14 +279,6 @@ class singleLeptonLooper
         Int_t qgjet4_; 
         Int_t qgjet5_; 
         Int_t qgjet6_; 
-        LorentzVector*  cresjet1_; 
-        LorentzVector*  cresjet2_; 
-        LorentzVector*  cresjet3_; 
-        LorentzVector*  cresjet4_; 
-        LorentzVector*  pfresjet1_; 
-        LorentzVector*  pfresjet2_; 
-        LorentzVector*  pfresjet3_; 
-        LorentzVector*  pfresjet4_; 
 
  	LorentzVector*  nonisoel_;   
  	LorentzVector*  nonisomu_;   
