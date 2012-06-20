@@ -143,6 +143,7 @@ class Z_looper
   LorentzVector*  bjet3_; 
   LorentzVector*  bjet4_; 
 
+  Int_t   isdata_;
   Int_t   el1tv_;
   Int_t   el2tv_;
   Float_t lljj_;
