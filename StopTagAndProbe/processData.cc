@@ -70,7 +70,42 @@ int main(int argc, char *argv[])
 
   else if( ijob == 7 ){
     cout << "Processing DYJets MC" << endl;
-    processLeptonTree("test", SmurfTree::dymm, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root", false, "",prescale);
+    processLeptonTree("test", SmurfTree::dymm, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple*root", false, "",prescale);
+  }
+
+  else if( ijob == 8 ){
+    cout << "Processing May10 data skim" << endl;
+    processLeptonTree("May10skim", SmurfTree::data, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root", true, goodrunlist,prescale);
+  }
+  
+  else if( ijob == 9 ){
+    cout << "Processing PRv4 data skim" << endl;
+    processLeptonTree("PRv4skim", SmurfTree::data, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-PromptReco-v4_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 10 ){
+    cout << "Processing Aug05 data skim" << endl;
+    processLeptonTree("Aug05skim", SmurfTree::data, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 11 ){
+    cout << "Processing PRv6 data skim" << endl;
+    processLeptonTree("PRv6skim", SmurfTree::data, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 12 ){
+    cout << "Processing 2011B-V33 data skim" << endl;
+    processLeptonTree("2011B-V33skim", SmurfTree::data, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 13 ){
+    cout << "Processing 2011B-V34 data skim" << endl;
+    processLeptonTree("2011B-V34skim", SmurfTree::data, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndTwoJets/merged*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 14 ){
+    cout << "Processing DYJets MC skim" << endl;
+    processLeptonTree("testskim", SmurfTree::dymm, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root", false, "",prescale);
   }
 
 
