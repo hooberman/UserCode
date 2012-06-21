@@ -27,6 +27,7 @@
 
 const bool debug          = true;
 const bool vtxreweight    = true;
+const bool bveto          = false;
 
 using namespace std;
 
@@ -46,6 +47,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
   if( vtxreweight ) cout << "Doing vtx reweighting" << endl;
   else              cout << "NO vtx reweighting"    << endl;
 
+  if( bveto )       cout << "Doing b-veto" << endl;
+  else              cout << "NO b-veto"    << endl;
+
   int npass = 0;
   bookHistos();
   
@@ -62,7 +66,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
   TH1F* reweightHist[5];
 
   if( vtxreweight ){ 
-    TFile *reweightFile = reweightFile = TFile::Open("vtxreweight_24fb.root");
+    TFile *reweightFile = reweightFile = TFile::Open("vtxreweight_3p93fb.root");
     reweightHist[0] = (TH1F*) reweightFile->Get("hratio20");
     reweightHist[1] = (TH1F*) reweightFile->Get("hratio30");
     reweightHist[2] = (TH1F*) reweightFile->Get("hratio50");
@@ -138,7 +142,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( elveto_ == 1 )                                    continue; // remove photons with nearby electrons
       if( maxleppt_ > 20.0 )                                continue; // veto leptons pt > 20 GeV
       if( acos( cos( phig_ - pfmetphi_ ) ) < 0.14 )         continue; // kill photons aligned with MET
-      //if( nbm_ < 1 )                                        continue; // >=2 b-jets
+      if( bveto && nbm_ > 0 )                               continue; // apply b-veto 
       
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
@@ -326,9 +330,11 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
     char* vtxchar = "";
     if( vtxreweight ) vtxchar = "_vtxreweight";
 
-    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s.root",iter,sample,vtxchar) << endl;
-    saveHist(Form("../photon_output/%s/%s_templates%s.root",iter,sample,vtxchar));
+    char* bvetochar = "";
+    if( bveto ) bvetochar = "_bveto";
 
+    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s%s.root",iter,sample,vtxchar,bvetochar) << endl;
+    saveHist(Form("../photon_output/%s/%s_templates%s%s.root",iter,sample,vtxchar,bvetochar));
 
     //deleteHistos();
 
