@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
   TString goodrunlist = "Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   int ijob     = atoi(argv[1]);
-  int prescale = 10;
+  int prescale = 1;
 
   if( ijob == 1 ){
     cout << "Processing May10 data" << endl;
