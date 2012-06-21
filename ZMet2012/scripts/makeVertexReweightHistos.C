@@ -25,35 +25,110 @@
 #include "TLine.h"
 #include "TMath.h"
 
-
 using namespace std;
 
 void makeVertexReweightHistos(){
 
-  char* Zfile        = (char*) "../output/V00-00-10/data_baby.root";
-  char* photonfile   = (char*) "../photon_output/V00-00-07/DoubleElectron_templates.root";
-  char* rootfilename = (char*) "vtxreweight_24fb.root";
+  char* Zfile        = (char*) "../output/V00-00-16/dataskim_baby.root";
+  char* photonfile   = (char*) "../photon_output/V00-00-11/DoubleElectron_templates.root";
+  char* photonbaby   = (char*) "../photon_output/V00-00-11/DoubleElectron_baby.root";
+  char* rootfilename = (char*) "vtxreweight_3p93fb.root";
 
+  //---------------------------
   // Z
+  //---------------------------
+
   TChain *chZ = new TChain("T1");
   chZ->Add(Zfile);
 
   TH1F* hZ   = new TH1F("hZ","",50,0,50);
   chZ->Draw("nvtx>>hZ","dilmass>81 && dilmass<101 && njets>=2");
 
+  //---------------------------
+  // photon
+  //---------------------------
+
+  TChain* chPhoton = new TChain("T1");
+  chPhoton->Add(photonbaby);
+
+  TCut njets("njets>=2");
+  TCut etg("etg>=20");
+  TCut etag("abs(etag)<2");
+  TCut hoe("hoe<0.1");
+  TCut pix("photon_pixelseed==0");
+  TCut emfrac("jetneutralemfrac>0.7");
+  TCut pfjet("jetpt - etg >= -5");
+  TCut cjet ("calojetpt - etg >= -5");
+  TCut elveto("elveto==0");
+  TCut lepveto("maxleppt<20");
+  TCut dphi("acos(cos( phig-pfmetphi ) ) > 0.14");
+  TCut alltrig("hgg22>0 || hgg36>0 || hgg50>0 || hgg75>0 || hgg90>0");
+
+  TCut photonSelection;
+  photonSelection += njets;
+  photonSelection += etg;
+  photonSelection += etag;
+  photonSelection += hoe;
+  photonSelection += pix;
+  photonSelection += emfrac;
+  photonSelection += pfjet;
+  photonSelection += cjet;
+  photonSelection += elveto;
+  photonSelection += lepveto;
+  photonSelection += dphi;
+  photonSelection += alltrig;
+
+  TCut hlt90("hgg90>0");
+  TCut hlt75("hgg75>0 && hgg90<1");
+  TCut hlt50("hgg50>0 && hgg75<1 && hgg90<1");
+  TCut hlt30("hgg36>0 && hgg50<1 && hgg75<1 && hgg90<1");
+  TCut hlt20("hgg22>0 && hgg36<1 && hgg50<1 && hgg75<1 && hgg90<1");
+
+  TCut weight90("hgg90");
+  TCut weight75("hgg75");
+  TCut weight50("hgg50");
+  TCut weight30("hgg36");
+  TCut weight20("hgg22");
+
   hZ->SetLineColor(2);
   hZ->SetLineWidth(3);
   hZ->Sumw2();
 
   // photons
-  TFile *f = TFile::Open(photonfile);
+  // TFile *f = TFile::Open(photonfile);
 
-  TH1F* h20  = (TH1F*) f->Get("hnvtxPt20");
-  TH1F* h30  = (TH1F*) f->Get("hnvtxPt30");
-  TH1F* h50  = (TH1F*) f->Get("hnvtxPt50");
-  TH1F* h70  = (TH1F*) f->Get("hnvtxPt70");
-  TH1F* h90  = (TH1F*) f->Get("hnvtxPt90");
-  TH1F* hall = (TH1F*) f->Get("hnvtxAll");
+  // TH1F* h20  = (TH1F*) f->Get("hnvtxPt20");
+  // TH1F* h30  = (TH1F*) f->Get("hnvtxPt30");
+  // TH1F* h50  = (TH1F*) f->Get("hnvtxPt50");
+  // TH1F* h70  = (TH1F*) f->Get("hnvtxPt70");
+  // TH1F* h90  = (TH1F*) f->Get("hnvtxPt90");
+  // TH1F* hall = (TH1F*) f->Get("hnvtxAll");
+
+  TH1F* h20  = new TH1F("h20" ,"h20",50,0,50);
+  TH1F* h30  = new TH1F("h30" ,"h30",50,0,50);
+  TH1F* h50  = new TH1F("h50" ,"h50",50,0,50);
+  TH1F* h70  = new TH1F("h70" ,"h70",50,0,50);
+  TH1F* h90  = new TH1F("h90" ,"h90",50,0,50);
+  TH1F* hall = new TH1F("hall","hall",50,0,50);
+
+  chPhoton->Draw("nvtx>>h20", (photonSelection + hlt20) * weight20);
+  chPhoton->Draw("nvtx>>h30", (photonSelection + hlt30) * weight30);
+  chPhoton->Draw("nvtx>>h50", (photonSelection + hlt50) * weight50);
+  chPhoton->Draw("nvtx>>h70", (photonSelection + hlt75) * weight75);
+  chPhoton->Draw("nvtx>>h90", (photonSelection + hlt90) * weight90);
+
+  hall->Add(h20);
+  hall->Add(h30);
+  hall->Add(h50);
+  hall->Add(h70);
+  hall->Add(h90);
+
+  cout << "pt20  " << h20->GetEntries()  << " " << h20->Integral() << endl;
+  cout << "pt30  " << h30->GetEntries()  << " " << h30->Integral() << endl;
+  cout << "pt50  " << h50->GetEntries()  << " " << h50->Integral() << endl;
+  cout << "pt70  " << h70->GetEntries()  << " " << h70->Integral() << endl;
+  cout << "pt90  " << h90->GetEntries()  << " " << h90->Integral() << endl;
+  cout << "ptall " << hall->GetEntries() << " " << hall->Integral() << endl;
 
   h20->Rebin(5);
   h30->Rebin(5);
