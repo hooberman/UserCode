@@ -29,10 +29,11 @@
 using namespace std;
 
 const bool  doKscaling =   true;
-const float K          =   0.14;
+      float K          =   0.14;
 const float Rem        =   1.24;   // OR of all triggers
 //const float Rem        =   1.20;   // specific triggers
 const int   rebin      =     10;
+const bool  bveto      =   true;
 
 float histError( TH1F* hist , int lowbin ){
 
@@ -54,9 +55,26 @@ void simplePlotMacro( bool printplots = false ){
   
   char* iter = "V00-00-13";
 
-  TFile *f   = TFile::Open(Form("../output/%s/babylooper_data_PhotonStitchedTemplatenjetsgeq2.root",iter));
-  TFile *fwz = TFile::Open(Form("../output/%s/babylooper_wzmg_PhotonStitchedTemplatenjetsgeq2.root",iter));
-  TFile *fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2.root",iter));
+  TFile *f   = new TFile();
+  TFile *fwz = new TFile();
+  TFile *fzz = new TFile();
+
+  if( bveto ){
+    f   = TFile::Open(Form("../output/%s/babylooper_data_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
+    fwz = TFile::Open(Form("../output/%s/babylooper_wzmg_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
+    fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
+
+    K = 0.13;
+  }
+
+  else{
+    f   = TFile::Open(Form("../output/%s/babylooper_data_PhotonStitchedTemplatenjetsgeq2.root",iter));
+    fwz = TFile::Open(Form("../output/%s/babylooper_wzmg_PhotonStitchedTemplatenjetsgeq2.root",iter));
+    fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2.root",iter));
+  }
+
+  cout << "B-veto?   " << bveto << endl;
+  cout << "K         " << K     << endl;
 
   //-----------------------------------
   // OF prediction
@@ -104,6 +122,7 @@ void simplePlotMacro( bool printplots = false ){
   TH1F*    h_wz[nplots];
   TH1F*    h_zz[nplots];
   TH1F*    h_vz[nplots];
+  TH1F*    hsysterr[nplots];
 
   TLatex *t = new TLatex();
   t->SetNDC();
@@ -140,6 +159,10 @@ void simplePlotMacro( bool printplots = false ){
       ee_and_mm = false;
     }
 
+    //------------------------------------------
+    // rebin, style, sum of predictions
+    //------------------------------------------
+
     h_ofpred[i]->Rebin(rebin);
     h_sf[i]->Rebin(rebin);
     h_gjets[i]->Rebin(rebin);
@@ -159,53 +182,7 @@ void simplePlotMacro( bool printplots = false ){
     pred[i]->Add(h_zz[i]);
     pred[i]->Add(h_ofpred[i]);
     pred[i]->Add(h_gjets[i]);
-  
-    can[i] = new TCanvas(Form("can_%i",i),"",800,800);
-    can[i]->cd();
 
-    mainpad[i] = new TPad(Form("mainpad_%i",i),Form("mainpad_%i",i),0.0,0.0,1.0,0.8);
-    mainpad[i]->Draw();
-    mainpad[i]->cd();
-    mainpad[i]->SetLeftMargin(0.15);
-    mainpad[i]->SetRightMargin(0.05);    
-    mainpad[i]->SetLogy();
-
-    h_sf[i]->GetXaxis()->SetTitle("E_{T}^{miss} [GeV]");
-    h_sf[i]->GetYaxis()->SetTitle("entries / 10 GeV");
-    h_sf[i]->GetYaxis()->SetTitleOffset(1.0);
-
-    h_sf[i]->SetMinimum(0.01);
-    h_sf[i]->Draw("E1");
-    pred[i]->Draw("histsame");
-    h_sf[i]->Draw("sameE1");
-    h_sf[i]->Draw("sameaxis");
-
-    TLegend* leg = new TLegend(0.75,0.5,0.9,0.9);
-    leg->AddEntry(h_sf[i],"data","lp");
-    leg->AddEntry(h_gjets[i],"Z+jets","f");
-    leg->AddEntry(h_ofpred[i],"OF","f");
-    leg->AddEntry(h_zz[i],"ZZ","f");
-    leg->AddEntry(h_wz[i],"WZ","f");
-    leg->SetFillColor(0);
-    leg->SetBorderSize(0);
-    leg->Draw();
-
-    t->SetTextSize(0.04);
-    t->DrawLatex(0.35,0.85,"CMS Preliminary");
-    t->DrawLatex(0.35,0.79,"#sqrt{s} = 8 TeV, L_{int} = 2.4 fb^{-1}");
-    t->DrawLatex(0.35,0.73,title);
-
-    can[i]->cd();
-
-    respad[i] = new TPad(Form("respad_%i",i),Form("respad_%i",i),0.0,0.8,1.0,1.0);
-    respad[i]->Draw();
-    respad[i]->cd();
-    respad[i]->SetTopMargin(0.1);
-    respad[i]->SetGridy();
-    respad[i]->SetLeftMargin(0.15);
-    respad[i]->SetRightMargin(0.05);
-    
-    hratio[i]   = (TH1F*) h_sf[i]->Clone(Form("hratio_%i",i));
     htotpred[i] = (TH1F*) h_ofpred[i]->Clone(Form("htotpred_%i",i));
     htotpred[i]->Add(h_gjets[i]);
     htotpred[i]->Add(h_wz[i]);
@@ -213,30 +190,17 @@ void simplePlotMacro( bool printplots = false ){
     for( int ibin = 1 ; ibin <= htotpred[i]->GetXaxis()->GetNbins() ; ibin++ ){
       htotpred[i]->SetBinError(ibin,0);
     }
-    hratio[i]->Divide(htotpred[i]);
-    
-    hratio[i]->GetXaxis()->SetLabelSize(0.0);
-    hratio[i]->GetYaxis()->SetLabelSize(0.2);
-    hratio[i]->GetYaxis()->SetTitleSize(0.2);
-    hratio[i]->GetYaxis()->SetNdivisions(5);
-    hratio[i]->GetYaxis()->SetTitle("ratio");
-    hratio[i]->GetXaxis()->SetTitle("");
-    
-    hratio[i]->SetMinimum(0.5);
-    hratio[i]->SetMaximum(2.5);
-    
-    hratio[i]->GetYaxis()->SetRangeUser(0.5,2.5);
-    hratio[i]->Draw();
-    
-    TLine line;
-    line.DrawLine(0.0,1.0,300,1.0);
 
-    if( printplots ) can[i]->Print(Form("../plots/met_%i.pdf",i));
-    
+    //-----------------------------------------------
+    // make tables
+    //-----------------------------------------------
+
     const unsigned int nbins = 6;
 
     //int bins[nbins]={0,30,60,100,150,200,300};
-    int bins[nbins]={0,30,60,100,200,300};
+    int      bins[nbins]  = {0,30,60,100,200,300};
+    Double_t xbins[nbins] = {0.0,30.0,60.0,100.0,200.0,300.0};
+
     int width1 = 16;
     int width2 =  2;
 
@@ -276,6 +240,8 @@ void simplePlotMacro( bool printplots = false ){
 
     float excess[nbins];
 
+    hsysterr[i] = new TH1F(Form("hsysterr_%i",i),Form("hsysterr_%i",i),nbins-1,xbins);
+
     for( unsigned int ibin = 0 ; ibin < nbins ; ++ibin ){
       int bin      = h_sf[i]->FindBin(bins[ibin]);
 
@@ -295,8 +261,16 @@ void simplePlotMacro( bool printplots = false ){
       //float ofsyst = 0.1;
       //if( doKscaling && bins[ibin] >= 200 ) ofsyst = 0.25;
 
-      float ofsyst = 0.15;
-      if( !ee_and_mm ) ofsyst = 0.2;
+      float ofsyst = 1;
+
+      if( bveto ){
+	ofsyst = 0.23;
+	if( !ee_and_mm ) ofsyst = 0.25;
+      }
+      else{
+	ofsyst = 0.15;
+	if( !ee_and_mm ) ofsyst = 0.2;
+      }
 
       nof_syst[ibin]    = ofsyst * h_ofpred[i]->Integral(bin,1000);
       nwz_syst[ibin]    = 0.5 * h_wz[i]->Integral(bin,1000);
@@ -318,8 +292,12 @@ void simplePlotMacro( bool printplots = false ){
       ntot_toterr[ibin]   = sqrt( pow(ngjets_toterr[ibin],2) + pow(nof_toterr[ibin],2) + pow(nwz_toterr[ibin],2) + pow(nzz_toterr[ibin],2));
 
       excess[ibin]        = (ndata[ibin]-ntot[ibin])/sqrt( pow(ntot_toterr[ibin],2) + ndata[ibin]);
-    }
 
+      if( ibin+1 < nbins ){
+	hsysterr[i]->SetBinContent(ibin+1,1);
+	hsysterr[i]->SetBinError(ibin+1,ntot_toterr[ibin]/ntot[ibin]);
+      }
+    }
 
 
     //-----------------------------
@@ -397,6 +375,88 @@ void simplePlotMacro( bool printplots = false ){
       cout << "|" << setw(width1) << Form("%.1f",excess[ibin]) << setw(width2);
     }
     cout << "|" << endl;
+
+    //------------------------------------------
+    // draw plots
+    //------------------------------------------
+  
+    can[i] = new TCanvas(Form("can_%i",i),"",800,800);
+    can[i]->cd();
+
+    mainpad[i] = new TPad(Form("mainpad_%i",i),Form("mainpad_%i",i),0.0,0.0,1.0,0.8);
+    mainpad[i]->Draw();
+    mainpad[i]->cd();
+    mainpad[i]->SetLeftMargin(0.15);
+    mainpad[i]->SetRightMargin(0.05);    
+    mainpad[i]->SetLogy();
+
+    h_sf[i]->GetXaxis()->SetTitle("E_{T}^{miss} [GeV]");
+    h_sf[i]->GetYaxis()->SetTitle("entries / 10 GeV");
+    h_sf[i]->GetYaxis()->SetTitleOffset(1.0);
+
+    h_sf[i]->SetMinimum(0.01);
+    h_sf[i]->Draw("E1");
+    pred[i]->Draw("histsame");
+    h_sf[i]->Draw("sameE1");
+    h_sf[i]->Draw("sameaxis");
+
+    TLegend* leg = new TLegend(0.75,0.5,0.9,0.9);
+    leg->AddEntry(h_sf[i],"data","lp");
+    leg->AddEntry(h_gjets[i],"Z+jets","f");
+    leg->AddEntry(h_ofpred[i],"OF","f");
+    leg->AddEntry(h_zz[i],"ZZ","f");
+    leg->AddEntry(h_wz[i],"WZ","f");
+    leg->SetFillColor(0);
+    leg->SetBorderSize(0);
+    leg->Draw();
+
+    t->SetTextSize(0.04);
+    t->DrawLatex(0.35,0.85,"CMS Preliminary");
+    t->DrawLatex(0.35,0.79,"#sqrt{s} = 8 TeV, L_{int} = 2.87 fb^{-1}");
+    t->DrawLatex(0.35,0.73,title);
+
+    can[i]->cd();
+
+    respad[i] = new TPad(Form("respad_%i",i),Form("respad_%i",i),0.0,0.8,1.0,1.0);
+    respad[i]->Draw();
+    respad[i]->cd();
+    respad[i]->SetTopMargin(0.1);
+    respad[i]->SetGridy();
+    respad[i]->SetLeftMargin(0.15);
+    respad[i]->SetRightMargin(0.05);
+    
+    gStyle->SetErrorX(0.5);
+    hsysterr[i]->SetFillColor(5);
+    hsysterr[i]->SetMarkerSize(0);
+   
+    hratio[i]   = (TH1F*) h_sf[i]->Clone(Form("hratio_%i",i));
+    hratio[i]->Divide(htotpred[i]);
+    
+    hratio[i]->GetXaxis()->SetLabelSize(0.0);
+    hratio[i]->GetYaxis()->SetLabelSize(0.2);
+    hratio[i]->GetYaxis()->SetTitleSize(0.25);
+    hratio[i]->GetYaxis()->SetTitleOffset(0.25);
+    hratio[i]->GetYaxis()->SetNdivisions(3);
+    hratio[i]->GetYaxis()->SetTitle("ratio");
+    hratio[i]->GetXaxis()->SetTitle("");
+    
+    hratio[i]->SetMinimum(0.5);
+    hratio[i]->SetMaximum(1.5);
+    
+    hratio[i]->GetYaxis()->SetRangeUser(0.5,1.5);
+    hratio[i]->Draw();
+    hsysterr[i]->Draw("sameE2");
+    hratio[i]->Draw("same");
+    hratio[i]->Draw("axissame");
+	
+    TLine line;
+    line.DrawLine(0.0,1.0,300,1.0);
+
+    if( printplots ) can[i]->Print(Form("../plots/met_%i.pdf",i));
+    
+
+
+
     
 
   }
