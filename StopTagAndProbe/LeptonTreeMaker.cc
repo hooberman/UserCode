@@ -377,6 +377,12 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
     // 	      currentFile->GetTitle(), currentFile->IsA()->GetName());
 
     cout << currentFile->GetTitle() << endl;
+    if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_999999_8_skim.root")  ) continue;
+    if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_172949_0_skim.root") ) continue;
+    if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_176201_0_skim.root") ) continue;
+    if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_176304_0_skim.root") ) continue;
+    if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_176548_0_skim.root") ) continue;
+    if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_177074_0_skim.root") ) continue;
 
     TFile *f = TFile::Open(currentFile->GetTitle()); 
     assert(f);
