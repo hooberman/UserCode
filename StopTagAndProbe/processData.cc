@@ -105,7 +105,37 @@ int main(int argc, char *argv[])
 
   else if( ijob == 14 ){
     cout << "Processing DYJets MC skim" << endl;
-    processLeptonTree("testskim", SmurfTree::dymm, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root", false, "",prescale);
+    processLeptonTree("testskim", SmurfTree::dymm, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged_ntuple_skim.root", false, "",prescale);
+  }
+
+  else if( ijob == 15 ){
+    cout << "Processing May10 DoubleElectron" << endl;
+    processLeptonTree("DoubleElectron_May10", SmurfTree::data, "/nfs-4/userdata/cms2/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 16 ){
+    cout << "Processing PRv4 DoubleElectron" << endl;
+    processLeptonTree("DoubleElectron_PRv4", SmurfTree::data, "/nfs-4/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/SSignSkim/skim*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 17 ){
+    cout << "Processing Aug05 DoubleElectron" << endl;
+    processLeptonTree("DoubleElectron_Aug05", SmurfTree::data, "/nfs-6/userdata/cms2/DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/SSignSkim/skim*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 18 ){
+    cout << "Processing PRv6 DoubleElectron" << endl;
+    processLeptonTree("DoubleElectron_PRv6", SmurfTree::data, "/nfs-6/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v6_AOD/V04-02-30/SSignSkim/skim*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 19 ){
+    cout << "Processing 2011B V33 DoubleElectron" << endl;
+    processLeptonTree("DoubleElectron_2011B33", SmurfTree::data, "/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/SSignSkim/skim*root", true, goodrunlist,prescale);
+  }
+
+  else if( ijob == 20 ){
+    cout << "Processing 2011B V34 DoubleElectron" << endl;
+    processLeptonTree("DoubleElectron_2011B34", SmurfTree::data, "/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-34/SSignSkim/skim*root", true, goodrunlist,prescale);
   }
 
 
