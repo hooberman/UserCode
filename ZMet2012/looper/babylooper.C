@@ -32,7 +32,7 @@ enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt
 //------------------------------------------------
 bool           debug              = false;                  // debug printout statements
 bool           doVtxReweight      = true;                   // reweight templates for nVertices
-bool           bveto              = true;                   // b-veto
+bool           bveto              = false;                  // b-veto
 bool           mjjcut             = false;                  // dijet mass requirement
 bool           nlep2              = false;                  // 3rd lepton veto
 bool           setTemplateErrors  = true;                   // calculate template errors
@@ -41,7 +41,7 @@ templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templat
 templateType   myTemplateType     = e_njets_ht;             // bin templates in njets and HT
 bool           reweight           = false;                  // reweight for photon vs. Z pt
 char*          iter               = "njetsgeq2";            // label for output file
-float          lumi               = 2.866;                  // luminosity
+float          lumi               = 3.93;                   // luminosity
 //------------------------------------------------
 
 using namespace std;
@@ -95,6 +95,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
     if( bveto ) bvetochar = "_bveto";
 
     templateFileName =  Form("../photon_output/%s/DoubleElectron_templates%s%s.root",template_version,vtxchar,bvetochar);
+    //templateFileName =  Form("../photon_output/%s/Photon_templates%s%s.root",template_version,vtxchar,bvetochar);
 
     //if( doVtxReweight ) templateFileName = Form("../photon_output/%s/DoubleElectron_templates_vtxreweight.root",template_version);
     //else                templateFileName = Form("../photon_output/%s/DoubleElectron_templates.root",template_version);
@@ -242,71 +243,63 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       
       if( selection_ == e_ZSelection ) {
 
-        // if( leptype_ == 0 ) eefile << dilmasscor_ << endl;
-        // if( leptype_ == 1 ) mmfile << dilmasscor_ << endl;
-     
-        // if( dilmass_ > 76. && dilmass_ < 106. ){
-
-        //   if( nJets_ == 0 ){
-        //     hyield_0j->Fill(0.5,          mcweight);
-        //     hyield_0j->Fill(1.5+leptype_, mcweight);
-        //   }
-        //   if( nJets_ == 1 ){
-        //     hyield_1j->Fill(0.5,          mcweight);
-        //     hyield_1j->Fill(1.5+leptype_, mcweight);
-        //   }
-        //   if( nJets_ == 2 ){
-        //     hyield_2j->Fill(0.5,          mcweight);
-        //     hyield_2j->Fill(1.5+leptype_, mcweight);
-        //   }
-        //   if( nJets_ > 2 ){
-        //     hyield_g2j->Fill(0.5,          mcweight);
-        //     hyield_g2j->Fill(1.5+leptype_, mcweight);
-        //   }
-        // }
-
-
         //------------------------------------------------------------
-        //event selection
+        // event selection
         //------------------------------------------------------------
 
 	if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
 	if( pflep2_->pt() < 20 )                        continue; // PF lepton 2 pt > 20 GeV
-	if( el1tv_ == 1 || el2tv_ == 1 )                continue; // veto transition region electrons
 	if( bveto && nbm_ > 0 )                         continue; // do b-veto
 	if( mjjcut && ( mjj_ < 70.0 || mjj_ > 110.0 ) ) continue; // mjj requirement
 	if( nlep2 && nlep_ > 2 )                        continue; // 3rd lepton veto
-
-	//if( lep3_->pt() > 10 )             continue; // 3rd lepton veto
-
-	// if( leptype_ == 0 ){
-	//   if( ee_ == 0 ) continue;
-	// }
-
-	// if( leptype_ == 1 ){
-	//   if( mm_ == 0 ) continue;
-	// }
-
-	// if( leptype_ == 2 ){
-	//   if( em_ == 0 && me_ == 0 ) continue;
-	// }
-
-	//if( fabs( lep1_->pt() - pflep1_->pt() ) > 5.0 ) continue;
-	//if( fabs( lep2_->pt() - pflep2_->pt() ) > 5.0 ) continue;
-
-	//if( pflep1_->pt() > 100.0 )        continue;
-	//if( pflep2_->pt() > 100.0 )        continue;
-
-	//float pfdilmass = (*pflep1_ + *pflep2_).mass();
-
-	// if( fabs( pfdilmass - dilmasspf_ ) > 0.01 ){
-	//   cout << pfdilmass << " " << dilmasspf_ << " " << pfdilmass-dilmasspf_ << endl;
-	// }
-
 	if( leptype_ == 0 ){
-	  if( jetpt_ll_ - ptll_ < -5  ) continue; 
-	  if( jetpt_lt_ - ptlt_ < -5  ) continue; 
+	  if( jetpt_ll_ - ptll_ < -5  ) continue;       // PF overcleaning 
+	  if( jetpt_lt_ - ptlt_ < -5  ) continue;       // PF overcleaning
 	}
+
+        //------------------------------------------------------------
+        // trigger selection
+        //------------------------------------------------------------
+
+	if( isData ){
+
+	  if( leptype_ == 0 ){
+	    if( ee_ == 0 ) continue;
+	  }
+	  
+	  else if( leptype_ == 1 ){
+	    if( mm_ == 0 ) continue;
+	  }
+	  
+	  else if( leptype_ == 2 ){
+	    if( em_ == 0 && me_ == 0 ) continue;
+	  }
+	}
+
+        //------------------------------------------------------------
+        // WZ/ZZ MC samples: only count events with neutrinos
+        //------------------------------------------------------------
+	
+	if( !isData ){
+	  if( ( TString(prefix).Contains("wz") || TString(prefix).Contains("zz") ) && ngennu_ == 0 ) continue;
+	}
+
+
+        //------------------------------------------------------------
+        // obsolete: just a dummy check
+        //------------------------------------------------------------
+
+	if( el1tv_ == 1 || el2tv_ == 1 ){
+	  cout << "ERROR! " << el1tv_ << " " << el2tv_ << endl;	
+	  continue; // veto transition region electrons
+	}
+
+
+
+
+
+
+
 
 	if( leptype_ == 0 ) fillUnderOverFlow( hpfdilmassee , dilmasspf_ , 1 );
 	if( leptype_ == 1 ) fillUnderOverFlow( hpfdilmassmm , dilmasspf_ , 1 );
@@ -1230,6 +1223,8 @@ void babylooper::setBranches (TTree* tree){
     tree->SetBranchAddress("mm",                   &mm_                   );
     tree->SetBranchAddress("em",                   &em_                   );
     tree->SetBranchAddress("me",                   &me_                   );
+
+    tree->SetBranchAddress("ngennu",               &ngennu_               );
 
     tree->SetBranchAddress("nbl",                  &nbl_                  );
     tree->SetBranchAddress("nbm",                  &nbm_                  );
