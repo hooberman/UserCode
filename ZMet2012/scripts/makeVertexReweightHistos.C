@@ -27,12 +27,28 @@
 
 using namespace std;
 
-void makeVertexReweightHistos(){
+void makeVertexReweightHistos( bool doPhoton = false ){
+
+  if( doPhoton )  cout << "Using triggers from Photon dataset"         << endl;
+  else            cout << "Using triggers from DoubleElectron dataset" << endl;
 
   char* Zfile        = (char*) "../output/V00-00-16/dataskim_baby.root";
-  char* photonfile   = (char*) "../photon_output/V00-00-11/DoubleElectron_templates.root";
-  char* photonbaby   = (char*) "../photon_output/V00-00-11/DoubleElectron_baby.root";
-  char* rootfilename = (char*) "vtxreweight_3p93fb.root";
+
+  char* photonfile;
+  char* photonbaby;
+  char* rootfilename;
+
+  if( doPhoton ){
+    photonfile   = (char*) "../photon_output/V00-00-11/Photon_templates.root";
+    photonbaby   = (char*) "../photon_output/V00-00-11/Photon_baby.root";
+    rootfilename = (char*) "vtxreweight_Photon_3p93fb.root";
+  }
+
+  else{
+    photonfile   = (char*) "../photon_output/V00-00-11/DoubleElectron_templates.root";
+    photonbaby   = (char*) "../photon_output/V00-00-11/DoubleElectron_baby.root";
+    rootfilename = (char*) "vtxreweight_DoubleElectron_3p93fb.root";
+  }
 
   //---------------------------
   // Z
@@ -62,7 +78,10 @@ void makeVertexReweightHistos(){
   TCut elveto("elveto==0");
   TCut lepveto("maxleppt<20");
   TCut dphi("acos(cos( phig-pfmetphi ) ) > 0.14");
-  TCut alltrig("hgg22>0 || hgg36>0 || hgg50>0 || hgg75>0 || hgg90>0");
+  TCut alltrig;
+  
+  if( doPhoton) alltrig = TCut("hlt20>0 || hlt30>0 || hlt50>0 || hlt75>0 || hlt90>0");
+  else          alltrig = TCut("hgg22>0 || hgg36>0 || hgg50>0 || hgg75>0 || hgg90>0");
 
   TCut photonSelection;
   photonSelection += njets;
@@ -78,17 +97,36 @@ void makeVertexReweightHistos(){
   photonSelection += dphi;
   photonSelection += alltrig;
 
-  TCut hlt90("hgg90>0");
-  TCut hlt75("hgg75>0 && hgg90<1");
-  TCut hlt50("hgg50>0 && hgg75<1 && hgg90<1");
-  TCut hlt30("hgg36>0 && hgg50<1 && hgg75<1 && hgg90<1");
-  TCut hlt20("hgg22>0 && hgg36<1 && hgg50<1 && hgg75<1 && hgg90<1");
+  TCut hlt90    , hlt75    , hlt50    , hlt30    , hlt20;
+  TCut weight90 , weight75 , weight50 , weight30 , weight20;
 
-  TCut weight90("hgg90");
-  TCut weight75("hgg75");
-  TCut weight50("hgg50");
-  TCut weight30("hgg36");
-  TCut weight20("hgg22");
+  if( doPhoton ){
+    hlt90 = TCut("hlt90>0");
+    hlt75 = TCut("hlt75>0 && hlt90<1");
+    hlt50 = TCut("hlt50>0 && hlt75<1 && hlt90<1");
+    hlt30 = TCut("hlt30>0 && hlt50<1 && hlt75<1 && hlt90<1");
+    hlt20 = TCut("hlt20>0 && hlt30<1 && hlt50<1 && hlt75<1 && hlt90<1");
+
+    weight90 = TCut("hlt90");
+    weight75 = TCut("hlt75");
+    weight50 = TCut("hlt50");
+    weight30 = TCut("hlt30");
+    weight20 = TCut("hlt20");
+  }
+
+  else{
+    hlt90 = TCut("hgg90>0");
+    hlt75 = TCut("hgg75>0 && hgg90<1");
+    hlt50 = TCut("hgg50>0 && hgg75<1 && hgg90<1");
+    hlt30 = TCut("hgg36>0 && hgg50<1 && hgg75<1 && hgg90<1");
+    hlt20 = TCut("hgg22>0 && hgg36<1 && hgg50<1 && hgg75<1 && hgg90<1");
+
+    weight90 = TCut("hgg90");
+    weight75 = TCut("hgg75");
+    weight50 = TCut("hgg50");
+    weight30 = TCut("hgg36");
+    weight20 = TCut("hgg22");
+  }
 
   hZ->SetLineColor(2);
   hZ->SetLineWidth(3);
