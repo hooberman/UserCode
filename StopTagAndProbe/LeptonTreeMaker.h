@@ -119,6 +119,8 @@ class LeptonTreeMaker {
 	unsigned int HLT_Ele17_Ele8_probe_;
 	unsigned int HLT_Ele27_WP80_tag_;
 	unsigned int HLT_Ele27_WP80_probe_;
+	unsigned int HLT_TNP_tag_;
+	unsigned int HLT_TNP_probe_;
 		
 	unsigned int HLT_IsoMu30_eta2p1_tag_;
 	unsigned int HLT_IsoMu30_eta2p1_probe_;
