@@ -232,6 +232,7 @@ class babylooper
 
 	Int_t el1tv_;
 	Int_t el2tv_;
+	Int_t ngennu_;
 
         //leading jet stuff
         Float_t jetmax_pt_;
