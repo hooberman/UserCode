@@ -36,27 +36,12 @@
 \newcommand{\sta}{$\sigma\times A$} %notation is such that A includes BR
 \newcommand{\statistics}{CL$_\mathrm{S}$}
 \newcommand{\njets}{$N_{\rm{jets}}$}
-
-%The lumi so that if it changes it's easier to update
 \newcommand{\lumi}{4.65~fb$^{-1}$}
-
-%loose(tight) signal region met cut
-\newcommand{\signalmetl}{100}
-\newcommand{\signalmett}{200}
-\newcommand{\signalmetvt}{300}
-
-\newcommand{\resulttitle}
-%{                       &   MET $>30$  GeV    &   MET $>60$  GeV    &   MET $>100$ GeV    &   MET $>200$ GeV \\}
-%{                       &   MET $>30$  GeV    &   MET $>60$  GeV    &   MET $>100$ GeV    &   MET $>200$ GeV  &  MET $>300$ GeV  \\}
-%move 300 to 150
-{                       &   MET $>30$  GeV    &   MET $>60$  GeV    &   MET $>100$ GeV    &   MET $>150$ GeV  &  MET $>200$ GeV  \\}
-
 \newcommand{\wjets}{$\rm{W}+{\rm jets}$}
 \newcommand{\zzmet}{$\rm{ZZ}+\MET$}
 \newcommand{\wzmet}{$\rm{WZ}+\MET$}
 \newcommand{\wzzmet}{$\rm{WZ/ZZ}+\MET$}
 \newcommand{\cls}  {\ensuremath{\mathrm{CL_S}}}
-
 
 \begin{document}
 
@@ -70,7 +55,7 @@
 
   \date{\today}
  
-  \title{A Search For New Physics in WZ/ZZ + MET}
+  \title{Search for Stop Quark Pairs in the Single Lepton Channel using Transverse Mass}
 
   %No Victor this time (sorry, Victor)
   \begin{Authlist}
@@ -89,18 +74,8 @@
 
 %keep it free of newcommands for eventual upload
 
-This note describes a refinement of the search for new physics in the 
-dilepton final state of Z plus two or more jets plus missing transverse 
-energy (MET) (SUS-11-021).
-The update uses the same data, same selection criteria, and same analysis methodology,
-but introduces additional requirements that significantly reduce the backgrounds
-at the cost of making the analysis less general.
-The most important such requirement is that we veto events containing b-tagged jets. 
-In addition, a dijet invariant mass consistent with a W or Z is required, and we veto events with a third lepton.
-This new search is thus focused on the WZ plus MET and ZZ plus MET final states, and is motived by the fact that these final states
-are common in chargino neutralino and neutralino pair production.
-We see no excess above the background prediction, and place model independent
-upper limits on the production of these final states as a function of the neutralino mass.
+This note describes a search for stop quark pair production in the single lepton channel. We search for an excess of events
+with a single isolated electron or muon, several jets, missing transverse energy, and large transverse mass.
 
 \end{abstract}
 
@@ -115,35 +90,19 @@ upper limits on the production of these final states as a function of the neutra
 \tableofcontents
 
 \newpage
+
 \linenumbers
 %\input{changes.tex}
 \input{introduction.tex}
 \input{datasets.tex}
 \input{eventsel.tex}
 \input{yields.tex}
-\input{sigregion.tex}
-\clearpage
-
 \input{results.tex} 
-\clearpage
 \input{systematics.tex}
-
-\clearpage
 \input{SMS}
-%\input{outreach} %Additional Information for Model Testing
-
-%\clearpage
-%\input{conclusion}
+\input{conclusion}
 
 \clearpage
 \input{bibliography.tex}
-
-\clearpage
-\appendix
-\input{app_results.tex}
-\clearpage
-\input{app_kinematics.tex}
-\clearpage
-\input{app_templates.tex}
 
 \end{document}
