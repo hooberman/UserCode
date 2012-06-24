@@ -1,0 +1,149 @@
+\documentclass{cmspaper}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{slashbox}
+\usepackage{epstopdf}  %added for MAC compiler
+\usepackage{pdfpages}
+\usepackage{lineno}
+\usepackage{verbatim}
+\usepackage{url}
+\RequirePackage{lineno} 
+%\RequirePackage{lineno} 
+
+\usepackage{wrapfig}
+
+%Note to authors: these definitions are suggested to be used for consistency
+\newcommand{\pt}{$p_T$ }
+\newcommand{\GeVc}{GeV/c}
+\newcommand{\mll}{\ensuremath{M_{\ell\ell}}}
+\newcommand{\z}{$Z$ }
+\newcommand{\zjets}{$Z+\rm{jets}$ }
+\newcommand{\gjets}{$\gamma+\rm{jets}$ }
+\newcommand{\Z}{$Z$ } %redundancy can be good
+\newcommand{\ttbar}{\ensuremath{t\bar{t}}}
+\newcommand{\emu }{\ensuremath{e\mu}}
+\newcommand{\ee  }{\ensuremath{ee}}
+\newcommand{\eepm}{\ensuremath{e^+ e^-}}
+\newcommand{\mm  }{\ensuremath{\mu\mu}}
+\newcommand{\mmpm}{\ensuremath{\mu^+ \mu^-}}
+\newcommand{\empm}{\ensuremath{e^\pm \mu^\mp}}
+\newcommand{\ase}[2]{\ensuremath{_{~- #1}^{~+ #2}}}
+\newcommand{\MET}{\ensuremath{\rm{E_{T}^{miss}}}}
+\newcommand{\met}{\mbox{$\raisebox{.3ex}{$\not$}E_T$\hspace*{0.5ex}}} 
+\newcommand{\effr}{$R_{e\mu}$} %used to be \epsilon
+\newcommand{\effrm}{$R_{\mu e}$} %used to be \epsilon
+\newcommand{\sta}{$\sigma\times A$} %notation is such that A includes BR
+\newcommand{\statistics}{CL$_\mathrm{S}$}
+\newcommand{\njets}{$N_{\rm{jets}}$}
+
+%The lumi so that if it changes it's easier to update
+\newcommand{\lumi}{4.65~fb$^{-1}$}
+
+%loose(tight) signal region met cut
+\newcommand{\signalmetl}{100}
+\newcommand{\signalmett}{200}
+\newcommand{\signalmetvt}{300}
+
+\newcommand{\resulttitle}
+%{                       &   MET $>30$  GeV    &   MET $>60$  GeV    &   MET $>100$ GeV    &   MET $>200$ GeV \\}
+%{                       &   MET $>30$  GeV    &   MET $>60$  GeV    &   MET $>100$ GeV    &   MET $>200$ GeV  &  MET $>300$ GeV  \\}
+%move 300 to 150
+{                       &   MET $>30$  GeV    &   MET $>60$  GeV    &   MET $>100$ GeV    &   MET $>150$ GeV  &  MET $>200$ GeV  \\}
+
+\newcommand{\wjets}{$\rm{W}+{\rm jets}$}
+\newcommand{\zzmet}{$\rm{ZZ}+\MET$}
+\newcommand{\wzmet}{$\rm{WZ}+\MET$}
+\newcommand{\wzzmet}{$\rm{WZ/ZZ}+\MET$}
+\newcommand{\cls}  {\ensuremath{\mathrm{CL_S}}}
+
+
+\begin{document}
+
+
+\begin{comment}
+
+\begin{titlepage}
+
+  %\internalnote{2011/000}
+  \cmsnote{2011/000}
+
+  \date{\today}
+ 
+  \title{A Search For New Physics in WZ/ZZ + MET}
+
+  %No Victor this time (sorry, Victor)
+  \begin{Authlist}
+    D.~Barge, C.~Campagnari, D.~Kovalskyi, V.~Krutelyov
+    \Instfoot{ucsb}{University of California, Santa Barbara, USA}
+
+    W.~Andrews, G.~Cerati, D.~Evans, F.~Golf, I.~MacNeill, S.~Padhi, Y.~Tu, F.~W\"urthwein, 
+	A.~Yagil, J.~Yoo
+    \Instfoot{ucsd}{University of California, San Diego, USA}
+
+	L.~Bauerdick, K.~Burkett, I.~Fisk, Y.~Gao, O.~Gutsche, B.~Hooberman, S.~Jindariani, J.~Linacre, V.~Martinez Outschoorn
+    \Instfoot{fnal}{Fermi National Accelerator Laboratory, Batavia, Illinois, USA}
+  \end{Authlist}
+
+  \begin{abstract}
+
+%keep it free of newcommands for eventual upload
+
+This note describes a refinement of the search for new physics in the 
+dilepton final state of Z plus two or more jets plus missing transverse 
+energy (MET) (SUS-11-021).
+The update uses the same data, same selection criteria, and same analysis methodology,
+but introduces additional requirements that significantly reduce the backgrounds
+at the cost of making the analysis less general.
+The most important such requirement is that we veto events containing b-tagged jets. 
+In addition, a dijet invariant mass consistent with a W or Z is required, and we veto events with a third lepton.
+This new search is thus focused on the WZ plus MET and ZZ plus MET final states, and is motived by the fact that these final states
+are common in chargino neutralino and neutralino pair production.
+We see no excess above the background prediction, and place model independent
+upper limits on the production of these final states as a function of the neutralino mass.
+
+\end{abstract}
+
+\end{titlepage}
+
+\end{comment}
+
+\setcounter{page}{2}%JPP
+
+
+\newpage
+\tableofcontents
+
+\newpage
+\linenumbers
+%\input{changes.tex}
+\input{introduction.tex}
+\input{datasets.tex}
+\input{eventsel.tex}
+\input{yields.tex}
+\input{sigregion.tex}
+\clearpage
+
+\input{results.tex} 
+\clearpage
+\input{systematics.tex}
+
+\clearpage
+\input{SMS}
+%\input{outreach} %Additional Information for Model Testing
+
+%\clearpage
+%\input{conclusion}
+
+\clearpage
+\input{bibliography.tex}
+
+\clearpage
+\appendix
+\input{app_results.tex}
+\clearpage
+\input{app_kinematics.tex}
+\clearpage
+\input{app_templates.tex}
+
+\end{document}
