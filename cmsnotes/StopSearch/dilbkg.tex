@@ -64,9 +64,9 @@ jet which is matched to the second lepton at generator level ($N_{\rm{jets}}^\el
 For events with $N_{\rm{jets}}^{\rm{cor}}=3$ the factor $K_3$ is applied, while for events with $N_{\rm{jets}}^{\rm{cor}}\geq4$ the factor $K_4$ is applied.
 For all subsequent steps, the scale factors $K_3$ and $K_4$ have been applied to the \ttll\ MC.
  
-\subsection{Step 2: Use the inclusive sample to define a data-to-MC scale factor}
+\subsection{Step 2: Use the pre-veto sample to define a data-to-MC scale factor}
 
-The inclusive sample is defined by the following requirements
+The pre-veto sample is defined by the following requirements
 
 \begin{itemize}
 \item At least 1 selected electron (muon) with \pt $>$ 30 GeV and $|\eta|<2.5$ ($|\eta|<2.1$)
@@ -74,22 +74,25 @@ The inclusive sample is defined by the following requirements
 \item \MET\ $>$ 50 GeV
 \end{itemize}
 
-The largest contribution to this sample is \ttlj, but \wjets\ and \ttll\ also have significant contributions.
-This sample is defined by the same requirements as the signal sample, with the exception that here we do not
-veto events containing an isolated track. We use this sample to define an overall scale factor ($SF$) which is applied
-to the full MC cocktail. To do so we define:
+Thus all selection criteria are applied with the exception of the veto on events containing an isolated track. 
+This sample is dominated by \ttlj\, with secondary contributions from \wjets\ and \ttll\ . 
+%The largest contribution to this sample is \ttlj, but \wjets\ and \ttll\ also have significant contributions.
+This sample is used to define an overall data over MC scale factor ($SF$) in the peak control region, 
+that accounts for differences between the data and the MC due to the luminosity estimate, the lepton 
+efficiencies and so on and is thus applied to the full MC cocktail. 
+To do so we define for the pre-veto sample (labeled `all'):
 
 \begin{itemize}
-\item $N_{\rm{peak}}$ = data yield in the peak region $60<\mt<100$ GeV
-\item $M_{\rm{peak}}$ = MC yield in the peak region $60<\mt<100$ GeV
-\item $SF_{all} = N_{\rm{peak}} / M_{\rm{peak}}$
+\item $N_{\rm{peak}}^{\rm{all}}$ = data yield in the peak region $60<\mt<100$ GeV
+\item $M_{\rm{peak}}^{\rm{all}}$ = MC yield in the peak region $60<\mt<100$ GeV
+\item $SF^{\rm{all}} = N_{\rm{peak}}^{\rm{all}} / M_{\rm{peak}}^{\rm{all}}$
 \end{itemize}
 
-For all subsequent steps, the scale factor $SF_{all}$ is applied to all MC contributions.
+For all subsequent steps, the scale factor $SF^{\rm{all}}$ is applied to all MC contributions.
 
-\subsection{Step 3: Use the signal sample to apply a correction factor to the single lepton background}
+\subsection{Step 3: Isolated Track Veto Efficiency Correction}
 
-The signal sample is defined by the same requirements as the inclusive sample, except that we veto events containing
+The signal sample is defined by the same requirements as the pre-veto sample, except that we veto events containing
 an isolated track. The background is the inclusive sample can be split into 2 contributions:
 
 \begin{itemize}
@@ -99,14 +102,15 @@ an isolated track. The background is the inclusive sample can be split into 2 co
 
 The isolated track veto impacts these 2 contributions in different ways. For the dilepton background, the veto
 rejects events which have a genuine 2nd lepton, so applying the isolated track veto scales the dilepton background
-by the efficiency $\epsilon$ to identify the isolated track. For the single lepton background, the veto rejects events
+by the efficiency $\epsilon(trk)$ to identify the isolated track. For the single lepton background, the veto rejects events
 which do not have a genuine 2nd lepton but which have a ``fake'' isolated track, so the isolated track veto scales
-the single lepton background by (1-FR), where FR is the ``fake rate'' to identify an isolated track in events which
+the single lepton background by (1-FR), where FR is the ``fake rate'' to identify an isolated track in events which 
 contain no genuine 2nd lepton. 
 
-The isolated track efficiency $\epsilon$ can be measured in data and MC using $Z\to\ell\ell$ tag-and-probe studies,
-but the measurement of the FR in data is non-trivial. We therefore use the tag-and-probe studies to apply a correction
-to the \ttll\ MC, and then scale the single lepton background such that the total MC matches the data in the \mt\ peak region.
+The isolated track efficiency $\epsilon$ can be measured in data and MC using $Z\to\ell\ell$ tag-and-probe studies. 
+We therefore use the tag-and-probe studies to apply a correction to the \ttll\ MC. 
+A measurement of the FR in data is non-trivial, but we can account for differences between the data and the MC by scaling 
+only the single lepton background in the \mt\ peak region after applying the isolated track veto.
 
 In detail, the procedure to correct the dilepton background is:
 
@@ -115,25 +119,49 @@ In detail, the procedure to correct the dilepton background is:
 and muons {\bf TODO: need to compare the e vs. $\mu$ track iso distributions, they might differ due to e$\to$e$\gamma$}.
 \item We verify that the distribution of absolute track isolation does not depend on the \pt\ of the probe lepton.
 This is due to the fact that this isolation is from ambient PU and jet activity in the event, which is uncorrelated with
-the lepton \pt {\bf TODO: verify this in data and MC}.
+the lepton \pt {\bf TODO: verify this in data and MC.}.
 \item Our requirement is {\bf relative} track isolation $<$ 0.1. For a given \ttll\ MC event, we determine the \pt of the 2nd
 lepton and translate this to find the corresponding requirement on the {\bf absolute} track isolation, which is simply $0.1\times$\pt.
 \item We measure the efficiency to satisfy this requirement in data and MC, and define a scale-factor $SF_{\epsilon(trk)}$ which
 is the ratio of the data-to-MC efficiencies. This scale-factor is applied to the \ttll\ MC event.
-\item {\bf THING 2 we are unsure about: we can measure this SF for electrons and for muons, but we can't measure it for hadronic tracks from $\tau$ decays. Verena has showed that the absolute track isolation distribution in hadronic $\tau$ tracks is harder due to $\pi^0\to\gamma\gamma$ with $\gamma\to e^+e^-$.}
+\item {\bf THING 2 we are unsure about: we can measure this SF for electrons and for muons, but we can't measure it for hadronic 
+tracks from $\tau$ decays. Verena has showed that the absolute track isolation distribution in hadronic $\tau$ tracks is harder due 
+to $\pi^0\to\gamma\gamma$ with $\gamma\to e^+e^-$.}
 \end{itemize} 
 
-At this point we are done applying scale factors to the dilepton background. We next apply a scale factor to the single lepton
-background. We use the following quantities:
+At this point we are done applying scale factors to the dilepton background. We next apply a scale factor to the single lepton background. We use the following quantities:
+
+%Use the signal sample to apply a correction factor to the single lepton background
 
 \begin{itemize}
-\item $N_{\rm{peak}}$ =  data yield in the peak region $60<\mt<100$ GeV
-\item $M^{\ell}_{\rm{peak}}$ =  single lepton background MC in the peak region $60<\mt<100$ GeV
-\item $M^{\ell\ell}_{\rm{peak}}$ =  dilepton background MC in the peak region $60<\mt<100$ GeV
-\item $SF_{\ell} = (N_{\rm{peak}} - M^{\ell\ell}_{\rm{peak}} )/ M^{\ell}_{\rm{peak}}$
+\item $N_{\rm{peak}}^{\rm{veto}}$ =  data yield in the peak region $60<\mt<100$ GeV
+\item $M^{\ell,\rm{veto}}_{\rm{peak}}$ =  single lepton background MC in the peak region $60<\mt<100$ GeV
+\item $M^{\ell\ell,\rm{veto}}_{\rm{peak}}$ =  dilepton background MC in the peak region $60<\mt<100$ GeV
+\item $SF_{\ell}^{\rm{veto}} = (N_{\rm{peak}}^{\rm{veto}} - M^{\ell\ell,\rm{veto}}_{\rm{peak}} SF_{\epsilon(trk)} )/ M^{\ell,\rm{veto}}_{\rm{peak}}$
 \end{itemize}
 
 The scale factor $SR_{\ell}$ is applied to the single lepton background to account for potential data vs. MC discrepancies 
 in the isolated track veto.
+
+To summarize, the dilepton and single lepton background prediction in the signal region (\mt\ $>150$ GeV) are given by
+
+\begin{itemize}
+\item $\rm{P}^{\ell\ell}_{\rm{sig}} = SF^{\rm{all}} \times SF_{\epsilon(trk)} \times M^{\ell \ell}_{\rm{sig}}$
+\item $\rm{P}^{\ell}_{\rm{sig}} = SF^{\rm{all}} \times SF_{\ell}^{\rm{veto}} \times M^{\ell}_{\rm{sig}}$
+\end{itemize}
+
+where $M_{\rm{sig}}$ correspond to the Monte Carlo predictions in the tail of the distributions and the $SF$ terms are data over MC scale factors to account 
+for differences between the data and the MC for the following effects
+
+\begin{itemize}
+\item $SF^{\rm{all}} \rightarrow $ effects impacting the normalization with the exception of the isolated track veto i.e. luminosity, 
+lepton identification and trigger efficiencies $\dots$
+\item $SF_{\epsilon(trk)} \rightarrow $ the track veto efficiency for real second leptons
+\item $SF_{\ell}^{\rm{veto}} \rightarrow $ the inefficiency introduced by the track veto on events without a second lepton (1-FR defined previously)
+\end{itemize}
+
+%SF_{\ell}^{\rm{post-veto}}$ 
+%\item $M^{\ell,\rm{sig}}_{\rm{peak}}$ =  single lepton background MC in the peak region $60<\mt<100$ GeV
+
 
 
