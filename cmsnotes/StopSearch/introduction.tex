@@ -1,174 +1,47 @@
-
 \section{Introduction}
 \label{ref:intro}
 
-The published analysis 
-%``A Search For New Physics in Z + Jets + MET using MET Templates'' %AN/old title
-%arxiv title
-``Search for physics beyond the standard model in events with a Z boson, jets, 
-and missing transverse energy in pp collisions at $\sqrt{s}$ = 7 TeV''
-(SUS-11-021) 
-searches for new physics in the final state of a 
-leptonically ($ee$ and $\mu\mu$) decaying Z boson, two or more jets and 
-missing transverse energy (\MET) 
-\cite{ref:oszpaper} \cite{ref:osznote} \cite{ref:oszpas}.
-This analysis will be referred to throughout this note as the ``nominal''
-analysis. The basic analysis strategy is to select Z bosons and 
-use data-driven methods to predict the \MET\ distribution in the signal 
-regions.
-The Z+Jets background is predicted using the 
-\MET\ templates method \cite{ref:templates1}\cite{ref:templates2}, the 
-\ttbar\ background is predicted using opposite flavor ($e\mu$) events, 
-and the diboson (WZ, ZZ) background is taken from Monte Carlo.
+This note presents a search for the production of supersymmetric (SUSY) stop quark pairs in events with a 
+single isolated lepton, several jets, missing transverse energy, and large transverse mass. We use the full 
+2011 data sample, corresponding to an integrated luminosity of \lumi. 
+This search is of theoretical interest because of the critical role played 
+by the stop quark in solving the hierarchy problem in SUSY models. This solution requires that the stop quark 
+be light, less than a few hundred GeV and hence within reach for direct pair production. We focus on two decay modes 
+$\tilde{t}\rightarrow t\chi^0_1$ and $\tilde{t}\rightarrow b \chi^+_1$  which are expected
+to have large branching fractions if they are kinematically accessible, leading to:
 
-The analysis presented in this note is a straightforward extension of
-the nominal analysis in that the analysis strategy and methodology
-remain unchanged. 
-The only changes with respect to the nominal analysis are the addition
-of cuts to increase sensitivity to new physics with 
-diboson production (WZ and/or ZZ) and \MET .
-
-An example of one such new physics scenario is the electroweak
-production of SUSY particles.
-In a generic SUSY framework, the neutralinos 
-(for example, $\chi_2^0$ or $\chi_1^0$)
-may decay to a Z boson and another neutral SUSY particle such as the LSP. 
-
-%Although SUSY production involving strongly interacting particles 
-%(such as gluinos and squarks) is normally targeted due to its expected 
-%larger production cross section as compared with electroweak production, 
-%such searches have as of yet failed to discover new physics. 
-%Another logical search is for electroweak production, 
-%and in this case, a final state involving Z bosons is a natural place 
-%to start since leptonically decay Zs are an extremely clean signature.
-
-In the case in which a neutralino is pair produced, the final state 
-may be ZZ+\MET. In addition, production of a neutralino and chargino 
-may lead to a final state of WZ+\MET.  
-When the Z decays leptonically and the other boson (either 
-a W or Z) decays to jets, the final state is Z plus two jets plus \MET,
-to which the nominal \MET\ templates analysis is particularly well suited. 
-Given that we are now searching for the specific final states WZ plus \MET\ or ZZ plus \MET ,
-rather than the more general Z plus jets plus \MET\ signature,
-we can apply additional cuts to increase the sensitivity.
-
-In the nominal analysis, the search is performed in the high \MET\ tail.
-\MET\ cuts used for signal regions are 100, 200, and 300 GeV.
-At such high \MET\ cuts, \ttbar\ background in which (the same-flavor 
-opposite-sign) dileptons happen to fall in the Z mass window dominate. 
-Because all \ttbar\ events contain b jets, a b jet veto is 
-very effective in suppressing this background.
-
-Because the final state targeted involves the decay of W (Z) to jets, 
-the dijet mass peaks at the W (Z) mass. In contrast, the jets from the
-background processes Z+jets and \ttbar\ have a very broad distribution.
-The dijet mass is therefore a variable which can further discriminate between 
-signal and background (see section \ref{sec:eventSelection}).
-
-The final sub-leading backgrounds in the nominal analysis are Z plus jets 
-and dibosons (WZ and ZZ). In the case of WZ, real \MET\ is produced from 
-the leptonically decaying W. In order to suppress this background, we 
-introduce a third lepton veto.
-
-In summary, we use the same selection as in the approved analysis SUS-11-021 and
-place three additional requirements:
 \begin{itemize}
-\item Veto events containing a b-tagged jet
-\item Require a dijet mass consistent with the hadronic decay of a W/Z boson
-\item Veto events with a third lepton
+\item $pp\rightarrow\tilde{t}\bar{\tilde{t}}\rightarrow t\bar{t}\chi^0_1\chi^0_1$, and
+\item $pp\rightarrow\tilde{t}\bar{\tilde{t}}\rightarrow b\bar{b}\chi^+_1\chi^-_1 \rightarrow b\bar{b}W^+W^-\chi^0_1\chi^0_1$.
 \end{itemize}
 
-This note is organized as follows. 
-In Sec.~\ref{sec:datasets} we review the datasets used.
-In Sec.~\ref{sec:eventSelection} we discuss the event selection.
-In Sec.~\ref{sec:yields} we present the data and MC yields passing the event preselection.
-In Sec.~\ref{sec:sigregion} we define the signal regions.
-In Sec.~\ref{sec:results} we present the results.
-In Sec.~\ref{sec:systematics} we discuss systematics on the background predictions.
-In Sec.~\ref{sec:bsm} we provide a new physics interpretation of the results.
-Additional material is included in the following appendices: 
-supplemental results (App. \ref{app:results}),
-supplemental interpretation (App. \ref{sec:app_bsm}),
-kinmatical distributions (App. \ref{sec:appkin}),
-combination of interpretation results (App. \ref{app:combo}),
-and the \MET\ templates (App. \ref{sec:appendix_templates}).
+Both of these signatures contain high transverse momentum (\pt) jets including two b-jets, and missing transverse 
+energy (\MET) due to the invisible $\chi^0_1$ lightest SUSY particles (LSP's). In addition, the presence of
+two W bosons leads to a large branching fraction to the single lepton final state. Hence we require the presence
+of exactly one isolated, high \pt electron or muon, which provides significant suppression of several backgrounds
+that are present in the all-hadronic channel. The largest backgrounds for this signature are semi-leptonic \ttbar\
+and \wjets. These backgrounds contain a single leptonically-decaying W boson, and the transverse mass (\mt)
+of the lepton-neutrino system has a kinematic endpoint requiring \mt $<$ $M_W$. For signal stop quark events,
+the presence additional LSP's in the final states allows the \mt to exceed $M_W$. Hence we search for an excess
+of events with large \mt. The dominant background in this kinematic region is dilepton \ttbar\ where one of the
+leptons is not identified, since the presence of two neutrinos from leptonically-decaying W bosons allows the 
+\mt\ to exceed $M_W$. Backgrounds are estimated from Monte Carlo (MC) simulation, with careful validation 
+and determination of scale factors and corresponding uncertainties based on data control samples.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The expected stop quark pair production cross section (see Fig.~\ref{fig:stopxsec}) varies between O(10) pb
+for $m_{\tilde{t}}=200$~GeV and O(0.01) pb for $m_{\tilde{t}}=500$~GeV. The critical challenge of this analysis
+is due to the fact that for light stop quarks with a mass close to the top quark, the production cross section is
+large but the kinematic distributions, in particular \mt, are very similar to SM \ttbar\ production, such that it becomes very
+difficult to distinguish the signal and background. For large stop quark mass the kinematic distributions differ
+from those in SM \ttbar\ production, but the cross section decreases rapidly, reducing the signal-to-background
+ratio.
 
-%OLD NOTE
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.4\linewidth]{plots/stop.pdf}
+	\caption{
+	  \label{fig:stopxsec}\protect 
+          The stop quark pair production cross section in pb, as a function of the stop quark mass.}
+  \end{center}
+\end{figure}
 
-\begin{comment}
-
-In this note we describe a search for new physics in the 2011 
-opposite sign isolated dilepton sample ($ee$, $e\mu$, and $\mu\mu$).  
-The main sources of high \pt isolated dileptons at CMS are Drell Yan and \ttbar.
-Here we concentrate on dileptons with invariant mass consistent
-with $Z \to ee$ and $Z \to \mu\mu$.  A separate search for new physics in the non-\Z
-sample is described in~\cite{ref:GenericOS}.
-
-We search for new physics in the final state of \Z plus two or more jets plus missing 
-transverse energy (MET). We reconstruct the \Z boson
-in its decay to $e^+e^-$ or $\mu^+\mu^-$. Our search regions are defined as 
-MET $\ge$ \signalmetl~GeV (loose signal region), MET $\ge$ \signalmett~GeV 
-(medium signal region), MET $\ge$ 300~GeV (tight signal region), and two or more jets. We use data driven techniques to predict the
-standard model background in these search regions. 
-Contributions from Drell-Yan production combined with detector mis-measurements that 
-produce fake MET are modeled via MET templates based on photon plus jets or QCD events. 
-Top pair production backgrounds, as well as other backgrounds for which the lepton
-flavors are uncorrelated such as $W^+W^-$, DY$\rightarrow\tau\tau$, and single top, are 
-modeled via $e^\pm\mu^\mp$ subtraction.
-
-As leptonically decaying \Z bosons are a signature that has very little background, 
-they provide a clean final state in which to search for new physics. 
-Because new physics is expected to be connected to the Standard Model Electroweak sector, 
-it is likely that new particles will couple to W and Z bosons. 
-For example, in mSUGRA, low $M_{1/2}$ can lead to a significant branching fraction 
-for $\chi_2^0 \rightarrow Z \chi_1^0$. 
-In addition, we are motivated by the existence of dark matter to search for new physics with MET.
-Enhanced MET is a feature of many new physics scenarios, and R-parity conserving SUSY 
-again provides a popular example. The main challenge of this search is therefore to 
-understand the tail of the fake MET distribution in \Z plus jets events.
-
-The basic idea of the MET template method~\cite{ref:templates1}\cite{ref:templates2} is 
-to measure the MET distribution in data in a control sample which has no true MET 
-and a similar topology to the signal events. 
-%Start the qcd vs photon discussion
-Templates can be derived from either a QCD sample (as was done in the original implementation) 
-or a photon plus jets sample.
-%In our case, we choose a photon sample with two or more jets as the control sample.
-%Both the control sample and signal sample consist of a well measured object (either a 
-%photon or a leptonically decaying $Z$), which recoils against a system of hadronic jets. 
-In both cases, the instrumental MET is dominated by mismeasurements of the hadronic system,
-and can be classified by the number of jets in the event and the scalar sum of their transverse
-momenta.
-The prediction is made such that the jet system in the control sample is similar to that of the
-signal sample.
-By using two independent control samples--QCD and photon plus jets--we are able to illustrate
-the robustness of the MET templates method and to cross check the data driven background 
-prediction.
-
-This note is organized as follows. 
-In sections \ref{sec:datasets} and \ref{sec:trigSel} we descibe
-the datasets and triggers used, followed by the detailed object definitions (electrons, muons, photons,
-jets, MET) and event selections in sections \ref{sec:evtsel} through \ref{sec:jetsel}.
-We define a preselection and compare data vs. MC yields passing this preselection in 
-Section~\ref{sec:yields}.
-We then define the signal regions and show the number of observed events and MC expected 
-yields in Section~\ref{sec:sigregion}.
-Section~\ref{sec:templates} introduces the MET template method and discusses its derivation 
-in some detail.
-% and is followed by a demonstration in Section~\ref{sec:mc} 
-%that the method works in Monte Carlo.
-Section~\ref{sec:topbkg} introduces the top background estimate based on opposite flavor subtraction, 
-and contributions from other backgrounds are discussed in Section~\ref{sec:othBG}.
-Section~\ref{sec:results_combined} shows the results for applying these methods in data.
-We analyze the systematic uncertainties in the background predictions and in signal acceptance
-in Section~\ref{app:systematics}. 
-We then proceed to calculate upper limit on the BSM physics processes
-in Section~\ref{sec:bsm}. 
-%Efficiencies which can be used to test specific models of new physics are given 
-%in Section \ref{sec:outreach}.
-%Finally, in Section~\ref{sec:models} we calculate upper limits on the quantity \sta\
-%assuming efficiencies and uncertainties from sample benchmark SUSY processes. 
-
-\end{comment}

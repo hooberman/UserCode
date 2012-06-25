@@ -1,0 +1,52 @@
+
+\section{Selection}
+\label{sec:eventSelection}
+
+The physics object  selections (leptons, jets, and \MET) are identical to the ones
+used in the nominal analysis~\cite{ref:osznote}, with one exception.
+We have updated the jet energy corrections (JEC) using the official recipe.
+The global tags GR\_R\_42\_V23 (DESIGN42\_V17) are used for data (MC).
+We use L1FastL2L3Residual (L1FastL2L3) corrections for data (MC).
+
+The nominal analysis preselection \cite{ref:osznote} consists of the following requirements:
+
+\begin{itemize}
+\item At least 2 \pt\ $>$ 20 GeV leptons (e or $\mu$) passing the analysis identification and isolation requirements
+\item Number of jets \njets\ $\geq$ 2
+\item For signal events, we require the leptons to have the same flavor (SF) (ee or $\mu\mu$) and to have an invariant
+mass consistent with the Z mass, $81 < m_{\ell\ell} < 101$ GeV
+\item Opposite flavor (OF) e$\mu$ events are used as a data control sample to predict the \ttbar\ background
+\end{itemize}
+
+In addition, we apply the following requirements.
+
+\begin{itemize}
+  \item We veto events containg any b jets which pass the \pt\ threshold for N jet counting (30 GeV) using the track-counting high efficiency algorithm~\cite{BTV11003}.
+	In order to reject as many real b jets as possible, we use the loose working point for jets with \pt\ $<$ 100 GeV. 
+	Because the loose working point has a large mistag rate at high \pt,
+	we use the medium working point to tag jets with \pt\ $>$ 100 GeV.
+
+        The same b-jet veto is applied when selecting \gjets\ events for the \MET\ templates.
+
+  \item In order to select events containing W/Z $\rightarrow$ jets, 
+	we require that the two leading jets have a dijet mass consistent
+	with W/Z decay. The window used is 70 to 110 GeV as motivated
+	by MC (see figure \ref{fig:djmass}). See also appendix 
+	\ref{sec:djmass} for data-MC comparisons of this quantity.
+
+  \item In order to suppress background from WZ events where the W decays
+	leptonically, we veto events containing a third lepton with \pt $>$ 20 GeV passing
+	our signal lepton selection.
+\end{itemize}
+
+All of the above requirements taken together are referred to as the ``preselection.''
+
+
+\begin{figure}[tbh]
+  \begin{center}
+	\includegraphics[width=0.8\linewidth]{plots/djmass.png}
+	\caption{ \label{fig:djmass}\protect 
+	  Dijet mass distribution in MC.
+	}
+  \end{center}
+\end{figure}
