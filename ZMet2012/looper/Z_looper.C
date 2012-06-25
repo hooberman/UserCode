@@ -59,10 +59,10 @@ const bool  generalLeptonVeto    = true;
 const bool  vetoTransition       = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
-      bool  doTenPercent         = true;
+      bool  doTenPercent         = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-16";
-const char* jsonfilename         = "../jsons/Cert_190456-195947_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 3.93/fb
+const char* iter                 = "V00-00-17";
+const char* jsonfilename         = "../jsons/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 5.10/fb
 
 //--------------------------------------------------------------------
 
@@ -243,6 +243,10 @@ float Z_looper::gluinoPairCrossSection( float gluinomass ){
 
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, int my_nEvents, float kFactor){
+
+  // cout << "------------------------" << endl;
+  // cout << "SCALING MC WEIGHT BY 10!" << endl;
+  // cout << "------------------------" << endl;
 
   isdata_ = isData ? 1 : 0;
 
@@ -556,6 +560,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	weight_ = cms2.evt_scale1fb() * kFactor * lumi;
 	  
 	if( doTenPercent )	  weight_ *= 10;
+	//weight_ *= 10; // REMOVE
 
 	if( TString(prefix).Contains("LM") ){
 	  if( TString(prefix).Contains("LM0") ) weight_ *= kfactorSUSY( "lm0" );
@@ -634,6 +639,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	if( doTenPercent )	  weight_ *= 10;
+	//weight_ *= 10; // REMOVE
 
 	genmetcustom_ = getGenMetCustom(prefix);
 

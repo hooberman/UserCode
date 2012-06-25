@@ -4,9 +4,9 @@
 
   gROOT->ProcessLine(".L runZLooper.C+");
 
-  //runZLooper("dataskim"                , true  );
-  runZLooper("zjets"                   , false );  
-  runZLooper("ttbar"                   , false );  
+  runZLooper("dataskim"                , true  );
+  //runZLooper("zjets"                   , false );  
+  //runZLooper("ttbar"                   , false );  
   //runZLooper("wz"                      , false );  
   //runZLooper("zz"                      , false );  
   //runZLooper("ww"                      , false );  
