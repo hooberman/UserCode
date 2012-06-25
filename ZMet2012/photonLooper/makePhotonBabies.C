@@ -53,8 +53,8 @@ using namespace tas;
 
 const bool debug                = false;
 const float lumi                = 1.0;
-const char* iter                = "V00-00-11";
-const char* jsonfilename        = "../jsons/Cert_190456-195947_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 3.9/fb json
+const char* iter                = "V00-00-12";
+const char* jsonfilename        = "../jsons/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; //5.10/fb
 
 //--------------------------------------------------------------------
 
