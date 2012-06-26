@@ -61,7 +61,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-17";
+const char* iter                 = "V00-00-18";
 const char* jsonfilename         = "../jsons/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 5.10/fb
 
 //--------------------------------------------------------------------
@@ -731,7 +731,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  // 	   passElectronSelection_ZMet2012_v1_NoIso(iel,true,true) , electronIsoValuePF2012_FastJetEffArea(iel) , 0.0 , 0.0, 0.0 );
 	  // }
 
-          if( els_p4().at(iel).pt() < 20 )                                             continue;
+          if( els_p4().at(iel).pt() < 10 )                                             continue;
 	  if( ! passElectronSelection_ZMet2012_v1(iel,vetoTransition,vetoTransition) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
 	  nlep_++;
@@ -747,7 +747,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  // 	   muonIdNotIsolated( imu , ZMet2012_v1 ) , muonIsoValuePF2012_deltaBeta(imu) , 0.0 , 0.0, 0.0 );
 	  // }
 
-          if( mus_p4().at(imu).pt() < 20 )           continue;
+          if( mus_p4().at(imu).pt() < 10 )           continue;
           if( !muonId( imu , ZMet2012_v1 ))          continue;
           goodLeptons.push_back( mus_p4().at(imu) );
 	  nlep_++;
@@ -1088,9 +1088,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	sort(goodExtraLeptons.begin()  , goodExtraLeptons.end()  , sortByPt);
 
 	if( goodExtraLeptons.size() > 0 ) lep3_ = &(goodExtraLeptons.at(0)); 
-	if( goodExtraLeptons.size() > 1 ) lep4_ = &(goodExtraLeptons.at(0)); 
-	if( goodExtraLeptons.size() > 2 ) lep5_ = &(goodExtraLeptons.at(0)); 
-	if( goodExtraLeptons.size() > 3 ) lep6_ = &(goodExtraLeptons.at(0)); 
+	if( goodExtraLeptons.size() > 1 ) lep4_ = &(goodExtraLeptons.at(1)); 
+	if( goodExtraLeptons.size() > 2 ) lep5_ = &(goodExtraLeptons.at(2)); 
+	if( goodExtraLeptons.size() > 3 ) lep6_ = &(goodExtraLeptons.at(3)); 
 
 	if( goodExtraLeptons.size() > 0 ){
 	  LorentzVector* pfmet_p4 = new LorentzVector( pfmet_ * cos(pfmetphi_) , pfmet_ * sin(pfmetphi_) ,      0      , pfmet_     );
@@ -1530,7 +1530,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( generalLeptonVeto ){
           bool rejectJet = false;
           for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-            if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+            if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 && goodLeptons.at(ilep).pt() > 20.0 ) rejectJet = true;  
           }
           if( rejectJet ) continue;
         }
