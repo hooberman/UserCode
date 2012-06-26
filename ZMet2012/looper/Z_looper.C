@@ -861,9 +861,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
 
       trgeff_ = -1;
-      if     ( leptype_ == 0 ) trgeff_ = 1.00;
-      else if( leptype_ == 1 ) trgeff_ = 0.90;
-      else if( leptype_ == 2 ) trgeff_ = 0.95;
+      if     ( leptype_ == 0 ) trgeff_ = 0.95;
+      else if( leptype_ == 1 ) trgeff_ = 0.88;
+      else if( leptype_ == 2 ) trgeff_ = 0.92;
 
       dilmass_ = hyp_p4()[hypIdx].mass();
 
