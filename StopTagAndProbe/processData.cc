@@ -38,10 +38,6 @@ int main(int argc, char *argv[])
   int ijob     = atoi(argv[1]);
   int prescale = 1;
 
-  
-  // processLeptonTree("DoubleElectron_May10", SmurfTree::data, 
-  // 		    "StopTNPSkim/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/merged_ntuple_999999_10_skim.root", true, goodrunlist,prescale);
-
   if( ijob == 1 ){
     processLeptonTree("DoubleElectron_May10" , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/merged*root", true, goodrunlist,prescale);
     processLeptonTree("DoubleElectron_PRv4"  , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/merged*root" , true, goodrunlist,prescale);
