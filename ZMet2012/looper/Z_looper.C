@@ -267,7 +267,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     set_vtxreweight_rootfile("vtxreweight_GMSB_4p7fb_Zselection.root",true);
   }
   else{
-    set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS7_24fb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS7_5p1fb_Zselection.root",true);
   }
 
 
