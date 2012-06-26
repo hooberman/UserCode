@@ -283,7 +283,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   // make smurf ntuples
   gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-01/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
+  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-02/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
   assert(fSmurf);
   LeptonTree leptonTree;
   leptonTree.CreateTree();
@@ -294,7 +294,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   HLT_Ele17_Ele8_probe_=0;
   HLT_Ele27_WP80_tag_=0;
   HLT_Ele27_WP80_probe_=0;
-		
+
   HLT_IsoMu30_eta2p1_tag_=0;
   HLT_IsoMu30_eta2p1_probe_=0;
   HLT_IsoMu24_eta2p1_tag_=0;
@@ -315,7 +315,6 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   leptonTree.tree_->Branch("HLT_TNP_tag"	       			, &HLT_TNP_tag_			         	,"HLT_TNP_tag/i");
   leptonTree.tree_->Branch("HLT_TNP_probe"    		        	, &HLT_TNP_probe_	             		,"HLT_TNP_probe/i");
-
   leptonTree.tree_->Branch("HLT_IsoMu30_eta2p1_tag"	       		, &HLT_IsoMu30_eta2p1_tag_			,"HLT_IsoMu30_eta2p1_tag/i");
   leptonTree.tree_->Branch("HLT_IsoMu30_eta2p1_probe"  			, &HLT_IsoMu30_eta2p1_probe_		        ,"HLT_IsoMu30_eta2p1_probe/i");
   leptonTree.tree_->Branch("HLT_IsoMu24_eta2p1_tag"	       		, &HLT_IsoMu24_eta2p1_tag_			,"HLT_IsoMu24_eta2p1_tag/i");
@@ -419,7 +418,6 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 	  (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
       }       
       ++nEventsTotal;
-
       //
       // basic event preselection
       //
@@ -431,14 +429,13 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
       // duplicate removal
       //
 
-      EventIdentifier id(cms2,realData);
+      EventIdentifier id(cms2,realData); // <<<<--------CRASH HERE
       if (is_duplicate(id)) {
 	duplicates_total_n++;
 	if(!realData) duplicates_total_weight += cms2.evt_scale1fb();
 	//cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
 	continue;
       }
-
       //
       // counter
       //
