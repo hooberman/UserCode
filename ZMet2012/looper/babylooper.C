@@ -23,7 +23,7 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
-enum metType        { e_tcmet    = 0 , e_tcmetNew      = 1 , e_pfmet             = 2 };
+enum metType        { e_tcmet    = 0 , e_tcmetNew      = 1 , e_pfmet             = 2 , e_t1pfmet = 3 };
 enum templateSource { e_QCD      = 0 , e_PhotonJet     = 1 , e_PhotonJetStitched = 2 };
 enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt = 2 };
 
@@ -41,7 +41,7 @@ templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templat
 templateType   myTemplateType     = e_njets_ht;             // bin templates in njets and HT
 bool           reweight           = false;                  // reweight for photon vs. Z pt
 char*          iter               = "njetsgeq2";            // label for output file
-float          lumi               = 3.93;                   // luminosity
+float          lumi               = 5.1;                    // luminosity
 //------------------------------------------------
 
 using namespace std;
@@ -236,6 +236,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       if     ( myMetType == e_tcmet    ) theMet = tcmet_;
       else if( myMetType == e_tcmetNew ) theMet = tcmetNew_;
       else if( myMetType == e_pfmet    ) theMet = pfmet_;
+      else if( myMetType == e_t1pfmet  ) theMet = pfmett1new_;
 
       //---------------------------------------------------
       // apply event selection
@@ -252,10 +253,11 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	if( bveto && nbm_ > 0 )                         continue; // do b-veto
 	if( mjjcut && ( mjj_ < 70.0 || mjj_ > 110.0 ) ) continue; // mjj requirement
 	if( nlep2 && nlep_ > 2 )                        continue; // 3rd lepton veto
-	if( leptype_ == 0 ){
-	  if( jetpt_ll_ - ptll_ < -5  ) continue;       // PF overcleaning 
-	  if( jetpt_lt_ - ptlt_ < -5  ) continue;       // PF overcleaning
-	}
+
+	//if( leptype_ == 0 ){
+	//if( jetpt_ll_ - ptll_ < -5  ) continue;       // PF overcleaning 
+	//if( jetpt_lt_ - ptlt_ < -5  ) continue;       // PF overcleaning
+	//}
 
         //------------------------------------------------------------
         // trigger selection
@@ -662,6 +664,7 @@ void babylooper::setErrors( TFile* file,  TH1F* hist , int n[3][7] ){
   if     ( myMetType == e_tcmet    ) metstring = "tcmet";
   else if( myMetType == e_tcmetNew ) metstring = "tcmetNew";
   else if( myMetType == e_pfmet    ) metstring = "pfmet";
+  else if( myMetType == e_t1pfmet  ) metstring = "t1pfmet";
 
   cout << hist->Integral() << endl;
 
@@ -710,6 +713,7 @@ void babylooper::setErrors( TFile* file,  TH1F* hist , int n[4][3][7] ){
   if     ( myMetType == e_tcmet    ) metstring = "tcmet";
   else if( myMetType == e_tcmetNew ) metstring = "tcmetNew";
   else if( myMetType == e_pfmet    ) metstring = "pfmet";
+  else if( myMetType == e_t1pfmet  ) metstring = "t1pfmet";
 
   cout << hist->Integral() << endl;
 
@@ -774,6 +778,7 @@ TH1F* babylooper::getMetTemplate( TFile* file, int iTrigBin , int iJetBin ,
   if     ( myMetType == e_tcmet    ) metstring = "tcmet";
   else if( myMetType == e_tcmetNew ) metstring = "tcmetNew";
   else if( myMetType == e_pfmet    ) metstring = "pfmet";
+  else if( myMetType == e_t1pfmet  ) metstring = "t1pfmet";
   
   TH1F* hmet = new TH1F();
   
@@ -1064,6 +1069,7 @@ void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("nvtx",         &nvtx_         );
   tree->SetBranchAddress("npfmuons",     &npfmuons_     );
   tree->SetBranchAddress("pfmet",        &pfmet_        );
+  tree->SetBranchAddress("pfmett1new",   &pfmett1new_   );
   tree->SetBranchAddress("pfmetcor",     &pfmetcor_     );
   tree->SetBranchAddress("pfmetphi",     &pfmetphi_     );
   tree->SetBranchAddress("pfsumet",      &pfsumet_      );

@@ -82,6 +82,7 @@ class babylooper
 
 	// pfmet stuff
 	Float_t pfmet_;
+	Float_t pfmett1new_;
 	Float_t pfmetcor_;
 	Float_t pfmetphi_;
 	Float_t pfsumet_;
