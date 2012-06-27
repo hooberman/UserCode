@@ -13,14 +13,13 @@ vertex is not fake, $\rm{ndf}\geq4$, $\rho<2$ cm, and $|z|<24$ cm.
 
 \subsection{Lepton Selection}
 
-Because Z $\rightarrow\ell\ell$ ($\ell=e,\mu$) is a final state with very little 
-background after a Z mass requirement is applied to the leptons,
+Because Z $\rightarrow\ell\ell$ ($\ell=e,\mu$) is a final state with very little background,
 we restrict ourselves to events in which the Z boson decays to electrons or muons only.
-Therefore two same flavor, opposite sign leptons passing the ID described below are required in each event.
+Therefore opposite sign leptons passing the identification and isolation requirements described below are required in each event.
 
 \begin{itemize}
 \item \pt $> 20$~GeV and $|\eta|<2.4$;
-\item Opposite-sign SF lepton pairs (OF e$\mu$ events are retained in a control 
+\item Opposite-sign same-flavor (SF) ee and $\mu\mu$ lepton pairs (opposite-flavor (OF) e$\mu$ lepton pairs are retained in a control 
   sample used to estimate the FS contribution);
 \item For SF events, the dilepton invariant mass is required to be consistent with the Z mass; namely $81<m_{\ell\ell}<101$ GeV.
 \end{itemize}
@@ -28,6 +27,7 @@ Therefore two same flavor, opposite sign leptons passing the ID described below 
 \subsubsection{Electron Selection}
 
 The electron selection is the loose working point recommended by the E/gamma POG, as documented at~\cite{ref:Egamma}. 
+Electrons with \pt $>$ 20 GeV and $|\eta|<2.4$ are considered.
 We use PF-based isolation with a cone size of $\Delta R<0.3$, using the effective area rho corrections documented at~\cite{ref:Egammaiso},
 and we require a relative isolation $<$ 0.15. 
 Electrons in the transition region defined by $1.4442 < |\eta_{SC}| < 1.566$ are rejected.
@@ -57,7 +57,8 @@ conversion rejection: missing hits     &  $\leq1$  & $\leq1$  \\
 
 \subsubsection{Muon Selection}
 
-We use the tight muon selection recommended by the muon POG, as documented at~\cite{ref:muon}. We use PF-based isolation with a cone size
+We use the tight muon selection recommended by the muon POG, as documented at~\cite{ref:muon}.
+Muons with \pt $>$ 20 GeV and $|\eta|<2.4$ are considered. We use PF-based isolation with a cone size
 of $\Delta R<0.3$, using the $\Delta\beta$ PU correction scheme, and we require a relative isolation of $<$ 0.15.
 The muon selection requirements are listed in Table~\ref{table:muons} for completeness.
 
@@ -81,6 +82,11 @@ tracker layers & $\geq5$ \\
 \end{center}
 \end{table}
 
+\subsubsection{PF Leptons}
+
+For consistency with pfmet, both electrons and muons are required to be reconstructed as PF electrons and PF muons, respectively,
+with \pt $>$ 20 GeV. For defining the dilepton invariant mass, the 4-momenta of the PF leptons are used.
+
 \subsection{Photons}
 \label{sec:phosel}
 
@@ -100,7 +106,7 @@ The matched jet is required to have a neutral electromagnetic energy fraction of
   This removes a few rare cases in which ``overcleaning" of a
   %ECAL recHit 
   pfjet
-  generated fake MET.
+  generates fake MET.
 
 \item We also match photons to calojets and require (calojet \pt - photon \pt) $>$ -5~GeV
   (the same requirement used for pfjets). This is to remove other rare cases in which fake
@@ -123,7 +129,7 @@ We use pfmet, henceforth referred to simply as \MET.
 \label{sec:jetsel}
 
 \begin{itemize}
-\item PF jets with L1FastL2L3 corrections (MC), L1FastL2L3residual corrections (data)
+\item PF jets with L1FastL2L3 corrections (MC), L1FastL2L3residual corrections (data), using the 52X jet energy corrections
 \item $|\eta| < 2.5$
 \item Passes loose PFJet ID
 \item \pt $ > 30$ GeV for determining the jet multiplicity, \pt $ > 15$ GeV for calculation of \Ht
