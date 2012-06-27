@@ -512,6 +512,48 @@ void singleLeptonLooper::InitBaby(){
   pfcandmindrj5_  = 9999.;
   pfcandmindrj10_ = 9999.;
 
+  trkpt10pt0p1_	    = 9999.;
+  trkreliso10pt0p1_ = 9999.;
+  trkpt10pt0p2_	    = 9999.;
+  trkreliso10pt0p2_ = 9999.;
+  trkpt10pt0p3_	    = 9999.;
+  trkreliso10pt0p3_ = 9999.;
+  trkpt10pt0p4_	    = 9999.;
+  trkreliso10pt0p4_ = 9999.;
+  trkpt10pt0p5_	    = 9999.;
+  trkreliso10pt0p5_ = 9999.;
+  trkpt10pt0p6_	    = 9999.;
+  trkreliso10pt0p6_ = 9999.;
+  trkpt10pt0p7_	    = 9999.;
+  trkreliso10pt0p7_ = 9999.;
+  trkpt10pt0p8_	    = 9999.;
+  trkreliso10pt0p8_ = 9999.;
+  trkpt10pt0p9_	    = 9999.;
+  trkreliso10pt0p9_ = 9999.;
+  trkpt10pt1p0_	    = 9999.;
+  trkreliso10pt1p0_ = 9999.;
+
+  pfcandpt10pt0p1_  = 9999.;
+  pfcandiso10pt0p1_ = 9999.;
+  pfcandpt10pt0p2_  = 9999.;
+  pfcandiso10pt0p2_ = 9999.;
+  pfcandpt10pt0p3_  = 9999.;
+  pfcandiso10pt0p3_ = 9999.;
+  pfcandpt10pt0p4_  = 9999.;
+  pfcandiso10pt0p4_ = 9999.;
+  pfcandpt10pt0p5_  = 9999.;
+  pfcandiso10pt0p5_ = 9999.;
+  pfcandpt10pt0p6_  = 9999.;
+  pfcandiso10pt0p6_ = 9999.;
+  pfcandpt10pt0p7_  = 9999.;
+  pfcandiso10pt0p7_ = 9999.;
+  pfcandpt10pt0p8_  = 9999.;
+  pfcandiso10pt0p8_ = 9999.;
+  pfcandpt10pt0p9_  = 9999.;
+  pfcandiso10pt0p9_ = 9999.;
+  pfcandpt10pt1p0_  = 9999.;
+  pfcandiso10pt1p0_ = 9999.;
+
 }
 
 //--------------------------------------------------------------------
@@ -1696,7 +1738,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) 
 	    isGoodLepton = true;  
 	}
-	bool isLeadLepton = ( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(imaxpt) ) < 0.1 ) ? true : false;
+	bool isLeadLepton = ( dRbetweenVectors( pfcands_p4().at(ipf) , 
+						goodLeptons.at(imaxpt) ) < 0.1 ) ? true : false;
 
 	//store loose definition to compare with previous results
 	float iso = trackIso(ipf, 0.3, dz_cut_loose, true) / pfcands_p4().at(ipf).pt();
@@ -1715,6 +1758,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
  	  if( fabs( dz_trk_vtx(itrk,0) ) > dz_cut ) continue;
  	}
 
+	//recalculated definition of the isolation
 	iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
 
 	if( iso < miniso10 && !isGoodLepton ){
@@ -1729,6 +1773,111 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandpt10_ = pfcands_p4().at(ipf).pt();
 	  pfcand10_ = &pfcands_p4().at(ipf);
 	}
+	
+	//add all the variables with various pt thresholds
+
+	if (isLeadLepton) continue;
+
+	float iso0p1 = trackIso(ipf, 0.3, dz_cut, false, 0.1) / pfcands_p4().at(ipf).pt();
+	if( iso0p1 < trkreliso10pt0p1_ && !isGoodLepton ){
+	  trkpt10pt0p1_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt0p1_   = iso0p1;
+	}
+	if( iso0p1 < pfcandiso10pt0p1_ ){
+	  pfcandpt10pt0p1_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt0p1_ = iso0p1;
+	}
+
+	float iso0p2 = trackIso(ipf, 0.3, dz_cut, false, 0.2) / pfcands_p4().at(ipf).pt();
+	if( iso0p2 < trkreliso10pt0p2_ && !isGoodLepton ){
+	  trkpt10pt0p2_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt0p2_   = iso0p2;
+	}
+	if( iso0p2 < pfcandiso10pt0p2_ ){
+	  pfcandpt10pt0p2_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt0p2_ = iso0p2;
+	}
+
+	float iso0p3 = trackIso(ipf, 0.3, dz_cut, false, 0.3) / pfcands_p4().at(ipf).pt();
+	if( iso0p3 < trkreliso10pt0p3_ && !isGoodLepton ){
+	  trkpt10pt0p3_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt0p3_   = iso0p3;
+	}
+	if( iso0p3 < pfcandiso10pt0p3_ ){
+	  pfcandpt10pt0p3_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt0p3_ = iso0p3;
+	}
+
+	float iso0p4 = trackIso(ipf, 0.3, dz_cut, false, 0.4) / pfcands_p4().at(ipf).pt();
+	if( iso0p4 < trkreliso10pt0p4_ && !isGoodLepton ){
+	  trkpt10pt0p4_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt0p4_   = iso0p4;
+	}
+	if( iso0p4 < pfcandiso10pt0p4_ ){
+	  pfcandpt10pt0p4_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt0p4_ = iso0p4;
+	}
+
+	float iso0p5 = trackIso(ipf, 0.3, dz_cut, false, 0.5) / pfcands_p4().at(ipf).pt();
+	if( iso0p5 < trkreliso10pt0p5_ && !isGoodLepton ){
+	  trkpt10pt0p5_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt0p5_   = iso0p5;
+	}
+	if( iso0p5 < pfcandiso10pt0p5_ ){
+	  pfcandpt10pt0p5_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt0p5_ = iso0p5;
+	}
+
+	float iso0p6 = trackIso(ipf, 0.3, dz_cut, false, 0.6) / pfcands_p4().at(ipf).pt();
+	if( iso0p6 < trkreliso10pt0p6_ && !isGoodLepton ){
+	  trkpt10pt0p6_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt0p6_   = iso0p6;
+	}
+	if( iso0p6 < pfcandiso10pt0p6_ ){
+	  pfcandpt10pt0p6_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt0p6_ = iso0p6;
+	}
+
+	float iso0p7 = trackIso(ipf, 0.3, dz_cut, false, 0.7) / pfcands_p4().at(ipf).pt();
+	if( iso0p7 < trkreliso10pt0p7_ && !isGoodLepton ){
+	  trkpt10pt0p7_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt0p7_   = iso0p7;
+	}
+	if( iso0p7 < pfcandiso10pt0p7_ ){
+	  pfcandpt10pt0p7_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt0p7_ = iso0p7;
+	}
+
+	float iso0p8 = trackIso(ipf, 0.3, dz_cut, false, 0.8) / pfcands_p4().at(ipf).pt();
+	if( iso0p8 < trkreliso10pt0p8_ && !isGoodLepton ){
+	  trkpt10pt0p8_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt0p8_   = iso0p8;
+	}
+	if( iso0p8 < pfcandiso10pt0p8_ ){
+	  pfcandpt10pt0p8_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt0p8_ = iso0p8;
+	}
+
+	float iso0p9 = trackIso(ipf, 0.3, dz_cut, false, 0.9) / pfcands_p4().at(ipf).pt();
+	if( iso0p9 < trkreliso10pt0p9_ && !isGoodLepton ){
+	  trkpt10pt0p9_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt0p9_   = iso0p9;
+	}
+	if( iso0p9 < pfcandiso10pt0p9_ ){
+	  pfcandpt10pt0p9_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt0p9_ = iso0p9;
+	}
+
+	float iso1p0 = trackIso(ipf, 0.3, dz_cut, false, 1.0) / pfcands_p4().at(ipf).pt();
+	if( iso1p0 < trkreliso10pt1p0_ && !isGoodLepton ){
+	  trkpt10pt1p0_       = pfcands_p4().at(ipf).pt();
+	  trkreliso10pt1p0_   = iso1p0;
+	}
+	if( iso1p0 < pfcandiso10pt1p0_ ){
+	  pfcandpt10pt1p0_ = pfcands_p4().at(ipf).pt();
+	  pfcandiso10pt1p0_ = iso1p0;
+	}
+
 
       }
 
@@ -1825,12 +1974,13 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //----------------------------------------
       // PDF Information
       //----------------------------------------
-      pdfid1_ = int(cms2.pdfinfo_id1());
-      pdfid2_ = int(cms2.pdfinfo_id2());
-      pdfQ_   = cms2.pdfinfo_scale();
-      pdfx1_  = cms2.pdfinfo_x1();
-      pdfx2_  = cms2.pdfinfo_x2();
-
+      if ( !isData ) {
+	pdfid1_ = int(cms2.pdfinfo_id1());
+	pdfid2_ = int(cms2.pdfinfo_id2()); 
+	pdfQ_   = cms2.pdfinfo_scale();
+	pdfx1_  = cms2.pdfinfo_x1();
+	pdfx2_  = cms2.pdfinfo_x2();
+      }
       //-------------------------------------
       // jet counting
       //-------------------------------------
@@ -3247,6 +3397,48 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("trkreliso5loose",  &trkreliso5loose_,  "trkreliso5loose/F");  
   outTree->Branch("trkreliso10loose", &trkreliso10loose_, "trkreliso10loose/F");  
 
+  outTree->Branch("trkpt10pt0p1",     &trkpt10pt0p1_,      "trkpt10pt0p1/F");  
+  outTree->Branch("trkpt10pt0p2",     &trkpt10pt0p2_,      "trkpt10pt0p2/F");  
+  outTree->Branch("trkpt10pt0p3",     &trkpt10pt0p3_,      "trkpt10pt0p3/F");  
+  outTree->Branch("trkpt10pt0p4",     &trkpt10pt0p4_,      "trkpt10pt0p4/F");  
+  outTree->Branch("trkpt10pt0p5",     &trkpt10pt0p5_,      "trkpt10pt0p5/F");  
+  outTree->Branch("trkpt10pt0p6",     &trkpt10pt0p6_,      "trkpt10pt0p6/F");  
+  outTree->Branch("trkpt10pt0p7",     &trkpt10pt0p7_,      "trkpt10pt0p7/F");  
+  outTree->Branch("trkpt10pt0p8",     &trkpt10pt0p8_,      "trkpt10pt0p8/F");  
+  outTree->Branch("trkpt10pt0p9",     &trkpt10pt0p9_,      "trkpt10pt0p9/F");  
+  outTree->Branch("trkpt10pt1p0",     &trkpt10pt1p0_,      "trkpt10pt1p0/F");  
+  outTree->Branch("trkreliso10pt0p1", &trkreliso10pt0p1_,  "trkreliso10pt0p1/F");  
+  outTree->Branch("trkreliso10pt0p2", &trkreliso10pt0p2_,  "trkreliso10pt0p2/F");  
+  outTree->Branch("trkreliso10pt0p3", &trkreliso10pt0p3_,  "trkreliso10pt0p3/F");  
+  outTree->Branch("trkreliso10pt0p4", &trkreliso10pt0p4_,  "trkreliso10pt0p4/F");  
+  outTree->Branch("trkreliso10pt0p5", &trkreliso10pt0p5_,  "trkreliso10pt0p5/F");  
+  outTree->Branch("trkreliso10pt0p6", &trkreliso10pt0p6_,  "trkreliso10pt0p6/F");  
+  outTree->Branch("trkreliso10pt0p7", &trkreliso10pt0p7_,  "trkreliso10pt0p7/F");  
+  outTree->Branch("trkreliso10pt0p8", &trkreliso10pt0p8_,  "trkreliso10pt0p8/F");  
+  outTree->Branch("trkreliso10pt0p9", &trkreliso10pt0p9_,  "trkreliso10pt0p9/F");  
+  outTree->Branch("trkreliso10pt1p0", &trkreliso10pt1p0_,  "trkreliso10pt1p0/F");  
+
+  outTree->Branch("pfcandpt10pt0p1",  &pfcandpt10pt0p1_,   "pfcandpt10pt0p1/F");  
+  outTree->Branch("pfcandpt10pt0p2",  &pfcandpt10pt0p2_,   "pfcandpt10pt0p2/F");  
+  outTree->Branch("pfcandpt10pt0p3",  &pfcandpt10pt0p3_,   "pfcandpt10pt0p3/F");  
+  outTree->Branch("pfcandpt10pt0p4",  &pfcandpt10pt0p4_,   "pfcandpt10pt0p4/F");  
+  outTree->Branch("pfcandpt10pt0p5",  &pfcandpt10pt0p5_,   "pfcandpt10pt0p5/F");  
+  outTree->Branch("pfcandpt10pt0p6",  &pfcandpt10pt0p6_,   "pfcandpt10pt0p6/F");  
+  outTree->Branch("pfcandpt10pt0p7",  &pfcandpt10pt0p7_,   "pfcandpt10pt0p7/F");  
+  outTree->Branch("pfcandpt10pt0p8",  &pfcandpt10pt0p8_,   "pfcandpt10pt0p8/F");  
+  outTree->Branch("pfcandpt10pt0p9",  &pfcandpt10pt0p9_,   "pfcandpt10pt0p9/F");  
+  outTree->Branch("pfcandpt10pt1p0",  &pfcandpt10pt1p0_,   "pfcandpt10pt1p0/F");  
+  outTree->Branch("pfcandiso10pt0p1", &pfcandiso10pt0p1_,  "pfcandiso10pt0p1/F");  
+  outTree->Branch("pfcandiso10pt0p2", &pfcandiso10pt0p2_,  "pfcandiso10pt0p2/F");  
+  outTree->Branch("pfcandiso10pt0p3", &pfcandiso10pt0p3_,  "pfcandiso10pt0p3/F");  
+  outTree->Branch("pfcandiso10pt0p4", &pfcandiso10pt0p4_,  "pfcandiso10pt0p4/F");  
+  outTree->Branch("pfcandiso10pt0p5", &pfcandiso10pt0p5_,  "pfcandiso10pt0p5/F");  
+  outTree->Branch("pfcandiso10pt0p6", &pfcandiso10pt0p6_,  "pfcandiso10pt0p6/F");  
+  outTree->Branch("pfcandiso10pt0p7", &pfcandiso10pt0p7_,  "pfcandiso10pt0p7/F");  
+  outTree->Branch("pfcandiso10pt0p8", &pfcandiso10pt0p8_,  "pfcandiso10pt0p8/F");  
+  outTree->Branch("pfcandiso10pt0p9", &pfcandiso10pt0p9_,  "pfcandiso10pt0p9/F");  
+  outTree->Branch("pfcandiso10pt1p0", &pfcandiso10pt1p0_,  "pfcandiso10pt1p0/F");  
+
   outTree->Branch("mbb",             &mbb_,              "mbb/F");
   outTree->Branch("lep1pfjetdr",     &lep1pfjetdr_,      "lep1pfjetdr/F");  
   outTree->Branch("lep2pfjetdr",     &lep2pfjetdr_,      "lep2pfjetdr/F");  
@@ -3309,7 +3501,7 @@ float singleLeptonLooper::dz_trk_vtx( const unsigned int trkidx, const unsigned 
   
 }
 
-float singleLeptonLooper::trackIso( int thisPf , float coneR , float dz_thresh , bool dovtxcut ){
+float singleLeptonLooper::trackIso( int thisPf , float coneR , float dz_thresh , bool dovtxcut , float pt_thresh ){
 
   float iso = 0.0;
 
@@ -3317,6 +3509,7 @@ float singleLeptonLooper::trackIso( int thisPf , float coneR , float dz_thresh ,
 
     if( ipf == thisPf                 ) continue; // skip this PFCandidate
     if( cms2.pfcands_charge().at(ipf) == 0 ) continue; // skip neutrals
+    if( cms2.pfcands_p4().at(ipf).pt() < pt_thresh ) continue; // skip pfcands below pt threshold
 
     if( dRbetweenVectors( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) ) > coneR ) continue;
 

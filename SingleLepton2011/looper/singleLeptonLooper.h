@@ -70,7 +70,7 @@ class singleLeptonLooper
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
 	float stopPairCrossSection( float stopmass );
         void closeTree ();
-	float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut = false );
+	float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut = false , float pt_thresh = 0.0);
 	std::vector<float> trackIsoPtRanges( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
 	std::vector<float> totalIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
 	pair<float,float> getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool is8TeV = false);
@@ -130,6 +130,29 @@ class singleLeptonLooper
 	Float_t trkpt10loose_;
 	Float_t trkreliso10loose_;
 
+	//min pt cut on particles 
+	//included in the isolation
+	Float_t trkpt10pt0p1_;
+	Float_t trkreliso10pt0p1_;
+	Float_t trkpt10pt0p2_;
+	Float_t trkreliso10pt0p2_;
+	Float_t trkpt10pt0p3_;
+	Float_t trkreliso10pt0p3_;
+	Float_t trkpt10pt0p4_;
+	Float_t trkreliso10pt0p4_;
+	Float_t trkpt10pt0p5_;
+	Float_t trkreliso10pt0p5_;
+	Float_t trkpt10pt0p6_;
+	Float_t trkreliso10pt0p6_;
+	Float_t trkpt10pt0p7_;
+	Float_t trkreliso10pt0p7_;
+ 	Float_t trkpt10pt0p8_;
+	Float_t trkreliso10pt0p8_;
+	Float_t trkpt10pt0p9_;
+	Float_t trkreliso10pt0p9_;
+	Float_t trkpt10pt1p0_;
+	Float_t trkreliso10pt1p0_;
+
 	// extra pfcand vars 
         Float_t pfcandiso5_;     
         Float_t pfcandiso10_;     
@@ -137,6 +160,27 @@ class singleLeptonLooper
         Float_t pfcandpt10_;
         Float_t pfcandmindrj5_;
         Float_t pfcandmindrj10_;
+
+	Float_t pfcandpt10pt0p1_;
+	Float_t pfcandiso10pt0p1_;
+	Float_t pfcandpt10pt0p2_;
+	Float_t pfcandiso10pt0p2_;
+	Float_t pfcandpt10pt0p3_;
+	Float_t pfcandiso10pt0p3_;
+	Float_t pfcandpt10pt0p4_;
+	Float_t pfcandiso10pt0p4_;
+	Float_t pfcandpt10pt0p5_;
+	Float_t pfcandiso10pt0p5_;
+	Float_t pfcandpt10pt0p6_;
+	Float_t pfcandiso10pt0p6_;
+	Float_t pfcandpt10pt0p7_;
+	Float_t pfcandiso10pt0p7_;
+ 	Float_t pfcandpt10pt0p8_;
+	Float_t pfcandiso10pt0p8_;
+	Float_t pfcandpt10pt0p9_;
+	Float_t pfcandiso10pt0p9_;
+	Float_t pfcandpt10pt1p0_;
+	Float_t pfcandiso10pt1p0_;
 
 	// btag variables
 	Int_t   nbtagsssv_;     

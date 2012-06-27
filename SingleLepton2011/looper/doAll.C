@@ -76,16 +76,20 @@ void doAll(bool skipFWLite = true)
   float kqcd      = 1.;  
   float kWjets    = 1.;  
   float kVV       = 1.;
+  float kVVV      = 1.;
   float kDYtot    = 1.;  
   float ktW       = 1.;
+  float kttV      = 1.;
 
   // prescales
   int preqcd      = 1;
   int prettall    = 1;
   int preWjets    = 1;
   int preVV       = 1;
+  int preVVV      = 1;
   int preDYtot    = 1;
   int pretW       = 1;
+  int prettV      = 1;
  
   // flags for files to run over
   bool rundata     = 0;
@@ -95,6 +99,8 @@ void doAll(bool skipFWLite = true)
   bool runQCD      = 0;
   bool runMuQCD    = 0;
   bool runtW       = 0;
+  bool runttV      = 0;
+  bool runVVV      = 0;
   bool runDYtot    = 0;
   bool runT2tt     = 0; 
   bool runT2tt_few = 0;
@@ -161,8 +167,10 @@ void doAll(bool skipFWLite = true)
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
+    //    pickSkimIfExists(chtopall,"/hadoop/cms/store/user/vimartin/CMS2_V04-02-29/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v2/ntuple_1454_0_Psq.root");
+    pickSkimIfExists(chtopall,"/hadoop/cms/store/user/vimartin/CMS2_V04-02-29/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v2/ntuple*.root");
     //    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple_35.root");
-    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root");
+    //    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root");
   }
 
   //----------------------------------------
@@ -180,9 +188,12 @@ void doAll(bool skipFWLite = true)
 
   TChain* chVV = new  TChain("Events");
   if(runVV){
-    pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WW_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
-    pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
-    pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/ZZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    pickSkimIfExists(chVV, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/WW_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    pickSkimIfExists(chVV, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/WZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    pickSkimIfExists(chVV, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/ZZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WW_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+    // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/ZZ_TuneZ2_7TeV_pythia6_tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
     // samples in multi-lepton decay modes
     // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
     // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
@@ -191,6 +202,19 @@ void doAll(bool skipFWLite = true)
     // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/ZZJetsTo4L_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
     // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/ZZJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
     // pickSkimIfExists(chVV, "/nfs-6/userdata/cms2/ZZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLepton/merged*root");
+  }
+
+  //----------------------------------------                                                                                                                                                                
+  // Triboson VVV                                                                                                                                                                                             
+  //----------------------------------------                                                                                                                                                                
+
+  TChain* chVVV = new  TChain("Events");
+  if(runVVV){
+    pickSkimIfExists(chVVV, "/nfs-3/userdata/cms2/WWPhoton_TuneZ2_7TeV-madgraphCMSSW42xPUv1_spadhi-WWPhoton_TuneZ2_7TeV-madgraphCMSSW42xPUv1-9ab11d163a88ab8f3641ab081403ebc5_singleLepton/CMS2_VB04-02-29_FastSim/merged*root");
+    pickSkimIfExists(chVVV, "/nfs-3/userdata/cms2/WWZNoGstar_TuneZ2_7TeV-madgraphCMSSW42xPUv1_spadhi-WWZNoGstar_TuneZ2_7TeV-madgraphCMSSW42xPUv1-9ab11d163a88ab8f3641ab081403ebc5_singleLepton/CMS2_VB04-02-29_FastSim/merged*root");
+    pickSkimIfExists(chVVV, "/nfs-3/userdata/cms2/WWW_TuneZ2_7TeV-madgraphCMSSW42xPUv1_spadhi-WWW_TuneZ2_7TeV-madgraphCMSSW42xPUv1-9ab11d163a88ab8f3641ab081403ebc5_singleLepton/CMS2_VB04-02-29_FastSim/merged*root");
+    pickSkimIfExists(chVVV, "/nfs-3/userdata/cms2/WZZNoGstar_TuneZ2_7TeV-madgraphCMSSW42xPUv1_spadhi-WZZNoGstar_TuneZ2_7TeV-madgraphCMSSW42xPUv1-9ab11d163a88ab8f3641ab081403ebc5_singleLepton/CMS2_VB04-02-29_FastSim/merged*root");
+    pickSkimIfExists(chVVV, "/nfs-6/userdata/cms2/ZZZNoGstar_TuneZ2_7TeV-madgraphCMSSW42xPUv1_spadhi-ZZZNoGstar_TuneZ2_7TeV-madgraphCMSSW42xPUv1-9ab11d163a88ab8f3641ab081403ebc5_singleLepton/CMS2_VB04-02-29_FastSim/merged*root"); 
   }
 
   //----------------------------------------
@@ -222,6 +246,17 @@ void doAll(bool skipFWLite = true)
     pickSkimIfExists(chtW,"/nfs-7/userdata/benhoob/cms2/Tbar_TuneZ2_t-channel_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
     pickSkimIfExists(chtW,"/nfs-7/userdata/benhoob/cms2/T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
     pickSkimIfExists(chtW,"/nfs-7/userdata/benhoob/cms2/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+  }
+
+  //----------------------------------------
+  // rare top processes
+  //----------------------------------------
+  
+  TChain* chttV = new  TChain("Events");
+  if (runttV) {
+      pickSkimIfExists(chttV,"/nfs-3/userdata/cms2/TTW_TuneZ2_7TeV-madgraphCMSSW42xPUv2_spadhi-TTW_TuneZ2_7TeV-madgraphCMSSW42xPUv2-9ab11d163a88ab8f3641ab081403ebc5_singleLepton/CMS2_VB04-02-29_FastSim/merged*.root");
+    pickSkimIfExists(chttV,"/nfs-6/userdata/cms2/TTZ_TuneZ2_7TeV-madgraphCMSSW42xPUv3_spadhi-TTZ_TuneZ2_7TeV-madgraphCMSSW42xPUv3-9ab11d163a88ab8f3641ab081403ebc5_singleLepton/CMS2_VB04-02-29_FastSim/merged*.root");
+    pickSkimIfExists(chttV,"/nfs-3/userdata/cms2/TTPhoton_TuneZ2_7TeV-madgraphCMSSW42xPUv3_spadhi-TTPhoton_TuneZ2_7TeV-madgraphCMSSW42xPUv3-9ab11d163a88ab8f3641ab081403ebc5_singleLepton/CMS2_VB04-02-29_FastSim/merged*.root");
   }
 
   //----------------------------------------
@@ -479,11 +514,23 @@ void doAll(bool skipFWLite = true)
     looper->ScanChain(chVV,"diboson", kVV, preVV, lumi);
     cout << "Done processing Diboson.." << endl;
   }
+  //-------------------------------------------------------------------
+  if (runVVV) {
+    cout << "Processing Triboson.." << endl;
+    looper->ScanChain(chVVV,"triboson", kVVV, preVVV, lumi);
+    cout << "Done processing Triboson.." << endl;
+  }
   //--------------------------------------------------------------------
   if (runtW) {
     cout << "Processing tW" << endl;
     looper->ScanChain(chtW,"tW", ktW, pretW, lumi);
     cout << "Done processing tW" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runttV) {
+    cout << "Processing ttV" << endl;
+    looper->ScanChain(chttV,"ttV", kttV, prettV, lumi);
+    cout << "Done processing ttV" << endl;
   }
   //--------------------------------------------------------------------
   if (runT2tt) {
