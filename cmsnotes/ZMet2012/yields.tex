@@ -4,7 +4,8 @@
 \label{sec:yields}
 
 In this section we compare the data and MC samples passing the selection described in Sec.~\ref{sec:eventSelection}
-In the following, the MC is reweighted to match the data distribution of number of reconstructed primary vertices. 
+In the following, the MC is reweighted to match the data distribution of number of reconstructed primary vertices
+{\bf FIXME: UPDATE TO 5.1/fb VTX-REWEIGHTING, CURRENTLY USING OUTDATED FUNCTION}. 
 The trigger efficiencies of Sec.~\ref{sec:datasets} are applied. In all plots, the last bin contains the overflow.
 
 We begin by counting the inclusive Z yields. Here we require the presence of two selected leptons without
@@ -19,7 +20,7 @@ of integrated luminosity (4.5\%), trigger efficiency (3\%), \zjets\ and \ttbar\ 
 	\caption{
 	  \label{fig:dilmass}\protect 
 	  Dilepton mass distribution for events with two selected leptons
-	  in the $ee$ (left) and $\mu\mu$ (right) final states.}
+	  in the ee (left) and $\mu\mu$ (right) final states.}
   \end{center}
 \end{figure}
 
@@ -53,15 +54,15 @@ of integrated luminosity (4.5\%), trigger efficiency (3\%), \zjets\ and \ttbar\ 
 
 \clearpage
 
-We next define the preselection region using the following requirements:
+We next define the preselection region for the inclusive search using the following requirements:
 \begin{itemize}
-\item Number of jets $\geq$ 2
-\item Same flavor dileptons (opposite flavor yields will be shown since they are used in data for the FS background estimation)
-\item Dilepton invariant mass $81<m_{\ell\ell}<101$ GeV
+\item Number of jets $\geq$ 2;
+\item Same flavor dileptons (opposite flavor yields will be shown since they are used in data for the FS background estimation);
+\item Dilepton invariant mass $81<m_{\ell\ell}<101$ GeV.
 \end{itemize}
 
-The dilepton mass distributions in the preselection region (without the dilepton mass requirement applied) for the $ee$ and $\mu\mu$ 
-final states are shown in Figure~\ref{fig:dilmass_2j}. In Table~\ref{table:zyields_2j} the data and MC yields in the preselection
+The dilepton mass distributions in the preselection region of the inclusive search (without the dilepton mass requirement applied) 
+for the ee and $\mu\mu$ final states are shown in Figure~\ref{fig:dilmass_2j}. In Table~\ref{table:zyields_2j} the data and MC yields in the preselection
 region are indicated. Good data vs. MC agreement is observed.
 
 
@@ -70,14 +71,14 @@ region are indicated. Good data vs. MC agreement is observed.
 	\includegraphics[width=1.0\linewidth]{plots/dilmass_ee_mm_2j.pdf}
 	\caption{
 	  \label{fig:dilmass_2j}\protect 
-	  Dilepton mass distribution for events in the preselection region
-	  in the $ee$ (left) and $\mu\mu$ (right) final states.}
+	  Dilepton mass distribution for events in the preselection region of the inclusive search
+	  in the ee (left) and $\mu\mu$ (right) final states.}
   \end{center}
 \end{figure}
 
 \begin{table}[htb]
 \begin{center}
-\caption{\label{table:zyields_2j} Data and MC yields in the preselection region.
+\caption{\label{table:zyields_2j} Data and MC yields in the preselection region of the inclusive search.
 }
 \begin{tabular}{lccccc}
 \hline
@@ -95,6 +96,62 @@ region are indicated. Good data vs. MC agreement is observed.
 \hline
            data   &          54426   &          80367   &           1565   &         136358  \\
 
+\hline
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\clearpage
+
+We next define the preselection region for the targeted search by adding the following requirements:
+\begin{itemize}
+\item Veto events containing a b-tagged jet;
+\item Dijet invariant mass $70<m_{jj}<110$ GeV;
+\item Veto events containing a third selected lepton (electron or muon) with \pt $>$ 20 GeV {\bf FIXME: lower third lepton \pt threshold to 10 GeV}.
+\end{itemize}
+
+The rejection of events with a b-tagged jet strongly suppresses the \ttbar\ background, which is the dominant background in the inclusive search
+after requiring large \MET. The requirement that the jet pair is consistent with originating from W/Z decay is motivated by the fact that we are 
+searching for signatures producing V(jj)Z($\ell\ell$)+\MET; this requirement suppresses the \zjets\ and \ttbar\ backgrounds. The veto of events
+containting a third electron or muon suppresses the WZ background, and also serves to make this analyis exclusive with respect to searches in
+the trilepton final state.
+
+The dilepton mass distributions in the preselection region of the targeted search (without the dilepton mass requirement applied) 
+for the ee and $\mu\mu$ final states are shown in Figure~\ref{fig:dilmass_2j_targeted}. In Table~\ref{table:zyields_2j_targeted} 
+the data and MC yields in the preselection region are indicated. Good data vs. MC agreement is observed.
+
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=1.0\linewidth]{plots/dilmass_ee_mm_2j_targeted.pdf}
+	\caption{
+	  \label{fig:dilmass_2j_targeted}\protect 
+	  Dilepton mass distribution for events in the preselection region of the targeted search
+	  in the ee (left) and $\mu\mu$ (right) final states.}
+  \end{center}
+\end{figure}
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{table:zyields_2j_targeted} Data and MC yields in the preselection region of the inclusive search.
+}
+\begin{tabular}{lccccc}
+\hline
+\hline
+         Sample   &           ee   &       $\mu\mu$   &         e$\mu$   &            total  \\
+\hline
+         \zjets   &14108.9 $\pm$ 486.3   &21927.1 $\pm$ 606.4   &  0.0 $\pm$ 0.0   &36036.0 $\pm$ 777.4  \\
+         \ttbar   & 21.0 $\pm$ 2.9   & 33.4 $\pm$ 3.9   & 53.7 $\pm$ 5.0   &108.0 $\pm$ 6.9  \\
+             WZ   &135.6 $\pm$ 1.4   &188.5 $\pm$ 1.6   &  1.0 $\pm$ 0.1   &325.1 $\pm$ 2.1  \\
+             ZZ   &106.0 $\pm$ 1.0   &148.8 $\pm$ 1.2   &  0.1 $\pm$ 0.0   &254.9 $\pm$ 1.5  \\
+             WW   &  3.4 $\pm$ 0.4   &  4.1 $\pm$ 0.4   &  7.8 $\pm$ 0.5   & 15.2 $\pm$ 0.7  \\
+     single top   &  2.0 $\pm$ 0.8   &  2.8 $\pm$ 1.1   &  5.5 $\pm$ 1.4   & 10.3 $\pm$ 1.9  \\
+\hline
+    total SM MC   &14376.9 $\pm$ 486.3   &22304.7 $\pm$ 606.5   & 68.0 $\pm$ 5.2   &36749.6 $\pm$ 777.4  \\
+\hline
+           data   &          14647   &          21840   &             74   &          36561  \\
+\hline
 \hline
 \hline
 \end{tabular}
