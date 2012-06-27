@@ -31,11 +31,12 @@
 //#include "histtools.h"
 using namespace std;
 
-bool  doKscaling =   true;
-float K          =   0.14;
-float Rem        =   1.22;   // OR of all triggers
-int   rebin      =     10;
+bool  doKscaling =    true;
+float K          =    0.14;
+float Rem        =    1.22;   // OR of all triggers
+int   rebin      =      10;
 bool  bveto      =   false;
+bool  latex      =    true;
 
 float histError( TH1F* hist , int lowbin ){
 
@@ -167,15 +168,24 @@ void simplePlotMacro( bool printplots = false ){
     bool  ee_and_mm = true;
 
     if( TString(observedHisto.at(i)).Contains("ee") ){
-      h_ofpred[i]->Scale(0.5/Rem);
+      //h_ofpred[i]->Scale(0.5/Rem);
+      h_ofpred[i]->Scale(0.41);
+      cout << "ee channel: scale em yield by 0.41" << endl;
       title     = (char*) "ee events";
       ee_and_mm = false;
     }
 
     else if( TString(observedHisto.at(i)).Contains("mm") ){
-      h_ofpred[i]->Scale(0.5*Rem);
+      //h_ofpred[i]->Scale(0.5*Rem);
+      h_ofpred[i]->Scale(0.58);
+      cout << "mm channel: scale em yield by 0.58" << endl;
       title     = (char*) "#mu#mu events";
       ee_and_mm = false;
+    }
+
+    else{
+      h_ofpred[i]->Scale(0.99);
+      cout << "ee+mm channels: scale em yield by 0.99" << endl;
     }
 
     //------------------------------------------
@@ -188,32 +198,6 @@ void simplePlotMacro( bool printplots = false ){
     h_wz[i]->Rebin(rebin);
     h_zz[i]->Rebin(rebin);
     h_vz[i]->Rebin(rebin);
-
-    // h_gjets[i]->SetFillColor(kAzure-9);
-    // h_ofpred[i]->SetFillColor(kGreen+2);
-    // h_zz[i]->SetFillColor(kRed);
-    // h_wz[i]->SetFillColor(kYellow);
-
-    // h_gjets[i]->SetFillColor(kYellow-9);
-    // h_ofpred[i]->SetFillColor(kAzure-9);
-    // h_zz[i]->SetFillColor(kYellow-9);
-    // h_vz[i]->SetFillColor(kOrange);
-    // h_vz[i]->SetFillColor(kGreen-6);
-    // h_zz[i]->SetFillColor(kYellow-9);
-    // h_wz[i]->SetFillColor(kGray+1);
-
-    // h_gjets[i]->SetFillColor(myBurntOrange);
-    // h_ofpred[i]->SetFillColor(kYellow);
-    // h_zz[i]->SetFillColor(kRed);
-    // h_wz[i]->SetFillColor(kGreen+2);
-
-    //h_gjets[i]->SetFillColor(kYellow);
-    //h_gjets[i]->SetFillColor(kCyan-10);
-    //h_wz[i]->SetFillColor(kRed);
-    // h_gjets[i]->SetFillStyle(3003);
-    // h_ofpred[i]->SetFillStyle(3004);
-    // h_wz[i]->SetFillStyle(3005);
-    // h_zz[i]->SetFillStyle(3002);
 
     h_gjets[i]->SetFillColor(50);
     h_ofpred[i]->SetFillColor(42);
@@ -241,23 +225,45 @@ void simplePlotMacro( bool printplots = false ){
     // make tables
     //-----------------------------------------------
 
-    const unsigned int nbins = 6;
+    int mynbins = 6;
+    if( bveto ) mynbins = 7;
+
+    const unsigned int nbins = 6;//mynbins;
 
     //int bins[nbins]={0,30,60,100,150,200,300};
     int      bins[nbins]  = {0,30,60,100,200,300};
     Double_t xbins[nbins] = {0.0,30.0,60.0,100.0,200.0,300.0};
 
-    int width1 = 16;
-    int width2 =  2;
+    int width1 = 18;
+    int width2 =  4;
 
     cout << endl;
     cout << title << endl << endl;
     
-    cout << "|" << setw(width1) << "" << setw(width2);
-    for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      cout << "|" << setw(width1) << Form("MET>%i GeV",bins[ibin]) << setw(width2);
+    char* delim_start =   "|";
+    char* delim_end   =   "|";
+    char* delim       =   "|";
+    char* pm          = "+/-";
+
+    if( latex ){
+      delim_start = " ";
+      delim_end   = "  \\\\";
+      delim       = "&";
+      pm          = "$\\pm$";
     }
-    cout << "|" << endl;
+
+    // cout << "|" << setw(width1) << "" << setw(width2);
+    // for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
+    //   cout << "|" << setw(width1) << Form("MET>%i GeV",bins[ibin]) << setw(width2);
+    // }
+    // cout << "|" << endl;
+
+    cout << delim_start << setw(width1) << "" << setw(width2);
+    for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
+      if( latex ) cout << delim << setw(width1) << Form("\\MET\\ $>$ %i GeV",bins[ibin]) << setw(width2);
+      else        cout << delim << setw(width1) << Form("MET>%i GeV",bins[ibin]) << setw(width2);
+    }
+    cout << delim_end << endl;
       
     int   ndata[nbins];
     float ngjets[nbins];
@@ -301,26 +307,38 @@ void simplePlotMacro( bool printplots = false ){
       nzz[ibin]    = h_zz[i]->Integral(bin,1000);
       ntot[ibin]   = htotpred[i]->Integral(bin,1000);
 
-      // syst uncertainties
-      ngjets_syst[ibin] = 0.3 * h_gjets[i]->Integral(bin,1000);
 
       //float ofsyst = 0.1;
       //if( doKscaling && bins[ibin] >= 200 ) ofsyst = 0.25;
 
-      float ofsyst = 1;
+      float ofsyst = 1.0;
+      float Ksyst  = 1.0;
+      float Rsyst  = 1.0;
 
       if( bveto ){
-	ofsyst = 0.23;
-	if( !ee_and_mm ) ofsyst = 0.25;
+	Ksyst = 0.02/0.13;
+	if( bins[ibin] >= 150 ) Ksyst = 0.07/0.13;
+
+	Rsyst = 0.06;
+	if( !ee_and_mm ) Rsyst = 0.12;
+
+	ofsyst = sqrt( Ksyst*Ksyst + Rsyst*Rsyst );
       }
       else{
-	ofsyst = 0.15;
-	if( !ee_and_mm ) ofsyst = 0.2;
+	Ksyst = 0.02/0.14;
+	if( bins[ibin] == 300 ) Ksyst = 0.08/0.14;
+
+	Rsyst = 0.06;
+	if( !ee_and_mm ) Rsyst = 0.12;
+
+	ofsyst = sqrt( Ksyst*Ksyst + Rsyst*Rsyst );
       }
 
-      nof_syst[ibin]    = ofsyst * h_ofpred[i]->Integral(bin,1000);
-      nwz_syst[ibin]    = 0.5 * h_wz[i]->Integral(bin,1000);
-      nzz_syst[ibin]    = 0.5 * h_zz[i]->Integral(bin,1000);
+      // syst uncertainties
+      nof_syst[ibin]    = ofsyst * h_ofpred[i]->Integral(bin,1000);   
+      ngjets_syst[ibin] = 0.3 * h_gjets[i]->Integral(bin,1000);       // 30% uncertainty on Z+jets
+      nwz_syst[ibin]    = 0.8 * h_wz[i]->Integral(bin,1000);          // 80% uncertainty on WZ
+      nzz_syst[ibin]    = 0.8 * h_zz[i]->Integral(bin,1000);          // 80% uncertainty on ZZ
       ntot_syst[ibin]   = sqrt( pow(ngjets_syst[ibin],2) + pow(nof_syst[ibin],2) + pow(nwz_syst[ibin],2) + pow(nzz_syst[ibin],2));
       
       // stat uncertainties
@@ -329,6 +347,12 @@ void simplePlotMacro( bool printplots = false ){
       nwz_stat[ibin]    = histError( h_wz[i]     , bin );
       nzz_stat[ibin]    = histError( h_zz[i]     , bin );
       ntot_stat[ibin]   = sqrt( pow(ngjets_stat[ibin],2) + pow(nof_stat[ibin],2) + pow(nwz_stat[ibin],2) + pow(nzz_stat[ibin],2));
+
+      // ngjets_stat[ibin] = 0.0;
+      // nof_stat[ibin]    = 0.0;
+      // nwz_stat[ibin]    = 0.0;
+      // nzz_stat[ibin]    = 0.0;
+      // ntot_stat[ibin]   = 0.0;
 
       // tot uncertainties
       ngjets_toterr[ibin] = sqrt( pow(ngjets_syst[ibin],2) + pow(ngjets_stat[ibin],2) );
@@ -350,77 +374,77 @@ void simplePlotMacro( bool printplots = false ){
     // g+jets
     //-----------------------------
 
-    cout << "|" << setw(width1) << "Z bkg" << setw(width2);
+    cout << delim_start << setw(width1) << "\\zjets\\ bkg" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      if( ngjets[ibin] > 100 ) cout << "|" << setw(width1) << Form("%.0f +/- %.0f",ngjets[ibin],ngjets_toterr[ibin]) << setw(width2);
-      else                     cout << "|" << setw(width1) << Form("%.1f +/- %.1f",ngjets[ibin],ngjets_toterr[ibin]) << setw(width2);
+      if( ngjets[ibin] > 100 ) cout << delim << setw(width1) << Form("%.0f %s %.0f",ngjets[ibin],pm,ngjets_toterr[ibin]) << setw(width2);
+      else                     cout << delim << setw(width1) << Form("%.1f %s %.1f",ngjets[ibin],pm,ngjets_toterr[ibin]) << setw(width2);
     }
-    cout << "|" << endl;
+    cout << delim_end << endl;
 
     //-----------------------------
     // OF
     //-----------------------------
 
-    cout << "|" << setw(width1) << "OF bkg" << setw(width2);
+    cout << delim_start << setw(width1) << "FS bkg" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      if( nof[ibin] > 100 )    cout << "|" << setw(width1) << Form("%.0f +/- %.0f",nof[ibin],nof_toterr[ibin]) << setw(width2);
-      else                     cout << "|" << setw(width1) << Form("%.1f +/- %.1f",nof[ibin],nof_toterr[ibin]) << setw(width2);
+      if( nof[ibin] > 100 )    cout << delim << setw(width1) << Form("%.0f %s %.0f",nof[ibin],pm,nof_toterr[ibin]) << setw(width2);
+      else                     cout << delim << setw(width1) << Form("%.1f %s %.1f",nof[ibin],pm,nof_toterr[ibin]) << setw(width2);
     }
-    cout << "|" << endl;
+    cout << delim_end << endl;
     
     //-----------------------------
     // WZ
     //-----------------------------
 
-    cout << "|" << setw(width1) << "WZ bkg" << setw(width2);
+    cout << delim_start << setw(width1) << "WZ bkg" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      cout << "|" << setw(width1) << Form("%.1f +/- %.1f",nwz[ibin],nwz_toterr[ibin]) << setw(width2);
+      cout << delim << setw(width1) << Form("%.1f %s %.1f",nwz[ibin],pm,nwz_toterr[ibin]) << setw(width2);
     }
-    cout << "|" << endl;
+    cout << delim_end << endl;
     
     //-----------------------------
     // ZZ
     //-----------------------------
 
-    cout << "|" << setw(width1) << "ZZ bkg" << setw(width2);
+    cout << delim_start << setw(width1) << "ZZ bkg" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      cout << "|" << setw(width1) << Form("%.1f +/- %.1f",nzz[ibin],nzz_toterr[ibin]) << setw(width2);
+      cout << delim << setw(width1) << Form("%.1f %s %.1f",nzz[ibin],pm,nzz_toterr[ibin]) << setw(width2);
       //cout << "|" << setw(width1) << Form("%.1f",nzz[ibin]) << setw(width2);
     }
-    cout << "|" << endl;
+    cout << delim_end << endl;
 
     //-----------------------------
     // total bkg
     //-----------------------------
 
-    cout << "|" << setw(width1) << "total bkg" << setw(width2);
+    cout << delim_start << setw(width1) << "total bkg" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      if( ntot[ibin] > 100 )   cout << "|" << setw(width1) << Form("%.0f +/- %.0f",ntot[ibin],ntot_toterr[ibin]) << setw(width2);
-      else                     cout << "|" << setw(width1) << Form("%.1f +/- %.1f",ntot[ibin],ntot_toterr[ibin]) << setw(width2);
+      if( ntot[ibin] > 100 )   cout << delim << setw(width1) << Form("%.0f %s %.0f",ntot[ibin],pm,ntot_toterr[ibin]) << setw(width2);
+      else                     cout << delim << setw(width1) << Form("%.1f %s %.1f",ntot[ibin],pm,ntot_toterr[ibin]) << setw(width2);
 
       //      cout << "|" << setw(width1) << Form("%.1f",ntot[ibin]) << setw(width2);
     }
-    cout << "|" << endl;
+    cout << delim_end << endl;
 
     //-----------------------------
     // data
     //-----------------------------
 
-    cout << "|" << setw(width1) << "data" << setw(width2);
+    cout << delim_start << setw(width1) << "data" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      cout << "|" << setw(width1) << ndata[ibin] << setw(width2);
+      cout << delim << setw(width1) << ndata[ibin] << setw(width2);
     }
-    cout << "|" << endl;
+    cout << delim_end << endl;
     
     //-----------------------------
     // significance
     //-----------------------------
 
-    cout << "|" << setw(width1) << "significance" << setw(width2);
+    cout << delim_start << setw(width1) << "significance" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      cout << "|" << setw(width1) << Form("%.1f",excess[ibin]) << setw(width2);
+      cout << delim << setw(width1) << Form("%.1f",excess[ibin]) << setw(width2);
     }
-    cout << "|" << endl;
+    cout << delim_end << endl;
 
     //------------------------------------------
     // draw plots
@@ -449,10 +473,10 @@ void simplePlotMacro( bool printplots = false ){
     TLegend* leg = new TLegend(0.75,0.6,0.9,0.9);
     leg->AddEntry(h_sf[i],"data","lp");
     leg->AddEntry(h_gjets[i],"Z+jets","f");
-    leg->AddEntry(h_ofpred[i],"OF","f");
+    leg->AddEntry(h_ofpred[i],"FS","f");
     //leg->AddEntry(h_zz[i],"ZZ","f");
     //leg->AddEntry(h_wz[i],"WZ","f");
-    leg->AddEntry(h_vz[i],"VZ","f");
+    leg->AddEntry(h_vz[i],"WZ+ZZ","f");
     leg->SetFillColor(0);
     leg->SetBorderSize(0);
     leg->Draw();
