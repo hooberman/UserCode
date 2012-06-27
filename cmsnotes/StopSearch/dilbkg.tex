@@ -1,8 +1,44 @@
-\clearpage
+%\clearpage
 
-\section{Background Estimation Technique}
+%\section{Background Estimation Technique}
 
-The SM background in the signal region defined by requirements of large \MET\ and \mt\ is estimated using MC.
+%Using dilepton triggers 
+%Data and MC comparison with only efficiency Data/MC SFs from OS analysis
+%SF(e-mu) = 0.95
+%SF(e-e) = 1.
+%SF(mu-mu) = 0.90
+%need to find uncertainties on these numbers
+%Jet multiplicity trends similar for e-mu and dimuon samples,
+%dielectron is flatter
+%
+%K3 = SF3/SF2 = 0.92 ± 0.03
+%K4 = SF4/SF2 = 0.83 ± 0.04
+
+%njets_all_dl_dimu.pdf
+%njets_all_dl_diel.pdf
+%njets_all_dl_mueg.pdf
+
+
+The dominant background to the signal sample comes from \ttll\
+events. Unlike in the case of single lepton events, \ttll\ events do not have a kinematic edge at $\mt \sim \mW$
+due to the presence of a second neutrino. As a result, these events satisfy the
+selection criteria due to real \met\ and do not depend on resolution
+effects or mis-measurements of the \met. An isolated track veto is
+used to reject events with a second lepton and since the dilepton
+contribution corresponds to a smaller fraction of the signal, the veto
+rejects more background than signal. 
+
+The \ttll\ background is comprised of events where the second lepton
+satisfies the isolated track veto, because it falls outside the
+acceptance, both in $\eta$ or in $\pt$, because it is non-isolated, or
+because it decays to a hadronic tau that is not explicitly rejected. 
+
+PUT TABLE AND EXPLAIN IN DETAIL WHY DIFFERENT EVENTS ARE MISSED
+
+
+large \met\ and \mt\ requirements due to the presence of true \met\
+
+The SM background in the signal region defined by requirements of large \met\ and \mt\ is estimated using MC.
 The MC is validated using data control samples, which are used to derive data-to-MC scale factors and corresponding uncertainties.
 We consider three samples:
 
@@ -21,7 +57,7 @@ factor accounting for possible data vs. MC discrepancies in the isolated track f
 The dilepton control sample is defined by the following requirements:
 \begin{itemize}
 \item Exactly 2 selected electrons or muons with \pt $>$ 20 GeV
-\item \MET\ $>$ 50 GeV
+\item \met\ $>$ 50 GeV
 \item $\geq1$ b-tagged jet
 \end{itemize}
 
@@ -71,7 +107,7 @@ The pre-veto sample is defined by the following requirements
 \begin{itemize}
 \item At least 1 selected electron (muon) with \pt $>$ 30 GeV and $|\eta|<2.5$ ($|\eta|<2.1$)
 \item At least 4 selected jets, with at least 1 b-tagged jet
-\item \MET\ $>$ 50 GeV
+\item \met\ $>$ 50 GeV
 \end{itemize}
 
 Thus all selection criteria are applied with the exception of the veto on events containing an isolated track. 
