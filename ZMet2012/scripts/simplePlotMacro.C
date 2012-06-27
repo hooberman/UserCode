@@ -23,17 +23,19 @@
 #include "TGraphErrors.h"
 #include "TStyle.h"
 #include "TLine.h"
+#include "TColor.h"
 #include "TMath.h"
+
+#include "mycolors.h"
 
 //#include "histtools.h"
 using namespace std;
 
-const bool  doKscaling =   true;
-      float K          =   0.14;
-const float Rem        =   1.24;   // OR of all triggers
-//const float Rem        =   1.20;   // specific triggers
-const int   rebin      =     10;
-const bool  bveto      =   true;
+bool  doKscaling =   true;
+float K          =   0.14;
+float Rem        =   1.22;   // OR of all triggers
+int   rebin      =     10;
+bool  bveto      =   false;
 
 float histError( TH1F* hist , int lowbin ){
 
@@ -53,24 +55,38 @@ void simplePlotMacro( bool printplots = false ){
   // data/MC files
   //-----------------------------------
   
-  char* iter = "V00-00-13";
+  char* iter = "V00-00-17";
 
   TFile *f   = new TFile();
   TFile *fwz = new TFile();
   TFile *fzz = new TFile();
 
+  TChain *chwz = new TChain("T1");
+  TChain *chzz = new TChain("T1");
+
+  chwz->Add(Form("../output/%s/wz_baby.root",iter));
+  chzz->Add(Form("../output/%s/zz_baby.root",iter));
+
   if( bveto ){
-    f   = TFile::Open(Form("../output/%s/babylooper_data_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
-    fwz = TFile::Open(Form("../output/%s/babylooper_wzmg_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
+    f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
+    fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
     fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
 
     K = 0.13;
   }
 
   else{
-    f   = TFile::Open(Form("../output/%s/babylooper_data_PhotonStitchedTemplatenjetsgeq2.root",iter));
-    fwz = TFile::Open(Form("../output/%s/babylooper_wzmg_PhotonStitchedTemplatenjetsgeq2.root",iter));
-    fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2.root",iter));
+    // f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplatenjetsgeq2.root",iter));
+    // fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplatenjetsgeq2.root",iter));
+    // fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2.root",iter));
+
+    f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplate_pfmet.root",iter));
+    fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplate_pfmet.root",iter));
+    fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplate_pfmet.root",iter));
+
+    // f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplate_t1pfmet.root",iter));
+    // fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplate_t1pfmet.root",iter));
+    // fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplate_t1pfmet.root",iter));
   }
 
   cout << "B-veto?   " << bveto << endl;
@@ -140,6 +156,9 @@ void simplePlotMacro( bool printplots = false ){
     h_wz[i]     = (TH1F*) fwz->Get(observedHisto.at(i));
     h_zz[i]     = (TH1F*) fzz->Get(observedHisto.at(i));
 
+    h_vz[i]     = (TH1F*) h_wz[i]->Clone(Form("h_vz_%i",i));
+    h_vz[i]->Add(h_zz[i]);
+    
     //------------------------------------------
     // scale OF prediction for ee vs. mm
     //------------------------------------------
@@ -168,18 +187,45 @@ void simplePlotMacro( bool printplots = false ){
     h_gjets[i]->Rebin(rebin);
     h_wz[i]->Rebin(rebin);
     h_zz[i]->Rebin(rebin);
+    h_vz[i]->Rebin(rebin);
 
-    h_ofpred[i]->SetFillColor(kGreen+2);
-    h_gjets[i]->SetFillColor(5);
-    h_wz[i]->SetFillColor(2);
-    h_zz[i]->SetFillColor(4);
+    // h_gjets[i]->SetFillColor(kAzure-9);
+    // h_ofpred[i]->SetFillColor(kGreen+2);
+    // h_zz[i]->SetFillColor(kRed);
+    // h_wz[i]->SetFillColor(kYellow);
+
+    // h_gjets[i]->SetFillColor(kYellow-9);
+    // h_ofpred[i]->SetFillColor(kAzure-9);
+    // h_zz[i]->SetFillColor(kYellow-9);
+    // h_vz[i]->SetFillColor(kOrange);
+    // h_vz[i]->SetFillColor(kGreen-6);
+    // h_zz[i]->SetFillColor(kYellow-9);
+    // h_wz[i]->SetFillColor(kGray+1);
+
+    // h_gjets[i]->SetFillColor(myBurntOrange);
+    // h_ofpred[i]->SetFillColor(kYellow);
+    // h_zz[i]->SetFillColor(kRed);
+    // h_wz[i]->SetFillColor(kGreen+2);
+
+    //h_gjets[i]->SetFillColor(kYellow);
+    //h_gjets[i]->SetFillColor(kCyan-10);
+    //h_wz[i]->SetFillColor(kRed);
+    // h_gjets[i]->SetFillStyle(3003);
+    // h_ofpred[i]->SetFillStyle(3004);
+    // h_wz[i]->SetFillStyle(3005);
+    // h_zz[i]->SetFillStyle(3002);
+
+    h_gjets[i]->SetFillColor(50);
+    h_ofpred[i]->SetFillColor(42);
+    h_vz[i]->SetFillColor(31);
 
     cout << "SF events " << h_sf[i]->GetEntries() << endl;
     cout << "OF events " << h_ofpred[i]->GetEntries() << endl;
 
     pred[i] = new THStack();
-    pred[i]->Add(h_wz[i]);
-    pred[i]->Add(h_zz[i]);
+    // pred[i]->Add(h_wz[i]);
+    // pred[i]->Add(h_zz[i]);
+    pred[i]->Add(h_vz[i]);
     pred[i]->Add(h_ofpred[i]);
     pred[i]->Add(h_gjets[i]);
 
@@ -394,26 +440,27 @@ void simplePlotMacro( bool printplots = false ){
     h_sf[i]->GetYaxis()->SetTitle("entries / 10 GeV");
     h_sf[i]->GetYaxis()->SetTitleOffset(1.0);
 
-    h_sf[i]->SetMinimum(0.01);
+    h_sf[i]->SetMinimum(0.1);
     h_sf[i]->Draw("E1");
     pred[i]->Draw("histsame");
     h_sf[i]->Draw("sameE1");
     h_sf[i]->Draw("sameaxis");
 
-    TLegend* leg = new TLegend(0.75,0.5,0.9,0.9);
+    TLegend* leg = new TLegend(0.75,0.6,0.9,0.9);
     leg->AddEntry(h_sf[i],"data","lp");
     leg->AddEntry(h_gjets[i],"Z+jets","f");
     leg->AddEntry(h_ofpred[i],"OF","f");
-    leg->AddEntry(h_zz[i],"ZZ","f");
-    leg->AddEntry(h_wz[i],"WZ","f");
+    //leg->AddEntry(h_zz[i],"ZZ","f");
+    //leg->AddEntry(h_wz[i],"WZ","f");
+    leg->AddEntry(h_vz[i],"VZ","f");
     leg->SetFillColor(0);
     leg->SetBorderSize(0);
     leg->Draw();
 
     t->SetTextSize(0.04);
-    t->DrawLatex(0.35,0.85,"CMS Preliminary");
-    t->DrawLatex(0.35,0.79,"#sqrt{s} = 8 TeV, L_{int} = 2.87 fb^{-1}");
-    t->DrawLatex(0.35,0.73,title);
+    t->DrawLatex(0.4,0.85,"CMS Preliminary");
+    t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 5.1 fb^{-1}");
+    t->DrawLatex(0.4,0.73,title);
 
     can[i]->cd();
 
@@ -426,7 +473,9 @@ void simplePlotMacro( bool printplots = false ){
     respad[i]->SetRightMargin(0.05);
     
     gStyle->SetErrorX(0.5);
-    hsysterr[i]->SetFillColor(5);
+    //hsysterr[i]->SetFillColor(5);
+    hsysterr[i]->SetFillColor(kBlue+1);
+    hsysterr[i]->SetFillStyle(3004);
     hsysterr[i]->SetMarkerSize(0);
    
     hratio[i]   = (TH1F*) h_sf[i]->Clone(Form("hratio_%i",i));
@@ -452,8 +501,11 @@ void simplePlotMacro( bool printplots = false ){
     TLine line;
     line.DrawLine(0.0,1.0,300,1.0);
 
-    if( printplots ) can[i]->Print(Form("../plots/met_%i.pdf",i));
-    
+    if( printplots ){
+      can[i]->Print(Form("../plots/met_%i.pdf",i));
+      can[i]->Print(Form("../plots/met_%i.root",i));
+      can[i]->Print(Form("../plots/met_%i.C",i));
+    }
 
 
 
