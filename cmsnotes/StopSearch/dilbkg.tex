@@ -2,41 +2,411 @@
 
 %\section{Background Estimation Technique}
 
-%Using dilepton triggers 
-%Data and MC comparison with only efficiency Data/MC SFs from OS analysis
-%SF(e-mu) = 0.95
-%SF(e-e) = 1.
-%SF(mu-mu) = 0.90
-%need to find uncertainties on these numbers
-%Jet multiplicity trends similar for e-mu and dimuon samples,
-%dielectron is flatter
-%
-%K3 = SF3/SF2 = 0.92 ± 0.03
-%K4 = SF4/SF2 = 0.83 ± 0.04
-
-%njets_all_dl_dimu.pdf
-%njets_all_dl_diel.pdf
-%njets_all_dl_mueg.pdf
 
 
 The dominant background to the signal sample comes from \ttll\
-events. Unlike in the case of single lepton events, \ttll\ events do not have a kinematic edge at $\mt \sim \mW$
-due to the presence of a second neutrino. As a result, these events satisfy the
-selection criteria due to real \met\ and do not depend on resolution
-effects or mis-measurements of the \met. An isolated track veto is
-used to reject events with a second lepton and since the dilepton
-contribution corresponds to a smaller fraction of the signal, the veto
-rejects more background than signal. 
+events. Due to the presence of a second neutrino, \ttll\ events do
+not have a kinematic edge at $\mt \sim \mW$. These events satisfy the
+selection criteria due to real \met\ and do not depend on detector
+resolution or \met\ mis-measurement effects. As a result, the
+\ttll\ background is expected to be well modeled in the MC. The
+prediction for this background is thus derived from MC and normalized
+to the data in the \mt\ peak region. However,
+there are two aspects that require dedicated corrections and detailed
+in this section 
+\begin{itemize}
+\item the modeling of additional jets from radiation, required to satisfy the 4-jet
+selection criteria.
+\item the modeling of the isolated track veto efficiency, which is
+  applied to explicitly reject leptons from \W\ and $\W\To\tau$ decays
+  and single prong $\tau$ decays.
+\end{itemize}
+The systematic uncertainty associated with the MC prediction is
+derived by comparing various generators and from the uncertainties on
+the various correction factors used. These are described at the end of
+this section.  
 
-The \ttll\ background is comprised of events where the second lepton
-satisfies the isolated track veto, because it falls outside the
-acceptance, both in $\eta$ or in $\pt$, because it is non-isolated, or
-because it decays to a hadronic tau that is not explicitly rejected. 
+\subsection{Modeling of Additional Hard Jets in Top Dilepton Events}
 
-PUT TABLE AND EXPLAIN IN DETAIL WHY DIFFERENT EVENTS ARE MISSED
+Dilepton \ttbar\ events have 2 jets from the top decays, so additional
+jets from radiation or higher order contributions are required to
+enter the signal sample. The modeling of addtional jets in \ttbar\
+events is checked in a a \ttll\ control sample,
+selected by requiring
+\begin{itemize}
+\item exactly 2 selected electrons or muons with \pt $>$ 20 GeV
+\item \met\ $>$ 50 GeV
+\item $\geq1$ b-tagged jet
+\end{itemize}
+Figure.~\ref{fig:dileptonnjets} shows a comparison of the jet
+multiplicity distribution in data and MC for this two-lepton control
+sample. After requiring at least 1 b-tagged jet, most of the
+events have 2 jets, as expected from the dominant process \ttll. There is also a
+significant fraction of events with additional jets. 
+The 3-jet sample is mainly comprised of \ttbar\ events with 1 additional
+emission and similarly the $\ge4$-jet sample contains primarily
+$\ttbar+\ge2$ jet events. Even though the primary \ttbar\
+Madgraph sample used includes up to 3 additional partons at the Matrix
+Element level, which are intended to describe additional hard jets,
+Figure.~\ref{fig:dileptonnjets} shows a slight mis-modeling of the
+additional jets. 
 
 
-large \met\ and \mt\ requirements due to the presence of true \met\
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.5\linewidth]{plots/njets_all_dl_mueg.pdf}
+	\includegraphics[width=0.5\linewidth]{plots/njets_all_dl_diel.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/njets_all_dl_dimu.pdf}
+	\caption{
+	  \label{fig:dileptonnjets}%\protect 
+          Comparison of the jet multiplicity distribution in data and MC for dilepton events in the \E-\M\
+          (top), \E-\E\ (bottom left) and \M-\M\ (bottom right) channels.}  
+      \end{center}
+\end{figure}
+
+It should be noted that in the case of \ttll\ events
+with a single reconstructed lepton, the other lepton may be
+mis-reconstructed as a jet. For example, a hadronic tau may be
+mis-identified as a jet (since no $\tau$ identification is used). 
+In this case only 1 additional jet from radiation may suffice for 
+a \ttll\ event to enter the signal sample. As a result, both the
+samples with $\ttbar+1$ jet and $\ttbar+\ge2$ jets are relevant for
+the signal sample.
+
+\begin{table}[!ht]
+\begin{center}
+\begin{tabular}{l|c}
+\hline
+            Jet Multiplicity Sample
+            &                Data/MC Scale Factor \\
+\hline
+\hline
+N jets $= 3$ (sensitive to $\ttbar+1$ extra jet from radiation)   &       $0.92 \pm 0.03$\\
+N jets $\ge4$ (sensitive to $\ttbar+\ge2$ extra jets from radiation)   &       $0.83 \pm 0.04$\\
+\hline
+\end{tabular}
+\caption{Data/MC scale factors used to account for differences in the
+  fraction of events with addtional hard jets from radiation in
+  \ttll\ events. \label{tab:njetskfactors}}
+\end{center}
+\end{table}
+
+
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.5\linewidth]{plots/ttdl_njets_lepremoval_comp.png}
+	\caption{
+	  \label{fig:dileptonnjets_lepcomp}%\protect 
+          Comparison of the jet multiplicity distribution for \ttll\
+          events in MC in the signal sample before (red) and after
+          (blue) applying the lepton-jet overlap removal. Note only
+          the first 6 jets are shown.}  
+      \end{center}
+\end{figure}
+
+Table.~\ref{tab:njetskfactors}  shows scale factors to correct the
+fraction of events with additional jets in MC to the observed fraction
+in data. These are applied to the \ttll\ MC in
+the signal sample. In order to do so, it is first necessary to count the number of
+additional jets from radiation and exclude leptons mis-identified as
+jets. A jet is considered a mis-identified lepton if is matched to a
+generator-level second lepton with sufficient energy to satisfy the jet
+\pt\ requirement ($\pt>30~\GeV$). 
+
+In the signal sample, leptons mis-identified as jets are not rare. 
+Figure.~\ref{fig:dileptonnjets_lepcomp}  shows the MC jet
+multiplicity distribution for \ttll\ events satisfying the full
+selection criteria before and after subtracting leptons mis-identified
+as jets. Approximately a quarter of the sample is comprised of 4-jet
+events that actually correspond to a 2-lepton + 3 jet event where the second
+lepton is counted as a jet. Lepton mis-identification depends strongly
+on the type of second lepton, occuring more frequently in the case of
+hadronic $\tau$s than leptonic objects. According to the \ttll\
+MC, for hadronic $\tau$s, $\sim85\%$ of multi-prong $\tau$s and about half
+single-prong $\tau$ are mis-identified as jets. In the case of
+leptonic objects, the fractions are smaller, comprising about a third
+of \E/\M\ from a \W\ decay and $<20\%$ for leptonic $\tau$s, 
+mainly because of the softness of the decay products. 
+The scale factors listed in Table.~\ref{tab:njetskfactors} are applied
+to the ``cleaned'' jet counts in the signal sample (shown in blue in
+Figure.~\ref{fig:dileptonnjets_lepcomp}). The impact of applying the
+scale factors on the \ttll\ is about a $10\%$ reduction in the
+prediction for the signal sample. 
+
+%\begin{itemize}
+%\item Hadronic ($\tau$) objects: most multi-prong $\tau$s and about
+%  half single-prong $\tau$s 
+%\item Leptonic objects: smaller fraction, 
+%\end{itemize}
+%Fraction of various lepton types matched to a jet
+%multi-prong taus ⟹ 85% give additional 30 GeV jet
+%single-prong taus ⟹ ~50% give additional 30 GeV jet
+%leptonic taus ⟹ <20% give additional 30 GeV jet
+%e/mu⟹ ~40% give additional 30 GeV jet 
+
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.5\linewidth]{plots/ttdl_njets_presel_3j_comp.png}%
+	\includegraphics[width=0.5\linewidth]{plots/ttdl_njets_presel_4j_comp.png}
+	\caption{
+	  \label{fig:dileptonnjets_signalcontrol_comp}%\protect 
+          Comparison of the number of additional jets from radiation
+          in the 3-jet (left) and $\ge4$-jet (right) bins for the control \ttll\
+          sample (with two reconstructed leptons) and the signal
+          sample (with one reconstructed lepton). The distributions
+          show good agreement, indicating that the usage of the
+          reconstructed jet multiplicity in one sample to reweight the
+        signal sample is indeed justified.}  
+      \end{center}
+\end{figure}
+
+Ultimately, the interesting quantity for reweighting is the number of
+additional hard jets from radiation and this information is accessed using the
+number of reconstructed
+jets. Figure.~\ref{fig:dileptonnjets_signalcontrol_comp} compares the
+number of additional jets from truth matching probed by N
+reconstructed jets, in this case 3 and $\ge4$ jets. In order to do so,
+jets that are truth-matched to the top decay products (the b-quarks
+and additional leptons) are removed. The 3-jet distribution shows 
+excellent agreement and the differences in the $\ge4$-jet distribution 
+are of at most $5\%$. The impact of possible differences in the
+underlying distribution of extra
+jets between the signal and control \ttll\ samples is estimated by
+varying the scale factor contributions by $10\%$ and calculating the
+change in the dilepton prediction. This effect is found to have a
+negligible impact on the prediction, well below $1\%$.
+
+Other effects that have been examined include the impact of 
+additional jets from pileup that may bias the jet multiplicity
+distribution, which  is found to be a negligible effect in this dataset. The
+impact of the non-\ttll\ background on the jet fraction scale factors
+has also been studied. In particular, given the large uncertainty on
+the $\dy+HF$ MC prediction, this component has been varied by a factor
+of 2 and the resulting change on the dilepton prediction is $<1\%$. As
+a result, the dominant source of uncertainty is the statiscal
+uncertainty, primarily from the two-lepton control sample size, that
+corresponds to a $3\%$ uncertainty on the dilepton prediction. 
+
+The scale factors for the fraction of additional jets in the dilepton
+sample are applied throughout the analysis. It may be noted that this
+scaling is also performed consistently for the alternative \ttbar\
+samples, always reweighting the jet multiplicity distribution to the
+data in the \ttll\ control sample. In this way, effects truly
+arising from using different MC samples and settings can be examined,
+separately from issues related to the modeling of additional jets. 
+
+\subsection{Normalization of the Top Prediction}
+
+The overall normalization of the \ttbar\ sample is determined by
+scaling to the \mt\ peak control region, following a procedure similar 
+to that described in Section.~\ref{sec:bkg_singlelep}. This control
+region is dominated by \ttbar\, albeit in its single lepton decay
+mode. The basic idea is that after adjusting the modeling of
+additional jets from radiation in the \ttll\ sample and correcting  
+the leptonic branching fractions in the \ttbar\ sample, the MC 
+prediction for the \ttlj\ and \ttll\ samples is subject to the same
+sources of uncertainty: the \ttbar\ cross section, the luminosity, the
+selection efficiencies, etc$\dots$ The exception is the veto on events
+containing an isolated track, since this last requirement has a different 
+impact on the \ttlj\ and \ttll\ samples. The impact of this
+requirement is addressed separately in Section.~\ref{sec:trkveto}. 
+
+The \mt-peak scale factor is thus determined after applying the full
+analysis selection with the exception of the isolated track veto. 
+Specifically, the pre-veto sample is defined by the following requirements
+\begin{itemize}
+\item At least 1 selected electron (muon) with \pt $>$ 30 GeV and $|\eta|<2.5$ ($|\eta|<2.1$)
+\item At least 4 selected jets, of which at least 1 is b-tagged
+\item \met\ $>$ 50 GeV
+\end{itemize}
+
+As in the case of the single lepton + jets sample, scaling the overall 
+normalization to the \mt\ peak largely reduces the dependence on the
+\ttbar\ cross section and cancels systematic uncertainties associated
+with effects such as the luminosity, selection efficiencies,
+etc$\dots$ However, the \mt\ peak control sample is contaminated 
+by non-\ttbar processes, particularly \wjets that contributes at
+the $5-10\%$ level, even after requiring a b-tagged jet. The \wjets+HF
+process is a particular concern given the large theoretical
+uncertainties associated with their production. 
+Therefore a systematic uncertainty is derived to account for
+the uncertainty in this background component. The normalization of 
+the \wjets\ sample is scaled up and down by $50\%$ and the full 
+background estimate recomputed. The impact of such a variation on 
+the dilepton sample is of $~5\%$, as shown in 
+Table.~\ref{tab:samplecomposition}. However, since the
+single lepton + jets prediction decreases because of the large
+variation in the \wjets\ component, the impact on the total background
+prediction is significantly smaller, at the level of $\sim 1\%$.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{l|c|c|c}
+\hline
+	Sample 	& Nominal	& W+Jets x1.5		& W+Jets x0.5\\
+\hline
+\hline
+$t\bar{t} \rightarrow l^{+}l^{-} $ 	 & 	 85.0 $\pm$ 3.8 (4 \%)			 & 	 81.4 $\pm$ 3.7			 & 	 89.0 $\pm$ 3.8 \\  
+$t\bar{t} \rightarrow l^{\pm} $+ jets 	 & 	 12.3 $\pm$ 0.6 (5 \%) 			 & 	 11.7 $\pm$ 0.6  		 & 	 12.8 $\pm$ 0.6 \\  
+W+jets 	 & 	 7.6 $\pm$ 3.9 (51 \%) 							 & 	 10.9 $\pm$ 5.5  		 & 	 4.0 $\pm$ 2.0 \\   
+single top 	 & 	 5.7 $\pm$ 0.6 (11 \%) 						 & 	 5.4 $\pm$ 0.6   		 & 	 5.9 $\pm$ 0.7 \\   
+WW/WZ/ZZ 	 & 	 0.5 $\pm$ 0.2 (33 \%) 						 & 	 0.5 $\pm$ 0.2   		 & 	 0.6 $\pm$ 0.2 \\   
+%DY+jets 	 & 	 0.0 $\pm$ 0.0 (0 \%) 						 & 	 0.0 $\pm$ 0.0   		 & 	 0.0 $\pm$ 0.0 \\   
+ttW/Z/$\gamma$ 	 & 	 5.6 $\pm$ 0.4 (7 \%) 						 & 	 5.4 $\pm$ 0.4   		 & 	 5.9 $\pm$ 0.4 \\   
+triboson 	 & 	 0.1 $\pm$ 0.0 (40 \%) 						 & 	 0.1 $\pm$ 0.0   		 & 	 0.1 $\pm$ 0.0 \\   
+\hline
+Total 	 & 	 116.8 $\pm$ 5.5 (5 \%)						 & 	 115.5 $\pm$ 6.7 (6 \%)	& 	 118.2 $\pm$ 4.4 (4 \%) \\
+\hline
+Non-tt dilepton 	 & 	 31.8 $\pm$ 4.0 (12 \%)				& 	 34.0 $\pm$ 5.6 (16 \%)		& 	 29.3 $\pm$ 2.2 (8 \%) \\
+\hline
+\hline
+Data/MC ctr SF &	0.90 $\pm$ 0.03	& 0.86 $\pm$ 0.03	&	0.94 $\pm$ 0.03 \\
+\hline
+MC sig/ctr SF &		0.079 $\pm$ 0.003	& 0.078 $\pm$ 0.004	&	0.080 $\pm$ 0.002 \\
+\hline
+\end{tabular}
+\caption{Comparison of the nominal background predictions and those
+  under the assumption that the \wjets\ normalization is 50\%
+  higher and $50\%$ lower than the nominal. NUMBERS TO BE UPDATED 
+  \label{tab:samplecomposition}%\protect
+}  
+\end{center}
+\end{table}
+
+It should be noted that the background prediction obtained using
+the same normalization scale factor based on the \mt\ peak for the 
+single lepton and dilepton samples is subject to smaller uncertainties
+than the prediction obtained by normalizing the \ttll\ component alone
+to the overall yield in the two-lepton control sample. The reason is 
+that the normalization of the two-lepton control yield depends on
+effects that do not impact the \ttll\ sample with one reconstructed
+lepton (i.e. the signal sample of interest) in the same way. Example
+of these effects include the dilepton trigger and second lepton
+reconstruction efficiencies.
+
+In conclusion, the pre-veto sample is used to define an overall data
+over MC scale factor ($SF^{\rm{all}}$) in the \mt\ peak control region, that is
+applied to all background predictions and is simply defined as
+\begin{itemize}
+\item $N_{\rm{peak}}^{\rm{all}}$ = data yield in the peak region $60<\mt<100$ GeV
+\item $M_{\rm{peak}}^{\rm{all}}$ = MC yield in the peak region $60<\mt<100$ GeV
+\item $SF^{\rm{all}} = N_{\rm{peak}}^{\rm{all}} / M_{\rm{peak}}^{\rm{all}}$
+\end{itemize}
+For all subsequent steps, the scale factor $SF^{\rm{all}}$ is applied to all MC contributions.
+
+\subsection{The Isolated Track Veto}
+\label{sec:trkveto}
+
+The \ttll\ background is further suppressed after the $4$-jet
+requirement by removing events with any non-isolated track with 
+$\pt>10~\GeV$. The isolated track veto rejects events with an 
+\E\ or a \M, as well as single-prong $\tau$-decays. 
+This veto is very effective at reducing the dilepton background. In
+particular, according to the \ttll\ MC, the veto removes about
+three-quarters of events with an \E\ or \M\ from the \W\ decay and
+almost half the leptonic and single prong $\tau$
+decays. The veto has no impact on multi-prong $\tau$s, though this is
+a smaller component overall. Since the \ttll\ background includes
+different types of processes, it is useful to first characterize the
+composition of this background. 
+
+\subsubsection{Top Dilepton Sample Composition}
+
+The \ttll\ background may be categorized based on the type of
+second lepton, as shown in Table.~\ref{tab:ttdlcomposition}. The main
+component is from electrons and muons from a \W\ decay or through an
+intermediate $\tau$ decay. The second largest component arises from
+single-prong hadronic $\tau$ decays, followed by multi-prong
+$\tau$s. Finally an additional contribution arises from leptons
+falling in the forward region, outside the Tracker acceptance
+$|\eta|>2.5$ (refered to as `lost').
+
+\begin{table}[!ht]
+\begin{center}
+\begin{tabular}{l|c|c}
+\hline
+            Sample					&                Yield   & 	Fraction [\%]\\
+\hline
+\hline
+$t\bar{t} \rightarrow l^{+}l^{-} (\mathrm{lost})$   &       7 $\pm$ 1 	& 	6\\
+$t\bar{t} \rightarrow l^{+}l^{-} (e/\mu)$   &      30 $\pm$ 3  	& 26\\
+$t\bar{t} \rightarrow l^{+}l^{-} (\tau_{\mathrm{lep}})$   &      21 $\pm$ 2  	& 18\\
+$t\bar{t} \rightarrow l^{+}l^{-} (\tau_{\mathrm{had}}\rightarrow \mathrm{1-prong})$   &      39 $\pm$ 3  & 34\\
+$t\bar{t} \rightarrow l^{+}l^{-} (\tau_{\mathrm{had}}\rightarrow \mathrm{3-prong})$   &      19 $\pm$ 2  & 16\\
+\hline
+         total $t\bar{t} \rightarrow l^{+}l^{-} $  &     117 $\pm$ 5  & 100\\
+\hline
+\end{tabular}
+\caption{Dilepton events satisfying the full selection criteria
+  separated by decay modes.\label{tab:ttdlcomposition}}
+\end{center}
+\end{table}
+
+The isolated track veto does not apply to the components where the
+second lepton falls outside the acceptance or where it decays to a 
+hadronic tau that is not explicitly rejected. For the cases where the
+second lepton includes an electron or muon or a charged $\pi/K$, it is
+possible to further distinguish cases when the relevant particle
+targeted by the veto is below the \pt\ threshold. Matching the
+truth-level particle to reconstructed tracks shows that in \ttll\ MC
+\begin{itemize}
+\item for $t\bar{t} \rightarrow l^{+}l^{-} (e/\mu)$, about a third of
+  the sample falls below the \pt\ threshold of the track veto, and the remaining 
+  two thirds fail the isolation
+\item for $t\bar{t} \rightarrow l^{+}l^{-} (\tau_{\mathrm{lep}})$,
+  about $80\%$ are soft $\pt<10~\GeV$ and about $20\%$ are
+  non-isolated
+\item for $t\bar{t} \rightarrow l^{+}l^{-}
+  (\tau_{\mathrm{had}}\rightarrow \mathrm{1-prong})$, 
+about $70\%$ are soft, as expected from a $\tau$ decay product and the
+rest fail the isolation criteria.
+\end{itemize}
+In summary, the combination of these fractions with the relative sample
+composition listed in Table.~\ref{tab:ttdlcomposition} shows that only
+about a third of the \ttll\ background sample is affected by the track
+veto\footnote{Explicitly, the fraction of events that give rise to a
+  sufficiently energetic lepton or single prong $\tau$ is: $70\%$ of \E-\M\ events
+  which are $26\%$ of the sample, $20\%$ of leptonic tau events which
+  are $18\%$ of the sample and $30\%$ of single prong $\tau$ events 
+  which are $10\%$ of the sample.}. The performance of the isolation
+used in the track veto requirement is the subject of the next section.
+
+It should also be noted that according to the MC, track reconstruction 
+inefficiencies affect a few percent ($\sim 1-2\%$) of the
+leptonic and single prong $\tau$ events. The tracking efficiency in
+this analysis is taken from MC, which is expected to provide good modeling of isolated 
+tracks with $\pt>10~\GeV$. The impact of  
+possible differences between data and MC is found to be negligible. 
+In particular, the case of single-prong taus is the most challenging to
+model due to the effect of nuclear interactions in the tracker material. 
+Past studies of the tracking efficiency for pions~\cite{TRK10002}
+provide a data/MC uncertainty in the tracking efficiency of $3.9\%$\footnote{
+This tracking efficiency uncertainty estimate is conservative for this 
+analysis since it includes tracks of \pt\ down to $250$ MeV, where
+material effects are larger and so are the corresponding
+uncertainties.}. Propagating this uncertainty to the total background
+estimate yields a total uncertainty of $< 0.5\%$. The reason is that
+the tracking efficiency uncertainty only applies to single prong
+$\tau$ decays with $\pt> 10~\GeV$, which are under $30\%$ of the 
+dilepton component, which in turn is $\sim 80\%$ of the total sample.  
+
+To conclude, the \ttll\ background arises from events where the second
+lepton falls outside the acceptance (both in $\eta$ and $\pt$),
+because the event contains a hadronic tau that is not explicitly rejected or
+because the second lepton fails the isolation requirement. 
+Even though the \ttll\ sample is quite heterogenous and comprises
+multiple types of second lepton events, there are two
+main sources of uncertainty in this estimate: 
+\begin{itemize}
+\item Acceptance effects, which are estimated by using alternative MC
+  samples
+\item Detector effects, mainly arising from understanding the
+  performance of the isolated track veto, which impacts only about a
+  third of the total \ttll\ sample.
+\end{itemize}
+
+
+\subsubsection{Performance of the Isolation Requirement}
 
 The SM background in the signal region defined by requirements of large \met\ and \mt\ is estimated using MC.
 The MC is validated using data control samples, which are used to derive data-to-MC scale factors and corresponding uncertainties.
