@@ -4,8 +4,8 @@
 \label{sec:yields}
 
 In this section we compare the data and MC samples passing the selection described in Sec.~\ref{sec:eventSelection}
-In the following, the MC is reweighted to match the data distribution of number of reconstructed primary vertices
-{\bf FIXME: UPDATE TO 5.1/fb VTX-REWEIGHTING, CURRENTLY USING OUTDATED FUNCTION}. 
+In the following, the MC is reweighted to match the data distribution of number of reconstructed primary vertices.
+%{\bf FIXME: UPDATE TO 5.1/fb VTX-REWEIGHTING, CURRENTLY USING OUTDATED FUNCTION}. 
 The trigger efficiencies of Sec.~\ref{sec:datasets} are applied. In all plots, the last bin contains the overflow.
 
 We begin by counting the inclusive Z yields. Here we require the presence of two selected leptons without
@@ -105,7 +105,7 @@ We next define the preselection region for the targeted search by adding the fol
 \begin{itemize}
 \item Veto events containing a b-tagged jet;
 \item Dijet invariant mass $70<m_{jj}<110$ GeV;
-\item Veto events containing a third selected lepton (electron or muon) with \pt $>$ 20 GeV {\bf FIXME: lower third lepton \pt threshold to 10 GeV}.
+\item Veto events containing a third selected lepton (electron or muon) with \pt $>$ 20 GeV; %{\bf FIXME: lower third lepton \pt threshold to 10 GeV}.
 \end{itemize}
 
 The rejection of events with a b-tagged jet strongly suppresses the \ttbar\ background, which is the dominant background in the inclusive search
@@ -117,6 +117,8 @@ the trilepton final state.
 The dilepton mass distributions in the preselection region of the targeted search (without the dilepton mass requirement applied) 
 for the ee and $\mu\mu$ final states are shown in Figure~\ref{fig:dilmass_2j_targeted}. In Table~\ref{table:zyields_2j_targeted} 
 the data and MC yields in the preselection region are indicated. Good data vs. MC agreement is observed.
+We also show the distribution of dijet mass in the targeted preselection (with the requirement on this quantity removed) in Fig.~\ref{fig:mjj},
+which demonstrates that the MC does a reasonable job of modeling this quantity.
 
 \begin{figure}[hbt]
   \begin{center}
@@ -155,58 +157,16 @@ the data and MC yields in the preselection region are indicated. Good data vs. M
 
 \clearpage
 
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=1.0\linewidth]{plots/mjj.pdf}
+	\caption{
+	  \label{fig:mjj}\protect 
+          Distributions of dijet mass for the targeted preselection in the ee (left), $\mu\mu$ (middle) and e$\mu$ (right) final state.}
+  \end{center}
+\end{figure}
 
 
 
 
 
-
-
-
-
-\begin{comment}
-
-The data yields and the MC predictions are given in Table~\ref{preselyieldtable}.
-%Dilepton mass and MET distributions for \emu ~events are shown in appendix \ref{app:emu}.
-
-As anticipated, the MC predicts that the preselection is dominated by Z+jets in the same-flavor 
-case and by \ttbar\ in the opposite-flavor case.  
-%The data yield is in reasonable agreement with the predictions for the $ee$, $\mu\mu$ and $e\mu$ channels.
-
-\begin{comment}
-
-We also show the %LO 
-next-to-leading order (NLO) 
-yields for the LM4 and LM8 processes, which are benchmark
-SUSY processes in which $Z$ bosons are produced via cascade decays of SUSY particles. 
-
-
-\begin{table}[htb]
-\begin{center}
-\caption{\label{preselyieldtable} Data and Monte Carlo yields for the preselection with \njets\ $\ge$ 2 for \lumi. 
-  %The NLO yields for the SUSY benchmark processes LM4 and LM8 are also shown.
-}
-\begin{tabular}{lccccc}
-\hline
-              Sample   &                $ee$   &            $\mu\mu$   &              $e\mu$   &         tot  \\
-\hline
-
-        WJets &   10.8 $\pm$    4.4  &     0.0 $\pm$    0.0  &     8.5 $\pm$    3.8  &    19.3 $\pm$    5.8 \\ 
-           WW &   14.8 $\pm$    0.5  &    17.2 $\pm$    0.5  &    32.9 $\pm$    0.8  &    64.9 $\pm$    1.1 \\ 
-           WZ &  405.7 $\pm$    1.8  &   411.7 $\pm$    1.7  &     5.0 $\pm$    0.1  &   822.4 $\pm$    2.5 \\ 
-           ZZ &  313.3 $\pm$    1.2  &   349.1 $\pm$    1.2  &     0.8 $\pm$    0.0  &   663.2 $\pm$    1.6 \\ 
-   Single Top &   29.3 $\pm$    1.2  &    26.1 $\pm$    1.0  &    50.8 $\pm$    1.5  &   106.2 $\pm$    2.1 \\ 
-     \ttbar &  523.2 $\pm$    2.6  &   529.0 $\pm$    2.5  &  1056.7 $\pm$    3.6  &  2108.8 $\pm$    5.1 \\ 
-       Z+Jets & 51051.4 $\pm$  147.5  &  53149.1 $\pm$  143.0  &    16.2 $\pm$    2.6  &  104216.8 $\pm$  205.4 \\ 
-\hline
-     Total MC & 52348.5 $\pm$  147.6  &  54482.2 $\pm$  143.0  &  1171.0 $\pm$    6.1  &  108001.6 $\pm$  205.6 \\ 
-\hline
-         Data &  49214  &   52757  &    1256  &  103227 \\ 
-\hline
-
-
-\end{tabular}
-\end{center}
-\end{table}
-
-\end{comment}

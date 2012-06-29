@@ -1,9 +1,9 @@
-\clearpage
+%\clearpage
 \section{Background Estimation Techniques}
 \label{sec:bkg}
 
 In this section we describe the techniques used to estimate the SM backgrounds in our signal regions defined by requirements of large \MET.
-The SM backgrounds fall into four categories:
+The SM backgrounds fall into three categories:
 
 \begin{itemize}
 \item \zjets: this is the dominant background after the preselection. The \MET\ in \zjets\ events is estimated with the 
@@ -13,8 +13,8 @@ by \ttbar\ but also contains Z$\to\tau\tau$, WW, and single top processes. This 
 is estimated using a data control sample of e$\mu$ events as described in Sec.~\ref{sec:bkg_fs};
 \item WZ and ZZ backgrounds: this background is estimated from MC, after validating the MC modeling of these processes using data control
 samples with jets and exactly 3 leptons (WZ control sample) and exactly 4 leptons (ZZ control sample) as described in Sec.~\ref{sec:bkg_vz};
-\item Rare SM backgrounds: this background contains rare processes such as $t\bar{t}$V and triple vector boson processes VVV (V=W,Z).
-This background is estimated from MC as described in Sec.~\ref{sec:bkg_raresm}. {\bf TODO: add rare MC}
+%\item Rare SM backgrounds: this background contains rare processes such as $t\bar{t}$V and triple vector boson processes VVV (V=W,Z).
+%This background is estimated from MC as described in Sec.~\ref{sec:bkg_raresm}. {\bf FIXME: add rare MC}
 \end{itemize}
 
 \subsection{Estimating the \zjets\ Background with \MET\ Templates}
@@ -82,7 +82,7 @@ R_{\mu e} = \sqrt{\frac{N_{\mu\mu}^{\rm{offline}}}{N_{ee}^{\rm{offline}}}} = \sq
 \end{equation}
 
 Here we have used the Z$\to\mu\mu$ and Z$\to$ee yields from Table~\ref{table:zyields_2j} and the trigger efficiencies quoted in Sec.~\ref{sec:datasets}.
-The indicated uncertainty is due to the 3\% uncertainties in the trigger efficiencies. {\bf TODO: check for variation w.r.t. lepton \pt}.
+The indicated uncertainty is due to the 3\% uncertainties in the trigger efficiencies. %{\bf FIXME: check for variation w.r.t. lepton \pt}.
 The predicted yields in the ee and $\mu\mu$ final states are calculated from the observed e$\mu$ yield as
 
 \begin{itemize}
@@ -99,7 +99,7 @@ and the predicted yield in the combined ee and $\mu\mu$ channel is simply the su
 \end{itemize}
 
 Note that the relative uncertainty in the combined ee and $\mu\mu$ prediction is smaller than those for the individual ee and $\mu\mu$ predictions
-because the uncertainty in $R_{\mu e}$ cancels when summing the ee and $\mu\mu$ predictions. {\bf N.B. these uncertainties are preliminary}.
+because the uncertainty in $R_{\mu e}$ cancels when summing the ee and $\mu\mu$ predictions. %{\bf N.B. these uncertainties are preliminary}.
 
 To improve the statistical precision of the FS background estimate, we remove the requirement that the e$\mu$ lepton pair falls in the Z mass window.
 Instead we scale the e$\mu$ yield by $K$, the efficiency for e$\mu$ events to satisfy the Z mass requirement, extracted from simulation. In Fig.~\ref{fig:K_incl}
@@ -120,7 +120,7 @@ so that we inflate the uncertainty and chose $K=0.13\pm0.07$.
 The efficiency for e$\mu$ events to satisfy the dilepton mass requirement, $K$, in data and simulation for inclusive \MET\ intervals (left) and
 exclusive \MET\ intervals (right) for the inclusive analysis. Based on this we chose $K=0.14\pm0.02$ for all \MET\ regions except \MET\ $>$ 300 GeV,
 where we chose $K=0.14\pm0.08$.
-{\bf plots made with 10\% of \zjets\ MC statistics, to be remade with full statistics}
+%{\bf FIXME plots made with 10\% of \zjets\ MC statistics, to be remade with full statistics}
 \label{fig:K_incl}
 }
 \end{center}
@@ -137,7 +137,7 @@ The efficiency for e$\mu$ events to satisfy the dilepton mass requirement, $K$, 
 exclusive \MET\ intervals (right) for the targeted analysis, including the b-veto. 
 Based on this we chose $K=0.13\pm0.02$ for the \MET\ regions up to \MET\ $>$ 100 GeV.
 For higher \MET\ regions we chose $K=0.13\pm0.07$.
-{\bf plots made with 10\% of \zjets\ MC statistics, to be remade with full statistics}
+%{\bf FIXME plots made with 10\% of \zjets\ MC statistics, to be remade with full statistics}
 \label{fig:K_targeted}
 }
 \end{center}
@@ -190,7 +190,8 @@ as indicated in Table~\ref{tab:wz2j}. We note some possible contributions to thi
 yield passing a \MET $>$ 50 GeV requirement is under-estimated in MC and second, because the fake
 rate is typically under-estimated in the MC. To get a rough idea for how much the excess depends
 on the \zjets\ yield, if the \zjets\ yield is doubled then the excess is reduced from 78\% to 55\%.
-{\bf currently using 10\% of \zjets\ MC, and there is 1 event with a weight of about 5, plots and tables to be remade with full \zjets\ stats}.
+Also note that we are currently using 10\% of the \zjets\ MC sample and there is 1 event with a weight 
+of about 5, so the plots and tables will be remade with full \zjets\ sample.
 
 \item The \ttbar\ contribution is under-estimated here because the fake
 rate is typically under-estimated in the MC. To get a rough idea for how much the excess depends
@@ -279,7 +280,9 @@ A pure ZZ sample can be selected in data with the requirements:
 The data and MC yields passing the above selection are in Table~\ref{tab:zz}. Again we observe an
 excess in data with respect to the MC prediction (29 observed vs. $17.3\pm0.1$~(stat) MC predicted).
 After requiring at least 2 jets, we observe 2 events and the MC predicts $1.5\pm0.1$~(stat).
-Based on this we apply an uncertainty of 80\% to the ZZ background.
+However, we have recently discovered that we may be using the wrong (too small) cross section for the ZZ sample,
+and we are in contact with the MC generator group to determine the correct cross section.
+Based on this we currently apply an uncertainty of 80\% to the ZZ background.
 
 \begin{table}[htb]
 \begin{center}
@@ -317,7 +320,7 @@ The number of jets, missing transverse energy, and Z boson transverse momentum a
 
 
 
-\subsection{Estimating the Rare SM Backgrounds with MC}
-\label{sec:bkg_raresm}
+%\subsection{Estimating the Rare SM Backgrounds with MC}
+%\label{sec:bkg_raresm}
 
-{\bf TODO: list samples, yields in preselection region, and show \MET\ distribution}
+%{\bf TODO: list samples, yields in preselection region, and show \MET\ distribution}
