@@ -255,7 +255,7 @@ LeptonTreeMaker::LeptonTreeMaker(bool lockToCoreSelectors, bool useLHeleId, bool
 LeptonTreeMaker::~LeptonTreeMaker() {
   std::cout << "LeptonTreeMaker::~LeptonTreeMaker" << std::endl;
   //if (electronIdMVA_ != 0) delete electronIdMVA_;
-  if (jet_corrector_pfL1FastJetL2L3_ != 0) delete jet_corrector_pfL1FastJetL2L3_;
+  //if (jet_corrector_pfL1FastJetL2L3_ != 0) delete jet_corrector_pfL1FastJetL2L3_;
 }
 
 void LeptonTreeMaker::ScanChain(TString outfileid,
@@ -283,7 +283,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   // make smurf ntuples
   gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-02/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
+  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-03/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
   assert(fSmurf);
   LeptonTree leptonTree;
   leptonTree.CreateTree();
@@ -638,38 +638,8 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
     goodLeptons.push_back( cms2.mus_p4().at(imu) );
   }  
 
-  //----------------------------------------------------
-  // count jets
-  //----------------------------------------------------
-
   VofP4 jets;
 
-  for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
-    
-    // get L1FastL2L3Residual total correction
-    jet_corrector_pfL1FastJetL2L3_->setRho   ( cms2.evt_ww_rho_vor()           );
-    jet_corrector_pfL1FastJetL2L3_->setJetA  ( cms2.pfjets_area().at(ijet)     );
-    jet_corrector_pfL1FastJetL2L3_->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
-    jet_corrector_pfL1FastJetL2L3_->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
-    double corr = jet_corrector_pfL1FastJetL2L3_->getCorrection();
-
-    LorentzVector vjet = corr * cms2.pfjets_p4().at(ijet);
-
-    if(       vjet.pt()    < 30. )           continue;
-    if( fabs( vjet.eta() ) > 2.5 )           continue;
-
-    // lepton-jet overlap removal
-    bool rejectJet = false;
-    for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-      if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-    }
-    if( rejectJet ) continue;
-	          
-    // PFJetID
-    if( !passesPFJetID(ijet) ) continue;
-    
-    jets.push_back(vjet);
-  }
 
   sort(jets.begin(), jets.end(), sortByPt);
 
@@ -726,6 +696,43 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       // if (jets.size()>0)	leptonTree.jet1_ = jets.at(0).first;
       // if (jets.size()>1)	leptonTree.jet2_ = jets.at(1).first;
       // if (jets.size()>2)	leptonTree.jet3_ = jets.at(2).first;
+
+      //----------------------------------------------------
+      // count jets
+      //----------------------------------------------------
+
+      jets.clear();
+      if( jets.size() > 0 ) cout << "ERROR! jets.size() " << jets.size() << endl;
+
+      for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
+    
+	// get L1FastL2L3Residual total correction
+	jet_corrector_pfL1FastJetL2L3_->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3_->setJetA  ( cms2.pfjets_area().at(ijet)     );
+	jet_corrector_pfL1FastJetL2L3_->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+	jet_corrector_pfL1FastJetL2L3_->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+	double corr = jet_corrector_pfL1FastJetL2L3_->getCorrection();
+
+	LorentzVector vjet = corr * cms2.pfjets_p4().at(ijet);
+
+	if(       vjet.pt()    < 30. )           continue;
+	if( fabs( vjet.eta() ) > 2.5 )           continue;
+
+	if( dRbetweenVectors( vjet , cms2.els_p4()[probe] ) < 0.4 ) continue;
+	if( dRbetweenVectors( vjet , cms2.els_p4()[tag]   ) < 0.4 ) continue;
+
+	// lepton-jet overlap removal
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+	          
+	// PFJetID
+	if( !passesPFJetID(ijet) ) continue;
+    
+	jets.push_back(vjet);
+      }
 
       // store jets quantities
       if( jets.size() > 0 ) leptonTree.jet1_ = jets.at(0);
@@ -809,35 +816,6 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
   //----------------------------------------------------
 
   VofP4 jets;
-
-  for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
-    
-    // get L1FastL2L3Residual total correction
-    jet_corrector_pfL1FastJetL2L3_->setRho   ( cms2.evt_ww_rho_vor()           );
-    jet_corrector_pfL1FastJetL2L3_->setJetA  ( cms2.pfjets_area().at(ijet)     );
-    jet_corrector_pfL1FastJetL2L3_->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
-    jet_corrector_pfL1FastJetL2L3_->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
-    double corr = jet_corrector_pfL1FastJetL2L3_->getCorrection();
-
-    LorentzVector vjet = corr * cms2.pfjets_p4().at(ijet);
-
-    if(       vjet.pt()    < 30. )           continue;
-    if( fabs( vjet.eta() ) > 2.5 )           continue;
-
-    // lepton-jet overlap removal
-    bool rejectJet = false;
-    for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-      if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-    }
-    if( rejectJet ) continue;
-	          
-    // PFJetID
-    if( !passesPFJetID(ijet) ) continue;
-    
-    jets.push_back(vjet);
-  }
-
-  sort(jets.begin(), jets.end(), sortByPt);
 	
   std::vector<Int_t> nullMu;  // null identified muons // FIXME
   std::vector<Int_t> nullEle; // null identified electrons  // FIXME
@@ -904,6 +882,43 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       // if (jets.size()>0)	leptonTree.jet1_ = jets.at(0).first;
       // if (jets.size()>1)	leptonTree.jet2_ = jets.at(1).first;
       // if (jets.size()>2)	leptonTree.jet3_ = jets.at(2).first;
+
+      //----------------------------------------------------
+      // count jets
+      //----------------------------------------------------
+
+      jets.clear();
+      if( jets.size() > 0 ) cout << "ERROR! jets.size() " << jets.size() << endl;
+
+      for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
+    
+	// get L1FastL2L3Residual total correction
+	jet_corrector_pfL1FastJetL2L3_->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3_->setJetA  ( cms2.pfjets_area().at(ijet)     );
+	jet_corrector_pfL1FastJetL2L3_->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+	jet_corrector_pfL1FastJetL2L3_->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+	double corr = jet_corrector_pfL1FastJetL2L3_->getCorrection();
+
+	LorentzVector vjet = corr * cms2.pfjets_p4().at(ijet);
+
+	if(       vjet.pt()    < 30. )           continue;
+	if( fabs( vjet.eta() ) > 2.5 )           continue;
+
+	if( dRbetweenVectors( vjet , cms2.mus_p4()[probe] ) < 0.4 ) continue;
+	if( dRbetweenVectors( vjet , cms2.mus_p4()[tag]   ) < 0.4 ) continue;
+
+	// lepton-jet overlap removal
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+	          
+	// PFJetID
+	if( !passesPFJetID(ijet) ) continue;
+    
+	jets.push_back(vjet);
+      }
 
       // store jets quantities
       if( jets.size() > 0 ) leptonTree.jet1_ = jets.at(0);
@@ -1109,6 +1124,8 @@ void LeptonTreeMaker::SetCommonTreeVariables(LeptonTree &leptonTree, const doubl
   leptonTree.lumi_        = cms2.evt_lumiBlock();
   leptonTree.nvtx_        = nGoodVertex();
   leptonTree.scale1fb_    = weight;
+  leptonTree.met_         = cms2.evt_pfmet();
+
   //leptonTree.rho_         = cms2.evt_ww_rho_vor();
 
 }
