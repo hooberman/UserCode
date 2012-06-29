@@ -8,20 +8,30 @@ The preselection sample is based on the following criteria
   \begin{itemize}
   \item $\pt>30~\GeVc$ and $|\eta|<2.5(2.1)$ for \E(\M)
   \item satisfy the identification and isolation requirements detailed
-    in~\cite{ref:osznote} for electrons and in~\cite{ref:osznote} for muons
+    in the same-sign SUSY analysis (SUS-11-010) for electrons and the opposite-sign 
+    SUSY analysis (SUS-11-011) for muons
   \end{itemize} 
   \item require at least 4 PF jets in the event with $\pt>30~\GeV$
     within $|\eta|<2.5$, out of which at least 1 is b-tagged based on
-    the SSV medium working point [CITE]. 
+    the SSV medium working point. 
   \item require moderate $\met>50~\GeV$
 \end{itemize}
 
-A benchmark signal sample is selected by tightening the \met\ and
+Currently, we focus on the muon channel because it is cleaner (the QCD contribution is negligible)
+and the triggers are simpler (we use single muon triggers, as opposed to electron + 3-jet triggers).
+We will add the electron channel, time permitting. However, since this is a systematics-dominated 
+analysis, increasing the statistics by adding the electrons is not expected to significantly improve
+the sensitivity, especialy because the electron selection efficiency is smaller and the systematic
+uncertainty associated with the QCD background is larger.
+
+A benchmark signal region is selected by tightening the \met\ and
 adding an \mt\ requirement
 \begin{itemize}
 \item $\met>100~\GeV$
 \item $\mt>150~\GeV$
 \end{itemize}
+
+{\bf We have not looked at the data in the signal region after the first 1 fb$^{-1}$ of data.}
 
 \subsection{Corrections to Jets and \met}
 
@@ -33,15 +43,17 @@ based on the global tags GR\_R\_42\_V23 (DESIGN42\_V17) for
 data (MC). In addition, these jet energy corrections are propagated to
 the \met\ calculation, following the official prescription for
 deriving the Type I corrections. It may be noted that events with
-anomalous corrections are excluded from the sample since these 
+anomalous ``rho'' pile-up corrections are excluded from the sample since these 
 correspond to events with unphysically large \met\ and \mt\ tail
-signal region. An additional correction to remove
+signal region (see Figure~\ref{fig:mtrhocomp}). An additional correction to remove
 the $\phi$-modulation observed in the \met\ is included, improving 
 the agreement between the data and the MC, as shown in 
-Figure.~\ref{fig:metphicomp}. This correction has an effect on this analysis,
+Figure~\ref{fig:metphicomp}. This correction has an effect on this analysis,
 since the azimuthal angle enters the \mt\ distribution. 
 
-\begin{figure}[tbh]
+\clearpage
+
+\begin{figure}[!ht]
   \begin{center}
 	\includegraphics[width=0.5\linewidth]{plots/mt_rho_comp.png}
 	\caption{ \label{fig:mtrhocomp}%\protect 
@@ -56,7 +68,7 @@ since the azimuthal angle enters the \mt\ distribution.
   \end{center}
 \end{figure}
 
-\begin{figure}[hb]
+\begin{figure}[!hb]
   \begin{center}
 	\includegraphics[width=0.5\linewidth]{plots/metphi.pdf}%
 	\includegraphics[width=0.5\linewidth]{plots/metphi_phicorr.pdf}
@@ -67,10 +79,12 @@ since the azimuthal angle enters the \mt\ distribution.
   \end{center}
 \end{figure}
 
+\clearpage
+
 \subsection{Branching Fraction Correction}
 
 The leptonic branching fraction used in some of the \ttbar\ MC samples
-differs from the value listed in the PDG $(10.80 ± 0.09)\%$. 
+differs from the value listed in the PDG $(10.80 \pm 0.09)\%$. 
 Table.~\ref{tab:wlepbf} summarizes the branching fractions used in
 the generation of the various \ttbar\ MC samples. 
 For \ttbar\ samples with the incorrect leptonic branching fraction, event
