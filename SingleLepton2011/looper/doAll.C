@@ -113,6 +113,21 @@ void doAll(bool skipFWLite = true)
   bool rundata2011b33 = 0;
   bool rundata2011b34 = 0;
 
+  bool rundimu     = 0;
+  bool rundiel     = 0;
+
+  //alternative ttbar samples
+  bool runtt_scaleup = 0;
+  bool runtt_scaledw = 0;
+  bool runtt_matchup = 0;
+  bool runtt_matchdw = 0;
+  bool runtt_massup  = 0;
+  bool runtt_massdw  = 0;
+  bool runtt_pythia  = 0;  
+  bool runtt_mcatnlo = 0;
+  bool runtt_powheg  = 0;
+  bool runtt_notauola  = 0;
+
   if( useMCSkims )  cout << "Using MC skims" << endl;
   else              cout << "Using full MC samples" << endl;
 
@@ -171,6 +186,54 @@ void doAll(bool skipFWLite = true)
     pickSkimIfExists(chtopall,"/hadoop/cms/store/user/vimartin/CMS2_V04-02-29/TTJets_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v2/ntuple*.root");
     //    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged_ntuple_35.root");
     //    pickSkimIfExists(chtopall,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29_singleLepton/merged*root");
+  }
+
+  //----------------------------------------
+  // ttbar special
+  //----------------------------------------
+
+  TChain* chtt_scaleup = new TChain("Events");
+  if (runtt_scaleup) {
+    //    pickSkimIfExists(chtt_scaleup,"/nfs-4/userdata/cms2/TTjets_TuneZ2_scaleup_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtt_scaleup,"/hadoop/cms/store/group/snt/papers2011/Fall11MC/TTjets_TuneZ2_scaleup_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v1/V04-02-29/*.root");
+  }
+  TChain* chtt_scaledw = new TChain("Events");
+  if (runtt_scaledw) {
+    //    pickSkimIfExists(chtt_scaledw,"/nfs-4/userdata/cms2/TTjets_TuneZ2_scaledown_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtt_scaledw,"/nfs-6/userdata/cms2/TTjets_TuneZ2_scaledown_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v2/V04-02-29/merged*root");
+  }
+  TChain* chtt_matchup = new TChain("Events");
+  if (runtt_matchup) {
+    //    pickSkimIfExists(chtt_matchup,"/nfs-4/userdata/cms2/TTjets_TuneZ2_matchingup_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtt_matchup,"/hadoop/cms/store/user/vimartin/CMS2_V04-02-29/TTjets_TuneZ2_matchingup_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v2/*.root");
+  }
+  TChain* chtt_matchdw = new TChain("Events");
+  if (runtt_matchdw) {
+    pickSkimIfExists(chtt_matchdw,"/nfs-4/userdata/cms2/TTjets_TuneZ2_matchingdown_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+  }
+  TChain* chtt_massup = new TChain("Events");
+  if (runtt_massup) {
+    pickSkimIfExists(chtt_massup,"/nfs-4/userdata/cms2/TTJets_TuneZ2_mass178_5_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v3/V04-02-29/merged*root");
+  }
+  TChain* chtt_massdw = new TChain("Events");
+  if (runtt_massdw) {
+    pickSkimIfExists(chtt_massdw,"/nfs-4/userdata/cms2/TTJets_TuneZ2_mass166_5_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v3/V04-02-29/merged*root");
+  }
+  TChain* chtt_pythia = new TChain("Events");
+  if (runtt_pythia) {
+    pickSkimIfExists(chtt_pythia,"/nfs-7/userdata/cms2/TT_TuneZ2_7TeV-pythia6-tauola_Summer11-PU_S3_START42_V11-v2/V04-02-29/merged*root");
+  }
+  TChain* chtt_mcatnlo = new TChain("Events");
+  if (runtt_mcatnlo) {
+    pickSkimIfExists(chtt_mcatnlo,"/nfs-6/userdata/cms2/TT_TuneZ2_7TeV-mcatnlo_Fall11-PU_S6_START42_V14B-v1_genfix/V04-02-29/merged*root");
+  }
+  TChain* chtt_powheg = new TChain("Events");
+  if (runtt_powheg) {
+    pickSkimIfExists(chtt_powheg,"/nfs-4/userdata/cms2/TT_TuneZ2_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+  }
+  TChain* chtt_notauola = new TChain("Events");
+  if (runtt_notauola) {
+    pickSkimIfExists(chtt_notauola,"/nfs-4/userdata/cms2/TTTo2L2Nu2B_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   //----------------------------------------
@@ -435,6 +498,37 @@ void doAll(bool skipFWLite = true)
     pickSkimIfExists(chdata,"/nfs-3/userdata/cms2/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndTwoJets/merged*root");
   }
 
+
+  TChain* chdimu     = new  TChain("Events");
+
+  if(rundimu){
+    
+    cout << "adding DoubleMuon data" << endl;
+
+    pickSkimIfExists(chdimu,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+    pickSkimIfExists(chdimu,"/nfs-4/userdata/cms2/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleMuTriggerSkim/skim*root");
+    pickSkimIfExists(chdimu,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
+    pickSkimIfExists(chdimu,"/nfs-6/userdata/cms2/DoubleMu_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");   
+    pickSkimIfExists(chdimu,"/nfs-6/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
+    pickSkimIfExists(chdimu,"/nfs-6/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleMuTriggerSkim/skim*root");
+
+
+  }
+  
+  TChain* chdiel     = new  TChain("Events");
+
+  if(rundiel){
+    
+    cout << "adding DoubleElectron data" << endl;
+
+    pickSkimIfExists(chdiel,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+    pickSkimIfExists(chdiel,"/nfs-4/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skim*root");
+    pickSkimIfExists(chdiel,"/nfs-6/userdata/cms2/DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
+    pickSkimIfExists(chdiel,"/nfs-6/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
+    pickSkimIfExists(chdiel,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
+    pickSkimIfExists(chdiel,"/nfs-6/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleElectronTriggerSkim/skim*root");
+
+  }
   
   //--------------------------------
   //set luminosity to scale to
@@ -483,6 +577,66 @@ void doAll(bool skipFWLite = true)
     cout << "Processing ttbar all.. " << endl;
     looper->ScanChain(chtopall,"ttall", kttall, prettall, lumi);
     cout << "Done processing ttbar all.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_scaleup) {
+    cout << "Processing ttbar scaleup.. " << endl;
+    looper->ScanChain(chtt_scaleup,"tt_scaleup", kttall, prettall, lumi);
+    cout << "Done processing ttbar scaleup.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_scaledw) {
+    cout << "Processing ttbar scaledw.. " << endl;
+    looper->ScanChain(chtt_scaledw,"tt_scaledw", kttall, prettall, lumi);
+    cout << "Done processing ttbar scaledw.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_matchup) {
+    cout << "Processing ttbar matchup.. " << endl;
+    looper->ScanChain(chtt_matchup,"tt_matchup", kttall, prettall, lumi);
+    cout << "Done processing ttbar matchup.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_matchdw) {
+    cout << "Processing ttbar matchdw.. " << endl;
+    looper->ScanChain(chtt_matchdw,"tt_matchdw", kttall, prettall, lumi);
+    cout << "Done processing ttbar matchdw.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_massup) {
+    cout << "Processing ttbar massup.. " << endl;
+    looper->ScanChain(chtt_massup,"tt_massup", kttall, prettall, lumi);
+    cout << "Done processing ttbar massup.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_massdw) {
+    cout << "Processing ttbar massdw.. " << endl;
+    looper->ScanChain(chtt_massdw,"tt_massdw", kttall, prettall, lumi);
+    cout << "Done processing ttbar massdw.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_pythia) {
+    cout << "Processing ttbar pythia.. " << endl;
+    looper->ScanChain(chtt_pythia,"tt_pythia", kttall, prettall, lumi);
+    cout << "Done processing ttbar pythia.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_mcatnlo) {
+    cout << "Processing ttbar mcatnlo.. " << endl;
+    looper->ScanChain(chtt_mcatnlo,"tt_mcatnlo", kttall, prettall, lumi);
+    cout << "Done processing ttbar mcatnlo.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_powheg) {
+    cout << "Processing ttbar powheg.. " << endl;
+    looper->ScanChain(chtt_powheg,"tt_powheg", kttall, prettall, lumi);
+    cout << "Done processing ttbar powheg.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runtt_notauola) {
+    cout << "Processing ttbar notauola.. " << endl;
+    looper->ScanChain(chtt_notauola,"tt_notauola", kttall, prettall, lumi);
+    cout << "Done processing ttbar notauola.. " << endl;
   }
   //--------------------------------------------------------------------
   if (runDYtot) {
@@ -555,6 +709,18 @@ void doAll(bool skipFWLite = true)
     cout << "Processing data" << endl;
     looper->ScanChain(chdata,"data", 1, 1, lumi);
     cout << "Done processing data" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (rundimu) {
+    cout << "Processing dimuon data" << endl;
+    looper->ScanChain(chdimu,"dimu", 1, 1, lumi);
+    cout << "Done processing Dimuon" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (rundiel) {
+    cout << "Processing dielectron data" << endl;
+    looper->ScanChain(chdiel,"diel", 1, 1, lumi);
+    cout << "Done processing Dielectron" << endl;
   }
   //--------------------------------------------------------------------
   
