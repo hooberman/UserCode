@@ -114,6 +114,7 @@ void doAll(bool skipFWLite = true)
   bool rundata2011b34 = 0;
 
   bool rundimu     = 0;
+  bool runmueg     = 0;
   bool rundiel     = 0;
 
   //alternative ttbar samples
@@ -514,6 +515,21 @@ void doAll(bool skipFWLite = true)
 
 
   }
+
+  TChain* chmueg     = new  TChain("Events");
+
+  if(runmueg){
+    
+    cout << "adding MuEG data" << endl;
+
+    pickSkimIfExists(ch,"/nfs-4/userdata/cms2/MuEG_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/MuEG_Run2011A-05Aug2011-v1_AOD/V04-02-30/SSignSkim/skim*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/MuEG_Run2011A-PromptReco-v6_AOD/V04-02-30/SSignSkim/skim*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-30/SSignSkim/skim*root");
+    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-34/SSignSkim/skim*root");
+
+  }
   
   TChain* chdiel     = new  TChain("Events");
 
@@ -715,6 +731,12 @@ void doAll(bool skipFWLite = true)
     cout << "Processing dimuon data" << endl;
     looper->ScanChain(chdimu,"dimu", 1, 1, lumi);
     cout << "Done processing Dimuon" << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runmueg) {
+    cout << "Processing MuEG data" << endl;
+    looper->ScanChain(chmueg,"mueg", 1, 1, lumi);
+    cout << "Done processing MuEG" << endl;
   }
   //--------------------------------------------------------------------
   if (rundiel) {
