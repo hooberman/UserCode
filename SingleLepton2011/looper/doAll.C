@@ -230,7 +230,7 @@ void doAll(bool skipFWLite = true)
   }
   TChain* chtt_powheg = new TChain("Events");
   if (runtt_powheg) {
-    pickSkimIfExists(chtt_powheg,"/nfs-4/userdata/cms2/TT_TuneZ2_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(chtt_powheg,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/TT_TuneZ2_7TeV-powheg-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
   TChain* chtt_notauola = new TChain("Events");
   if (runtt_notauola) {
