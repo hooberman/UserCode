@@ -101,6 +101,8 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   cout << "MC   eff  " << Form("%.2f +/- %.3f",effmc  ,effmcerr)   << endl;
   cout << "Data/MC   " << Form("%.2f +/- %.2f",ratio  ,ratioerr)   << endl;
 
+  data->Scan("run:lumi:event:probe->pt():probe->eta():tkisonew:met:njets",sel+"tkisonew>9");
+
 
   if( printplot ) can->Print(Form("plots/%s.pdf",plottitle));
 
@@ -175,26 +177,23 @@ void tnpScale( bool printplot = false ) {
   chmc->Add(Form("smurf/%s/dymm_testskim.root",version));
 
   TChain *chdata = new TChain("leptons");
-  // chdata->Add(Form("smurf/%s/data_May10skim.root"      , version));
-  // chdata->Add(Form("smurf/%s/data_PRv4skim.root"       , version));
-  // chdata->Add(Form("smurf/%s/data_Aug05skim.root"      , version));
-  // chdata->Add(Form("smurf/%s/data_PRv6skim.root"       , version));
-  // chdata->Add(Form("smurf/%s/data_2011B-V33skim.root"  , version));
-  // chdata->Add(Form("smurf/%s/data_2011B-V34skim.root"  , version));
 
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_May10.root"    , version ));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv4.root"     , version ));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv6.root"     , version ));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_Aug05.root"    , version ));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_B30.root"      , version ));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_B34.root"      , version ));
+  //char* suffix = "";
+  char* suffix = "_2jets";
+  
+  chdata->Add(Form("smurf/%s/data_DoubleElectron_May10%s.root"    , version , suffix));
+  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv4%s.root"     , version , suffix));
+  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv6%s.root"     , version , suffix));
+  chdata->Add(Form("smurf/%s/data_DoubleElectron_Aug05%s.root"    , version , suffix));
+  chdata->Add(Form("smurf/%s/data_DoubleElectron_B30%s.root"      , version , suffix));
+  chdata->Add(Form("smurf/%s/data_DoubleElectron_B34%s.root"      , version , suffix));
 
-  chdata->Add(Form("smurf/%s/data_SingleMu_May10.root"          , version ));
-  chdata->Add(Form("smurf/%s/data_SingleMu_PRv4.root"           , version ));
-  chdata->Add(Form("smurf/%s/data_SingleMu_Aug05.root"          , version ));
-  chdata->Add(Form("smurf/%s/data_SingleMu_PRv6.root"           , version ));
-  chdata->Add(Form("smurf/%s/data_SingleMu_B30.root"            , version ));
-  chdata->Add(Form("smurf/%s/data_SingleMu_B34.root"            , version ));
+  chdata->Add(Form("smurf/%s/data_SingleMu_May10%s.root"          , version , suffix));
+  chdata->Add(Form("smurf/%s/data_SingleMu_PRv4%s.root"           , version , suffix));
+  chdata->Add(Form("smurf/%s/data_SingleMu_Aug05%s.root"          , version , suffix));
+  chdata->Add(Form("smurf/%s/data_SingleMu_PRv6%s.root"           , version , suffix));
+  chdata->Add(Form("smurf/%s/data_SingleMu_B30%s.root"            , version , suffix));
+  chdata->Add(Form("smurf/%s/data_SingleMu_B34%s.root"            , version , suffix));
 
   //----------------------------------------
   // bins 
@@ -248,10 +247,10 @@ void tnpScale( bool printplot = false ) {
 
   //TString tnpcut 	= "abs(tagAndProbeMass-91)<15&&(eventSelection&1)==1&&HLT_Ele27_WP80_tag>0&&qProbe*qTag<0"; 
   //TString tnpcut 	= "abs(tagAndProbeMass-91)<15&&(eventSelection&2)==2&&qProbe*qTag<0"; 
-  TCut mutnpcut 	 = "abs(tagAndProbeMass-91)<5 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0"; 
-  TCut eltnpcut 	 = "abs(tagAndProbeMass-91)<5 && (eventSelection&1)==1 && HLT_TNP_tag>0            && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0"; 
+  TCut mutnpcut 	 = "abs(tagAndProbeMass-91)<15 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0"; 
+  TCut eltnpcut 	 = "abs(tagAndProbeMass-91)<15 && (eventSelection&1)==1 && HLT_TNP_tag>0            && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0 && met<30.0"; 
 
-  TCut tnpcut   	 = "abs(tagAndProbeMass-91)<5 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0"; 
+  TCut tnpcut   	 = "abs(tagAndProbeMass-91)<15 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0"; 
   TCut vtxweight = "vtxweight";
 
   cout << "Electrons:" << endl;
@@ -268,7 +267,7 @@ void tnpScale( bool printplot = false ) {
   TCut elfo     = "(leptonSelection&4)==4";            // ele fo 
   TCut elid  	= "(leptonSelection&8)==8";            // ele id 
   TCut eliso 	= "(leptonSelection&16)==16";          // ele iso
-  TCut probept  = "probe->pt()>30";                    // probe pt
+  TCut probept  = "probe->pt()>30 && abs(probe->eta())<1.5";                    // probe pt
 
   //TCut njets    = "njets>=2";
   TCut tkisoold = "tkisoold/probe->pt()>0.1";
@@ -311,10 +310,10 @@ void tnpScale( bool printplot = false ) {
   //printHisto( chdata , chmc , TCut(muiso) , TCut(tnpcut+muid) , "probe.pt()" , 10 , 0.0 , 100.0 , "lepton p_{T} [GeV]" , "iso efficiency" );
 
   //plotDistribution( chdata , chmc , TCut(eltnpcut+elid+probept) , vtxweight , "tkisoold" , 10 , 0 , 10 , "trkiso (old) [GeV]" , "el_tkiso_old" , printplot );
-  plotDistribution( chdata , chmc , TCut(eltnpcut+elid+probept) , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_new" , printplot );
+  plotDistribution( chdata , chmc , TCut(eltnpcut+elid+probept) , vtxweight , "tkisonew" , 30 , 0 , 30 , "abs tkiso [GeV]"    , "el_tkiso_new" , printplot );
 
   //plotDistribution( chdata , chmc , TCut(mutnpcut+muid+probept) , vtxweight , "tkisoold" , 10 , 0 , 10 , "trkiso (old) [GeV]" , "mu_tkiso_old" , printplot );
-  plotDistribution( chdata , chmc , TCut(mutnpcut+muid+probept) , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_new" , printplot );
+  //plotDistribution( chdata , chmc , TCut(mutnpcut+muid+probept) , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_new" , printplot );
 
   //printHisto( chdata , chmc , tkisoold , TCut(tnpcut+muid+njets) , "probe.pt()" , 10 , 0.0 , 100.0 , "lepton p_{T} [GeV]" , "tkiso(old) efficiency" );
   //printHisto( chdata , chmc , tkisonew , TCut(tnpcut+muid+njets) , "probe.pt()" , 10 , 0.0 , 100.0 , "lepton p_{T} [GeV]" , "tkiso(new) efficiency" );
