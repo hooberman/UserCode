@@ -934,7 +934,7 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 	          
 	// PFJetID
 	if( !passesPFJetID(ijet) ) continue;
-    
+
 	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ) nbl_++;
 	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ) nbm_++;
 
@@ -986,7 +986,7 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       tkiso_new_pt4_   = trackIso(pfindex, 0.3, 0.05, false , 0.4);
       tkiso_new_pt5_   = trackIso(pfindex, 0.3, 0.05, false , 0.5);
 
-      leptonTree.mt_   = sqrt( 2 * cms2.els_p4().at(tag).pt() * cms2.evt_pfmet() * ( 1 - cos( cms2.els_p4().at(tag).phi() - cms2.evt_pfmetPhi() ) ) );
+      leptonTree.mt_   = sqrt( 2 * cms2.mus_p4().at(tag).pt() * cms2.evt_pfmet() * ( 1 - cos( cms2.mus_p4().at(tag).phi() - cms2.evt_pfmetPhi() ) ) );
 
       // fill it
       leptonTree.tree_->Fill();
