@@ -28,7 +28,7 @@ using namespace std;
 
 bool plotExpected = false;
 bool plotObserved = true;
-bool logplot      = false;
+bool logplot      = true;
 
 void makeGMSBPlot( bool printplots = false ){
 
@@ -67,15 +67,15 @@ void makeGMSBPlot( bool printplots = false ){
 
   for( int i = 0 ; i < 15 ; ++i ){
 
-    // gulexp->GetPoint ((Int_t) i,xp,yp);
-    // gul2exp->GetPoint((Int_t) i,xp2,yp2);
-    // gulcexp->GetPoint((Int_t) i,xpc,ypc);
-    // float exp = 1.0 / sqrt( 1.0/(yp*yp) + 1.0/(yp2*yp2) ); 
-
-    gul->GetPoint ((Int_t) i,xp,yp);
-    gul2->GetPoint((Int_t) i,xp2,yp2);
-    gulc->GetPoint((Int_t) i,xpc,ypc);
+    gulexp->GetPoint ((Int_t) i,xp,yp);
+    gul2exp->GetPoint((Int_t) i,xp2,yp2);
+    gulcexp->GetPoint((Int_t) i,xpc,ypc);
     float exp = 1.0 / sqrt( 1.0/(yp*yp) + 1.0/(yp2*yp2) ); 
+
+    // gul->GetPoint ((Int_t) i,xp,yp);
+    // gul2->GetPoint((Int_t) i,xp2,yp2);
+    // gulc->GetPoint((Int_t) i,xpc,ypc);
+    // float exp = 1.0 / sqrt( 1.0/(yp*yp) + 1.0/(yp2*yp2) ); 
 
 
     // gul->GetPoint ((Int_t) i,xp,yp);
@@ -135,7 +135,7 @@ void makeGMSBPlot( bool printplots = false ){
   hdummy->Draw();
 
   c1->cd();
-  gPad->SetLogy();
+  if( logplot ) gPad->SetLogy();
 
   g->SetLineColor(4);
   g->SetLineWidth(2);
@@ -195,7 +195,7 @@ void makeGMSBPlot( bool printplots = false ){
     gulcexp->Draw("samel");
   }
 
-  g->Draw("samec");
+  g->Draw("samel");
 
   //gulexp->Draw("samel");
   //gul2exp->Draw("samel");
@@ -229,6 +229,7 @@ void makeGMSBPlot( bool printplots = false ){
   // gul->Draw("samel");
   // gul2->Draw("samel");
 
+  //TLegend *leg = new TLegend(0.4,0.6,0.9,0.8);
   TLegend *leg = new TLegend(0.45,0.7,0.95,0.9);
   if( plotObserved ){
     leg->AddEntry(gul  ,"observed UL (VZ+E_{T}^{miss})","l");
