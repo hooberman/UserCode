@@ -115,6 +115,9 @@ class LeptonTreeMaker {
 	Float_t tkiso_new_pt5_;
 	Float_t vtxweight_;
 
+	unsigned int nbl_;
+	unsigned int nbm_;
+
 	unsigned int HLT_Ele17_Ele8_tag_;
 	unsigned int HLT_Ele17_Ele8_probe_;
 	unsigned int HLT_Ele27_WP80_tag_;

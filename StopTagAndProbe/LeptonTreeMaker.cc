@@ -283,7 +283,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   // make smurf ntuples
   gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-03/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
+  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-04/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
   assert(fSmurf);
   LeptonTree leptonTree;
   leptonTree.CreateTree();
@@ -308,6 +308,10 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   HLT_TNP_probe_=0;
 
   vtxweight_ = 0.0;
+
+  nbl_ = 0;
+  nbm_ = 0;
+
   // leptonTree.tree_->Branch("HLT_Ele17_Ele8_tag"			      	, &HLT_Ele17_Ele8_tag_				,"HLT_Ele17_Ele8_tag/i");
   // leptonTree.tree_->Branch("HLT_Ele17_Ele8_probe"		       	, &HLT_Ele17_Ele8_probe_			,"HLT_Ele17_Ele8_probe/i");
   // leptonTree.tree_->Branch("HLT_Ele27_WP80_tag"	       			, &HLT_Ele27_WP80_tag_				,"HLT_Ele27_WP80_tag/i");
@@ -329,6 +333,9 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   leptonTree.tree_->Branch("tkisonewpt3"                 		, &tkiso_new_pt3_	            	        ,"tkisonewpt3/F");
   leptonTree.tree_->Branch("tkisonewpt4"                 		, &tkiso_new_pt4_	            	        ,"tkisonewpt4/F");
   leptonTree.tree_->Branch("tkisonewpt5"                 		, &tkiso_new_pt5_	            	        ,"tkisonewpt5/F");
+
+  leptonTree.tree_->Branch("nbl"                          		, &nbl_	            	                        ,"nbl/I");
+  leptonTree.tree_->Branch("nbm"                          		, &nbm_	            	                        ,"nbm/I");
 
   // leptonTree.tree_->Branch("HLT_Mu17_TkMu8_tag"			       	, &HLT_Mu17_TkMu8_tag_				,"HLT_Mu17_TkMu8_tag/i");
   // leptonTree.tree_->Branch("HLT_Mu17_TkMu8_probe"      	       		, &HLT_Mu17_TkMu8_probe_			,"HLT_Mu17_TkMu8_probe/i");
@@ -704,6 +711,9 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       jets.clear();
       if( jets.size() > 0 ) cout << "ERROR! jets.size() " << jets.size() << endl;
 
+      nbl_ = 0;
+      nbm_ = 0;
+
       for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
     
 	// get L1FastL2L3Residual total correction
@@ -731,6 +741,9 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
 	// PFJetID
 	if( !passesPFJetID(ijet) ) continue;
     
+	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ) nbl_++;
+	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ) nbm_++;
+
 	jets.push_back(vjet);
       }
 
@@ -780,6 +793,8 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       tkiso_new_pt4_   = trackIso(pfindex, 0.3, 0.05, false , 0.4);
       tkiso_new_pt5_   = trackIso(pfindex, 0.3, 0.05, false , 0.5);
 
+      leptonTree.mt_   = sqrt( 2 * cms2.els_p4().at(tag).pt() * cms2.evt_pfmet() * ( 1 - cos( cms2.els_p4().at(tag).phi() - cms2.evt_pfmetPhi() ) ) );
+      
       // fill it
       leptonTree.tree_->Fill();
 
@@ -890,6 +905,9 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       jets.clear();
       if( jets.size() > 0 ) cout << "ERROR! jets.size() " << jets.size() << endl;
 
+      nbl_ = 0;
+      nbm_ = 0;
+
       for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
     
 	// get L1FastL2L3Residual total correction
@@ -917,6 +935,9 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 	// PFJetID
 	if( !passesPFJetID(ijet) ) continue;
     
+	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ) nbl_++;
+	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ) nbm_++;
+
 	jets.push_back(vjet);
       }
 
@@ -964,6 +985,8 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       tkiso_new_pt3_   = trackIso(pfindex, 0.3, 0.05, false , 0.3);
       tkiso_new_pt4_   = trackIso(pfindex, 0.3, 0.05, false , 0.4);
       tkiso_new_pt5_   = trackIso(pfindex, 0.3, 0.05, false , 0.5);
+
+      leptonTree.mt_   = sqrt( 2 * cms2.els_p4().at(tag).pt() * cms2.evt_pfmet() * ( 1 - cos( cms2.els_p4().at(tag).phi() - cms2.evt_pfmetPhi() ) ) );
 
       // fill it
       leptonTree.tree_->Fill();
