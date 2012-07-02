@@ -173,7 +173,7 @@ int objectPassTrigger(const LorentzVector &obj, char* trigname, float ptmin = 0,
   for (unsigned int i = 0; i < trigp4.size(); ++i){
     if ( trigp4[i].Pt() < ptmin ) continue;
     float dr = dRbetweenVectors(trigp4[i], obj);
-    if (dr < drmax) return 1;
+    if (dr < drmax) return cms2.hlt_prescales().at(findTriggerIndex(exact_trigname));
   }
 
   return 0;
@@ -283,7 +283,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   // make smurf ntuples
   gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-04/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
+  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-05/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
   assert(fSmurf);
   LeptonTree leptonTree;
   leptonTree.CreateTree();
@@ -306,6 +306,8 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   HLT_TNP_tag_=0;
   HLT_TNP_probe_=0;
+  HLT_TNPel_tag_=0;
+  HLT_TNPel_probe_=0;
 
   vtxweight_ = 0.0;
 
@@ -319,6 +321,8 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   leptonTree.tree_->Branch("HLT_TNP_tag"	       			, &HLT_TNP_tag_			         	,"HLT_TNP_tag/i");
   leptonTree.tree_->Branch("HLT_TNP_probe"    		        	, &HLT_TNP_probe_	             		,"HLT_TNP_probe/i");
+  leptonTree.tree_->Branch("HLT_TNPel_tag"	       			, &HLT_TNPel_tag_			        ,"HLT_TNPel_tag/i");
+  leptonTree.tree_->Branch("HLT_TNPel_probe"    		        , &HLT_TNPel_probe_	             		,"HLT_TNPel_probe/i");
   leptonTree.tree_->Branch("HLT_IsoMu30_eta2p1_tag"	       		, &HLT_IsoMu30_eta2p1_tag_			,"HLT_IsoMu30_eta2p1_tag/i");
   leptonTree.tree_->Branch("HLT_IsoMu30_eta2p1_probe"  			, &HLT_IsoMu30_eta2p1_probe_		        ,"HLT_IsoMu30_eta2p1_probe/i");
   leptonTree.tree_->Branch("HLT_IsoMu24_eta2p1_tag"	       		, &HLT_IsoMu24_eta2p1_tag_			,"HLT_IsoMu24_eta2p1_tag/i");
@@ -689,13 +693,17 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       // HLT_Ele27_WP80_probe_      = cms2.els_HLT_Ele27_WP80()[probe];
 			
       if( isData ){
-	HLT_TNP_tag_   = objectPassTrigger( cms2.els_p4()[tag]   ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v");
-	HLT_TNP_probe_ = objectPassTrigger( cms2.els_p4()[probe] ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v");
+	HLT_TNP_tag_     = objectPassTrigger( cms2.els_p4()[tag]   ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v");
+	HLT_TNP_probe_   = objectPassTrigger( cms2.els_p4()[probe] ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v");
+	HLT_TNPel_tag_   = objectPassTrigger( cms2.els_p4()[tag]   ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30");
+	HLT_TNPel_probe_ = objectPassTrigger( cms2.els_p4()[probe] ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30");
       }
 
       else{
-	HLT_TNP_tag_   = 1;
-	HLT_TNP_probe_ = 1;
+	HLT_TNP_tag_     = 1;
+	HLT_TNP_probe_   = 1;
+	HLT_TNPel_tag_   = 1;
+	HLT_TNPel_probe_ = 1;
       }
 
       // fill the tree - criteria the probe passed 
