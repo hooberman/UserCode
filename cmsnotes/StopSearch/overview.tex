@@ -40,7 +40,7 @@ The $\ell +$ jets background, which is dominated by
 $t\bar{t} \to \ell $+ jets, but also includes some $W +$ jets as well as single top,
 is estimated as follows:
 \begin{enumerate}
-\item We select a control sample of events passing all cuts, but anti-btagged.  This
+\item We select a control sample of events passing all cuts, but anti-btagged, i.e. b-vetoed.  This
 sample is now dominated by $W +$ jets.  The sample is used to understand the
 $M_T$ tail in $\ell +$ jets processes. 
 \item In MC we measure the ratio of the number of $\ell +$ jets events in the $M_T$ tail to
@@ -55,32 +55,47 @@ data-to-MC scale factor (SF) which is the ratio of the  ratios defined in step 2
 uncertainty.  
 \item We next perform the full selection in $t\bar{t} \to \ell +$ jets MC, and measure this ratio
 again (which should be the same as that in step 2).
-\item We perform the full selection in data.  We count the events with $M_T \approx 80$ GeV, we
-subtract off the dilepton contribution, we multiply the subtracted event count by the ratio from step 5 (or from 
-step 2), and also by the data/MC SF from step 4.  The result is the prediction for the $\ell +$ jets BG in 
-the $M_T$ tail.
+\item 
+We perform the full selection in data. We count the number of events with $M_T \approx 80$ GeV, after subtracting off the dilepton contribution,
+  and multiply this count by the ratio from step 5 times the data/MC scale factor from step 4.
+%We count the events with $M_T \approx 80$ GeV, we
+%subtract off the dilepton contribution, we multiply the subtracted event count by the ratio from step 5 (or from 
+%step 2), and also by the data/MC SF from step 4.  
+The result is the prediction for the $\ell +$ jets BG in the $M_T$ tail.
 \end{enumerate}
 
-The dilepton background can be broken up into many components depending
-on the characteristics of the 2nd (undetected) lepton
-\begin{itemize}
-\item 3-prong hadronic tau decay
-\item 1-prong hadronic tau decay 
-\item $e$ or $\mu$ possibly from $\tau$ decay
-\end{itemize}
-We have currently no veto against 3-prong taus.  For the other two categories, we explicitely 
-veto events %with additional electrons and muons above 10 GeV , and we veto events 
-with an isolated track of \pt\ $>$ 10 GeV.  This rejects electrons and muons (either from $W\to e/\mu$ or
-$W\to \tau\to e/\mu$) and 1-prong tau decays.
+Steps 1-4 above are all measurements on the b-vetoed samples in data and/or MC. Steps 5 and 6 are performed on the b-tagged sample.
+
+To suppress dilepton backgrounds, we veto events with an isolated track of \pt $>$ 10 GeV. 
+Being the common feature for electron, muon, and one-prong
+tau decays, this veto is highly efficient for rejecting 
+$t\bar{t}$ to dilepton events. The remaining dilepton background can be classified into the following categories:
+
+%The dilepton background can be broken up into many components depending
+%on the characteristics of the 2nd (undetected) lepton
+%\begin{itemize}
+%\item 3-prong hadronic tau decay
+%\item 1-prong hadronic tau decay 
+%\item $e$ or $\mu$ possibly from $\tau$ decay
+%\end{itemize}
+%We have currently no veto against 3-prong taus.  For the other two categories, we explicitely 
+%veto events %with additional electrons and muons above 10 GeV , and we veto events 
+%with an isolated track of \pt\ $>$ 10 GeV.  This rejects electrons and muons (either from $W\to e/\mu$ or
+%$W\to \tau\to e/\mu$) and 1-prong tau decays.
 %(it turns out that the explicit $e$ or $\mu$ veto is redundant with the isolated track veto).
-Therefore the latter two categories can be broken into 
+%Therefore the latter two categories can be broken into 
 \begin{itemize}
-\item out of acceptance $(|\eta| > 2.50)$
-\item \pt\ $<$ 10 GeV
-\item \pt\ $>$ 10 GeV, but survives the additional track isolation veto
+\item lepton is out of acceptance $(|\eta| > 2.50)$
+\item lepton has \pt\ $<$ 10 GeV, and is inside the acceptance
+\item lepton has \pt\ $>$ 10 GeV, is inside the acceptance, but survives the additional isolated track veto
 \end{itemize}
-Monte Carlo studies indicate that there is no dominant contribution: it is ``a little bit of this,
-and a little bit of that''.
+
+%Monte Carlo studies indicate that there is no dominant contribution: it is ``a little bit of this,
+%and a little bit of that''.
+
+The last category includes 3-prong tau decays as well as electrons and muons from W decay that fail the isolation requirement.
+Monte Carlo studies indicate that these three components populate the $M_T$ tail in the proportions of roughly  6\%, 47\%, 47\%. 
+We note that at present we do not attempt to veto 3-prong tau decays as they are only 16\% of the total dilepton background according to the MC.
 
 The high $M_T$ dilepton backgrounds come from MC, but their rate is normalized to the 
 $M_T \approx 80$ GeV peak.  In order to perform this normalization in data, the $W +$ jets
@@ -130,7 +145,9 @@ Finally, there are possible improvements to this basic analysis strategy that ca
 experiment under control.
 \item Add an explicit three prong tau veto
 \item Do something to require that three of the jets in the event be consistent with $t \to Wb, W \to q\bar{q}$.
-This could help rejecting some of the dilepton BG; however, it would also loose efficiency for 
-the $\widetilde{t} \to b \chi^+$ mode
+%This could help rejecting some of the dilepton BG; however, it would also loose efficiency for 
+%the $\widetilde{t} \to b \chi^+$ mode
+This could help reject some of the dilepton BG in the search for $\widetilde{t} \to t \chi^0$, 
+but is not applicable to the $\widetilde{t} \to b \chi^+$ search.
 \item Consider the $M(\ell b)$ variable, which is not bounded by $M_{top}$ in $\widetilde{t} \to b \chi^+$
 \end{itemize}
