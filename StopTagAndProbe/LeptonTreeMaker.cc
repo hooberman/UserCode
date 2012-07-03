@@ -314,10 +314,16 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   nbl_ = 0;
   nbm_ = 0;
 
-  // leptonTree.tree_->Branch("HLT_Ele17_Ele8_tag"			      	, &HLT_Ele17_Ele8_tag_				,"HLT_Ele17_Ele8_tag/i");
+  // leptype_ = 0;
+  // elid_    = 0;
+  // eliso_   = 0;
+  // muid_    = 0;
+  // muiso_   = 0;
+
+  // leptonTree.tree_->Branch("HLT_Ele17_Ele8_tag"			, &HLT_Ele17_Ele8_tag_				,"HLT_Ele17_Ele8_tag/i");
   // leptonTree.tree_->Branch("HLT_Ele17_Ele8_probe"		       	, &HLT_Ele17_Ele8_probe_			,"HLT_Ele17_Ele8_probe/i");
-  // leptonTree.tree_->Branch("HLT_Ele27_WP80_tag"	       			, &HLT_Ele27_WP80_tag_				,"HLT_Ele27_WP80_tag/i");
-  // leptonTree.tree_->Branch("HLT_Ele27_WP80_probe"    		      	, &HLT_Ele27_WP80_probe_			,"HLT_Ele27_WP80_probe/i");
+  // leptonTree.tree_->Branch("HLT_Ele27_WP80_tag"	       		, &HLT_Ele27_WP80_tag_		        	,"HLT_Ele27_WP80_tag/i");
+  // leptonTree.tree_->Branch("HLT_Ele27_WP80_probe"    		, &HLT_Ele27_WP80_probe_		        ,"HLT_Ele27_WP80_probe/i");
 
   leptonTree.tree_->Branch("HLT_TNP_tag"	       			, &HLT_TNP_tag_			         	,"HLT_TNP_tag/i");
   leptonTree.tree_->Branch("HLT_TNP_probe"    		        	, &HLT_TNP_probe_	             		,"HLT_TNP_probe/i");
@@ -340,6 +346,12 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   leptonTree.tree_->Branch("nbl"                          		, &nbl_	            	                        ,"nbl/I");
   leptonTree.tree_->Branch("nbm"                          		, &nbm_	            	                        ,"nbm/I");
+
+  // leptonTree.tree_->Branch("leptype"                          		, &leptype_	            	                ,"leptype/I");
+  // leptonTree.tree_->Branch("elid"                          		, &elid_	            	                ,"elid/I");
+  // leptonTree.tree_->Branch("eliso"                          		, &eliso_	            	                ,"eliso/I");
+  // leptonTree.tree_->Branch("muid"                          		, &muid_	            	                ,"muid/I");
+  // leptonTree.tree_->Branch("muiso"                          		, &muiso_	            	                ,"muiso/I");
 
   // leptonTree.tree_->Branch("HLT_Mu17_TkMu8_tag"			       	, &HLT_Mu17_TkMu8_tag_				,"HLT_Mu17_TkMu8_tag/i");
   // leptonTree.tree_->Branch("HLT_Mu17_TkMu8_probe"      	       		, &HLT_Mu17_TkMu8_probe_			,"HLT_Mu17_TkMu8_probe/i");
@@ -678,6 +690,7 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       // fill the tree - event general variables
       SetCommonTreeVariables(leptonTree, weight, sample);
       leptonTree.eventSelection_ = LeptonTree::ZeeTagAndProbe;
+      //leptype_ = 0;
 
       // fill the tree - probe specific variables
       leptonTree.probe_       = cms2.els_p4()[probe];
@@ -695,9 +708,17 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       if( isData ){
 	HLT_TNP_tag_     = objectPassTrigger( cms2.els_p4()[tag]   ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v");
 	HLT_TNP_probe_   = objectPassTrigger( cms2.els_p4()[probe] ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v");
-	HLT_TNPel_tag_   = objectPassTrigger( cms2.els_p4()[tag]   ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30");
-	HLT_TNPel_probe_ = objectPassTrigger( cms2.els_p4()[probe] ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30");
+
+	if( cms2.evt_run() >= 165088 ){
+	  HLT_TNPel_tag_   = objectPassTrigger( cms2.els_p4()[tag]   ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30");
+	  HLT_TNPel_probe_ = objectPassTrigger( cms2.els_p4()[probe] ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30");
+	}
+	else{
+	  HLT_TNPel_tag_   = 0;
+	  HLT_TNPel_probe_ = 0;
+	}
       }
+
 
       else{
 	HLT_TNP_tag_     = 1;
@@ -871,6 +892,7 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       // fill the tree - event general variables
       SetCommonTreeVariables(leptonTree, weight, sample);
       leptonTree.eventSelection_ = LeptonTree::ZmmTagAndProbe;
+      //leptype_ = 1;
 
       // fill the tree - probe specific variables
       leptonTree.probe_       = cms2.mus_p4()[probe];
