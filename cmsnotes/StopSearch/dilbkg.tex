@@ -12,8 +12,8 @@ resolution or \met\ mis-measurement effects. As a result, the
 \ttll\ background is expected to be well modeled in the MC. The
 prediction for this background is thus derived from MC and normalized
 to the data in the \mt\ peak region. However,
-there are two aspects that require dedicated corrections and detailed
-in this section 
+there are two aspects that require dedicated corrections and are detailed
+in this section:
 \begin{itemize}
 \item the modeling of additional jets from radiation, required to satisfy the 4-jet
 selection criteria.
@@ -21,17 +21,19 @@ selection criteria.
   applied to explicitly reject leptons from \W\ and $\W\To\tau$ decays
   and single prong $\tau$ decays.
 \end{itemize}
-The systematic uncertainty associated with the MC prediction is
-derived by comparing various generators and from the uncertainties on
+The systematic uncertainty associated with the MC prediction then has two components.
+One that is
+derived by comparing various generators, and a second from the uncertainties on
 the various correction factors used. These are described at the end of
 this section.  
 
 \subsection{Modeling of Additional Hard Jets in Top Dilepton Events}
+\label{sec:jetmultiplicity}
 
 Dilepton \ttbar\ events have 2 jets from the top decays, so additional
 jets from radiation or higher order contributions are required to
 enter the signal sample. The modeling of addtional jets in \ttbar\
-events is checked in a a \ttll\ control sample,
+events is checked in a \ttll\ control sample,
 selected by requiring
 \begin{itemize}
 \item exactly 2 selected electrons or muons with \pt $>$ 20 GeV
@@ -109,7 +111,7 @@ fraction of events with additional jets in MC to the observed fraction
 in data. These are applied to the \ttll\ MC in
 the signal sample. In order to do so, it is first necessary to count the number of
 additional jets from radiation and exclude leptons mis-identified as
-jets. A jet is considered a mis-identified lepton if is matched to a
+jets. A jet is considered a mis-identified lepton if it is matched to a
 generator-level second lepton with sufficient energy to satisfy the jet
 \pt\ requirement ($\pt>30~\GeV$). 
 
@@ -123,15 +125,15 @@ lepton is counted as a jet. Lepton mis-identification depends strongly
 on the type of second lepton, occuring more frequently in the case of
 hadronic $\tau$s than leptonic objects. According to the \ttll\
 MC, for hadronic $\tau$s, $\sim85\%$ of multi-prong $\tau$s and about half
-single-prong $\tau$ are mis-identified as jets. In the case of
+the single-prong $\tau$ are mis-identified as jets. In the case of
 leptonic objects, the fractions are smaller, comprising about a third
 of \E/\M\ from a \W\ decay and $<20\%$ for leptonic $\tau$s, 
 mainly because of the softness of the decay products. 
 The scale factors listed in Table.~\ref{tab:njetskfactors} are applied
 to the ``cleaned'' jet counts in the signal sample (shown in blue in
 Figure~\ref{fig:dileptonnjets_lepcomp}). The impact of applying the
-scale factors on the \ttll\ is about a $10\%$ reduction in the
-prediction for the signal sample. 
+jet multiplicity scale factors on the \ttll\ is about a $10\%$ reduction in the
+background prediction for the signal region. 
 
 %\begin{itemize}
 %\item Hadronic ($\tau$) objects: most multi-prong $\tau$s and about
@@ -163,15 +165,18 @@ prediction for the signal sample.
 Ultimately, the interesting quantity for reweighting is the number of
 additional hard jets from radiation and this information is accessed using the
 number of reconstructed
-jets. Figure~\ref{fig:dileptonnjets_signalcontrol_comp} compares the
+jets. Figure~\ref{fig:dileptonnjets_signalcontrol_comp} 
+demonstrates in MC that the \ttll control sample, i.e. when both leptons are reconstructed,
+can indeed be used to reweight the \ttll signal sample, i.e. when one lepton is missed.
+The figure compares the
 number of additional jets from truth matching probed by N
 reconstructed jets, in this case 3 and $\ge4$ jets. In order to do so,
 jets that are truth-matched to the top decay products (the b-quarks
 and additional leptons) are removed. The 3-jet distribution shows 
 excellent agreement and the differences in the $\ge4$-jet distribution 
-are of at most $5\%$. The impact of possible differences in the
+are at most $5\%$. The impact of possible differences in the
 underlying distribution of extra
-jets between the signal and control \ttll\ samples is estimated by
+jets between the signal and control \ttll\ samples are estimated by
 varying the scale factor contributions by $10\%$ and calculating the
 change in the dilepton prediction. This effect is found to have a
 negligible impact on the prediction, well below $1\%$.
@@ -183,7 +188,7 @@ impact of the non-\ttll\ background on the jet fraction scale factors
 has also been studied. In particular, given the large uncertainty on
 the $\dy+HF$ MC prediction, this component has been varied by a factor
 of 2 and the resulting change on the dilepton prediction is $<1\%$. As
-a result, the dominant source of uncertainty is the statiscal
+a result, the dominant source of uncertainty is the statistical
 uncertainty, primarily from the two-lepton control sample size, that
 corresponds to a $3\%$ uncertainty on the dilepton prediction. 
 

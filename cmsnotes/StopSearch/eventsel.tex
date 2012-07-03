@@ -1,6 +1,11 @@
 
+This analysis uses several different control regions in addition to the signal regions. 
+All of these different regions are defined in this section. 
+Figure~\ref{fig:venndiagram} illustrates the relationship between these regions.
 
-The preselection sample is based on the following criteria
+\subsection{Single Lepton Selections}
+
+The single lepton preselection sample is based on the following criteria
 \begin{itemize}
 \item satisfy the trigger requirement (see
   Table.~\ref{tab:DatasetsData}). Dilepton triggers are used only for the dilepton control region.
@@ -12,27 +17,47 @@ The preselection sample is based on the following criteria
     SUSY analysis (SUS-11-011) for muons
   \end{itemize} 
   \item require at least 4 PF jets in the event with $\pt>30~\GeV$
-    within $|\eta|<2.5$, out of which at least 1 is b-tagged based on
-    the SSV medium working point. 
+    within $|\eta|<2.5$
   \item require moderate $\met>50~\GeV$
 \end{itemize}
+
+In addition, we count the number of SSV medium working point b-tags, $N_{b-tag}$.
 
 Currently, we focus on the muon channel because it is cleaner (the QCD contribution is negligible)
 and the triggers are simpler (we use single muon triggers, as opposed to electron + 3-jet triggers).
 We will add the electron channel, time permitting. However, since this is a systematics-dominated 
 analysis, increasing the statistics by adding the electrons is not expected to significantly improve
-the sensitivity, especialy because the electron selection efficiency is smaller and the systematic
+the sensitivity, especially because the electron selection efficiency is smaller and the systematic
 uncertainty associated with the QCD background is larger.
-
-A benchmark signal region is selected by tightening the \met\ and
-adding an \mt\  as well as isolated track veto requirement
+    
+We then define the following subsamples within this preselection sample:
 \begin{itemize}
-\item $\met>100~\GeV$
-\item $\mt>150~\GeV$
-\item isolated track veto as discussed below
+\item $N_{b-tag} = 0$, i.e. b-veto region
+\item $N_{b-tag} \ge 1 $, i.e. b-tagged region
+\begin{itemize}
+\item without an additional isolated track veto
+\item with an additional isolated track veto
+\end{itemize}
 \end{itemize}
 
+For the signal regions, we then furthermore require $\met>100~\GeV$ while some of the background predictions and scale factors
+are done for both \met
+requirements to show stability of the method.
+Within each of these subsamples we then define an \mt peak ($60 < \mt < 100~\GeV$) region and an \mt tail ($\mt > 150~\GeV$) region
+%
+We generally use the \mt peak region yields in data and multiply it by the ratio of tail divided by peak in MC times appropriate corrections
+in order to estimate the background in data in the tail region.
+
 {\bf We have not looked at the data in the signal region after the first 1 fb$^{-1}$ of data.}
+
+\subsection{Dilepton control region}
+
+We define a dilepton control region requiring two isolated leptons, $ee, e\mu$, or $\mu\mu$ to study the jet multiplicity in data and MC, and derive
+scale factors based on their consistency. This study is documented in Section~\ref{sec:jetmultiplicity}.
+
+{\bf Fix me: Need to describe here the actual selection. What lepton pT's, \met , etc. } 
+
+This sample is only partially overlapping with the single lepton preselection as it requires the dilepton rather than the single lepton triggers.
 
 \subsection{Corrections to Jets and \met}
 
