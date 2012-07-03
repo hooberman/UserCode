@@ -69,5 +69,10 @@ int main(int argc, char *argv[])
     processLeptonTree("testskim", SmurfTree::dymm, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root", false, "",prescale);
   }
 
+  else if( ijob == 5 ){
+    cout << "Processing ttbar MC skim" << endl;
+    processLeptonTree("testskim", SmurfTree::ttbar, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root", false, "",prescale);
+  }
+
   return 0; 
 }
