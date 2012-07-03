@@ -117,6 +117,12 @@ class LeptonTreeMaker {
 
 	unsigned int nbl_;
 	unsigned int nbm_;
+	
+	/* unsigned int leptype_; */
+	/* unsigned int elpassid_;    */
+	/* unsigned int elpassiso_;   */
+	/* unsigned int mupassid_;    */
+	/* unsigned int mupassiso_; */
 
 	unsigned int HLT_Ele17_Ele8_tag_;
 	unsigned int HLT_Ele17_Ele8_probe_;
