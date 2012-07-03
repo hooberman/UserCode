@@ -61,7 +61,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-18";
+const char* iter                 = "V00-00-19";
 const char* jsonfilename         = "../jsons/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 5.10/fb
 
 //--------------------------------------------------------------------
@@ -1073,14 +1073,41 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	float maxpt = -1.;
 	
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	  if( dRbetweenVectors( *lep1_ , goodLeptons.at(ilep) ) < 0.1 ) continue;
-	  if( dRbetweenVectors( *lep2_ , goodLeptons.at(ilep) ) < 0.1 ) continue;
+	  if( dRbetweenVectors( *lep1_ , goodLeptons.at(ilep) ) < 0.00001 ) continue;
+	  if( dRbetweenVectors( *lep2_ , goodLeptons.at(ilep) ) < 0.00001 ) continue;
 
 	  goodExtraLeptons.push_back( goodLeptons.at(ilep) );
 
 	  if( goodLeptons.at(ilep).pt() > maxpt ){
 	    maxpt = goodLeptons.at(ilep).pt();
 	    imax = ilep;
+	  }
+
+	}
+
+	
+	if( nlep_ != 2 + goodExtraLeptons.size() ){
+
+	  cout << endl << endl;
+	  cout << "WARNING" << endl;
+	  cout << "nleptons " << nlep_ << endl;
+	  cout << "extra leptons " << goodExtraLeptons.size() << endl;
+	  
+	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+
+	    cout << ilep << " " << goodLeptons.at(ilep).pt() << endl;
+
+	    if( dRbetweenVectors( *lep1_ , goodLeptons.at(ilep) ) < 0.00001 ){
+	      cout << "lepton1" << endl;
+	      continue;
+	    }
+	    if( dRbetweenVectors( *lep2_ , goodLeptons.at(ilep) ) < 0.00001 ){
+	      cout << "lepton2" << endl;
+	      continue;
+	    }
+
+	    cout << "extra lepton" << endl;
+	    
 	  }
 
 	}
