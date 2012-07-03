@@ -63,26 +63,13 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
 
   TCanvas *can = new TCanvas(Form("can_%i",iplot),Form("can_%i",iplot),600,600);
   can->cd();
-  
+
+  TPad *mainpad = new TPad("mainpad","mainpad",0.0,0.0,1.0,0.8);
+  mainpad->Draw();
+  mainpad->cd();
+
   data->Draw(Form("min(%s,%f)>>hdata_%i"  , var,xmax-0.0001,iplot),sel);
   mc  ->Draw(Form("min(%s,%f)>>hmc_%i"    , var,xmax-0.0001,iplot),sel*vtxweight);
-
-  hmc->GetXaxis()->SetTitle(xtitle);
-  hmc->SetLineColor(2);
-  hmc->SetMarkerColor(2);
-  hmc->DrawNormalized("hist");
-  hmc->DrawNormalized("samE1");
-  hdata->SetLineColor(4);
-  hdata->SetMarkerColor(4);
-  hdata->DrawNormalized("sameE1");
-
-  TLegend *leg = new TLegend(0.6,0.6,0.8,0.8);
-  leg->AddEntry(hdata , "data" , "lp");
-  leg->AddEntry(hmc   , "MC"   , "lp");
-  leg->SetBorderSize(0);
-  leg->SetFillColor(0);			       
-  leg->Draw();
-
 
   float ndata1     = (float) hdata->GetBinContent(1);
   float ndata      = (float) hdata->Integral();
@@ -97,16 +84,87 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   float ratio    = effdata/effmc;
   float ratioerr = ratio * sqrt(pow(effdataerr/effdata,2)+pow(effmcerr/effmc,2));
 
+  float datatot = hdata->Integral();
+  float mctot   = hmc->Integral();
+
+  hdata->Scale(1.0/hdata->Integral());
+  hmc->Scale(1.0/hmc->Integral());
+
+  hmc->GetYaxis()->SetRangeUser(0,1);  
+  hmc->GetXaxis()->SetTitle(xtitle);
+  hmc->SetLineColor(2);
+  hmc->SetMarkerColor(2);
+  hmc->DrawNormalized("hist");
+  hmc->DrawNormalized("sameE1");
+  hdata->SetLineColor(4);
+  hdata->SetMarkerColor(4);
+  hdata->Draw("sameE1");
+
+  TLegend *leg = new TLegend(0.6,0.6,0.8,0.8);
+  leg->AddEntry(hdata , "data" , "lp");
+  leg->AddEntry(hmc   , "MC"   , "lp");
+  leg->SetBorderSize(0);
+  leg->SetFillColor(0);			       
+  leg->Draw();
+
+
+
+  // TH1F* h1 = new TH1F("h1","",nbins,xmin,xmax);
+  // for( int ibin = 1 ; ibin <= nbins ; ibin++ ) h1->SetBinContent(ibin,datatot);
+
+  TH1F* hdata_num = new TH1F("hdata_num","",1,0,1);
+  TH1F* hdata_den = new TH1F("hdata_den","",1,0,1);
+
+  hdata_num->SetBinContent(1,ndata1);
+  hdata_den->SetBinContent(1,ndata);
+
+  TGraphAsymmErrors* grdata = new TGraphAsymmErrors();
+  grdata->BayesDivide(hdata_num,hdata_den);
+
+  //TGraphAsymmErrors* grmc = new TGraphAsymmErrors();
+  //grmc->BayesDivide(hmc,h1);
+
+  grdata->SetLineColor(6);
+  //grmc->SetLineColor(7);
+  grdata->Draw("sameP");
+  //grmc->Draw("sameP");
+
+  can->cd();
+  
+  TPad *respad = new TPad("respad","respad",0.0,0.8,1.0,1.0);
+  respad->Draw();
+  respad->cd();
+
+  TH1F* hratio = (TH1F*) hdata->Clone(Form("hratio_%i",iplot));
+  hratio->Divide(hmc);
+
+  hratio->SetMarkerColor(1);
+  hratio->SetLineColor(1);
+  hratio->Draw();
+  hratio->GetYaxis()->SetRangeUser(0,2);
+  hratio->GetYaxis()->SetNdivisions(5);
+  hratio->GetYaxis()->SetLabelSize(0.2);
+  hratio->GetXaxis()->SetLabelSize(0.0);
+  
+
+  TLine line;
+  line.DrawLine(xmin,1.0,xmax,1.0);
+
+
   cout << "Data eff  " << Form("%.2f +/- %.3f",effdata,effdataerr) << endl;
   cout << "MC   eff  " << Form("%.2f +/- %.3f",effmc  ,effmcerr)   << endl;
   cout << "Data/MC   " << Form("%.2f +/- %.2f",ratio  ,ratioerr)   << endl;
 
-  data->Scan("run:lumi:event:probe->pt():probe->eta():tkisonew:met:njets",sel+"tkisonew>9");
-
+  //data->Scan("run:lumi:event:probe->pt():probe->eta():tkisonew:met:mt:njets:nbl:nbm",sel+"tkisonew>9");
 
   if( printplot ) can->Print(Form("plots/%s.pdf",plottitle));
 
   iplot++;
+
+  TCanvas *c2 = new TCanvas();
+  c2->cd();
+  grdata->Draw("AP");
+
 }
 
 
@@ -171,15 +229,15 @@ void tnpScale( bool printplot = false ) {
   // Files
   //----------------------------------------
 
-  char* version = (char*) "V00-00-03";
+  char* version = (char*) "V00-00-05";
 
-  TChain *chmc = new TChain("leptons");
-  chmc->Add(Form("smurf/%s/dymm_testskim.root",version));
-
+  TChain *chmc   = new TChain("leptons");
   TChain *chdata = new TChain("leptons");
 
   //char* suffix = "";
   char* suffix = "_2jets";
+
+  chmc->Add(Form("smurf/%s/dymm_testskim%s.root" , version , suffix));
   
   chdata->Add(Form("smurf/%s/data_DoubleElectron_May10%s.root"    , version , suffix));
   chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv4%s.root"     , version , suffix));
@@ -248,9 +306,43 @@ void tnpScale( bool printplot = false ) {
   //TString tnpcut 	= "abs(tagAndProbeMass-91)<15&&(eventSelection&1)==1&&HLT_Ele27_WP80_tag>0&&qProbe*qTag<0"; 
   //TString tnpcut 	= "abs(tagAndProbeMass-91)<15&&(eventSelection&2)==2&&qProbe*qTag<0"; 
   TCut mutnpcut 	 = "abs(tagAndProbeMass-91)<15 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0"; 
-  TCut eltnpcut 	 = "abs(tagAndProbeMass-91)<15 && (eventSelection&1)==1 && HLT_TNP_tag>0            && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0 && met<30.0"; 
+
+
+  TCut zmass("abs(tagAndProbeMass-91)<15");
+  TCut eltnp("(eventSelection&1)==1");
+  TCut os("qProbe*qTag<0");
+  TCut tag_eta25("abs(tag->eta())<2.5");
+  TCut njets2("njets>=2");
+  TCut njets3("njets>=3");
+  TCut njets4("njets>=4");
+  TCut tag_pt30("tag->pt()>30.0");
+  TCut met30("met<30");
+  TCut met20("met<20");
+  TCut nbm0("nbm==0");
+  TCut nbl0("nbl==0");
+  TCut mt30("mt<30");
+  TCut tnptrig("HLT_TNP_tag > 0 || HLT_TNPel_tag > 0");
+
+  //TCut eltnpcut 	 = "abs(tagAndProbeMass-91)<15 && (eventSelection&1)==1 && qProbe*qTag<0 && abs(tag->eta())<2.5 && njets>=4 && tag->pt()>30.0 && met<30.0 && nbm==0 && mt<30"; 
+
+  TCut eltnpcut;
+  eltnpcut += zmass;
+  eltnpcut += eltnp;
+  eltnpcut += os;
+  eltnpcut += tag_eta25;
+  eltnpcut += njets2;
+  //eltnpcut += njets3;
+  eltnpcut += njets4;
+  eltnpcut += tag_pt30;
+  eltnpcut += met20;
+  eltnpcut += met30;
+  eltnpcut += nbl0;
+  eltnpcut += nbm0;
+  //eltnpcut += mt30;
+  eltnpcut += tnptrig;
 
   TCut tnpcut   	 = "abs(tagAndProbeMass-91)<15 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0"; 
+
   TCut vtxweight = "vtxweight";
 
   cout << "Electrons:" << endl;
@@ -310,7 +402,7 @@ void tnpScale( bool printplot = false ) {
   //printHisto( chdata , chmc , TCut(muiso) , TCut(tnpcut+muid) , "probe.pt()" , 10 , 0.0 , 100.0 , "lepton p_{T} [GeV]" , "iso efficiency" );
 
   //plotDistribution( chdata , chmc , TCut(eltnpcut+elid+probept) , vtxweight , "tkisoold" , 10 , 0 , 10 , "trkiso (old) [GeV]" , "el_tkiso_old" , printplot );
-  plotDistribution( chdata , chmc , TCut(eltnpcut+elid+probept) , vtxweight , "tkisonew" , 30 , 0 , 30 , "abs tkiso [GeV]"    , "el_tkiso_new" , printplot );
+  plotDistribution( chdata , chmc , TCut(eltnpcut+elid+probept) , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_new" , printplot );
 
   //plotDistribution( chdata , chmc , TCut(mutnpcut+muid+probept) , vtxweight , "tkisoold" , 10 , 0 , 10 , "trkiso (old) [GeV]" , "mu_tkiso_old" , printplot );
   //plotDistribution( chdata , chmc , TCut(mutnpcut+muid+probept) , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_new" , printplot );
