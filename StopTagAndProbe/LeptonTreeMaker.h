@@ -108,6 +108,7 @@ class LeptonTreeMaker {
 	Float_t drprobe_;
 	Float_t tkiso_old_;
 	Float_t tkiso_new_;
+	Float_t tkiso_new_noveto_;
 	Float_t tkiso_new_pt1_;
 	Float_t tkiso_new_pt2_;
 	Float_t tkiso_new_pt3_;

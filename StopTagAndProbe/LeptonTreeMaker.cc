@@ -303,7 +303,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   // make smurf ntuples
   gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-06/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
+  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-07/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
   assert(fSmurf);
   LeptonTree leptonTree;
   leptonTree.CreateTree();
@@ -358,6 +358,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   leptonTree.tree_->Branch("drprobe"                 			, &drprobe_	                 	        ,"drprobe/F");
   leptonTree.tree_->Branch("tkisoold"                 			, &tkiso_old_	                 	        ,"tkisoold/F");
   leptonTree.tree_->Branch("tkisonew"                 			, &tkiso_new_	                 	        ,"tkisonew/F");
+  leptonTree.tree_->Branch("tkisonewnoveto"                 		, &tkiso_new_noveto_	          	        ,"tkisonewnoveto/F");
   leptonTree.tree_->Branch("tkisonewpt1"                 		, &tkiso_new_pt1_	            	        ,"tkisonewpt1/F");
   leptonTree.tree_->Branch("tkisonewpt2"                 		, &tkiso_new_pt2_	            	        ,"tkisonewpt2/F");
   leptonTree.tree_->Branch("tkisonewpt3"                 		, &tkiso_new_pt3_	            	        ,"tkisonewpt3/F");
@@ -566,18 +567,17 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
       if (eventSelection & muonFRMask)               	MakeMuonFakeRateTree(leptonTree, weight, sample, eventSelection);
       */
 
-      //
+      //-------------------------------
       // electron tag and probe
-      //
+      //-------------------------------
 
-      // COMMENT OUT FOR NOW
       if (cms2.els_p4().size() > 1)    MakeElectronTagAndProbeTree(leptonTree, weight, sample);
 
-      //
+      //-------------------------------
       // muon tag and probe tree
-      //
+      //-------------------------------
 
-      //if (cms2.mus_p4().size() > 1)    MakeMuonTagAndProbeTree(leptonTree, weight, sample);
+      if (cms2.mus_p4().size() > 1)    MakeMuonTagAndProbeTree(leptonTree, weight, sample);
 
     }
 
@@ -834,12 +834,12 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
 			
       // ID
       //if (goodElectronWithoutIsolation(probe, useLHeleId_, useMVAeleId_, egammaMvaEleEstimator_leptree))
-      if( !pass_electronSelection( probe , electronSelection_ssV5_noIso , false , false ) ) 
+      if( pass_electronSelection( probe , electronSelection_ssV5_noIso , false , false ) ) 
 	leptonTree.leptonSelection_     |= LeptonTree::PassEleID;
 
       // ISO
       //if (ww_elIso(probe))
-      if( !pass_electronSelection( probe , electronSelection_ssV5_iso , false , false ) ) 
+      if( pass_electronSelection( probe , electronSelection_ssV5_iso , false , false ) ) 
 	leptonTree.leptonSelection_     |= LeptonTree::PassEleIso;
 
       vtxweight_ = vtxweight(isData);
@@ -869,6 +869,7 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       if( pfindex > -1 ){
 	tkiso_old_       = trackIso(pfindex, 0.3, 0.20, true  , 0.0 , 0.07 , 0.025 );
 	tkiso_new_       = trackIso(pfindex, 0.3, 0.05, false , 0.0 , 0.07 , 0.025 );
+	tkiso_new_noveto_= trackIso(pfindex, 0.3, 0.05, false , 0.0 , 0.0  , 0.0   );
 	tkiso_new_pt1_   = trackIso(pfindex, 0.3, 0.05, false , 0.1 , 0.07 , 0.025 );
 	tkiso_new_pt2_   = trackIso(pfindex, 0.3, 0.05, false , 0.2 , 0.07 , 0.025 );
 	tkiso_new_pt3_   = trackIso(pfindex, 0.3, 0.05, false , 0.3 , 0.07 , 0.025 );
@@ -878,6 +879,7 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       else{
 	tkiso_old_       =  -1;
 	tkiso_new_       =  -1;
+	tkiso_new_noveto_=  -1;
 	tkiso_new_pt1_   =  -1;
 	tkiso_new_pt2_   =  -1;
 	tkiso_new_pt3_   =  -1;
@@ -1080,9 +1082,10 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 
       drprobe_         = mindr;
 
-      if( pfindex < -1 ){
+      if( pfindex > -1 ){
 	tkiso_old_       = trackIso(pfindex, 0.3, 0.20, true       );
 	tkiso_new_       = trackIso(pfindex, 0.3, 0.05, false      );
+	tkiso_new_noveto_= trackIso(pfindex, 0.3, 0.05, false      );
 	tkiso_new_pt1_   = trackIso(pfindex, 0.3, 0.05, false , 0.1);
 	tkiso_new_pt2_   = trackIso(pfindex, 0.3, 0.05, false , 0.2);
 	tkiso_new_pt3_   = trackIso(pfindex, 0.3, 0.05, false , 0.3);
@@ -1092,6 +1095,7 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       else{
 	tkiso_old_       =  -1;
 	tkiso_new_       =  -1;
+	tkiso_new_noveto_=  -1;
 	tkiso_new_pt1_   =  -1;
 	tkiso_new_pt2_   =  -1;
 	tkiso_new_pt3_   =  -1;
