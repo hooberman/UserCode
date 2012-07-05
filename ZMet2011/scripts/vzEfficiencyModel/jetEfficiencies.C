@@ -27,6 +27,15 @@
 #include "TGraphAsymmErrors.h"
 #include <sstream>
 
+double fitf3 (double* x, double* par) {
+  double arg = 0;
+  if (par[2] != 0)
+    arg = (x[0] - par[1])/par[2];
+  
+  double fitval = 0.5 * par[0] * (TMath::Erf(arg) + 1);
+  return fitval;
+}
+
 double fitf (double* x, double* par) {
   double arg = x[0];
 
@@ -35,14 +44,12 @@ double fitf (double* x, double* par) {
   return fitval;
 }
 
-
-
-void jetEfficiencies_V21( bool printplots = false ){
+void jetEfficiencies( bool printplots = false ){
 
   gStyle->SetOptFit(0);
 
-  TFile* f     = TFile::Open("../output/V00-02-21/wz_summer11_madgraph.root");
-  TFile* ftt   = TFile::Open("../output/V00-02-21/ttbar.root");
+  TFile* f     = TFile::Open("../../output/V00-02-21/wz_summer11_madgraph_gen.root");
+  TFile* ftt   = TFile::Open("../../output/V00-02-21/ttbar_gen.root");
 
   //TChain *ch = new TChain("T1");
   //ch->Add("../output/V00-02-20/wzsms_gen_baby.root");
@@ -67,10 +74,15 @@ void jetEfficiencies_V21( bool printplots = false ){
   TH1F* hjetpt_b_pass   = (TH1F*) ftt->Get("hjetpt_b_pass");
   TH1F* hjetpt_g_pass   = (TH1F*) f->Get("hjetpt_g_pass");
 
-  TH1F* hbtag_q_all     = (TH1F*) f->Get("hbtag_q_all");
-  TH1F* hbtag_c_all     = (TH1F*) f->Get("hbtag_c_all");
-  TH1F* hbtag_b_all     = (TH1F*) ftt->Get("hbtag_b_all");
-  TH1F* hbtag_g_all     = (TH1F*) f->Get("hbtag_g_all");
+  // TH1F* hbtag_q_all     = (TH1F*) f->Get("hbtag_q_all");
+  // TH1F* hbtag_c_all     = (TH1F*) f->Get("hbtag_c_all");
+  // TH1F* hbtag_b_all     = (TH1F*) ftt->Get("hbtag_b_all");
+  // TH1F* hbtag_g_all     = (TH1F*) f->Get("hbtag_g_all");
+
+  TH1F* hbtag_q_all     = (TH1F*) f->Get("hjetpt_q_all25");
+  TH1F* hbtag_c_all     = (TH1F*) f->Get("hjetpt_c_all25");
+  TH1F* hbtag_b_all     = (TH1F*) ftt->Get("hjetpt_b_all25");
+  TH1F* hbtag_g_all     = (TH1F*) f->Get("hjetpt_g_all25");
 
   TH1F* hbtag_q_passL   = (TH1F*) f->Get("hbtag_q_passL");
   TH1F* hbtag_c_passL   = (TH1F*) f->Get("hbtag_c_passL");
@@ -204,9 +216,13 @@ void jetEfficiencies_V21( bool printplots = false ){
   grjet_g->SetMarkerColor(6);
   grjet_g->SetLineColor(6);
 
+  //TF1*  fit_jet = new TF1("fit_jet", fitf3, 20, 200, 3);
+  //fit_jet->SetParameters( 1.0 , 30 , 10 );
+
   TF1*  fit_jet = new TF1("fit_jet", fitf, 20, 200, 7);
   fit_jet->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
   fit_jet->FixParameter(6,0);
+
   fit_jet->SetLineWidth(4);
   fit_jet->SetLineColor(1);
 
@@ -233,8 +249,8 @@ void jetEfficiencies_V21( bool printplots = false ){
 
   line.DrawLine(30,0,30,1.05);
 
-  if( printplots ) c1->Print("../plots/jetreco.pdf");
-  
+  if( printplots ) c1->Print("jetreco.pdf");
+
 
   //---------------------------------
   // b-tagging (loose)
@@ -263,28 +279,69 @@ void jetEfficiencies_V21( bool printplots = false ){
   grbtag_qL->SetMinimum(0.001);
   grbtag_qL->SetMaximum(1.0);
 
+  //-----------------
+  // linear fit
+  //-----------------
+
+  // TF1* fit_cL = new TF1("fit_cL","[0]+[1]*x",30,100);
+  // TF1* fit_bL = new TF1("fit_cL","[0]+[1]*x",30,100);
+  // TF1* fit_qL = new TF1("fit_cL","[0]+[1]*x",30,100);
+  // TF1* fit_gL = new TF1("fit_cL","[0]+[1]*x",30,100);
+
+  //-----------------
+  // quadratic fit
+  //-----------------
+
+  // TF1* fit_cL = new TF1("fit_cL","[0]+[1]*x+[2]*x*x",30,100);
+  // TF1* fit_bL = new TF1("fit_cL","[0]+[1]*x+[2]*x*x",30,100);
+  // TF1* fit_qL = new TF1("fit_cL","[0]+[1]*x+[2]*x*x",30,100);
+  // TF1* fit_gL = new TF1("fit_cL","[0]+[1]*x+[2]*x*x",30,100);
+
+  //-----------------
+  // erf3 fit
+  //-----------------
+
+  // TF1*  fit_cL = new TF1("fit_cL", fitf3, 30, 100, 3);
+  // fit_cL->SetParameters( 0.5 , 50, 50 );
+
+  // TF1*  fit_bL = new TF1("fit_bL", fitf3, 30, 100, 3);
+  // fit_bL->SetParameters( 0.5 , 50, 50 );
+
+  // TF1*  fit_qL = new TF1("fit_qL", fitf3, 30, 100, 3);
+  // fit_qL->SetParameters( 0.5 , 50, 50 );
+
+  // TF1*  fit_gL = new TF1("fit_gL", fitf3, 30, 100, 3);
+  // fit_gL->SetParameters( 0.5 , 50, 50 );
+
+  //-----------------
+  // quadratic fit
+  //-----------------
+
   TF1*  fit_cL = new TF1("fit_cL", fitf, 30, 200, 7);
   fit_cL->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
   fit_cL->FixParameter(6,0);
-  fit_cL->SetLineColor(4);
-  fit_cL->SetLineWidth(2);
 
   TF1*  fit_bL = new TF1("fit_bL", fitf, 30, 200, 7);
   fit_bL->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
   fit_bL->FixParameter(6,0);
-  fit_bL->SetLineColor(2);
-  fit_bL->SetLineWidth(2);
 
   TF1*  fit_qL = new TF1("fit_qL", fitf, 30, 200, 7);
   fit_qL->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
   fit_qL->FixParameter(6,0);
-  fit_qL->SetLineColor(kGreen+2);
-  fit_qL->SetLineWidth(2);
 
   TF1*  fit_gL = new TF1("fit_gL", fitf, 30, 200, 7);
   fit_gL->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
   fit_gL->FixParameter(6,0);
+
+
+  fit_cL->SetLineColor(4);
+  fit_bL->SetLineColor(2);
+  fit_qL->SetLineColor(kGreen+2);
   fit_gL->SetLineColor(6);
+
+  fit_cL->SetLineWidth(2);
+  fit_bL->SetLineWidth(2);
+  fit_qL->SetLineWidth(2);
   fit_gL->SetLineWidth(2);
 
   cout << endl << "loose uds fit" << endl;
@@ -302,7 +359,7 @@ void jetEfficiencies_V21( bool printplots = false ){
   grbtag_bL->Draw("sameP");
   grbtag_gL->Draw("sameP");
 
-  TLegend *leg2 = new TLegend(0.35,0.52,0.5,0.72);
+  TLegend *leg2 = new TLegend(0.6,0.55,0.75,0.75);
   leg2->AddEntry(grbtag_qL,"uds","lp");
   leg2->AddEntry(grbtag_cL,"c","lp");
   leg2->AddEntry(grbtag_bL,"b","lp");
@@ -311,9 +368,10 @@ void jetEfficiencies_V21( bool printplots = false ){
   leg2->SetBorderSize(1);
   leg2->Draw();
   
-  line.DrawLine(30,0,30,1.0);
+  line.DrawLine(30 ,0,30,1.0);
+  line.DrawLine(100,0,100,1.0);
 
-  if( printplots ) c2->Print("../plots/btagL.pdf");
+  if( printplots ) c2->Print("btagL.pdf");
 
   //---------------------------------
   // b-tagging (medium)
@@ -341,31 +399,53 @@ void jetEfficiencies_V21( bool printplots = false ){
   grbtag_qM->SetMinimum(0.001);
   grbtag_qM->SetMaximum(1.0);
 
+  //-------------------
+  // linear
+  //-------------------
+
+  // TF1* fit_cM = new TF1("fit_cM","[0]+[1]*x",100,200);
+  // TF1* fit_bM = new TF1("fit_cM","[0]+[1]*x",100,200);
+  // TF1* fit_qM = new TF1("fit_cM","[0]+[1]*x",100,200);
+  // TF1* fit_gM = new TF1("fit_cM","[0]+[1]*x",100,200);
+
+  //-------------------
+  // quadratic
+  //-------------------
+
+  // TF1* fit_cM = new TF1("fit_cM","[0]+[1]*x+[2]*x*x",100,200);
+  // TF1* fit_bM = new TF1("fit_cM","[0]+[1]*x+[2]*x*x",100,200);
+  // TF1* fit_qM = new TF1("fit_cM","[0]+[1]*x+[2]*x*x",100,200);
+  // TF1* fit_gM = new TF1("fit_cM","[0]+[1]*x+[2]*x*x",100,200);
+
   TF1*  fit_cM = new TF1("fit_cM", fitf, 30, 200, 7);
   //fit_cM->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
   fit_cM->SetParameters( 60 , 60 , 150 , 2 , 0.1 , 0.1 , 0 );
   fit_cM->FixParameter(6,0);
-  fit_cM->SetParLimits(5,0,10);
-  fit_cM->SetLineColor(4);
-  fit_cM->SetLineWidth(2);
+  //fit_cM->SetParLimits(5,0,10);
 
   TF1*  fit_bM = new TF1("fit_bM", fitf, 30, 200, 7);
   fit_bM->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
   fit_bM->FixParameter(6,0);
-  fit_bM->SetLineColor(2);
-  fit_bM->SetLineWidth(2);
 
   TF1*  fit_qM = new TF1("fit_qM", fitf, 30, 200, 7);
   fit_qM->SetParameters( 60 , 10 , 100 , 100 , 0.01 , 0.1 , 0 );
   fit_qM->FixParameter(6,0);
-  fit_qM->SetLineColor(kGreen+2);
-  fit_qM->SetLineWidth(2);
 
   TF1*  fit_gM = new TF1("fit_gM", fitf, 30, 200, 7);
   //fit_gM->SetParameters( 60 , 60 , 20 , 20 , 0.1 , 0.1 , 0 );
-  fit_gM->SetParameters( 100 , 100 , 60 , 150 , 0.2 , 0.02 , 0 );
+  //fit_gM->SetParameters( 100 , 100 , 60 , 150 , 0.2 , 0.02 , 0 );
+  //fit_gM->SetParameters( 86 , 33 , 86 , 35 , -0.6 , 0.6 , 0 );
+  fit_gM->SetParameters( -700 , 2500 , -300 , 700 , -0.4 , 0.3 , 0 );
   fit_gM->FixParameter(6,0);
+
+  fit_cM->SetLineColor(4);
+  fit_bM->SetLineColor(2);
+  fit_qM->SetLineColor(kGreen+2);
   fit_gM->SetLineColor(6);
+
+  fit_cM->SetLineWidth(2);
+  fit_bM->SetLineWidth(2);
+  fit_qM->SetLineWidth(2);
   fit_gM->SetLineWidth(2);
 
   cout << endl << "medium q fit" << endl;
@@ -382,10 +462,19 @@ void jetEfficiencies_V21( bool printplots = false ){
   grbtag_bM->Draw("sameP");
   grbtag_gM->Draw("sameP");
 
-  line.DrawLine(30,0,30,1.0);
-  
-  if( printplots ) c3->Print("../plots/btagM.pdf");
+  TLegend *leg3 = new TLegend(0.6,0.4,0.75,0.6);
+  leg3->AddEntry(grbtag_qL,"uds","lp");
+  leg3->AddEntry(grbtag_cL,"c","lp");
+  leg3->AddEntry(grbtag_bL,"b","lp");
+  leg3->AddEntry(grbtag_gL,"g","lp");
+  leg3->SetFillColor(0);
+  leg3->SetBorderSize(1);
+  leg3->Draw();
 
+  line.DrawLine(30,0,30,1.0);
+  line.DrawLine(100,0,100,1.0);
+  
+  if( printplots ) c3->Print("btagM.pdf");
 
   cout << endl << endl << endl;
 
@@ -399,14 +488,114 @@ void jetEfficiencies_V21( bool printplots = false ){
        << "|" << setw(10) << "c6" << setw(4) << "|" << endl;
 
   cout << "|" << setw(15) << "jet reco" << setw(4) 
-       << "|" << setw(10) << fit_jet->GetParameter(0) << setw(4) 
-       << "|" << setw(10) << fit_jet->GetParameter(1) << setw(4) 
-       << "|" << setw(10) << fit_jet->GetParameter(2) << setw(4) 
-       << "|" << setw(10) << fit_jet->GetParameter(3) << setw(4) 
-       << "|" << setw(10) << fit_jet->GetParameter(4) << setw(4) 
-       << "|" << setw(10) << fit_jet->GetParameter(5) << setw(4) 
-       << "|" << setw(10) << fit_jet->GetParameter(6) << setw(4) << "|" << endl;
+       << "|" << setw(10) << Form("%.0f",fit_jet->GetParameter(0)) << setw(4) 
+       << "|" << setw(10) << Form("%.0f",fit_jet->GetParameter(1)) << setw(4) 
+       << "|" << setw(10) << Form("%.0f",fit_jet->GetParameter(2)) << setw(4) 
+       << "|" << setw(10) << Form("%.0f",fit_jet->GetParameter(3)) << setw(4) 
+       << "|" << setw(10) << Form("%.2f",fit_jet->GetParameter(4)) << setw(4) 
+       << "|" << setw(10) << Form("%.2f",fit_jet->GetParameter(5)) << setw(4) 
+       << "|" << setw(10) << Form("%.0f",fit_jet->GetParameter(6)) << setw(4) << "|" << endl;
 
+
+  TF1* fdummy = new TF1();
+  char* title = (char*) "";
+
+  for( int i = 0 ; i < 8 ; ++i ){
+
+    if( i == 0 ){
+      fdummy = (TF1*) fit_bL->Clone(Form("fit_%i",i));
+      title  = "loose (b)";
+    }
+    else if( i == 1 ){
+      fdummy = (TF1*) fit_cL->Clone(Form("fit_%i",i));
+      title  = "loose (c)";
+    }
+    else if( i == 2 ){
+      fdummy = (TF1*) fit_gL->Clone(Form("fit_%i",i));
+      title  = "loose (g)";
+    }
+    else if( i == 3 ){
+      fdummy = (TF1*) fit_qL->Clone(Form("fit_%i",i));
+      title  = "loose (q)";
+    }
+    else if( i == 4 ){
+      fdummy = (TF1*) fit_bM->Clone(Form("fit_%i",i));
+      title  = "medium (b)";
+    }
+    else if( i == 5 ){
+      fdummy = (TF1*) fit_cM->Clone(Form("fit_%i",i));
+      title  = "medium (c)";
+    }
+    else if( i == 6 ){
+      fdummy = (TF1*) fit_gM->Clone(Form("fit_%i",i));
+      title  = "medium (g)";
+    }
+    else if( i == 7 ){
+      fdummy = (TF1*) fit_qM->Clone(Form("fit_%i",i));
+      title  = "medium (q)";
+    }
+
+    cout << "|" << setw(15) << title << setw(4) 
+	 << "|" << setw(10) << Form("%.0f",fdummy->GetParameter(0)) << setw(4) 
+	 << "|" << setw(10) << Form("%.0f",fdummy->GetParameter(1)) << setw(4) 
+	 << "|" << setw(10) << Form("%.0f",fdummy->GetParameter(2)) << setw(4) 
+	 << "|" << setw(10) << Form("%.0f",fdummy->GetParameter(3)) << setw(4) 
+	 << "|" << setw(10) << Form("%.2f",fdummy->GetParameter(4)) << setw(4) 
+	 << "|" << setw(10) << Form("%.2f",fdummy->GetParameter(5)) << setw(4) 
+	 << "|" << setw(10) << Form("%.0f",fdummy->GetParameter(6)) << setw(4) << "|" << endl;
+
+  }
+
+
+
+  /*
+
+  cout << endl << endl;
+  cout << "loose b-tagging" << endl;
+
+  cout << "|" << setw(15) << "flavor" << setw(4) 
+       << "|" << setw(10) << "y-int"  << setw(4) 
+       << "|" << setw(10) << "slope"  << setw(4) << "|" << endl;
+
+  cout << "|" << setw(15) << "b" << setw(4) 
+       << "|" << setw(10) << Form("%.2f",fit_bL->GetParameter(0))  << setw(4) 
+       << "|" << setw(10) << Form("%.4f",fit_bL->GetParameter(1))  << setw(4) << "|" << endl;
+
+  cout << "|" << setw(15) << "c" << setw(4) 
+       << "|" << setw(10) << Form("%.2f",fit_cL->GetParameter(0))  << setw(4) 
+       << "|" << setw(10) << Form("%.4f",fit_cL->GetParameter(1))  << setw(4) << "|" << endl;
+
+  cout << "|" << setw(15) << "glu" << setw(4) 
+       << "|" << setw(10) << Form("%.3f",fit_gL->GetParameter(0))  << setw(4) 
+       << "|" << setw(10) << Form("%.4f",fit_gL->GetParameter(1))  << setw(4) << "|" << endl;
+
+  cout << "|" << setw(15) << "q" << setw(4) 
+       << "|" << setw(10) << Form("%.3f",fit_qL->GetParameter(0))  << setw(4) 
+       << "|" << setw(10) << Form("%.4f",fit_qL->GetParameter(1))  << setw(4) << "|" << endl;
 
   cout << endl << endl << endl;
+
+  cout << "medium b-tagging" << endl;
+
+  cout << "|" << setw(15) << "flavor" << setw(4) 
+       << "|" << setw(10) << "y-int"  << setw(4) 
+       << "|" << setw(10) << "slope"  << setw(4) << "|" << endl;
+
+  cout << "|" << setw(15) << "b" << setw(4) 
+       << "|" << setw(10) << Form("%.2f",fit_bM->GetParameter(0))  << setw(4) 
+       << "|" << setw(10) << Form("%.4f",fit_bM->GetParameter(1))  << setw(4) << "|" << endl;
+
+  cout << "|" << setw(15) << "c" << setw(4) 
+       << "|" << setw(10) << Form("%.2f",fit_cM->GetParameter(0))  << setw(4) 
+       << "|" << setw(10) << Form("%.4f",fit_cM->GetParameter(1))  << setw(4) << "|" << endl;
+
+  cout << "|" << setw(15) << "glu" << setw(4) 
+       << "|" << setw(10) << Form("%.3f",fit_gM->GetParameter(0))  << setw(4) 
+       << "|" << setw(10) << Form("%.4f",fit_gM->GetParameter(1))  << setw(4) << "|" << endl;
+
+  cout << "|" << setw(15) << "q" << setw(4) 
+       << "|" << setw(10) << Form("%.3f",fit_qM->GetParameter(0))  << setw(4) 
+       << "|" << setw(10) << Form("%.4f",fit_qM->GetParameter(1))  << setw(4) << "|" << endl;
+
+  */
 }
