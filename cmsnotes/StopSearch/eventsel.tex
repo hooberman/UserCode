@@ -21,6 +21,8 @@ The single lepton preselection sample is based on the following criteria
   \item require moderate $\met>50~\GeV$
 \end{itemize}
 
+Table~\ref{tab:preselectionyield} shows the yields in data and MC without any corrections for this preselection region.
+
 In addition, we count the number of SSV medium working point b-tags, $N_{b-tag}$.
 
 Currently, we focus on the muon channel because it is cleaner (the QCD contribution is negligible)
@@ -32,32 +34,125 @@ uncertainty associated with the QCD background is larger.
     
 We then define the following subsamples within this preselection sample:
 \begin{itemize}
-\item $N_{b-tag} = 0$, i.e. b-veto region
+\item $N_{b-tag} = 0$, i.e. b-veto region $\to$ used to validate the lepton + jets bkg estimation method (see Section~\ref{sec:bkg_singlelep}).
+For raw yields prior to any corrections see Tables~\ref{tab:bvetoyieldpeak} and ~\ref{tab:bvetoyieldtail}.
+%
 \item $N_{b-tag} \ge 1 $, i.e. b-tagged region
+For raw yields prior to any corrections see Table~\ref{tab:btagpreselection}.
+%
 \begin{itemize}
-\item without an additional isolated track veto
-\item with an additional isolated track veto
+\item with $\met > 100 \GeV$, $ 60 < \mt < 100 \GeV$, and without an additional isolated track veto $\to$ used to normalize top bkg (see Section~\ref{sec:topnorm}).
+For raw yields prior to any corrections see Table~\ref{tab:btagpeakregionnotrkiso}.
+%
+\item with an additional isolated track veto, $\met > 100 \GeV$, $\mt > 150 \GeV$ $\to$ used as signal region 
+For raw yields prior to any corrections see Table~\ref{tab:btagtailaftertrkiso}. As this is our signal region, only MC is shown at this point.
 \end{itemize}
 \end{itemize}
 
-For the signal regions, we then furthermore require $\met>100~\GeV$ while some of the background predictions and scale factors
-are done for both \met
-requirements to show stability of the method.
-Within each of these subsamples we then define an \mt peak ($60 < \mt < 100~\GeV$) region and an \mt tail ($\mt > 150~\GeV$) region
+%For the signal regions, we then furthermore require $\met>100~\GeV$ while some of the background predictions and scale factors
+%are done for both \met
+%requirements to show stability of the method.
+%Within each of these subsamples we then define an \mt peak ($60 < \mt < 100~\GeV$) region and an \mt tail ($\mt > 150~\GeV$) region
 %
-We generally use the \mt peak region yields in data and multiply it by the ratio of tail divided by peak in MC times appropriate corrections
-in order to estimate the background in data in the tail region.
+%We generally use the \mt peak region yields in data and multiply it by the ratio of tail divided by peak in MC times appropriate corrections
+%in order to estimate the background in data in the tail region.
 
 {\bf We have not looked at the data in the signal region after the first 1 fb$^{-1}$ of data.}
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{c|c}
+\hline
+\hline
+\end{tabular}
+\caption{  Raw Data and MC predictions without any corrections are shown after preselection. \label{tab:preselectionyield}}
+\end{center}
+\end{table}
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{c|c}
+\hline
+\hline
+\end{tabular}
+\caption{  Raw Data and MC predictions without any corrections are shown for the b-veto peak region ($\met > 100 \GeV$ and $60 < \mt < 100 \GeV$). 
+\label{tab:bvetoyieldpeak}}
+\end{center}
+\end{table}
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{c|c}
+\hline
+\hline
+\end{tabular}
+\caption{  Raw Data and MC predictions without any corrections are shown for the b-veto tail region ($\met > 100 \GeV$ and $ \mt > 150 \GeV$) . 
+\label{tab:bvetoyieldtail}}
+\end{center}
+\end{table}
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{c|c}
+\hline
+\hline
+\end{tabular}
+\caption{  Raw Data and MC predictions without any corrections are shown after preselection and b-tagging. 
+\label{tab:btagpreselection}}
+\end{center}
+\end{table}
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{c|c}
+\hline
+\hline
+\end{tabular}
+\caption{  Raw Data and MC predictions without any corrections are shown for the peak region after b-tagging but before applying the isolated track veto. 
+This region is used to normalize the top bkg prediction from MC to data.
+\label{tab:btagpeakregionnotrkiso}}
+\end{center}
+\end{table}
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{c|c}
+\hline
+\hline
+\end{tabular}
+\caption{  Raw Data and MC predictions without any corrections are shown for the tail region after b-tagging and isolated track veto are applied. 
+As this is our signal region, only MC yields are shown at this point.
+\label{tab:btagtailaftertrkiso}}
+\end{center}
+\end{table}
 
 \subsection{Dilepton control region}
 
 We define a dilepton control region requiring two isolated leptons, $ee, e\mu$, or $\mu\mu$ to study the jet multiplicity in data and MC, and derive
 scale factors based on their consistency. This study is documented in Section~\ref{sec:jetmultiplicity}.
 
-{\bf Fix me: Need to describe here the actual selection. What lepton pT's, \met , etc. } 
+In this region we require:
+\begin{itemize}
+\item dilepton triggers
+\item two leptons with $\pt > 20 \GeV$ that pass our lepton id and isolation
+\item $\met > 50 \GeV$
+\item $\ge 1$ b-tag, SSV medium
+\end{itemize}
 
-This sample is only partially overlapping with the single lepton preselection as it requires the dilepton rather than the single lepton triggers.
+This sample is only partially overlapping with the single lepton preselection as it requires the dilepton rather than the single lepton triggers, and
+differs in the $\pt$ requirement for the leading lepton. Table~\ref{tab:dileptonyield} shows the raw yields in data and MC prior to any corrections.
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{c|c}
+\hline
+\hline
+\end{tabular}
+\caption{  Raw Data and MC predictions without any corrections are shown for the dilepton control region.
+This region is used for correcting the jet multiplicity seen in MC to that in data.
+\label{tab:dileptonyield}}
+\end{center}
+\end{table}
 
 \subsection{Corrections to Jets and \met}
 

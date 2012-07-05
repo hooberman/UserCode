@@ -30,6 +30,11 @@ this section.
 \subsection{Modeling of Additional Hard Jets in Top Dilepton Events}
 \label{sec:jetmultiplicity}
 
+In this section we discuss a correction to $ N_{2 lep}^{MC} $ in Equation XXX
+due to differences in the modelling of the jet multiplicity in data versus MC.
+The same correction also enters $ N_{peak}^{MC}$ in Equation XXX to the extend that the 
+dilepton contributions to $ N_{peak}^{MC}$ gets corrected.
+
 Dilepton \ttbar\ events have 2 jets from the top decays, so additional
 jets from radiation or higher order contributions are required to
 enter the signal sample. The modeling of addtional jets in \ttbar\
@@ -73,7 +78,7 @@ mis-identified as a jet (since no $\tau$ identification is used).
 In this case only 1 additional jet from radiation may suffice for 
 a \ttll\ event to enter the signal sample. As a result, both the
 samples with $\ttbar+1$ jet and $\ttbar+\ge2$ jets are relevant for
-the signal sample.
+estimating the top dilepton bkg in the signal region.
 
 \begin{table}[!ht]
 \begin{center}
@@ -106,10 +111,12 @@ N jets $\ge4$ (sensitive to $\ttbar+\ge2$ extra jets from radiation)   &       $
       \end{center}
 \end{figure}
 
-Table.~\ref{tab:njetskfactors}  shows scale factors to correct the
+Table~\ref{tab:njetskfactors}  shows scale factors to correct the
 fraction of events with additional jets in MC to the observed fraction
-in data. These are applied to the \ttll\ MC in
-the signal sample. In order to do so, it is first necessary to count the number of
+in data. These are applied to the \ttll\ MC throughout the entire analysis, i.e. whenever \ttll\ MC is used to estimate or subtract
+a yield or distribution. 
+%
+In order to do so, it is first necessary to count the number of
 additional jets from radiation and exclude leptons mis-identified as
 jets. A jet is considered a mis-identified lepton if it is matched to a
 generator-level second lepton with sufficient energy to satisfy the jet
@@ -158,7 +165,7 @@ background prediction for the signal region.
           sample (with one reconstructed lepton). The distributions
           show good agreement, indicating that the usage of the
           reconstructed jet multiplicity in one sample to reweight the
-        signal sample is indeed justified.}  
+        signal sample is indeed justified. {\bf Fix me: Is this before or after the isolated track veto?}}  
       \end{center}
 \end{figure}
 
@@ -166,8 +173,8 @@ Ultimately, the interesting quantity for reweighting is the number of
 additional hard jets from radiation and this information is accessed using the
 number of reconstructed
 jets. Figure~\ref{fig:dileptonnjets_signalcontrol_comp} 
-demonstrates in MC that the \ttll control sample, i.e. when both leptons are reconstructed,
-can indeed be used to reweight the \ttll signal sample, i.e. when one lepton is missed.
+demonstrates in MC that the \ttll\ control sample, i.e. when both leptons are reconstructed,
+can indeed be used to reweight the \ttll\ signal sample, i.e. when one lepton is missed.
 The figure compares the
 number of additional jets from truth matching probed by N
 reconstructed jets, in this case 3 and $\ge4$ jets. In order to do so,
@@ -201,6 +208,10 @@ arising from using different MC samples and settings can be examined,
 separately from issues related to the modeling of additional jets. 
 
 \subsection{Normalization of the Top Prediction}
+\label{sec:topnorm}
+
+In this section we discuss the factor $ {N_{peak}^{data} \over N_{peak}^{MC}} $ in Equation XX.
+The same factor is applied to both the single and dilepton estimates.
 
 The overall normalization of the \ttbar\ sample is determined by
 scaling to the \mt\ peak control region, following a procedure similar 
@@ -222,10 +233,11 @@ Specifically, the pre-veto sample is defined by the following requirements
 \begin{itemize}
 \item At least 1 selected electron (muon) with \pt $>$ 30 GeV and $|\eta|<2.5$ ($|\eta|<2.1$)
 \item At least 4 selected jets, of which at least 1 is b-tagged
-\item \met\ $>$ 50 GeV
+\item \met\ $>$ 100 GeV 
 \end{itemize}
 
-As in the case of the single lepton + jets sample, scaling the overall 
+%As in the case of the single lepton + jets sample, 
+Scaling the overall 
 normalization to the \mt\ peak largely reduces the dependence on the
 \ttbar\ cross section and cancels systematic uncertainties associated
 with effects such as the luminosity, selection efficiencies,
@@ -302,9 +314,20 @@ For all subsequent steps, the scale factor $SF^{\rm{all}}$ is applied to all MC 
 \subsection{The Isolated Track Veto}
 \label{sec:trkveto}
 
+In this section we discuss the factors 
+${(1- \epsilon_{fake})^{data} \over (1 - \epsilon_{fake})^{MC}} $
+and
+${(1- \epsilon_{iso\ trk})^{data} \over (1 - \epsilon_{iso\ trk})^{MC}} $
+in Equation XXX.
+
 The \ttll\ background is further suppressed after the $4$-jet
-requirement by removing events with any non-isolated track with 
-$\pt>10~\GeV$. The isolated track veto rejects events with an 
+requirement by removing events with any isolated track with 
+$\pt>10~\GeV$. 
+%
+As isolation definition we use
+relative track isolation $\sum \pt/\pt(trk)$ in a cone of size $R=0.3<0.1$. 
+%
+This isolated track veto rejects events with an 
 \E\ or a \M, as well as single-prong $\tau$-decays. 
 This veto is very effective at reducing the dilepton background. In
 particular, according to the \ttll\ MC, the veto removes about
@@ -344,7 +367,7 @@ $t\bar{t} \rightarrow l^{+}l^{-} (\tau_{\mathrm{had}}\rightarrow \mathrm{3-prong
 \end{tabular}
 \caption{Dilepton events satisfying the full selection criteria
  and \met\ $>$ 100 GeV, \mt\ $>$ 150 GeV,  separated by decay modes.
-Recall that \ttll\ accounts for $\approx80$\% of the total background.
+Recall that \ttll\ accounts for $\approx80$\% of the total background.{\bf Fix me: Is this before or after the isolated track veto?}
 \label{tab:ttdlcomposition}}
 \end{center}
 \end{table}
@@ -407,7 +430,7 @@ multiple types of second lepton events, there are two
 main sources of uncertainty in this estimate: 
 \begin{itemize}
 \item Acceptance effects, which are estimated by using alternative MC
-  samples
+  samples. Here acceptance refers to the combination of $\eta$ and \pt of the leptons.
 \item Detector effects, mainly arising from understanding the
   performance of the isolated track veto, which impacts only about a
   third of the total \ttll\ sample.
@@ -425,7 +448,7 @@ efficiency for rejecting dilepton events compared to the efficiency
 for selecting single lepton events for various cone sizes and cut
 values. The chosen working point provides a signal efficiency of
 $\epsilon(sig) =92\%$ for a background rejection of $\epsilon(bkg)
-=53\%$ in MC. 
+=53\%$ in MC. With "signal" ("background") we are referring to \ttlj\ (\ttll\ ).
 
 \begin{figure}[hbt]
   \begin{center}
@@ -445,14 +468,14 @@ It should be emphasized that the isolated track veto has a different impact on t
 lepton (mainly \ttlj\ and \wjets) and that with two leptons (mainly \ttll).
 For the dilepton background, the veto rejects events which have a
 genuine second lepton. Thus the performance may be understood
-as an efficiency $\epsilon(trk)$ to identify the isolated track. In the
+as an efficiency $\epsilon_{iso\ trk}$ to identify the isolated track. In the
 case of the single lepton background, the veto rejects events
 which do not have a genuine second lepton, but rather which contain 
 a ``fake'' isolated track. The isolated track veto thus effectively scales the
-single lepton sample by (1-FR), where FR is the ``fake rate'' to 
-identify an isolated track in events which contain no genuine second
+single lepton sample by (1-$\epsilon_{fake}$), where $\epsilon_{fake}$ is the probability to 
+identify an isolated track with \pt $> 10$~\GeV in events which contain no genuine second
 lepton. It is thus necessary to study the isolated track efficiency
-$\epsilon(trk)$ and the ``fake rate'' FR in order to fully
+$\epsilon(trk)$ and $\epsilon_{fake}$ in order to fully
 characterize the veto performance. 
 
 The veto efficiency for dilepton events is calculated using 
@@ -461,6 +484,9 @@ satisfying the full ID and isolation criteria and matched to a
 trigger object serves as the tag. The probe is defined as a track with
 $\pt>10~\GeV$ that has opposite charge to the tag and has an invariant
 mass with the probe consistent with the \Z\ mass. 
+
+{\bf Fix me: fkw does not understand why you refer to \pt $>$ 10~\GeV here, given that in the very next paragraph you state that
+this is measured via the absolute track isolation, implying, but not explicitly stating, that a much higher \pt\ threshold is used to get a clean Z signal. ???}
 
 The variable used to study the performance of the veto is the absolute track isolation,
 since it removes the dependence of the isolation variable on the \pt\ of the
@@ -559,8 +585,11 @@ isolation distribution for this sample.
 %END SECTION TO WRITE OUT 
 
 
-A measurement of the FR in data is non-trivial. However, it is
-possible to correct for differences in the FR between data and MC by
+{\bf fix me: What you have written in the next paragraph does not explain how $\epsilon_{fake}$ is measured.
+Why not measure $\epsilon_{fake}$ in the b-veto region?}
+
+A measurement of the $\epsilon_{fake}$ in data is non-trivial. However, it is
+possible to correct for differences in the $\epsilon_{fake}$ between data and MC by
 applying an additional scale factor for the single lepton background
 alone, using the sample in the \mt\ peak region. This scale factor is determined after applying the isolated track
 veto and after subtracting the \ttll\ component, corrected for the

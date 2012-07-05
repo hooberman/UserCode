@@ -8,8 +8,15 @@ background estimate.
 It should be underlined that single lepton events entering the signal sample are in the far \mt~tail for these processes
 and contribute mainly due to the \met\ resolution that smears the \mt\ peak, particularly in the presence of multiple jets. 
 Since these types of effects are challenging to model in simulation, the background estimate for this category of processes is cross checked 
-in a control sample in data. The control sample is obtained by applying the full selection criteria with the exception of the b-tagging requirement, 
-that is reversed, vetoing events with b-tagged jets. The b-tag veto greatly reduces the contamination from \ttbar, which is particularly important
+in a control sample in data. 
+%
+%The control sample is obtained by applying the full selection criteria with the exception of the b-tagging requirement, 
+%that is reversed, vetoing events with b-tagged jets. 
+%
+The control sample used here is the b-veto region defined in Section~\ref{sec:selection}. \met $> 100$~\GeV is required and the 
+isolated track veto is not applied.
+%
+The b-tag veto greatly reduces the contamination from \ttbar, which is particularly important
 in the case of \ttll\ which otherwise populates the \mt\ tail. The resulting sample is dominated by \wjets\ events. The derivation of the background 
 estimate in this control sample serves to validate the method. 
 In addition, the level of agreement between the prediction and the data in the \mt\ tail provides an estimate of the systematic uncertainty for this
@@ -23,19 +30,27 @@ background prediction.
 	  \label{fig:mtsinglelepcomp}%\protect 
           Monte Carlo comparison of the shapes (left) of the \mt\ distribution for the main background processes containing a single leptonic \W\ decay (left).
           The \mt\ shape for \ttlj, \wjets\ and single top are similar and thus combined into a single background estimate. Comparison of the MC 
-        prediction (right) for single lepton processes (blue) and the data after subtracting the non-single lepton background MC prediction (also shown in red). 
-        The \mt\ distribution in MC is scaled to the data in the \mt\ peak region ($60-100~\GeV$). Since the control sample is dominated by $\Wfourj$ events, 
+        prediction (right) for single lepton processes (blue) and the data after subtracting the non-single lepton background MC prediction.
+        The latter is overlayed in red to show the scale of the subtraction. 
+        Since the control sample is dominated by $\Wfourj$ events, 
         the MC is not expected to provide an estimate of the overall normalization to better than the $\sim 15\%$ difference observed.}
   \end{center}
 \end{figure}
 
-The single lepton background contribution to the tail of the \mt\ is derived from MC and normalized to the data in the \mt\ peak region, defined by the 
-range $60 < \mt \le 100~\GeV$. In particular, the total yield for the combination of the single lepton + jets samples in MC satisfying $60 < \mt \le 100~\GeV$
-is scaled to match the entries in data satisfying the same \mt\ requirement. The data is corrected for the expected contamination from non-single 
-lepton + jets processes, which is obtained from MC. The derivation of this MC to data scale factor is shown in Figure.~\ref{fig:mtsinglelepcomp} (right), where the 
-contribution from non-single lepton + jets processes in the \mt\ peak is also shown to be small. 
-Scaling to the data yield in the \mt\ peak largely reduces the dependence on the \ttbar\ cross section and cancels systematic uncertainties associated with
-effects such as the luminosity, selection efficiencies, etc$\dots$
+To validate the single lepton bkg estimate, we take the right plot in Figure~ref{fig:mtsinglelepcomp},
+form the ratio of yields in the peak region in data (after non-single lepton subtraction), $N_{peak}^{data}$, and in lepton plus jets MC, $N_{peak}^{MC}$, 
+and multiply this ratio by the yield in the tail in lepton plus jets MC, $N_{tail}^{MC}$. The non-single lepton subtraction applied to data is obtained from MC.
+We do so for two \met requirements as shown in Table~\ref{tab:ljetsclosure}. 
+%Based on the statistical precision of this closure test, we assign a 30\%
+%systematic error to the single lepton bkg estimation technique.
+
+%The single lepton background contribution to the tail of the \mt\ is derived from MC and normalized to the data in the \mt\ peak region, defined by the 
+%range $60 < \mt \le 100~\GeV$. In particular, the total yield for the combination of the single lepton + jets samples in MC satisfying $60 < \mt \le 100~\GeV$
+%is scaled to match the entries in data satisfying the same \mt\ requirement. The data is corrected for the expected contamination from non-single 
+%lepton + jets processes, which is obtained from MC. The derivation of this MC to data scale factor is shown in Figure.~\ref{fig:mtsinglelepcomp} (right), where the 
+%contribution from non-single lepton + jets processes in the \mt\ peak is also shown to be small. 
+%Scaling to the data yield in the \mt\ peak largely reduces the dependence on the \ttbar\ cross section and cancels systematic uncertainties associated with
+%effects such as the luminosity, selection efficiencies, etc$\dots$
  
 
 \begin{figure}[!ht]
@@ -89,7 +104,8 @@ the single lepton contribution to the \mt\ peak region. The simulation models th
 a comparison of the single lepton + jets prediction and the data in the $\mt>150~\GeV$ region. The prediction and the data are in agreement
 within the statistical uncertainty, which is $30 \%$ for the $\met>100~\GeV$ case. No correction is necessary given the agreement observed and the uncertainty 
 serves as an estimate of the systematic uncertainty on the lepton + jets background. It may be noted that the $30\%$ uncertainty applies to the lepton + jets
-background, which constitues $15\%$ of the sample. The resulting uncertainty on the total background is $\approx5\%$, within our uncertainty budget of $\approx10\%$.
+background, which constitues $15\%$ of the sample. The resulting uncertainty on the total background is $\approx5\%$.
+%, within our uncertainty budget of $\approx10\%$.
 
 Given the similarities in the shapes of the \mt\ distributions for the various samples, the resulting dependence on the sample composition is small. 
 Figure.~\ref{fig:mtsamplecomperr} shows the \mt\ distribution for the single lepton + jets components in MC. The distribution on the right shows the impact of 
