@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-04-00";
+  const char* version    = "V00-04-08";
   const char* jsonfile   = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
@@ -105,6 +105,7 @@ void doAll(bool skipFWLite = true)
   bool runT2tt     = 0; 
   bool runT2tt_few = 0;
   bool runT2bw     = 0;
+  bool runT2bw_few = 0;
 
   bool rundatamay10   = 0;
   bool rundataprv4    = 0;
@@ -341,7 +342,7 @@ void doAll(bool skipFWLite = true)
   }
 
   //----------------------------------------
-  // T2tt (a few sample points)
+  // T2tt 
   //----------------------------------------
 
   TChain *chT2tt = new TChain("Events");
@@ -356,6 +357,15 @@ void doAll(bool skipFWLite = true)
   TChain *chT2bw = new TChain("Events");
   if (runT2bw) {
     pickSkimIfExists(chT2bw,"/nfs-7a/userdata/cms2/SMS-T2bw_x-0p25to0p75_mStop-50to850_mLSP-50to800_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v1/VB04-02-29_Fastsim/merged*root");
+  }
+
+  //----------------------------------------
+  // T2bw (a few sample points)
+  //----------------------------------------
+
+  TChain *chT2bw_few = new TChain("Events");
+  if (runT2bw_few) {
+    pickSkimIfExists(chT2bw_few,"");
   }
 
   //----------------------------------------
@@ -719,6 +729,12 @@ void doAll(bool skipFWLite = true)
     cout << "Processing T2bw all.. " << endl;
     looper->ScanChain(chT2bw,"T2bw", 1, 1, lumi);
     cout << "Done processing T2bw all.. " << endl;
+  }
+  //--------------------------------------------------------------------
+  if (runT2bw_few) {
+    cout << "Processing T2bw few.. " << endl;
+    looper->ScanChain(chT2bw_few,"T2bw_few", 1, 1, lumi);
+    cout << "Done processing T2bw few.. " << endl;
   }
   //--------------------------------------------------------------------
   if (rundata) {

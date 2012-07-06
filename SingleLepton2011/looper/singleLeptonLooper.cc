@@ -624,21 +624,10 @@ void singleLeptonLooper::closeTree()
 
 float singleLeptonLooper::stopPairCrossSection( float stopmass ){
 
-  // stop mass divisible by 10
-  if( ((int)stopmass%10)<1 ){
-    int   bin  = stop_xsec_hist->FindBin(stopmass);
-    float xsec = stop_xsec_hist->GetBinContent(bin);
-    return xsec;
-  }
+  int   bin  = stop_xsec_hist->FindBin(stopmass);
+  float xsec = stop_xsec_hist->GetBinContent(bin);
+  return xsec;
 
-  // stop mass not divisible by 10
-  else{
-    int   bin   = stop_xsec_hist->FindBin(stopmass);
-    float xsec1 = stop_xsec_hist->GetBinContent(bin);
-    float xsec2 = stop_xsec_hist->GetBinContent(bin+1);
-    float xsec  = 0.5 * ( xsec1 + xsec2 );
-    return xsec;
-  }
 }
 
 //--------------------------------------------------------------------
@@ -779,14 +768,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   // set stop cross section file
   //------------------------------------------------
 
-  stop_xsec_file = TFile::Open("data/reference_xSec_stop.root");
+  stop_xsec_file = TFile::Open("stop_xsec.root");
   
   if( !stop_xsec_file->IsOpen() ){
     cout << "Error, could not open stop cross section TFile, quitting" << endl;
     exit(0);
   }
   
-  stop_xsec_hist        = (TH1D*) stop_xsec_file->Get("stop");
+  stop_xsec_hist        = (TH1D*) stop_xsec_file->Get("h_stop_xsec");
   
   if( stop_xsec_hist == 0 ){
     cout << "Error, could not retrieve stop cross section hist, quitting" << endl;
@@ -2548,10 +2537,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	weight_ = lumi * stopPairCrossSection(mG_) * (1000./50000.);
 
 	if( doTenPercent )	  weight_ *= 10;
-
- 	if( TString(prefix).Contains("T2bw") ){
- 	  if( fabs(x_-0.75) < 0.01 ) weight_ *= 5./4.;
- 	}
       }
 
       else if(strcmp(prefix,"LMscan") == 0){ 
