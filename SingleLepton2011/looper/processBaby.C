@@ -112,6 +112,7 @@ void processBaby( TString outfileid = "merged_ntuple_35", TString infile = "/nfs
   else if (infile.Contains("QCD_Pt-50to80_MuPt5Enriched"))     sample = Form("MuQCD50to80_%s",  outfileid.Data());
   else if (infile.Contains("QCD_Pt-80to120_MuPt5Enriched"))    sample = Form("MuQCD80to120_%s", outfileid.Data());
   else if (infile.Contains("SMS-T2tt"))                        sample = Form("T2tt_%s",         outfileid.Data());
+  else if (infile.Contains("SMS-T2bw"))                        sample = Form("T2bw_%s",         outfileid.Data());
   else if (infile.Contains("WWJetsTo2L2Nu"))                   sample = Form("ww2l2nujets_%s",  outfileid.Data());
   //Data
   //single muon
