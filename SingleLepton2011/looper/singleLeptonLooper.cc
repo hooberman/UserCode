@@ -32,6 +32,7 @@
 #include "../CORE/trackSelections.h"
 #include "../CORE/metSelections.h"
 #include "../CORE/jetcorr/FactorizedJetCorrector.h"
+#include "../CORE/jetcorr/JetCorrectionUncertainty.h"
 #include "../CORE/jetSelections.h"
 #include "../CORE/photonSelections.h"
 #include "../CORE/triggerUtils.h"
@@ -739,7 +740,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
   jetcorr_filenames_pfL1FastJetL2L3.clear();
   
-  //string pfUncertaintyFile;
+  string pfUncertaintyFile;
   //string caloUncertaintyFile;
 
   if ( isData ) {
@@ -748,21 +749,19 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L3Absolute.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_42_V23_AK5PF_L2L3Residual.txt");
 
-    //pfUncertaintyFile = "jetCorrections/GR_R_42_V23_AK5PF_Uncertainty.txt";
-
+    pfUncertaintyFile = "jetCorrections/GR_R_42_V23_AK5PF_Uncertainty.txt";
   } 
   else {
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L1FastJet.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L2Relative.txt");
     jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN42_V17_AK5PF_L3Absolute.txt");
     
-    //pfUncertaintyFile = "jetCorrections/DESIGN42_V17_AK5PF_Uncertainty.txt";
-
+    pfUncertaintyFile = "jetCorrections/DESIGN42_V17_AK5PF_Uncertainty.txt";
   }
 
   jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
 
-  //JetCorrectionUncertainty *pfUncertainty   = new JetCorrectionUncertainty( pfUncertaintyFile   );
+  JetCorrectionUncertainty *pfUncertainty   = new JetCorrectionUncertainty( pfUncertaintyFile   );
 
   //------------------------------------------------
   // set stop cross section file
