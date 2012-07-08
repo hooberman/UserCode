@@ -272,10 +272,16 @@ class singleLeptonLooper
 	//phi corrected type1 mets
 	Float_t t1metphicorr_;
 	Float_t t1metphicorrphi_;
+	Float_t t1metphicorrphiup_;
+	Float_t t1metphicorrphidn_;
 	Float_t t1metphicorrmt_;
 	Float_t t1metphicorrlepmt_;
 	Float_t t1metphicorrlep_;
 	Float_t t1metphicorrlepphi_;
+	Float_t t1metphicorrup_;
+	Float_t t1metphicorrdn_;
+	Float_t t1metphicorrmtup_;
+	Float_t t1metphicorrmtdn_;
 
 	// assorted p4's
 	LorentzVector*  t_;   

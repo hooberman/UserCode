@@ -2038,8 +2038,20 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 
 	LorentzVector vjet      = corr    * pfjets_p4().at(ijet);
-	LorentzVector vjetUp    = corr    * pfjets_p4().at(ijet) * 1.075; // over-estimate...
-	LorentzVector vjetDown  = corr    * pfjets_p4().at(ijet) * 0.925; // over-estimate...
+
+	//---------------------------------------------------------------------------
+	// get JES uncertainty
+	//---------------------------------------------------------------------------
+	
+	pfUncertainty->setJetEta(vjet.eta());
+	pfUncertainty->setJetPt(vjet.pt());   // here you must use the CORRECTED jet pt
+	double unc = pfUncertainty->getUncertainty(true);
+
+	LorentzVector vjetUp   = corr * pfjets_p4().at(ijet) * ( 1 + unc );
+	LorentzVector vjetDown = corr * pfjets_p4().at(ijet) * ( 1 - unc );
+
+	//LorentzVector vjetUp    = corr    * pfjets_p4().at(ijet) * 1.075; // over-estimate...
+	//LorentzVector vjetDown  = corr    * pfjets_p4().at(ijet) * 0.925; // over-estimate...
 
 	// lepton-jet overlap removal
 	bool rejectJet = false;
@@ -2240,6 +2252,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	nbtagscsvtcorr_ = nbtagscsvt_;
       }
 
+
       // type1 met's
       pair<float, float> p_t1met10     = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 10.0 );
       pair<float, float> p_t1met20     = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 20.0 );
@@ -2255,6 +2268,48 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       pair<float, float> p_t1metphicorr = getPhiCorrMET( t1met10_, t1met10phi_, evt_pfsumet(), !isData);
       t1metphicorr_    = p_t1metphicorr.first;
       t1metphicorrphi_ = p_t1metphicorr.second;
+
+      //---------------------------------------
+      // now calculate METup and METdown
+      //---------------------------------------
+
+      float pfmetx = t1metphicorr_ * cos( t1metphicorrphi_ );
+      float pfmety = t1metphicorr_ * sin( t1metphicorrphi_ );
+
+      //--------------------------------------------------------
+      // calculate unclustered energy x and y components
+      // unclustered energy = -1 X ( MET + jets + leptons )
+      //--------------------------------------------------------
+
+      float unclustered_x = -1 * ( pfmetx + jetptx );
+      float unclustered_y = -1 * ( pfmety + jetpty );
+
+      for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	unclustered_x -= goodLeptons.at(ilep).px();
+	unclustered_y -= goodLeptons.at(ilep).py();
+      }
+      
+      //------------------------------------------------------------------------------
+      // now vary jets according to JEC uncertainty, vary unclustered energy by 10%
+      //------------------------------------------------------------------------------
+
+      float pfmetx_up = pfmetx - dmetx - 0.1 * unclustered_x; 
+      float pfmety_up = pfmety - dmety - 0.1 * unclustered_y; 
+
+      // pfmet DOWN
+      t1metphicorrup_    = sqrt( pfmetx_up * pfmetx_up + pfmety_up * pfmety_up );
+      t1metphicorrphiup_ = atan2( pfmety_up , pfmetx_up );
+
+      float pfmetx_dn = pfmetx + dmetx + 0.1 * unclustered_x; 
+      float pfmety_dn = pfmety + dmety + 0.1 * unclustered_y; 
+
+      // pfmet UP
+      t1metphicorrdn_    = sqrt( pfmetx_dn * pfmetx_dn + pfmety_dn * pfmety_dn );
+      t1metphicorrphidn_ = atan2( pfmety_dn , pfmetx_dn );
+
+      //-------------------------------------------------------------------------------
+      // for dilepton events, calculate MET where negative lepton is added back to MET
+      //-------------------------------------------------------------------------------
 
       t1metphicorrlep_    = 0;
       t1metphicorrlepphi_ = 0;
@@ -2642,7 +2697,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       t1met20mt_     = getMT( lep1_->pt() , lep1_->phi() , t1met20_     , t1met20phi_ );
       t1met30mt_     = getMT( lep1_->pt() , lep1_->phi() , t1met30_     , t1met30phi_ );
       //phi-corrected met
-      t1metphicorrmt_ = getMT( lep1_->pt() , lep1_->phi() , t1metphicorr_ , t1metphicorrphi_ );
+      t1metphicorrmt_   = getMT( lep1_->pt() , lep1_->phi() , t1metphicorr_ , t1metphicorrphi_ );
+
+      t1metphicorrmtup_ = getMT( lep1_->pt() , lep1_->phi() , t1metphicorrup_ , t1metphicorrphiup_ );
+      t1metphicorrmtdn_ = getMT( lep1_->pt() , lep1_->phi() , t1metphicorrdn_ , t1metphicorrphidn_ );
 
       if( ngoodlep_ >1 && lepp_->pt() > 0 && lepm_->pt() > 0 ){
 	t1metphicorrlepmt_ = getMT( lepp_->pt() , lepp_->phi() , t1metphicorrlep_ , t1metphicorrlepphi_ );
@@ -3281,10 +3339,16 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   //met variables with phi correction
   outTree->Branch("t1metphicorr"       , &t1metphicorr_       , "t1metphicorr/F");
+  outTree->Branch("t1metphicorrup"     , &t1metphicorrup_     , "t1metphicorrup/F");
+  outTree->Branch("t1metphicorrdn"     , &t1metphicorrdn_     , "t1metphicorrdn/F");
   outTree->Branch("t1metphicorrphi"    , &t1metphicorrphi_    , "t1metphicorrphi/F");
+  outTree->Branch("t1metphicorrphiup"  , &t1metphicorrphiup_  , "t1metphicorrphiup/F");
+  outTree->Branch("t1metphicorrphidn"  , &t1metphicorrphidn_  , "t1metphicorrphidn/F");
   outTree->Branch("t1metphicorrlep"    , &t1metphicorrlep_    , "t1metphicorrlep/F");
   outTree->Branch("t1metphicorrlepphi" , &t1metphicorrlepphi_ , "t1metphicorrlepphi/F");
   outTree->Branch("t1metphicorrmt"     , &t1metphicorrmt_     , "t1metphicorrmt/F");
+  outTree->Branch("t1metphicorrmtup"   , &t1metphicorrmtup_   , "t1metphicorrmtup/F");
+  outTree->Branch("t1metphicorrmtdn"   , &t1metphicorrmtdn_   , "t1metphicorrmtdn/F");
   outTree->Branch("t1metphicorrlepmt"  , &t1metphicorrlepmt_  , "t1metphicorrlepmt/F");
 
   outTree->Branch("htpfres30",        &htpfres30_,        "htpfres30/F");
