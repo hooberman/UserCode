@@ -273,6 +273,9 @@ class singleLeptonLooper
 	Float_t t1metphicorr_;
 	Float_t t1metphicorrphi_;
 	Float_t t1metphicorrmt_;
+	Float_t t1metphicorrlepmt_;
+	Float_t t1metphicorrlep_;
+	Float_t t1metphicorrlepphi_;
 
 	// assorted p4's
 	LorentzVector*  t_;   
@@ -291,6 +294,8 @@ class singleLeptonLooper
         LorentzVector*  pfcand10_;
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
+        LorentzVector*  lepp_;
+        LorentzVector*  lepm_;
         LorentzVector*  pflep1_;
         LorentzVector*  pflep2_;
         LorentzVector*  leppfjet1_;
