@@ -504,6 +504,8 @@ void singleLeptonLooper::InitBaby(){
   pflep_        = 0;
   pftaud_       = 0;
   mbb_		= -9999.;
+  mcmln_	= -9999.;
+  mcmtln_	= -9999.;
   pflepmindrj_   = 9999.;
   pftaudmindrj_  = 9999.;
   lep1pfjetdr_   = 9999.;
@@ -725,8 +727,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     cout << "setting json " << g_json << endl;
     set_goodrun_file( g_json );
 
-    //set vtx reweighting hist
-    set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
+    //set vtx reweighting hist - depends on pileup scenario
+    if( TString(prefix).Contains("ttall") || TString(prefix).Contains("mcatnlo") 
+     || TString(prefix).Contains("scaleup") || TString(prefix).Contains("scaledw") 
+     || TString(prefix).Contains("matchup") )
+      set_vtxreweight_rootfile("vtxreweight/vtxreweight_Fall11MC_PUS6_4p7fb_Zselection.root",true);
+    else
+      set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
+
     //    weight3D_init( "vtxreweight/Weight3D.root" );
 
     //set msugra cross section file
@@ -1203,7 +1211,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	qscale_ = genps_qScale();
 	
 	//store W flavor history
-	wflav_ = (int)genps_flavorHistoryFilterResult();
+	if (!TString(prefix).Contains("mcatnlo"))
+	  wflav_ = (int)genps_flavorHistoryFilterResult();
 
 	//splitting ttbar into ttdil/ttotr
 	//nleps = leptonGenpCount_lepTauDecays(nels, nmus, ntaus);
@@ -1346,6 +1355,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	mctaudvis2_   =  0;
 	mctaudid1_  = -1;
 	mctaudid2_  = -1;
+	//variables for single lepton studies
+	mcnu_       =  0;
+	mclep_      =  0;
 
 	//-----------------------------------------------------
 	// store single gen lepton info
@@ -2663,7 +2675,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       else{
 
-	weight_ = kFactor * evt_scale1fb() * lumi;
+        if( TString(prefix).Contains("ttall") )
+          weight_ = kFactor * lumi * 157.5/44514744.*1000.;
+        else
+          weight_ = kFactor * evt_scale1fb() * lumi;
+        //do a signed weight for mcatnlo
+        if ( TString(prefix).Contains("mcatnlo") && genps_weight()<0) weight_ *= -1.;
 
 	if( doTenPercent )	  weight_ *= 10;
 
@@ -2714,6 +2731,26 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //dijet mass two bs highest pT b-tagged jets
       if (mediumBJets.size()>1) {
 	mbb_ = (mediumBJets.at(0)+mediumBJets.at(1)).M();
+      }
+
+      //ugly bit of code to store information about the lepton, neutrino and W
+      //for single lepton events
+      bool foundlep = false;
+      bool foundnu  = false;
+      for (int igen = (cms2.genps_p4().size()-1); igen >-1; igen--) {
+	int id = genps_id().at(igen);
+	if (abs(id)==11 || abs(id)==13) {
+	  foundlep = true;
+	  mclep_ = &cms2.genps_p4()[igen];
+	}
+	if (abs(id)==12 || abs(id)==14) {
+	  foundnu = true;
+	  mcnu_  = &cms2.genps_p4()[igen];
+	}
+      }
+      if (foundlep && foundnu) {
+	mcmln_ = (*mclep_+*mcnu_).mass();
+	mcmtln_ = getMT( mclep_->Pt() , mclep_->Phi() , mcnu_->Pt() , mcnu_->Phi() );
       }
 
       /*
@@ -3545,6 +3582,11 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mbb",             &mbb_,              "mbb/F");
   outTree->Branch("lep1pfjetdr",     &lep1pfjetdr_,      "lep1pfjetdr/F");  
   outTree->Branch("lep2pfjetdr",     &lep2pfjetdr_,      "lep2pfjetdr/F");  
+
+  outTree->Branch("mclep"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mclep_      );
+  outTree->Branch("mcnu"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mcnu_       );
+  outTree->Branch("mcmln",           &mcmln_,              "mcmln/F");
+  outTree->Branch("mcmtln",          &mcmtln_,             "mcmtln/F");
 
   outTree->Branch("mlep"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);

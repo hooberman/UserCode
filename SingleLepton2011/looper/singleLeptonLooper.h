@@ -308,6 +308,8 @@ class singleLeptonLooper
         LorentzVector*  leppfjet2_;
         LorentzVector*  dilep_;
         LorentzVector*  jet_; 
+	LorentzVector*  mcnu_;
+	LorentzVector*  mclep_;
 
 	// jet p4's
         LorentzVector*  pfjet1_; 
@@ -339,6 +341,8 @@ class singleLeptonLooper
  	LorentzVector*  nonisomu_;   
 
         // Baby ntuple variables
+ 	Float_t mcmln_;
+ 	Float_t mcmtln_;
 	Float_t mjj_;
 	Float_t dphilm_;
 	Float_t mG_;
