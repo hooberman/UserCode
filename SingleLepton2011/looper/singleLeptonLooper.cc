@@ -710,7 +710,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
   bool isLM = TString(prefix).Contains("LM");
   bool isData = false;
-  if( TString(prefix).Contains("data") || TString(prefix).Contains("2011") ){
+  if( TString(prefix).Contains("data") || TString(prefix).Contains("2011") 
+      || TString(prefix).Contains("dimu") || TString(prefix).Contains("diel")
+      || TString(prefix).Contains("mueg") ){
     cout << "DATA!!!" << endl;
     isData       = true;
     doTenPercent = false;
@@ -2735,22 +2737,24 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       //ugly bit of code to store information about the lepton, neutrino and W
       //for single lepton events
-      bool foundlep = false;
-      bool foundnu  = false;
-      for (int igen = (cms2.genps_p4().size()-1); igen >-1; igen--) {
-	int id = genps_id().at(igen);
-	if (abs(id)==11 || abs(id)==13) {
-	  foundlep = true;
-	  mclep_ = &cms2.genps_p4()[igen];
+      if( !isData ){
+	bool foundlep = false;
+	bool foundnu  = false;
+	for (int igen = (cms2.genps_p4().size()-1); igen >-1; igen--) {
+	  int id = genps_id().at(igen);
+	  if (abs(id)==11 || abs(id)==13) {
+	    foundlep = true;
+	    mclep_ = &cms2.genps_p4()[igen];
+	  }
+	  if (abs(id)==12 || abs(id)==14) {
+	    foundnu = true;
+	    mcnu_  = &cms2.genps_p4()[igen];
+	  }
 	}
-	if (abs(id)==12 || abs(id)==14) {
-	  foundnu = true;
-	  mcnu_  = &cms2.genps_p4()[igen];
+	if (foundlep && foundnu) {
+	  mcmln_ = (*mclep_+*mcnu_).mass();
+	  mcmtln_ = getMT( mclep_->Pt() , mclep_->Phi() , mcnu_->Pt() , mcnu_->Phi() );
 	}
-      }
-      if (foundlep && foundnu) {
-	mcmln_ = (*mclep_+*mcnu_).mass();
-	mcmtln_ = getMT( mclep_->Pt() , mclep_->Phi() , mcnu_->Pt() , mcnu_->Phi() );
       }
 
       /*
