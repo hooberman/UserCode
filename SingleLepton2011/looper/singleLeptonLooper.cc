@@ -902,7 +902,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       // skip stop-pair events with m(stop) > 850 GeV
       if( TString(prefix).Contains("T2") ){
-	if( sparm_mG() > 800.0 ) continue;
+	if( sparm_mG() > 600.0 ) continue;
       }
 
       //---------------------------------------------
