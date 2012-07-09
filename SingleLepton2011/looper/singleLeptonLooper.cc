@@ -2030,6 +2030,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
 
+	// skip jets with |eta| > 5.0
+	if( fabs( pfjets_p4().at(ijet).eta() ) > 5.0 ) continue;
+
 	// get L1FastL2L3Residual total correction
 	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
 	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
