@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-04-08";
+  const char* version    = "V00-04-09";
   const char* jsonfile   = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
@@ -92,8 +92,8 @@ void doAll(bool skipFWLite = true)
   int prettV      = 1;
  
   // flags for files to run over
-  bool rundata     = 0;
-  bool runttall    = 1;
+  bool rundata     = 1;
+  bool runttall    = 0;
   bool runWjets    = 0;
   bool runVV       = 0;
   bool runQCD      = 0;
@@ -101,7 +101,7 @@ void doAll(bool skipFWLite = true)
   bool runtW       = 0;
   bool runttV      = 0;
   bool runVVV      = 0;
-  bool runDYtot    = 1;
+  bool runDYtot    = 0;
   bool runT2tt     = 0; 
   bool runT2tt_few = 0;
   bool runT2bw     = 0;
@@ -481,8 +481,8 @@ void doAll(bool skipFWLite = true)
     
     cout << "adding ElectronHad and MuHad or SingleMu data" << endl;
 
-    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_999999_0_skim.root");//l+2j filtered
-    
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_999999_0_skim.root");//l+2j filtered
+    /*
     // May10
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011A-May10ReReco-v1_AOD/V04-02-33/SingleLeptonAndJets/merged*root");
@@ -511,6 +511,7 @@ void doAll(bool skipFWLite = true)
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/ElectronHad_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata,"/nfs-7/userdata/cms2/MuHad_Run2011B-PromptReco-v1_AOD/V04-02-35/SingleLeptonAndJets/merged*root");
     pickSkimIfExists(chdata,"/nfs-3/userdata/cms2/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/SingleLeptonAndTwoJets/merged*root");
+    */
   }
 
 

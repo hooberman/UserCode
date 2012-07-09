@@ -257,6 +257,54 @@ bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector
 
 //--------------------------------------------------------------------
 
+TString triggerName(TString triggerPattern){
+
+  //-------------------------------------------------------
+  // get exact trigger name corresponding to given pattern
+  //-------------------------------------------------------
+
+  bool    foundTrigger  = false;
+  TString exact_hltname = "";
+
+  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
+    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
+      foundTrigger  = true;
+      exact_hltname = hlt_trigNames().at(itrig);
+      break;
+    }
+  }
+
+  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
+
+  return exact_hltname;
+
+}
+
+//--------------------------------------------------------------------
+
+bool objectPassTrigger(const LorentzVector &obj, char* trigname, float drmax = 0.1 ){
+
+  TString exact_trigname = triggerName( trigname );
+
+  if( exact_trigname.Contains("TRIGGER_NOT_FOUND") ){
+    cout << __FILE__ << " " << __LINE__ << " Error! couldn't find trigger name " << trigname << endl;
+    return false;
+  }
+
+  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(exact_trigname)];
+
+  if( trigp4.size() == 0 ) return false;
+
+  for (unsigned int i = 0; i < trigp4.size(); ++i){
+    float dr = dRbetweenVectors(trigp4[i], obj);
+    if( dr < drmax ) return true;
+  }
+
+  return false;
+}
+
+//--------------------------------------------------------------------
+
 singleLeptonLooper::singleLeptonLooper()
 {
   g_susybaseline = false;
@@ -669,6 +717,36 @@ float getMT( float leppt , float lepphi , float met , float metphi ) {
 
 //--------------------------------------------------------------------
 
+bool passSingleMuTrigger2011_pt30( bool isData , int lepType ) {
+  
+  //----------------------------
+  // single muon triggers
+  //----------------------------
+
+  // no triggers required for MC
+  if( !isData ) return true;
+
+  // false for electron channel
+  if( lepType == 0 ){
+    return false;
+  }
+
+  // muon channel
+  else if( lepType == 1 ){    
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_v") )          return true; //  < 173212
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true; // >= 173212
+  }
+
+  else{
+    cout << __FILE__ << " " << __LINE__ << " ERROR unrecognized lepType " << lepType << ", quitting" << endl;
+    exit(0);
+  }
+
+  return false;
+}
+
+//--------------------------------------------------------------------
+
 float getMuTriggerWeight( float pt, float eta ) {
   //Trigger efficiency for single muon triggers averaged over full 2011 dataset
   //From AN2011-456 Table 28
@@ -851,19 +929,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
   if(g_createTree) makeTree(prefix, doFakeApp, frmode);
 
-  char* thisFile = "blah";
-
   while((currentFile = (TChainElement*)fileIter.Next())) {
     TFile* f = new TFile(currentFile->GetTitle());
+
+    cout << currentFile->GetTitle() << endl;
 
     if( !f || f->IsZombie() ) {
       cout << "Skipping bad input file: " << currentFile->GetTitle() << endl;
       continue; //exit(1);                                                                                             
-    }
-
-    if( strcmp(thisFile,currentFile->GetTitle()) != 0 ){
-      thisFile = (char*) currentFile->GetTitle();
-      cout << thisFile << endl;
     }
 
     TTree *tree = (TTree*)f->Get("Events");
@@ -2301,7 +2374,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       float unclustered_x = -1 * ( pfmetx + jetptx );
       float unclustered_y = -1 * ( pfmety + jetpty );
 
-      for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+      for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
 	unclustered_x -= goodLeptons.at(ilep).px();
 	unclustered_y -= goodLeptons.at(ilep).py();
       }
@@ -2855,7 +2928,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ldi_  = passSingleLep2JetSUSYTrigger2011( isData , leptype_ ) ? 1 : 0;
       ltri_ = passSingleLep3JetSUSYTrigger2011( isData , leptype_ ) ? 1 : 0;
       smu_  = passSingleMuTrigger2011(          isData , leptype_ ) ? 1 : 0;
+      smu30_= passSingleMuTrigger2011_pt30(     isData , leptype_ ) ? 1 : 0;
       dil_  = passSUSYTrigger2011_v1(     isData , hypType , true ) ? 1 : 0;
+
+      if( cms2.evt_run() >= 173212 ) trgmu30_ = objectPassTrigger( *lep1_ , (char*) "HLT_IsoMu30_eta2p1_v" , 0.1 ) ? 1 : 0;
+      else                           trgmu30_ = objectPassTrigger( *lep1_ , (char*) "HLT_IsoMu30_v"        , 0.1 ) ? 1 : 0;
 
       //set trigger weight
       mutrigweight_ = getMuTriggerWeight( lep1_->pt() , lep1_->eta() );
@@ -3250,14 +3327,14 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   //else if( g_trig == e_highpt ) dir = "highpt";
 
   //Super compressed ntuple here
-  char* frsuffix = "";
+  char* frsuffix = (char*) "";
   if( doFakeApp ){
-    if ( frmode == e_qcd   ) frsuffix = "_doubleFake";
-    if ( frmode == e_wjets ) frsuffix = "_singleFake";
+    if ( frmode == e_qcd   ) frsuffix = (char*) "_doubleFake";
+    if ( frmode == e_wjets ) frsuffix = (char*) "_singleFake";
   }
 
-  char* tpsuffix = "";
-  if( doTenPercent ) tpsuffix = "_tenPercent";
+  char* tpsuffix = (char*) "";
+  if( doTenPercent ) tpsuffix = (char*) "_tenPercent";
 
   outFile   = new TFile(Form("output/%s_smallTree%s%s.root",prefix,frsuffix,tpsuffix), "RECREATE");
   //  outFile   = new TFile(Form("output/%s/%s_smallTree%s%s.root",g_version,prefix,frsuffix,tpsuffix), "RECREATE");
@@ -3315,6 +3392,8 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ldi",             &ldi_,              "ldi/I");
   outTree->Branch("ltri",            &ltri_,             "ltri/I");
   outTree->Branch("smu",             &smu_,              "smu/I");
+  outTree->Branch("smu30",           &smu30_,            "smu30/I");
+  outTree->Branch("trgmu30",         &trgmu30_,          "trgmu30/I");
   outTree->Branch("dil",             &dil_,              "dil/I");
   outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
   outTree->Branch("multgen",         &multgen_,          "multgen/I");

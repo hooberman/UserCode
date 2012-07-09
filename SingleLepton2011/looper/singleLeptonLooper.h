@@ -243,6 +243,8 @@ class singleLeptonLooper
 	Int_t   ldi_;
 	Int_t   ltri_;
 	Int_t   smu_;
+	Int_t   smu30_;
+	Int_t   trgmu30_;
 	Int_t   dil_;
 
 	// MC truth vars
