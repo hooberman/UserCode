@@ -165,10 +165,14 @@ void makeGMSBPlot( bool printplots = false ){
   // gul2exp->SetLineStyle(2);
 
 
-  hdummy->GetXaxis()->SetTitle("m_{#chi} [GeV]");
+  hdummy->GetXaxis()->SetTitle("m(#chi) [GeV]");
   hdummy->GetYaxis()->SetTitle("#sigma [fb]");
   hdummy->GetYaxis()->SetLabelSize(0.04);
   hdummy->GetXaxis()->SetLabelSize(0.04);
+  hdummy->GetYaxis()->SetTitleSize(0.05);
+  hdummy->GetXaxis()->SetTitleSize(0.05);
+  hdummy->GetXaxis()->SetTitleOffset(1.12);
+  hdummy->GetYaxis()->SetTitleOffset(1.5);
 
   /*
   TBox* box = new TBox();
@@ -252,7 +256,8 @@ void makeGMSBPlot( bool printplots = false ){
   TLatex *t = new TLatex();
   t->SetNDC();								
   t->SetTextSize(0.04);
-  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.98 fb^{-1}");
+  //t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.98 fb^{-1}");
+  t->DrawLatex(0.18,0.93,"CMS Preliminary,  #sqrt{s}=7 TeV,  L_{int}=4.98 fb^{-1}");
   t->SetTextSize(0.04);
   //t->DrawLatex(0.47,0.45,"");
   t->DrawLatex(0.57,0.63,"GMSB  ZZ + E_{T}^{miss}");
