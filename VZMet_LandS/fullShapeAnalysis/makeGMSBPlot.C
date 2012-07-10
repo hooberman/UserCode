@@ -125,11 +125,11 @@ void makeGMSBPlot( bool printplots = false ){
   TCanvas *c1 = new TCanvas();
   gPad->SetTopMargin(0.1);
   gPad->SetRightMargin(0.05);
-  gPad->SetGridx();
-  gPad->SetGridy();
+  //gPad->SetGridx();
+  //gPad->SetGridy();
 
   float ymin = 0;
-  if( logplot ) ymin = 80;
+  if( logplot ) ymin = 99.9;
 
   TH2F* hdummy = new TH2F("hdummy","",100,130,300,100,ymin,3000);
   hdummy->Draw();
@@ -137,26 +137,41 @@ void makeGMSBPlot( bool printplots = false ){
   c1->cd();
   if( logplot ) gPad->SetLogy();
 
-  g->SetLineColor(4);
-  g->SetLineWidth(2);
+  g->SetLineColor(2);
+  g->SetLineWidth(4);
 
-  gul->SetLineColor(2);
-  gul->SetLineWidth(4);
+  //2l2j observed
+  gul->SetLineColor(4);
+  gul->SetLineWidth(3);
+  gul->SetLineStyle(4);
+
+  //2l2j expected
   gulexp->SetLineColor(2);
   gulexp->SetLineWidth(4);
-
-  gul2->SetLineWidth(4);
-  gul2exp->SetLineWidth(4);
-
-  gulc->SetLineWidth(4);
-  gulc->SetLineColor(kGreen+2);
-  gulcexp->SetLineWidth(4);
-  gulcexp->SetLineColor(kGreen+2);
-
-  gul->SetLineStyle(2);
   gulexp->SetLineStyle(2);
-  gul2->SetLineStyle(2);
+
+  //4l observed
+  gul2->SetLineWidth(3);
+  gul2->SetLineStyle(4);
+  gul2->SetLineColor(kGreen+2);
+
+  //4l expected
+  gul2exp->SetLineWidth(4);
   gul2exp->SetLineStyle(2);
+
+  //combined observed
+  gulc->SetLineWidth(4);
+  gulc->SetLineColor(1);
+
+  //combined expected
+  gulcexp->SetLineWidth(4);
+  gulcexp->SetLineColor(1);
+  gulcexp->SetLineStyle(2);
+
+
+
+
+
 
   // gulexp->SetLineWidth(2);
   // gulexp->SetLineStyle(2);
@@ -191,6 +206,7 @@ void makeGMSBPlot( bool printplots = false ){
     gul->Draw("samel");
     gul2->Draw("samel");
     gulc->Draw("samel");
+    gulcexp->Draw("samel");
   }
 
   if( plotExpected ){
@@ -234,11 +250,13 @@ void makeGMSBPlot( bool printplots = false ){
   // gul2->Draw("samel");
 
   //TLegend *leg = new TLegend(0.4,0.6,0.9,0.8);
-  TLegend *leg = new TLegend(0.45,0.7,0.95,0.9);
+  TLegend *leg = new TLegend(0.38,0.7,0.95,0.88);
   if( plotObserved ){
-    leg->AddEntry(gul  ,"observed UL (VZ+E_{T}^{miss})","l");
-    leg->AddEntry(gul2 ,"observed UL (multi-lepton)","l");
-    leg->AddEntry(gulc ,"observed UL (combined)","l");
+    leg->AddEntry(gulc    ,"combined observed UL","l");
+    leg->AddEntry(gulcexp ,"combined median expected UL","l");
+    leg->AddEntry(gul     ,"2l2j observed UL","l");
+    leg->AddEntry(gul2    ,"4l observed UL","l");
+
   }
   if( plotExpected ){
     leg->AddEntry(gulexp  ,"expected UL (VZ+E_{T}^{miss})","l");
@@ -248,7 +266,7 @@ void makeGMSBPlot( bool printplots = false ){
 
   leg->AddEntry(g,  "theory","l");
   //leg->AddEntry(box,"excluded region","f");
-  leg->SetBorderSize(1);
+  leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->SetTextSize(0.03);
   leg->Draw();
