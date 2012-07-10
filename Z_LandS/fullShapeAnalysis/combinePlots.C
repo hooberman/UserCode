@@ -111,8 +111,8 @@ TGraph* getGraph_T5zzh(string type){
   int npoints = -1;
 
   if( type == "nom" ){
-    x[0] =  837;  y[0] =  50;
-    x[1] =  837;  y[1] = 300;
+    x[0] =  850;  y[0] =  50;
+    x[1] =  825;  y[1] = 325;
     x[2] =  800;  y[2] = 350;
     x[3] =  625;  y[3] = 350;
     x[4] =  625;  y[4] = 550;
@@ -122,14 +122,14 @@ TGraph* getGraph_T5zzh(string type){
     x[0] = 600;   y[0] =  50;
     x[1] = 600;   y[1] = 150;
     x[2] = 525;   y[2] = 200;
-    x[3] = 475;   y[3] = 300;
+    x[3] = 500;   y[3] = 300;
     x[4] = 525;   y[4] = 450;
     npoints = 5;
   }
   else if( type == "up" ){
     x[0] = 1000;  y[0] =   50;
-    x[1] = 1000;  y[1] =  300;
-    x[2] =  950;  y[2] =  475;
+    x[1] = 975;   y[1] =  425;
+    x[2] =  925;  y[2] =  475;
     x[3] = 712.5; y[3] =  475;
     x[4] = 712.5; y[4] =  637.5;
     npoints = 5;
@@ -327,11 +327,11 @@ void combinePlots(bool print = false){
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
   // float dm             = 4*91.0;
 
-  // char* version        = "V00-03-01";
-  // char* sample         = "T5zz";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  // float dm             = 182.0;
+  char* version        = "V00-03-01";
+  char* sample         = "T5zz";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  float dm             = 182.0;
   
   // char* version        = "V00-03-02";
   // char* sample         = "T5zzl";
@@ -339,12 +339,18 @@ void combinePlots(bool print = false){
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
   // float dm             = (4./3.)*91;
 
-  char* version        = "V00-03-03";
-  char* sample         = "T5zzgmsb";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g})";
-  float dm             = 0.0;
-  smooth               = true;
+  // char* version        = "V00-03-03";
+  // char* sample         = "T5zzgmsb";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g})";
+  // float dm             = 0.0;
+  // smooth               = true;
+
+  // char* version        = "V00-03-07";
+  // char* sample         = "T5zzh";
+  // bool  do3jets        = false;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
+  // float dm             = 4 * 91;
 
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";

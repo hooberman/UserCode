@@ -28,7 +28,7 @@
 
 using namespace std;
 
-char* version             = "V00-03-02";
+char* version             = "V00-03-07";
 
 bool fileInList(string thisfilename);
 
