@@ -24,6 +24,7 @@
 #include "TStyle.h"
 #include "TLine.h"
 #include "TMath.h"
+#include "TPaveText.h"
 
 
 using namespace std;
@@ -55,19 +56,20 @@ void cmsPrelim( double intLumi )
 
 void makePlots(){
 
-
   //-------------------------------------------
   // Rutgers/KIT
   //-------------------------------------------
 
   TFile *fkit = TFile::Open("KIT_2i.root");
 
-  TH2D* h2i  = (TH2D*) fkit->Get("xSecObserved");
-  TH2D* h2i1 = (TH2D*) fkit->Get("xSecObserved1");
-  TH2D* h2i0 = (TH2D*) fkit->Get("xSecObserved0");
-
+  TH2D*   h2i     = (TH2D*) fkit->Get("xSecObserved");
+  TH2D*   h2i1    = (TH2D*) fkit->Get("xSecObserved1");
+  TH2D*   h2i0    = (TH2D*) fkit->Get("xSecObserved0");
+  TGraph* gr2i_1  = (TGraph*) fkit->Get("Graph1");
+  TGraph* gr2i_2  = (TGraph*) fkit->Get("Graph2");
+  TGraph* gr2i_3  = (TGraph*) fkit->Get("Graph3");
+  TGraph* gr2i_4  = (TGraph*) fkit->Get("Graph4");
   
-
   TCanvas *can = new TCanvas();
   can->cd();
   gPad->SetRightMargin(0.2);
@@ -77,16 +79,27 @@ void makePlots(){
   h2i0->Draw("colz");
   h2i->Draw("colsame");
   h2i1->Draw("colsame");
+  gr2i_1->Draw("l");
+  gr2i_2->Draw("l");
+  gr2i_3->Draw("l");
+  gr2i_4->Draw("l");
   cmsPrelim(4.98);
 
-  //h2i->Draw("colsame");
+  TLegend *leg = new TLegend(0.2,0.78,0.6,0.88);
+  leg->AddEntry(gr2i_1,"observed","l");
+  leg->AddEntry(gr2i_2,"median expected","l");
+  leg->AddEntry(gr2i_3,"expected #pm1#sigma","l");
+  leg->SetBorderSize(0);
+  leg->SetFillColor(0);
+  leg->Draw();
 
-
-
-
-
-
-
+  TLatex *tex = new TLatex();
+  tex->SetNDC();
+  tex->SetTextSize(0.028);
+  tex->DrawLatex(0.18,0.73,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  tex->DrawLatex(0.18,0.68,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{e}e, #tilde{#mu}#mu, #tilde{#tau}#tau (BF=50%)");
+  tex->DrawLatex(0.18,0.63,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{e}#nu_{e}, #tilde{#mu}#nu_{#mu}, #tilde{#tau}#nu_{#tau}");
+  tex->DrawLatex(0.18,0.58,"m_{ #tilde{l}} = (m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + m(#tilde{#chi}_{1}^{0})) / 2");
 
 
 
