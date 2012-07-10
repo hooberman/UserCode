@@ -120,6 +120,25 @@ TGraph* getGraph_Combo(){
 
 }
 
+TGraph* getGraph_ComboExp(){
+
+  float x[6];
+  float y[6];
+  int npoints = -1;
+
+  x[0] =  212.5;  y[0] = -12.5;
+  x[1] =  187.5;  y[1] =  62.5;
+  x[2] =    175;  y[2] =  62.5;
+  x[3] =   87.5;  y[3] =  12.5;
+  x[4] =   87.5;  y[4] = -12.5;
+
+  npoints = 5;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+  return gr;
+
+}
+
 TGraph* getGraph_VZMet(){
 
   float x[6];
@@ -243,10 +262,13 @@ void combinePlots_VZ_Trilepton(bool print = false){
   TH2F* hexcluded13 = new TH2F("hexcluded13","hexcluded13", 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
   TH2F* hexcluded3  = new TH2F("hexcluded3","hexcluded3"  , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
   
+  TH2F* hexcluded_exp = new TH2F("hexcluded_exp","hexcluded_exp"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
+
   for( unsigned int ibin = 1 ; ibin <= 21 ; ibin++ ){
     for( unsigned int jbin = 1 ; jbin <= 21 ; jbin++ ){
 
-      float xsecul = hexcl->GetBinContent(ibin,jbin);
+      float xsecul     = hexcl->GetBinContent(ibin,jbin);
+      float xsecul_exp = hexp->GetBinContent(ibin,jbin);
 
       if( xsecul < 1.e-10 ) continue;
 
@@ -260,6 +282,9 @@ void combinePlots_VZ_Trilepton(bool print = false){
 
       hexcluded->SetBinContent(ibin,jbin,0);
       if( xsec > xsecul )   hexcluded->SetBinContent(ibin,jbin,1);
+
+      hexcluded_exp->SetBinContent(ibin,jbin,0);
+      if( xsec > xsecul_exp )   hexcluded_exp->SetBinContent(ibin,jbin,1);
 
       hexcluded3->SetBinContent(ibin,jbin,0);
       if( 3 * xsec > xsecul )   hexcluded3->SetBinContent(ibin,jbin,1);
@@ -342,25 +367,29 @@ void combinePlots_VZ_Trilepton(bool print = false){
   // TGraph* gr_excl_down = getGraph_WZ("down");
   // TGraph* gr_excl_up   = getGraph_WZ("up");
 
-  TGraph* gr_vzmet   = getGraph_VZMet();
-  TGraph* gr_tri     = getGraph_Trilepton();
-  TGraph* gr_combo   = getGraph_Combo();
+  TGraph* gr_vzmet     = getGraph_VZMet();
+  TGraph* gr_tri       = getGraph_Trilepton();
+  TGraph* gr_combo     = getGraph_Combo();
+  TGraph* gr_combo_exp = getGraph_ComboExp();
   
   if( TString(sample).Contains("wzsms") ) {
     
     gr_vzmet->SetLineWidth(3);
-    gr_combo->SetLineWidth(6);
+    gr_combo->SetLineWidth(4);
+    gr_combo_exp->SetLineWidth(4);
+    gr_combo_exp->SetLineStyle(2);
     gr_tri->SetLineWidth(3);
     gr_combo->SetLineStyle(1);
     gr_combo->SetLineColor(1);
-    gr_tri->SetLineStyle(2);
-    gr_vzmet->SetLineStyle(2);
+    gr_tri->SetLineStyle(4);
+    gr_vzmet->SetLineStyle(3);
     gr_tri->SetLineColor(2);
     gr_vzmet->SetLineColor(4);
-    gr_combo->Draw("same");
 
-    gr_vzmet->Draw("same");
-    gr_tri->Draw("same");
+    gr_combo->Draw("samel");
+    gr_combo_exp->Draw("samel");
+    gr_vzmet->Draw("samel");
+    gr_tri->Draw("samel");
 
     TLegend *leg = new TLegend(0.2,0.53,0.55,0.75);
     //leg->AddEntry(gr_vzmet,     "#sigma^{wino-like}","l");
@@ -392,9 +421,10 @@ void combinePlots_VZ_Trilepton(bool print = false){
   // TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
   // TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
 
-  TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
-  TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
-  TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
+  TH2F* hexcluded_shifted       = (TH2F*) hexcluded->Clone("hexcluded_shifted");
+  TH2F* hexcluded_exp_shifted   = (TH2F*) hexcluded_exp->Clone("hexcluded_exp_shifted");
+  TH2F* hexcluded13_shifted     = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
+  TH2F* hexcluded3_shifted      = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
 
   // TFile* fout = TFile::Open(Form("cards/%s/limit.root",version.c_str()),"RECREATE");
   // fout->cd();
@@ -411,11 +441,18 @@ void combinePlots_VZ_Trilepton(bool print = false){
   gPad->SetGridx();
   gPad->SetGridy();
   //hexcluded13->Draw("colz");
-  hexcluded13_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
-  hexcluded13_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
-  hexcluded13_shifted->Draw("colz");
+  // hexcluded13_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
+  // hexcluded13_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  // hexcluded13_shifted->Draw("colz");
+
+  hexcluded_exp_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
+  hexcluded_exp_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcluded_exp_shifted->Draw("colz");
+  gr_combo_exp->Draw();
   //gr_tri->Draw();
-  t->DrawLatex(0.3,0.8,"#sigma^{higgsino}");
+  //t->DrawLatex(0.3,0.8,"#sigma^{higgsino}");
+  t->DrawLatex(0.3,0.8,"#sigma^{wino}");
+  t->DrawLatex(0.3,0.7,"expected");
 
   c2->cd(2);
   gPad->SetGridx();
@@ -428,6 +465,7 @@ void combinePlots_VZ_Trilepton(bool print = false){
   gr_vzmet->Draw();
   gr_combo->Draw();
   t->DrawLatex(0.3,0.8,"#sigma^{wino}");
+  t->DrawLatex(0.3,0.7,"observed");
 
   if( print ){
     // c2->Print(Form("cards/%s/plots/SMS_points.eps",version.c_str()));
@@ -443,6 +481,10 @@ void combinePlots_VZ_Trilepton(bool print = false){
   fout->cd();
   hexcl->Write();
   hexp->Write();
+  gr_combo->Write();
+  gr_combo_exp->Write();
+  gr_vzmet->Write();
+  gr_tri->Write();
   fout->Close();
 
 }
