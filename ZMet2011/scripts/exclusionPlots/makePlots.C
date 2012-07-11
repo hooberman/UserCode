@@ -60,13 +60,12 @@ void makePlots(){
 
   TLatex *tex = new TLatex();
   tex->SetNDC();
-  //tex->SetTextSize(0.028);
-
+  tex->SetTextSize(0.03);
 
   //-------------------------------------------
   // Rutgers/KIT
   //-------------------------------------------
-
+  /*
   //-----------------
   // model 2i
   //-----------------
@@ -106,10 +105,10 @@ void makePlots(){
   leg->Draw();
 
 
-  tex->SetTextSize(0.032);
-  tex->DrawLatex(0.18,0.73,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
-  tex->DrawLatex(0.18,0.67,"m_{ #tilde{l}} = 0.5m(#tilde{#chi}_{1}^{0}) + 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm})");
-  tex->DrawLatex(0.18,0.61,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=50%)");
+  tex->SetTextSize(0.03);
+  tex->DrawLatex(0.18,0.70,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  tex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  tex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=50%)");
   tex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{l}#nu_{l}");
 
 
@@ -144,10 +143,10 @@ void makePlots(){
 
   leg->Draw();
 
-  tex->SetTextSize(0.032);
-  tex->DrawLatex(0.18,0.73,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
-  tex->DrawLatex(0.18,0.67,"m_{ #tilde{l}} = 0.5m(#tilde{#chi}_{1}^{0}) + 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm})");
-  tex->DrawLatex(0.18,0.61,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=100%)");
+  tex->SetTextSize(0.03);
+  tex->DrawLatex(0.18,0.70,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  tex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  tex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=100%)");
   tex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
 
   can_2a->Modified();
@@ -199,9 +198,18 @@ void makePlots(){
   can_wz->Modified();
   can_wz->Update();
   can_wz->Print("model_wz.pdf");
-
+*/
+  //-----------------------------
+  // Florida/ETH plots
+  //-----------------------------
 
   makeFloridaPlot("LeftSlepton",25);
+  makeFloridaPlot("LeftSlepton",50);
+  makeFloridaPlot("LeftSlepton",75);
+
+  // makeFloridaPlot("TauEnriched",25);
+  // makeFloridaPlot("TauEnriched",50);
+  // makeFloridaPlot("TauEnriched",75);
 
 
 }
@@ -225,8 +233,43 @@ TH2D* cloneHist( TH2D* hin ){
 
 void makeFloridaPlot(char* sample, int x ){
 
+  char* ssfilename  = "";
+  char* ssgraphname = "";
+  bool plotss       = false;
+
+  if( TString(sample).Contains("Tau") ){
+    if( x==25 ){
+      ssfilename  = "SLEP025.root";
+      ssgraphname = "Graph";
+      plotss = true;
+    }
+    if( x==75 ){
+      ssfilename = "SLEP075.root";
+      ssgraphname = "Graph";
+      plotss = true;
+    }
+  }
+  else if( TString(sample).Contains("Left") ){
+    if( x==25 ){
+      ssfilename  = "TChip25_HT0_MET200_waldi.root";
+      ssgraphname = "expected";
+      plotss = true;
+    }
+    if( x==50 ){
+      ssfilename  = "TChip50_HT0_MET200_waldi.root";
+      ssgraphname = "expected";
+      plotss = true;
+    }
+    if( x==75 ){
+      ssfilename  = "TChip75_HT0_MET200_waldi.root";
+      ssgraphname = "expected";
+      plotss = true;
+    }
+  }
+
   TFile *fcombo   = TFile::Open(Form("%s_Combo_%i.root",sample,x));
   TFile *fflorida = TFile::Open(Form("%s_%i.root",sample,x));
+
 
   TH2D*    hobs_temp       = (TH2D*)   fcombo->Get("BestObsSxBR");
   TH2D*    hobs            = cloneHist(hobs_temp);
@@ -234,18 +277,28 @@ void makeFloridaPlot(char* sample, int x ){
   TGraph*  gr_combo_exp    = (TGraph*) fcombo->Get("ExpectedExclusion");
   TGraph*  gr_florida      = (TGraph*) fflorida->Get("ObservedExclusion");
 
+  TFile*   fss             = new TFile();
+  TGraph*  gr_ss          = new TGraph();
+  if( plotss ){
+    fss = TFile::Open(ssfilename);
+    gr_ss = (TGraph*) fss->Get(ssgraphname);
+  }
+
+  gr_ss->SetLineWidth(4);
+  gr_ss->SetLineStyle(3);
+  gr_ss->SetLineColor(6);
+
+
   gr_combo_obs->SetLineWidth(4);
 
   gr_combo_exp->SetLineWidth(4);
   gr_combo_exp->SetLineStyle(2);
 
-  gr_florida->SetLineWidth(3);
-  gr_florida->SetLineStyle(3);
+  gr_florida->SetLineWidth(4);
+  gr_florida->SetLineStyle(4);
   gr_florida->SetLineColor(2);
 
-  // gr_eth->SetLineWidth(3);
-  // gr_eth->SetLineStyle(4);
-  // gr_eth->SetLineColor(4);
+
 
 
   TH2D *hdummy = new TH2D("hdummy","",65,100,750,72,0,725);
@@ -263,18 +316,39 @@ void makeFloridaPlot(char* sample, int x ){
   gr_combo_obs->Draw("l");
   gr_combo_exp->Draw("l");
   gr_florida->Draw("l");
+  if( plotss ) gr_ss->Draw("l");
   hobs->Draw("axissame");
   cmsPrelim(4.98);
 
   
-  TLegend *leg = new TLegend(0.2,0.68,0.6,0.88);
+  TLegend *leg = new TLegend(0.2,0.73,0.65,0.88);
   leg->AddEntry(gr_combo_obs    ,"combined observed","l");
   leg->AddEntry(gr_combo_exp    ,"combined median expected","l");
   leg->AddEntry(gr_florida      ,"trilepton observed","l");
-  //leg->AddEntry(grwz_tri      ,"trilepton observed","l");
+  leg->AddEntry(gr_ss           ,"SS observed","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->Draw();
   leg->Draw();
+
+  TLatex *thistex = new TLatex();
+  thistex->SetNDC();
+  thistex->SetTextSize(0.03);
+  thistex->DrawLatex(0.18,0.7,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  if     ( x == 25 ) thistex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.25m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.75m(#tilde{#chi}_{1}^{0})");
+  else if( x == 50 ) thistex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  else if( x == 75 ) thistex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.75m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.25m(#tilde{#chi}_{1}^{0})");
+  if( TString(sample).Contains("Left") ){
+    thistex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=50%)");
+    thistex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{l}#nu_{l}");
+  }
+  else{
+    thistex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=100%)");
+    thistex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
+  }
+
+  can->Modified();
+  can->Update();
+  can->Print(Form("%s_%i.pdf",sample,x));
 
 }
