@@ -65,7 +65,7 @@ void makePlots(){
   //-------------------------------------------
   // Rutgers/KIT
   //-------------------------------------------
-  /*
+
   //-----------------
   // model 2i
   //-----------------
@@ -107,14 +107,14 @@ void makePlots(){
 
   tex->SetTextSize(0.03);
   tex->DrawLatex(0.18,0.70,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
-  tex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  tex->DrawLatex(0.18,0.65,"m(#tilde{l}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
   tex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=50%)");
   tex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{l}#nu_{l}");
 
 
   can_2i->Modified();
   can_2i->Update();
-  can_2i->Print("model_2i.pdf");
+  can_2i->Print("multilepton_flavordemocratic_Fig7.pdf");
 
 
   //-----------------
@@ -145,13 +145,13 @@ void makePlots(){
 
   tex->SetTextSize(0.03);
   tex->DrawLatex(0.18,0.70,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
-  tex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  tex->DrawLatex(0.18,0.65,"m(#tilde{l}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
   tex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=100%)");
   tex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
 
   can_2a->Modified();
   can_2a->Update();
-  can_2a->Print("model_2a.pdf");
+  can_2a->Print("multilepton_tauenriched_Fig8.pdf");
 
 
   //-----------------
@@ -197,8 +197,8 @@ void makePlots(){
 
   can_wz->Modified();
   can_wz->Update();
-  can_wz->Print("model_wz.pdf");
-*/
+  can_wz->Print("WZ_Fig11.pdf");
+
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
@@ -207,9 +207,9 @@ void makePlots(){
   makeFloridaPlot("LeftSlepton",50);
   makeFloridaPlot("LeftSlepton",75);
 
-  // makeFloridaPlot("TauEnriched",25);
-  // makeFloridaPlot("TauEnriched",50);
-  // makeFloridaPlot("TauEnriched",75);
+  makeFloridaPlot("TauEnriched",25);
+  makeFloridaPlot("TauEnriched",50);
+  makeFloridaPlot("TauEnriched",75);
 
 
 }
@@ -233,61 +233,25 @@ TH2D* cloneHist( TH2D* hin ){
 
 void makeFloridaPlot(char* sample, int x ){
 
-  char* ssfilename  = "";
-  char* ssgraphname = "";
-  bool plotss       = false;
 
-  if( TString(sample).Contains("Tau") ){
-    if( x==25 ){
-      ssfilename  = "SLEP025.root";
-      ssgraphname = "Graph";
-      plotss = true;
-    }
-    if( x==75 ){
-      ssfilename = "SLEP075.root";
-      ssgraphname = "Graph";
-      plotss = true;
-    }
-  }
-  else if( TString(sample).Contains("Left") ){
-    if( x==25 ){
-      ssfilename  = "TChip25_HT0_MET200_waldi.root";
-      ssgraphname = "expected";
-      plotss = true;
-    }
-    if( x==50 ){
-      ssfilename  = "TChip50_HT0_MET200_waldi.root";
-      ssgraphname = "expected";
-      plotss = true;
-    }
-    if( x==75 ){
-      ssfilename  = "TChip75_HT0_MET200_waldi.root";
-      ssgraphname = "expected";
-      plotss = true;
-    }
-  }
+  bool plotss = true;
+  if( TString(sample).Contains("Tau") && x==50 ) plotss = false;
 
   TFile *fcombo   = TFile::Open(Form("%s_Combo_%i.root",sample,x));
   TFile *fflorida = TFile::Open(Form("%s_%i.root",sample,x));
-
 
   TH2D*    hobs_temp       = (TH2D*)   fcombo->Get("BestObsSxBR");
   TH2D*    hobs            = cloneHist(hobs_temp);
   TGraph*  gr_combo_obs    = (TGraph*) fcombo->Get("ObservedExclusion");
   TGraph*  gr_combo_exp    = (TGraph*) fcombo->Get("ExpectedExclusion");
   TGraph*  gr_florida      = (TGraph*) fflorida->Get("ObservedExclusion");
+  TGraph*  gr_ss           = new TGraph();
 
-  TFile*   fss             = new TFile();
-  TGraph*  gr_ss          = new TGraph();
-  if( plotss ){
-    fss = TFile::Open(ssfilename);
-    gr_ss = (TGraph*) fss->Get(ssgraphname);
-  }
+  if( plotss ) gr_ss = (TGraph*) fcombo->Get("SSObservedExclusion");
 
   gr_ss->SetLineWidth(4);
   gr_ss->SetLineStyle(3);
   gr_ss->SetLineColor(6);
-
 
   gr_combo_obs->SetLineWidth(4);
 
@@ -297,9 +261,6 @@ void makeFloridaPlot(char* sample, int x ){
   gr_florida->SetLineWidth(4);
   gr_florida->SetLineStyle(4);
   gr_florida->SetLineColor(2);
-
-
-
 
   TH2D *hdummy = new TH2D("hdummy","",65,100,750,72,0,725);
   
@@ -335,9 +296,9 @@ void makeFloridaPlot(char* sample, int x ){
   thistex->SetNDC();
   thistex->SetTextSize(0.03);
   thistex->DrawLatex(0.18,0.7,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
-  if     ( x == 25 ) thistex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.25m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.75m(#tilde{#chi}_{1}^{0})");
-  else if( x == 50 ) thistex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
-  else if( x == 75 ) thistex->DrawLatex(0.18,0.65,"m_{ #tilde{l}} = 0.75m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.25m(#tilde{#chi}_{1}^{0})");
+  if     ( x == 25 ) thistex->DrawLatex(0.18,0.65,"m(#tilde{l}) = 0.25m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.75m(#tilde{#chi}_{1}^{0})");
+  else if( x == 50 ) thistex->DrawLatex(0.18,0.65,"m(#tilde{l}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  else if( x == 75 ) thistex->DrawLatex(0.18,0.65,"m(#tilde{l}) = 0.75m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.25m(#tilde{#chi}_{1}^{0})");
   if( TString(sample).Contains("Left") ){
     thistex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=50%)");
     thistex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{l}#nu_{l}");
@@ -349,6 +310,7 @@ void makeFloridaPlot(char* sample, int x ){
 
   can->Modified();
   can->Update();
-  can->Print(Form("%s_%i.pdf",sample,x));
-
+  if     ( TString(sample).Contains("Left") ) can->Print(Form("%s_%i_Fig9.pdf" ,sample,x));
+  else if( TString(sample).Contains("Tau") )  can->Print(Form("%s_%i_Fig10.pdf",sample,x));
+  
 }
