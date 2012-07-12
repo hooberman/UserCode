@@ -1,4 +1,4 @@
-#include "Utils/SMS_utils.C"
+//#include "Utils/SMS_utils.C"
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -30,22 +30,13 @@
 //-------------------------------------------
 /*
 
-1) njets up and down, pfmet up and down, mT up and down
 2) b-tagging uncertanties
 
+*/
 
 
-
-
-
- */
-
-
-
-
-float getObservedLimit( float seff );
-float getExpectedLimit( float seff );
-
+float getObservedLimit( float seff , string SR );
+float getExpectedLimit( float seff , string SR );
 
 using namespace std;
 
@@ -64,8 +55,31 @@ void SMS(char* sample , int x = 1, bool print = false){
   cout << "Using denominator " << denom    << " events" << endl;
   cout << "Using lumi        " << lumi     << " pb-1" << endl;
 
-  char* label = "";
-  if( TString(sample).Contains("T2tt") ) label = "pp #rightarrow #tilde{t}#tilde{t}, #tilde{t} #rightarrow t+#chi_{1}^{0}";
+  char* label = (char*)"";
+  if     ( TString(sample).Contains("T2tt") ) label = (char*)"pp #rightarrow #tilde{t}#tilde{t}, #tilde{t} #rightarrow t+#chi_{1}^{0}";
+  else if( TString(sample).Contains("T2bw") ){
+    if( x == 25 ){
+      cout << "Doing x=0.25 slice" << endl;
+      label = (char*)"pp #rightarrow #tilde{t}#tilde{t}, #tilde{t} #rightarrow b+#chi_{1}^{#pm}, x=0.25";
+    }
+    else if( x == 50 ){
+      cout << "Doing x=0.50 slice" << endl;
+      label = (char*)"pp #rightarrow #tilde{t}#tilde{t}, #tilde{t} #rightarrow b+#chi_{1}^{#pm}, x=0.50";
+    }
+    else if( x == 75 ){
+      cout << "Doing x=0.75 slice" << endl;
+      label = (char*)"pp #rightarrow #tilde{t}#tilde{t}, #tilde{t} #rightarrow b+#chi_{1}^{#pm}, x=0.75";
+    }
+    else{
+      cout << "ERROR! unrecognized x value " << x << endl;
+      exit(0);
+    }
+  }
+  else{
+    cout << "ERROR! unrecognized sample " << sample << endl;
+    exit(0);
+  }
+
   //if( TString(sample).Contains("T2tt") ) label = "";
 
   //--------------------------------------------------
@@ -91,12 +105,17 @@ void SMS(char* sample , int x = 1, bool print = false){
   TCut njets4("npfjets30 >= 4");
   TCut btag1("nbtagsssvcorr>=1");
   TCut isotrk("pfcandpt10 > 9998. || pfcandiso10 > 0.1");
-  TCut signal("t1metphicorr > 100 && t1metphicorrmt > 150");
+  TCut SRA("t1metphicorr > 100 && t1metphicorrmt > 150");
+  TCut SRB("t1metphicorr > 150 && t1metphicorrmt > 120");
 
   TCut weight("ndavtxweight * mutrigweight");
   //TCut weight("1");
 
   TCut presel  = rho + goodlep + njets4 + btag1 + isotrk;
+
+  if( x == 25 ) presel += TCut("x==0.25");
+  if( x == 50 ) presel += TCut("x==0.50");
+  if( x == 75 ) presel += TCut("x==0.75");
 
   cout << "Using pre-selection   " << presel.GetTitle() << endl;
   cout << "Using weight          " << weight.GetTitle() << endl;
@@ -110,8 +129,8 @@ void SMS(char* sample , int x = 1, bool print = false){
   vector<string>  labels;
   vector<int>     cuts;
 
-  //sigcuts.push_back(TCut(presel+signal));  signames.push_back("E_{T}^{miss} > 100 GeV, M_{T} > 150 GeV");  labels.push_back("nominal");  cuts.push_back(1);
-  sigcuts.push_back(TCut(presel+signal));  signames.push_back("");  labels.push_back("nominal");  cuts.push_back(1);
+  sigcuts.push_back(TCut(presel+SRA));  signames.push_back("SRA");  labels.push_back("SRA");  cuts.push_back(1);
+  //sigcuts.push_back(TCut(presel+SRB));  signames.push_back("SRB");  labels.push_back("SRB");  cuts.push_back(1);
 
   const unsigned int nsig = sigcuts.size();
 
@@ -151,13 +170,29 @@ void SMS(char* sample , int x = 1, bool print = false){
     cout << "Selection up  : " << jesupcut      << endl;
     cout << "Selection dn  : " << jesdncut      << endl;
 
-    heff[i]      = new TH2F(Form("heff_%i",i)        , Form("heff_%i",i)       , 17,187.5,612.5,13,-12.5,312.5);
-    heffup[i]    = new TH2F(Form("heffup_%i",i)      , Form("heffup_%i",i)     , 17,187.5,612.5,13,-12.5,312.5);
-    heffdn[i]    = new TH2F(Form("heffdn_%i",i)      , Form("heffdn_%i",i)     , 17,187.5,612.5,13,-12.5,312.5);
-    hxsec[i]     = new TH2F(Form("hxsec_%i",i)       , Form("hxsec_%i",i)      , 17,187.5,612.5,13,-12.5,312.5);
-    hxsec_exp[i] = new TH2F(Form("hxsec_exp_%i",i)   , Form("hxsec_exp_%i",i)  , 17,187.5,612.5,13,-12.5,312.5);
-    hexcl[i]     = new TH2F(Form("hexcl_%i",i)       , Form("hexcl_%i",i)      , 17,187.5,612.5,13,-12.5,312.5);
-    hjes[i]      = new TH2F(Form("hjes_%i",i)        , Form("hjes_%i",i)       , 17,187.5,612.5,13,-12.5,312.5);
+    int   nbinsx  = 17;
+    float xmin    = 187.5;
+    float xmax    = 612.5;
+    int   nbinsy  = 13;
+    float ymin    = -12.5;
+    float ymax    = 312.5;
+
+    if( TString(sample).Contains("T2bw") ){
+      nbinsx =   9;
+      xmin   = 175;
+      xmax   = 625;
+      nbinsy =   7;
+      ymin   = -25;
+      ymax   = 352;
+    }
+
+    heff[i]      = new TH2F(Form("heff_%i",i)        , Form("heff_%i",i)       , nbinsx , xmin , xmax , nbinsy , ymin , ymax );
+    heffup[i]    = new TH2F(Form("heffup_%i",i)      , Form("heffup_%i",i)     , nbinsx , xmin , xmax , nbinsy , ymin , ymax );
+    heffdn[i]    = new TH2F(Form("heffdn_%i",i)      , Form("heffdn_%i",i)     , nbinsx , xmin , xmax , nbinsy , ymin , ymax );
+    hxsec[i]     = new TH2F(Form("hxsec_%i",i)       , Form("hxsec_%i",i)      , nbinsx , xmin , xmax , nbinsy , ymin , ymax );
+    hxsec_exp[i] = new TH2F(Form("hxsec_exp_%i",i)   , Form("hxsec_exp_%i",i)  , nbinsx , xmin , xmax , nbinsy , ymin , ymax );
+    hexcl[i]     = new TH2F(Form("hexcl_%i",i)       , Form("hexcl_%i",i)      , nbinsx , xmin , xmax , nbinsy , ymin , ymax );
+    hjes[i]      = new TH2F(Form("hjes_%i",i)        , Form("hjes_%i",i)       , nbinsx , xmin , xmax , nbinsy , ymin , ymax );
 
     ch->Draw(Form("ml:mg>>heff_%i",i),sigcuts.at(i)*weight);
     heff[i]->Scale(1.0/denom);
@@ -172,7 +207,7 @@ void SMS(char* sample , int x = 1, bool print = false){
       for( unsigned int jbin = 1 ; jbin <= 25 ; jbin++ ){
 
 	float mg = heff[i]->GetXaxis()->GetBinCenter(ibin);
-	float ml = heff[i]->GetYaxis()->GetBinCenter(jbin);
+	//float ml = heff[i]->GetYaxis()->GetBinCenter(jbin);
 
 	float eff    = heff[i]->GetBinContent(ibin,jbin);
 	float effup  = heffup[i]->GetBinContent(ibin,jbin);
@@ -192,10 +227,10 @@ void SMS(char* sample , int x = 1, bool print = false){
 
 	float toterr  = sqrt( 0.022*0.022 + 0.02*0.02 + 0.03*0.03 + btagerr*btagerr + djes*djes );
 
-	float this_ul = getObservedLimit( toterr  );
+	float this_ul = getObservedLimit( toterr , labels.at(i) );
 	float xsecul  = this_ul / ( lumi * eff );
 
-	float this_ul_exp = getExpectedLimit( toterr  );
+	float this_ul_exp = getExpectedLimit( toterr , labels.at(i) );
 	float xsecul_exp  = this_ul_exp / ( lumi * eff );
 
 	if( eff > 0 ){
@@ -207,7 +242,7 @@ void SMS(char* sample , int x = 1, bool print = false){
 	float xsec = refxsec->GetBinContent(bin);
 
 	hexcl[i]->SetBinContent(ibin,jbin,0);
-	if( xsec > xsecul_exp )   hexcl[i]->SetBinContent(ibin,jbin,1);
+	if( xsec > xsecul )   hexcl[i]->SetBinContent(ibin,jbin,1);
 	//cout << "ibin jbin mg xsec " << ibin << " " << jbin << " " << mg << " " << xsec << endl;
       }
     }
@@ -243,11 +278,13 @@ void SMS(char* sample , int x = 1, bool print = false){
     can[i]->cd(1);
     gPad->SetTopMargin(0.1);
     gPad->SetRightMargin(0.2);
+    heff[i]->Scale(100);
     heff[i]->GetXaxis()->SetLabelSize(0.035);
     heff[i]->GetYaxis()->SetTitle("#chi^{0}_{1} mass (GeV)");
     heff[i]->GetXaxis()->SetTitle("#tilde{t} mass (GeV)");
-    heff[i]->GetZaxis()->SetTitle("efficiency");
+    heff[i]->GetZaxis()->SetTitle("efficiency (%)");
     heff[i]->Draw("colz");
+    heff[i]->Draw("sametext");
 
     t->DrawLatex(0.2,0.83,label);
     //t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
@@ -335,7 +372,7 @@ void SMS(char* sample , int x = 1, bool print = false){
     t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.98 fb^{-1}");
 
     if( print ){
-      can[i]->Print(Form("../../plots/%s.pdf",labels.at(i).c_str()));
+      can[i]->Print(Form("../../plots/%s_%s.pdf",sample,labels.at(i).c_str()));
       //can[i]->Print(Form("../plots/%s.eps",labels.at(i).c_str()));
       //gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.eps  ../plots/%s.pdf",labels.at(i).c_str(),labels.at(i).c_str()));
     }
@@ -348,8 +385,8 @@ void SMS(char* sample , int x = 1, bool print = false){
     cout << "xsec UL exp          " << hxsec_exp[i]->GetBinContent(bin) << endl;
     cout << "JES                  " << hjes[i]->GetBinContent(bin) << endl;
     cout << "tot err              " << toterr << endl;
-    cout << "obs limit            " << getObservedLimit(toterr) << endl;
-    cout << "exp limit            " << getExpectedLimit(toterr) << endl;
+    cout << "obs limit            " << getObservedLimit(toterr,labels.at(i)) << endl;
+    cout << "exp limit            " << getExpectedLimit(toterr,labels.at(i)) << endl;
     cout << endl << endl;
   }
   
@@ -367,53 +404,94 @@ void SMS(char* sample , int x = 1, bool print = false){
 
 //-----------------------------------------
 // the following UL's correspdond to:
-// observed yield = 116
+// SRA: observed 116, predicted 112.7 8.3% uncertainty
+// SRB: observed  79, predicted 58.75 9.1% uncertainty
 // predicted bkg  = 116, 10% uncertainty
 //-----------------------------------------
 
-float getObservedLimit( float seff ){
+float getObservedLimit( float seff , string SR ){
   float ul = 9999.;
-  if(seff >= 0.00 && seff < 0.05) ul = 30.2;
-  if(seff >= 0.05 && seff < 0.10) ul = 30.6;
-  if(seff >= 0.10 && seff < 0.15) ul = 31.4;
-  if(seff >= 0.15 && seff < 0.20) ul = 32.1;
-  if(seff >= 0.20 && seff < 0.25) ul = 35.6;
-  if(seff >= 0.25 && seff < 0.30) ul = 34.4;
+
+  if( TString(SR).Contains("SRA") ){
+    if(seff >= 0.00 && seff < 0.05) ul = 30.3;
+    if(seff >= 0.05 && seff < 0.10) ul = 30.7;
+    if(seff >= 0.10 && seff < 0.15) ul = 31.6;
+    if(seff >= 0.15 && seff < 0.20) ul = 32.3;
+    if(seff >= 0.20 && seff < 0.25) ul = 36.0;
+  }
+
+  else if( TString(SR).Contains("SRB") ){
+    if(seff >= 0.00 && seff < 0.05) ul = 38.3;
+    if(seff >= 0.05 && seff < 0.10) ul = 39.3;
+    if(seff >= 0.10 && seff < 0.15) ul = 40.4;
+    if(seff >= 0.15 && seff < 0.20) ul = 42.1;
+    if(seff >= 0.20 && seff < 0.25) ul = 47.7;
+  }
+
+  else{
+    cout << "ERROR! unrecognized SR name " << SR << endl;
+    exit(0);
+  }
+
+  if( ul > 1000 ){
+    cout << "WARNING: signal efficiency uncertainty " << seff << ", returning ul 9999" << endl;
+  }
+
   return ul;
 }
 
 
-float getExpectedLimit( float seff ){
+float getExpectedLimit( float seff , string SR ){
   float ul = 9999.;
-  if(seff >= 0.00 && seff < 0.05) ul = 30.0;
-  if(seff >= 0.05 && seff < 0.10) ul = 30.4;
-  if(seff >= 0.10 && seff < 0.15) ul = 31.0;
-  if(seff >= 0.15 && seff < 0.20) ul = 31.8;
-  if(seff >= 0.20 && seff < 0.25) ul = 35.1;
-  if(seff >= 0.25 && seff < 0.30) ul = 33.8;
+
+  if( TString(SR).Contains("SRA") ){
+    if(seff >= 0.00 && seff < 0.05) ul = 27.9;
+    if(seff >= 0.05 && seff < 0.10) ul = 28.2;
+    if(seff >= 0.10 && seff < 0.15) ul = 28.8;
+    if(seff >= 0.15 && seff < 0.20) ul = 29.5;
+    if(seff >= 0.20 && seff < 0.25) ul = 32.4;
+  }
+
+  else if( TString(SR).Contains("SRB") ){
+    if(seff >= 0.00 && seff < 0.05) ul = 20.1;
+    if(seff >= 0.05 && seff < 0.10) ul = 22.2;
+    if(seff >= 0.10 && seff < 0.15) ul = 20.8;
+    if(seff >= 0.15 && seff < 0.20) ul = 21.4;
+    if(seff >= 0.20 && seff < 0.25) ul = 24.0;
+  }
+
+  else{
+    cout << "ERROR! unrecognized SR name " << SR << endl;
+    exit(0);
+  }
+
+  if( ul > 1000 ){
+    cout << "WARNING: signal efficiency uncertainty " << seff << ", returning ul 9999" << endl;
+  }
+
   return ul;
 }
 
 
-float getExpectedP1UpperLimit( float seff ){
-  float ul = 9999.;
-  if(seff >= 0.00 && seff < 0.05) ul = 41.5;
-  if(seff >= 0.05 && seff < 0.10) ul = 42.7;
-  if(seff >= 0.10 && seff < 0.15) ul = 44.3;
-  if(seff >= 0.15 && seff < 0.20) ul = 46.2;
-  if(seff >= 0.20 && seff < 0.25) ul = 54.3;
-  if(seff >= 0.25 && seff < 0.30) ul = 51.3;
-  return ul;
-}
+// float getExpectedP1UpperLimit( float seff ){
+//   float ul = 9999.;
+//   if(seff >= 0.00 && seff < 0.05) ul = 41.5;
+//   if(seff >= 0.05 && seff < 0.10) ul = 42.7;
+//   if(seff >= 0.10 && seff < 0.15) ul = 44.3;
+//   if(seff >= 0.15 && seff < 0.20) ul = 46.2;
+//   if(seff >= 0.20 && seff < 0.25) ul = 54.3;
+//   if(seff >= 0.25 && seff < 0.30) ul = 51.3;
+//   return ul;
+// }
 
 
-float getExpectedM1UpperLimit( float seff ){
-  float ul = 9999.;
-  if(seff >= 0.00 && seff < 0.05) ul = 21.6;
-  if(seff >= 0.05 && seff < 0.10) ul = 21.9;
-  if(seff >= 0.10 && seff < 0.15) ul = 22.4;
-  if(seff >= 0.15 && seff < 0.20) ul = 22.7;
-  if(seff >= 0.20 && seff < 0.25) ul = 24.1;
-  if(seff >= 0.25 && seff < 0.30) ul = 23.6;
-  return ul;
-}
+// float getExpectedM1UpperLimit( float seff ){
+//   float ul = 9999.;
+//   if(seff >= 0.00 && seff < 0.05) ul = 21.6;
+//   if(seff >= 0.05 && seff < 0.10) ul = 21.9;
+//   if(seff >= 0.10 && seff < 0.15) ul = 22.4;
+//   if(seff >= 0.15 && seff < 0.20) ul = 22.7;
+//   if(seff >= 0.20 && seff < 0.25) ul = 24.1;
+//   if(seff >= 0.25 && seff < 0.30) ul = 23.6;
+//   return ul;
+// }
