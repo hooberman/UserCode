@@ -69,9 +69,13 @@ void simplePlotMacro( bool printplots = false ){
   chzz->Add(Form("../output/%s/zz_baby.root",iter));
 
   if( bveto ){
-    f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
-    fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
-    fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
+    // f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
+    // fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
+    // fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
+
+    f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplate_pfmet_bveto.root",iter));
+    fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplate_pfmet_bveto.root",iter));
+    fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplate_pfmet_bveto.root",iter));
 
     K = 0.13;
   }
@@ -228,11 +232,35 @@ void simplePlotMacro( bool printplots = false ){
     int mynbins = 6;
     if( bveto ) mynbins = 7;
 
-    const unsigned int nbins = 6;//mynbins;
+    const unsigned int nbins = mynbins;
 
     //int bins[nbins]={0,30,60,100,150,200,300};
-    int      bins[nbins]  = {0,30,60,100,200,300};
-    Double_t xbins[nbins] = {0.0,30.0,60.0,100.0,200.0,300.0};
+    // int      bins[nbins]  = {0,30,60,100,200,300};
+    // Double_t xbins[nbins] = {0.0,30.0,60.0,100.0,200.0,300.0};
+
+    int      bins[nbins];
+    Double_t xbins[nbins+1];
+
+    if( bveto ){
+      bins[0] =   0;   xbins[0] =   0.0;
+      bins[1] =  30;   xbins[1] =  30.0;
+      bins[2] =  60;   xbins[2] =  60.0;
+      bins[3] =  80;   xbins[3] =  80.0;
+      bins[4] = 100;   xbins[4] = 100.0;
+      bins[5] = 150;   xbins[5] = 150.0;
+      bins[6] = 200;   xbins[6] = 200.0;
+      xbins[7] = 250.0;
+    }
+
+    else{
+      bins[0] =   0;   xbins[0] =   0.0;
+      bins[1] =  30;   xbins[1] =  30.0;
+      bins[2] =  60;   xbins[2] =  60.0;
+      bins[3] = 100;   xbins[3] = 100.0;
+      bins[4] = 200;   xbins[4] = 200.0;
+      bins[5] = 300;   xbins[5] = 300.0;
+      xbins[6] = 350.0;
+    }
 
     int width1 = 18;
     int width2 =  4;
@@ -292,7 +320,8 @@ void simplePlotMacro( bool printplots = false ){
 
     float excess[nbins];
 
-    hsysterr[i] = new TH1F(Form("hsysterr_%i",i),Form("hsysterr_%i",i),nbins-1,xbins);
+    //hsysterr[i] = new TH1F(Form("hsysterr_%i",i),Form("hsysterr_%i",i),nbins-1,xbins);
+    hsysterr[i] = new TH1F(Form("hsysterr_%i",i),Form("hsysterr_%i",i),nbins,xbins);
 
     for( unsigned int ibin = 0 ; ibin < nbins ; ++ibin ){
       int bin      = h_sf[i]->FindBin(bins[ibin]);
@@ -363,10 +392,10 @@ void simplePlotMacro( bool printplots = false ){
 
       excess[ibin]        = (ndata[ibin]-ntot[ibin])/sqrt( pow(ntot_toterr[ibin],2) + ndata[ibin]);
 
-      if( ibin+1 < nbins ){
-	hsysterr[i]->SetBinContent(ibin+1,1);
-	hsysterr[i]->SetBinError(ibin+1,ntot_toterr[ibin]/ntot[ibin]);
-      }
+      //if( ibin+1 < nbins ){
+      hsysterr[i]->SetBinContent(ibin+1,1);
+      hsysterr[i]->SetBinError(ibin+1,ntot_toterr[ibin]/ntot[ibin]);
+      //}
     }
 
 
@@ -464,7 +493,8 @@ void simplePlotMacro( bool printplots = false ){
     h_sf[i]->GetYaxis()->SetTitle("entries / 10 GeV");
     h_sf[i]->GetYaxis()->SetTitleOffset(1.0);
 
-    h_sf[i]->SetMinimum(0.1);
+    if( bveto ) h_sf[i]->SetMinimum(0.01);
+    else        h_sf[i]->SetMinimum(0.1);
     h_sf[i]->Draw("E1");
     pred[i]->Draw("histsame");
     h_sf[i]->Draw("sameE1");
@@ -513,22 +543,39 @@ void simplePlotMacro( bool printplots = false ){
     hratio[i]->GetYaxis()->SetTitle("ratio");
     hratio[i]->GetXaxis()->SetTitle("");
     
-    hratio[i]->SetMinimum(0.5);
-    hratio[i]->SetMaximum(1.5);
-    
-    hratio[i]->GetYaxis()->SetRangeUser(0.5,1.5);
+    if( bveto ){
+      hratio[i]->SetMinimum(0.0);
+      hratio[i]->SetMaximum(2.0);
+      hratio[i]->GetYaxis()->SetRangeUser(0.0,2.0);
+    }
+
+    else{
+      hratio[i]->SetMinimum(0.5);
+      hratio[i]->SetMaximum(1.5);
+      hratio[i]->GetYaxis()->SetRangeUser(0.5,1.5);
+    }
+
+
     hratio[i]->Draw();
     hsysterr[i]->Draw("sameE2");
     hratio[i]->Draw("same");
     hratio[i]->Draw("axissame");
 	
     TLine line;
-    line.DrawLine(0.0,1.0,300,1.0);
+    if( bveto ) line.DrawLine(0.0,1.0,250,1.0);
+    else        line.DrawLine(0.0,1.0,350,1.0);
 
     if( printplots ){
-      can[i]->Print(Form("../plots/met_%i.pdf",i));
-      can[i]->Print(Form("../plots/met_%i.root",i));
-      can[i]->Print(Form("../plots/met_%i.C",i));
+      if( bveto ){
+	can[i]->Print(Form("../plots/met_bveto_%i.pdf",i));
+	can[i]->Print(Form("../plots/met_bveto_%i.root",i));
+	can[i]->Print(Form("../plots/met_bveto_%i.C",i));
+      }
+      else{
+	can[i]->Print(Form("../plots/met_%i.pdf",i));
+	can[i]->Print(Form("../plots/met_%i.root",i));
+	can[i]->Print(Form("../plots/met_%i.C",i));
+      }
     }
 
 
