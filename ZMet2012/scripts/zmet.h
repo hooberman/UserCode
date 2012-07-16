@@ -13,8 +13,10 @@ float calculateHistError( TH1F* h , int minbin , int maxbin );
 TChain *data;
 TChain *tt;
 TChain *zjets;
+TChain *ww;
 TChain *wz;
 TChain *zz;
+TChain *t;
 
 vector<TChain*> mc;
 vector<char*>   mclabels;

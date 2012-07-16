@@ -68,6 +68,37 @@ void simplePlotMacro( bool printplots = false ){
   chwz->Add(Form("../output/%s/wz_baby.root",iter));
   chzz->Add(Form("../output/%s/zz_baby.root",iter));
 
+  //-----------------------------------
+  // selection
+  //-----------------------------------
+
+  TCut pfleptons("pflep1.pt() > 20 && pflep2.pt() > 20");
+  TCut Zmass("dilmasspf>81 && dilmasspf<101");
+  TCut njets2("njets>=2");
+  TCut ee("leptype==0 && (ee==1 || isdata==0)");
+  TCut mm("leptype==1 && (mm==1 || isdata==0)");
+  TCut em("leptype==2 && (em==1 || me==1 || isdata==0)");
+  TCut sf = ee||mm;
+  TCut nu("ngennu>0");
+  TCut bvetocut("nbm==0");
+  TCut nlep2("nlep==2");
+  TCut mjj("mjj>70.0 && mjj<110.0");
+
+  TCut sel;
+  sel += njets2;
+  sel += pfleptons;
+  sel += Zmass;
+  sel += (ee||mm);
+  sel += nu;
+  if( bveto ){
+    sel += bvetocut;
+    sel += nlep2;
+    sel += mjj;
+  }
+
+  TCut weight("weight * 5.10 * vtxweight");
+
+
   if( bveto ){
     // f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
     // fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
@@ -158,18 +189,16 @@ void simplePlotMacro( bool printplots = false ){
     h_gjets[i]  = (TH1F*) f->Get(predictedHisto.at(i));          
     h_ofpred[i] = (TH1F*) h_of->Clone(Form("hofpred_%i",i));     
 
-    h_wz[i]     = (TH1F*) fwz->Get(observedHisto.at(i));
-    h_zz[i]     = (TH1F*) fzz->Get(observedHisto.at(i));
+    //h_wz[i]     = (TH1F*) fwz->Get(observedHisto.at(i));
+    //h_zz[i]     = (TH1F*) fzz->Get(observedHisto.at(i));
 
-    h_vz[i]     = (TH1F*) h_wz[i]->Clone(Form("h_vz_%i",i));
-    h_vz[i]->Add(h_zz[i]);
-    
     //------------------------------------------
     // scale OF prediction for ee vs. mm
     //------------------------------------------
 
     char* title     = (char*) "ee/#mu#mu events";
     bool  ee_and_mm = true;
+    TCut  mysel = sel;
 
     if( TString(observedHisto.at(i)).Contains("ee") ){
       //h_ofpred[i]->Scale(0.5/Rem);
@@ -177,6 +206,7 @@ void simplePlotMacro( bool printplots = false ){
       cout << "ee channel: scale em yield by 0.41" << endl;
       title     = (char*) "ee events";
       ee_and_mm = false;
+      mysel = sel + ee;
     }
 
     else if( TString(observedHisto.at(i)).Contains("mm") ){
@@ -185,12 +215,44 @@ void simplePlotMacro( bool printplots = false ){
       cout << "mm channel: scale em yield by 0.58" << endl;
       title     = (char*) "#mu#mu events";
       ee_and_mm = false;
+      mysel = sel + mm;
     }
 
     else{
       h_ofpred[i]->Scale(0.99);
       cout << "ee+mm channels: scale em yield by 0.99" << endl;
+      mysel = sel;
     }
+
+    //------------------------------------------
+    // WZ/ZZ histos
+    //------------------------------------------
+
+    int   nmetbins = 350;
+    float metmin   = 0.0;
+    float metmax   = 350.0;
+
+    if( bveto ){
+      nmetbins = 250;
+      metmin   = 0.0;
+      metmax   = 250.0;
+    }
+
+    h_wz[i]     = new TH1F(Form("h_wz_%i",i),Form("h_wz_%i",i),nmetbins,metmin,metmax);
+    h_zz[i]     = new TH1F(Form("h_zz_%i",i),Form("h_wz_%i",i),nmetbins,metmin,metmax);
+
+    h_wz[i]->Sumw2();
+    h_zz[i]->Sumw2();
+
+    TCanvas *ctemp = new TCanvas();
+    ctemp->cd();
+    chwz->Draw(Form("pfmet>>h_wz_%i",i),mysel*weight);
+    chzz->Draw(Form("pfmet>>h_zz_%i",i),mysel*weight);
+    delete ctemp;
+
+    h_vz[i]     = (TH1F*) h_wz[i]->Clone(Form("h_vz_%i",i));
+    h_vz[i]->Add(h_zz[i]);
+    
 
     //------------------------------------------
     // rebin, style, sum of predictions

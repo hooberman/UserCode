@@ -1,29 +1,3 @@
-#include <algorithm>
-#include <iostream>
-#include <iomanip>
-#include <vector>
-#include <math.h>
-#include <fstream>
-
-#include "TCanvas.h"
-#include "TLegend.h"
-#include "TChain.h"
-#include "TDirectory.h"
-#include "TFile.h"
-#include "TROOT.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TMath.h"
-#include "TPad.h"
-#include "TCut.h"
-#include "TProfile.h"
-#include "THStack.h"
-#include "TLatex.h"
-#include "TGraphErrors.h"
-#include "TStyle.h"
-#include "TLine.h"
-#include "TMath.h"
-#include <sstream>
 #include "Hootilities.C"
 #include "zmet.h"
 //#include "histtools.h"
@@ -46,8 +20,10 @@ void initialize(char* path){
     data->Reset();
     tt->Reset();
     zjets->Reset();
+    ww->Reset();
     wz->Reset();
     zz->Reset();
+    t->Reset();
 
     mc.clear();
     mclabels.clear();
@@ -58,30 +34,45 @@ void initialize(char* path){
     data	= new TChain("T1");
     tt	        = new TChain("T1");
     zjets	= new TChain("T1");
+    ww	        = new TChain("T1");
     wz	        = new TChain("T1");
     zz  	= new TChain("T1");
+    t   	= new TChain("T1");
   }
 
   cout << endl;
   cout << "Loading babies at       : " << path << endl;
   
-  data->Add(Form("%s/data_baby.root",path));
-  zjets->Add(Form("%s/zjets_baby.root",path));
+  // data->  Add(Form("%s/dataskim_baby.root"  , path));
+  // zjets-> Add(Form("%s/zjets_baby.root"     , path));
+  // tt->    Add(Form("%s/ttbar_baby.root"     , path));
+  // ww->    Add(Form("%s/ww_baby.root"        , path));
+  // wz->    Add(Form("%s/wz_baby.root"        , path));
+  // zz->    Add(Form("%s/zz_baby.root"        , path));
+  // t->     Add(Form("%s/t_baby.root"         , path));
 
-  //tt->Add(Form("%s/ttbar_baby.root",path));
-  //zjets->Add(Form("%s/zjets_baby_geq2jets.root",path));
-  //wz->Add(Form("%s/wz_summer11_madgraph_baby.root",path));
-  //zz->Add(Form("%s/zz_summer11_madgraph_baby.root",path));
-  //wz->Add(Form("%s/wz_summer11_pythia_baby.root",path));
-  //zz->Add(Form("%s/zz_summer11_pythia_baby.root",path));
+  // cout << "-------------------------------------" << endl;
+  // cout << "USING SKIMMED SAMPLES WITH NJETS >= 2" << endl;
+  // cout << "-------------------------------------" << endl << endl;
+  
+  data->  Add(Form("%s/dataskim_baby_2jets.root"  , path));
+  zjets-> Add(Form("%s/zjets_baby_2jets.root"     , path));
+  tt->    Add(Form("%s/ttbar_baby_2jets.root"     , path));
+  ww->    Add(Form("%s/ww_baby_2jets.root"        , path));
+  wz->    Add(Form("%s/wz_baby_2jets.root"        , path));
+  zz->    Add(Form("%s/zz_baby_2jets.root"        , path));
+  t->     Add(Form("%s/t_baby_2jets.root"         , path));
 
-  //mc.push_back(tt);     mclabels.push_back("tt");
   mc.push_back(zjets);  mclabels.push_back("zjets");
-  //mc.push_back(zz);     mclabels.push_back("zz");
-  //mc.push_back(wz);     mclabels.push_back("wz");
+  mc.push_back(wz);     mclabels.push_back("wz");
+  mc.push_back(zz);     mclabels.push_back("zz");
+  mc.push_back(tt);     mclabels.push_back("tt");
+  mc.push_back(ww);     mclabels.push_back("ww");
+  mc.push_back(t);      mclabels.push_back("t");
 
   alreadyInitialized_ = true;
 }
+
 //------------------------------------------
 // selection and weight to apply to babies
 //------------------------------------------
@@ -92,17 +83,47 @@ TCut selection_TCut(){
   TCut transveto("el1tv==0 && el2tv==0");
   TCut Zmass("dilmasspf>81 && dilmasspf<101");
   TCut njets2("njets>=2");
-  TCut ee("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5");
-  TCut mm("leptype==1");
-  TCut em("leptype==2");
-  TCut sf = ee||mm;
+  TCut nlep3("nlep==3 && lep3.pt()>20");
+  TCut nlep4("nlep==4");
+  TCut met30("pfmet>30");
+  TCut met40("pfmet>40");
+  TCut met50("pfmet>50");
+  TCut met60("pfmet>60");
+  TCut met100("pfmet>100");
+  TCut bveto("nbm==0");
+  TCut nlep2("nlep==2");
+  TCut mjj("mjj>70.0 && mjj<110.0");
+
+  // no trigger requirements
+  // TCut eetype("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5");
+  // TCut mmtype("leptype==1");
+  // TCut emtype("leptype==2");
+  
+  //TCut eetype("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5 && (ee==1 || isdata==0)");
+  TCut eetype("leptype==0 && (ee==1 || isdata==0)");
+  TCut mmtype("leptype==1 && (mm==1 || isdata==0)");
+  TCut emtype("leptype==2 && (em==1||me==1||isdata==0)");
+
+  // TCut eetype("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5 && (ee==1 || isdata==0)");
+  // TCut mmtype("leptype==1 && (mm==1 || mmtk==1 || mu==1 || weight!=1.0)");
+  // TCut emtype("leptype==2 && (em==1 || me==1   || mu==1 || weight!=1.0)");
+  
+  TCut sf = eetype||mmtype;
 
   TCut sel;
   //sel += njets2;
   sel += pfleptons;
-  sel += transveto;
-  //sel += Zmass;
-  sel += (ee||mm||em);
+  //sel += transveto;
+  sel += Zmass;
+  sel += (eetype||mmtype||emtype);
+  //sel += nlep3;
+  //sel += nlep4;
+  //sel += met50;
+  sel += bveto;
+  sel += nlep2;
+  //sel += mjj;
+  sel += met60;
+  //sel += "jet2.pt()>50.0";
 
   cout << "Using selection         : " << sel.GetTitle() << endl;
 
@@ -110,7 +131,9 @@ TCut selection_TCut(){
 }
 TCut weight_TCut(){
 
-  TCut weight("weight * 0.92 * vtxweight");
+  TCut weight("weight * 5.10 * vtxweight");
+  //TCut weight("weight * 5.10");
+  //TCut weight("1");
   
   cout << "Using weight            : " << weight.GetTitle() << endl;
   return weight;
@@ -160,7 +183,7 @@ void printYieldTable( char* path , bool latex = false ){
 void makePlots( char* path , bool printgif = false ){
 
   bool combine     = true;
-  int  nplots      = 2;
+  int  nplots      = 3;
   bool residual    = true;
   bool log         = false;
   bool overlayData = true;
@@ -177,8 +200,12 @@ void makePlots( char* path , bool printgif = false ){
   vector<float> xf;
   vector<char*> flavor;
 
-  vars.push_back("dilmasspf");       xt.push_back("M(ee) (GeV)");          n.push_back(100);  xi.push_back(0.);   xf.push_back(200.);    flavor.push_back("ee");
-  vars.push_back("dilmasspf");       xt.push_back("M(#mu#mu) (GeV)");      n.push_back(100);  xi.push_back(0.);   xf.push_back(200.);    flavor.push_back("mm");
+  //vars.push_back("dilmasspf");       xt.push_back("M(ee) (GeV)");          n.push_back(15);  xi.push_back(50.);   xf.push_back(200.);    flavor.push_back("ee");
+  //vars.push_back("dilmasspf");       xt.push_back("M(#mu#mu) (GeV)");      n.push_back(15);  xi.push_back(50.);   xf.push_back(200.);    flavor.push_back("mm");
+  //vars.push_back("dilmasspf");       xt.push_back("M(e#mu) (GeV)");        n.push_back(15);  xi.push_back(0.);   xf.push_back(300.);    flavor.push_back("em");
+
+  //vars.push_back("nvtx");              xt.push_back("N_{VTX}");              n.push_back(40);  xi.push_back(0.);    xf.push_back(40.);     flavor.push_back("all");
+  //vars.push_back("dilmasspf");       xt.push_back("M(e#mu) (GeV)");        n.push_back(75);  xi.push_back(50.);   xf.push_back(200.);    flavor.push_back("em");
   //vars.push_back("lljj");          xt.push_back("M(lljj) (GeV)");      n.push_back(25);  xi.push_back(350.); xf.push_back(1850.);   flavor.push_back("ee");
   //vars.push_back("lljj");          xt.push_back("M(lljj) (GeV)");      n.push_back(25);  xi.push_back(350.); xf.push_back(1850.);   flavor.push_back("mm");
   //vars.push_back("njets");         xt.push_back("njets");              n.push_back(6);   xi.push_back(0);    xf.push_back(6);       flavor.push_back("ee");
@@ -187,6 +214,15 @@ void makePlots( char* path , bool printgif = false ){
   //vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");        n.push_back(50);  xi.push_back(0.);   xf.push_back(100.);  flavor.push_back("mm");
   //vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");      n.push_back(10);  xi.push_back(0);    xf.push_back(400);
   //vars.push_back("w.pt()");        xt.push_back("W p_{T} (GeV)");      n.push_back(10);  xi.push_back(0);    xf.push_back(400);
+
+  // WZ/ZZ control plots
+  // vars.push_back("njets");         xt.push_back("njets");              n.push_back(5);   xi.push_back(0);    xf.push_back(5);       flavor.push_back("all");
+  // vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");        n.push_back(6);   xi.push_back(0.);   xf.push_back(300.0);   flavor.push_back("all");
+  // vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");      n.push_back(6);   xi.push_back(0);    xf.push_back(300.0);   flavor.push_back("all");
+
+  vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(10);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("ee");
+  vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(10);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("mm");
+  vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(10);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("em");
 
   const unsigned int nvars = vars.size();
   
@@ -207,7 +243,13 @@ void makePlots( char* path , bool printgif = false ){
     if( combine ){
       if( ivar % nplots == 0 ){
 	canCounter++;
-	can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1200,600);
+
+	if( nplots == 1 ) can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),600,600);
+	if( nplots == 2 ) can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1200,600);
+	if( nplots == 3 ) can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1800,600);
+	if( nplots == 4 ) can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1200,1200);
+
+	//can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1200,600);
 	//can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),1400,1200);
 	//can[canCounter] = new TCanvas(Form("%s_can",vars[ivar]),Form("%s_can",vars[ivar]),2000,1200);
 	
@@ -228,9 +270,9 @@ void makePlots( char* path , bool printgif = false ){
 	plotpad[canCounter]->Draw();
 	plotpad[canCounter]->cd();
 
-	//plotpad[canCounter]->Divide(3,2);
-	//plotpad[canCounter]->Divide(2,2);
-	plotpad[canCounter]->Divide(2,1);
+	if( nplots == 2 ) plotpad[canCounter]->Divide(2,1);
+	if( nplots == 3 ) plotpad[canCounter]->Divide(3,1);
+	if( nplots == 4 ) plotpad[canCounter]->Divide(2,2);
 	plotpad[canCounter]->cd(1);
 
       }else{

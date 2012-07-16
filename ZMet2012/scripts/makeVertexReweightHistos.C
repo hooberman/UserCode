@@ -32,22 +32,22 @@ void makeVertexReweightHistos( bool doPhoton = false ){
   if( doPhoton )  cout << "Using triggers from Photon dataset"         << endl;
   else            cout << "Using triggers from DoubleElectron dataset" << endl;
 
-  char* Zfile        = (char*) "../output/V00-00-16/dataskim_baby.root";
+  char* Zfile        = (char*) "../output/V00-00-17/dataskim_baby.root";
 
   char* photonfile;
   char* photonbaby;
   char* rootfilename;
 
   if( doPhoton ){
-    photonfile   = (char*) "../photon_output/V00-00-11/Photon_templates.root";
-    photonbaby   = (char*) "../photon_output/V00-00-11/Photon_baby.root";
-    rootfilename = (char*) "vtxreweight_Photon_3p93fb.root";
+    photonfile   = (char*) "../photon_output/V00-00-12/Photon_templates.root";
+    photonbaby   = (char*) "../photon_output/V00-00-12/Photon_baby.root";
+    rootfilename = (char*) "vtxreweight_Photon_5p1fb.root";
   }
 
   else{
-    photonfile   = (char*) "../photon_output/V00-00-11/DoubleElectron_templates.root";
-    photonbaby   = (char*) "../photon_output/V00-00-11/DoubleElectron_baby.root";
-    rootfilename = (char*) "vtxreweight_DoubleElectron_3p93fb.root";
+    photonfile   = (char*) "../photon_output/V00-00-12/DoubleElectron_templates.root";
+    photonbaby   = (char*) "../photon_output/V00-00-12/DoubleElectron_baby.root";
+    rootfilename = (char*) "vtxreweight_DoubleElectron_5p1fb.root";
   }
 
   //---------------------------

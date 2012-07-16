@@ -15,7 +15,7 @@ void initSymbols(bool);
 void  printLine(bool);
 void deleteHistos();
 TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayData, 
-		    float x1 = 0.8, float y1 = 0.45 , float x2 = 0.92 , float y2 = 0.94 );
+		    float x1 = 0.75, float y1 = 0.45 , float x2 = 0.87 , float y2 = 0.94 );
 
 char* pm;         
 char* delim;      
