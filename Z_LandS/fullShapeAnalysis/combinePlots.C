@@ -157,9 +157,10 @@ TGraph* getGraph_T5zz(string type){
     x[2] =  850;  y[2] = 400;
     x[3] =  825;  y[3] = 425;
     x[4] =  775;  y[4] = 425;
-    x[5] =  625;  y[5] = 412.5;
-    x[6] =  625;  y[6] = 537.5;
-    npoints = 7;
+    //x[5] =  625;  y[5] = 412.5;
+    //x[6] =  625;  y[6] = 537.5;
+    x[5] =  600;  y[5] = 400;
+    npoints = 6;
   }
   else if( type == "up" ){
     x[0] =  1050;  y[0] =  50;
@@ -167,18 +168,20 @@ TGraph* getGraph_T5zz(string type){
     x[2] =  1000;  y[2] = 475;
     x[3] =   950;  y[3] = 525;
     x[4] =   900;  y[4] = 550;
+    //x[5] =   725;  y[5] = 525;
+    //x[6] =   725;  y[6] = 637.5;
     x[5] =   725;  y[5] = 525;
-    x[6] =   725;  y[6] = 637.5;
-    npoints = 7;
+    npoints = 6;
   }
   else if( type == "down" ){
     x[0] =  775;    y[0] =  50;
     x[1] =  775;    y[1] = 150;
     x[2] =  725;    y[2] = 300;
     x[3] =  662.5;  y[3] = 312.5;
-    x[4] =  525;    y[4] = 300;
-    x[5] =  525;    y[5] = 437.5;
-    npoints = 6;
+    //x[4] =  525;    y[4] = 300;
+    //x[5] =  525;    y[5] = 437.5;
+    x[4] =  500;    y[4] = 300;
+    npoints = 5;
   }
 
   for( int i = 0 ; i < npoints ; ++i ){
@@ -204,9 +207,9 @@ TGraph* getGraph_T5zzl(string type){
     x[2] =  900;    y[2] = 500;
     x[3] =  875;    y[3] = 525;
     x[4] =  825;    y[4] = 525;
-    x[5] =  625;    y[5] = 487.5;
-    x[6] =  625;    y[6] = 537.5;
-    npoints = 7;
+    x[5] =  600;    y[5] = 475;
+    //x[6] =  625;    y[6] = 537.5;
+    npoints = 6;
   }
   else if( type == "up" ){
     x[0] =  1100;  y[0] =  50;
@@ -214,9 +217,9 @@ TGraph* getGraph_T5zzl(string type){
     x[2] =  1075;  y[2] = 525;
     x[3] =   975;  y[3] = 650;
     x[4] =   950;  y[4] = 650;
-    x[5] =   750;  y[5] = 575;
-    x[6] =   750;  y[6] = 662.5;
-    npoints = 7;
+    x[5] =   700;  y[5] = 575;
+    //x[6] =   750;  y[6] = 662.5;
+    npoints = 6;
   }
   else if( type == "down" ){
     x[0] =  837.5;  y[0] =  50;
@@ -224,9 +227,9 @@ TGraph* getGraph_T5zzl(string type){
     x[2] =  810;    y[2] = 370;
     x[3] =  750;    y[3] = 425;
     x[4] =  687.5;  y[4] = 425;
-    x[5] =  525;    y[5] = 375;
-    x[6] =  525;    y[6] = 437.5;
-    npoints = 7;
+    x[5] =  500;    y[5] = 375;
+    //x[6] =  525;    y[6] = 437.5;
+    npoints = 6;
   }
 
   for( int i = 0 ; i < npoints ; ++i ){
@@ -280,9 +283,30 @@ void smoothHist( TH2F* h ){
   }  
 }
 
-void combinePlots(bool print = false){
+void removeDiagonal( TH2F* h , float deltaM ){
 
-  bool smooth = false;
+  for( int ibin = 1 ; ibin <= h->GetXaxis()->GetNbins() ; ibin++ ){
+    for( int jbin = 1 ; jbin <= h->GetYaxis()->GetNbins() ; jbin++ ){
+
+      float mg = h->GetXaxis()->GetBinCenter(ibin);
+      float ml = h->GetYaxis()->GetBinCenter(jbin);
+
+      cout << "mg ml " << mg << " " << ml << endl;
+
+      if( mg - ml < deltaM ) h->SetBinContent(ibin,jbin,0);
+      
+    }
+  }
+
+
+
+}
+
+void combinePlots(bool print = false){
+  
+  bool drawLine = false;
+  bool smooth   = false;
+
   // char* version        = "V00-01-00";
   // char* sample         = "T5zz";
   // bool  do3jets        = false;
@@ -327,17 +351,17 @@ void combinePlots(bool print = false){
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
   // float dm             = 4*91.0;
 
-  char* version        = "V00-03-01";
-  char* sample         = "T5zz";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  float dm             = 182.0;
-  
-  // char* version        = "V00-03-02";
-  // char* sample         = "T5zzl";
+  // char* version        = "V00-03-01";
+  // char* sample         = "T5zz";
   // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
-  // float dm             = (4./3.)*91;
+  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  // float dm             = 182.0;
+  
+  char* version        = "V00-03-02";
+  char* sample         = "T5zzl";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
+  float dm             = (4./3.)*91;
 
   // char* version        = "V00-03-03";
   // char* sample         = "T5zzgmsb";
@@ -412,6 +436,9 @@ void combinePlots(bool print = false){
   bin = heff->FindBin(800,300);
   cout << "Efficiency for 800,300 " << heff->GetBinContent(bin) << endl;
 
+  removeDiagonal(heff,dm);
+  removeDiagonal(hexcl,dm);
+
   //-------------------------------
   // find excluded points
   //-------------------------------
@@ -460,11 +487,14 @@ void combinePlots(bool print = false){
   // draw efficiency
   //-------------------------------
 
-  TCanvas *can = new TCanvas("can","",1200,600);
-  can->cd();
-  can->Divide(2,1);
+  // TCanvas *can = new TCanvas("can","",1200,600);
+  // can->cd();
+  // can->Divide(2,1);
+  // can->cd(1);
 
-  can->cd(1);
+  TCanvas *can1 = new TCanvas("can1","",600,600);
+  can1->cd();
+
   gPad->SetTopMargin(0.1);
   gPad->SetRightMargin(0.2);
 
@@ -493,14 +523,20 @@ void combinePlots(bool print = false){
   t->SetTextSize(0.04);
   t->DrawLatex(0.18,0.93,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
 
-  if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
-  else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
+  if( drawLine ){
+    if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
+    else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
+  }
 
   //-------------------------------
   // cross section limit
   //-------------------------------
 
-  can->cd(2);
+  TCanvas *can2 = new TCanvas("can2","",600,600);
+  can2->cd();
+
+  //can->cd(2);
+
   gPad->SetTopMargin(0.1);
   gPad->SetRightMargin(0.2);
 
@@ -550,9 +586,9 @@ void combinePlots(bool print = false){
     gr_excl_up   = getRefXsecGraph(hexcl, "T5zz", 3.);
   }
 
-  gr_excl->SetLineWidth(2.5);
-  gr_excl_up->SetLineWidth(2.5);
-  gr_excl_down->SetLineWidth(2.5);
+  gr_excl->SetLineWidth(3);
+  gr_excl_up->SetLineWidth(3);
+  gr_excl_down->SetLineWidth(3);
   gr_excl_up->SetLineStyle(2);
   gr_excl_down->SetLineStyle(3);
   gr_excl->Draw("same");
@@ -566,8 +602,10 @@ void combinePlots(bool print = false){
   gr_excl_down->SetName("gr_excl_down");
   gr_excl_down->SetTitle("gr_excl_down");
 
-  if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
-  else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
+  if( drawLine ){
+    if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
+    else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
+  }
 
   // if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
   // else                                    line.DrawLine(50+dm,50,1200,1200-dm);
@@ -595,12 +633,14 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.18,0.93,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
 
   if( print ){
-    can->Print(Form("cards/%s/plots/SMS.eps",version));
-    can->Print(Form("cards/%s/plots/SMS.pdf",version));
-    can->Print(Form("cards/%s/plots/SMS.png",version));
-    can->Print(Form("cards/%s/plots/SMS.C",version));
+    // can->Print(Form("cards/%s/plots/SMS.eps",version));
+    // can->Print(Form("cards/%s/plots/SMS.pdf",version));
+    // can->Print(Form("cards/%s/plots/SMS.png",version));
+    // can->Print(Form("cards/%s/plots/SMS.C",version));
+    // gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
 
-    gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
+    can1->Print(Form("cards/%s/plots/%s_eff.pdf" ,version,sample));
+    can2->Print(Form("cards/%s/plots/%s_xsec.pdf",version,sample));
   }
 
   TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
@@ -656,12 +696,12 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.3,0.8,"3 #times #sigma^{NLO-QCD}");
 
   if( print ){
-    c2->Print(Form("cards/%s/plots/SMS_points.eps",version));
+    // c2->Print(Form("cards/%s/plots/SMS_points.eps",version));
     c2->Print(Form("cards/%s/plots/SMS_points.pdf",version));
-    c2->Print(Form("cards/%s/plots/SMS_points.png",version));
-    c2->Print(Form("cards/%s/plots/SMS_points.C",version));
+    // c2->Print(Form("cards/%s/plots/SMS_points.png",version));
+    // c2->Print(Form("cards/%s/plots/SMS_points.C",version));
 
-    gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS_points.eps cards/%s/plots/SMS_points_ppt.pdf",version,version));
+    // gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS_points.eps cards/%s/plots/SMS_points_ppt.pdf",version,version));
   }
 
 
