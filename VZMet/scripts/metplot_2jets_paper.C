@@ -839,7 +839,7 @@
    entry->SetMarkerColor(1);
    entry->SetMarkerStyle(21);
    entry->SetMarkerSize(1);
-   entry=leg->AddEntry("smwz_met","bkg + WZ E_{T}^{miss} (200,0)","lpf");
+   entry=leg->AddEntry("smwz_met","bkg + WZ E_{T}^{miss} (200,0)","l");
    entry->SetFillStyle(1001);
 
    ci = TColor::GetColor("#ff9900");
