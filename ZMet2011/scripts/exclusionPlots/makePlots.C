@@ -31,6 +31,22 @@ using namespace std;
 
 void makeFloridaPlot(char* sample, int x );
 
+void removeDiagonal( TH2D* h , float deltaM ){
+
+  for( int ibin = 1 ; ibin <= h->GetXaxis()->GetNbins() ; ibin++ ){
+    for( int jbin = 1 ; jbin <= h->GetYaxis()->GetNbins() ; jbin++ ){
+
+      float mg = h->GetXaxis()->GetBinCenter(ibin);
+      float ml = h->GetYaxis()->GetBinCenter(jbin);
+
+      cout << "mg ml " << mg << " " << ml << endl;
+
+      if( mg - ml < deltaM ) h->SetBinContent(ibin,jbin,0);
+      
+    }
+  }
+}
+
 void formatHist( TH2D* hist ){
 
   hist->GetXaxis()->SetTitle("m(#tilde{#chi}_{2}^{0}) = m(#tilde{#chi}_{1}^{#pm}) [GeV]");
@@ -86,6 +102,8 @@ void makePlots(){
   gPad->SetTopMargin(0.1);
   gPad->SetLogz();
   formatHist(h2i0);
+  //removeDiagonal(h2i,50);
+  //removeDiagonal(h2i1,50);
   h2i0->Draw("colz");
   h2i->Draw("colsame");
   h2i1->Draw("colsame");
@@ -135,6 +153,7 @@ void makePlots(){
   gPad->SetLogz();
   formatHist(h2a0);
   h2a0->Draw("colz");
+  //removeDiagonal(h2a,50);
   h2a->Draw("colsame");
   gr2a_1->Draw("l");
   gr2a_2->Draw("l");
@@ -152,7 +171,6 @@ void makePlots(){
   can_2a->Modified();
   can_2a->Update();
   can_2a->Print("multilepton_tauenriched_Fig8.pdf");
-
 
   //-----------------
   // TChiWZ
@@ -186,7 +204,7 @@ void makePlots(){
   legwz->AddEntry(grwz_combo    ,"combined observed","l");
   legwz->AddEntry(grwz_combo_exp,"combined median expected","l");
   legwz->AddEntry(grwz_vzmet    ,"2l2j observed","l");
-  legwz->AddEntry(grwz_tri      ,"trilepton observed","l");
+  legwz->AddEntry(grwz_tri      ,"trilepton (M_{T}) observed","l");
   legwz->SetBorderSize(0);
   legwz->SetFillColor(0);
   legwz->Draw();
@@ -210,7 +228,6 @@ void makePlots(){
   makeFloridaPlot("TauEnriched",25);
   makeFloridaPlot("TauEnriched",50);
   makeFloridaPlot("TauEnriched",75);
-
 
 }
 
@@ -285,7 +302,7 @@ void makeFloridaPlot(char* sample, int x ){
   TLegend *leg = new TLegend(0.2,0.73,0.65,0.88);
   leg->AddEntry(gr_combo_obs    ,"combined observed","l");
   leg->AddEntry(gr_combo_exp    ,"combined median expected","l");
-  leg->AddEntry(gr_florida      ,"trilepton observed","l");
+  leg->AddEntry(gr_florida      ,"trilepton (M_{T}) observed","l");
   leg->AddEntry(gr_ss           ,"SS observed","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
