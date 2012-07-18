@@ -31,21 +31,24 @@ void skim(char* version, char* sample);
 
 void skimSamples_2jets(){
 
-  skim("V00-00-05","data_DoubleElectron_May10");
-  skim("V00-00-05","data_DoubleElectron_PRv4");
-  skim("V00-00-05","data_DoubleElectron_Aug05");
-  skim("V00-00-05","data_DoubleElectron_PRv6");
-  skim("V00-00-05","data_DoubleElectron_B30");
-  skim("V00-00-05","data_DoubleElectron_B34");
+  char* version = "V00-00-07";
 
-  skim("V00-00-05","data_SingleMu_May10");
-  skim("V00-00-05","data_SingleMu_PRv4");
-  skim("V00-00-05","data_SingleMu_Aug05");
-  skim("V00-00-05","data_SingleMu_PRv6");
-  skim("V00-00-05","data_SingleMu_B30");
-  skim("V00-00-05","data_SingleMu_B34");
+  // skim(version,"data_DoubleElectron_May10");
+  // skim(version,"data_DoubleElectron_PRv4");
+  // skim(version,"data_DoubleElectron_Aug05");
+  // skim(version,"data_DoubleElectron_PRv6");
+  // skim(version,"data_DoubleElectron_B30");
+  // skim(version,"data_DoubleElectron_B34");
 
-  skim("V00-00-05","dymm_testskim");
+  // skim(version,"data_SingleMu_May10");
+  // skim(version,"data_SingleMu_PRv4");
+  // skim(version,"data_SingleMu_Aug05");
+  // skim(version,"data_SingleMu_PRv6");
+  // skim(version,"data_SingleMu_B30");
+  // skim(version,"data_SingleMu_B34");
+
+  //skim(version,"dymm_testskim");
+  skim(version,"dymm_test");
 
 }
 
