@@ -29,6 +29,9 @@
 
 using namespace std;
 
+bool isPreliminary = true;
+char* isPrelimChar = (char*) "";
+
 void makeFloridaPlot(char* sample, int x );
 
 void removeDiagonal( TH2D* h , float deltaM ){
@@ -63,13 +66,29 @@ void formatHist( TH2D* hist ){
   
 }
 
-void cmsPrelim( double intLumi )
-{
+// void cmsPrelim( double intLumi )
+// {
 
-  TLatex latex;
-  latex.SetNDC();
-  latex.SetTextSize(0.04);
-  latex.DrawLatex(0.18,0.93,"CMS Preliminary,  #sqrt{s}=7 TeV,  L_{int}=4.98 fb^{-1}");
+//   TLatex latex;
+//   latex.SetNDC();
+//   latex.SetTextSize(0.04);
+//   latex.DrawLatex(0.18,0.93,"CMS Preliminary,  #sqrt{s}=7 TeV,  L_{int}=4.98 fb^{-1}");
+// }
+
+void cmsPrelim(double intLumi, bool prelim)
+{
+        TLatex latex;
+        latex.SetNDC();
+        latex.SetTextFont(62);
+        if(prelim) latex.SetTextSize(0.04);
+        else       latex.SetTextSize(0.045);
+
+        latex.SetTextAlign(11); // align left
+        if(prelim) latex.DrawLatex(0.13,0.92,"CMS Preliminary");
+        else       latex.DrawLatex(0.13,0.92,"CMS");
+
+        latex.SetTextAlign(31); // align right
+        latex.DrawLatex(0.89, 0.92, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", intLumi));
 }
 
 void makePlots(){
@@ -77,6 +96,9 @@ void makePlots(){
   TLatex *tex = new TLatex();
   tex->SetNDC();
   tex->SetTextSize(0.03);
+
+
+  if( isPreliminary ) isPrelimChar = (char*) "_prelim";
 
   //-------------------------------------------
   // Rutgers/KIT
@@ -112,7 +134,7 @@ void makePlots(){
   h2i0->Draw("axissame");
   //gr2i_3->Draw("l");
   //gr2i_4->Draw("l");
-  cmsPrelim(4.98);
+  cmsPrelim(4.98,isPreliminary);
 
   TLegend *leg = new TLegend(0.2,0.78,0.6,0.88);
   leg->AddEntry(gr2i_1,"observed","l");
@@ -132,7 +154,7 @@ void makePlots(){
 
   can_2i->Modified();
   can_2i->Update();
-  can_2i->Print("multilepton_flavordemocratic_Fig7.pdf");
+  can_2i->Print(Form("multilepton_flavordemocratic_Fig7%s.pdf",isPrelimChar));
 
 
   //-----------------
@@ -158,7 +180,7 @@ void makePlots(){
   gr2a_1->Draw("l");
   gr2a_2->Draw("l");
   h2a0->Draw("axissame");
-  cmsPrelim(4.98);
+  cmsPrelim(4.98,isPreliminary);
 
   leg->Draw();
 
@@ -170,7 +192,7 @@ void makePlots(){
 
   can_2a->Modified();
   can_2a->Update();
-  can_2a->Print("multilepton_tauenriched_Fig8.pdf");
+  can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
 
   //-----------------
   // TChiWZ
@@ -198,7 +220,7 @@ void makePlots(){
   grwz_combo_exp->Draw("l");
   grwz_tri->Draw("l");
   grwz_vzmet->Draw("l");
-  cmsPrelim(4.98);
+  cmsPrelim(4.98,isPreliminary);
 
   TLegend *legwz = new TLegend(0.2,0.68,0.7,0.88);
   legwz->AddEntry(grwz_combo    ,"combined observed","l");
@@ -215,7 +237,7 @@ void makePlots(){
 
   can_wz->Modified();
   can_wz->Update();
-  can_wz->Print("WZ_Fig11.pdf");
+  can_wz->Print(Form("WZ_Fig11%s.pdf",isPrelimChar));
 
   //-----------------------------
   // Florida/ETH plots
@@ -296,7 +318,7 @@ void makeFloridaPlot(char* sample, int x ){
   gr_florida->Draw("l");
   if( plotss ) gr_ss->Draw("l");
   hobs->Draw("axissame");
-  cmsPrelim(4.98);
+  cmsPrelim(4.98,isPreliminary);
 
   
   TLegend *leg = new TLegend(0.2,0.73,0.65,0.88);
@@ -327,7 +349,7 @@ void makeFloridaPlot(char* sample, int x ){
 
   can->Modified();
   can->Update();
-  if     ( TString(sample).Contains("Left") ) can->Print(Form("%s_%i_Fig9.pdf" ,sample,x));
-  else if( TString(sample).Contains("Tau") )  can->Print(Form("%s_%i_Fig10.pdf",sample,x));
+  if     ( TString(sample).Contains("Left") ) can->Print(Form("%s_%i_Fig9%s.pdf" ,sample,x,isPrelimChar));
+  else if( TString(sample).Contains("Tau") )  can->Print(Form("%s_%i_Fig10%s.pdf",sample,x,isPrelimChar));
   
 }
