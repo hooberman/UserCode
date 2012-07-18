@@ -51,6 +51,26 @@ void printline(TH2F* h2)
   }
 }
 
+float getBinomialError( float num , float den ){
+
+  TGraphAsymmErrors* grtemp = new TGraphAsymmErrors();
+
+  TH1F* hnum = new TH1F("hnum","",1,0,1);
+  TH1F* hden = new TH1F("hden","",1,0,1);
+
+  hnum->SetBinContent(1,num);
+  hden->SetBinContent(1,den);
+
+  grtemp->BayesDivide(hnum,hden);
+
+  float err = 0.5 * ( grtemp->GetErrorYlow(0) + grtemp->GetErrorYhigh(0) );
+
+  delete hnum;
+  delete hden;
+
+  return err;
+}
+
 
 void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , char* var , int nbins , float xmin , float xmax , char* xtitle , char* plottitle = "" , bool printplot = false , bool residual = false , bool log = false ){
 
@@ -107,6 +127,7 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   // get efficiencies and errors
   //--------------------------------------
 
+  /*
   float ndata1     = (float) hdata->GetBinContent(1);
   float ndata      = (float) hdata->Integral();
   float effdata    = 1-ndata1 / ndata;
@@ -128,17 +149,114 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   //float effmcerr   = hmc->GetBinError(1) / nmc;
   float effmcerr   = 0.5 * ( grmc->GetErrorYlow(0) + grmc->GetErrorYhigh(0) );
 
-  float ratio    = effdata/effmc;
-  float ratioerr = ratio * sqrt(pow(effdataerr/effdata,2)+pow(effmcerr/effmc,2));
 
   float datatot = hdata->Integral();
   float mctot   = hmc->Integral();
   
   cout << endl;
   cout << plottitle << endl;
+
   cout << "Data eff  " << Form("%.2f +/- %.3f",effdata,effdataerr) << endl;
   cout << "MC   eff  " << Form("%.2f +/- %.3f",effmc  ,effmcerr)   << endl;
   cout << "Data/MC   " << Form("%.2f +/- %.2f",ratio  ,ratioerr)   << endl;
+  */
+
+  float ndata    = hdata->Integral();
+  float ndata1   = hdata->Integral(2,20);
+  float ndata2   = hdata->Integral(3,20);
+  float ndata3   = hdata->Integral(4,20);
+  float ndata4   = hdata->Integral(5,20);
+  float ndata5   = hdata->Integral(6,20);
+
+  float nmc      = hmc->Integral();
+  float nmc1     = hmc->Integral(2,20);
+  float nmc2     = hmc->Integral(3,20);
+  float nmc3     = hmc->Integral(4,20);
+  float nmc4     = hmc->Integral(5,20);
+  float nmc5     = hmc->Integral(6,20);
+
+  float effdata1 = ndata1/ndata;
+  float effdata2 = ndata2/ndata;
+  float effdata3 = ndata3/ndata;
+  float effdata4 = ndata4/ndata;
+  float effdata5 = ndata5/ndata;
+
+  float effmc1   = nmc1/nmc;
+  float effmc2   = nmc2/nmc;
+  float effmc3   = nmc3/nmc;
+  float effmc4   = nmc4/nmc;
+  float effmc5   = nmc5/nmc;
+
+  float effdata1err = getBinomialError(ndata1,ndata);
+  float effdata2err = getBinomialError(ndata2,ndata);
+  float effdata3err = getBinomialError(ndata3,ndata);
+  float effdata4err = getBinomialError(ndata4,ndata);
+  float effdata5err = getBinomialError(ndata5,ndata);
+
+  float effmc1err   = getBinomialError(nmc1,nmc);
+  float effmc2err   = getBinomialError(nmc2,nmc);
+  float effmc3err   = getBinomialError(nmc3,nmc);
+  float effmc4err   = getBinomialError(nmc4,nmc);
+  float effmc5err   = getBinomialError(nmc5,nmc);
+
+  float ratio1      = effdata1/effmc1;
+  float ratio2      = effdata2/effmc2;
+  float ratio3      = effdata3/effmc3;
+  float ratio4      = effdata4/effmc4;
+  float ratio5      = effdata5/effmc5;
+
+  float ratio1err   = ratio1 * sqrt(pow(effdata1err/effdata1,2)+pow(effmc1err/effmc1,2));
+  float ratio2err   = ratio2 * sqrt(pow(effdata2err/effdata2,2)+pow(effmc2err/effmc2,2));
+  float ratio3err   = ratio3 * sqrt(pow(effdata3err/effdata3,2)+pow(effmc3err/effmc3,2));
+  float ratio4err   = ratio4 * sqrt(pow(effdata4err/effdata4,2)+pow(effmc4err/effmc4,2));
+  float ratio5err   = ratio5 * sqrt(pow(effdata5err/effdata5,2)+pow(effmc5err/effmc5,2));
+
+  cout << endl << endl << plottitle << endl;
+
+  int left = 20;
+
+
+  // char* delimstart = "|";
+  // char* delim      = "|";
+  // char* delimend   = "|";
+  // char* pm         = "+/-";
+
+  char* delimstart = "";
+  char* delim      = "&";
+  char* delimend   = "\\\\";
+  char* pm         = "$\\pm$";
+
+  cout << delimstart << setw(10) << "" << setw(4)
+       << delim << setw(left) << "$>$ 1 GeV" << setw(4)
+       << delim << setw(left) << "$>$ 2 GeV" << setw(4)
+       << delim << setw(left) << "$>$ 3 GeV" << setw(4) 
+       << delim << setw(left) << "$>$ 4 GeV" << setw(4)
+       << delim << setw(left) << "$>$ 5 GeV" << setw(4) 
+       << delimend << endl;
+
+  cout << delimstart << setw(10) << "data" << setw(4)
+       << delim << setw(left) << Form("%.3f %s %.4f",effdata1,pm,effdata1err) << setw(4)
+       << delim << setw(left) << Form("%.3f %s %.4f",effdata2,pm,effdata2err) << setw(4)
+       << delim << setw(left) << Form("%.3f %s %.4f",effdata3,pm,effdata3err) << setw(4) 
+       << delim << setw(left) << Form("%.3f %s %.4f",effdata4,pm,effdata4err) << setw(4)
+       << delim << setw(left) << Form("%.3f %s %.4f",effdata5,pm,effdata5err) << setw(4) 
+       << delimend << endl;
+
+  cout << delimstart << setw(10) << "mc" << setw(4)
+       << delim << setw(left) << Form("%.3f %s %.4f",effmc1,pm,effmc1err) << setw(4)
+       << delim << setw(left) << Form("%.3f %s %.4f",effmc2,pm,effmc2err) << setw(4)
+       << delim << setw(left) << Form("%.3f %s %.4f",effmc3,pm,effmc3err) << setw(4) 
+       << delim << setw(left) << Form("%.3f %s %.4f",effmc4,pm,effmc4err) << setw(4)
+       << delim << setw(left) << Form("%.3f %s %.4f",effmc5,pm,effmc5err) << setw(4) 
+       << delimend << endl;
+
+  cout << delimstart << setw(10) << "data/mc" << setw(4)
+       << delim << setw(left) << Form("%.2f %s %.2f",ratio1,pm,ratio1err) << setw(4)
+       << delim << setw(left) << Form("%.2f %s %.2f",ratio2,pm,ratio2err) << setw(4)
+       << delim << setw(left) << Form("%.2f %s %.2f",ratio3,pm,ratio3err) << setw(4) 
+       << delim << setw(left) << Form("%.2f %s %.2f",ratio4,pm,ratio4err) << setw(4)
+       << delim << setw(left) << Form("%.2f %s %.2f",ratio5,pm,ratio5err) << setw(4) 
+       << delimend << endl;
 
   //--------------------------------------
   // draw stuff
@@ -147,7 +265,7 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   hdata->Scale(1.0/hdata->Integral());
   hmc->Scale(1.0/hmc->Integral());
 
-  if( log ) hmc->GetYaxis()->SetRangeUser(0.001,3);  
+  if( log ) hmc->GetYaxis()->SetRangeUser(0.0001,5);  
   else      hmc->GetYaxis()->SetRangeUser(0.0,1);  
 
   hmc->GetXaxis()->SetTitle(xtitle);
@@ -177,6 +295,8 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   if( TString(plottitle).Contains("el") ) t->DrawLatex(0.6,0.6,"electrons");
   if( TString(plottitle).Contains("mu") ) t->DrawLatex(0.6,0.6,"muons");
 
+  if( TString(plottitle).Contains("0j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 0");
+  if( TString(plottitle).Contains("1j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 1");
   if( TString(plottitle).Contains("2j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 2");
   if( TString(plottitle).Contains("3j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 3");
   if( TString(plottitle).Contains("4j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 4");
@@ -191,6 +311,7 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
     TPad *respad = new TPad("respad","respad",0.0,0.8,1.0,1.0);
     respad->Draw();
     respad->cd();
+    respad->SetGridy();
 
     TH1F* hratio = (TH1F*) hdata->Clone(Form("hratio_%i",iplot));
     hratio->Divide(hmc);
@@ -198,7 +319,7 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
     hratio->SetMarkerColor(1);
     hratio->SetLineColor(1);
     hratio->Draw();
-    hratio->GetYaxis()->SetRangeUser(0,2);
+    hratio->GetYaxis()->SetRangeUser(0.5,1.5);
     hratio->GetYaxis()->SetNdivisions(5);
     hratio->GetYaxis()->SetLabelSize(0.2);
     hratio->GetXaxis()->SetLabelSize(0.0);
@@ -208,6 +329,7 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   }
   
   //data->Scan("run:lumi:event:probe->pt():probe->eta():tkisonew:met:mt:njets:nbl:nbm",sel+"tkisonew>20");
+  //data->Scan("run:lumi:event:probe->pt():probe->eta():tkisonew:met:mt:njets:nbl:nbm",sel);
 
   if( printplot ) can->Print(Form("plots/%s.pdf",plottitle));
 
@@ -281,15 +403,18 @@ void tnpScale( bool printplot = false ) {
   // Files
   //----------------------------------------
 
-  char* version = (char*) "V00-00-05";
+  char* version = (char*) "V00-00-07";
 
   TChain *chmc   = new TChain("leptons");
   TChain *chdata = new TChain("leptons");
 
-  //char* suffix = "";
-  char* suffix = "_2jets";
+  char* suffix = "";
+  //char* suffix = "_2jets";
 
-  chmc->Add(Form("smurf/%s/dymm_testskim%s.root" , version , suffix));
+  chmc->Add(Form("smurf/%s/dymm_test%s.root" , version , suffix));
+  //chmc->Add(Form("smurf/%s/dymm_test%s_INCOMPLETE.root" , version , suffix));
+  //chmc->Add(Form("smurf/%s/dymm_testskim%s.root" , version , suffix));
+  //chmc->Add(Form("smurf/%s/dymm_test%s.root" , version , suffix));
   
   chdata->Add(Form("smurf/%s/data_DoubleElectron_May10%s.root"    , version , suffix));
   chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv4%s.root"     , version , suffix));
@@ -362,6 +487,7 @@ void tnpScale( bool printplot = false ) {
   TCut os("qProbe*qTag<0");
   TCut tag_eta21("abs(tag->eta())<2.1");
   TCut tag_eta25("abs(tag->eta())<2.5");
+  TCut njets1("njets>=1");
   TCut njets2("njets>=2");
   TCut njets3("njets>=3");
   TCut njets4("njets>=4");
@@ -385,34 +511,40 @@ void tnpScale( bool printplot = false ) {
   TCut elid  	= "(leptonSelection&8)==8";            // ele id 
   TCut eliso 	= "(leptonSelection&16)==16";          // ele iso
   TCut probept  = "probe->pt()>30";                    // probe pt
+  TCut drprobe  = "drprobe<0.05";                      // dR(probe,pfcandidate)
 
   TCut eltnpcut;
   eltnpcut += zmass;
   eltnpcut += os;
   eltnpcut += eltnp;
   eltnpcut += tag_eta25;
-  eltnpcut += njets2;
+  //eltnpcut += njets2;
   eltnpcut += tag_pt30;
   eltnpcut += eltnptrig;
   eltnpcut += met30;
+  // eltnpcut += mt30;
   eltnpcut += nbl0;
-
+  
   eltnpcut += elid;
   eltnpcut += probept;
+  eltnpcut += drprobe;
 
   TCut mutnpcut;
   mutnpcut += zmass;
   mutnpcut += os;
   mutnpcut += mutnp;
   mutnpcut += tag_eta21;
-  mutnpcut += njets2;
+  //mutnpcut += njets2;
   mutnpcut += tag_pt30;
   mutnpcut += mutnptrig;
-  //mutnpcut += met30;
-  //mutnpcut += nbl0;
+  mutnpcut += met30;
+  // mutnpcut += mt30;
+  mutnpcut += nbl0;
 
   mutnpcut += muid;
   mutnpcut += probept;
+  mutnpcut += drprobe;
+
 
   //eltnpcut += njets2;
   //eltnpcut += njets3;
@@ -422,8 +554,6 @@ void tnpScale( bool printplot = false ) {
 
   //TCut eltnpcut 	 = "abs(tagAndProbeMass-91)<15 && (eventSelection&1)==1 && qProbe*qTag<0 && abs(tag->eta())<2.5 && njets>=4 && tag->pt()>30.0 && met<30.0 && nbm==0 && mt<30"; 
   //TCut mutnpcut 	 = "abs(tagAndProbeMass-91)<15 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && njets>=4 && tag->pt()>30.0"; 
-
-
 
   TCut vtxweight = "vtxweight";
 
@@ -480,15 +610,23 @@ void tnpScale( bool printplot = false ) {
   
   bool residual = true;
   bool log      = true;
+  
+  char* var = "tkisonewnoveto";
+  
+  plotDistribution( chdata , chmc , TCut(eltnpcut)        , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_0j" , printplot , residual , log );
+  plotDistribution( chdata , chmc , TCut(mutnpcut)        , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_0j" , printplot , residual , log );
+  
+  plotDistribution( chdata , chmc , TCut(eltnpcut+njets1) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_1j" , printplot , residual , log );
+  plotDistribution( chdata , chmc , TCut(mutnpcut+njets1) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_1j" , printplot , residual , log );
+  
+  plotDistribution( chdata , chmc , TCut(eltnpcut+njets2) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_2j" , printplot , residual , log );
+  plotDistribution( chdata , chmc , TCut(mutnpcut+njets2) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_2j" , printplot , residual , log );
 
-  plotDistribution( chdata , chmc , TCut(eltnpcut)        , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_2j" , printplot , residual , log );
-  plotDistribution( chdata , chmc , TCut(mutnpcut)        , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_2j" , printplot , residual , log );
+  plotDistribution( chdata , chmc , TCut(eltnpcut+njets3) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_3j" , printplot , residual , log );
+  plotDistribution( chdata , chmc , TCut(mutnpcut+njets3) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_3j" , printplot , residual , log );
 
-  plotDistribution( chdata , chmc , TCut(eltnpcut+njets3) , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_3j" , printplot , residual , log );
-  plotDistribution( chdata , chmc , TCut(mutnpcut+njets3) , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_3j" , printplot , residual , log );
-
-  plotDistribution( chdata , chmc , TCut(eltnpcut+njets4) , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_4j" , printplot , residual , log );
-  plotDistribution( chdata , chmc , TCut(mutnpcut+njets4) , vtxweight , "tkisonew" , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_4j" , printplot , residual , log );
+  plotDistribution( chdata , chmc , TCut(eltnpcut+njets4) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_4j" , printplot , residual , log );
+  plotDistribution( chdata , chmc , TCut(mutnpcut+njets4) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_4j" , printplot , residual , log );
 
   //--------------------------
   // relative track isolation
