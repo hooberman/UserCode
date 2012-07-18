@@ -26,26 +26,47 @@
 
 using namespace std;
 
-bool plotExpected = false;
-bool plotObserved = true;
-bool logplot      = true;
+bool plotExpected  = false;
+bool plotObserved  = true;
+bool logplot       = true;
+bool isPreliminary = true;
+
+void cmsPrelim(double intLumi, bool prelim)
+{
+        TLatex latex;
+        latex.SetNDC();
+        latex.SetTextFont(62);
+        if(prelim) latex.SetTextSize(0.04);
+        else       latex.SetTextSize(0.045);
+
+        latex.SetTextAlign(11); // align left
+        //if(prelim) latex.DrawLatex(0.13,0.92,"CMS Preliminary");
+        //else       latex.DrawLatex(0.13,0.92,"CMS");
+
+        if(prelim) latex.DrawLatex(0.19,0.92,"CMS Preliminary");
+        else       latex.DrawLatex(0.19,0.92,"CMS");
+
+        latex.SetTextAlign(31); // align right
+        //latex.DrawLatex(0.89, 0.92, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", intLumi));
+        latex.DrawLatex(0.92, 0.92, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", intLumi));
+}
 
 void makeGMSBPlot( bool printplots = false ){
 
   // VZ+MET exclusion
-  TFile *f       = TFile::Open("cards/V00-02-08/observed_limit.root");
+  TFile *f       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit.root");
   TGraph* gul    = (TGraph*) f->Get("grobs");
   TGraph* gulexp = (TGraph*) f->Get("grexp");
 
   // Rutgers exclusion
   //TFile *frutgers = TFile::Open("20120411_UCSD_GMSB_datacard/observed_limit.root ");
   //TFile *frutgers = TFile::Open("20120419_UCSD_GMSB_datacard/observed_limit.root ");
-  TFile *frutgers = TFile::Open("cards/20120420_UCSD_GMSB_datacard/observed_limit.root ");
+  TFile *frutgers = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/20120420_UCSD_GMSB_datacard/observed_limit.root ");
   TGraph* gul2    = (TGraph*) frutgers->Get("grobs");
   TGraph* gul2exp = (TGraph*) frutgers->Get("grexp");
 
   // VZ+MET exclusion
-  TFile *fc       = TFile::Open("cards/V00-02-08/observed_limit_combined.root");
+  TFile *fc       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit_combined.root");
   TGraph* gulc    = (TGraph*) fc->Get("grobs");
   TGraph* gulcexp = (TGraph*) fc->Get("grexp");
 
@@ -180,7 +201,7 @@ void makeGMSBPlot( bool printplots = false ){
   // gul2exp->SetLineStyle(2);
 
 
-  hdummy->GetXaxis()->SetTitle("m(#chi) [GeV]");
+  hdummy->GetXaxis()->SetTitle("#mu [GeV]");
   hdummy->GetYaxis()->SetTitle("#sigma [fb]");
   hdummy->GetYaxis()->SetLabelSize(0.04);
   hdummy->GetXaxis()->SetLabelSize(0.04);
@@ -275,15 +296,18 @@ void makeGMSBPlot( bool printplots = false ){
   t->SetNDC();								
   t->SetTextSize(0.04);
   //t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.98 fb^{-1}");
-  t->DrawLatex(0.18,0.93,"CMS Preliminary,  #sqrt{s}=7 TeV,  L_{int}=4.98 fb^{-1}");
+  //t->DrawLatex(0.18,0.93,"CMS Preliminary,  #sqrt{s}=7 TeV,  L_{int}=4.98 fb^{-1}");
+  cmsPrelim(4.98,isPreliminary);
   t->SetTextSize(0.04);
   //t->DrawLatex(0.47,0.45,"");
   t->DrawLatex(0.57,0.63,"GMSB  ZZ + E_{T}^{miss}");
 
   if( printplots ){
-    c1->Print("GMSB.pdf");
-    c1->Print("GMSB.png");
-    c1->Print("GMSB.eps");
-    gROOT->ProcessLine(".! ps2pdf GMSB.eps GMSB_ppt.pdf");
+    if( isPreliminary) c1->Print("GMSB_Fig12_prelim.pdf");
+    else               c1->Print("GMSB_Fig12.pdf");
+
+    // c1->Print("GMSB.png");
+    // c1->Print("GMSB.eps");
+    // gROOT->ProcessLine(".! ps2pdf GMSB.eps GMSB_ppt.pdf");
   }	   
 }
