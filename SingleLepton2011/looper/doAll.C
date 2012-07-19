@@ -92,9 +92,9 @@ void doAll(bool skipFWLite = true)
   int prettV      = 1;
  
   // flags for files to run over
-  bool rundata     = 1;
-  bool runttall    = 0;
-  bool runWjets    = 0;
+  bool rundata     = 0;
+  bool runttall    = 1;
+  bool runWjets    = 1;
   bool runVV       = 0;
   bool runQCD      = 0;
   bool runMuQCD    = 0;
