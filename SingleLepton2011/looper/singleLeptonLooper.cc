@@ -735,7 +735,7 @@ bool passSingleMuTrigger2011_pt30( bool isData , int lepType ) {
   //----------------------------
 
   // no triggers required for MC
-  if( !isData ) return true;
+  //if( !isData ) return true;
 
   // false for electron channel
   if( lepType == 0 ){
@@ -782,8 +782,6 @@ float getMuTriggerWeight( float pt, float eta ) {
 //--------------------------------------------------------------------
 
 float getMuTriggerWeightNew( float pt, float eta ) {
-
-  float weight = 1.0;
 
   float aeta = fabs(eta);
 
@@ -3052,8 +3050,42 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       smu30_= passSingleMuTrigger2011_pt30(     isData , leptype_ ) ? 1 : 0;
       dil_  = passSUSYTrigger2011_v1(     isData , hypType , true ) ? 1 : 0;
 
-      if( cms2.evt_run() >= 173212 ) trgmu30_ = objectPassTrigger( *lep1_ , (char*) "HLT_IsoMu30_eta2p1_v" , 0.1 ) ? 1 : 0;
-      else                           trgmu30_ = objectPassTrigger( *lep1_ , (char*) "HLT_IsoMu30_v"        , 0.1 ) ? 1 : 0;
+      trgmu30_  = -1;
+      trg2mu30_ = -1;
+
+      if( isData ){
+ 	if( cms2.evt_run() >= 173212 ) trgmu30_ = objectPassTrigger( *lep1_ , (char*) "HLT_IsoMu30_eta2p1_v" , 0.1 ) ? 1 : 0;
+	else                           trgmu30_ = objectPassTrigger( *lep1_ , (char*) "HLT_IsoMu30_v"        , 0.1 ) ? 1 : 0;
+	
+	if( ngoodlep_ > 1 ){
+	  if( cms2.evt_run() >= 173212 ) trg2mu30_ = objectPassTrigger( *lep2_ , (char*) "HLT_IsoMu30_eta2p1_v" , 0.1 ) ? 1 : 0;
+	  else                           trg2mu30_ = objectPassTrigger( *lep2_ , (char*) "HLT_IsoMu30_v"        , 0.1 ) ? 1 : 0;
+	}
+
+      }
+
+      else{
+
+	// for MC, some samples have IsoMu30 and some have IsoMu30_eta2p1, so we need to check
+
+	TString isoMuName    = triggerName("HLT_IsoMu30_v");
+	TString isoMu2p1Name = triggerName("HLT_IsoMu30_eta2p1_v");
+
+	if( !isoMuName.Contains("TRIGGER_NOT_FOUND") ){
+	  trgmu30_ = objectPassTrigger( *lep1_ , (char*) "HLT_IsoMu30_v" , 0.1 ) ? 1 : 0;
+	  if( ngoodlep_ > 1 ) 	  trg2mu30_ = objectPassTrigger( *lep2_ , (char*) "HLT_IsoMu30_v" , 0.1 ) ? 1 : 0;
+	}
+	
+	else if( !isoMu2p1Name.Contains("TRIGGER_NOT_FOUND") ){
+	  trgmu30_ = objectPassTrigger( *lep1_ , (char*) "HLT_IsoMu30_eta2p1_v" , 0.1 ) ? 1 : 0;
+	  if( ngoodlep_ > 1 ) 	  trg2mu30_ = objectPassTrigger( *lep2_ , (char*) "HLT_IsoMu30_eta2p1_v" , 0.1 ) ? 1 : 0;
+	}
+
+	else{
+	  trgmu30_ = -2;
+	}
+
+      }
 
       //set trigger weight
       mutrigweight_  = getMuTriggerWeight   ( lep1_->pt() , lep1_->eta() );
@@ -3518,6 +3550,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("smu",             &smu_,              "smu/I");
   outTree->Branch("smu30",           &smu30_,            "smu30/I");
   outTree->Branch("trgmu30",         &trgmu30_,          "trgmu30/I");
+  outTree->Branch("trg2mu30",        &trg2mu30_,         "trg2mu30/I");
   outTree->Branch("dil",             &dil_,              "dil/I");
   outTree->Branch("mullgen",         &mullgen_,          "mullgen/I");
   outTree->Branch("multgen",         &multgen_,          "multgen/I");
