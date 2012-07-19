@@ -27,10 +27,10 @@
   // runZLooper("zjetsS6_incomplete"    , false );
   // runZLooper("dyee"                  , false );
   // runZLooper("dymm"                  , false );
-  // runZLooper("wz_summer11_madgraph"  , false );
-  // runZLooper("zz_summer11_madgraph"  , false );
+  runZLooper("wz_summer11_madgraph"  , false );
+  runZLooper("zz_summer11_madgraph"  , false );
   // runZLooper("ttbar"                 , false );
-  runZLooper("wzsms"                 , false );
+  // runZLooper("wzsms"                 , false );
   // runZLooper("zjets"                 , false );
   // runZLooper("LM4"                   , false );
   // runZLooper("LM4v2"                 , false );

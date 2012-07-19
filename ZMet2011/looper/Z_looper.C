@@ -82,7 +82,7 @@ const bool  generalLeptonVeto    = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-02-21";
+const char* iter                 = "V00-02-22";
 const char* jsonfilename         = "../jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
 //--------------------------------------------------------------------
@@ -1048,7 +1048,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       weight_ = 1.;
       pthat_  = -1;
-      
+
+      ngennu_ = 0;
+
       if( !isData ){
 
 	weight_ = cms2.evt_scale1fb() * kFactor * lumi;
@@ -1067,6 +1069,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	pthat_  = cms2.genps_pthat();	
+
+	for ( int i = 0 ; i < cms2.genps_id().size() ; i++) { 
+	  if (abs(cms2.genps_id().at(i)) == 12) ngennu_++; 
+	  if (abs(cms2.genps_id().at(i)) == 14) ngennu_++; 
+	  if (abs(cms2.genps_id().at(i)) == 16) ngennu_++; 
+	}
+
       }
       
       mg_ = -1.;
@@ -2146,8 +2155,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	if( nw != 1 ){
-	  cout << "Error, found " << nw << " W's" << endl;
-	  dumpDocLines();
+	  //cout << "Error, found " << nw << " W's" << endl;
+	  //dumpDocLines();
 	}
 
 	if( mother1 == 23 && mother2 == 23 ) mjjmatch_ = 1;
@@ -2660,6 +2669,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("eff100",       &eff100_,       "eff100/F"       );
   babyTree_->Branch("eff200",       &eff200_,       "eff200/F"       );
   babyTree_->Branch("eff300",       &eff300_,       "eff300/F"       );
+  babyTree_->Branch("ngennu",       &ngennu_,       "ngennu/I"       );
 
   babyTree_->Branch("gid1",         &gid1_,         "gid1/I"         );
   babyTree_->Branch("gid2",         &gid2_,         "gid2/I"         );

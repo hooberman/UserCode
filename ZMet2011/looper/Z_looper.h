@@ -91,6 +91,7 @@ class Z_looper
   Int_t   id2_;
   Int_t   nlep_;
   Int_t   nmu_;
+  Int_t   ngennu_;
   Int_t   nel_;
   Int_t   nbvz_;
   Int_t   nbvzres_;
