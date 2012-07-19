@@ -1036,6 +1036,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       InitBaby();
 
+      isdata_ = isData ? 1 : 0;
+
       if( verbose ){
 	cout << "-------------------------------------------------------"   << endl;
 	cout << "Event " << z                                               << endl;
@@ -3468,6 +3470,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("acc_highmet",     &acc_highmet_,      "acc_highmet/I");
   outTree->Branch("acc_highht",      &acc_highht_,       "acc_highht/I");
   outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
+  outTree->Branch("isdata",          &isdata_,           "isdata/I");
   outTree->Branch("jetid",           &jetid_,            "jetid/I");
   outTree->Branch("jetid30",         &jetid30_,          "jetid30/I");
   outTree->Branch("json",            &json_,             "json/I");

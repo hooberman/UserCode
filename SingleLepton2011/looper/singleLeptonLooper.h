@@ -523,6 +523,7 @@ class singleLeptonLooper
 	Float_t xsecsusy2_;
 
 	Float_t mbb_;
+	Int_t   isdata_;
 
         // for fakeRates
         double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
