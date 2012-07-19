@@ -778,6 +778,54 @@ float getMuTriggerWeight( float pt, float eta ) {
 
 }
 
+
+//--------------------------------------------------------------------
+
+float getMuTriggerWeightNew( float pt, float eta ) {
+
+  float weight = 1.0;
+
+  float aeta = fabs(eta);
+
+  if( aeta < 0.8 ){
+    if( pt >  30.0 && pt <   40.0 ) return 0.89;
+    if( pt >  40.0 && pt <   60.0 ) return 0.89;
+    if( pt >  60.0 && pt <  100.0 ) return 0.88;
+    if( pt > 100.0                ) return 0.87;
+  }
+  
+  else if( aeta > 0.8 && aeta < 1.3 ){
+    if( pt >  30.0 && pt <   40.0 ) return 0.81;
+    if( pt >  40.0 && pt <   60.0 ) return 0.82;
+    if( pt >  60.0 && pt <  100.0 ) return 0.81;
+    if( pt > 100.0                ) return 0.80;
+  }
+
+  else if( aeta > 1.3 && aeta < 1.8 ){
+    if( pt >  30.0 && pt <   40.0 ) return 0.82;
+    if( pt >  40.0 && pt <   60.0 ) return 0.84;
+    if( pt >  60.0 && pt <  100.0 ) return 0.82;
+    if( pt > 100.0                ) return 0.80;
+  }
+
+  else if( aeta > 1.8 && aeta < 2.0 ){
+    if( pt >  30.0 && pt <   40.0 ) return 0.79;
+    if( pt >  40.0 && pt <   60.0 ) return 0.81;
+    if( pt >  60.0 && pt <  100.0 ) return 0.80;
+    if( pt > 100.0                ) return 0.79;
+  }
+
+  else if( aeta > 2.0 && aeta < 2.1 ){
+    if( pt >  30.0 && pt <   40.0 ) return 0.69;
+    if( pt >  40.0 && pt <   60.0 ) return 0.71;
+    if( pt >  60.0 && pt <  100.0 ) return 0.70;
+    if( pt > 100.0                ) return 0.70;
+  }
+
+
+  return 1;
+}
+
 //--------------------------------------------------------------------
 
 float getminjdr( VofP4 jets, LorentzVector *particle ) {
@@ -3006,7 +3054,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       else                           trgmu30_ = objectPassTrigger( *lep1_ , (char*) "HLT_IsoMu30_v"        , 0.1 ) ? 1 : 0;
 
       //set trigger weight
-      mutrigweight_ = getMuTriggerWeight( lep1_->pt() , lep1_->eta() );
+      mutrigweight_  = getMuTriggerWeight   ( lep1_->pt() , lep1_->eta() );
+      mutrigweight2_ = getMuTriggerWeightNew( lep1_->pt() , lep1_->eta() );
       
       outTree->Fill();
     
@@ -3436,6 +3485,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
   outTree->Branch("mutrigweight",    &mutrigweight_,     "mutrigweight/F");
+  outTree->Branch("mutrigweight2",   &mutrigweight2_,    "mutrigweight2/F");
   outTree->Branch("trgeff",          &trgeff_,           "trgeff/F");
   outTree->Branch("pthat",           &pthat_,            "pthat/F");
   outTree->Branch("qscale",          &qscale_,           "qscale/F");

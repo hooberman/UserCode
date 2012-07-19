@@ -371,6 +371,7 @@ class singleLeptonLooper
         Float_t weight_;
         Float_t trgeff_;
         Float_t mutrigweight_;
+        Float_t mutrigweight2_;
         Float_t pfmetsig_;
         Float_t smeff_;
         Float_t k_;
