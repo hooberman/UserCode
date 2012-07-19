@@ -1143,16 +1143,21 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // Matching lepton with pflepton
       // and with trk and gfit where available
       if( abs(id1_) == 13 ) {
+
         int ipf1 = mus_pfmusidx().at(index1);
         if( ipf1 >= 0 ) pflep1_ = &(pfmus_p4().at(ipf1));
+
 	trklep1_ = &(mus_trk_p4().at(index1));
 	gfitlep1_ = &(mus_gfit_p4().at(index1));
+
 	float dtrkpt1  = fabs( trklep1_->Pt()  - lep1_->Pt() );
 	float dgfitpt1 = fabs( gfitlep1_->Pt() - lep1_->Pt() );
-	if ( dtrkpt1<=0.1 && dgfitpt1<=0.1 ) leptype1_ = 2;
-	else if ( dtrkpt1<=0.1 )            leptype1_ = 0;
-	else if ( dgfitpt1<=0.1 )           leptype1_ = 1;
-	else                                leptype1_ = -1;
+
+	if ( dtrkpt1<=0.1 && dgfitpt1<=0.1 ) leptype1_ =  2;
+	else if ( dtrkpt1 <=0.1 )            leptype1_ =  0;
+	else if ( dgfitpt1<=0.1 )            leptype1_ =  1;
+	else                                 leptype1_ = -1;
+
       } else if( abs(id1_) == 11 ) {
         int ipf1 = els_pfelsidx().at(index1);
         if( ipf1 >= 0 ) pflep1_ = &(pfels_p4().at(ipf1));
@@ -1233,16 +1238,21 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	// and to trk and gfit where available
 	//---------------------------------------------
 	if( abs(id2_) == 13 ) {
+
 	  int ipf2 = mus_pfmusidx().at(index2);
 	  if( ipf2 >= 0 ) pflep2_ = &(pfmus_p4().at(ipf2));
+ 	  
 	  trklep2_ = &(mus_trk_p4().at(index2));
 	  gfitlep2_ = &(mus_gfit_p4().at(index2));
+
 	  float dtrkpt2  = fabs( trklep2_->Pt()  - lep2_->Pt() );
 	  float dgfitpt2 = fabs( gfitlep2_->Pt() - lep2_->Pt() );
-	  if ( dtrkpt2<=0.1 && dgfitpt2<=0.1 ) leptype2_ = 2;
-	  else if ( dtrkpt2<=0.1 )            leptype2_ = 0;
-	  else if ( dgfitpt2<=0.1 )           leptype2_ = 1;
-	  else                               leptype2_ = -1;
+
+	  if ( dtrkpt2<=0.1 && dgfitpt2<=0.1 ) leptype2_ =  2;
+	  else if ( dtrkpt2 <=0.1 )            leptype2_ =  0;
+	  else if ( dgfitpt2<=0.1 )            leptype2_ =  1;
+	  else                                 leptype2_ = -1;
+
 	} else if( abs(id2_) == 11 ) {
 	  int ipf2 = els_pfelsidx().at(index2);
 	  if( ipf2 >= 0 ) pflep2_ = &(pfels_p4().at(ipf2));
