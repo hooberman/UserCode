@@ -164,7 +164,6 @@ void checkMuon( int muidx ){
 
 double dRbetweenVectors(const LorentzVector &vec1, 
 			const LorentzVector &vec2 ){ 
-
   double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
   double deta = vec1.Eta() - vec2.Eta();
   return sqrt(dphi*dphi + deta*deta);
@@ -439,6 +438,8 @@ void singleLeptonLooper::InitBaby(){
   npfjets35_	= 0;
   npfjets40_	= 0;
   npfjets45_	= 0;
+  npfjets30lepcorr_ = 0;
+  knjets_       = 1.;
 
   htpf30_	= 0.;
   htpf35_	= 0.;
@@ -541,8 +542,18 @@ void singleLeptonLooper::InitBaby(){
   qgjet5_     = -1; 
   qgjet6_     = -1; 
 
+  lep1chi2ndf_	= -9999.;
+  lep2chi2ndf_	= -9999.;
+  lep1dpt_	= -9999.;
+  lep2dpt_	= -9999.;
+  leptype1_	= -999;
+  leptype2_	= -999;
   lep1_		= 0;
   lep2_		= 0;
+  trklep1_	= 0;
+  trklep2_	= 0;
+  gfitlep1_	= 0;
+  gfitlep2_	= 0;
   lepp_		= 0;
   lepm_		= 0;
   pflep1_	= 0;
@@ -758,9 +769,9 @@ float getMuTriggerWeight( float pt, float eta ) {
   if ( i_pt < 0 ) return 1.;
 
   int i_eta = -1;
-  if ( abs(eta) < 0.8 ) i_eta = 0;
-  else if ( abs(eta) >= 0.8 && abs(eta) < 1.5 ) i_eta = 1;
-  else if ( abs(eta) >= 1.5 && abs(eta) < 2.1 ) i_eta = 2;
+  if ( fabs(eta) < 0.8 ) i_eta = 0;
+  else if ( fabs(eta) >= 0.8 && abs(eta) < 1.5 ) i_eta = 1;
+  else if ( fabs(eta) >= 1.5 && abs(eta) < 2.1 ) i_eta = 2;
   if ( i_eta < 0 ) return 1.;
 
   return trigweights[i_pt][i_eta];
@@ -812,6 +823,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
      || TString(prefix).Contains("scaleup") || TString(prefix).Contains("scaledw") 
      || TString(prefix).Contains("matchup") )
       set_vtxreweight_rootfile("vtxreweight/vtxreweight_Fall11MC_PUS6_4p7fb_Zselection.root",true);
+    else if( TString(prefix).Contains("pythia") )
+      set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer11-PU_S3_START42_V11_4p7fb_ttbar.root",true);
     else
       set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
 
@@ -983,6 +996,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	cout << "-------------------------------------------------------"   << endl;
       }
 
+      TString datasetname(evt_dataset());
+      bool isperiodA = datasetname.Contains("2011A") ? true : false;
+      //      cout<<"dataset: "<<datasetname.Data()<<" isperiodA: "<<isperiodA<<endl;
+
       // skip stop-pair events with m(stop) > 850 GeV
       if( TString(prefix).Contains("T2") ){
 	if( sparm_mG() > 600.0 ) continue;
@@ -1033,6 +1050,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //---------------------------------------------
 
       VofP4 goodLeptons;
+      vector<float> lepchi2ndf;
+      vector<float> lepdpt;
       vector<int> lepId;
       vector<int> lepIndex;
 
@@ -1044,6 +1063,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( els_p4().at(iel).pt() < 10 )                                              continue;
 	if( !pass_electronSelection( iel , electronSelection_ssV5 , false , false ) ) continue;
 	goodLeptons.push_back( els_p4().at(iel) );
+	lepchi2ndf.push_back( -9999. );
+	lepdpt.push_back( -9999. );
 	lepId.push_back( els_charge().at(iel) * 11 );
 	lepIndex.push_back(iel);
 	ngoodel_++;
@@ -1056,6 +1077,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( mus_p4().at(imu).pt() < 10 )           continue;
 	if( !muonId( imu , OSGeneric_v3 ))         continue;
 	goodLeptons.push_back( mus_p4().at(imu) );
+	//in original OSGeneric_v3 version, cut on chi2ndf is at 10
+	lepchi2ndf.push_back( cms2.mus_gfit_chi2().at(imu)/cms2.mus_gfit_ndof().at(imu) );
+	//in original OSGeneric_v3, cut on dpt/pt is at 0.1
+	lepdpt.push_back( mus_ptErr().at(imu) / mus_p4().at(imu).pt() );
 	lepId.push_back( mus_charge().at(imu) * 13 );
 	lepIndex.push_back(imu);
 	ngoodmu_++;
@@ -1089,8 +1114,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // REQUIRE LEADING LEPTON PT > 20 GEV
       if( maxpt < 20 ) continue;
 
-      id1_       = lepId.at(imaxpt);
-      lep1_      = &goodLeptons.at(imaxpt);
+      id1_         = lepId.at(imaxpt);
+      lep1_        = &goodLeptons.at(imaxpt);
+      lep1chi2ndf_ = lepchi2ndf.at(imaxpt);
+      lep1dpt_     = lepdpt.at(imaxpt);
+
       int index1 = lepIndex.at(imaxpt);
 
       // Matching lepton with pfjet
@@ -1113,12 +1141,22 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	leppfjet1_ = &minvjet1;
 
       // Matching lepton with pflepton
+      // and with trk and gfit where available
       if( abs(id1_) == 13 ) {
         int ipf1 = mus_pfmusidx().at(index1);
         if( ipf1 >= 0 ) pflep1_ = &(pfmus_p4().at(ipf1));
+	trklep1_ = &(mus_trk_p4().at(index1));
+	gfitlep1_ = &(mus_gfit_p4().at(index1));
+	float dtrkpt1  = fabs( trklep1_->Pt()  - lep1_->Pt() );
+	float dgfitpt1 = fabs( gfitlep1_->Pt() - lep1_->Pt() );
+	if ( dtrkpt1<=0.1 && dgfitpt1<=0.1 ) leptype1_ = 2;
+	else if ( dtrkpt1<=0.1 )            leptype1_ = 0;
+	else if ( dgfitpt1<=0.1 )           leptype1_ = 1;
+	else                                leptype1_ = -1;
       } else if( abs(id1_) == 11 ) {
         int ipf1 = els_pfelsidx().at(index1);
         if( ipf1 >= 0 ) pflep1_ = &(pfels_p4().at(ipf1));
+	trklep1_ = &(els_trk_p4().at(index1));
       }
 
       //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
@@ -1155,10 +1193,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  exit(3);
 	}
 
-	id2_       = lepId.at(imaxpt2);
-	lep2_      = &goodLeptons.at(imaxpt2);
-	index2     = lepIndex.at(imaxpt2);
-	dilmass_   = sqrt((goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass2());
+	id2_         = lepId.at(imaxpt2);
+	lep2_        = &goodLeptons.at(imaxpt2);
+	lep2chi2ndf_ = lepchi2ndf.at(imaxpt2);
+	lep2dpt_     = lepdpt.at(imaxpt2);
+	index2       = lepIndex.at(imaxpt2);
+	dilmass_     = sqrt((goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass2());
 
 	if( id1_ > 0 && id2_ < 0 ){
 	  lepp_ = &goodLeptons.at(imaxpt);
@@ -1188,18 +1228,27 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if (lep2pfjetdr_<9998.)
 	  leppfjet2_      = &minvjet2;      
 
-      //---------------------------------------------
-      // Matching sub-leading lepton with pflepton
-      //---------------------------------------------
-
-      if( abs(id2_) == 13 ) {
-        int ipf2 = mus_pfmusidx().at(index2);
-        if( ipf2 >= 0 ) pflep2_ = &(pfmus_p4().at(ipf2));
-      } else if( abs(id2_) == 11 ) {
-        int ipf2 = els_pfelsidx().at(index2);
-        if( ipf2 >= 0 ) pflep2_ = &(pfels_p4().at(ipf2));
-      }
-
+	//---------------------------------------------
+	// Matching sub-leading lepton with pflepton
+	// and to trk and gfit where available
+	//---------------------------------------------
+	if( abs(id2_) == 13 ) {
+	  int ipf2 = mus_pfmusidx().at(index2);
+	  if( ipf2 >= 0 ) pflep2_ = &(pfmus_p4().at(ipf2));
+	  trklep2_ = &(mus_trk_p4().at(index2));
+	  gfitlep2_ = &(mus_gfit_p4().at(index2));
+	  float dtrkpt2  = fabs( trklep2_->Pt()  - lep2_->Pt() );
+	  float dgfitpt2 = fabs( gfitlep2_->Pt() - lep2_->Pt() );
+	  if ( dtrkpt2<=0.1 && dgfitpt2<=0.1 ) leptype2_ = 2;
+	  else if ( dtrkpt2<=0.1 )            leptype2_ = 0;
+	  else if ( dgfitpt2<=0.1 )           leptype2_ = 1;
+	  else                               leptype2_ = -1;
+	} else if( abs(id2_) == 11 ) {
+	  int ipf2 = els_pfelsidx().at(index2);
+	  if( ipf2 >= 0 ) pflep2_ = &(pfels_p4().at(ipf2));
+	  trklep2_ = &(els_trk_p4().at(index2));
+	}
+	
         float metx = evt_pfmet() * cos( evt_pfmetPhi() );
         float mety = evt_pfmet() * sin( evt_pfmetPhi() );
         TVector2 met( metx, mety );
@@ -1300,9 +1349,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	// this is a weight which corrects for the wrong MG W->lnu BF
 	if( TString(prefix).Contains("ttall") ){
-	  if( nleps == 0 ) mgcor_ = 1.029;
+	  if( nleps == 0 ) mgcor_ = 1.028;
 	  if( nleps == 1 ) mgcor_ = 0.986;
-	  if( nleps == 2 ) mgcor_ = 0.947;
+	  if( nleps == 2 ) mgcor_ = 0.945;
 	}
 
 	if( strcmp(prefix,"ttem")  == 0 && ( nels + nmus ) != 2 ) continue;
@@ -2160,7 +2209,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
         // store raw pfjet p4's and corrections for type1 pfmet
         // using corr jet pT > 10 GeV and adding |eta|<4.7 as in AN2011/459 to avoid problems with
         // erroneously large corrections
-        if( vjet.pt() > 10 && abs(vjet.eta()) < 4.7 ){
+        if( vjet.pt() > 10 && fabs(vjet.eta()) < 4.7 ){
 	  float l1cor = factors.at(0);
           vpfrawjets_p4.push_back( pfjets_p4().at(ijet) );
           fullcors.push_back( corr );
@@ -2209,6 +2258,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	// njets: L1FastL2L3Residual, pt > 30 GeV
 	if( vjet.pt() > 30 && fabs( vjet.eta() ) < 2.5 ){
 	  npfjets30_ ++;
+	  //count jets that are not overlapping with second lepton
+	  npfjets30lepcorr_ ++;
+	  if (nleps_==2 &&  mclep2_->Pt() > 30.
+	      && dRbetweenVectors(*mclep2_, vjet) < 0.4 ) 
+	    npfjets30lepcorr_ --;
 	  htpf30_ += vjet.pt();
 	}
 
@@ -2342,6 +2396,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	nbtagscsvtcorr_ = nbtagscsvt_;
       }
 
+      //store njets kscaling - for ttbar dilepton
+      //K3 = 0.92 pm 0.03 and K4 = 0.83 pm 0.03
+     if( TString(prefix).Contains("ttall") && nleps_==2 && npfjets30_>3){
+       if (npfjets30lepcorr_==3)      knjets_=0.92;
+       else if (npfjets30lepcorr_>=4) knjets_=0.83;
+     }
 
       // type1 met's
       pair<float, float> p_t1met10     = Type1PFMET( vpfrawjets_p4 , fullcors , l1cors , 10.0 );
@@ -2355,7 +2415,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       t1met30phi_     = p_t1met30.second;	  
 
       //phi-corrected type1 met
-      pair<float, float> p_t1metphicorr = getPhiCorrMET( t1met10_, t1met10phi_, evt_pfsumet(), !isData);
+      pair<float, float> p_t1metphicorr = 
+	getPhiCorrMET( t1met10_, t1met10phi_, evt_pfsumet(), !isData, isperiodA);
       t1metphicorr_    = p_t1metphicorr.first;
       t1metphicorrphi_ = p_t1metphicorr.second;
 
@@ -3434,10 +3495,12 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("njpt",            &njpt_,             "njpt/I");
 
   // pfjets L1FastL2L3Res
-  outTree->Branch("npfjets30",       &npfjets30_,        "npfjets30/I");
-  outTree->Branch("npfjets35",       &npfjets35_,        "npfjets35/I");
-  outTree->Branch("npfjets40",       &npfjets40_,        "npfjets40/I");
-  outTree->Branch("npfjets45",       &npfjets45_,        "npfjets45/I");
+  outTree->Branch("npfjets30",        &npfjets30_,        "npfjets30/I");
+  outTree->Branch("npfjets35",        &npfjets35_,        "npfjets35/I");
+  outTree->Branch("npfjets40",        &npfjets40_,        "npfjets40/I");
+  outTree->Branch("npfjets45",        &npfjets45_,        "npfjets45/I");
+  outTree->Branch("npfjets30lepcorr", &npfjets30lepcorr_, "npfjets30lepcorr/I");
+  outTree->Branch("knjets",           &knjets_,           "knjets/F");
 
   //rho correction
   outTree->Branch("rhovor",          &rhovor_,           "rhovor/F");
@@ -3534,8 +3597,14 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ml",               &mL_,               "ml/F");
   outTree->Branch("x",                &x_,                "x/F");
   outTree->Branch("m12",              &m12_,              "m12/F");
+  outTree->Branch("lep1chi2ndf",      &lep1chi2ndf_,      "lep1chi2ndf/F");
+  outTree->Branch("lep2chi2ndf",      &lep2chi2ndf_,      "lep2chi2ndf/F");
+  outTree->Branch("lep1dpt",          &lep1dpt_,          "lep1dpt/F");
+  outTree->Branch("lep2dpt",          &lep2dpt_,          "lep2dpt/F");
   outTree->Branch("id1",              &id1_,              "id1/I");
   outTree->Branch("id2",              &id2_,              "id2/I");
+  outTree->Branch("leptype1",         &leptype1_,         "leptype1/I");
+  outTree->Branch("leptype2",         &leptype2_,         "leptype2/I");
   outTree->Branch("w1",               &w1_,               "w1/I");
   outTree->Branch("w2",               &w2_,               "w2/I");
   outTree->Branch("iso1",             &iso1_,             "iso1/F");
@@ -3677,6 +3746,10 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("mlep"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &mlep_	);
   outTree->Branch("lep1"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
+  outTree->Branch("trklep1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trklep1_	);
+  outTree->Branch("trklep2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &trklep2_	);
+  outTree->Branch("gfitlep1"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &gfitlep1_	);
+  outTree->Branch("gfitlep2"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &gfitlep2_	);
   outTree->Branch("lepp"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lepp_	);
   outTree->Branch("lepm"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lepm_	);
   outTree->Branch("pflep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pflep1_	);
@@ -3942,35 +4015,78 @@ std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , floa
   return isos;
 }
 
-pair<float,float> singleLeptonLooper::getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool is8TeV ){
-
-  //using met phi correction values from location
-  //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/Type1MET/python/pfMETsysShiftCorrections_cfi.py?revision=1.3&view=markup
-
+pair<float,float> singleLeptonLooper::getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool isA)
+{
   float metx = met * cos( metphi );
   float mety = met * sin( metphi );
   
-  float shiftx = 0.;
-  float shifty = 0.;
+  //Values for 2011A
+  float cx0A = ismc ? -0.09389 : -0.3365;
+  float cx1A = ismc ? 0.0001815 : 0.004801;
+  float cy0A = ismc ? 0.1571 :  0.2578; 
+  float cy1A = ismc ? -0.00371 : -0.006124;
+  //Values for 2011B
+  float cx0B = ismc ? -0.1070 : -0.3265;
+  float cx1B = ismc ? 0.00009587 : 0.005162;
+  float cy0B = ismc ? 0.01517 : -0.1956; 
+  float cy1B = ismc ? -0.003357 : -0.006299;
 
-  //use correction for data vs. mc and 7 TeV vs. 8 TeV
-  if (is8TeV) {
-    cout<<"RUNNING WITH 8 TEV SETTINGS! This is a check that you are paying attention! Comment out line "
-	<<__LINE__<<" and rerun"<<endl;
-    shiftx = ismc ? (+1.77344e-01 - 1.34333e-03*sumet)
-      : (-7.67892e-01 + 5.76983e-03*sumet);
-    shifty = ismc ? (+8.08402e-01 - 2.84264e-03*sumet)
-      : (+5.54005e-01 - 2.94046e-03*sumet);
+  float cx0 = 0.;
+  float cx1 = 0.;
+  float cy0 = 0.;
+  float cy1 = 0.;
+  if (ismc) {
+    //For MC Use lumi weighted av
+    float lumiA = 2.1;
+    float lumiB = 2.6;
+    cx0 = (cx0A*lumiA + cx0B*lumiB)/(lumiA+lumiB);
+    cx1 = (cx1A*lumiA + cx1B*lumiB)/(lumiA+lumiB);
+    cy0 = (cy0A*lumiA + cy0B*lumiB)/(lumiA+lumiB);
+    cy1 = (cy1A*lumiA + cy1B*lumiB)/(lumiA+lumiB);
   } else {
-    shiftx = ismc ? (-4.53909e-02 - 2.55863e-05*sumet)
-      : (-5.65217e-01 + 5.42436e-03*sumet);
-    shifty = ismc ? (+1.27947e-01 - 3.62604e-03*sumet)
-      : (+4.54054e-01 - 6.73607e-03*sumet);
+    cx0 = isA ? cx0A : cx0B;    
+    cx1 = isA ? cx1A : cx1B;
+    cy0 = isA ? cy0A : cy0B;
+    cy1 = isA ? cy1A : cy1B;
   }
 
-  metx -= shiftx;
-  mety -= shifty;
+  metx -= cx0 + cx1 * sumet;
+  mety -= cy0 + cy1 * sumet;
 
   pair<float, float> phicorrmet = make_pair( sqrt( metx*metx + mety*mety ), atan2( mety , metx ) );
   return phicorrmet;
 }
+
+// //VERSION FOR RUNNING ON 8 TEV AND COMBINED 7 TEV
+// pair<float,float> singleLeptonLooper::getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool is8TeV ){
+
+//   //using met phi correction values from location
+//   //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/Type1MET/python/pfMETsysShiftCorrections_cfi.py?revision=1.3&view=markup
+
+//   float metx = met * cos( metphi );
+//   float mety = met * sin( metphi );
+  
+//   float shiftx = 0.;
+//   float shifty = 0.;
+
+//   //use correction for data vs. mc and 7 TeV vs. 8 TeV
+//   if (is8TeV) {
+//     cout<<"RUNNING WITH 8 TEV SETTINGS! This is a check that you are paying attention! Comment out line "
+// 	<<__LINE__<<" and rerun"<<endl;
+//     shiftx = ismc ? (+1.77344e-01 - 1.34333e-03*sumet)
+//       : (-7.67892e-01 + 5.76983e-03*sumet);
+//     shifty = ismc ? (+8.08402e-01 - 2.84264e-03*sumet)
+//       : (+5.54005e-01 - 2.94046e-03*sumet);
+//   } else {
+//     shiftx = ismc ? (-4.53909e-02 - 2.55863e-05*sumet)
+//       : (-5.65217e-01 + 5.42436e-03*sumet);
+//     shifty = ismc ? (+1.27947e-01 - 3.62604e-03*sumet)
+//       : (+4.54054e-01 - 6.73607e-03*sumet);
+//   }
+
+//   metx -= shiftx;
+//   mety -= shifty;
+
+//   pair<float, float> phicorrmet = make_pair( sqrt( metx*metx + mety*mety ), atan2( mety , metx ) );
+//   return phicorrmet;
+// }

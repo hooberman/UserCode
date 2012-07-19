@@ -73,7 +73,8 @@ class singleLeptonLooper
 	float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut = false , float pt_thresh = 0.0);
 	std::vector<float> trackIsoPtRanges( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
 	std::vector<float> totalIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
-	pair<float,float> getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool is8TeV = false);
+	//pair<float,float> getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool is8TeV = false);
+	pair<float,float> getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool isA = false);
 
 	bool initialized;
 	TH1D*   stop_xsec_hist;
@@ -205,6 +206,8 @@ class singleLeptonLooper
 	Int_t   npfresjets35_;
 	Int_t   npfresjets40_;
 	Int_t   npfresjets45_;
+	Int_t   npfjets30lepcorr_;
+	Float_t knjets_;
 
 	//rho correction
 	Float_t rhovor_;
@@ -302,6 +305,10 @@ class singleLeptonLooper
         LorentzVector*  pfcand10_;
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
+        LorentzVector*  trklep1_;
+        LorentzVector*  trklep2_;
+        LorentzVector*  gfitlep1_;
+        LorentzVector*  gfitlep2_;
         LorentzVector*  lepp_;
         LorentzVector*  lepm_;
         LorentzVector*  pflep1_;
@@ -453,8 +460,14 @@ class singleLeptonLooper
         Float_t m0_;
         Float_t m12_;
         Float_t ptl1_;
+	Float_t lep1chi2ndf_;
+	Float_t lep2chi2ndf_;
+	Float_t lep1dpt_;
+	Float_t lep2dpt_;
 	Int_t   id1_;
 	Int_t   id2_;
+	Int_t   leptype1_;
+	Int_t   leptype2_;
 	Int_t   w1_;
 	Int_t   w2_;
 	Float_t iso1_;
