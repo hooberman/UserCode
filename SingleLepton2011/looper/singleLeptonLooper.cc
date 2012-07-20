@@ -1032,6 +1032,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       cms2.GetEntry(z);
 
+      if( cms2.evt_ww_rho_vor() != cms2.evt_ww_rho_vor() ){
+	cout << "Skipping event with rho = nan!!!" << endl;
+	continue;
+      }
+
       InitBaby();
 
       isdata_ = isData ? 1 : 0;
