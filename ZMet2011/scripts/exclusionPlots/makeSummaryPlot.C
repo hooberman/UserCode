@@ -298,7 +298,8 @@ void makeSummaryPlot(){
 
   cmsPrelim(4.98,isPreliminary);
 
-  can->Print("ewkino_summaryPlot.pdf");
+  if( drawExpected ) can->Print("ewkino_summaryPlot_expected.pdf");
+  else               can->Print("ewkino_summaryPlot.pdf");
 
 }
 
