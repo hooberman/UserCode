@@ -29,7 +29,7 @@
 
 using namespace std;
 
-bool drawExpected  = true;
+bool drawExpected  = false;
 bool isPreliminary = true;
 char* isPrelimChar = (char*) "";
 
@@ -256,7 +256,7 @@ void makeSummaryPlot(){
 
   TLegend *leg = new TLegend(0.2,0.6,0.8,0.88);
   leg->AddEntry(grslepton  ,"LEP2 slepton limit m( #tilde{#font[12]{l}} ) > 82 GeV","f");
-  leg->AddEntry(grchargino ,"LEP2 chargino limit m(#chi^{#pm}) > 103.5 GeV)","f");
+  leg->AddEntry(grchargino ,"LEP2 chargino limit m(#chi^{#pm}) > 103.5 GeV","f");
   leg->AddEntry(gr2i  ,"3#font[12]{l}+E_{T}^{miss} ( #tilde{#font[12]{l}}_{L} , BF(3#font[12]{l})=0.5)","l");
   leg->AddEntry(gr2a  ,"3#font[12]{l}+E_{T}^{miss} ( #tilde{#font[12]{l}}_{R} , BF(#font[12]{l^{+}l^{-}}#tau)=1)","l");
   leg->AddEntry(gr2imt,"3#font[12]{l}+M_{T} & 2#font[12]{l}(SS) ( #tilde{#font[12]{l}}_{L} , BF(3#font[12]{l})=0.5)","l");
@@ -273,7 +273,7 @@ void makeSummaryPlot(){
   hexp->SetLineWidth(3);
   hexp->SetLineStyle(2);
 
-  TLegend *leg2 = new TLegend(0.75,0.45,0.95,0.55);
+  TLegend *leg2 = new TLegend(0.65,0.45,0.85,0.55);
   leg2->AddEntry(hobs  ,"observed","l");
   leg2->AddEntry(hexp  ,"expected","l");
   leg2->SetBorderSize(0);
@@ -285,7 +285,7 @@ void makeSummaryPlot(){
   TLatex *tex = new TLatex();
   tex->SetNDC();
   tex->SetTextSize(0.03);  
-  tex->DrawLatex(0.18,0.5,"m(#tilde{l}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  tex->DrawLatex(0.2,0.55,"m( #tilde{#font[12]{l}} ) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
 
   tex->SetTextAngle(32);
   tex->DrawLatex(0.25,0.31,"m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) > m(#tilde{#chi}_{1}^{0})");
