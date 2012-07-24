@@ -29,7 +29,7 @@
 
 using namespace std;
 
-bool drawExpected  = false;
+bool drawExpected  = true;
 bool isPreliminary = true;
 char* isPrelimChar = (char*) "";
 
@@ -273,7 +273,7 @@ void makeSummaryPlot(){
   hexp->SetLineWidth(3);
   hexp->SetLineStyle(2);
 
-  TLegend *leg2 = new TLegend(0.6,0.65,0.8,0.75);
+  TLegend *leg2 = new TLegend(0.75,0.45,0.95,0.55);
   leg2->AddEntry(hobs  ,"observed","l");
   leg2->AddEntry(hexp  ,"expected","l");
   leg2->SetBorderSize(0);
