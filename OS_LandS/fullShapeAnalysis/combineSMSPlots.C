@@ -29,7 +29,7 @@ using namespace std;
 
 TH2F* shiftHist(TH2F* hin){
 
-  TH2F* hout = new TH2F("hout","hout", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
+  TH2F* hout = new TH2F(Form("%s_shift",hin->GetName()),Form("%s_shift",hin->GetTitle()), 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
 
   for(int ibin = 1 ; ibin <= 48 ; ibin++ ){
     for(int jbin = 1 ; jbin <= 48 ; jbin++ ){
@@ -48,8 +48,8 @@ TGraph* getGraph_T1lh(string type){
 
   if( type == "nom" ){
     x[0]  =  800;    y[0]  = 37.5;
-    x[1]  =  862.5;  y[1]  = 150;
-    x[2]  =  862.5;  y[2]  = 350;
+    x[1]  =  875;    y[1]  = 150;
+    x[2]  =  875;    y[2]  = 350;
     x[3]  =  837.5;  y[3]  = 425;
     x[4]  =  787.5;  y[4]  = 425;
     x[5]  =  675;    y[5]  = 412.5;
@@ -271,13 +271,15 @@ void combineSMSPlots(bool print = false){
   TCut sig("(pfmet>275 && ht>300) || (pfmet>200 && ht>600)");
 
   TCut sel  = presel + sig;
+  TCut weight("trgeff * lepscale * ndavtxweight * (1.0/1.07)");
 
   cout << "Using selection: " << sel.GetTitle() << endl;
 
   TH2F* heff = new TH2F("heff","heff", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
   //TH2F* heff = new TH2F("heff","heff", 48,0,1200,48,0,1200);
   TCanvas *ctemp = new TCanvas();
-  ch->Draw("ml:mg>>heff",sel,"trgeff * lepscale & ndavtxweight * (1.0/1.07)");
+  ch->Draw("ml:mg>>heff",sel*weight);
+  //ch->Draw("ml:mg>>heff",sel,"trgeff * lepscale & ndavtxweight");
 
   delete ctemp;
   heff->Scale(1./10000.);
@@ -289,9 +291,10 @@ void combineSMSPlots(bool print = false){
   // find excluded points
   //-------------------------------
 
-  //TFile *xsecfile = TFile::Open("reference_xSec.root");
-  TFile *xsecfile = TFile::Open("reference_xSec_mg2TeV.root");
-  TH1F* refxsec   = (TH1F*) xsecfile->Get("gluino");
+  TFile *xsecfile = TFile::Open("referenceXSecs.root");
+  //TFile *xsecfile = TFile::Open("reference_xSec_mg2TeV.root");
+  TH1F* refxsec       = (TH1F*) xsecfile->Get("gluino_NLONLL");
+  TH1F* refxsec_unc   = (TH1F*) xsecfile->Get("gluino_NLONLL_unc");
 
   TH2F* hexcluded   = new TH2F("hexcluded","hexcluded", 48,0,1200,48,0,1200);
   TH2F* hexcluded13 = new TH2F("hexcluded13","hexcluded13", 48,0,1200,48,0,1200);
@@ -307,17 +310,20 @@ void combineSMSPlots(bool print = false){
       float mg = hexcluded->GetXaxis()->GetBinCenter(ibin)-12.5;
       float ml = hexcluded->GetYaxis()->GetBinCenter(jbin)-12.5;
 
-      int   bin = refxsec->FindBin(mg);
-      float xsec = refxsec->GetBinContent(bin);
+      int   bin      = refxsec->FindBin(mg);
+      float xsec     = refxsec->GetBinContent(bin);
+      float xsec_unc = refxsec_unc->GetBinContent(bin);
 
       hexcluded->SetBinContent(ibin,jbin,0);
       if( xsec > xsecul )   hexcluded->SetBinContent(ibin,jbin,1);
 
       hexcluded3->SetBinContent(ibin,jbin,0);
-      if( 3 * xsec > xsecul )   hexcluded3->SetBinContent(ibin,jbin,1);
+      //if( 3 * xsec > xsecul )   hexcluded3->SetBinContent(ibin,jbin,1);
+      if( (xsec+xsec_unc) > xsecul )   hexcluded3->SetBinContent(ibin,jbin,1);
 
       hexcluded13->SetBinContent(ibin,jbin,0);
-      if( (1./3.) * xsec > xsecul )   hexcluded13->SetBinContent(ibin,jbin,1);
+      //if( (1./3.) * xsec > xsecul )   hexcluded13->SetBinContent(ibin,jbin,1);
+      if( (xsec-xsec_unc) > xsecul )   hexcluded13->SetBinContent(ibin,jbin,1);
 
       //cout << "ibin jbin mg xsec " << ibin << " " << jbin << " " << mg << " " << xsec << endl;
     }
