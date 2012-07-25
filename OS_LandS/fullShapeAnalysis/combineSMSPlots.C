@@ -1,4 +1,4 @@
-#include "Utils/SMS_utils.C"
+//#include "Utils/SMS_utils.C"
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -48,60 +48,107 @@ TGraph* getGraph_T1lh(string type){
 
   if( type == "nom" ){
     x[0]  =  800;    y[0]  = 37.5;
-    x[1]  =  875;    y[1]  = 150;
-    x[2]  =  875;    y[2]  = 350;
-    x[3]  =  837.5;  y[3]  = 425;
-    x[4]  =  787.5;  y[4]  = 425;
-    x[5]  =  675;    y[5]  = 412.5;
-    x[6]  =  662.5;  y[6]  = 437.5;
-    x[7]  =  662.5;  y[7]  = 450;
-    x[8]  =  678.5;  y[8]  = 487.5;
-    x[9]  =  650;    y[9]  = 512.5;
-    x[10] =  575;    y[10] = 500;
-    x[11] =  137.5;  y[11] = 112.5;
-    x[12] =  137.5;  y[12] =  37.5;
-    npoints = 13;
-
-    for( int i = 0 ; i < npoints ; ++i ){
-      x[i]+=12.5;
-      y[i]+=12.5;
-    }
+    x[1]  =  900;    y[1]  = 187.5;
+    x[2]  =  900;    y[2]  = 250.0;
+    x[3]  =  875;    y[3]  = 350;
+    x[4]  =  837.5;  y[4]  = 425;
+    x[5]  =  787.5;  y[5]  = 437.5;
+    x[6]  =  700;    y[6]  = 437.5;
+    x[7]  =  687.5;  y[7]  = 500;
+    x[8]  =  650;    y[8]  = 512.5;
+    x[9]  =  575;    y[9]  = 512.5;
+    x[10] =  187.5;  y[10] = 162.5;
+    x[11] =  187.4;  y[11] =  37.5;
+    npoints = 12;
   }
   else if( type == "down" ){
-    x[0]  = 700;   y[0] =  50;
-    x[1]  = 725;   y[1] =  75;
-    x[2]  = 737.5; y[2] = 200;
-    x[3]  = 737.5; y[3] = 250;
-    x[4]  = 700;   y[4] = 300;
-    x[5]  = 600;   y[5] = 300;
-    x[6]  = 550;   y[6] = 350;
-    x[7]  = 575;   y[7] = 375;
-    x[8]  = 550;   y[8] = 400;
-    x[9]  = 450;   y[9] = 400;
-    x[10] = 150;   y[10] = 125;
-    x[11] = 150;   y[11] = 50;
-    npoints = 12;
+    x[0]  =  775;    y[0]  = 37.5;
+    x[1]  =  850;    y[1]  = 187.5;
+    x[2]  =  850;    y[2]  = 337.5;
+    x[3]  =  800;    y[3]  = 400;
+    x[4]  =  775;    y[4]  = 412.5;
+    x[5]  =  700;    y[5]  = 412.5;
+    x[6]  =  650;    y[6]  = 437.5;
+    x[7]  =  637.5;  y[7]  = 500;
+    x[8]  =  575;    y[8]  = 500;
+    x[9]  =  500;    y[9]  = 445;
+    x[10] =  187.5;  y[10] = 162.5;
+    x[11] =  187.4;  y[11] =  37.5;
+    npoints = 11;
   }
   else if( type == "up" ){
-    x[0] =  950;  y[0] =   50;
-    x[1] = 1025;  y[1] =  225;
-    x[2] = 1025;  y[2] =  450;
-    x[3] =  975;  y[3] =  550;
-    x[4] =  750;  y[4] =  550;
-    x[5] =  750;  y[5] =  560;
-    x[6] =  775;  y[6] =  575;
-    x[7] =  775;  y[7] =  600;
-    x[8] =  750;  y[8] =  615;
-    x[9] =  675;  y[9] =  600;
-    x[10]=  150;  y[10]=  125;
-    x[11]=  150;  y[11]=   50;
+    x[0]  =  850;    y[0]  = 37.5;
+    x[1]  =  925;    y[1]  = 212.5;
+    x[2]  =  925;    y[2]  = 325.0;
+    x[3]  =  912.5;  y[3]  = 412.5;
+    x[4]  =  875.0;  y[4]  = 450.0;
+    x[5]  =  787.5;  y[5]  = 462.5;
+    x[6]  =  712.5;  y[6]  = 462.5;
+    x[7]  =  687.5;  y[7]  = 537.5;
+    x[8]  =  650;    y[8]  = 537.5;
+    x[9]  =  575;    y[9]  = 512.5;
+    x[10] =  187.5;  y[10] = 162.5;
+    x[11] =  187.4;  y[11] =  37.5;
     npoints = 12;
   }
 
-  for( int i = 0 ; i < npoints ; ++i ){
-    x[i]-=12.5;
-    y[i]-=12.5;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+  return gr;
+
+}
+
+TGraph* getGraph_T1lh_expected(string type){
+
+  float x[15];
+  float y[15];
+  int npoints = -1;
+
+  if( type == "nom" ){
+    x[0]  =  800;    y[0]  = 37.5;
+    x[1]  =  887.5;  y[1]  = 187.5;
+    x[2]  =  887.5;  y[2]  = 387.5;
+    x[3]  =  837.5;  y[3]  = 425;
+    x[4]  =  787.5;  y[4]  = 437.5;
+    x[5]  =  687.5;  y[5]  = 437.5;
+    x[6]  =  675;    y[6]  = 487.5;
+    x[7]  =  650;    y[7]  = 512.5;
+    x[8]  =  575;    y[8]  = 512.5;
+    x[9]  =  187.5;  y[9]  = 162.5;
+    x[10] =  187.4;  y[10] =  37.5;
+    npoints = 11;
   }
+  else if( type == "down" ){
+    x[0]  =  762.5;  y[0]  = 37.5;
+    x[1]  =  837.5;  y[1]  = 187.5;
+    x[2]  =  837.5;  y[2]  = 337.5;
+    x[3]  =  800;    y[3]  = 400;
+    x[4]  =  775;    y[4]  = 412.5;
+    x[5]  =  700;    y[5]  = 387.5;
+    x[6]  =  637.5;  y[6]  = 387.5;
+    x[7]  =  612.5;  y[7]  = 487.5;
+    x[8]  =  575;    y[8]  = 487.5;
+    x[9]  =  500;    y[9]  = 445;
+    x[10] =  187.5;  y[10] = 162.5;
+    x[11] =  187.4;  y[11] =  37.5;
+    npoints = 11;
+  }
+  else if( type == "up" ){
+    x[0]  =  862.5;  y[0]  = 37.5;
+    x[1]  =  937.5;  y[1]  = 212.5;
+    x[2]  =  937.5;  y[2]  = 325.0;
+    x[3]  =  912.5;  y[3]  = 412.5;
+    x[4]  =  875.0;  y[4]  = 512.5;
+    x[5]  =  825;    y[5]  = 512.5;
+    x[6]  =  712.5;  y[6]  = 475.0;
+    x[7]  =  687.5;  y[7]  = 562.5;
+    x[8]  =  650;    y[8]  = 562.5;
+    x[9]  =  575;    y[9]  = 512.5;
+    x[10] =  187.5;  y[10] = 162.5;
+    x[11] =  187.4;  y[11] =  37.5;
+    npoints = 12;
+  }
+
 
   TGraph *gr = new TGraph(npoints,x,y);
   return gr;
@@ -238,9 +285,17 @@ void combineSMSPlots(bool print = false){
   TFile *file = TFile::Open(Form("cards/%s/observed_limit.root",version));
   //TH2F* hexcl = (TH2F*) file->Get("hexcl");
 
-  TH2F* hexcl_temp = (TH2F*) file->Get("hexcl");
+  TH2F* hexcl_temp   = (TH2F*) file->Get("hexcl");
+  TH2F* hexp_temp    = (TH2F*) file->Get("hexp");
+  TH2F* hexpp1_temp  = (TH2F*) file->Get("hexpp1");
+  TH2F* hexpm1_temp  = (TH2F*) file->Get("hexpm1");
+
   //TH2F* hexcl_temp = (TH2F*) file->Get("hexp");
-  TH2F* hexcl = shiftHist(hexcl_temp);
+  TH2F* hexcl   = shiftHist(hexcl_temp);
+  TH2F* hexp    = shiftHist(hexp_temp);
+  TH2F* hexpp1  = shiftHist(hexpp1_temp);
+  TH2F* hexpm1  = shiftHist(hexpm1_temp);
+
   if( fixup  ) fixupHist    ( hexcl );
   //if( smooth ) smoothAllHist( hexcl );
   smoothHist( hexcl );
@@ -299,11 +354,18 @@ void combineSMSPlots(bool print = false){
   TH2F* hexcluded   = new TH2F("hexcluded","hexcluded", 48,0,1200,48,0,1200);
   TH2F* hexcluded13 = new TH2F("hexcluded13","hexcluded13", 48,0,1200,48,0,1200);
   TH2F* hexcluded3  = new TH2F("hexcluded3","hexcluded3", 48,0,1200,48,0,1200);
+
+  TH2F* hexcl_exp     = new TH2F("hexcl_exp"  ,"hexcl_exp"  , 48,0,1200,48,0,1200);
+  TH2F* hexcl_expp1   = new TH2F("hexcl_expp1","hexcl_expp1", 48,0,1200,48,0,1200);
+  TH2F* hexcl_expm1   = new TH2F("hexcl_expm1","hexcl_expm1", 48,0,1200,48,0,1200);
   
   for( unsigned int ibin = 1 ; ibin <= 48 ; ibin++ ){
     for( unsigned int jbin = 1 ; jbin <= 48 ; jbin++ ){
 
-      float xsecul = hexcl->GetBinContent(ibin,jbin);
+      float xsecul     = hexcl->GetBinContent(ibin,jbin);
+      float xsec_exp   = hexp->GetBinContent(ibin,jbin);
+      float xsec_expp1 = hexpp1->GetBinContent(ibin,jbin);
+      float xsec_expm1 = hexpm1->GetBinContent(ibin,jbin);
 
       if( xsecul < 1.e-10 ) continue;
 
@@ -324,6 +386,15 @@ void combineSMSPlots(bool print = false){
       hexcluded13->SetBinContent(ibin,jbin,0);
       //if( (1./3.) * xsec > xsecul )   hexcluded13->SetBinContent(ibin,jbin,1);
       if( (xsec-xsec_unc) > xsecul )   hexcluded13->SetBinContent(ibin,jbin,1);
+
+      hexcl_exp->SetBinContent(ibin,jbin,0);
+      if( xsec > xsec_exp )  hexcl_exp->SetBinContent(ibin,jbin,1);
+
+      hexcl_expp1->SetBinContent(ibin,jbin,0);
+      if( xsec > xsec_expp1 )  hexcl_expp1->SetBinContent(ibin,jbin,1);
+
+      hexcl_expm1->SetBinContent(ibin,jbin,0);
+      if( xsec > xsec_expm1 )  hexcl_expm1->SetBinContent(ibin,jbin,1);
 
       //cout << "ibin jbin mg xsec " << ibin << " " << jbin << " " << mg << " " << xsec << endl;
     }
@@ -404,26 +475,67 @@ void combineSMSPlots(bool print = false){
   TGraph* gr_excl;      
   TGraph* gr_excl_down;
   TGraph* gr_excl_up;   
+
+  TGraph* gr_excl_exp;      
+  TGraph* gr_excl_exp_down;
+  TGraph* gr_excl_exp_up;   
   
   if( TString(sample).Contains("T1lh") ) {
     gr_excl      = getGraph_T1lh("nom");
     gr_excl_down = getGraph_T1lh("down");
     gr_excl_up   = getGraph_T1lh("up");
+
+    gr_excl_exp      = getGraph_T1lh_expected("nom");
+    gr_excl_exp_down = getGraph_T1lh_expected("down");
+    gr_excl_exp_up   = getGraph_T1lh_expected("up");
   }
   else{
-    gr_excl      = getRefXsecGraph(hexcl, "T1lh", 1.0);
-    gr_excl_down = getRefXsecGraph(hexcl, "T1lh", 1./3.);
-    gr_excl_up   = getRefXsecGraph(hexcl, "T1lh", 3.);
+    // gr_excl      = getRefXsecGraph(hexcl, "T1lh", 1.0);
+    // gr_excl_down = getRefXsecGraph(hexcl, "T1lh", 1./3.);
+    // gr_excl_up   = getRefXsecGraph(hexcl, "T1lh", 3.);
   }
 
-  gr_excl->SetLineWidth(2.5);
-  gr_excl_up->SetLineWidth(2.5);
-  gr_excl_down->SetLineWidth(2.5);
+  gr_excl->SetLineWidth(3);
+  gr_excl_up->SetLineWidth(3);
+  gr_excl_down->SetLineWidth(3);
+
+  gr_excl->SetMarkerSize(1);
+  gr_excl_up->SetMarkerSize(1);
+  gr_excl_down->SetMarkerSize(1);
+
+  gr_excl->SetMarkerStyle(20);
+  gr_excl_up->SetMarkerStyle(20);
+  gr_excl_down->SetMarkerStyle(20);
+
+  gr_excl_exp->SetLineWidth(3);
+  gr_excl_exp_up->SetLineWidth(3);
+  gr_excl_exp_down->SetLineWidth(3);
+
+  gr_excl_exp->SetMarkerSize(1);
+  gr_excl_exp_up->SetMarkerSize(1);
+  gr_excl_exp_down->SetMarkerSize(1);
+
+  gr_excl_exp->SetMarkerStyle(20);
+  gr_excl_exp_up->SetMarkerStyle(20);
+  gr_excl_exp_down->SetMarkerStyle(20);
+
+  gr_excl_down->SetLineStyle(2);
   gr_excl_up->SetLineStyle(2);
-  gr_excl_down->SetLineStyle(3);
+
+  gr_excl_exp->SetLineColor(2);
+  gr_excl_exp_down->SetLineColor(2);
+  gr_excl_exp_up->SetLineColor(2);
+
+  gr_excl_exp_up->SetLineStyle(2);
+  gr_excl_exp_down->SetLineStyle(2);
+
   gr_excl->Draw("same");
   gr_excl_up->Draw("same");
   gr_excl_down->Draw("same");
+
+  gr_excl_exp->Draw("same");
+  gr_excl_exp_up->Draw("same");
+  gr_excl_exp_down->Draw("same");
 
   if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
   else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
@@ -431,48 +543,65 @@ void combineSMSPlots(bool print = false){
   // if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
   // else                                    line.DrawLine(50+dm,50,1200,1200-dm);
 
-  TLegend *leg = new TLegend(0.2,0.55,0.45,0.65);
-  leg->AddEntry(gr_excl,     "#sigma^{NLO-QCD}","l");
-  leg->AddEntry(gr_excl_up,  "3 #times #sigma^{NLO-QCD}","l");
-  leg->AddEntry(gr_excl_down,"1/3 #times #sigma^{NLO-QCD}","l");
+  TLegend *leg = new TLegend(0.2,0.45,0.35,0.65);
+  leg->AddEntry(gr_excl,         "observed","l");
+  leg->AddEntry(gr_excl_up,      "observed (#pm1#sigma theory)","l");
+  leg->AddEntry(gr_excl_exp,     "expected","l");
+  leg->AddEntry(gr_excl_exp_up,  "expected (#pm1#sigma)","l");
+  //leg->AddEntry(gr_excl_down,"#sigma^{NLO-QCD}_{DOWN}","l");
   leg->SetFillColor(0);
   leg->SetBorderSize(0);
-  leg->SetTextSize(0.04);
+  leg->SetTextSize(0.025);
   leg->Draw();
   
-  t->SetTextSize(0.04);
+  t->SetTextSize(0.025);
   t->DrawLatex(0.2,0.85,"pp #rightarrow #tilde{g}#tilde{g}");
   t->DrawLatex(0.2,0.79,"#tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow l^{+}l^{-} #chi_{1}^{0}");
   t->DrawLatex(0.2,0.73,"#tilde{g} #rightarrow 2j+#chi_{1}^{0}");
   t->DrawLatex(0.2,0.67,title);
   //t->DrawLatex(0.2,0.71,njets);
-  t->DrawLatex(0.2,0.48,"l^{+}l^{-} + E_{T}^{miss} + H_{T}");
+  t->DrawLatex(0.2,0.38,"l^{+}l^{-} + E_{T}^{miss} + H_{T}");
   t->SetTextSize(0.035);
   //t->DrawLatex(0.18,0.92,"CMS                     #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
   t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
 
   if( print ){
-    can->Print(Form("cards/%s/plots/SMS.eps",version));
+    //can->Print(Form("cards/%s/plots/SMS.eps",version));
     can->Print(Form("cards/%s/plots/SMS.pdf",version));
-    can->Print(Form("cards/%s/plots/SMS.png",version));
-    can->Print(Form("cards/%s/plots/SMS.C",version));
+    //can->Print(Form("cards/%s/plots/SMS.png",version));
+    //can->Print(Form("cards/%s/plots/SMS.C",version));
 
-    gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
+    //gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
   }
 
   TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
   TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
   TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
 
+  TH2F* hexcl_exp_shifted   = shiftHist( hexcl_exp   );
+  TH2F* hexcl_expp1_shifted = shiftHist( hexcl_expp1 );
+  TH2F* hexcl_expm1_shifted = shiftHist( hexcl_expm1 );
+
   // TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
   // TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
   // TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
-  gr_excl->SetName("graph");
-  gr_excl->SetTitle("graph");
-  gr_excl_up->SetName("graphup");
-  gr_excl_up->SetTitle("graphup");
-  gr_excl_down->SetName("graphdown");
-  gr_excl_down->SetTitle("graphdown");
+  gr_excl->SetName("obs");
+  gr_excl->SetTitle("obs");
+
+  gr_excl_up->SetName("obs_theoryup");
+  gr_excl_up->SetTitle("obs_theoryup");
+
+  gr_excl_down->SetName("obs_theorydown");
+  gr_excl_down->SetTitle("obs_theorydown");
+
+  gr_excl_exp->SetName("expected");
+  gr_excl_exp->SetTitle("expected");
+
+  gr_excl_exp_up->SetName("exp_up");
+  gr_excl_exp_up->SetTitle("exp_up");
+
+  gr_excl_exp_down->SetName("exp_down");
+  gr_excl_exp_down->SetTitle("exp_down");
 
   TFile* fout = TFile::Open(Form("cards/%s/OS_shape_T1lh_limit.root",version),"RECREATE");
   fout->cd();
@@ -481,7 +610,11 @@ void combineSMSPlots(bool print = false){
   gr_excl->Write();
   gr_excl_up->Write();
   gr_excl_down->Write();
+  gr_excl_exp->Write();
+  gr_excl_exp_up->Write();
+  gr_excl_exp_down->Write();
   fout->Close();
+
 
   TCanvas *c2 = new TCanvas("c2","c2",1500,500);
   c2->Divide(3,1);
@@ -496,7 +629,8 @@ void combineSMSPlots(bool print = false){
   hexcluded13_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
   hexcluded13_shifted->Draw("colz");
   gr_excl_down->Draw();
-  t->DrawLatex(0.3,0.8,"1/3 #times #sigma^{NLO-QCD}");
+  gr_excl_down->Draw("sameP");
+  t->DrawLatex(0.3,0.8,"#sigma^{NLO-QCD}_{DOWN}");
 
   c2->cd(2);
   gPad->SetGridx();
@@ -506,6 +640,7 @@ void combineSMSPlots(bool print = false){
   hexcluded_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
   hexcluded_shifted->Draw("colz");
   gr_excl->Draw();
+  gr_excl->Draw("sameP");
   t->DrawLatex(0.3,0.8,"#sigma^{NLO-QCD}");
 
   c2->cd(3);
@@ -516,15 +651,59 @@ void combineSMSPlots(bool print = false){
   hexcluded3_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
   hexcluded3_shifted->Draw("colz");
   gr_excl_up->Draw();
-  t->DrawLatex(0.3,0.8,"3 #times #sigma^{NLO-QCD}");
+  gr_excl_up->Draw("sameP");
+  t->DrawLatex(0.3,0.8,"#sigma^{NLO-QCD}_{UP}");
+
+
+  TCanvas *c3 = new TCanvas("c3","c3",1500,500);
+  c3->Divide(3,1);
+
+  t->SetTextSize(0.07);
+
+  c3->cd(1);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  //hexcluded13->Draw("colz");
+  hexcl_expp1_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
+  hexcl_expp1_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcl_expp1_shifted->Draw("colz");
+  gr_excl_exp_down->Draw();
+  gr_excl_exp_down->Draw("sameP");
+  t->DrawLatex(0.3,0.8,"expected (-1#sigma)");
+
+  c3->cd(2);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  //hexcluded->Draw("colz");
+  hexcl_exp_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
+  hexcl_exp_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcl_exp_shifted->Draw("colz");
+  gr_excl_exp->Draw();
+  gr_excl_exp->Draw("sameP");
+  t->DrawLatex(0.3,0.8,"expected");
+
+  c3->cd(3);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  //hexcluded3->Draw("colz");
+  hexcl_expm1_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
+  hexcl_expm1_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcl_expm1_shifted->Draw("colz");
+  gr_excl_exp_up->Draw();
+  gr_excl_exp_up->Draw("sameP");
+  t->DrawLatex(0.3,0.8,"expected (+1#sigma)");
 
   if( print ){
-    c2->Print(Form("cards/%s/plots/SMS_points.eps",version));
-    c2->Print(Form("cards/%s/plots/SMS_points.pdf",version));
-    c2->Print(Form("cards/%s/plots/SMS_points.png",version));
-    c2->Print(Form("cards/%s/plots/SMS_points.C",version));
 
-    gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS_points.eps cards/%s/plots/SMS_points_ppt.pdf",version,version));
+    c2->Print(Form("cards/%s/plots/SMS_points.pdf",version));
+    c3->Print(Form("cards/%s/plots/SMS_points_expected.pdf",version));
+
+    // c2->Print(Form("cards/%s/plots/SMS_points.eps",version));
+    // c2->Print(Form("cards/%s/plots/SMS_points.pdf",version));
+    // c2->Print(Form("cards/%s/plots/SMS_points.png",version));
+    // c2->Print(Form("cards/%s/plots/SMS_points.C",version));
+
+    // gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS_points.eps cards/%s/plots/SMS_points_ppt.pdf",version,version));
   }
 
 
