@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-26";
+  const char* version   = "V00-02-27";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -328,9 +328,9 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLMscanFall11dil10 = 0; 
   bool runT2tt     = 0;
   bool runT2blnu   = 0;
-  bool runT1lh     = 0;
+  bool runT1lh     = 1;
   bool runZZZ      = 0;
-  bool runT1tttt   = 1;
+  bool runT1tttt   = 0;
 
   char* dir = "";
 
@@ -990,9 +990,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chT1lh = new TChain("Events");
   if (runT1lh) {
     
-    pickSkimIfExists(chT1lh,
-      		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged*root",
-     		     "T1lh");  
+
+    pickSkimIfExists(chT1lh,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple.root");
+
+    // pickSkimIfExists(chT1lh,
+    //   		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged*root",
+    //  		     "T1lh");  
 
     // pickSkimIfExists(chT1lh,
     //  		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_3.root",
