@@ -51,7 +51,32 @@ void cmsPrelim(double intLumi, bool prelim)
         latex.DrawLatex(0.92, 0.92, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", intLumi));
 }
 
+
+void getUncertainties(){
+
+  ifstream *ip = new ifstream();
+  ifstream *im = new ifstream();
+
+  ip->open("7TeVc1pn2_finer_less.dat");
+  im->open("7TeVc1mn2_finer_less.dat");
+
+  float m;
+  float xsec;
+  float unc;
+  
+  while( *ip >> m >> xsec >> unc ){
+    cout << m << " " << xsec << " " << unc << " " << Form("%.3f",unc/xsec) << endl;
+  }
+
+  while( *im >> m >> xsec >> unc ){
+    cout << m << " " << xsec << " " << unc << " " << Form("%.3f",unc/xsec) << endl;
+  }
+
+}
+
 void makeGMSBPlot( bool printplots = false ){
+
+  //getUncertainties();
 
   // VZ+MET exclusion
   TFile *f       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit.root");
@@ -125,21 +150,24 @@ void makeGMSBPlot( bool printplots = false ){
   float x[n];
   float y[n];
 
-  x[0]  = 130;   y[0]  = 3057;
-  x[1]  = 150;   y[1]  = 1719; 
-  x[2]  = 170;   y[2]  = 1035; 
-  x[3]  = 190;   y[3]  =  656;  
-  x[4]  = 210;   y[4]  =  433;  
-  x[5]  = 230;   y[5]  =  293;  
-  x[6]  = 250;   y[6]  =  205;  
-  x[7]  = 270;   y[7]  =  146;     
-  x[8]  = 290;   y[8]  =  105;   
-  x[9]  = 310;   y[9]  =   77;   
-  x[10] = 330;   y[10] =   57;  
-  x[11] = 350;   y[11] =   43;      
-  x[12] = 370;   y[12] =   33;      
-  x[13] = 390;   y[13] =   25;      
-  x[14] = 410;   y[14] =   20;      
+  // float xerr[n];
+  float yerr[n];
+
+  x[0]  = 130;   y[0]  = 3057;   yerr[i] = 0.055 * y[0];
+  x[1]  = 150;   y[1]  = 1719;   yerr[i] = 0.054 * y[1];
+  x[2]  = 170;   y[2]  = 1035;   yerr[i] = 0.050 * y[2];
+  x[3]  = 190;   y[3]  =  656;   yerr[i] = 0.047 * y[3];
+  x[4]  = 210;   y[4]  =  433;   yerr[i] = 0.048 * y[4];
+  x[5]  = 230;   y[5]  =  293;   yerr[i] = 0.051 * y[5];
+  x[6]  = 250;   y[6]  =  205;   yerr[i] = 0.047 * y[6];
+  x[7]  = 270;   y[7]  =  146;   yerr[i] = 0.048 * y[7];
+  x[8]  = 290;   y[8]  =  105;   yerr[i] = 0.049 * y[8];
+  x[9]  = 310;   y[9]  =   77;   yerr[i] = 0.048 * y[9];
+  x[10] = 330;   y[10] =   57;   yerr[i] = 0.053 * y[10];
+  x[11] = 350;   y[11] =   43;   yerr[i] = 0.055 * y[11];   
+  x[12] = 370;   y[12] =   33;   yerr[i] = 0.057 * y[12];   
+  x[13] = 390;   y[13] =   25;   yerr[i] = 0.057 * y[13];   
+  x[14] = 410;   y[14] =   20;   yerr[i] = 0.060 * y[14];   
 
   TGraph* g  = new TGraph(n,x,y);
 
