@@ -29,7 +29,7 @@
 
 using namespace std;
 
-bool isPreliminary = true;
+bool isPreliminary = false;
 char* isPrelimChar = (char*) "";
 
 void makeFloridaPlot(char* sample, int x );
@@ -99,7 +99,7 @@ void makePlots(){
 
 
   if( isPreliminary ) isPrelimChar = (char*) "_prelim";
-
+  /*
   //-------------------------------------------
   // Rutgers/KIT
   //-------------------------------------------
@@ -193,7 +193,7 @@ void makePlots(){
   can_2a->Modified();
   can_2a->Update();
   can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
-
+*/
   //-----------------
   // TChiWZ
   //-----------------
@@ -239,10 +239,17 @@ void makePlots(){
   can_wz->Update();
   can_wz->Print(Form("WZ_Fig11%s.pdf",isPrelimChar));
 
+  hwz->GetXaxis()->SetRangeUser(100,300);
+  hwz->GetYaxis()->SetRangeUser(  0,300);
+
+  can_wz->Modified();
+  can_wz->Update();
+  can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
+
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
-
+  /*
   makeFloridaPlot("LeftSlepton",25);
   makeFloridaPlot("LeftSlepton",50);
   makeFloridaPlot("LeftSlepton",75);
@@ -250,7 +257,7 @@ void makePlots(){
   makeFloridaPlot("TauEnriched",25);
   makeFloridaPlot("TauEnriched",50);
   makeFloridaPlot("TauEnriched",75);
-
+  */
 }
 
 

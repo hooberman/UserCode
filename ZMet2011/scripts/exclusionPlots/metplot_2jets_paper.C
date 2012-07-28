@@ -888,11 +888,11 @@
    else       latex.SetTextSize(0.045);
    
    latex.SetTextAlign(11); // align left
-   if(prelim) latex.DrawLatex(0.13,0.94,"CMS Preliminary");
-   else       latex.DrawLatex(0.13,0.94,"CMS");
+   if(prelim) latex.DrawLatex(0.14,0.94,"CMS Preliminary");
+   else       latex.DrawLatex(0.14,0.94,"CMS");
    
    latex.SetTextAlign(31); // align right
-   latex.DrawLatex(0.89, 0.94, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", 4.98));
+   latex.DrawLatex(0.94, 0.94, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", 4.98));
    
    plotpad->Modified();
 

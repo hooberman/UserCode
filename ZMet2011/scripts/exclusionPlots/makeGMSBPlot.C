@@ -29,7 +29,7 @@ using namespace std;
 bool plotExpected  = false;
 bool plotObserved  = true;
 bool logplot       = true;
-bool isPreliminary = false;
+bool isPreliminary = true;
 
 void cmsPrelim(double intLumi, bool prelim)
 {
