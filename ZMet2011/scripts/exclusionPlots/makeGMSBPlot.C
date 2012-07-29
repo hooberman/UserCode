@@ -28,7 +28,7 @@ using namespace std;
 
 bool plotExpected  = false;
 bool plotObserved  = true;
-bool logplot       = false;
+bool logplot       = true;
 bool isPreliminary = false;
 
 void cmsPrelim(double intLumi, bool prelim)
@@ -74,6 +74,35 @@ void getUncertainties(){
 
 }
 
+TGraph* uncertaintyBand( TGraph* gup , TGraph* gdn ){
+
+  float x[30];
+  float y[30];
+
+  Double_t thisx;
+  Double_t thisy;
+
+  for( int i = 0 ; i < 15; ++i ){
+    gup->GetPoint(i,thisx,thisy);
+    x[i] = thisx;
+    y[i] = thisy;
+    //cout << x[i] << " " << y[i] << endl;
+  }
+
+  for( int i = 0 ; i < 15; ++i ){
+    gdn->GetPoint(14-i,thisx,thisy);
+    x[i+15] = thisx;
+    y[i+15] = thisy;
+    //cout << x[i+15] << " " << y[i+15] << endl;
+  }
+
+  TGraph* gr = new TGraph(30,x,y);
+  gr->SetFillColor(7);
+
+  return gr;
+
+}
+
 void makeGMSBPlot( bool printplots = false ){
 
   //getUncertainties();
@@ -91,10 +120,12 @@ void makeGMSBPlot( bool printplots = false ){
   TGraph* gul2exp = (TGraph*) frutgers->Get("grexp");
 
   // VZ+MET exclusion
-  TFile *fc       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit_combined.root");
-  TGraph* gulc    = (TGraph*) fc->Get("grobs");
-  TGraph* gulcexp = (TGraph*) fc->Get("grexp");
-
+  TFile *fc       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit_combined_band.root");
+  TGraph* gulc      = (TGraph*) fc->Get("grobs");
+  TGraph* gulcexp   = (TGraph*) fc->Get("grexp");
+  TGraph* gulcexpp1 = (TGraph*) fc->Get("grexpp1");
+  TGraph* gulcexpm1 = (TGraph*) fc->Get("grexpm1");
+  TGraph* gulcband  = uncertaintyBand( gulcexpp1 , gulcexpm1 );
 
   Double_t xp;
   Double_t yp;
@@ -232,7 +263,7 @@ void makeGMSBPlot( bool printplots = false ){
   gband->SetFillColor(5);
 
   //2l2j observed
-  gul->SetLineColor(4);
+  gul->SetLineColor(6);
   gul->SetLineWidth(3);
   gul->SetLineStyle(4);
 
@@ -256,7 +287,7 @@ void makeGMSBPlot( bool printplots = false ){
 
   //combined expected
   gulcexp->SetLineWidth(4);
-  gulcexp->SetLineColor(1);
+  gulcexp->SetLineColor(4);
   gulcexp->SetLineStyle(2);
 
 
@@ -293,14 +324,18 @@ void makeGMSBPlot( bool printplots = false ){
   hdummy->Draw("axissame");
   */
 
+  gulcband->Draw("samef");
   gband->Draw("samef");
   g->Draw("samel");
+
 
   if( plotObserved ){
     gul->Draw("samel");
     gul2->Draw("samel");
     gulc->Draw("samel");
     gulcexp->Draw("samel");
+    //gulcexpp1->Draw("samel");
+    //gulcexpm1->Draw("samel");
   }
 
   if( plotExpected ){
@@ -347,10 +382,20 @@ void makeGMSBPlot( bool printplots = false ){
   // gul2->Draw("samel");
 
   //TLegend *leg = new TLegend(0.4,0.6,0.9,0.8);
+
+  TH1F* hgexp = new TH1F("hgexp","",1,0,1);
+  hgexp->SetLineColor(4);
+  hgexp->SetLineWidth(3);
+  hgexp->SetLineStyle(2);
+  hgexp->SetFillColor(7);
+
+
+
   TLegend *leg = new TLegend(0.38,0.7,0.95,0.88);
   if( plotObserved ){
     leg->AddEntry(gulc    ,"combined observed UL","l");
-    leg->AddEntry(gulcexp ,"combined median expected UL","l");
+    //leg->AddEntry(gulcexp ,"combined median expected UL","l");
+    leg->AddEntry(hgexp   ,"combined median expected UL","lf");
     leg->AddEntry(gul     ,"2l2j observed UL","l");
     leg->AddEntry(gul2    ,"4l observed UL","l");
 
