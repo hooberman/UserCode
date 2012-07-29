@@ -28,8 +28,8 @@ using namespace std;
 
 bool plotExpected  = false;
 bool plotObserved  = true;
-bool logplot       = true;
-bool isPreliminary = true;
+bool logplot       = false;
+bool isPreliminary = false;
 
 void cmsPrelim(double intLumi, bool prelim)
 {
@@ -149,27 +149,63 @@ void makeGMSBPlot( bool printplots = false ){
   const unsigned int n = 15;
   float x[n];
   float y[n];
+  float yup[n];
+  float ydn[n];
 
-  // float xerr[n];
+  float xerr[n];
   float yerr[n];
 
-  x[0]  = 130;   y[0]  = 3057;   yerr[i] = 0.055 * y[0];
-  x[1]  = 150;   y[1]  = 1719;   yerr[i] = 0.054 * y[1];
-  x[2]  = 170;   y[2]  = 1035;   yerr[i] = 0.050 * y[2];
-  x[3]  = 190;   y[3]  =  656;   yerr[i] = 0.047 * y[3];
-  x[4]  = 210;   y[4]  =  433;   yerr[i] = 0.048 * y[4];
-  x[5]  = 230;   y[5]  =  293;   yerr[i] = 0.051 * y[5];
-  x[6]  = 250;   y[6]  =  205;   yerr[i] = 0.047 * y[6];
-  x[7]  = 270;   y[7]  =  146;   yerr[i] = 0.048 * y[7];
-  x[8]  = 290;   y[8]  =  105;   yerr[i] = 0.049 * y[8];
-  x[9]  = 310;   y[9]  =   77;   yerr[i] = 0.048 * y[9];
-  x[10] = 330;   y[10] =   57;   yerr[i] = 0.053 * y[10];
-  x[11] = 350;   y[11] =   43;   yerr[i] = 0.055 * y[11];   
-  x[12] = 370;   y[12] =   33;   yerr[i] = 0.057 * y[12];   
-  x[13] = 390;   y[13] =   25;   yerr[i] = 0.057 * y[13];   
-  x[14] = 410;   y[14] =   20;   yerr[i] = 0.060 * y[14];   
+  float xband[30];
+  float yband[30];
 
-  TGraph* g  = new TGraph(n,x,y);
+  x[0]  = 130;   y[0]  = 3057;   yerr[0]  = 0.055 * y[0];
+  x[1]  = 150;   y[1]  = 1719;   yerr[1]  = 0.054 * y[1];
+  x[2]  = 170;   y[2]  = 1035;   yerr[2]  = 0.050 * y[2];
+  x[3]  = 190;   y[3]  =  656;   yerr[3]  = 0.047 * y[3];
+  x[4]  = 210;   y[4]  =  433;   yerr[4]  = 0.048 * y[4];
+  x[5]  = 230;   y[5]  =  293;   yerr[5]  = 0.051 * y[5];
+  x[6]  = 250;   y[6]  =  205;   yerr[6]  = 0.047 * y[6];
+  x[7]  = 270;   y[7]  =  146;   yerr[7]  = 0.048 * y[7];
+  x[8]  = 290;   y[8]  =  105;   yerr[8]  = 0.049 * y[8];
+  x[9]  = 310;   y[9]  =   77;   yerr[9]  = 0.048 * y[9];
+  x[10] = 330;   y[10] =   57;   yerr[10] = 0.053 * y[10];
+  x[11] = 350;   y[11] =   43;   yerr[11] = 0.055 * y[11];   
+  x[12] = 370;   y[12] =   33;   yerr[12] = 0.057 * y[12];   
+  x[13] = 390;   y[13] =   25;   yerr[13] = 0.057 * y[13];   
+  x[14] = 410;   y[14] =   20;   yerr[14] = 0.060 * y[14];   
+
+  for( int i = 0 ; i < 15; ++i ){
+    xerr[i] = 0.0;
+    yup[i]  = y[i] + yerr[i];
+    ydn[i]  = y[i] - yerr[i];
+  }
+
+  for( int i = 0 ; i < 15; ++i ){
+    xband[i] = x[i];
+    yband[i] = y[i] + yerr[i];
+  }
+
+  for( int i = 0 ; i < 15; ++i ){
+    xband[i+15] = x[14-i];
+    yband[i+15] = y[14-i] - yerr[14-i];
+  }
+  
+  // cout << endl << endl;
+  // for( int i = 0 ; i < 30 ; ++i ){
+  //   cout << xband[i] << " " << yband[i] << endl;
+  // }
+  // cout << endl << endl;
+
+  TGraph* g     = new TGraph(n,x,y);
+  TGraph* gup   = new TGraph(n,x,yup);
+  TGraph* gdn   = new TGraph(n,x,ydn);
+  TGraph* gband = new TGraph(30,xband,yband);
+
+
+  // UP:   248
+  // DOWN: 148
+
+  //TGraphErrors* g  = new TGraphErrors(n,x,y,xerr,yerr);
 
   TCanvas *c1 = new TCanvas();
   gPad->SetTopMargin(0.1);
@@ -187,7 +223,13 @@ void makeGMSBPlot( bool printplots = false ){
   if( logplot ) gPad->SetLogy();
 
   g->SetLineColor(2);
-  g->SetLineWidth(4);
+  g->SetLineWidth(3);
+  g->SetFillColor(5);
+  gup->SetLineColor(2);
+  gdn->SetLineColor(2);
+  gup->SetLineStyle(2);
+  gdn->SetLineStyle(2);
+  gband->SetFillColor(5);
 
   //2l2j observed
   gul->SetLineColor(4);
@@ -251,6 +293,9 @@ void makeGMSBPlot( bool printplots = false ){
   hdummy->Draw("axissame");
   */
 
+  gband->Draw("samef");
+  g->Draw("samel");
+
   if( plotObserved ){
     gul->Draw("samel");
     gul2->Draw("samel");
@@ -264,7 +309,10 @@ void makeGMSBPlot( bool printplots = false ){
     gulcexp->Draw("samel");
   }
 
-  g->Draw("samel");
+  //gband->Draw("samef");
+  //g->Draw("samel");
+  //gup->Draw("samel");
+  //gdn->Draw("samel");
 
   //gulexp->Draw("samel");
   //gul2exp->Draw("samel");
@@ -313,7 +361,14 @@ void makeGMSBPlot( bool printplots = false ){
     leg->AddEntry(gulcexp ,"expected UL (combined)","l");
   }
 
-  leg->AddEntry(g,  "theory","l");
+  TH1F* hg = new TH1F("h","",1,0,1);
+  hg->SetLineColor(2);
+  hg->SetLineWidth(3);
+  hg->SetFillColor(5);
+
+  //leg->AddEntry(g,  "theory","l");
+  leg->AddEntry(hg,  "theory","lf");
+
   //leg->AddEntry(box,"excluded region","f");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
