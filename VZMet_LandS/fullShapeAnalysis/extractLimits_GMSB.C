@@ -78,6 +78,8 @@ void extractLimits_GMSB(){
   vector<float> mgvec;
   vector<float> expvec;
   vector<float> obsvec;
+  vector<float> expp1vec;
+  vector<float> expm1vec;
 
   for( unsigned int mgbin = 1 ; mgbin <= nbins ; mgbin++ ){
 
@@ -115,14 +117,18 @@ void extractLimits_GMSB(){
       mgvec.push_back(mg);
       expvec.push_back(xsec * mylimit.exp);
       obsvec.push_back(xsec * mylimit.obs);
-      
+      expp1vec.push_back(xsec * mylimit.expp1);
+      expm1vec.push_back(xsec * mylimit.expm1);
+
       cout << "---------------------------------------------------" << endl;
-      cout << "filename    " << filename    << endl;
-      cout << "mgbin       " << mgbin       << endl;
-      cout << "xsec        " << xsec        << endl;
-      cout << "mg          " << mg          << endl;
-      cout << "Observed:   " << xsec * mylimit.obs << endl; 
-      cout << "Expected:   " << xsec * mylimit.exp << endl; 
+      cout << "filename       " << filename             << endl;
+      cout << "mgbin          " << mgbin                << endl;
+      cout << "xsec           " << xsec                 << endl;
+      cout << "mg             " << mg                   << endl;
+      cout << "Observed:      " << xsec * mylimit.obs   << endl; 
+      cout << "Expected:      " << xsec * mylimit.exp   << endl; 
+      cout << "Expected(+1):  " << xsec * mylimit.expp1 << endl; 
+      cout << "Expected(-1):  " << xsec * mylimit.expm1 << endl; 
       cout << "---------------------------------------------------" << endl;
 
       //----------------------
@@ -154,24 +160,34 @@ void extractLimits_GMSB(){
   float mg[n];
   float obs[n];
   float exp[n];
+  float expp1[n];
+  float expm1[n];
 
   for( unsigned int i0 = 0 ; i0 < n ; ++i0 ){
-    mg[i0]    = mgvec.at(i0);
-    exp[i0]   = expvec.at(i0);
-    obs[i0]   = obsvec.at(i0);
+    mg[i0]      = mgvec.at(i0);
+    exp[i0]     = expvec.at(i0);
+    obs[i0]     = obsvec.at(i0);
+    expp1[i0]   = expp1vec.at(i0);
+    expm1[i0]   = expm1vec.at(i0);
   }
 
   TGraph grobs(n,mg,obs);    
   TGraph grexp(n,mg,exp);
+  TGraph grexpp1(n,mg,expp1);
+  TGraph grexpm1(n,mg,expm1);
 
   grobs.SetName("grobs");
   grexp.SetName("grexp");
+  grexpp1.SetName("grexpp1");
+  grexpm1.SetName("grexpm1");
 
   grobs.SetTitle("grobs");
   grexp.SetTitle("grexp");
+  grexpp1.SetTitle("grexpp1");
+  grexpm1.SetTitle("grexpm1");
 
   char* outfilename         = Form("cards/%s/observed_limit.root",version);
-  if( combined) outfilename = Form("cards/%s/observed_limit_combined.root",version);
+  if( combined) outfilename = Form("cards/%s/observed_limit_combined_band.root",version);
 
   TFile* outfile = TFile::Open(outfilename,"RECREATE");
 
