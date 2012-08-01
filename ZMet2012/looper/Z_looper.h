@@ -232,6 +232,12 @@ class Z_looper
   Int_t   nbtags_;
   Int_t   nbl_;
   Int_t   nbm_;
+  Int_t   nbcsvm_;
+  Int_t   nbcsvl_;
+  Int_t   nbcsvt_;
+  Float_t ht30_;
+  Float_t ht40_;
+  Float_t jzb_;
 
   //electron-matched jet stuff
   Float_t drjet_ll_;
