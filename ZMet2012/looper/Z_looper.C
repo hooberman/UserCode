@@ -1580,8 +1580,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           
         LorentzVector vlt    = hyp_lt_p4()[hypIdx];
         LorentzVector vll    = hyp_ll_p4()[hypIdx];
-
-        if( fabs( vjet.eta() ) > 2.5 ) continue;
      
         if( generalLeptonVeto ){
           bool rejectJet = false;
@@ -1602,6 +1600,15 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           failjetid_ = 1;
           continue;
         }
+
+        if( fabs( vjet.eta() ) > 3.0 ) continue;
+
+        if ( vjet.pt()   > 40. ){
+	  nJets40_++;
+	  ht40_ += vjet.pt();
+	}
+
+        if( fabs( vjet.eta() ) > 2.5 ) continue;
 
 	//---------------------------------------------------------------------------
 	// jet passes: now store various quantities
@@ -1626,8 +1633,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  jetptx += vjet.px();
 	  jetpty += vjet.py();
 	}
-
-
 
         if ( vjet.pt() > 10. ){
           sumJetPt10_ += vjet.pt();
@@ -1715,10 +1720,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if ( vjet.pt()   > 30. ){
 	  nJets_++;
 	  ht30_ += vjet.pt();
-	}
-        if ( vjet.pt()   > 40. ){
-	  nJets40_++;
-	  ht40_ += vjet.pt();
 	}
       }
 
