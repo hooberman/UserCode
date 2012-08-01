@@ -657,6 +657,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       pfmett1_     = cms2.evt_pfmet_type1cor();
       pfmett1phi_  = cms2.evt_pfmetPhi_type1cor();
 
+      
+
       std::pair<float, float> Type1PFMetPair = myMetCorrector->getCorrectedMET();
       pfmett1new_     = Type1PFMetPair.first;
       pfmett1newphi_  = Type1PFMetPair.second;
@@ -819,8 +821,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
-        if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
-        if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
+        if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 10. )   continue;
+        //if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
       
         //muon ID
         if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 )))   continue;
@@ -1004,6 +1006,22 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       dilep_   = &hyp_p4().at(hypIdx);
 
+      //---------------------------------------------
+      // calculate JZB = | -MET - pTZ | - | pTZ |
+      //---------------------------------------------
+
+      float metx = evt_pfmet() * cos( evt_pfmetPhi() );
+      float mety = evt_pfmet() * sin( evt_pfmetPhi() );
+
+      float pzx  = hyp_p4().at(hypIdx).px();
+      float pzy  = hyp_p4().at(hypIdx).py();
+
+      float dx   = -1 * ( metx + pzx );
+      float dy   = -1 * ( mety + pzy );
+
+      jzb_ = sqrt( dx*dx + dy*dy ) - hyp_p4().at(hypIdx).pt();
+
+
       dilmasspf_ = -1;
 
       if( nmatched == 2 ){
@@ -1094,6 +1112,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	  cout << endl << endl;
 	  cout << "WARNING" << endl;
+	  cout << currentFile->GetTitle() << endl;
 	  cout << "run lumi event " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 	  cout << "nleptons " << nlep_ << endl;
 	  cout << "extra leptons " << goodExtraLeptons.size() << endl;
@@ -2198,6 +2217,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("nbcsvt",       &nbcsvt_,       "nbcsvt/I"       );
   babyTree_->Branch("nbvz",         &nbvz_,         "nbvz/I"         );
   babyTree_->Branch("nbvzres",      &nbvzres_,      "nbvzres/I"      );
+  babyTree_->Branch("jzb",          &jzb_,          "jzb/F"          );
   babyTree_->Branch("mjj",          &mjj_,          "mjj/F"          );
   babyTree_->Branch("mjjup",        &mjjup_,        "mjjup/F"        );
   babyTree_->Branch("mjjdn",        &mjjdn_,        "mjjdn/F"        );
