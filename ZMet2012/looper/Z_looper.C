@@ -1681,12 +1681,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 )  nbm_++;
 
 	
-	if( pfjets_combinedSecondaryVertexBJetTag() > 0.244 )  nbcsvl_++;
-	if( pfjets_combinedSecondaryVertexBJetTag() > 0.679 ){
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.244 )  nbcsvl_++;
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.679 ){
 	  nbcsvm_++;
 	  goodBJets.push_back(vjet);
 	}
-	if( pfjets_combinedSecondaryVertexBJetTag() > 0.898 )  nbcsvt_++;
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.898 )  nbcsvt_++;
 
 	//weight (scale factor) branches
 
