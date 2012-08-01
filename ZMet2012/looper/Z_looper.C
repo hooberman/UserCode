@@ -61,7 +61,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-19";
+const char* iter                 = "V00-00-21";
 const char* jsonfilename         = "../jsons/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 5.10/fb
 
 //--------------------------------------------------------------------
@@ -616,8 +616,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	else if(TString(prefix).Contains("wzsms") ){
-	  mg_ = -1;//sparm_mN();
-	  ml_ = -1;//sparm_mL();
+	  mg_ = sparm_values().at(0);
+	  ml_ = sparm_values().at(1);
 	  x_  = -999;
 	  int bin = xsec_C1N2->FindBin(mg_);
 	  weight_ = lumi * xsec_C1N2->GetBinContent(bin) * (1.0/100000.);
@@ -709,10 +709,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       int nHypPass = 0;
 
       VofP4 goodLeptons;
+      vector<int> goodLeptonIDs;
       vector<int> goodMuonIndices;
       vector<int> goodPFMuonIndices;
       vector<bool>  killedJet;
       goodLeptons.clear();
+      goodLeptonIDs.clear();
       killedJet.clear();
       goodMuonIndices.clear();
       goodPFMuonIndices.clear();
@@ -734,6 +736,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           if( els_p4().at(iel).pt() < 10 )                                             continue;
 	  if( ! passElectronSelection_ZMet2012_v1(iel,vetoTransition,vetoTransition) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
+	  goodLeptonIDs.push_back( els_charge().at(iel) * 11 );
 	  nlep_++;
 	  nel_++;
 	  killedJet.push_back( false );
@@ -750,6 +753,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
           if( mus_p4().at(imu).pt() < 10 )           continue;
           if( !muonId( imu , ZMet2012_v1 ))          continue;
           goodLeptons.push_back( mus_p4().at(imu) );
+	  goodLeptonIDs.push_back( mus_charge().at(imu) * 13 );
 	  nlep_++;
 	  nmu_++;
           killedJet.push_back( false );
@@ -1090,12 +1094,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	  cout << endl << endl;
 	  cout << "WARNING" << endl;
+	  cout << "run lumi event " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 	  cout << "nleptons " << nlep_ << endl;
 	  cout << "extra leptons " << goodExtraLeptons.size() << endl;
 	  
 	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
 
-	    cout << ilep << " " << goodLeptons.at(ilep).pt() << endl;
+	    cout << ilep << " " << goodLeptonIDs.at(ilep) << " " << goodLeptons.at(ilep).pt() << endl;
 
 	    if( dRbetweenVectors( *lep1_ , goodLeptons.at(ilep) ) < 0.00001 ){
 	      cout << "lepton1" << endl;
@@ -1432,6 +1437,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       nbm_          = 0;
       nbl_          = 0;
       nJetsOld_     = 0;
+      ht30_         = 0.0;
+      ht40_         = 0.0;
+      nbcsvm_       = 0;
+      nbcsvl_       = 0;
+      nbcsvt_       = 0;
 
       LorentzVector jetSystem(0.,0.,0.,0.);        
       float maxcosdphi  = -99;
@@ -1649,10 +1659,15 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         }
 
 	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 )  nbl_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 )  nbm_++;
+
+	
+	if( pfjets_combinedSecondaryVertexBJetTag() > 0.244 )  nbcsvl_++;
+	if( pfjets_combinedSecondaryVertexBJetTag() > 0.679 ){
+	  nbcsvm_++;
 	  goodBJets.push_back(vjet);
-	  nbm_++;
 	}
+	if( pfjets_combinedSecondaryVertexBJetTag() > 0.898 )  nbcsvt_++;
 
 	//weight (scale factor) branches
 
@@ -1678,8 +1693,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  }
 	}
 
-        if ( vjet.pt()   > 30. ) nJets_++;
-        if ( vjet.pt()   > 40. ) nJets40_++;
+        if ( vjet.pt()   > 30. ){
+	  nJets_++;
+	  ht30_ += vjet.pt();
+	}
+        if ( vjet.pt()   > 40. ){
+	  nJets40_++;
+	  ht40_ += vjet.pt();
+	}
       }
 
       //---------------
@@ -1948,6 +1969,12 @@ void Z_looper::InitBabyNtuple (){
   vecJetPt_     = -999999;
   nJets40_      = -999999;
   sumJetPt10_   = -999999;
+  ht30_         = -999999.;
+  ht40_         = -999999.;
+  nbcsvl_       = -999999;
+  nbcsvm_       = -999999;
+  nbcsvt_       = -999999;
+  jzb_          = -999999.;
 
   nbtags_       = -999999;
   nbl_          = -999999;
@@ -2164,6 +2191,11 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("run",          &run_,          "run/I"          );
   babyTree_->Branch("btagweight",   &btagweight_,   "btagweight/F"   );
   babyTree_->Branch("btagweightup", &btagweightup_, "btagweightup/F" );
+  babyTree_->Branch("ht30",         &ht30_,         "ht30/F"         );
+  babyTree_->Branch("ht40",         &ht40_,         "ht40/F"         );
+  babyTree_->Branch("nbcsvl",       &nbcsvl_,       "nbcsvl/I"       );
+  babyTree_->Branch("nbcsvm",       &nbcsvm_,       "nbcsvm/I"       );
+  babyTree_->Branch("nbcsvt",       &nbcsvt_,       "nbcsvt/I"       );
   babyTree_->Branch("nbvz",         &nbvz_,         "nbvz/I"         );
   babyTree_->Branch("nbvzres",      &nbvzres_,      "nbvzres/I"      );
   babyTree_->Branch("mjj",          &mjj_,          "mjj/F"          );
