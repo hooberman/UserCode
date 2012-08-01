@@ -53,7 +53,7 @@ using namespace tas;
 
 const bool debug                = false;
 const float lumi                = 1.0;
-const char* iter                = "V00-00-12";
+const char* iter                = "V00-00-13";
 const char* jsonfilename        = "../jsons/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; //5.10/fb
 
 //--------------------------------------------------------------------
@@ -465,6 +465,21 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       swiss_      = photons_swissSeed().at(igmax);
       int scind   = photons_scindex().at(igmax) ;
       
+      //---------------------------------------------
+      // calculate JZB = | -MET - pTZ | - | pTZ |
+      //---------------------------------------------
+
+      float metx = evt_pfmet() * cos( evt_pfmetPhi() );
+      float mety = evt_pfmet() * sin( evt_pfmetPhi() );
+
+      float pzx  = photons_p4().at(igmax).px();
+      float pzy  = photons_p4().at(igmax).py();
+
+      float dx   = -1 * ( metx + pzx );
+      float dy   = -1 * ( mety + pzy );
+
+      jzb_ = sqrt( dx*dx + dy*dy ) - photons_p4().at(igmax).pt();
+
       if( scind > - 1 ){
         seed_       = scs_eSeed().at(scind) ;
         s4_         = swiss_ - seed_ ;
@@ -554,6 +569,8 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       nbl_          = 0;
       nbm_          = 0;
       nbt_          = 0;
+      ht30_         = 0.0;
+      ht40_         = 0.0;
 
       LorentzVector jetSystem(0.,0.,0.,0.);        
       float maxcosdphi  = -99;
@@ -591,8 +608,6 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
 	LorentzVector vjet = corr * pfjets_p4().at(ijet);
 
-	if( fabs(vjet.eta()) > 3.0 ) continue;
-
 	//---------------------------------------------------------------------------
         // PFJetID
 	//---------------------------------------------------------------------------
@@ -601,6 +616,15 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
           failjetid_ = 1;
           continue;
         }
+
+	if( fabs(vjet.eta()) > 3.0 ) continue;
+
+        if ( vjet.pt() > 40. ){
+	  nJets40_++;
+	  ht40_ += vjet.pt();
+	}
+
+	if( fabs(vjet.eta()) > 2.5 ) continue;
 
 	//---------------------------------------------------------------------------
         // HT variables
@@ -621,8 +645,10 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 	}
 
         if ( vjet.pt() > 20. ) nJets20_++;
-        if ( vjet.pt() > 30. ) nJets_++;
-        if ( vjet.pt() > 40. ) nJets40_++;
+        if ( vjet.pt() > 30. ){
+	  nJets_++;
+	  ht30_ += vjet.pt();
+	}
               
         if( vjet.pt() < 30. )                    continue;
 
@@ -919,6 +945,9 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("maxemf"	,       &maxemf_           ,	"maxemf/F"         );
   babyTree_->Branch("maxleppt"	,	&maxleppt_         ,	"maxleppt/F"       );
   babyTree_->Branch("elveto"	,	&elveto_           ,	"elveto/I"         );
+  babyTree_->Branch("ht30"	,	&ht30_             ,	"ht30/F"           );
+  babyTree_->Branch("ht40"	,	&ht40_             ,	"ht40/F"           );
+  babyTree_->Branch("jzb"	,	&jzb_              ,	"jzb/F"            );
 
   //met stuff
   babyTree_->Branch("pfmet"			,       &pfmet_                ,	 "pfmet/F"			);

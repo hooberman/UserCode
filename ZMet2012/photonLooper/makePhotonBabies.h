@@ -62,6 +62,9 @@ class makePhotonBabies
   Int_t hgg90_;
 
   Float_t rho_;
+  Float_t ht30_;
+  Float_t ht40_;
+  Float_t jzb_;
 
   // event stuff
   char    dataset_[200];
