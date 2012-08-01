@@ -4,20 +4,22 @@
 
   gROOT->ProcessLine(".L runZLooper.C+");
 
+  // runZLooper("data"                    , true  );
   // runZLooper("dataskim"                , true  );
+  runZLooper("dataskim2010"             , true  );
   // runZLooper("wz"                      , false );  
   // runZLooper("zz"                      , false );  
   // runZLooper("ttbar"                   , false );  
   // runZLooper("ww"                      , false );  
   // runZLooper("t"                       , false );  
   // runZLooper("zjets"                   , false );  
-  runZLooper("wzsms"     , false  );  
-  runZLooper("gmsb"      , false  );  
+  // runZLooper("wzsms"     , false  );  
+  // runZLooper("gmsb"      , false  );  
 
   //runZLooper("testfilter_newJEC"     , true  );  
   //runZLooper("RelValZEE"             , false );  
   //runZLooper("RelValZMM"             , false );  
-  //runZLooper("data"                  , true  );
+
 }
 
 

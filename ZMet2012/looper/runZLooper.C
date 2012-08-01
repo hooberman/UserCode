@@ -36,29 +36,44 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   if( strcmp( prefix , "data" ) == 0 ){    
 
     // 2012A
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012A-PromptReco-v1_AOD/unmerged/store*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012A-PromptReco-v1_AOD/unmerged/store*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/MuEG_Run2012A-PromptReco-v1_AOD/unmerged/store*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/merged*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012A-PromptReco-v1_AOD/merged/merged*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/MuEG_Run2012A-PromptReco-v1_AOD/merged/merged*root");
 
     // 2012 B
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012B-PromptReco-v1_AOD/unmerged/store*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012B-PromptReco-v1_AOD/unmerged/store*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/MuEG_Run2012B-PromptReco-v1_AOD/unmerged/store*root");
-
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012B-PromptReco-v1_AOD/merged/merged*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012B-PromptReco-v1_AOD/merged/merged*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/MuEG_Run2012B-PromptReco-v1_AOD/merged/merged*root");
   }
   
   //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "dataskim" ) == 0 ){    
 
     // 2012A
     pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleElectron_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
     pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleMu_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
     pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/MuEG_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
-
+    
     // 2012B
     pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleElectron_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
     pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/DoubleMu_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
     pickSkimIfExists(ch,"/nfs-6/userdata/benhoob/ZMet2012/MuEG_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
+  }
+  
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "dataskim2010" ) == 0 ){    
+
+    // 2012A
+    pickSkimIfExists(ch,"ZMet2012_pt2010/DoubleElectron_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010/DoubleMu_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010/MuEG_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
+    
+    // 2012B
+    pickSkimIfExists(ch,"ZMet2012_pt2010/DoubleElectron_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010/DoubleMu_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010/MuEG_Run2012B-PromptReco-v1_AOD/V05-02-27/merged*root");
   }
   
   //----------------------------------------------------------------------------------------
