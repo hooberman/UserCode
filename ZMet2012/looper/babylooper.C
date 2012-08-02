@@ -23,7 +23,7 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
-enum metType        { e_tcmet    = 0 , e_tcmetNew      = 1 , e_pfmet             = 2 , e_t1pfmet = 3 };
+enum metType        { e_tcmet    = 0 , e_tcmetNew      = 1 , e_pfmet             = 2 , e_t1pfmet = 3 , e_t1newpfmet = 4 };
 enum templateSource { e_QCD      = 0 , e_PhotonJet     = 1 , e_PhotonJetStitched = 2 };
 enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt = 2 };
 
@@ -36,11 +36,11 @@ bool           bveto              = false;                  // b-veto
 bool           mjjcut             = false;                  // dijet mass requirement
 bool           nlep2              = false;                  // 3rd lepton veto
 bool           setTemplateErrors  = true;                   // calculate template errors
-metType        myMetType          = e_pfmet;                // MET type
+metType        myMetType          = e_t1newpfmet;              // MET type
 templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templates
 templateType   myTemplateType     = e_njets_ht;             // bin templates in njets and HT
 bool           reweight           = false;                  // reweight for photon vs. Z pt
-char*          iter               = "njetsgeq2";            // label for output file
+char*          iter               = "_t1newpfmet";             // label for output file
 float          lumi               = 5.1;                    // luminosity
 //------------------------------------------------
 
@@ -95,8 +95,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
     if( bveto ) bvetochar = "_bveto";
 
     templateFileName =  Form("../photon_output/%s/DoubleElectron_templates%s%s.root",template_version,vtxchar,bvetochar);
-    //templateFileName =  Form("../photon_output/%s/Photon_templates%s%s.root",template_version,vtxchar,bvetochar);
 
+    //templateFileName =  Form("../photon_output/%s/Photon_templates%s%s.root",template_version,vtxchar,bvetochar);
     //if( doVtxReweight ) templateFileName = Form("../photon_output/%s/DoubleElectron_templates_vtxreweight.root",template_version);
     //else                templateFileName = Form("../photon_output/%s/DoubleElectron_templates.root",template_version);
 
@@ -233,10 +233,11 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       fillUnderOverFlow( hphotonpt     , etg_   , mcweight );
  
       float theMet = -1;
-      if     ( myMetType == e_tcmet    ) theMet = tcmet_;
-      else if( myMetType == e_tcmetNew ) theMet = tcmetNew_;
-      else if( myMetType == e_pfmet    ) theMet = pfmet_;
-      else if( myMetType == e_t1pfmet  ) theMet = pfmett1new_;
+      if     ( myMetType == e_tcmet       ) theMet = tcmet_;
+      else if( myMetType == e_tcmetNew    ) theMet = tcmetNew_;
+      else if( myMetType == e_pfmet       ) theMet = pfmet_;
+      else if( myMetType == e_t1pfmet     ) theMet = pfmett1_;
+      else if( myMetType == e_t1newpfmet  ) theMet = pfmett1new_;
 
       //---------------------------------------------------
       // apply event selection
@@ -394,7 +395,13 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
 
 	//cout << dilmass_ << " " << pfdilmass << endl;
-	//if( dilmass_ < 81. || dilmass_ > 101. )                              continue; 
+
+	
+	// if( dilmass_ < 81. || dilmass_ > 101. )                              continue; 
+	// if( fabs( pflep1_->pt() - lep1_->pt() ) > 5.0 ) continue;
+	// if( fabs( pflep2_->pt() - lep2_->pt() ) > 5.0 ) continue;
+	
+
 	if( dilmasspf_ < 81. || dilmasspf_ > 101. )                              continue; 
 	//if( dilmass_ < 86. || dilmasspf_ > 96. )                              continue; 
 
@@ -661,10 +668,11 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 void babylooper::setErrors( TFile* file,  TH1F* hist , int n[3][7] ){
 
   char* metstring = "";
-  if     ( myMetType == e_tcmet    ) metstring = "tcmet";
-  else if( myMetType == e_tcmetNew ) metstring = "tcmetNew";
-  else if( myMetType == e_pfmet    ) metstring = "pfmet";
-  else if( myMetType == e_t1pfmet  ) metstring = "t1pfmet";
+  if     ( myMetType == e_tcmet       ) metstring = "tcmet";
+  else if( myMetType == e_tcmetNew    ) metstring = "tcmetNew";
+  else if( myMetType == e_pfmet       ) metstring = "pfmet";
+  else if( myMetType == e_t1pfmet     ) metstring = "t1pfmet";
+  else if( myMetType == e_t1newpfmet  ) metstring = "t1newpfmet";
 
   cout << hist->Integral() << endl;
 
@@ -710,10 +718,11 @@ void babylooper::setErrors( TFile* file,  TH1F* hist , int n[4][3][7] ){
   cout << "setErrors: " << hist->GetName() << endl;
 
   char* metstring = "";
-  if     ( myMetType == e_tcmet    ) metstring = "tcmet";
-  else if( myMetType == e_tcmetNew ) metstring = "tcmetNew";
-  else if( myMetType == e_pfmet    ) metstring = "pfmet";
-  else if( myMetType == e_t1pfmet  ) metstring = "t1pfmet";
+  if     ( myMetType == e_tcmet       ) metstring = "tcmet";
+  else if( myMetType == e_tcmetNew    ) metstring = "tcmetNew";
+  else if( myMetType == e_pfmet       ) metstring = "pfmet";
+  else if( myMetType == e_t1pfmet     ) metstring = "t1pfmet";
+  else if( myMetType == e_t1newpfmet  ) metstring = "t1newpfmet";
 
   cout << hist->Integral() << endl;
 
@@ -775,10 +784,11 @@ TH1F* babylooper::getMetTemplate( TFile* file, int iTrigBin , int iJetBin ,
   
   char* metstring = "";
   
-  if     ( myMetType == e_tcmet    ) metstring = "tcmet";
-  else if( myMetType == e_tcmetNew ) metstring = "tcmetNew";
-  else if( myMetType == e_pfmet    ) metstring = "pfmet";
-  else if( myMetType == e_t1pfmet  ) metstring = "t1pfmet";
+  if     ( myMetType == e_tcmet       ) metstring = "tcmet";
+  else if( myMetType == e_tcmetNew    ) metstring = "tcmetNew";
+  else if( myMetType == e_pfmet       ) metstring = "pfmet";
+  else if( myMetType == e_t1pfmet     ) metstring = "t1pfmet";
+  else if( myMetType == e_t1newpfmet  ) metstring = "t1newpfmet";
   
   TH1F* hmet = new TH1F();
   
@@ -969,8 +979,8 @@ void babylooper::bookHistos(){
   hgenps_pthat = new TH1F("hgenps_pthat","",100,0,100);
   hphotonpt    = new TH1F("hphotonpt","",100,0,100);
 
-  int maxmet = 300;
-
+  int maxmet = 350;
+  if( bveto ) maxmet = 250;
 
     
   metObserved  = new TH1F("metObserved", "Observed MET",maxmet,0,maxmet);
@@ -1069,6 +1079,7 @@ void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("nvtx",         &nvtx_         );
   tree->SetBranchAddress("npfmuons",     &npfmuons_     );
   tree->SetBranchAddress("pfmet",        &pfmet_        );
+  tree->SetBranchAddress("pfmett1",      &pfmett1_      );
   tree->SetBranchAddress("pfmett1new",   &pfmett1new_   );
   tree->SetBranchAddress("pfmetcor",     &pfmetcor_     );
   tree->SetBranchAddress("pfmetphi",     &pfmetphi_     );
