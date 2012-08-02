@@ -197,7 +197,8 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
         fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
         fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
-        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1_       , templateWeight );
+        fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
       
       else if( h75 > 0 ){
@@ -212,7 +213,8 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
         fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
         fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
-        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1_       , templateWeight );
+        fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
 
       else if( h50 > 0 ){
@@ -227,7 +229,8 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
         fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
         fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
-        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1_       , templateWeight );
+        fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
 
       else if( h30 > 0 ){
@@ -242,7 +245,8 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
         fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
         fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
-        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1_       , templateWeight );
+        fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
 
       else if( h20 > 0 ){
@@ -257,7 +261,8 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
         fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
         fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
-        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1_       , templateWeight );
+        fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
 
       else{
@@ -331,6 +336,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
           scale = t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Integral();
           if( scale > 0 )  t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+
+          scale = t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Integral();
+          if( scale > 0 )  t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
           
         }
       }
@@ -396,7 +404,8 @@ void makePhotonTemplates::bookHistos(){
   hnvtxPt90  = new TH1F("hnvtxPt90", "",50,0,50);
   hnvtxAll   = new TH1F("hnvtxAll" , "",50,0,50);
 
-  int maxmet = 300;
+  int maxmet = 350;
+  if( bveto ) maxmet = 250;
 
   for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
     for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
@@ -481,13 +490,20 @@ void makePhotonTemplates::bookHistos(){
 									   Form("%s, %s, %s",trigName[iTrigBin],
 										jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
         
+
+        t1newpfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin] = new TH1F(Form("t1newpfmetTemplate_photon_%i_%i_%i",iTrigBin,iJetBin,iSumJetPtBin),
+									      Form("%s, %s, %s",trigName[iTrigBin],
+										   jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
+        
         tcmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
         pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
         t1pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
+        t1newpfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
         
         tcmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("tcmet (GeV)");
         pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("pfmet (GeV)");          
-        t1pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("type1 pfmet (GeV)");          
+        t1pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("type1 pfmet 42X (GeV)");          
+        t1newpfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("type1 pfmet 52X(GeV)");          
         
       }
     }
@@ -501,6 +517,7 @@ void makePhotonTemplates::setBranches (TTree* tree){
   tree->SetBranchAddress("tcmet"	       ,        &tcmet_                 );
   tree->SetBranchAddress("pfmet"	       ,        &pfmet_                 );
   tree->SetBranchAddress("pfmett1new"	       ,        &pfmett1new_            );
+  tree->SetBranchAddress("pfmett1"	       ,        &pfmett1_               );
   tree->SetBranchAddress("pfmetphi"	       ,        &pfmetphi_              );
   tree->SetBranchAddress("njets"	       ,        &nJets_                 );
   tree->SetBranchAddress("nbl"	               ,        &nbl_                   );
