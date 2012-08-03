@@ -28,10 +28,12 @@ class makePhotonTemplates
   Float_t   pfmet_;
   Float_t   pfmetphi_;
   Int_t     nJets_;
+  Int_t     nJets40_;
   Int_t     nbl_;
   Int_t     nbm_;
   Int_t     nbt_;
   Float_t   ht_;
+  Float_t   ht40_;
   Int_t     nvtx_;
   Float_t   maxjetpt_;
   Float_t   prescale_;

@@ -28,6 +28,7 @@
 const bool debug          = true;
 const bool vtxreweight    = true;
 const bool bveto          = false;
+const bool pt40           = true;
 
 using namespace std;
 
@@ -49,6 +50,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
   if( bveto )       cout << "Doing b-veto" << endl;
   else              cout << "NO b-veto"    << endl;
+
+  if( pt40 )        cout << "Require >=2 40 GeV jets with HT > 100 GeV"        << endl;
+  else              cout << "DO NOT require >=2 40 GeV jets with HT > 100 GeV" << endl;
 
   int npass = 0;
   bookHistos();
@@ -149,7 +153,8 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( maxleppt_ > 20.0 )                                continue; // veto leptons pt > 20 GeV
       if( acos( cos( phig_ - pfmetphi_ ) ) < 0.14 )         continue; // kill photons aligned with MET
       if( bveto && nbm_ > 0 )                               continue; // apply b-veto 
-      
+      if( pt40 && ( nJets40_ < 2 || ht40_ < 100.0 ) )       continue; // require 2 pT > 40 GeV jets with HT > 100 GeV
+
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
 
@@ -355,8 +360,11 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
     char* bvetochar = "";
     if( bveto ) bvetochar = "_bveto";
 
-    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s%s.root",iter,sample,vtxchar,bvetochar) << endl;
-    saveHist(Form("../photon_output/%s/%s_templates%s%s.root",iter,sample,vtxchar,bvetochar));
+    char* pt40char = "";
+    if( pt40 ) pt40char = "_pt40";
+
+    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s%s%s.root",iter,sample,vtxchar,bvetochar,pt40char) << endl;
+    saveHist(Form("../photon_output/%s/%s_templates%s%s%s.root",iter,sample,vtxchar,bvetochar,pt40char));
 
     //deleteHistos();
 
@@ -520,10 +528,12 @@ void makePhotonTemplates::setBranches (TTree* tree){
   tree->SetBranchAddress("pfmett1"	       ,        &pfmett1_               );
   tree->SetBranchAddress("pfmetphi"	       ,        &pfmetphi_              );
   tree->SetBranchAddress("njets"	       ,        &nJets_                 );
+  tree->SetBranchAddress("njets40"	       ,        &nJets40_               );
   tree->SetBranchAddress("nbl"	               ,        &nbl_                   );
   tree->SetBranchAddress("nbm"	               ,        &nbm_                   );
   tree->SetBranchAddress("nbt"	               ,        &nbt_                   );
   tree->SetBranchAddress("ht"	               ,        &ht_                    );
+  tree->SetBranchAddress("ht40"	               ,        &ht40_                  );
   tree->SetBranchAddress("nvtx"		       ,        &nvtx_                  );
   tree->SetBranchAddress("jetpt"	       ,        &jet_pt_                );
   tree->SetBranchAddress("calojetpt"	       ,	&calojet_pt_		);  
