@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-04-09";
+  const char* version    = "V00-04-13";
   const char* jsonfile   = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
@@ -92,9 +92,9 @@ void doAll(bool skipFWLite = true)
   int prettV      = 1;
  
   // flags for files to run over
-  bool rundata     = 0;
+  bool rundata     = 1;
   bool runttall    = 1;
-  bool runWjets    = 1;
+  bool runWjets    = 0;
   bool runVV       = 0;
   bool runQCD      = 0;
   bool runMuQCD    = 0;
