@@ -56,7 +56,21 @@ bool doTenPercent   = false;
 using namespace std;
 using namespace tas;
 
-typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > P4;
+typedef vector< P4 > VofP4;
+//typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
+
+struct indP4{
+  LorentzVector p4obj;
+  int p4ind;
+};
+
+typedef vector< indP4 > VofiP4;
+
+inline bool sortIP4ByPt(indP4 iP41, indP4 iP42) {
+  return iP41.p4obj.pt() > iP42.p4obj.pt();
+}
+
 
 //mSUGRA scan parameters-----------------------------
 
@@ -192,16 +206,57 @@ int isGenQGMatched ( LorentzVector p4, float dR ) {
   for (int igen = (cms2.genps_p4().size()-1); igen >-1; igen--) {
     float deltaR = dRbetweenVectors( p4 , cms2.genps_p4().at(igen) );
     if ( deltaR > dR ) continue;
-    int id = abs(cms2.genps_id().at(igen));
-    int mothid = abs(genps_id_mother().at(igen));
+    int id = cms2.genps_id().at(igen);
+    int mothid = genps_id_mother().at(igen);
     // cout<<"status 3 particle ID "<<id<<" mother "<<mothid
     // 	<<" dR to jet "<<deltaR<<endl;
-    if (id<6 && mothid==24) return 2;
-    if (id==5 && mothid==6) return 1;
-    if (id==21) return 3;
-    if (id<6) return 4;
+    if (abs(id)<6 && abs(mothid)==24) 
+      return (mothid>0) ? 2 : -2;
+    if (abs(id)==5 && abs(mothid)==6) 
+      return (mothid>0) ? 1 : -1;
+    if (abs(id)==21) return 3;
+    if (abs(id)<6) return 4;
   }
-  return -1;
+  return -9;
+}
+
+//--------------------------------------------------------------------
+
+float dRGenJet ( LorentzVector p4, float genminpt = 20.) {
+
+  //return dR to closest gen-jet with pT > genminpt
+  float mindeltaR = 9999.;
+  for (unsigned int igen = 0; igen < cms2.genjets_p4().size(); igen++) {
+    LorentzVector vgenj = cms2.genjets_p4().at(igen);
+    if ( vgenj.Pt() < genminpt ) continue;
+    float deltaR = dRbetweenVectors( p4 , vgenj );
+    if ( deltaR< mindeltaR ) mindeltaR = deltaR;
+  }
+  return mindeltaR;
+
+}
+
+//--------------------------------------------------------------------
+
+int isSSVMTagged ( int ijet ) {
+
+  if ( pfjets_simpleSecondaryVertexHighEffBJetTag().at(ijet) > 1.74 )
+    return 1;
+
+  return 0;
+
+}
+
+//--------------------------------------------------------------------
+
+int isCSVTagged ( int ijet ) {
+  
+  float discrim = pfjets_combinedSecondaryVertexBJetTag().at(ijet);
+  if ( discrim > 0.679 ) return 1;
+  if ( discrim > 0.244 ) return 2;
+
+  return 0;
+
 }
 
 //--------------------------------------------------------------------
@@ -522,13 +577,66 @@ void singleLeptonLooper::InitBaby(){
   pfjet4_	= 0;
   pfjet5_	= 0;
   pfjet6_	= 0;
-
+  beta1jet1_    = -9999.; 
+  beta1jet2_    = -9999.; 
+  beta1jet3_    = -9999.; 
+  beta1jet4_    = -9999.; 
+  beta1jet5_    = -9999.; 
+  beta1jet6_    = -9999.; 
+  beta2jet1_    = -9999.; 
+  beta2jet2_    = -9999.; 
+  beta2jet3_    = -9999.; 
+  beta2jet4_    = -9999.; 
+  beta2jet5_    = -9999.; 
+  beta2jet6_    = -9999.; 
+  beta10p1jet1_ = -9999.; 
+  beta10p1jet2_ = -9999.; 
+  beta10p1jet3_ = -9999.; 
+  beta10p1jet4_ = -9999.; 
+  beta10p1jet5_ = -9999.; 
+  beta10p1jet6_ = -9999.; 
+  beta20p1jet1_ = -9999.; 
+  beta20p1jet2_ = -9999.; 
+  beta20p1jet3_ = -9999.; 
+  beta20p1jet4_ = -9999.; 
+  beta20p1jet5_ = -9999.; 
+  beta20p1jet6_ = -9999.; 
+  beta10p15jet1_= -9999.; 
+  beta10p15jet2_= -9999.; 
+  beta10p15jet3_= -9999.; 
+  beta10p15jet4_= -9999.; 
+  beta10p15jet5_= -9999.; 
+  beta10p15jet6_= -9999.; 
+  beta20p15jet1_= -9999.; 
+  beta20p15jet2_= -9999.; 
+  beta20p15jet3_= -9999.; 
+  beta20p15jet4_= -9999.; 
+  beta20p15jet5_= -9999.; 
+  beta20p15jet6_= -9999.; 
+  beta10p2jet1_ = -9999.; 
+  beta10p2jet2_ = -9999.; 
+  beta10p2jet3_ = -9999.; 
+  beta10p2jet4_ = -9999.; 
+  beta10p2jet5_ = -9999.; 
+  beta10p2jet6_ = -9999.; 
+  beta20p2jet1_ = -9999.; 
+  beta20p2jet2_ = -9999.; 
+  beta20p2jet3_ = -9999.; 
+  beta20p2jet4_ = -9999.; 
+  beta20p2jet5_ = -9999.; 
+  beta20p2jet6_ = -9999.; 
   bjet1_      = -1; 
   bjet2_      = -1; 
   bjet3_      = -1; 
   bjet4_      = -1; 
   bjet5_      = -1; 
   bjet6_      = -1; 
+  bcsvjet1_   = -1; 
+  bcsvjet2_   = -1; 
+  bcsvjet3_   = -1; 
+  bcsvjet4_   = -1; 
+  bcsvjet5_   = -1; 
+  bcsvjet6_   = -1; 
   lepjet1_    = -1; 
   lepjet2_    = -1; 
   lepjet3_    = -1; 
@@ -541,6 +649,12 @@ void singleLeptonLooper::InitBaby(){
   qgjet4_     = -1; 
   qgjet5_     = -1; 
   qgjet6_     = -1; 
+  genjetdr1_  = 9999.; 
+  genjetdr2_  = 9999.; 
+  genjetdr3_  = 9999.; 
+  genjetdr4_  = 9999.; 
+  genjetdr5_  = 9999.; 
+  genjetdr6_  = 9999.; 
 
   lep1chi2ndf_	= -9999.;
   lep2chi2ndf_	= -9999.;
@@ -826,11 +940,11 @@ float getMuTriggerWeightNew( float pt, float eta ) {
 
 //--------------------------------------------------------------------
 
-float getminjdr( VofP4 jets, LorentzVector *particle ) {
+float getminjdr( VofiP4 jets, LorentzVector *particle ) {
   float mindr = 9999.;
   if (jets.size()==0 || particle==0) return mindr;
   for ( unsigned int ijet = 0; ijet<jets.size(); ++ijet ) {
-    float partjdr = dRbetweenVectors(jets.at(ijet),*particle);
+    float partjdr = dRbetweenVectors(jets.at(ijet).p4obj,*particle);
     if ( partjdr<mindr ) mindr = partjdr;
   }
   return mindr;
@@ -2192,10 +2306,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       float maxjetpt  = -1.;
       float ht_ = 0.;
 
-      VofP4 vpfjets_p4;
+      //      VofP4 vpfjets_p4;
       VofP4 vpfrawjets_p4;
-      vpfjets_p4.clear();
+      //      vpfjets_p4.clear();
       vpfrawjets_p4.clear();
+      VofiP4 vipfjets_p4;
+      vipfjets_p4.clear();
 
       vector<float> fullcors;
       vector<float> l2l3cors;
@@ -2240,6 +2356,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 
 	LorentzVector vjet      = corr    * pfjets_p4().at(ijet);
+	indP4 ivjet = { vjet, ijet };
 
 	//---------------------------------------------------------------------------
 	// get JES uncertainty
@@ -2303,7 +2420,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	// store L1FastL2L3Residual jet p4's pt > 15 GeV
 	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 2.5 ){
-	  vpfjets_p4.push_back( vjet );
+	  //	  vpfjets_p4.push_back( vjet );
+	  vipfjets_p4.push_back( ivjet );
 	}
 
 	// njets JEC up
@@ -2541,63 +2659,125 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       // store L1FastL2L3Residual pfjets
       // check if jet is b-tagged
-      sort(vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
-      if( vpfjets_p4.size() > 0 ) {
-	pfjet1_  = &vpfjets_p4.at(0);
-	bjet1_ = isBTagged( vpfjets_p4.at(0), mediumBJets ) ? 1 : 0;
+      //      sort(vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
+      sort(vipfjets_p4.begin(), vipfjets_p4.end(), sortIP4ByPt);
+
+      if( vipfjets_p4.size() > 0 ) {
+	pfjet1_  = &vipfjets_p4.at(0).p4obj;
+	bjet1_    = isSSVMTagged( vipfjets_p4.at(0).p4ind );
+	bcsvjet1_ = isCSVTagged(  vipfjets_p4.at(0).p4ind );
 	if (!isData) {
 	  lepjet1_ = getLeptonMatchIndex ( pfjet1_, mclep1_, mclep2_, 0.4 );
-	  qgjet1_ = isGenQGMatched( vpfjets_p4.at(0), 0.4 );
+	  qgjet1_ = isGenQGMatched( vipfjets_p4.at(0).p4obj, 0.4 );
+	  genjetdr1_ = dRGenJet ( vipfjets_p4.at(0).p4obj );
+	  beta1jet1_    = pfjet_beta( vipfjets_p4.at(0).p4ind, 1 );
+	  beta2jet1_    = pfjet_beta( vipfjets_p4.at(0).p4ind, 2 );
+	  beta10p1jet1_ = pfjet_beta( vipfjets_p4.at(0).p4ind, 1, 0.1);
+	  beta20p1jet1_ = pfjet_beta( vipfjets_p4.at(0).p4ind, 2, 0.1);
+	  beta10p15jet1_= pfjet_beta( vipfjets_p4.at(0).p4ind, 1, 0.15);
+	  beta20p15jet1_= pfjet_beta( vipfjets_p4.at(0).p4ind, 2, 0.15);
+	  beta10p2jet1_ = pfjet_beta( vipfjets_p4.at(0).p4ind, 1, 0.2);
+	  beta20p2jet1_ = pfjet_beta( vipfjets_p4.at(0).p4ind, 2, 0.2);
 	}
-      }
-      if( vpfjets_p4.size() > 1 ) {
-	pfjet2_  = &vpfjets_p4.at(1);
-	bjet2_ = isBTagged( vpfjets_p4.at(1), mediumBJets ) ? 1 : 0;
+      } 
+      if( vipfjets_p4.size() > 1 ) {
+	pfjet2_  = &vipfjets_p4.at(1).p4obj;
+	bjet2_    = isSSVMTagged( vipfjets_p4.at(1).p4ind );
+	bcsvjet2_ = isCSVTagged(  vipfjets_p4.at(1).p4ind );
 	if (!isData) {
 	  lepjet2_ = getLeptonMatchIndex ( pfjet2_, mclep1_, mclep2_, 0.4 );
-	  qgjet2_ = isGenQGMatched( vpfjets_p4.at(1), 0.4 );
+	  qgjet2_ = isGenQGMatched( vipfjets_p4.at(1).p4obj, 0.4 );
+	  genjetdr2_ = dRGenJet ( vipfjets_p4.at(1).p4obj );
+	  beta1jet2_ = pfjet_beta( vipfjets_p4.at(1).p4ind, 1 );
+	  beta2jet2_ = pfjet_beta( vipfjets_p4.at(1).p4ind, 2 );
+	  beta10p1jet2_ = pfjet_beta( vipfjets_p4.at(1).p4ind, 1, 0.1);
+	  beta20p1jet2_ = pfjet_beta( vipfjets_p4.at(1).p4ind, 2, 0.1);
+	  beta10p15jet2_= pfjet_beta( vipfjets_p4.at(1).p4ind, 1, 0.15);
+	  beta20p15jet2_= pfjet_beta( vipfjets_p4.at(1).p4ind, 2, 0.15);
+	  beta10p2jet2_ = pfjet_beta( vipfjets_p4.at(1).p4ind, 1, 0.2);
+	  beta20p2jet2_ = pfjet_beta( vipfjets_p4.at(1).p4ind, 2, 0.2);
 	}
       }
-      if( vpfjets_p4.size() > 2 ) {
-	pfjet3_  = &vpfjets_p4.at(2);
-	bjet3_ = isBTagged( vpfjets_p4.at(2), mediumBJets ) ? 1 : 0;
+      if( vipfjets_p4.size() > 2 ) {
+	pfjet3_  = &vipfjets_p4.at(2).p4obj;
+	bjet3_    = isSSVMTagged( vipfjets_p4.at(2).p4ind );
+	bcsvjet3_ = isCSVTagged(  vipfjets_p4.at(2).p4ind );
 	if (!isData) {
 	  lepjet3_ = getLeptonMatchIndex ( pfjet3_, mclep1_, mclep2_, 0.4 );
-	  qgjet3_ = isGenQGMatched( vpfjets_p4.at(2), 0.4 );
+	  qgjet3_ = isGenQGMatched( vipfjets_p4.at(2).p4obj, 0.4 );
+	  genjetdr3_ = dRGenJet ( vipfjets_p4.at(2).p4obj );
+	  beta1jet3_ = pfjet_beta( vipfjets_p4.at(2).p4ind, 1 );
+	  beta2jet3_ = pfjet_beta( vipfjets_p4.at(2).p4ind, 2 );
+	  beta10p1jet3_ = pfjet_beta( vipfjets_p4.at(2).p4ind, 1, 0.1);
+	  beta20p1jet3_ = pfjet_beta( vipfjets_p4.at(2).p4ind, 2, 0.1);
+	  beta10p15jet3_= pfjet_beta( vipfjets_p4.at(2).p4ind, 1, 0.15);
+	  beta20p15jet3_= pfjet_beta( vipfjets_p4.at(2).p4ind, 2, 0.15);
+	  beta10p2jet3_ = pfjet_beta( vipfjets_p4.at(2).p4ind, 1, 0.2);
+	  beta20p2jet3_ = pfjet_beta( vipfjets_p4.at(2).p4ind, 2, 0.2);
 	}
       }
-      if( vpfjets_p4.size() > 3 ) {
-	pfjet4_  = &vpfjets_p4.at(3);
-	bjet4_ = isBTagged( vpfjets_p4.at(3), mediumBJets ) ? 1 : 0;
+      if( vipfjets_p4.size() > 3 ) {
+	pfjet4_  = &vipfjets_p4.at(3).p4obj;
+	bjet4_    = isSSVMTagged( vipfjets_p4.at(3).p4ind );
+	bcsvjet4_ = isCSVTagged(  vipfjets_p4.at(3).p4ind );
 	if (!isData) {
 	  lepjet4_ = getLeptonMatchIndex ( pfjet4_, mclep1_, mclep2_, 0.4 );
-	  qgjet4_ = isGenQGMatched( vpfjets_p4.at(3), 0.4 );
+	  qgjet4_ = isGenQGMatched( vipfjets_p4.at(3).p4obj, 0.4 );
+	  genjetdr4_ = dRGenJet ( vipfjets_p4.at(3).p4obj );
+	  beta1jet4_ = pfjet_beta( vipfjets_p4.at(3).p4ind, 1 );
+	  beta2jet4_ = pfjet_beta( vipfjets_p4.at(3).p4ind, 2 );
+	  beta10p1jet4_ = pfjet_beta( vipfjets_p4.at(3).p4ind, 1, 0.1);
+	  beta20p1jet4_ = pfjet_beta( vipfjets_p4.at(3).p4ind, 2, 0.1);
+	  beta10p15jet4_= pfjet_beta( vipfjets_p4.at(3).p4ind, 1, 0.15);
+	  beta20p15jet4_= pfjet_beta( vipfjets_p4.at(3).p4ind, 2, 0.15);
+	  beta10p2jet4_ = pfjet_beta( vipfjets_p4.at(3).p4ind, 1, 0.2);
+	  beta20p2jet4_ = pfjet_beta( vipfjets_p4.at(3).p4ind, 2, 0.2);	  
 	}
       }
-      if( vpfjets_p4.size() > 4 ) {
-	pfjet5_  = &vpfjets_p4.at(4);
-	bjet5_ = isBTagged( vpfjets_p4.at(4), mediumBJets ) ? 1 : 0;
+      if( vipfjets_p4.size() > 4 ) {
+	pfjet5_  = &vipfjets_p4.at(4).p4obj;
+	bjet5_    = isSSVMTagged( vipfjets_p4.at(4).p4ind );
+	bcsvjet5_ = isCSVTagged(  vipfjets_p4.at(4).p4ind );
 	if (!isData) {
 	  lepjet5_ = getLeptonMatchIndex ( pfjet5_, mclep1_, mclep2_, 0.4 );
-	  qgjet5_ = isGenQGMatched( vpfjets_p4.at(4), 0.4 );
+	  qgjet5_ = isGenQGMatched( vipfjets_p4.at(4).p4obj, 0.4 );
+	  genjetdr5_ = dRGenJet ( vipfjets_p4.at(4).p4obj );
+	  beta1jet5_ = pfjet_beta( vipfjets_p4.at(4).p4ind, 1 );
+	  beta2jet5_ = pfjet_beta( vipfjets_p4.at(4).p4ind, 2 );
+	  beta10p1jet5_ = pfjet_beta( vipfjets_p4.at(4).p4ind, 1, 0.1);
+	  beta20p1jet5_ = pfjet_beta( vipfjets_p4.at(4).p4ind, 2, 0.1);
+	  beta10p15jet5_= pfjet_beta( vipfjets_p4.at(4).p4ind, 1, 0.15);
+	  beta20p15jet5_= pfjet_beta( vipfjets_p4.at(4).p4ind, 2, 0.15);
+	  beta10p2jet5_ = pfjet_beta( vipfjets_p4.at(4).p4ind, 1, 0.2);
+	  beta20p2jet5_ = pfjet_beta( vipfjets_p4.at(4).p4ind, 2, 0.2);
 	}
       }
-      if( vpfjets_p4.size() > 5 ) {
-	pfjet6_  = &vpfjets_p4.at(5);
-	bjet6_ = isBTagged( vpfjets_p4.at(5), mediumBJets ) ? 1 : 0;
+      if( vipfjets_p4.size() > 5 ) {
+	pfjet6_  = &vipfjets_p4.at(5).p4obj;
+	bjet6_    = isSSVMTagged( vipfjets_p4.at(5).p4ind );
+	bcsvjet6_ = isCSVTagged(  vipfjets_p4.at(5).p4ind );
 	if (!isData) {
 	  lepjet6_ = getLeptonMatchIndex ( pfjet6_, mclep1_, mclep2_, 0.4 );
-	  qgjet6_ = isGenQGMatched( vpfjets_p4.at(5), 0.4 );
+	  qgjet6_ = isGenQGMatched( vipfjets_p4.at(5).p4obj, 0.4 );
+	  genjetdr6_ = dRGenJet ( vipfjets_p4.at(5).p4obj );
+	  beta1jet6_ = pfjet_beta( vipfjets_p4.at(5).p4ind, 1 );
+	  beta2jet6_ = pfjet_beta( vipfjets_p4.at(5).p4ind, 2 );
+	  beta10p1jet6_ = pfjet_beta( vipfjets_p4.at(5).p4ind, 1, 0.1);
+	  beta20p1jet6_ = pfjet_beta( vipfjets_p4.at(5).p4ind, 2, 0.1);
+	  beta10p15jet6_= pfjet_beta( vipfjets_p4.at(5).p4ind, 1, 0.15);
+	  beta20p15jet6_= pfjet_beta( vipfjets_p4.at(5).p4ind, 2, 0.15);
+	  beta10p2jet6_ = pfjet_beta( vipfjets_p4.at(5).p4ind, 1, 0.2);
+	  beta20p2jet6_ = pfjet_beta( vipfjets_p4.at(5).p4ind, 2, 0.2);
 	}
       }
 
       //store distance to closest jet for pfcand
       if ( nleps_ == 2 ) {
-	pflepmindrj_  = getminjdr( vpfjets_p4, pflep_ );
-	pftaudmindrj_ = getminjdr( vpfjets_p4, pftaud_ );
+	pflepmindrj_  = getminjdr( vipfjets_p4, pflep_ );
+	pftaudmindrj_ = getminjdr( vipfjets_p4, pftaud_ );
       }
-      pfcandmindrj5_  = getminjdr( vpfjets_p4, pfcand5_ );
-      pfcandmindrj10_ = getminjdr( vpfjets_p4, pfcand10_ );
+      pfcandmindrj5_  = getminjdr( vipfjets_p4, pfcand5_ );
+      pfcandmindrj10_ = getminjdr( vipfjets_p4, pfcand10_ );
 
       // max jet variables
       if( imaxjet > -1 ){ 
@@ -3662,6 +3842,12 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("bjet4",            &bjet4_,            "bjet4/I");
   outTree->Branch("bjet5",            &bjet5_,            "bjet5/I");
   outTree->Branch("bjet6",            &bjet6_,            "bjet6/I");
+  outTree->Branch("bcsvjet1",         &bcsvjet1_,         "bcsvjet1/I");
+  outTree->Branch("bcsvjet2",         &bcsvjet2_,         "bcsvjet2/I");
+  outTree->Branch("bcsvjet3",         &bcsvjet3_,         "bcsvjet3/I");
+  outTree->Branch("bcsvjet4",         &bcsvjet4_,         "bcsvjet4/I");
+  outTree->Branch("bcsvjet5",         &bcsvjet5_,         "bcsvjet5/I");
+  outTree->Branch("bcsvjet6",         &bcsvjet6_,         "bcsvjet6/I");
   outTree->Branch("lepjet1",          &lepjet1_,          "lepjet1/I");
   outTree->Branch("lepjet2",          &lepjet2_,          "lepjet2/I");
   outTree->Branch("lepjet3",          &lepjet3_,          "lepjet3/I");
@@ -3674,6 +3860,60 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("qgjet4",           &qgjet4_,           "qgjet4/I");
   outTree->Branch("qgjet5",           &qgjet5_,           "qgjet5/I");
   outTree->Branch("qgjet6",           &qgjet6_,           "qgjet6/I");
+  outTree->Branch("genjetdr1",        &genjetdr1_,        "genjetdr1/F");
+  outTree->Branch("genjetdr2",        &genjetdr2_,        "genjetdr2/F");
+  outTree->Branch("genjetdr3",        &genjetdr3_,        "genjetdr3/F");
+  outTree->Branch("genjetdr4",        &genjetdr4_,        "genjetdr4/F");
+  outTree->Branch("genjetdr5",        &genjetdr5_,        "genjetdr5/F");
+  outTree->Branch("genjetdr6",        &genjetdr6_,        "genjetdr6/F");
+  outTree->Branch("beta1jet1",        &beta1jet1_,        "beta1jet1/F");
+  outTree->Branch("beta1jet2",        &beta1jet2_,        "beta1jet2/F");
+  outTree->Branch("beta1jet3",        &beta1jet3_,        "beta1jet3/F");
+  outTree->Branch("beta1jet4",        &beta1jet4_,        "beta1jet4/F");
+  outTree->Branch("beta1jet5",        &beta1jet5_,        "beta1jet5/F");
+  outTree->Branch("beta1jet6",        &beta1jet6_,        "beta1jet6/F");
+  outTree->Branch("beta2jet1",        &beta2jet1_,        "beta2jet1/F");
+  outTree->Branch("beta2jet2",        &beta2jet2_,        "beta2jet2/F");
+  outTree->Branch("beta2jet3",        &beta2jet3_,        "beta2jet3/F");
+  outTree->Branch("beta2jet4",        &beta2jet4_,        "beta2jet4/F");
+  outTree->Branch("beta2jet5",        &beta2jet5_,        "beta2jet5/F");
+  outTree->Branch("beta2jet6",        &beta2jet6_,        "beta2jet6/F");
+  outTree->Branch("beta10p1jet1",     &beta10p1jet1_,     "beta10p1jet1/F");
+  outTree->Branch("beta10p1jet2",     &beta10p1jet2_,     "beta10p1jet2/F");
+  outTree->Branch("beta10p1jet3",     &beta10p1jet3_,     "beta10p1jet3/F");
+  outTree->Branch("beta10p1jet4",     &beta10p1jet4_,     "beta10p1jet4/F");
+  outTree->Branch("beta10p1jet5",     &beta10p1jet5_,     "beta10p1jet5/F");
+  outTree->Branch("beta10p1jet6",     &beta10p1jet6_,     "beta10p1jet6/F");
+  outTree->Branch("beta20p1jet1",     &beta20p1jet1_,     "beta20p1jet1/F");
+  outTree->Branch("beta20p1jet2",     &beta20p1jet2_,     "beta20p1jet2/F");
+  outTree->Branch("beta20p1jet3",     &beta20p1jet3_,     "beta20p1jet3/F");
+  outTree->Branch("beta20p1jet4",     &beta20p1jet4_,     "beta20p1jet4/F");
+  outTree->Branch("beta20p1jet5",     &beta20p1jet5_,     "beta20p1jet5/F");
+  outTree->Branch("beta20p1jet6",     &beta20p1jet6_,     "beta20p1jet6/F");
+  outTree->Branch("beta10p15jet1",    &beta10p15jet1_,    "beta10p15jet1/F");
+  outTree->Branch("beta10p15jet2",    &beta10p15jet2_,    "beta10p15jet2/F");
+  outTree->Branch("beta10p15jet3",    &beta10p15jet3_,    "beta10p15jet3/F");
+  outTree->Branch("beta10p15jet4",    &beta10p15jet4_,    "beta10p15jet4/F");
+  outTree->Branch("beta10p15jet5",    &beta10p15jet5_,    "beta10p15jet5/F");
+  outTree->Branch("beta10p15jet6",    &beta10p15jet6_,    "beta10p15jet6/F");
+  outTree->Branch("beta20p15jet1",    &beta20p15jet1_,    "beta20p15jet1/F");
+  outTree->Branch("beta20p15jet2",    &beta20p15jet2_,    "beta20p15jet2/F");
+  outTree->Branch("beta20p15jet3",    &beta20p15jet3_,    "beta20p15jet3/F");
+  outTree->Branch("beta20p15jet4",    &beta20p15jet4_,    "beta20p15jet4/F");
+  outTree->Branch("beta20p15jet5",    &beta20p15jet5_,    "beta20p15jet5/F");
+  outTree->Branch("beta20p15jet6",    &beta20p15jet6_,    "beta20p15jet6/F");
+  outTree->Branch("beta10p2jet1",     &beta10p2jet1_,     "beta10p2jet1/F");
+  outTree->Branch("beta10p2jet2",     &beta10p2jet2_,     "beta10p2jet2/F");
+  outTree->Branch("beta10p2jet3",     &beta10p2jet3_,     "beta10p2jet3/F");
+  outTree->Branch("beta10p2jet4",     &beta10p2jet4_,     "beta10p2jet4/F");
+  outTree->Branch("beta10p2jet5",     &beta10p2jet5_,     "beta10p2jet5/F");
+  outTree->Branch("beta10p2jet6",     &beta10p2jet6_,     "beta10p2jet6/F");
+  outTree->Branch("beta20p2jet1",     &beta20p2jet1_,     "beta20p2jet1/F");
+  outTree->Branch("beta20p2jet2",     &beta20p2jet2_,     "beta20p2jet2/F");
+  outTree->Branch("beta20p2jet3",     &beta20p2jet3_,     "beta20p2jet3/F");
+  outTree->Branch("beta20p2jet4",     &beta20p2jet4_,     "beta20p2jet4/F");
+  outTree->Branch("beta20p2jet5",     &beta20p2jet5_,     "beta20p2jet5/F");
+  outTree->Branch("beta20p2jet6",     &beta20p2jet6_,     "beta20p2jet6/F");
   outTree->Branch("njetsUp",          &njetsUp_,          "njetsUp/I");
   outTree->Branch("njetsDown",        &njetsDown_,        "njetsDown/I");
   outTree->Branch("htUp",             &htUp_,             "htUp/F");
