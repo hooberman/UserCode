@@ -32,7 +32,7 @@ using namespace std;
 bool isPreliminary = false;
 char* isPrelimChar = (char*) "";
 
-void makeFloridaPlot(char* sample, int x );
+void makeFloridaPlot(char* sample, int x , bool printplot);
 
 void removeDiagonal( TH2D* h , float deltaM ){
 
@@ -91,7 +91,7 @@ void cmsPrelim(double intLumi, bool prelim)
         latex.DrawLatex(0.85, 0.92, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", intLumi));
 }
 
-void makePlots(){
+void makePlots( bool printPlots = false){
 
   TLatex *tex = new TLatex();
   tex->SetNDC();
@@ -99,7 +99,7 @@ void makePlots(){
 
 
   if( isPreliminary ) isPrelimChar = (char*) "_prelim";
-  /*
+
   //-------------------------------------------
   // Rutgers/KIT
   //-------------------------------------------
@@ -154,7 +154,7 @@ void makePlots(){
 
   can_2i->Modified();
   can_2i->Update();
-  can_2i->Print(Form("multilepton_flavordemocratic_Fig7%s.pdf",isPrelimChar));
+  if( printPlots) can_2i->Print(Form("multilepton_flavordemocratic_Fig7%s.pdf",isPrelimChar));
 
 
   //-----------------
@@ -192,8 +192,8 @@ void makePlots(){
 
   can_2a->Modified();
   can_2a->Update();
-  can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
-*/
+  if( printPlots) can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
+
   //-----------------
   // TChiWZ
   //-----------------
@@ -237,27 +237,27 @@ void makePlots(){
 
   can_wz->Modified();
   can_wz->Update();
-  can_wz->Print(Form("WZ_Fig11%s.pdf",isPrelimChar));
+  if( printPlots) can_wz->Print(Form("WZ_Fig11%s.pdf",isPrelimChar));
 
   hwz->GetXaxis()->SetRangeUser(100,300);
   hwz->GetYaxis()->SetRangeUser(  0,300);
 
   can_wz->Modified();
   can_wz->Update();
-  can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
+  if( printPlots) can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
 
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
-  /*
-  makeFloridaPlot("LeftSlepton",25);
-  makeFloridaPlot("LeftSlepton",50);
-  makeFloridaPlot("LeftSlepton",75);
 
-  makeFloridaPlot("TauEnriched",25);
-  makeFloridaPlot("TauEnriched",50);
-  makeFloridaPlot("TauEnriched",75);
-  */
+  makeFloridaPlot("LeftSlepton",25,printPlots);
+  makeFloridaPlot("LeftSlepton",50,printPlots);
+  makeFloridaPlot("LeftSlepton",75,printPlots);
+
+  makeFloridaPlot("TauEnriched",25,printPlots);
+  makeFloridaPlot("TauEnriched",50,printPlots);
+  makeFloridaPlot("TauEnriched",75,printPlots);
+
 }
 
 
@@ -277,7 +277,7 @@ TH2D* cloneHist( TH2D* hin ){
 
 }
 
-void makeFloridaPlot(char* sample, int x ){
+void makeFloridaPlot(char* sample, int x, bool printPlots ){
 
 
   bool plotss = true;
@@ -356,7 +356,10 @@ void makeFloridaPlot(char* sample, int x ){
 
   can->Modified();
   can->Update();
-  if     ( TString(sample).Contains("Left") ) can->Print(Form("%s_%i_Fig9%s.pdf" ,sample,x,isPrelimChar));
-  else if( TString(sample).Contains("Tau") )  can->Print(Form("%s_%i_Fig10%s.pdf",sample,x,isPrelimChar));
-  
+
+  if( printPlots ){
+    if     ( TString(sample).Contains("Left") ) can->Print(Form("%s_%i_Fig9%s.pdf" ,sample,x,isPrelimChar));
+    else if( TString(sample).Contains("Tau") )  can->Print(Form("%s_%i_Fig10%s.pdf",sample,x,isPrelimChar));
+  }
+
 }
