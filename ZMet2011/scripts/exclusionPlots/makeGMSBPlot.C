@@ -400,8 +400,8 @@ void makeGMSBPlot( bool printplots = false ){
     leg->AddEntry(gulc    ,"combined observed UL","l");
     //leg->AddEntry(gulcexp ,"combined median expected UL","l");
     leg->AddEntry(hgexp   ,"combined median expected UL (#pm1#sigma)","lf");
-    leg->AddEntry(gul     ,"2l2j observed UL","l");
-    leg->AddEntry(gul2    ,"4l observed UL","l");
+    leg->AddEntry(gul     ,"2#font[12]{l}2j observed UL","l");
+    leg->AddEntry(gul2    ,"4#font[12]{l} observed UL","l");
 
   }
   if( plotExpected ){
