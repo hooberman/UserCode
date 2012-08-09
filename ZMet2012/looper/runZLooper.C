@@ -66,6 +66,8 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   else if( strcmp( prefix , "dataskim2010" ) == 0 ){    
 
     // 2012A
+    //pickSkimIfExists(ch,"ZMet2012_pt2010/DoubleElectron_Run2012A-PromptReco-v1_AOD/V05-02-27/merged_ntuple_193621_0_skim.root");
+
     pickSkimIfExists(ch,"ZMet2012_pt2010/DoubleElectron_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
     pickSkimIfExists(ch,"ZMet2012_pt2010/DoubleMu_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");
     pickSkimIfExists(ch,"ZMet2012_pt2010/MuEG_Run2012A-PromptReco-v1_AOD/V05-02-27/merged*root");

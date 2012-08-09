@@ -9,7 +9,7 @@
   runZLooper("dataskim2010"             , true  );
   // runZLooper("wz"                      , false );  
   // runZLooper("zz"                      , false );  
-  // runZLooper("ttbar"                   , false );  
+  runZLooper("ttbar"                   , false );  
   // runZLooper("ww"                      , false );  
   // runZLooper("t"                       , false );  
   // runZLooper("zjets"                   , false );  
