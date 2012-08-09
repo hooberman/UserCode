@@ -1845,6 +1845,22 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	mlb2_ = -1;
       }
 
+      if( goodBJets.size() == 2 ){
+	float m10 = ( *lep1_ + goodBJets.at(0) ).mass();
+	float m11 = ( *lep1_ + goodBJets.at(1) ).mass();
+	float m20 = ( *lep2_ + goodBJets.at(0) ).mass();
+	float m21 = ( *lep2_ + goodBJets.at(1) ).mass();
+
+	mlbmin_ = m10;
+	if( m11 < mlbmin_ ) mlbmin_ = m11;
+	if( m20 < mlbmin_ ) mlbmin_ = m20;
+	if( m21 < mlbmin_ ) mlbmin_ = m21;
+      }
+
+      else{
+	mlbmin_ = -1;
+      }
+
       if( goodTightBJets.size() > 0 ){
 	mlbt1_ = 9999;
 	mlbt2_ = 9999;
@@ -1861,6 +1877,22 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       else{
 	mlbt1_ = -1;
 	mlbt2_ = -1;
+      }
+
+      if( goodTightBJets.size() == 2 ){
+	float m10 = ( *lep1_ + goodTightBJets.at(0) ).mass();
+	float m11 = ( *lep1_ + goodTightBJets.at(1) ).mass();
+	float m20 = ( *lep2_ + goodTightBJets.at(0) ).mass();
+	float m21 = ( *lep2_ + goodTightBJets.at(1) ).mass();
+
+	mlbtmin_ = m10;
+	if( m11 < mlbtmin_ ) mlbtmin_ = m11;
+	if( m20 < mlbtmin_ ) mlbtmin_ = m20;
+	if( m21 < mlbtmin_ ) mlbtmin_ = m21;
+      }
+
+      else{
+	mlbtmin_ = -1;
       }
       
       mt2_ = MT2( evt_pfmet() , evt_pfmetPhi() , hyp_ll_p4()[hypIdx] , hyp_lt_p4()[hypIdx] , 0. , false );
@@ -2322,6 +2354,9 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("mlb2",         &mlb2_,         "mlb2/F"         );
   babyTree_->Branch("mlbt1",        &mlbt1_,        "mlbt1/F"        );
   babyTree_->Branch("mlbt2",        &mlbt2_,        "mlbt2/F"        );
+
+  babyTree_->Branch("mlbmin",       &mlbmin_,       "mlbmin/F"       );
+  babyTree_->Branch("mlbtmin",      &mlbtmin_,      "mlbtmin/F"      );
 
   babyTree_->Branch("mt2",          &mt2_,          "mt2/F"          );
   babyTree_->Branch("mt2j",         &mt2j_,         "mt2j/F"         );

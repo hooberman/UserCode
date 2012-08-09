@@ -287,6 +287,8 @@ class Z_looper
   Float_t mlb2_;
   Float_t mlbt1_;
   Float_t mlbt2_;
+  Float_t mlbmin_;
+  Float_t mlbtmin_;
 
   Float_t mt2_;
   Float_t mt2j_;
