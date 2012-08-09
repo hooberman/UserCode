@@ -283,6 +283,14 @@ class Z_looper
   Int_t mu_;
   Int_t ee_;
 
+  Float_t mlb1_;
+  Float_t mlb2_;
+  Float_t mlbt1_;
+  Float_t mlbt2_;
+
+  Float_t mt2_;
+  Float_t mt2j_;
+
   TH2F* hunc_eta1;
   TH2F* hunc_eta2;
   TH2F* hunc_eta3;

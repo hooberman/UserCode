@@ -46,6 +46,8 @@
 #include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 #include "../Tools/bTagEff_BTV.cc"
+#include "../CORE/MT2/MT2Utility.cc"
+#include "../CORE/MT2/MT2.cc"
 #endif
 
 using namespace tas;
@@ -61,7 +63,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-21";
+const char* iter                 = "V00-00-22";
 const char* jsonfilename         = "../jsons/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 5.10/fb
 
 //--------------------------------------------------------------------
@@ -1508,11 +1510,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       VofP4 goodJetsUp;
       VofP4 goodJetsDn;
       VofP4 goodBJets;
+      VofP4 goodTightBJets;
 
       goodJets.clear();
       goodJetsUp.clear();
       goodJetsDn.clear();
       goodBJets.clear();
+      goodTightBJets.clear();
 
       nbvz_            = 0;
       btagweight_      = 1;    
@@ -1691,7 +1695,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  nbcsvm_++;
 	  goodBJets.push_back(vjet);
 	}
-	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.898 )  nbcsvt_++;
+	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.898 ){
+	  nbcsvt_++;
+	  goodTightBJets.push_back(vjet);
+	}
 
 	//weight (scale factor) branches
 
@@ -1815,10 +1822,57 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( goodJetsUp.size() >= 2 ) mjjup_ = ( goodJetsUp.at(0) + goodJetsUp.at(1) ).mass();
       if( goodJetsDn.size() >= 2 ) mjjdn_ = ( goodJetsDn.at(0) + goodJetsDn.at(1) ).mass();
 
-      //fill histos and ntuple----------------------------------------------------------- 
 
+      //-------------------------
+      // M(l,b) variables
+      //-------------------------
 
+      if( goodBJets.size() > 0 ){
+	mlb1_ = 9999;
+	mlb2_ = 9999;
 
+	for( int i = 0 ; i < goodBJets.size() ; ++i ){
+	  float m1 = ( *lep1_ + goodBJets.at(i) ).mass();
+	  float m2 = ( *lep2_ + goodBJets.at(i) ).mass();
+
+	  if( m1 < mlb1_ ) mlb1_ = m1;
+	  if( m2 < mlb2_ ) mlb2_ = m2;
+	}
+      }
+
+      else{
+	mlb1_ = -1;
+	mlb2_ = -1;
+      }
+
+      if( goodTightBJets.size() > 0 ){
+	mlbt1_ = 9999;
+	mlbt2_ = 9999;
+
+	for( int i = 0 ; i < goodTightBJets.size() ; ++i ){
+	  float m1 = ( *lep1_ + goodTightBJets.at(i) ).mass();
+	  float m2 = ( *lep2_ + goodTightBJets.at(i) ).mass();
+
+	  if( m1 < mlbt1_ ) mlbt1_ = m1;
+	  if( m2 < mlbt2_ ) mlbt2_ = m2;
+	}
+      }
+
+      else{
+	mlbt1_ = -1;
+	mlbt2_ = -1;
+      }
+      
+      mt2_ = MT2( evt_pfmet() , evt_pfmetPhi() , hyp_ll_p4()[hypIdx] , hyp_lt_p4()[hypIdx] , 0. , false );
+
+      mt2j_ = -1;
+
+      if( nJets_ > 1)
+	mt2j_ = MT2J( evt_pfmet() , evt_pfmetPhi() , hyp_ll_p4()[hypIdx] , hyp_lt_p4()[hypIdx], goodJets );
+      
+      //-------------------------
+      // fill histos and ntuple
+      //-------------------------
 
       FillBabyNtuple();
 
@@ -2263,6 +2317,14 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ngennum",      &ngennum_,      "ngennum/I"      );
   babyTree_->Branch("ngennut",      &ngennut_,      "ngennut/I"      );
   babyTree_->Branch("ngennu",       &ngennu_,       "ngennu/I"       );
+
+  babyTree_->Branch("mlb1",         &mlb1_,         "mlb1/F"         );
+  babyTree_->Branch("mlb2",         &mlb2_,         "mlb2/F"         );
+  babyTree_->Branch("mlbt1",        &mlbt1_,        "mlbt1/F"        );
+  babyTree_->Branch("mlbt2",        &mlbt2_,        "mlbt2/F"        );
+
+  babyTree_->Branch("mt2",          &mt2_,          "mt2/F"          );
+  babyTree_->Branch("mt2j",         &mt2j_,         "mt2j/F"         );
 
   babyTree_->Branch("mm"       ,    &mm_       ,    "mm/I"          );
   babyTree_->Branch("mmtk"     ,    &mmtk_     ,    "mmtk/I"        );
