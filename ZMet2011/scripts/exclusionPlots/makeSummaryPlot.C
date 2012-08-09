@@ -119,7 +119,7 @@ TGraph *getCharginoGraph(){
   float y[4];
 
   //http://lepsusy.web.cern.ch/lepsusy/www/inos_moriond01/charginos_pub.html
-  float exc = 103.5;
+  float exc = 103;
 
   x[0] = 100.0; y[0] =     0;
   x[1] =   exc; y[1] =     0;
@@ -255,8 +255,8 @@ void makeSummaryPlot(){
   hdummy->Draw("sameaxis");
 
   TLegend *leg = new TLegend(0.18,0.6,0.78,0.88);
-  leg->AddEntry(grslepton  ,"LEP2 slepton limit m( #tilde{#font[12]{l}} ) > 82 GeV","f");
-  leg->AddEntry(grchargino ,"LEP2 chargino limit m(#chi^{#pm}) > 103.5 GeV","f");
+  leg->AddEntry(grslepton  ,"LEP2 slepton limit","f");
+  leg->AddEntry(grchargino ,"LEP2 chargino limit","f");
   leg->AddEntry(gr2i  ,"3#font[12]{l}+E_{T}^{miss} ( #tilde{#font[12]{l}}_{L} , BF(3#font[12]{l})=0.5)","l");
   leg->AddEntry(gr2a  ,"3#font[12]{l}+E_{T}^{miss} ( #tilde{#font[12]{l}}_{R} , BF(#font[12]{l^{+}l^{-}}#tau)=1)","l");
   leg->AddEntry(gr2imt,"3#font[12]{l}+M_{#font[12]{ll}}+M_{T} & 2#font[12]{l}(SS) ( #tilde{#font[12]{l}}_{L} , BF(3#font[12]{l})=0.5)","l");
@@ -264,6 +264,7 @@ void makeSummaryPlot(){
   leg->AddEntry(grwz  ,"2#font[12]{l}2j & 3#font[12]{l}+M_{#font[12]{ll}}+M_{T} (no #tilde{#font[12]{l}} , BF(WZ)=1)","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
+  leg->SetTextSize(0.027);
   leg->Draw();
 
   TH1F *hobs = new TH1F();
@@ -299,12 +300,24 @@ void makeSummaryPlot(){
   cmsPrelim(4.98,isPreliminary);
 
   if( isPreliminary ){
-    if( drawExpected ) can->Print("ewkino_summaryPlot_expected_prelim.pdf");
-    else               can->Print("ewkino_summaryPlot_prelim.pdf");
+    if( drawExpected ){
+      can->Print("ewkino_summaryPlot_expected_prelim.pdf");
+      can->Print("ewkino_summaryPlot_expected_prelim.C");
+    }
+    else{
+      can->Print("ewkino_summaryPlot_prelim.pdf");
+      can->Print("ewkino_summaryPlot_prelim.C");
+    }
   }
   else{
-    if( drawExpected ) can->Print("ewkino_summaryPlot_expected.pdf");
-    else               can->Print("ewkino_summaryPlot.pdf");
+    if( drawExpected ){
+      can->Print("ewkino_summaryPlot_expected.pdf");
+      can->Print("ewkino_summaryPlot_expected.C");
+    }
+    else{
+      can->Print("ewkino_summaryPlot.pdf");
+      can->Print("ewkino_summaryPlot.C");
+    }
   }
 
 }
