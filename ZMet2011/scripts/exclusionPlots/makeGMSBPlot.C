@@ -29,7 +29,7 @@ using namespace std;
 bool plotExpected  = false;
 bool plotObserved  = true;
 bool logplot       = true;
-bool isPreliminary = false;
+bool isPreliminary = true;
 
 void cmsPrelim(double intLumi, bool prelim)
 {
@@ -263,7 +263,7 @@ void makeGMSBPlot( bool printplots = false ){
   gband->SetFillColor(5);
 
   //2l2j observed
-  gul->SetLineColor(6);
+  gul->SetLineColor(4);
   gul->SetLineWidth(3);
   gul->SetLineStyle(4);
 
@@ -287,7 +287,7 @@ void makeGMSBPlot( bool printplots = false ){
 
   //combined expected
   gulcexp->SetLineWidth(4);
-  gulcexp->SetLineColor(4);
+  gulcexp->SetLineColor(1);
   gulcexp->SetLineStyle(2);
 
 
@@ -324,8 +324,8 @@ void makeGMSBPlot( bool printplots = false ){
   hdummy->Draw("axissame");
   */
 
-  gulcband->Draw("samef");
-  gband->Draw("samef");
+  //gulcband->Draw("samef");
+  //gband->Draw("samef");
   g->Draw("samel");
 
 
@@ -394,8 +394,8 @@ void makeGMSBPlot( bool printplots = false ){
   TLegend *leg = new TLegend(0.38,0.7,0.95,0.88);
   if( plotObserved ){
     leg->AddEntry(gulc    ,"combined observed UL","l");
-    //leg->AddEntry(gulcexp ,"combined median expected UL","l");
-    leg->AddEntry(hgexp   ,"combined median expected UL","lf");
+    leg->AddEntry(gulcexp ,"combined median expected UL","l");
+    //leg->AddEntry(hgexp   ,"combined median expected UL","lf");
     leg->AddEntry(gul     ,"2l2j observed UL","l");
     leg->AddEntry(gul2    ,"4l observed UL","l");
 
@@ -411,8 +411,8 @@ void makeGMSBPlot( bool printplots = false ){
   hg->SetLineWidth(3);
   hg->SetFillColor(5);
 
-  //leg->AddEntry(g,  "theory","l");
-  leg->AddEntry(hg,  "theory","lf");
+  leg->AddEntry(g,  "theory","l");
+  //leg->AddEntry(hg,  "theory","lf");
 
   //leg->AddEntry(box,"excluded region","f");
   leg->SetBorderSize(0);
