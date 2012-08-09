@@ -263,13 +263,13 @@ void makeGMSBPlot( bool printplots = false ){
   gband->SetFillColor(5);
 
   //2l2j observed
-  gul->SetLineColor(4);
+  gul->SetLineColor(6);
   gul->SetLineWidth(3);
   gul->SetLineStyle(4);
 
   //2l2j expected
   gulexp->SetLineColor(2);
-  gulexp->SetLineWidth(4);
+  gulexp->SetLineWidth(3);
   gulexp->SetLineStyle(2);
 
   //4l observed
@@ -278,16 +278,16 @@ void makeGMSBPlot( bool printplots = false ){
   gul2->SetLineColor(kGreen+2);
 
   //4l expected
-  gul2exp->SetLineWidth(4);
+  gul2exp->SetLineWidth(3);
   gul2exp->SetLineStyle(2);
 
   //combined observed
-  gulc->SetLineWidth(4);
+  gulc->SetLineWidth(5);
   gulc->SetLineColor(1);
 
   //combined expected
-  gulcexp->SetLineWidth(4);
-  gulcexp->SetLineColor(1);
+  gulcexp->SetLineWidth(5);
+  gulcexp->SetLineColor(4);
   gulcexp->SetLineStyle(2);
 
 
@@ -324,9 +324,11 @@ void makeGMSBPlot( bool printplots = false ){
   hdummy->Draw("axissame");
   */
 
-  //gulcband->Draw("samef");
-  //gband->Draw("samef");
+  gband->Draw("samef");
   g->Draw("samel");
+
+  gulcband->SetFillStyle(3002);
+  gulcband->Draw("samef");
 
 
   if( plotObserved ){
@@ -343,6 +345,7 @@ void makeGMSBPlot( bool printplots = false ){
     gul2exp->Draw("samel");
     gulcexp->Draw("samel");
   }
+
 
   //gband->Draw("samef");
   //g->Draw("samel");
@@ -385,17 +388,18 @@ void makeGMSBPlot( bool printplots = false ){
 
   TH1F* hgexp = new TH1F("hgexp","",1,0,1);
   hgexp->SetLineColor(4);
-  hgexp->SetLineWidth(3);
+  hgexp->SetLineWidth(5);
   hgexp->SetLineStyle(2);
   hgexp->SetFillColor(7);
+  hgexp->SetFillStyle(3002);
 
 
 
-  TLegend *leg = new TLegend(0.38,0.7,0.95,0.88);
+  TLegend *leg = new TLegend(0.33,0.7,0.9,0.88);
   if( plotObserved ){
     leg->AddEntry(gulc    ,"combined observed UL","l");
-    leg->AddEntry(gulcexp ,"combined median expected UL","l");
-    //leg->AddEntry(hgexp   ,"combined median expected UL","lf");
+    //leg->AddEntry(gulcexp ,"combined median expected UL","l");
+    leg->AddEntry(hgexp   ,"combined median expected UL (#pm1#sigma)","lf");
     leg->AddEntry(gul     ,"2l2j observed UL","l");
     leg->AddEntry(gul2    ,"4l observed UL","l");
 
@@ -411,8 +415,8 @@ void makeGMSBPlot( bool printplots = false ){
   hg->SetLineWidth(3);
   hg->SetFillColor(5);
 
-  leg->AddEntry(g,  "theory","l");
-  //leg->AddEntry(hg,  "theory","lf");
+  //leg->AddEntry(g,  "theory","l");
+  leg->AddEntry(hg,  "#sigma^{NLO} theory (#pm1#sigma)","lf");
 
   //leg->AddEntry(box,"excluded region","f");
   leg->SetBorderSize(0);
