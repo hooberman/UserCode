@@ -80,6 +80,16 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "data2012c" ) == 0 ){    
+
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-09/DoubleElectron_Run2012C-PromptReco-v2_AOD/merged/merged*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-09/DoubleMu_Run2012C-PromptReco-v2_AOD/merged/merged*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-09/MuEG_Run2012C-PromptReco-v2_AOD/merged/merged*root");
+
+  }
+  
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "zjets" ) == 0 ){
     //pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V9-v2/V05-02-27/merged*1.root");
     pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V9-v2/V05-02-27/merged*root");
