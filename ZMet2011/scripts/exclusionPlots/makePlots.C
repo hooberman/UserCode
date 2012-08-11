@@ -99,7 +99,7 @@ void makePlots( bool printPlots = false){
 
 
   if( isPreliminary ) isPrelimChar = (char*) "_prelim";
-
+  /*
   //-------------------------------------------
   // Rutgers/KIT
   //-------------------------------------------
@@ -245,7 +245,7 @@ void makePlots( bool printPlots = false){
   can_wz->Modified();
   can_wz->Update();
   if( printPlots) can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
-
+  */
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
@@ -285,6 +285,7 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
 
   TFile *fcombo   = TFile::Open(Form("%s_Combo_%i.root",sample,x));
   TFile *fflorida = TFile::Open(Form("%s_%i.root",sample,x));
+  TFile *fcombo_band = TFile::Open(Form("%s_Combo_%i_UNCBANDS.root",sample,x));
 
   TH2D*    hobs_temp       = (TH2D*)   fcombo->Get("BestObsSxBR");
   TH2D*    hobs            = cloneHist(hobs_temp);
@@ -292,6 +293,9 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   TGraph*  gr_combo_exp    = (TGraph*) fcombo->Get("ExpectedExclusion");
   TGraph*  gr_florida      = (TGraph*) fflorida->Get("ObservedExclusion");
   TGraph*  gr_ss           = new TGraph();
+
+  TGraph*  gr_combo_expp1  = (TGraph*) fcombo_band->Get("ExpectedP1SigmaExclusion");
+  TGraph*  gr_combo_expm1  = (TGraph*) fcombo_band->Get("ExpectedM1SigmaExclusion");
 
   if( plotss ) gr_ss = (TGraph*) fcombo->Get("SSObservedExclusion");
 
@@ -307,6 +311,15 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   gr_florida->SetLineWidth(4);
   gr_florida->SetLineStyle(4);
   gr_florida->SetLineColor(2);
+
+  gr_combo_expp1->SetLineColor(kGreen+2);
+  gr_combo_expm1->SetLineColor(kGreen+2);
+
+  gr_combo_expp1->SetLineWidth(5);
+  gr_combo_expm1->SetLineWidth(5);
+
+  gr_combo_expp1->SetLineStyle(1);
+  gr_combo_expm1->SetLineStyle(1);
 
   TH2D *hdummy = new TH2D("hdummy","",65,100,750,72,0,725);
   
@@ -327,6 +340,8 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   hobs->Draw("axissame");
   cmsPrelim(4.98,isPreliminary);
 
+  gr_combo_expp1->Draw("l");
+  gr_combo_expm1->Draw("l");
   
   TLegend *leg = new TLegend(0.2,0.73,0.65,0.88);
   leg->AddEntry(gr_combo_obs    ,"combined observed","l");
