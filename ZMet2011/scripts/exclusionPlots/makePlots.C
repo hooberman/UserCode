@@ -26,6 +26,7 @@
 #include "TMath.h"
 #include "TPaveText.h"
 
+#include "fedorContours.C"
 
 using namespace std;
 
@@ -52,8 +53,10 @@ void removeDiagonal( TH2D* h , float deltaM ){
 
 void formatHist( TH2D* hist ){
 
-  hist->GetXaxis()->SetTitle("m(#tilde{#chi}_{2}^{0}) = m(#tilde{#chi}_{1}^{#pm}) [GeV]");
-  hist->GetYaxis()->SetTitle("m(#tilde{#chi}_{1}^{0}) [GeV]");
+  //hist->GetXaxis()->SetTitle("m(#tilde{#chi}_{2}^{0}) = m(#tilde{#chi}_{1}^{#pm}) [GeV]");
+  //hist->GetYaxis()->SetTitle("m(#tilde{#chi}_{1}^{0}) [GeV]");
+  hist->GetXaxis()->SetTitle("m_{#tilde{#chi}_{2}^{0}} = m_{#tilde{#chi}_{1}^{#pm}} [GeV]");
+  hist->GetYaxis()->SetTitle("m_{#tilde{#chi}_{1}^{0}} [GeV]");
   hist->GetZaxis()->SetTitle("95% CL UL #sigma#timesBF [fb]");
   hist->GetXaxis()->SetTitleOffset(1.12);
   hist->GetYaxis()->SetTitleOffset(1.5);
@@ -95,14 +98,42 @@ void makePlots( bool printPlots = false){
 
   TLatex *tex = new TLatex();
   tex->SetNDC();
-  tex->SetTextSize(0.03);
+  tex->SetTextSize(0.05);
 
 
   if( isPreliminary ) isPrelimChar = (char*) "_prelim";
-  /*
+
   //-------------------------------------------
   // Rutgers/KIT
   //-------------------------------------------
+
+  TGraph* mod2i_observed   = model2i_observed();
+  TGraph* mod2i_expected   = model2i_expected();
+  TGraph* mod2i_expectedP1 = model2i_expectedP1();
+  TGraph* mod2i_expectedM1 = model2i_expectedM1();
+  TGraph* mod2i_observedP  = model2i_observedp();
+  TGraph* mod2i_observedM  = model2i_observedm();
+
+  mod2i_observed->SetLineWidth(4);
+
+  mod2i_expected->SetLineWidth(4);
+  mod2i_expected->SetLineStyle(2);
+
+  mod2i_expectedP1->SetLineColor(2);
+  mod2i_expectedP1->SetLineWidth(2);
+  mod2i_expectedP1->SetLineStyle(3);
+
+  mod2i_expectedM1->SetLineColor(2);
+  mod2i_expectedM1->SetLineWidth(2);
+  mod2i_expectedM1->SetLineStyle(3);
+
+  mod2i_observedP->SetLineColor(4);
+  mod2i_observedP->SetLineWidth(2);
+  mod2i_observedP->SetLineStyle(4);
+
+  mod2i_observedM->SetLineColor(4);
+  mod2i_observedM->SetLineWidth(2);
+  mod2i_observedM->SetLineStyle(4);
 
   //-----------------
   // model 2i
@@ -118,7 +149,7 @@ void makePlots( bool printPlots = false){
   // TGraph* gr2i_3  = (TGraph*) fkit_2i->Get("Graph3");
   // TGraph* gr2i_4  = (TGraph*) fkit_2i->Get("Graph4");
   
-  TCanvas *can_2i = new TCanvas();
+  TCanvas *can_2i = new TCanvas("can_2i","can_2i",600,600);
   can_2i->cd();
   gPad->SetRightMargin(0.2);
   gPad->SetTopMargin(0.1);
@@ -129,27 +160,41 @@ void makePlots( bool printPlots = false){
   h2i0->Draw("colz");
   h2i->Draw("colsame");
   h2i1->Draw("colsame");
-  gr2i_1->Draw("l");
-  gr2i_2->Draw("l");
+  //gr2i_1->Draw("l");
+  //gr2i_2->Draw("l");
+
+  mod2i_observed->Draw("l");
+  mod2i_expected->Draw("l");
+  mod2i_expectedP1->Draw("l");
+  mod2i_expectedM1->Draw("l");
+  mod2i_observedP->Draw("l");
+  mod2i_observedM->Draw("l");
+
   h2i0->Draw("axissame");
   //gr2i_3->Draw("l");
   //gr2i_4->Draw("l");
   cmsPrelim(4.98,isPreliminary);
 
-  TLegend *leg = new TLegend(0.2,0.78,0.6,0.88);
-  leg->AddEntry(gr2i_1,"observed","l");
-  leg->AddEntry(gr2i_2,"median expected","l");
+  TLegend *leg = new TLegend(0.2,0.72,0.6,0.88);
+  //leg->AddEntry(gr2i_1,"observed","l");
+  //leg->AddEntry(gr2i_2,"median expected","l");
   //leg->AddEntry(gr2i_3,"expected #pm1#sigma","l");
+  leg->AddEntry(mod2i_observed  ,"observed","l");
+  leg->AddEntry(mod2i_observedP ,"observed (#pm1#sigma^{theory})","l");
+  leg->AddEntry(mod2i_expected  ,"median expected","l");
+  leg->AddEntry(mod2i_expectedP1,"expected (#pm1#sigma)","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->Draw();
 
 
-  tex->SetTextSize(0.03);
-  tex->DrawLatex(0.18,0.70,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
-  tex->DrawLatex(0.18,0.65,"m(#tilde{l}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
-  tex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=50%)");
-  tex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{l}#nu_{l}");
+  tex->SetTextSize(0.035);
+  tex->DrawLatex(0.19,0.67,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  //tex->DrawLatex(0.18,0.65,"m(#tilde{#font[12]{l}}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  //tex->DrawLatex(0.19,0.65,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}} = m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  tex->DrawLatex(0.19,0.61,"x_{#tilde{#font[12]{l}}} = 0.5");
+  tex->DrawLatex(0.19,0.55,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=0.5)");
+  tex->DrawLatex(0.19,0.49,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#font[12]{l}}#nu_{#font[12]{l}} , #font[12]{l}#tilde{#nu}_{#font[12]{l}}");
 
 
   can_2i->Modified();
@@ -160,6 +205,34 @@ void makePlots( bool printPlots = false){
   //-----------------
   // model 2a
   //-----------------
+
+  TGraph* mod2a_observed   = model2a_observed();
+  TGraph* mod2a_expected   = model2a_expected();
+  TGraph* mod2a_expectedP1 = model2a_expectedP1();
+  TGraph* mod2a_expectedM1 = model2a_expectedM1();
+  TGraph* mod2a_observedP  = model2a_observedp();
+  TGraph* mod2a_observedM  = model2a_observedm();
+
+  mod2a_observed->SetLineWidth(4);
+
+  mod2a_expected->SetLineWidth(4);
+  mod2a_expected->SetLineStyle(2);
+
+  mod2a_expectedP1->SetLineColor(2);
+  mod2a_expectedP1->SetLineWidth(2);
+  mod2a_expectedP1->SetLineStyle(3);
+
+  mod2a_expectedM1->SetLineColor(2);
+  mod2a_expectedM1->SetLineWidth(2);
+  mod2a_expectedM1->SetLineStyle(3);
+
+  mod2a_observedP->SetLineColor(4);
+  mod2a_observedP->SetLineWidth(2);
+  mod2a_observedP->SetLineStyle(4);
+
+  mod2a_observedM->SetLineColor(4);
+  mod2a_observedM->SetLineWidth(2);
+  mod2a_observedM->SetLineStyle(4);
 
   TFile *fkit_2a  = TFile::Open("KIT_2a.root");
 
@@ -177,18 +250,34 @@ void makePlots( bool printPlots = false){
   h2a0->Draw("colz");
   //removeDiagonal(h2a,50);
   h2a->Draw("colsame");
-  gr2a_1->Draw("l");
-  gr2a_2->Draw("l");
+  //gr2a_1->Draw("l");
+  //gr2a_2->Draw("l");
+
+  mod2a_observed->Draw("l");
+  mod2a_expected->Draw("l");
+  mod2a_expectedP1->Draw("l");
+  mod2a_expectedM1->Draw("l");
+  mod2a_observedP->Draw("l");
+  mod2a_observedM->Draw("l");
+
   h2a0->Draw("axissame");
   cmsPrelim(4.98,isPreliminary);
 
   leg->Draw();
 
-  tex->SetTextSize(0.03);
-  tex->DrawLatex(0.18,0.70,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
-  tex->DrawLatex(0.18,0.65,"m(#tilde{l}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
-  tex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=100%)");
-  tex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
+  // tex->SetTextSize(0.03);
+  // tex->DrawLatex(0.18,0.70,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  // tex->DrawLatex(0.18,0.65,"m(#tilde{l}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  // tex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=100%)");
+  // tex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
+
+  tex->SetTextSize(0.035);
+  tex->DrawLatex(0.19,0.67,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  //tex->DrawLatex(0.18,0.65,"m(#tilde{#font[12]{l}}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  //tex->DrawLatex(0.19,0.65,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}} = m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  tex->DrawLatex(0.19,0.61,"x_{#tilde{#font[12]{l}}} = 0.5");
+  tex->DrawLatex(0.19,0.55,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=1)");
+  tex->DrawLatex(0.19,0.49,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
 
   can_2a->Modified();
   can_2a->Update();
@@ -197,7 +286,7 @@ void makePlots( bool printPlots = false){
   //-----------------
   // TChiWZ
   //-----------------
-
+  /*
   TFile *fwz  = TFile::Open("combinePlots_VZ_Trilepton.root");
 
   TH2F*   hwz             = (TH2F*)   fwz->Get("hexcl");
@@ -245,7 +334,7 @@ void makePlots( bool printPlots = false){
   can_wz->Modified();
   can_wz->Update();
   if( printPlots) can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
-  */
+
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
@@ -257,7 +346,7 @@ void makePlots( bool printPlots = false){
   makeFloridaPlot("TauEnriched",25,printPlots);
   makeFloridaPlot("TauEnriched",50,printPlots);
   makeFloridaPlot("TauEnriched",75,printPlots);
-
+*/
 }
 
 
@@ -378,3 +467,7 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   }
 
 }
+
+
+
+
