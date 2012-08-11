@@ -188,14 +188,15 @@ void makePlots( bool printPlots = false){
   leg->Draw();
 
 
-  tex->SetTextSize(0.035);
-  tex->DrawLatex(0.19,0.67,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  tex->SetTextSize(0.04);
+  tex->DrawLatex(0.19,0.65,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
   //tex->DrawLatex(0.18,0.65,"m(#tilde{#font[12]{l}}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
   //tex->DrawLatex(0.19,0.65,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}} = m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
-  tex->DrawLatex(0.19,0.61,"x_{#tilde{#font[12]{l}}} = 0.5");
-  tex->DrawLatex(0.19,0.55,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=0.5)");
-  tex->DrawLatex(0.19,0.49,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#font[12]{l}}#nu_{#font[12]{l}} , #font[12]{l}#tilde{#nu}_{#font[12]{l}}");
+  //tex->DrawLatex(0.19,0.61,"x_{#tilde{#font[12]{l}}} = 0.5");
+  tex->DrawLatex(0.19,0.59,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=0.5)");
+  tex->DrawLatex(0.19,0.53,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#font[12]{l}}#nu_{#font[12]{l}} , #font[12]{l}#tilde{#nu}_{#font[12]{l}}");
 
+  tex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
 
   can_2i->Modified();
   can_2i->Update();
@@ -271,13 +272,15 @@ void makePlots( bool printPlots = false){
   // tex->DrawLatex(0.18,0.60,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{l}l (BF=100%)");
   // tex->DrawLatex(0.18,0.55,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
 
-  tex->SetTextSize(0.035);
-  tex->DrawLatex(0.19,0.67,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  tex->SetTextSize(0.04);
+  tex->DrawLatex(0.19,0.65,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
   //tex->DrawLatex(0.18,0.65,"m(#tilde{#font[12]{l}}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
-  //tex->DrawLatex(0.19,0.65,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}} = m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
-  tex->DrawLatex(0.19,0.61,"x_{#tilde{#font[12]{l}}} = 0.5");
-  tex->DrawLatex(0.19,0.55,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=1)");
-  tex->DrawLatex(0.19,0.49,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
+  //tex->DrawLatex(0.19,0.61,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}} = m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  //tex->DrawLatex(0.19,0.61,"x_{#tilde{#font[12]{l}}} = 0.5");
+  tex->DrawLatex(0.19,0.59,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=1)");
+  tex->DrawLatex(0.19,0.53,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
+
+  tex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
 
   can_2a->Modified();
   can_2a->Update();
@@ -334,19 +337,19 @@ void makePlots( bool printPlots = false){
   can_wz->Modified();
   can_wz->Update();
   if( printPlots) can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
-
+  */
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
 
-  makeFloridaPlot("LeftSlepton",25,printPlots);
-  makeFloridaPlot("LeftSlepton",50,printPlots);
-  makeFloridaPlot("LeftSlepton",75,printPlots);
+  // makeFloridaPlot("LeftSlepton",25,printPlots);
+  // makeFloridaPlot("LeftSlepton",50,printPlots);
+  // makeFloridaPlot("LeftSlepton",75,printPlots);
 
-  makeFloridaPlot("TauEnriched",25,printPlots);
-  makeFloridaPlot("TauEnriched",50,printPlots);
-  makeFloridaPlot("TauEnriched",75,printPlots);
-*/
+  // makeFloridaPlot("TauEnriched",25,printPlots);
+  // makeFloridaPlot("TauEnriched",50,printPlots);
+  // makeFloridaPlot("TauEnriched",75,printPlots);
+
 }
 
 
