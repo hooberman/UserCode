@@ -27,6 +27,19 @@
 #include "TPaveText.h"
 
 #include "fedorContours.C"
+//#include "Ronny_observed/LeftSlepton_Combo_25.C"
+#include "Ronny_observed_v2/LeftSlepton_Combo_25.C"
+#include "Ronny_observed_v2/LeftSlepton_Combo_50.C"
+#include "Ronny_observed_v2/LeftSlepton_Combo_75.C"
+#include "Ronny_observed_v2/TauEnriched_Combo_25.C"
+#include "Ronny_observed_v2/TauEnriched_Combo_50.C"
+#include "Ronny_observed_v2/TauEnriched_Combo_75.C"
+#include "Ronny_expectedplots/LeftSlepton_Combo_25_expected.C"
+#include "Ronny_expectedplots/LeftSlepton_Combo_50_expected.C"
+#include "Ronny_expectedplots/LeftSlepton_Combo_75_expected.C"
+#include "Ronny_expectedplots/TauEnriched_Combo_25_expected.C"
+#include "Ronny_expectedplots/TauEnriched_Combo_50_expected.C"
+#include "Ronny_expectedplots/TauEnriched_Combo_75_expected.C"
 
 using namespace std;
 
@@ -286,7 +299,7 @@ void makePlots( bool printPlots = false){
   can_2a->Modified();
   can_2a->Update();
   if( printPlots) can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
-*/
+
   //-----------------
   // TChiWZ
   //-----------------
@@ -381,11 +394,11 @@ void makePlots( bool printPlots = false){
     can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
     can_wz->Print(Form("WZ_zoom_Fig11%s.png",isPrelimChar));
   }
-
+  */
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
-  /*
+
   makeFloridaPlot("LeftSlepton",25,printPlots);
   makeFloridaPlot("LeftSlepton",50,printPlots);
   makeFloridaPlot("LeftSlepton",75,printPlots);
@@ -393,7 +406,7 @@ void makePlots( bool printPlots = false){
   makeFloridaPlot("TauEnriched",25,printPlots);
   makeFloridaPlot("TauEnriched",50,printPlots);
   makeFloridaPlot("TauEnriched",75,printPlots);
-*/
+
 }
 
 
@@ -437,11 +450,58 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   TGraph*  gr_florida      = (TGraph*) fflorida->Get("ObservedExclusion");
   TGraph*  gr_ss           = new TGraph();
 
-  TGraph*  gr_combo_expp1  = (TGraph*) fcombo_band->Get("ExpectedP1SigmaExclusion");
-  TGraph*  gr_combo_expm1  = (TGraph*) fcombo_band->Get("ExpectedM1SigmaExclusion");
+  // TGraph*  gr_combo_expp1  = (TGraph*) fcombo_band->Get("ExpectedP1SigmaExclusion");
+  // TGraph*  gr_combo_expm1  = (TGraph*) fcombo_band->Get("ExpectedM1SigmaExclusion");
 
-  TGraph*  gr_combo_theoryUp = (TGraph*) fcombo_theoryUp->Get("ObservedExclusion_THEORYUP");
-  TGraph*  gr_combo_theoryDn = (TGraph*) fcombo_theoryDn->Get("ObservedExclusion_THEORYDOWN");
+  // TGraph*  gr_combo_theoryUp = (TGraph*) fcombo_theoryUp->Get("ObservedExclusion_THEORYUP");
+  // TGraph*  gr_combo_theoryDn = (TGraph*) fcombo_theoryDn->Get("ObservedExclusion_THEORYDOWN");
+
+  TGraph*  gr_combo_expp1;
+  TGraph*  gr_combo_expm1;
+
+  TGraph*  gr_combo_theoryUp;
+  TGraph*  gr_combo_theoryDn;
+
+  if( TString(sample).Contains("LeftSlepton") ){
+    if( x==25){
+      gr_combo_expp1     = Left_ExpectedUp_25();
+      gr_combo_expm1     = Left_ExpectedDn_25();
+      gr_combo_theoryUp  = Left25_observedup();
+      gr_combo_theoryDn  = Left25_observeddown();
+    }
+    else if( x==50){
+      gr_combo_expp1     = Left_ExpectedUp_50();
+      gr_combo_expm1     = Left_ExpectedDn_50();
+      gr_combo_theoryUp  = Left50_observedup();
+      gr_combo_theoryDn  = Left50_observeddown();
+    }
+    else if( x==75){
+      gr_combo_expp1     = Left_ExpectedUp_75();
+      gr_combo_expm1     = Left_ExpectedDn_75();
+      gr_combo_theoryUp  = Left75_observedup();
+      gr_combo_theoryDn  = Left75_observeddown();
+    }
+  }
+  else{
+    if( x==25){
+      gr_combo_expp1     = Tau_ExpectedUp_25();
+      gr_combo_expm1     = Tau_ExpectedDn_25();
+      gr_combo_theoryUp  = Tau25_observedup();
+      gr_combo_theoryDn  = Tau25_observeddown();
+    }
+    else if( x==50){
+      gr_combo_expp1     = Tau_ExpectedUp_50();
+      gr_combo_expm1     = Tau_ExpectedDn_50();
+      gr_combo_theoryUp  = Tau50_observedup();
+      gr_combo_theoryDn  = Tau50_observeddown();
+    }
+    else if( x==75){
+      gr_combo_expp1     = Tau_ExpectedUp_75();
+      gr_combo_expm1     = Tau_ExpectedDn_75();
+      gr_combo_theoryUp  = Tau75_observedup();
+      gr_combo_theoryDn  = Tau75_observeddown();
+    }
+  }
 
   //TGraph*  gr_combo_obs_new    = (TGraph*) fcomboNew->Get("ObservedExclusion");
   //TGraph*  gr_combo_exp_new    = (TGraph*) fcomboNew->Get("ExpectedExclusion");
@@ -451,30 +511,40 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
 
   if( plotss ) gr_ss = (TGraph*) fcombo->Get("SSObservedExclusion");
 
+  // 3l observed
+  gr_florida->SetLineWidth(4);
+  gr_florida->SetLineStyle(4);
+  gr_florida->SetLineColor(kGreen+2);
+
+  // SS observed
   gr_ss->SetLineWidth(4);
   gr_ss->SetLineStyle(3);
   gr_ss->SetLineColor(6);
 
+  // combined expected +/-1 sigma
+  gr_combo_expp1->SetLineColor(2);
+  gr_combo_expp1->SetLineWidth(2);
+  gr_combo_expp1->SetLineStyle(3);
+
+  gr_combo_expm1->SetLineColor(2);
+  gr_combo_expm1->SetLineWidth(2);
+  gr_combo_expm1->SetLineStyle(3);
+
+  // combined observed +/-1 sigma theory
+  gr_combo_theoryUp->SetLineColor(4);
+  gr_combo_theoryUp->SetLineWidth(2);
+  gr_combo_theoryUp->SetLineStyle(4);
+
+  gr_combo_theoryDn->SetLineColor(4);
+  gr_combo_theoryDn->SetLineWidth(2);
+  gr_combo_theoryDn->SetLineStyle(4);
+
+  // combined observed
   gr_combo_obs->SetLineWidth(4);
 
+  // combined expected
   gr_combo_exp->SetLineWidth(4);
   gr_combo_exp->SetLineStyle(2);
-
-  gr_florida->SetLineWidth(4);
-  gr_florida->SetLineStyle(4);
-  gr_florida->SetLineColor(2);
-
-  gr_combo_expp1->SetLineColor(2);
-  gr_combo_expm1->SetLineColor(2);
-
-  //gr_combo_expp1->SetLineWidth(5);
-  //gr_combo_expm1->SetLineWidth(5);
-
-  gr_combo_expp1->SetLineStyle(1);
-  gr_combo_expm1->SetLineStyle(1);
-
-  gr_combo_theoryUp->SetLineColor(2);
-  gr_combo_theoryDn->SetLineColor(2);
 
   TH2D *hdummy = new TH2D("hdummy","",65,100,750,72,0,725);
   
@@ -488,15 +558,15 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   hdummy->Draw();
   hobs->Draw("colzsame");
 
-  //gr_combo_obs->Draw("l");
+  gr_combo_obs->Draw("l");
   gr_combo_exp->Draw("l");
-  //gr_florida->Draw("l");
+  gr_florida->Draw("l");
 
   //gr_combo_obs_new->Draw("l");
   //gr_combo_exp_new->Draw("l");
 
-  //gr_combo_theoryUp->Draw("l");
-  //gr_combo_theoryDn->Draw("l");
+  gr_combo_theoryUp->Draw("l");
+  gr_combo_theoryDn->Draw("l");
 
   gr_combo_expp1->Draw("l");
   gr_combo_expm1->Draw("l");
@@ -506,11 +576,13 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   cmsPrelim(4.98,isPreliminary);
 
   
-  TLegend *leg = new TLegend(0.2,0.73,0.65,0.88);
-  leg->AddEntry(gr_combo_obs    ,"combined observed","l");
-  leg->AddEntry(gr_combo_exp    ,"combined median expected","l");
-  leg->AddEntry(gr_florida      ,"trilepton (M_{T}) observed","l");
-  leg->AddEntry(gr_ss           ,"SS observed","l");
+  TLegend *leg = new TLegend(0.2,0.67,0.6,0.88);
+  leg->AddEntry(gr_combo_obs      ,"comb. observed","l");
+  leg->AddEntry(gr_combo_theoryUp ,"comb. observed (#pm1#sigma^{theory})","l");
+  leg->AddEntry(gr_combo_exp      ,"comb. median expected","l");
+  leg->AddEntry(gr_combo_expp1    ,"comb. expected (#pm1#sigma)","l");
+  leg->AddEntry(gr_florida        ,"trilepton (M_{T}) observed","l");
+  leg->AddEntry(gr_ss             ,"SS observed","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->Draw();
@@ -519,7 +591,7 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   TLatex *thistex = new TLatex();
   thistex->SetNDC();
   thistex->SetTextSize(0.04);
-  thistex->DrawLatex(0.19,0.65,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
+  thistex->DrawLatex(0.19,0.6,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm}");
   // if     (x==25) thistex->DrawLatex(0.01,0.03,"m(#tilde{l}) = 0.25m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.75m(#tilde{#chi}_{1}^{0})");
   // else if(x==50) thistex->DrawLatex(0.01,0.03,"m(#tilde{l}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
   // else if(x==75) thistex->DrawLatex(0.01,0.03,"m(#tilde{l}) = 0.75m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.25m(#tilde{#chi}_{1}^{0})");
@@ -529,12 +601,12 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   else if(x==75) thistex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.75(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.25^{}m_{#tilde{#chi}_{1}^{0}}");
 
   if( TString(sample).Contains("Left") ){
-    thistex->DrawLatex(0.19,0.59,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=0.5)");
-    thistex->DrawLatex(0.19,0.53,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#font[12]{l}}#nu_{#font[12]{l}} , #font[12]{l}#tilde{#nu}_{#font[12]{l}}");
+    thistex->DrawLatex(0.19,0.54,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=0.5)");
+    thistex->DrawLatex(0.19,0.48,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#font[12]{l}}#nu_{#font[12]{l}} , #font[12]{l}#tilde{#nu}_{#font[12]{l}}");
   }
   else{
-    thistex->DrawLatex(0.19,0.59,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=1)");
-    thistex->DrawLatex(0.19,0.53,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
+    thistex->DrawLatex(0.19,0.54,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=1)");
+    thistex->DrawLatex(0.19,0.48,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
   }
 
   can->Modified();
