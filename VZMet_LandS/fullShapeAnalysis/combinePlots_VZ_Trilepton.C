@@ -207,7 +207,7 @@ void combinePlots_VZ_Trilepton(bool print = false){
   //ifstream ifile("T1ChiWZ_Trileptons_UL.txt");
   //ifstream ifile("T1ChiWZ_LLJJ_UL.txt");
 
-  char* rootfilename = "T1ChiWZ_LLJJ_UL.txt";
+  char* rootfilename = "combinePlots_VZ_Trilepton.root";
 
   bool smooth = false;
 
@@ -481,6 +481,15 @@ void combinePlots_VZ_Trilepton(bool print = false){
   fout->cd();
   hexcl->Write();
   hexp->Write();
+
+  gr_combo->SetName("gr_combo");
+  gr_combo->SetTitle("gr_combo");
+  gr_combo_exp->SetName("gr_combo_exp");
+  gr_combo_exp->SetTitle("gr_combo_exp");
+  gr_tri->SetName("gr_tri");
+  gr_tri->SetTitle("gr_tri");
+  gr_vzmet->SetName("gr_vzmet");
+  gr_vzmet->SetTitle("gr_vzmet");
   gr_combo->Write();
   gr_combo_exp->Write();
   gr_vzmet->Write();
