@@ -139,6 +139,54 @@ TGraph* getGraph_ComboExp(){
 
 }
 
+TGraph* getGraph_ComboExpP1(){
+
+  float x[6];
+  float y[6];
+  int npoints = -1;
+
+  x[0] =  167.5;    y[0] = -12.5;
+  x[1] =  157.5;    y[1] =  35.0;
+  x[2] =    140;    y[2] =  35.0;
+  x[3] =   87.5;    y[3] =  12.5;
+  x[4] =   87.5;    y[4] = -12.5;
+
+  npoints = 5;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+
+  gr->SetLineColor(4);
+  gr->SetLineWidth(2);
+  gr->SetMarkerColor(6);
+
+  return gr;
+
+}
+
+TGraph* getGraph_ComboExpM1(){
+
+  float x[6];
+  float y[6];
+  int npoints = -1;
+
+  x[0] =  240.0;  y[0] = -12.5;
+  x[1] =  212.5;  y[1] =  87.5;
+  x[2] =  187.5;  y[2] =  87.5;
+  x[3] =   87.5;  y[3] =  12.5;
+  x[4] =   87.5;  y[4] = -12.5;
+
+  npoints = 5;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+
+  gr->SetLineColor(4);
+  gr->SetLineWidth(2);
+  gr->SetMarkerColor(6);
+
+  return gr;
+
+}
+
 TGraph* getGraph_VZMet(){
 
   float x[6];
@@ -203,7 +251,8 @@ void smoothHist( TH2F* h ){
 
 void combinePlots_VZ_Trilepton(bool print = false){
 
-  ifstream ifile("T1ChiWZ_Combo_UL.txt");
+  ifstream ifile("T1ChiWZ_Combo_BANDS_UL.txt");
+  //ifstream ifile("T1ChiWZ_Combo_UL.txt");
   //ifstream ifile("T1ChiWZ_Trileptons_UL.txt");
   //ifstream ifile("T1ChiWZ_LLJJ_UL.txt");
 
@@ -218,20 +267,26 @@ void combinePlots_VZ_Trilepton(bool print = false){
   TLatex *t = new TLatex();
   t->SetNDC();
 
-  TH2F* hexp   = new TH2F("hexp","hexp"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
-  TH2F* hexcl   = new TH2F("hexcl","hhexcl"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
+  TH2F* hexp     = new TH2F("hexp"  ,"hexp"      , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
+  TH2F* hexcl    = new TH2F("hexcl" ,"hhexcl"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
+  TH2F* hexpp1   = new TH2F("hexpp1","hexpp1"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
+  TH2F* hexpm1   = new TH2F("hexpm1","hexpm1"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
 
   int m1;
   int m2;
   float obs;
   float exp;
+  float expp1;
+  float expm1;
 
   while( !ifile.eof() ){
-    ifile >> m1 >> m2 >> exp >> obs;
-    cout << m1 << " " << m2 << " " << exp << " " << obs << endl;
+    ifile >> m1 >> m2 >> exp >> obs >> expp1 >> expm1;
+    cout << m1 << " " << m2 << " " << exp << " " << obs << " " << expp1 << " " << expm1 << endl;
 
     hexcl->Fill(m1,m2,obs);
     hexp->Fill(m1,m2,exp);
+    hexpp1->Fill(m1,m2,expp1);
+    hexpm1->Fill(m1,m2,expm1);
     
   }
 
@@ -263,17 +318,21 @@ void combinePlots_VZ_Trilepton(bool print = false){
   TH2F* hexcluded3  = new TH2F("hexcluded3","hexcluded3"  , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
   
   TH2F* hexcluded_exp = new TH2F("hexcluded_exp","hexcluded_exp"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
+  TH2F* hexcluded_expp1 = new TH2F("hexcluded_expp1","hexcluded_expp1"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
+  TH2F* hexcluded_expm1 = new TH2F("hexcluded_expm1","hexcluded_expm1"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
 
   for( unsigned int ibin = 1 ; ibin <= 21 ; ibin++ ){
     for( unsigned int jbin = 1 ; jbin <= 21 ; jbin++ ){
 
       float xsecul     = hexcl->GetBinContent(ibin,jbin);
       float xsecul_exp = hexp->GetBinContent(ibin,jbin);
+      float xsecul_expp1 = hexpp1->GetBinContent(ibin,jbin);
+      float xsecul_expm1 = hexpm1->GetBinContent(ibin,jbin);
 
       if( xsecul < 1.e-10 ) continue;
 
-      float mg = hexcluded->GetXaxis()->GetBinCenter(ibin)-12.5;
-      float ml = hexcluded->GetYaxis()->GetBinCenter(jbin)-12.5;
+      float mg = hexcluded->GetXaxis()->GetBinCenter(ibin);
+      float ml = hexcluded->GetYaxis()->GetBinCenter(jbin);
 
       int   bin  = refxsec->FindBin(mg);
       float xsec = refxsec->GetBinContent(bin);
@@ -285,6 +344,13 @@ void combinePlots_VZ_Trilepton(bool print = false){
 
       hexcluded_exp->SetBinContent(ibin,jbin,0);
       if( xsec > xsecul_exp )   hexcluded_exp->SetBinContent(ibin,jbin,1);
+
+      hexcluded_expp1->SetBinContent(ibin,jbin,0);
+      if( xsec > xsecul_expp1 )   hexcluded_expp1->SetBinContent(ibin,jbin,1);
+      if( mg==150 && ml==25)      hexcluded_expp1->SetBinContent(ibin,jbin,1);
+
+      hexcluded_expm1->SetBinContent(ibin,jbin,0);
+      if( xsec > xsecul_expm1 )   hexcluded_expm1->SetBinContent(ibin,jbin,1);
 
       hexcluded3->SetBinContent(ibin,jbin,0);
       if( 3 * xsec > xsecul )   hexcluded3->SetBinContent(ibin,jbin,1);
@@ -358,6 +424,8 @@ void combinePlots_VZ_Trilepton(bool print = false){
   hexcl->GetYaxis()->SetTitle("LSP mass [GeV]");
   hexcl->GetXaxis()->SetTitle("#chi mass [GeV]");
   hexcl->GetZaxis()->SetTitle("95% CL upper limit on #sigma [fb]");
+  hexcl->GetXaxis()->SetRangeUser(100,300);
+  hexcl->GetYaxis()->SetRangeUser(  0,300);
   hexcl->Draw("colz");
   hexcl->SetMinimum(50);
   hexcl->SetMaximum(5000);
@@ -371,6 +439,8 @@ void combinePlots_VZ_Trilepton(bool print = false){
   TGraph* gr_tri       = getGraph_Trilepton();
   TGraph* gr_combo     = getGraph_Combo();
   TGraph* gr_combo_exp = getGraph_ComboExp();
+  TGraph* gr_combo_expp1 = getGraph_ComboExpP1();
+  TGraph* gr_combo_expm1 = getGraph_ComboExpM1();
   
   if( TString(sample).Contains("wzsms") ) {
     
@@ -390,6 +460,8 @@ void combinePlots_VZ_Trilepton(bool print = false){
     gr_combo_exp->Draw("samel");
     gr_vzmet->Draw("samel");
     gr_tri->Draw("samel");
+    gr_combo_expp1->Draw("samel");
+    gr_combo_expm1->Draw("samel");
 
     TLegend *leg = new TLegend(0.2,0.53,0.55,0.75);
     //leg->AddEntry(gr_vzmet,     "#sigma^{wino-like}","l");
@@ -432,8 +504,8 @@ void combinePlots_VZ_Trilepton(bool print = false){
   // gr_vzmet->Write();
   // fout->Close();
 
-  TCanvas *c2 = new TCanvas("c2","c2",1200,600);
-  c2->Divide(2,1);
+  TCanvas *c2 = new TCanvas("c2","c2",1200,1200);
+  c2->Divide(2,2);
 
   t->SetTextSize(0.07);
 
@@ -466,6 +538,26 @@ void combinePlots_VZ_Trilepton(bool print = false){
   gr_combo->Draw();
   t->DrawLatex(0.3,0.8,"#sigma^{wino}");
   t->DrawLatex(0.3,0.7,"observed");
+
+  c2->cd(3);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  hexcluded_expp1->GetXaxis()->SetTitle("gluino mass [GeV]");
+  hexcluded_expp1->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcluded_expp1->Draw("colz");
+  gr_combo_expp1->Draw("lp");
+  t->DrawLatex(0.3,0.8,"#sigma^{wino}");
+  t->DrawLatex(0.3,0.7,"expected (+1)");
+
+  c2->cd(4);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  hexcluded_expm1->GetXaxis()->SetTitle("gluino mass [GeV]");
+  hexcluded_expm1->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcluded_expm1->Draw("colz");
+  gr_combo_expm1->Draw("lp");
+  t->DrawLatex(0.3,0.8,"#sigma^{wino}");
+  t->DrawLatex(0.3,0.7,"expected (-1)");
 
   if( print ){
     // c2->Print(Form("cards/%s/plots/SMS_points.eps",version.c_str()));
