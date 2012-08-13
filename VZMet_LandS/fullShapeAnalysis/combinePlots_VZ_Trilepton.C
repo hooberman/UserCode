@@ -120,6 +120,54 @@ TGraph* getGraph_Combo(){
 
 }
 
+TGraph* getGraph_ComboTheoryUp(){
+
+  float x[6];
+  float y[6];
+  int npoints = -1;
+
+  x[0] =  242.5;  y[0] = -12.5;
+  x[1] = 216.07;  y[1] =  80.0;
+  x[2] =  187.5;  y[2] =  80.0;
+  x[3] =   87.5;  y[3] =  12.5;
+  x[4] =   87.5;  y[4] = -12.5;
+
+  npoints = 5;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+
+  gr->SetLineColor(4);
+  gr->SetLineWidth(2);
+  gr->SetMarkerColor(6);
+
+  return gr;
+
+}
+
+TGraph* getGraph_ComboTheoryDown(){
+
+  float x[6];
+  float y[6];
+  int npoints = -1;
+
+  x[0] =  232.5;  y[0] = -12.5;
+  x[1] = 208.93;  y[1] =  70.0;
+  x[2] =  187.5;  y[2] =  70.0;
+  x[3] =   87.5;  y[3] =  12.5;
+  x[4] =   87.5;  y[4] = -12.5;
+
+  npoints = 5;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+
+  gr->SetLineColor(4);
+  gr->SetLineWidth(2);
+  gr->SetMarkerColor(6);
+
+  return gr;
+
+}
+
 TGraph* getGraph_ComboExp(){
 
   float x[6];
@@ -441,7 +489,9 @@ void combinePlots_VZ_Trilepton(bool print = false){
   TGraph* gr_combo_exp = getGraph_ComboExp();
   TGraph* gr_combo_expp1 = getGraph_ComboExpP1();
   TGraph* gr_combo_expm1 = getGraph_ComboExpM1();
-  
+  TGraph* gr_comboUp     = getGraph_ComboTheoryUp();  
+  TGraph* gr_comboDn     = getGraph_ComboTheoryDown();  
+
   if( TString(sample).Contains("wzsms") ) {
     
     gr_vzmet->SetLineWidth(3);
@@ -462,6 +512,8 @@ void combinePlots_VZ_Trilepton(bool print = false){
     gr_tri->Draw("samel");
     gr_combo_expp1->Draw("samel");
     gr_combo_expm1->Draw("samel");
+    gr_comboUp->Draw("samel");
+    gr_comboDn->Draw("samel");
 
     TLegend *leg = new TLegend(0.2,0.53,0.55,0.75);
     //leg->AddEntry(gr_vzmet,     "#sigma^{wino-like}","l");
@@ -532,10 +584,14 @@ void combinePlots_VZ_Trilepton(bool print = false){
   //hexcluded->Draw("colz");
   hexcluded_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
   hexcluded_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
+  hexcluded_shifted->GetXaxis()->SetRangeUser(100,300);
+  hexcluded_shifted->GetYaxis()->SetRangeUser(  0,200);
   hexcluded_shifted->Draw("colz");
-  gr_tri->Draw();
-  gr_vzmet->Draw();
+  //gr_tri->Draw();
+  //gr_vzmet->Draw();
   gr_combo->Draw();
+  gr_comboUp->Draw("samelp");
+  gr_comboDn->Draw("samelp");
   t->DrawLatex(0.3,0.8,"#sigma^{wino}");
   t->DrawLatex(0.3,0.7,"observed");
 
@@ -576,8 +632,16 @@ void combinePlots_VZ_Trilepton(bool print = false){
 
   gr_combo->SetName("gr_combo");
   gr_combo->SetTitle("gr_combo");
+  gr_comboUp->SetName("gr_comboTheoryUp");
+  gr_comboUp->SetTitle("gr_comboTheoryup");
+  gr_comboDn->SetName("gr_comboTheoryDown");
+  gr_comboDn->SetTitle("gr_comboTheoryDown");
   gr_combo_exp->SetName("gr_combo_exp");
   gr_combo_exp->SetTitle("gr_combo_exp");
+  gr_combo_expp1->SetName("gr_combo_expp1");
+  gr_combo_expp1->SetTitle("gr_combo_expp1");
+  gr_combo_expm1->SetName("gr_combo_expm1");
+  gr_combo_expm1->SetTitle("gr_combo_expm1");
   gr_tri->SetName("gr_tri");
   gr_tri->SetTitle("gr_tri");
   gr_vzmet->SetName("gr_vzmet");
@@ -586,6 +650,10 @@ void combinePlots_VZ_Trilepton(bool print = false){
   gr_combo_exp->Write();
   gr_vzmet->Write();
   gr_tri->Write();
+  gr_comboUp->Write();
+  gr_comboDn->Write();
+  gr_combo_expp1->Write();
+  gr_combo_expm1->Write();
   fout->Close();
 
 }
