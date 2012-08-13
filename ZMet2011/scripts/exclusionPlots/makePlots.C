@@ -102,6 +102,7 @@ void makePlots( bool printPlots = false){
 
 
   if( isPreliminary ) isPrelimChar = (char*) "_prelim";
+
   /*
   //-------------------------------------------
   // Rutgers/KIT
@@ -285,23 +286,46 @@ void makePlots( bool printPlots = false){
   can_2a->Modified();
   can_2a->Update();
   if( printPlots) can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
-  */
+*/
   //-----------------
   // TChiWZ
   //-----------------
 
-  TFile *fwz  = TFile::Open("combinePlots_VZ_Trilepton.root");
+  TFile *fwz  = TFile::Open("combinePlots_VZ_Trilepton_AllUncertainties.root");
 
   TH2F*   hwz             = (TH2F*)   fwz->Get("hexcl");
   TGraph* grwz_combo      = (TGraph*) fwz->Get("gr_combo");
   TGraph* grwz_combo_exp  = (TGraph*) fwz->Get("gr_combo_exp");
   TGraph* grwz_tri        = (TGraph*) fwz->Get("gr_tri");
   TGraph* grwz_vzmet      = (TGraph*) fwz->Get("gr_vzmet");
-  
+  TGraph* grwz_combo_expp1  = (TGraph*) fwz->Get("gr_combo_expp1");
+  TGraph* grwz_combo_expm1  = (TGraph*) fwz->Get("gr_combo_expm1");
+  TGraph* grwz_comboUp      = (TGraph*) fwz->Get("gr_comboTheoryUp");
+  TGraph* grwz_comboDn      = (TGraph*) fwz->Get("gr_comboTheoryDown");
+
   grwz_combo->SetLineWidth(6);
   grwz_combo_exp->SetLineWidth(6);
+
   grwz_tri->SetLineWidth(4);
+  grwz_tri->SetLineColor(6);
   grwz_vzmet->SetLineWidth(4);
+  grwz_vzmet->SetLineColor(2);
+
+  grwz_combo_expp1->SetLineColor(kViolet-5);
+  grwz_combo_expp1->SetLineWidth(4);
+  grwz_combo_expp1->SetLineStyle(3);
+
+  grwz_combo_expm1->SetLineColor(kViolet-5);
+  grwz_combo_expm1->SetLineWidth(4);
+  grwz_combo_expm1->SetLineStyle(3);
+
+  grwz_comboUp->SetLineColor(4);
+  grwz_comboUp->SetLineWidth(4);
+  grwz_comboUp->SetLineStyle(4);
+
+  grwz_comboDn->SetLineColor(4);
+  grwz_comboDn->SetLineWidth(4);
+  grwz_comboDn->SetLineStyle(4);
 
   TCanvas *can_wz = new TCanvas();
   can_wz->cd();
@@ -310,6 +334,9 @@ void makePlots( bool printPlots = false){
   gPad->SetLogz();
   formatHist((TH2D*)hwz);
   hwz->GetXaxis()->SetRangeUser(87.5,512.5);
+  hwz->GetYaxis()->SetRangeUser(-12.5,512.5);
+  //hwz->GetXaxis()->SetRangeUser(100,300);
+  //hwz->GetYaxis()->SetRangeUser(  0,300);
   hwz->SetMinimum(50);
   hwz->SetMaximum(5000);
   hwz->Draw("colz");
@@ -317,20 +344,26 @@ void makePlots( bool printPlots = false){
   grwz_combo_exp->Draw("l");
   grwz_tri->Draw("l");
   grwz_vzmet->Draw("l");
+  grwz_combo_expp1->Draw("l");
+  grwz_combo_expm1->Draw("l");
+  grwz_comboUp->Draw("l");
+  grwz_comboDn->Draw("l");
   cmsPrelim(4.98,isPreliminary);
 
-  TLegend *legwz = new TLegend(0.2,0.68,0.7,0.88);
-  legwz->AddEntry(grwz_combo    ,"combined observed","l");
-  legwz->AddEntry(grwz_combo_exp,"combined median expected","l");
-  legwz->AddEntry(grwz_vzmet    ,"2l2j observed","l");
-  legwz->AddEntry(grwz_tri      ,"trilepton (M_{T}) observed","l");
+  TLegend *legwz = new TLegend(0.2,0.6,0.65,0.88);
+  legwz->AddEntry(grwz_combo       ,"combined observed","l");
+  legwz->AddEntry(grwz_comboUp     ,"combined observed (#pm1#sigma^{theory})","l");
+  legwz->AddEntry(grwz_combo_exp   ,"combined median expected","l");
+  legwz->AddEntry(grwz_combo_expp1 ,"combined expected (#pm1#sigma)","l");
+  legwz->AddEntry(grwz_vzmet       ,"2#font[12]{l}2j observed","l");
+  legwz->AddEntry(grwz_tri         ,"trilepton (M_{T}) observed","l");
   legwz->SetBorderSize(0);
   legwz->SetFillColor(0);
   legwz->Draw();
   legwz->Draw();
   
   tex->SetTextSize(0.035);
-  tex->DrawLatex(0.18,0.6,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm} #rightarrow WZ+E_{T}^{miss}");
+  tex->DrawLatex(0.18,0.55,"pp #rightarrow #tilde{#chi}_{2}^{0} #tilde{#chi}_{1}^{#pm} #rightarrow WZ+E_{T}^{miss}");
 
   can_wz->Modified();
   can_wz->Update();
@@ -348,7 +381,7 @@ void makePlots( bool printPlots = false){
     can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
     can_wz->Print(Form("WZ_zoom_Fig11%s.png",isPrelimChar));
   }
-  
+
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
