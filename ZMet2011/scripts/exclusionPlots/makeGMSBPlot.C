@@ -26,10 +26,11 @@
 
 using namespace std;
 
-bool plotExpected  = false;
-bool plotObserved  = true;
-bool logplot       = true;
-bool isPreliminary = true;
+bool plotExpected   = false;
+bool plotObserved   = true;
+bool logplot        = true;
+bool isPreliminary  = true;
+bool logInterpolate = true;
 
 void cmsPrelim(double intLumi, bool prelim)
 {
@@ -76,30 +77,103 @@ void getUncertainties(){
 
 TGraph* uncertaintyBand( TGraph* gup , TGraph* gdn ){
 
-  float x[30];
-  float y[30];
+  const unsigned int npoints = gup->GetN();
+  cout << "npoints " << npoints << endl;
+
+  float x[2*npoints];
+  float y[2*npoints];
 
   Double_t thisx;
   Double_t thisy;
 
-  for( int i = 0 ; i < 15; ++i ){
+  for( int i = 0 ; i < npoints; ++i ){
     gup->GetPoint(i,thisx,thisy);
     x[i] = thisx;
     y[i] = thisy;
     //cout << x[i] << " " << y[i] << endl;
   }
 
-  for( int i = 0 ; i < 15; ++i ){
-    gdn->GetPoint(14-i,thisx,thisy);
-    x[i+15] = thisx;
-    y[i+15] = thisy;
+  for( int i = 0 ; i < npoints; ++i ){
+    gdn->GetPoint(npoints-1-i,thisx,thisy);
+    x[i+npoints] = thisx;
+    y[i+npoints] = thisy;
     //cout << x[i+15] << " " << y[i+15] << endl;
   }
 
-  TGraph* gr = new TGraph(30,x,y);
+  TGraph* gr = new TGraph(2*npoints,x,y);
   gr->SetFillColor(7);
 
   return gr;
+
+}
+
+TGraph* getGraph(TGraph* gin , int ndiv = 10 , bool verbose = false ){
+
+  const unsigned int n = gin->GetN();
+
+  if( verbose ) cout << "npoints " << n << endl;
+
+  float x[n];
+  float y[n];
+
+  Double_t thisx;
+  Double_t thisy;
+
+  for(int i = 0 ; i < n ; ++i){
+    gin->GetPoint(i,thisx,thisy);
+    x[i] = thisx;
+    y[i] = thisy;
+  }
+
+  if( verbose ){
+    cout << endl << "Original points" << endl;
+    for( int i = 0 ; i < n ; i++ ){
+      cout << i << " " << x[i] << " " << y[i] << endl;
+    }
+  }
+
+  const unsigned int nnew = ndiv * (n-1);
+
+  float xnew[nnew];
+  float ynew[nnew];
+
+  if( verbose ) cout << endl << "New points" << endl;
+  for( int i = 0 ; i < n-1 ; ++i){
+
+    float xgraph = x[i];
+    float ygraph = y[i];
+
+    float slope = (y[i+1]-y[i])/(x[i+1]-x[i]);
+
+    if( verbose ) cout << i << " " << xgraph << " " << ygraph << " " << slope << endl;
+
+    for( int j = 0 ; j < ndiv ; ++j ){
+
+      //cout << "counter " << i*10+j << endl;
+      xnew[i*ndiv+j] = xgraph;
+      ynew[i*ndiv+j] = ygraph;
+
+      xgraph += 20.0 / (float)ndiv;
+      ygraph += (20.0/(float)ndiv)*slope;
+    }
+  }
+
+  if( verbose ){
+    cout << endl << "New graph points" << endl;
+    for( int i = 0 ; i < nnew ; i++ ){
+      cout << i << " " << xnew[i] << " " << ynew[i] << endl;
+    }
+  }
+
+  TGraph *gout = new TGraph(nnew,xnew,ynew);
+
+  gout->SetLineColor(gin->GetLineColor());
+  gout->SetLineWidth(gin->GetLineWidth());
+  gout->SetLineStyle(gin->GetLineStyle());
+  //gout->SetMarkerColor(gin->GetLineColor());
+
+  return gout;
+
 
 }
 
@@ -126,6 +200,7 @@ void makeGMSBPlot( bool printplots = false ){
   TGraph* gulcexpp1 = (TGraph*) fc->Get("grexpp1");
   TGraph* gulcexpm1 = (TGraph*) fc->Get("grexpm1");
   TGraph* gulcband  = uncertaintyBand( gulcexpp1 , gulcexpm1 );
+
 
   Double_t xp;
   Double_t yp;
@@ -238,7 +313,7 @@ void makeGMSBPlot( bool printplots = false ){
 
   //TGraphErrors* g  = new TGraphErrors(n,x,y,xerr,yerr);
 
-  TCanvas *c1 = new TCanvas();
+  TCanvas *c1 = new TCanvas("c1","",600,600);
   gPad->SetTopMargin(0.1);
   gPad->SetRightMargin(0.05);
   //gPad->SetGridx();
@@ -290,10 +365,15 @@ void makeGMSBPlot( bool printplots = false ){
   gulcexp->SetLineColor(4);
   gulcexp->SetLineStyle(2);
 
-
-
-
-
+  //clone TGraphs, with more points
+  TGraph* gulc_line       = getGraph(gulc,10);
+  TGraph* gulcexp_line    = getGraph(gulcexp,20);
+  TGraph* gul_line        = getGraph(gul,20);
+  TGraph* gul2_line       = getGraph(gul2,20);
+  TGraph* gulcexpp1_line  = getGraph(gulcexpp1,20);
+  TGraph* gulcexpm1_line  = getGraph(gulcexpm1,20);
+  //TGraph* g_line          = getGraph(g,20);
+  TGraph* gulcband_line   = uncertaintyBand( gulcexpp1_line , gulcexpm1_line );
 
   // gulexp->SetLineWidth(2);
   // gulexp->SetLineStyle(2);
@@ -327,24 +407,45 @@ void makeGMSBPlot( bool printplots = false ){
   gband->Draw("samef");
   g->Draw("samel");
 
-  gulcband->SetFillStyle(3002);
-  gulcband->Draw("samef");
+  // gulcband->SetFillStyle(3002);
+  // gulcband->Draw("samef");
+
+  gulcband_line->SetFillStyle(3002);
+  gulcband_line->Draw("samef");
 
 
   if( plotObserved ){
-    gul->Draw("samel");
-    gul2->Draw("samel");
-    gulc->Draw("samel");
-    gulcexp->Draw("samel");
-    //gulcexpp1->Draw("samel");
-    //gulcexpm1->Draw("samel");
+    if( !logInterpolate ){
+      gul->Draw("samel");
+      gul2->Draw("samel");
+      gulc->Draw("samel");
+      gulcexp->Draw("samel");
+      //gulcexpp1->Draw("samel");
+      //gulcexpm1->Draw("samel");
+    }
+
+    else{
+      gul_line->Draw("samel");
+      gul2_line->Draw("samel");
+      gulc_line->Draw("samel");
+      gulcexp_line->Draw("samel");
+      //gulcexpp1_line->Draw("samel");
+      //gulcexpm1_line->Draw("samel");
+    }
   }
+
+  // gulc_line->SetLineColor(2);
+  // gulc_line->SetLineWidth(1);
+  // gulc_line->SetMarkerColor(2);
+  // gulc_line->Draw("samelp");
 
   if( plotExpected ){
     gulexp->Draw("samel");
     gul2exp->Draw("samel");
     gulcexp->Draw("samel");
   }
+
+
 
 
   //gband->Draw("samef");
@@ -409,6 +510,8 @@ void makeGMSBPlot( bool printplots = false ){
     leg->AddEntry(gul2exp ,"expected UL (multi-lepton)","l");
     leg->AddEntry(gulcexp ,"expected UL (combined)","l");
   }
+
+
 
   TH1F* hg = new TH1F("h","",1,0,1);
   hg->SetLineColor(2);
