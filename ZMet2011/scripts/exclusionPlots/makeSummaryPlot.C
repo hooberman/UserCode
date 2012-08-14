@@ -25,7 +25,7 @@
 #include "TLine.h"
 #include "TMath.h"
 #include "TPaveText.h"
-
+#include "fedorContours.C"
 
 using namespace std;
 
@@ -52,8 +52,10 @@ void removeDiagonal( TH2D* h , float deltaM ){
 
 void formatHist( TH2D* hist ){
 
-  hist->GetXaxis()->SetTitle("m(#tilde{#chi}_{2}^{0}) = m(#tilde{#chi}_{1}^{#pm}) [GeV]");
-  hist->GetYaxis()->SetTitle("m(#tilde{#chi}_{1}^{0}) [GeV]");
+  //hist->GetXaxis()->SetTitle("m(#tilde{#chi}_{2}^{0}) = m(#tilde{#chi}_{1}^{#pm}) [GeV]");
+  //hist->GetYaxis()->SetTitle("m(#tilde{#chi}_{1}^{0}) [GeV]");
+  hist->GetXaxis()->SetTitle("m_{#tilde{#chi}_{2}^{0}} = m_{#tilde{#chi}_{1}^{#pm}} [GeV]");
+  hist->GetYaxis()->SetTitle("m_{#tilde{#chi}_{1}^{0}} [GeV]");
   hist->GetZaxis()->SetTitle("95% CL UL #sigma#timesBF [fb]");
   hist->GetXaxis()->SetTitleOffset(1.12);
   hist->GetYaxis()->SetTitleOffset(1.5);
@@ -135,7 +137,7 @@ TGraph *getCharginoGraph(){
 }
 
 
-void makeSummaryPlot(){
+void makeSummaryPlot( bool printPlot = false ){
 
   if( isPreliminary ) isPrelimChar = (char*) "_prelim";
 
@@ -165,6 +167,12 @@ void makeSummaryPlot(){
   TGraph* gr2imt_exp    = (TGraph*) f2imt->Get("ExpectedExclusion");
   TGraph* gr2amt_exp    = (TGraph*) f2amt->Get("ExpectedExclusion");
 
+  TGraph* mod2i_observed   = model2i_observed();
+  TGraph* mod2a_observed   = model2a_observed();
+
+  mod2i_observed->SetLineColor(4);
+  mod2a_observed->SetLineColor(4);
+
   TGraph* grslepton     = getSleptonGraph();
   TGraph* grchargino    = getCharginoGraph();
 
@@ -175,12 +183,22 @@ void makeSummaryPlot(){
   gr2i->SetLineColor(1);
   gr2i->SetFillColor(kGray);
   gr2i->SetLineWidth(3);
-  if( !drawExpected ) gr2i->SetLineStyle(1);
+  mod2i_observed->SetLineColor(1);
+  mod2i_observed->SetLineWidth(3);
+  if( !drawExpected ){
+    gr2i->SetLineStyle(1);
+    mod2i_observed->SetLineStyle(1);
+  }
 
   gr2a->SetLineColor(2);
   gr2a->SetFillColor(2);
   gr2a->SetLineWidth(3);
-  if( !drawExpected ) gr2a->SetLineStyle(2);
+  mod2a_observed->SetLineColor(2);
+  mod2a_observed->SetLineWidth(3);
+  if( !drawExpected ){
+    gr2a->SetLineStyle(2);
+    mod2a_observed->SetLineStyle(2);
+  }
 
   grwz->SetLineColor(4);
   grwz->SetFillColor(4);
@@ -239,10 +257,12 @@ void makeSummaryPlot(){
   grchargino->Draw("samef");
 
   gr2imt->Draw("l");
-  gr2i->Draw("l");
-  gr2a->Draw("l");
+  //gr2i->Draw("l");
+  //gr2a->Draw("l");
   gr2amt->Draw("l");
   grwz->Draw("l");
+  mod2i_observed->Draw("l");
+  mod2a_observed->Draw("l");
 
   if( drawExpected ){
     gr2i_exp->Draw("l");
@@ -285,11 +305,13 @@ void makeSummaryPlot(){
 
   TLatex *tex = new TLatex();
   tex->SetNDC();
-  tex->SetTextSize(0.03);  
-  tex->DrawLatex(0.2,0.55,"m( #tilde{#font[12]{l}} ) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  tex->SetTextSize(0.04);  
+  //tex->DrawLatex(0.2,0.55,"m( #tilde{#font[12]{l}} ) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
+  tex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
 
   tex->SetTextAngle(32);
-  tex->DrawLatex(0.25,0.31,"m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) > m(#tilde{#chi}_{1}^{0})");
+  //tex->DrawLatex(0.25,0.31,"m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) > m(#tilde{#chi}_{1}^{0})");
+  tex->DrawLatex(0.25,0.33,"^{}m_{#tilde{#chi}_{2}^{0}} = m_{#tilde{#chi}_{1}^{#pm}} > ^{}m_{#tilde{#chi}_{1}^{0}}");
 
   TLine line;
 
@@ -299,24 +321,26 @@ void makeSummaryPlot(){
 
   cmsPrelim(4.98,isPreliminary);
 
-  if( isPreliminary ){
-    if( drawExpected ){
-      can->Print("ewkino_summaryPlot_expected_prelim.pdf");
-      can->Print("ewkino_summaryPlot_expected_prelim.C");
+  if( printPlot ){
+    if( isPreliminary ){
+      if( drawExpected ){
+	can->Print("ewkino_summaryPlot_expected_prelim.pdf");
+	can->Print("ewkino_summaryPlot_expected_prelim.C");
+      }
+      else{
+	can->Print("ewkino_summaryPlot_prelim.pdf");
+	can->Print("ewkino_summaryPlot_prelim.C");
+      }
     }
     else{
-      can->Print("ewkino_summaryPlot_prelim.pdf");
-      can->Print("ewkino_summaryPlot_prelim.C");
-    }
-  }
-  else{
-    if( drawExpected ){
-      can->Print("ewkino_summaryPlot_expected.pdf");
-      can->Print("ewkino_summaryPlot_expected.C");
-    }
-    else{
-      can->Print("ewkino_summaryPlot.pdf");
-      can->Print("ewkino_summaryPlot.C");
+      if( drawExpected ){
+	can->Print("ewkino_summaryPlot_expected.pdf");
+	can->Print("ewkino_summaryPlot_expected.C");
+      }
+      else{
+	can->Print("ewkino_summaryPlot.pdf");
+	can->Print("ewkino_summaryPlot.C");
+      }
     }
   }
 
