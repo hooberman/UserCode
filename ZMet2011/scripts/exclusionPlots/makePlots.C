@@ -63,6 +63,50 @@ void removeDiagonal( TH2D* h , float deltaM ){
   }
 }
 
+TGraph* extendGraph(TGraph* gin){
+  
+  const unsigned int nold = gin->GetN();
+  //cout << "npoints " << nold << endl;
+
+  const unsigned int nnew = nold + 2;
+  
+  float xnew[nnew];
+  float ynew[nnew];
+
+  float xold[nold];
+  float yold[nold];
+
+  Double_t x;
+  Double_t y;
+
+  //cout << endl << "old" << endl;
+  for(int i = 0 ; i < nold ; ++i){
+    gin->GetPoint(i,x,y);
+    //cout << i << " " << x << " " << y << endl;
+    xold[i] = x;
+    yold[i] = y;
+
+    xnew[i+1] = x;
+    ynew[i+1] = y;
+  }
+
+  xnew[0]      = xold[0];      ynew[0] = 0.0;
+  xnew[nnew-1] = xold[nold-1]; ynew[0] = 0.0;
+
+  // cout << endl << "new" << endl;
+  // for(int i = 0 ; i < nnew ; ++i){
+  //   cout << i << " " << xnew[i] << " " << ynew[i] << endl;
+  // }
+
+  TGraph* gout = new TGraph(nnew,xnew,ynew);
+
+  gout->SetLineColor(gin->GetLineColor());
+  gout->SetLineWidth(gin->GetLineWidth());
+  gout->SetLineStyle(gin->GetLineStyle());
+
+  return gout;
+}
+
 void formatHist( TH2D* hist ){
 
   //hist->GetXaxis()->SetTitle("m(#tilde{#chi}_{2}^{0}) = m(#tilde{#chi}_{1}^{#pm}) [GeV]");
@@ -397,7 +441,7 @@ void makePlots( bool printPlots = false){
     can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
     can_wz->Print(Form("WZ_zoom_Fig11%s.png",isPrelimChar));
   }
-  
+
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
@@ -564,6 +608,11 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   gr_combo_exp->SetLineWidth(8);
   gr_combo_exp->SetLineStyle(2);
 
+  //gr_ss_new->SetLineColor(2);
+  //gr_ss_new->SetLineWidth(2);
+
+  if( TString(sample).Contains("Tau") && (x==25||x==75) ) gr_ss = extendGraph(gr_ss);
+
   TH2D *hdummy = new TH2D("hdummy","",65,100,750,72,0,725);
   
   TCanvas *can = new TCanvas(Form("%s_%i",sample,x),Form("%s_%i",sample,x),600,600);
@@ -596,6 +645,9 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   gr_combo_expm1->Draw("l");
 
   if( plotss ) gr_ss->Draw("l");
+
+  //gr_ss_new->Draw("l");
+
   hobs->Draw("axissame");
   cmsPrelim(4.98,isPreliminary);
 
