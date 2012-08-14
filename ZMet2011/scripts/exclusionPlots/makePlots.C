@@ -27,19 +27,18 @@
 #include "TPaveText.h"
 
 #include "fedorContours.C"
-//#include "Ronny_observed/LeftSlepton_Combo_25.C"
-#include "Ronny_observed_v2/LeftSlepton_Combo_25.C"
-#include "Ronny_observed_v2/LeftSlepton_Combo_50.C"
-#include "Ronny_observed_v2/LeftSlepton_Combo_75.C"
-#include "Ronny_observed_v2/TauEnriched_Combo_25.C"
-#include "Ronny_observed_v2/TauEnriched_Combo_50.C"
-#include "Ronny_observed_v2/TauEnriched_Combo_75.C"
-#include "Ronny_expectedplots/LeftSlepton_Combo_25_expected.C"
-#include "Ronny_expectedplots/LeftSlepton_Combo_50_expected.C"
-#include "Ronny_expectedplots/LeftSlepton_Combo_75_expected.C"
-#include "Ronny_expectedplots/TauEnriched_Combo_25_expected.C"
-#include "Ronny_expectedplots/TauEnriched_Combo_50_expected.C"
-#include "Ronny_expectedplots/TauEnriched_Combo_75_expected.C"
+#include "Pieter_observed/LeftSlepton_Combo_25.C"
+#include "Pieter_observed/LeftSlepton_Combo_50.C"
+#include "Pieter_observed/LeftSlepton_Combo_75.C"
+#include "Pieter_observed/TauEnriched_Combo_25.C"
+#include "Pieter_observed/TauEnriched_Combo_50.C"
+#include "Pieter_observed/TauEnriched_Combo_75.C"
+#include "Pieter_expected/LeftSlepton_Combo_25_expected.C"
+#include "Pieter_expected/LeftSlepton_Combo_50_expected.C"
+#include "Pieter_expected/LeftSlepton_Combo_75_expected.C"
+#include "Pieter_expected/TauEnriched_Combo_25_expected.C"
+#include "Pieter_expected/TauEnriched_Combo_50_expected.C"
+#include "Pieter_expected/TauEnriched_Combo_75_expected.C"
 
 using namespace std;
 
@@ -445,8 +444,8 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
 
   TH2D*    hobs_temp       = (TH2D*)   fcombo->Get("BestObsSxBR");
   TH2D*    hobs            = cloneHist(hobs_temp);
-  TGraph*  gr_combo_obs    = (TGraph*) fcombo->Get("ObservedExclusion");
-  TGraph*  gr_combo_exp    = (TGraph*) fcombo->Get("ExpectedExclusion");
+  //TGraph*  gr_combo_obs    = (TGraph*) fcombo->Get("ObservedExclusion");
+  //TGraph*  gr_combo_exp    = (TGraph*) fcombo->Get("ExpectedExclusion");
   TGraph*  gr_florida      = (TGraph*) fflorida->Get("ObservedExclusion");
   TGraph*  gr_ss           = new TGraph();
 
@@ -462,44 +461,59 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   TGraph*  gr_combo_theoryUp;
   TGraph*  gr_combo_theoryDn;
 
+  TGraph*  gr_combo_obs;
+  TGraph*  gr_combo_exp;
+
   if( TString(sample).Contains("LeftSlepton") ){
     if( x==25){
-      gr_combo_expp1     = Left_ExpectedUp_25();
-      gr_combo_expm1     = Left_ExpectedDn_25();
+      gr_combo_expp1     = Left25_expectedup();
+      gr_combo_expm1     = Left25_expecteddown();
       gr_combo_theoryUp  = Left25_observedup();
       gr_combo_theoryDn  = Left25_observeddown();
+      gr_combo_obs       = Left25_observed();
+      gr_combo_exp       = Left25_expected();
     }
     else if( x==50){
-      gr_combo_expp1     = Left_ExpectedUp_50();
-      gr_combo_expm1     = Left_ExpectedDn_50();
+      gr_combo_expp1     = Left50_expectedup();
+      gr_combo_expm1     = Left50_expecteddown();
       gr_combo_theoryUp  = Left50_observedup();
       gr_combo_theoryDn  = Left50_observeddown();
+      gr_combo_obs       = Left50_observed();
+      gr_combo_exp       = Left50_expected();
     }
     else if( x==75){
-      gr_combo_expp1     = Left_ExpectedUp_75();
-      gr_combo_expm1     = Left_ExpectedDn_75();
+      gr_combo_expp1     = Left75_expectedup();
+      gr_combo_expm1     = Left75_expecteddown();
       gr_combo_theoryUp  = Left75_observedup();
       gr_combo_theoryDn  = Left75_observeddown();
+      gr_combo_obs       = Left75_observed();
+      gr_combo_exp       = Left75_expected();
     }
   }
   else{
     if( x==25){
-      gr_combo_expp1     = Tau_ExpectedUp_25();
-      gr_combo_expm1     = Tau_ExpectedDn_25();
+      gr_combo_expp1     = Tau25_expectedup();
+      gr_combo_expm1     = Tau25_expecteddown();
       gr_combo_theoryUp  = Tau25_observedup();
       gr_combo_theoryDn  = Tau25_observeddown();
+      gr_combo_obs       = Tau25_observed();
+      gr_combo_exp       = Tau25_expected();
     }
     else if( x==50){
-      gr_combo_expp1     = Tau_ExpectedUp_50();
-      gr_combo_expm1     = Tau_ExpectedDn_50();
+      gr_combo_expp1     = Tau50_expectedup();
+      gr_combo_expm1     = Tau50_expecteddown();
       gr_combo_theoryUp  = Tau50_observedup();
       gr_combo_theoryDn  = Tau50_observeddown();
+      gr_combo_obs       = Tau50_observed();
+      gr_combo_exp       = Tau50_expected();
     }
     else if( x==75){
-      gr_combo_expp1     = Tau_ExpectedUp_75();
-      gr_combo_expm1     = Tau_ExpectedDn_75();
+      gr_combo_expp1     = Tau75_expectedup();
+      gr_combo_expm1     = Tau75_expecteddown();
       gr_combo_theoryUp  = Tau75_observedup();
       gr_combo_theoryDn  = Tau75_observeddown();
+      gr_combo_obs       = Tau75_observed();
+      gr_combo_exp       = Tau75_expected();
     }
   }
 
@@ -540,10 +554,10 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   gr_combo_theoryDn->SetLineStyle(4);
 
   // combined observed
-  gr_combo_obs->SetLineWidth(4);
+  gr_combo_obs->SetLineWidth(6);
 
   // combined expected
-  gr_combo_exp->SetLineWidth(4);
+  gr_combo_exp->SetLineWidth(6);
   gr_combo_exp->SetLineStyle(2);
 
   TH2D *hdummy = new TH2D("hdummy","",65,100,750,72,0,725);
@@ -555,6 +569,12 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   gPad->SetLogz();
   formatHist(hdummy);
   formatHist(hobs);
+
+  if( TString(sample).Contains("Tau") ){
+    hdummy->GetXaxis()->SetRangeUser(100,475);
+    hdummy->GetYaxis()->SetRangeUser(  0,450);
+  }
+
   hdummy->Draw();
   hobs->Draw("colzsame");
 
