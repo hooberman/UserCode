@@ -307,7 +307,8 @@ void makeSummaryPlot( bool printPlot = false ){
   tex->SetNDC();
   tex->SetTextSize(0.04);  
   //tex->DrawLatex(0.2,0.55,"m( #tilde{#font[12]{l}} ) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
-  tex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  //tex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  tex->DrawLatex(0.10,0.03,"m_{#tilde{#font[12]{l}}} = 0.5^{}m_{#tilde{#chi}_{1}^{#pm}} + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
 
   tex->SetTextAngle(32);
   //tex->DrawLatex(0.25,0.31,"m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) > m(#tilde{#chi}_{1}^{0})");
