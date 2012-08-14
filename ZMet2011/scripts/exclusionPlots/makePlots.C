@@ -115,7 +115,6 @@ void makePlots( bool printPlots = false){
 
   if( isPreliminary ) isPrelimChar = (char*) "_prelim";
 
-  /*
   //-------------------------------------------
   // Rutgers/KIT
   //-------------------------------------------
@@ -127,25 +126,25 @@ void makePlots( bool printPlots = false){
   TGraph* mod2i_observedP  = model2i_observedp();
   TGraph* mod2i_observedM  = model2i_observedm();
 
-  mod2i_observed->SetLineWidth(4);
+  mod2i_observed->SetLineWidth(8);
 
-  mod2i_expected->SetLineWidth(4);
+  mod2i_expected->SetLineWidth(8);
   mod2i_expected->SetLineStyle(2);
 
   mod2i_expectedP1->SetLineColor(2);
-  mod2i_expectedP1->SetLineWidth(2);
+  mod2i_expectedP1->SetLineWidth(4);
   mod2i_expectedP1->SetLineStyle(3);
 
   mod2i_expectedM1->SetLineColor(2);
-  mod2i_expectedM1->SetLineWidth(2);
+  mod2i_expectedM1->SetLineWidth(4);
   mod2i_expectedM1->SetLineStyle(3);
 
   mod2i_observedP->SetLineColor(4);
-  mod2i_observedP->SetLineWidth(2);
+  mod2i_observedP->SetLineWidth(4);
   mod2i_observedP->SetLineStyle(4);
 
   mod2i_observedM->SetLineColor(4);
-  mod2i_observedM->SetLineWidth(2);
+  mod2i_observedM->SetLineWidth(4);
   mod2i_observedM->SetLineStyle(4);
 
   //-----------------
@@ -209,7 +208,8 @@ void makePlots( bool printPlots = false){
   tex->DrawLatex(0.19,0.59,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=0.5)");
   tex->DrawLatex(0.19,0.53,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#font[12]{l}}#nu_{#font[12]{l}} , #font[12]{l}#tilde{#nu}_{#font[12]{l}}");
 
-  tex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  //tex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  tex->DrawLatex(0.10,0.03,"m_{#tilde{#font[12]{l}}} = 0.5^{}m_{#tilde{#chi}_{1}^{#pm}} + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
 
   can_2i->Modified();
   can_2i->Update();
@@ -227,25 +227,25 @@ void makePlots( bool printPlots = false){
   TGraph* mod2a_observedP  = model2a_observedp();
   TGraph* mod2a_observedM  = model2a_observedm();
 
-  mod2a_observed->SetLineWidth(4);
+  mod2a_observed->SetLineWidth(8);
 
-  mod2a_expected->SetLineWidth(4);
+  mod2a_expected->SetLineWidth(8);
   mod2a_expected->SetLineStyle(2);
 
   mod2a_expectedP1->SetLineColor(2);
-  mod2a_expectedP1->SetLineWidth(2);
+  mod2a_expectedP1->SetLineWidth(4);
   mod2a_expectedP1->SetLineStyle(3);
 
   mod2a_expectedM1->SetLineColor(2);
-  mod2a_expectedM1->SetLineWidth(2);
+  mod2a_expectedM1->SetLineWidth(4);
   mod2a_expectedM1->SetLineStyle(3);
 
   mod2a_observedP->SetLineColor(4);
-  mod2a_observedP->SetLineWidth(2);
+  mod2a_observedP->SetLineWidth(4);
   mod2a_observedP->SetLineStyle(4);
 
   mod2a_observedM->SetLineColor(4);
-  mod2a_observedM->SetLineWidth(2);
+  mod2a_observedM->SetLineWidth(4);
   mod2a_observedM->SetLineStyle(4);
 
   TFile *fkit_2a  = TFile::Open("KIT_2a.root");
@@ -293,7 +293,8 @@ void makePlots( bool printPlots = false){
   tex->DrawLatex(0.19,0.59,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=1)");
   tex->DrawLatex(0.19,0.53,"#tilde{#chi}_{1}^{#pm} #rightarrow #tilde{#tau}#nu_{#tau}");
 
-  tex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  //tex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  tex->DrawLatex(0.10,0.03,"m_{#tilde{#font[12]{l}}} = 0.5^{}m_{#tilde{#chi}_{1}^{#pm}} + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
 
   can_2a->Modified();
   can_2a->Update();
@@ -315,19 +316,22 @@ void makePlots( bool printPlots = false){
   TGraph* grwz_comboUp      = (TGraph*) fwz->Get("gr_comboTheoryUp");
   TGraph* grwz_comboDn      = (TGraph*) fwz->Get("gr_comboTheoryDown");
 
-  grwz_combo->SetLineWidth(6);
-  grwz_combo_exp->SetLineWidth(6);
+  grwz_combo->SetLineWidth(8);
+  grwz_combo_exp->SetLineWidth(8);
 
   grwz_tri->SetLineWidth(4);
   grwz_tri->SetLineColor(6);
-  grwz_vzmet->SetLineWidth(4);
-  grwz_vzmet->SetLineColor(2);
+  grwz_tri->SetLineStyle(7);
 
-  grwz_combo_expp1->SetLineColor(kViolet-5);
+  grwz_vzmet->SetLineWidth(4);
+  grwz_vzmet->SetLineColor(kViolet-5);
+  grwz_vzmet->SetLineStyle(9);
+
+  grwz_combo_expp1->SetLineColor(2);
   grwz_combo_expp1->SetLineWidth(4);
   grwz_combo_expp1->SetLineStyle(3);
 
-  grwz_combo_expm1->SetLineColor(kViolet-5);
+  grwz_combo_expm1->SetLineColor(2);
   grwz_combo_expm1->SetLineWidth(4);
   grwz_combo_expm1->SetLineStyle(3);
 
@@ -350,16 +354,16 @@ void makePlots( bool printPlots = false){
   //hwz->GetXaxis()->SetRangeUser(100,300);
   //hwz->GetYaxis()->SetRangeUser(  0,300);
   hwz->SetMinimum(50);
-  hwz->SetMaximum(5000);
+  hwz->SetMaximum(10000);
   hwz->Draw("colz");
   grwz_combo->Draw("l");
   grwz_combo_exp->Draw("l");
-  grwz_tri->Draw("l");
-  grwz_vzmet->Draw("l");
   grwz_combo_expp1->Draw("l");
   grwz_combo_expm1->Draw("l");
   grwz_comboUp->Draw("l");
   grwz_comboDn->Draw("l");
+  grwz_tri->Draw("l");
+  grwz_vzmet->Draw("l");
   cmsPrelim(4.98,isPreliminary);
 
   TLegend *legwz = new TLegend(0.2,0.6,0.65,0.88);
@@ -393,7 +397,7 @@ void makePlots( bool printPlots = false){
     can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
     can_wz->Print(Form("WZ_zoom_Fig11%s.png",isPrelimChar));
   }
-  */
+  
   //-----------------------------
   // Florida/ETH plots
   //-----------------------------
@@ -527,37 +531,37 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
 
   // 3l observed
   gr_florida->SetLineWidth(4);
-  gr_florida->SetLineStyle(4);
-  gr_florida->SetLineColor(kGreen+2);
+  gr_florida->SetLineStyle(7);
+  gr_florida->SetLineColor(6);
 
   // SS observed
   gr_ss->SetLineWidth(4);
-  gr_ss->SetLineStyle(3);
-  gr_ss->SetLineColor(6);
+  gr_ss->SetLineStyle(9);
+  gr_ss->SetLineColor(kViolet-5);
 
   // combined expected +/-1 sigma
   gr_combo_expp1->SetLineColor(2);
-  gr_combo_expp1->SetLineWidth(2);
+  gr_combo_expp1->SetLineWidth(4);
   gr_combo_expp1->SetLineStyle(3);
 
   gr_combo_expm1->SetLineColor(2);
-  gr_combo_expm1->SetLineWidth(2);
+  gr_combo_expm1->SetLineWidth(4);
   gr_combo_expm1->SetLineStyle(3);
 
   // combined observed +/-1 sigma theory
   gr_combo_theoryUp->SetLineColor(4);
-  gr_combo_theoryUp->SetLineWidth(2);
+  gr_combo_theoryUp->SetLineWidth(4);
   gr_combo_theoryUp->SetLineStyle(4);
 
   gr_combo_theoryDn->SetLineColor(4);
-  gr_combo_theoryDn->SetLineWidth(2);
+  gr_combo_theoryDn->SetLineWidth(4);
   gr_combo_theoryDn->SetLineStyle(4);
 
   // combined observed
-  gr_combo_obs->SetLineWidth(6);
+  gr_combo_obs->SetLineWidth(8);
 
   // combined expected
-  gr_combo_exp->SetLineWidth(6);
+  gr_combo_exp->SetLineWidth(8);
   gr_combo_exp->SetLineStyle(2);
 
   TH2D *hdummy = new TH2D("hdummy","",65,100,750,72,0,725);
@@ -616,9 +620,13 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   // else if(x==50) thistex->DrawLatex(0.01,0.03,"m(#tilde{l}) = 0.5m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.5m(#tilde{#chi}_{1}^{0})");
   // else if(x==75) thistex->DrawLatex(0.01,0.03,"m(#tilde{l}) = 0.75m(#tilde{#chi}_{2}^{0}, #tilde{#chi}_{1}^{#pm}) + 0.25m(#tilde{#chi}_{1}^{0})");
 
-  if     (x==25) thistex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.25(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.75^{}m_{#tilde{#chi}_{1}^{0}}");
-  else if(x==50) thistex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
-  else if(x==75) thistex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.75(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.25^{}m_{#tilde{#chi}_{1}^{0}}");
+  // if     (x==25) thistex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.25(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.75^{}m_{#tilde{#chi}_{1}^{0}}");
+  // else if(x==50) thistex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.5(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  // else if(x==75) thistex->DrawLatex(0.01,0.03,"m_{#tilde{#font[12]{l}}} = 0.75(^{}m_{#tilde{#chi}_{2}^{0}}=m_{#tilde{#chi}_{1}^{#pm}}) + 0.25^{}m_{#tilde{#chi}_{1}^{0}}");
+
+  if     (x==25) thistex->DrawLatex(0.10,0.03,"m_{#tilde{#font[12]{l}}} = 0.25^{}m_{#tilde{#chi}_{1}^{#pm}} + 0.75^{}m_{#tilde{#chi}_{1}^{0}}");
+  else if(x==50) thistex->DrawLatex(0.10,0.03,"m_{#tilde{#font[12]{l}}} = 0.5^{}m_{#tilde{#chi}_{1}^{#pm}} + 0.5^{}m_{#tilde{#chi}_{1}^{0}}");
+  else if(x==75) thistex->DrawLatex(0.10,0.03,"m_{#tilde{#font[12]{l}}} = 0.75^{}m_{#tilde{#chi}_{1}^{#pm}} + 0.25^{}m_{#tilde{#chi}_{1}^{0}}");
 
   if( TString(sample).Contains("Left") ){
     thistex->DrawLatex(0.19,0.54,"#tilde{#chi}_{2}^{0} #rightarrow #tilde{#font[12]{l}}#font[12]{l} (BF=0.5)");
