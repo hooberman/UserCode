@@ -45,6 +45,12 @@ using namespace std;
 bool isPreliminary = true;
 char* isPrelimChar = (char*) "";
 
+int width1 = 8;
+int width2 = 4;
+
+// int width1 = 4;
+// int width2 = 2;
+
 void makeFloridaPlot(char* sample, int x , bool printplot);
 
 void removeDiagonal( TH2D* h , float deltaM ){
@@ -170,25 +176,25 @@ void makePlots( bool printPlots = false){
   TGraph* mod2i_observedP  = model2i_observedp();
   TGraph* mod2i_observedM  = model2i_observedm();
 
-  mod2i_observed->SetLineWidth(8);
+  mod2i_observed->SetLineWidth(width1);
 
-  mod2i_expected->SetLineWidth(8);
+  mod2i_expected->SetLineWidth(width1);
   mod2i_expected->SetLineStyle(2);
 
   mod2i_expectedP1->SetLineColor(2);
-  mod2i_expectedP1->SetLineWidth(4);
+  mod2i_expectedP1->SetLineWidth(width2);
   mod2i_expectedP1->SetLineStyle(3);
 
   mod2i_expectedM1->SetLineColor(2);
-  mod2i_expectedM1->SetLineWidth(4);
+  mod2i_expectedM1->SetLineWidth(width2);
   mod2i_expectedM1->SetLineStyle(3);
 
   mod2i_observedP->SetLineColor(4);
-  mod2i_observedP->SetLineWidth(4);
+  mod2i_observedP->SetLineWidth(width2);
   mod2i_observedP->SetLineStyle(4);
 
   mod2i_observedM->SetLineColor(4);
-  mod2i_observedM->SetLineWidth(4);
+  mod2i_observedM->SetLineWidth(width2);
   mod2i_observedM->SetLineStyle(4);
 
   //-----------------
@@ -257,8 +263,11 @@ void makePlots( bool printPlots = false){
 
   can_2i->Modified();
   can_2i->Update();
-  if( printPlots) can_2i->Print(Form("multilepton_flavordemocratic_Fig7%s.pdf",isPrelimChar));
-
+  //if( printPlots) can_2i->Print(Form("multilepton_flavordemocratic_Fig7%s.pdf",isPrelimChar));
+  if( printPlots){
+    can_2i->Print("Figure7a.pdf");
+    can_2i->Print("Figure7a.png");
+  }
 
   //-----------------
   // model 2a
@@ -271,25 +280,25 @@ void makePlots( bool printPlots = false){
   TGraph* mod2a_observedP  = model2a_observedp();
   TGraph* mod2a_observedM  = model2a_observedm();
 
-  mod2a_observed->SetLineWidth(8);
+  mod2a_observed->SetLineWidth(width1);
 
-  mod2a_expected->SetLineWidth(8);
+  mod2a_expected->SetLineWidth(width1);
   mod2a_expected->SetLineStyle(2);
 
   mod2a_expectedP1->SetLineColor(2);
-  mod2a_expectedP1->SetLineWidth(4);
+  mod2a_expectedP1->SetLineWidth(width2);
   mod2a_expectedP1->SetLineStyle(3);
 
   mod2a_expectedM1->SetLineColor(2);
-  mod2a_expectedM1->SetLineWidth(4);
+  mod2a_expectedM1->SetLineWidth(width2);
   mod2a_expectedM1->SetLineStyle(3);
 
   mod2a_observedP->SetLineColor(4);
-  mod2a_observedP->SetLineWidth(4);
+  mod2a_observedP->SetLineWidth(width2);
   mod2a_observedP->SetLineStyle(4);
 
   mod2a_observedM->SetLineColor(4);
-  mod2a_observedM->SetLineWidth(4);
+  mod2a_observedM->SetLineWidth(width2);
   mod2a_observedM->SetLineStyle(4);
 
   TFile *fkit_2a  = TFile::Open("KIT_2a.root");
@@ -342,7 +351,11 @@ void makePlots( bool printPlots = false){
 
   can_2a->Modified();
   can_2a->Update();
-  if( printPlots) can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
+  //if( printPlots) can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
+  if( printPlots){
+    can_2a->Print("Figure7b.pdf");
+    can_2a->Print("Figure7b.png");
+  }
 
   //-----------------
   // TChiWZ
@@ -360,31 +373,31 @@ void makePlots( bool printPlots = false){
   TGraph* grwz_comboUp      = (TGraph*) fwz->Get("gr_comboTheoryUp");
   TGraph* grwz_comboDn      = (TGraph*) fwz->Get("gr_comboTheoryDown");
 
-  grwz_combo->SetLineWidth(8);
-  grwz_combo_exp->SetLineWidth(8);
+  grwz_combo->SetLineWidth(width1);
+  grwz_combo_exp->SetLineWidth(width1);
 
-  grwz_tri->SetLineWidth(4);
+  grwz_tri->SetLineWidth(width2);
   grwz_tri->SetLineColor(6);
   grwz_tri->SetLineStyle(7);
 
-  grwz_vzmet->SetLineWidth(4);
+  grwz_vzmet->SetLineWidth(width2);
   grwz_vzmet->SetLineColor(kViolet-5);
   grwz_vzmet->SetLineStyle(9);
 
   grwz_combo_expp1->SetLineColor(2);
-  grwz_combo_expp1->SetLineWidth(4);
+  grwz_combo_expp1->SetLineWidth(width2);
   grwz_combo_expp1->SetLineStyle(3);
 
   grwz_combo_expm1->SetLineColor(2);
-  grwz_combo_expm1->SetLineWidth(4);
+  grwz_combo_expm1->SetLineWidth(width2);
   grwz_combo_expm1->SetLineStyle(3);
 
   grwz_comboUp->SetLineColor(4);
-  grwz_comboUp->SetLineWidth(4);
+  grwz_comboUp->SetLineWidth(width2);
   grwz_comboUp->SetLineStyle(4);
 
   grwz_comboDn->SetLineColor(4);
-  grwz_comboDn->SetLineWidth(4);
+  grwz_comboDn->SetLineWidth(width2);
   grwz_comboDn->SetLineStyle(4);
 
   TCanvas *can_wz = new TCanvas();
@@ -428,8 +441,10 @@ void makePlots( bool printPlots = false){
   can_wz->Modified();
   can_wz->Update();
   if( printPlots){
-    can_wz->Print(Form("WZ_Fig11%s.pdf",isPrelimChar));
-    can_wz->Print(Form("WZ_Fig11%s.png",isPrelimChar));
+    //can_wz->Print(Form("WZ_Fig11%s.pdf",isPrelimChar));
+    //can_wz->Print(Form("WZ_Fig11%s.png",isPrelimChar));
+    can_wz->Print("Figure10.pdf");
+    can_wz->Print("Figure10.png");
   }
 
   hwz->GetXaxis()->SetRangeUser(100,300);
@@ -438,8 +453,10 @@ void makePlots( bool printPlots = false){
   can_wz->Modified();
   can_wz->Update();
   if( printPlots){
-    can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
-    can_wz->Print(Form("WZ_zoom_Fig11%s.png",isPrelimChar));
+    //can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
+    //can_wz->Print(Form("WZ_zoom_Fig11%s.png",isPrelimChar));
+    can_wz->Print("Figure14_Add.pdf");
+    can_wz->Print("Figure14_Add.png");
   }
 
   //-----------------------------
@@ -574,38 +591,38 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   if( plotss ) gr_ss = (TGraph*) fcombo->Get("SSObservedExclusion");
 
   // 3l observed
-  gr_florida->SetLineWidth(4);
+  gr_florida->SetLineWidth(width2);
   gr_florida->SetLineStyle(7);
   gr_florida->SetLineColor(6);
 
   // SS observed
-  gr_ss->SetLineWidth(4);
+  gr_ss->SetLineWidth(width2);
   gr_ss->SetLineStyle(9);
   gr_ss->SetLineColor(kViolet-5);
 
   // combined expected +/-1 sigma
   gr_combo_expp1->SetLineColor(2);
-  gr_combo_expp1->SetLineWidth(4);
+  gr_combo_expp1->SetLineWidth(width2);
   gr_combo_expp1->SetLineStyle(3);
 
   gr_combo_expm1->SetLineColor(2);
-  gr_combo_expm1->SetLineWidth(4);
+  gr_combo_expm1->SetLineWidth(width2);
   gr_combo_expm1->SetLineStyle(3);
 
   // combined observed +/-1 sigma theory
   gr_combo_theoryUp->SetLineColor(4);
-  gr_combo_theoryUp->SetLineWidth(4);
+  gr_combo_theoryUp->SetLineWidth(width2);
   gr_combo_theoryUp->SetLineStyle(4);
 
   gr_combo_theoryDn->SetLineColor(4);
-  gr_combo_theoryDn->SetLineWidth(4);
+  gr_combo_theoryDn->SetLineWidth(width2);
   gr_combo_theoryDn->SetLineStyle(4);
 
   // combined observed
-  gr_combo_obs->SetLineWidth(8);
+  gr_combo_obs->SetLineWidth(width1);
 
   // combined expected
-  gr_combo_exp->SetLineWidth(8);
+  gr_combo_exp->SetLineWidth(width1);
   gr_combo_exp->SetLineStyle(2);
 
   //gr_ss_new->SetLineColor(2);
@@ -693,8 +710,19 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   can->Update();
 
   if( printPlots ){
-    if     ( TString(sample).Contains("Left") ) can->Print(Form("%s_%i_Fig9%s.pdf" ,sample,x,isPrelimChar));
-    else if( TString(sample).Contains("Tau") )  can->Print(Form("%s_%i_Fig10%s.pdf",sample,x,isPrelimChar));
+    //if     ( TString(sample).Contains("Left") ) can->Print(Form("%s_%i_Fig9%s.pdf" ,sample,x,isPrelimChar));
+    //else if( TString(sample).Contains("Tau") )  can->Print(Form("%s_%i_Fig10%s.pdf",sample,x,isPrelimChar));
+
+    char* fignum = "8";
+    char* figlet = "a";
+
+    if( TString(sample).Contains("Tau") ) fignum = "9";
+
+    if( x==50 ) figlet = "b";
+    if( x==75 ) figlet = "c";
+
+    can->Print(Form("Figure%s%s.pdf",fignum,figlet));
+    can->Print(Form("Figure%s%s.png",fignum,figlet));
   }
 
 }
