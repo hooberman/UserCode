@@ -148,7 +148,11 @@ void initialize(char* path){
 
   cout << endl;
   cout << "Loading babies at       : " << path << endl;
-  
+
+  //---------------------------------------------
+  // load samples
+  //---------------------------------------------
+
   data->	Add(Form("%s/data_smallTree*root",path));
   ttall->	Add(Form("%s/ttall_smallTree*root",path));
   ttfake->	Add(Form("%s/ttfake_smallTree.root",path));
@@ -172,9 +176,9 @@ void initialize(char* path){
   ttV->		Add(Form("%s/ttV_smallTree*root",path));
 
   //t2tt->	Add(Form("%s/T2tt_few_smallTree.root",path));
-  //t2ttA->	Add(Form("%s/T2tt_350_100_smallTree.root",path));
-  //t2ttB->	Add(Form("%s/T2tt_450_100_smallTree.root",path));
-  //t2ttC->	Add(Form("%s/T2tt_200_50_smallTree.root",path));
+  t2ttA->	Add(Form("%s/T2tt_250_50_smallTree.root",path));
+  t2ttB->	Add(Form("%s/T2tt_300_50_smallTree.root",path));
+  t2ttC->	Add(Form("%s/T2tt_350_50_smallTree.root",path));
   //t2ttA->	Add(Form("%s/T2tt_300_50_smallTree.root",path));
   //t2ttB->	Add(Form("%s/T2tt_400_50_smallTree.root",path));
   //t2ttA->	Add(Form("%s/T2tt_300_50_smallTree.root","../output/V00-04-08/skim"));
@@ -191,10 +195,11 @@ void initialize(char* path){
   // DECLARE SM MC SAMPLES
   //------------------------------
 
-  mc.push_back(ttV);         mclabels.push_back("rare");   
-  mc.push_back(tW);          mclabels.push_back("single top");   
+  mc.push_back(ttdl);        mclabels.push_back("ttdl");    
+  mc.push_back(ttsl);        mclabels.push_back("ttsl");    
   mc.push_back(wjets);       mclabels.push_back("wjets");   
-  mc.push_back(ttall);       mclabels.push_back("ttall");
+  mc.push_back(tW);          mclabels.push_back("single top");   
+  mc.push_back(ttV);         mclabels.push_back("rare");   
 
   //----------------------------------
   // ttbar: 0 vs. 1 vs. 2 leptons
@@ -216,6 +221,10 @@ void initialize(char* path){
   // mc.push_back(ttdltauhm);   mclabels.push_back("ttdl_tauhm");    
   // mc.push_back(ttsl);        mclabels.push_back("ttsl");    
 
+
+
+
+
   //mc.push_back(ttdltauh);    mclabels.push_back("ttdl_tauh");    
   //mc.push_back(ttl);         mclabels.push_back("ttl");    
   //mc.push_back(ttll);        mclabels.push_back("ttll");    
@@ -230,17 +239,16 @@ void initialize(char* path){
   // signal MC
   //------------------------------
 
+  mc.push_back(t2ttB);       mclabels.push_back("T2tt 300/50");   
+
+  //mc.push_back(t2ttA);       mclabels.push_back("T2tt 250/50");   
+  //mc.push_back(t2ttC);       mclabels.push_back("T2tt 350/50");   
   //mc.push_back(t2tt);        mclabels.push_back("T2tt");   
   //mc.push_back(t2ttA);       mclabels.push_back("T2tt 300/50");   
   //mc.push_back(t2ttB);       mclabels.push_back("T2tt 400/50");   
-
   //mc.push_back(t2ttA);       mclabels.push_back("T2tt 250/50");   
   //mc.push_back(t2ttB);       mclabels.push_back("T2tt 300/50");   
   //mc.push_back(t2ttC);       mclabels.push_back("T2tt 350/50");   
-  //mc.push_back(t2ttA);       mclabels.push_back("T2tt 250/50");   
-  //mc.push_back(t2ttB);       mclabels.push_back("T2tt 300/50");   
-  //mc.push_back(t2ttC);       mclabels.push_back("T2tt 350/50");   
-  
   //mc.push_back(t2ttA);       mclabels.push_back("T2tt 250/50 X5");   
   //mc.push_back(t2ttB);       mclabels.push_back("T2tt 350/50");   
   //mc.push_back(t2ttC);       mclabels.push_back("T2tt 400/50");   
@@ -258,28 +266,30 @@ void initialize(char* path){
 
 TCut selection_TCut(){
 
-  TCut rho("rhovor>0 && rhovor<40");
-  TCut goodlep("ngoodlep > 0 && leptype==1 && lep1->Pt()>30 && abs(lep1->Eta())<2.1");
-  TCut njets4("npfjets30 >= 4");
-  TCut btag1("nbtagsssvcorr>=1");
-  TCut isotrk("pfcandpt10 > 9998. || pfcandiso10 > 0.1");
-  TCut met50("t1metphicorr > 50");
-  TCut met100("t1metphicorr > 100");
-  TCut met150("t1metphicorr > 150");
-  TCut SRA("t1metphicorr > 100 && t1metphicorrmt > 150");
-  TCut SRB("t1metphicorr > 150 && t1metphicorrmt > 120");
+  TCut rho("rhovor>=0 && rhovor<40");                                                  // rho(Voronoi) must be non-negative and <40 GeV
+  TCut goodlep("ngoodlep > 0 && leptype==1 && lep1->Pt()>30 && abs(lep1->Eta())<2.1"); // >=1 good lepton, muon (leptype=1), pT > 30, |eta| < 2.1
+  TCut njets4("npfjets30 >= 4");                                                       // >=4 pfjets
+  TCut btag1("nbtagsssvcorr>=1");                                                      // >=1 b-tags
+  TCut isotrk("pfcandpt10 > 9998. || pfcandiso10 > 0.1");                              // the isolated track veto
+  TCut met50("t1metphicorr > 50");                                                     // MET > 50 GeV (type1, with phi-corrections) 
+  TCut met100("t1metphicorr > 100");                                                   // MET > 100 GeV
+  TCut met150("t1metphicorr > 150");                                                   // MET > 150 GeV
+  TCut SRA("t1metphicorr > 100 && t1metphicorrmt > 150");                              // Signal region A: MET > 100 GeV, MT > 150 GeV
+  TCut SRB("t1metphicorr > 150 && t1metphicorrmt > 120");                              // Signal region B: MET > 100 GeV, MT > 120 GeV
 
   TCut sel;
 
   //-------------------------------------------
-  // THESE CUTS DEFINE PRESELECTION REGION
+  // THESE CUTS DEFINE THE PRESELECTION REGION
   //-------------------------------------------
+
   sel += rho;
   sel += goodlep;
   sel += njets4;
   sel += btag1;
-  sel += !isotrk;
+  sel += isotrk;
   sel += met50;
+
   //-------------------------------------------
 
   //sel += SRA;
@@ -293,6 +303,7 @@ TCut selection_TCut(){
 
 TCut weight_TCut(){
 
+  // apply nvtx
   TCut weight("ndavtxweight * mutrigweight * weight * mgcor * 4.98");
 
   cout << "Using weight            : " << weight.GetTitle() << endl;
@@ -426,9 +437,9 @@ void makePlots( char* path , bool printgif = false ){
 
   bool combine     = false;
   int  nplots      = 4;
-  bool residual    = false;
+  bool residual    = true;
   bool log         = true;
-  bool overlayData = false;
+  bool overlayData = true;
 
   initialize(path);
 
@@ -441,45 +452,14 @@ void makePlots( char* path , bool printgif = false ){
   vector<float> xi;
   vector<float> xf;
 
+  //---------------------------------------------------------
+  // specify variables to plot
+  //---------------------------------------------------------
 
-  vars.push_back("t1metphicorrmt");        xt.push_back("M_{T} (GeV)");		                    n.push_back(30);  xi.push_back(0.);     xf.push_back(300.);
-
-  // vars.push_back("lep1.pt()");                               xt.push_back("lepton p_{T} (GeV)");	            n.push_back(30);  xi.push_back(0.);   xf.push_back(300.);
-  // vars.push_back("acos(cos(lep1.pt()-t1metphicorrphi))");    xt.push_back("#Delta#phi(lep,E_{T}^{miss})");	    n.push_back(20);  xi.push_back(0.);   xf.push_back(3.15);
-
-
-  /*
-  vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  // vars.push_back("htcalo");       xt.push_back("H_{T} (GeV)");		            n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
-  // vars.push_back("ncalojets");    xt.push_back("jet multiplicity");	            n.push_back(10); xi.push_back(0.);   xf.push_back(10.);
-
-  vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  vars.push_back("nbctcm");       xt.push_back("b-jet multiplicity");	            n.push_back(5);  xi.push_back(0.);   xf.push_back(5.);
-  */
-
-  //vars.push_back("ngoodlep");       xt.push_back("nleptons");  	                    n.push_back(5); xi.push_back(0.);   xf.push_back(5.);
-  //vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  //vars.push_back("pfmet");        xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(30); xi.push_back(0.);   xf.push_back(300.);
-  //vars.push_back("htcalo");        xt.push_back("H_{T} (GeV)");		            n.push_back(20); xi.push_back(0.);   xf.push_back(1000.);
-  //vars.push_back("trkreliso5");    xt.push_back("track reliso");		            n.push_back(50); xi.push_back(0.);     xf.push_back(1.);
-  //vars.push_back("mt");            xt.push_back("M_{T} (GeV)");		                    n.push_back(30);  xi.push_back(0.);     xf.push_back(300.);
-  //vars.push_back("mleptrk5");      xt.push_back("M_{lepton-track} (GeV)");		    n.push_back(30);  xi.push_back(0.);     xf.push_back(300.);
-  //
-  //vars.push_back("mclep2.pt()");   xt.push_back("2nd gen lepton p_{T} (GeV)");		    n.push_back(50);  xi.push_back(0.);     xf.push_back(100.);
-
-  //vars.push_back("trkreliso5");    xt.push_back("track reliso5");		            n.push_back(50); xi.push_back(0.);     xf.push_back(1.);
-  //vars.push_back("trkreliso10");   xt.push_back("track reliso10");		            n.push_back(50); xi.push_back(0.);     xf.push_back(1.);
-
-  //vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(16); xi.push_back(0.);     xf.push_back(400.);
-  //vars.push_back("mt");           xt.push_back("M_{T} (GeV)");		            n.push_back(11); xi.push_back(125.);   xf.push_back(400.);
-  //vars.push_back("mctaudpt2");      xt.push_back("#tau daughter p_{T} (GeV)");		    n.push_back(20); xi.push_back(0.);   xf.push_back(100.);
-  //vars.push_back("mclep2.pt()");      xt.push_back("2nd lepton p_{T} (GeV)");		    n.push_back(20); xi.push_back(0.);   xf.push_back(100.);
-  //vars.push_back("pfmet");          xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(11); xi.push_back(70.);    xf.push_back(400.);
-  //vars.push_back("pfmet");          xt.push_back("E_{T}^{miss} (GeV)");  	            n.push_back(16); xi.push_back(0.);    xf.push_back(400.);
-  //vars.push_back("ndavtx");          xt.push_back("nDAvertices");  	            n.push_back(20); xi.push_back(0.);    xf.push_back(20.);
-  //vars.push_back("trkreliso5");          xt.push_back("track reliso");            n.push_back(20); xi.push_back(0.);    xf.push_back(1.);
-  //vars.push_back("trkreliso5*trkpt5");   xt.push_back("track iso");               n.push_back(20); xi.push_back(0.);    xf.push_back(10.);
-  //vars.push_back("trkreliso10");         xt.push_back("trkreliso p_{T} > 10 GeV");            n.push_back(20); xi.push_back(0.);    xf.push_back(1.);
+  vars.push_back("t1metphicorrmt");        xt.push_back("M_{T} [GeV]");		                    n.push_back(30);  xi.push_back(0.);     xf.push_back(300.);
+  // vars.push_back("t1metphicorr");          xt.push_back("E_{T}^{miss} [GeV]");		            n.push_back(30);  xi.push_back(0.);     xf.push_back(300.);
+  // vars.push_back("lep1.pt()");             xt.push_back("lepton p_{T} [GeV]");		            n.push_back(30);  xi.push_back(0.);     xf.push_back(300.);
+  // vars.push_back("npfjets30");             xt.push_back("n_{jets}");	        	            n.push_back(10);  xi.push_back(0.);     xf.push_back(10);
 
   const unsigned int nvars = vars.size();
   
@@ -492,7 +472,7 @@ void makePlots( char* path , bool printgif = false ){
 
   for( unsigned int ivar = 0 ; ivar < nvars ; ++ivar ){     
     
-    if( ivar == 1 ) log = false;
+    //if( ivar == 1 ) log = false;
     //else           log = false;
 
     if( combine ){
