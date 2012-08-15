@@ -1,4 +1,40 @@
-{
+#include "Math/QuantFuncMathCore.h"
+#include "TMath.h"
+#include "TGraphAsymmErrors.h"
+#include "TCanvas.h"
+#include "TPad.h"
+#include "TH1.h"
+#include "TLegend.h"
+#include "TLegendEntry.h"
+#include "TLatex.h"
+#include "TColor.h"
+#include "TLine.h"
+#include "THStack.h"
+#include "TStyle.h"
+
+using namespace std;
+
+TGraphAsymmErrors * Asym(TH1F * h1){
+
+  const double alpha = 1 - 0.6827;
+  TGraphAsymmErrors * g=new TGraphAsymmErrors();
+  int npoints=0;
+  for (int i = 0; i < h1->GetNbinsX(); ++i) {   
+    int N = (int) h1->GetBinContent(i+1);
+    float x=h1->GetBinCenter(i+1);
+    if(N!=0){
+      g->SetPoint(npoints,x,N);
+      double L =  (N==0) ? 0  : (ROOT::Math::gamma_quantile(alpha/2,N,1.));
+      double U =  (N==0) ? (ROOT::Math::gamma_quantile_c(alpha,N+1,1) ):( ROOT::Math::gamma_quantile_c(alpha/2,N+1,1) );
+      g->SetPointEYlow(npoints, N-L);
+      g->SetPointEYhigh(npoints, U-N);
+      npoints++;
+    }
+  }
+  return g;
+}
+
+void metplot_2jets_paper(){
 //=========Macro generated from canvas: main_canvas/main_canvas
 //=========  (Mon Apr 23 16:50:42 2012) by ROOT version5.28/00
    TCanvas *main_canvas = new TCanvas("main_canvas", "main_canvas",0,0,600,750);
@@ -428,7 +464,7 @@
    pfMET_all_true_ge2pred_pheb_vjptall_nemf70->GetZaxis()->SetLabelSize(0.05);
    pfMET_all_true_ge2pred_pheb_vjptall_nemf70->GetZaxis()->SetTitleSize(0.05);
    pfMET_all_true_ge2pred_pheb_vjptall_nemf70->GetZaxis()->SetTitleFont(42);
-   pfMET_all_true_ge2pred_pheb_vjptall_nemf70->Draw("sameE1");
+   //pfMET_all_true_ge2pred_pheb_vjptall_nemf70->Draw("sameE1");
    
    //repeat???
    /*
@@ -796,8 +832,15 @@
    pfMET_all_true_ge2pred_pheb_vjptall_nemf70->GetZaxis()->SetTitleFont(42);
    pfMET_all_true_ge2pred_pheb_vjptall_nemf70->Draw("sameE1");
    */
+
+   TGraphAsymmErrors *grdata = Asym( (TH1F*) pfMET_all_true_ge2pred_pheb_vjptall_nemf70 );
+   grdata->SetLineWidth(2);
+   // grdata->SetLineColor(2);
+   // grdata->SetMarkerColor(2);
+   // grdata->SetMarkerSize(0.5);
+   grdata->Draw("p");
    
-   TLegend *leg = new TLegend(0.55,0.62,0.9,0.9,NULL,"brNDC");
+   TLegend *leg = new TLegend(0.45,0.62,0.9,0.9,NULL,"brNDC");
    leg->SetBorderSize(0);
    leg->SetTextFont(62);
    leg->SetLineColor(1);
@@ -811,7 +854,8 @@
    entry->SetMarkerColor(1);
    entry->SetMarkerStyle(20);
    entry->SetMarkerSize(1);
-   entry=leg->AddEntry("hist_photon","total bkg (#gamma+jets)","l");
+   //entry=leg->AddEntry("hist_photon","total bkg (#gamma+jets)","l");
+   entry=leg->AddEntry("hist_photon","total bkg","l");
 
    ci = TColor::GetColor("#ff0000");
    entry->SetLineColor(ci);
@@ -839,7 +883,8 @@
    entry->SetMarkerColor(1);
    entry->SetMarkerStyle(21);
    entry->SetMarkerSize(1);
-   entry=leg->AddEntry("smwz_met","bkg + WZ E_{T}^{miss} (200,0)","l");
+   //entry=leg->AddEntry("smwz_met","bkg + WZ E_{T}^{miss} (200,0)","l")
+   entry=leg->AddEntry("smwz_met","bkg + WZ SMS (200,0)","l");
    entry->SetFillStyle(1001);
 
    ci = TColor::GetColor("#ff9900");
@@ -851,22 +896,53 @@
    entry->SetMarkerColor(ci);
    entry->SetMarkerStyle(1);
    entry->SetMarkerSize(1);
+
+   // TH1F* hdummy = new TH1F("hdummy","",1,0,1);
+   // hdummy->SetLineColor(0);
+   // hdummy->SetMarkerColor(0);
+   // leg->AddEntry(hdummy,"m(#tilde{#chi}_{2}^{0}) = m(#tilde{#chi}_{1}^{#pm}) = 200 GeV");
+   // leg->AddEntry(hdummy,"m(#tilde{#chi}_{1}^{0}) = 0 GeV");
+
    leg->Draw();
-   TLatex *   tex = new TLatex(0.6,0.48,"ee/#mu#mu + #geq2 jets");
+
+   TLatex *wztex = new TLatex();
+   wztex->SetNDC();
+   wztex->SetTextSize(0.03);
+   //wztex->DrawLatex(0.45,0.57,"m(#tilde{#chi}_{2}^{0})=m(#tilde{#chi}_{1}^{#pm})=200 GeV, m(#tilde{#chi}_{1}^{0})=0 GeV");
+
+
+   TLatex *   tex = new TLatex(0.6,0.53,"ee/#mu#mu + #geq2 jets");
    tex->SetNDC();
    tex->SetTextSize(0.042);
    tex->SetLineWidth(2);
    tex->Draw();
-   tex = new TLatex(0.14,0.95,"CMS Preliminary        #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
-   tex->SetNDC();
-   tex->SetTextSize(0.042);
-   tex->SetLineWidth(2);
-   tex->Draw();
+   // tex = new TLatex(0.14,0.95,"CMS Preliminary        #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
+   // tex->SetNDC();
+   // tex->SetTextSize(0.042);
+   // tex->SetLineWidth(2);
+   // tex->Draw();
+
+   bool prelim = false;
+
+   TLatex latex;
+   latex.SetNDC();
+   latex.SetTextFont(62);
+   if(prelim) latex.SetTextSize(0.04);
+   else       latex.SetTextSize(0.045);
+   
+   latex.SetTextAlign(11); // align left
+   if(prelim) latex.DrawLatex(0.14,0.94,"CMS Preliminary");
+   else       latex.DrawLatex(0.14,0.94,"CMS");
+   
+   latex.SetTextAlign(31); // align right
+   latex.DrawLatex(0.95, 0.95, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", 4.98));
+   
    plotpad->Modified();
+
    main_canvas->cd();
   
 // ------------>Primitives in pad: coverpad
-   coverpad = new TPad("coverpad", "coverpad",0.122,0.16,1,0.303);
+   TPad* coverpad = new TPad("coverpad", "coverpad",0.122,0.16,1,0.303);
    coverpad->Draw();
    coverpad->cd();
    coverpad->Range(0,0,1,1);
@@ -885,7 +961,7 @@
    main_canvas->cd();
   
 // ------------>Primitives in pad: bottompad
-   bottompad = new TPad("bottompad", "Ratio Pad",0,0,1,0.289);
+   TPad* bottompad = new TPad("bottompad", "Ratio Pad",0,0,1,0.289);
    bottompad->Draw();
    bottompad->cd();
    bottompad->Range(-39.63415,-0.923077,265.2439,2.153846);
@@ -979,7 +1055,8 @@
    data_pred->GetZaxis()->SetTitleSize(0.05);
    data_pred->GetZaxis()->SetTitleFont(42);
    data_pred->Draw("");
-   
+
+
    //repeat???
    /*
    TH1D *data/pred = new TH1D("data/pred","Dilepton data predicted from Pho; ee+#mu#mu; njet >= 2",50,0,250);
@@ -1066,4 +1143,12 @@
    main_canvas->Modified();
    main_canvas->cd();
    main_canvas->SetSelected(main_canvas);
+   if( prelim){
+     main_canvas->Print("vzmet_Fig6_prelim.pdf");
+     main_canvas->Print("vzmet_Fig6_prelim.png");
+   }
+   else{
+     main_canvas->Print("vzmet_Fig6.pdf");
+     main_canvas->Print("vzmet_Fig6.png");
+   }
 }
