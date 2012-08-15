@@ -42,7 +42,7 @@
 
 using namespace std;
 
-bool isPreliminary = true;
+bool isPreliminary = false;
 char* isPrelimChar = (char*) "";
 
 int width1 = 8;
@@ -263,7 +263,7 @@ void makePlots( bool printPlots = false){
 
   can_2i->Modified();
   can_2i->Update();
-  //if( printPlots) can_2i->Print(Form("multilepton_flavordemocratic_Fig7%s.pdf",isPrelimChar));
+  if( printPlots) can_2i->Print(Form("multilepton_flavordemocratic_Fig7%s.pdf",isPrelimChar));
   if( printPlots){
     can_2i->Print("Figure7a.pdf");
     can_2i->Print("Figure7a.png");
@@ -351,7 +351,7 @@ void makePlots( bool printPlots = false){
 
   can_2a->Modified();
   can_2a->Update();
-  //if( printPlots) can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
+  if( printPlots) can_2a->Print(Form("multilepton_tauenriched_Fig8%s.pdf",isPrelimChar));
   if( printPlots){
     can_2a->Print("Figure7b.pdf");
     can_2a->Print("Figure7b.png");
@@ -441,8 +441,8 @@ void makePlots( bool printPlots = false){
   can_wz->Modified();
   can_wz->Update();
   if( printPlots){
-    //can_wz->Print(Form("WZ_Fig11%s.pdf",isPrelimChar));
-    //can_wz->Print(Form("WZ_Fig11%s.png",isPrelimChar));
+    can_wz->Print(Form("WZ_Fig11%s.pdf",isPrelimChar));
+    can_wz->Print(Form("WZ_Fig11%s.png",isPrelimChar));
     can_wz->Print("Figure10.pdf");
     can_wz->Print("Figure10.png");
   }
@@ -453,8 +453,8 @@ void makePlots( bool printPlots = false){
   can_wz->Modified();
   can_wz->Update();
   if( printPlots){
-    //can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
-    //can_wz->Print(Form("WZ_zoom_Fig11%s.png",isPrelimChar));
+    can_wz->Print(Form("WZ_zoom_Fig11%s.pdf",isPrelimChar));
+    can_wz->Print(Form("WZ_zoom_Fig11%s.png",isPrelimChar));
     can_wz->Print("Figure14_Add.pdf");
     can_wz->Print("Figure14_Add.png");
   }
@@ -710,8 +710,8 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   can->Update();
 
   if( printPlots ){
-    //if     ( TString(sample).Contains("Left") ) can->Print(Form("%s_%i_Fig9%s.pdf" ,sample,x,isPrelimChar));
-    //else if( TString(sample).Contains("Tau") )  can->Print(Form("%s_%i_Fig10%s.pdf",sample,x,isPrelimChar));
+    if     ( TString(sample).Contains("Left") ) can->Print(Form("%s_%i_Fig9%s.pdf" ,sample,x,isPrelimChar));
+    else if( TString(sample).Contains("Tau") )  can->Print(Form("%s_%i_Fig10%s.pdf",sample,x,isPrelimChar));
 
     char* fignum = "8";
     char* figlet = "a";
