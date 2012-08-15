@@ -29,7 +29,7 @@ using namespace std;
 bool plotExpected   = false;
 bool plotObserved   = true;
 bool logplot        = true;
-bool isPreliminary  = true;
+bool isPreliminary  = false;
 bool logInterpolate = true;
 
 void cmsPrelim(double intLumi, bool prelim)
@@ -413,6 +413,8 @@ void makeGMSBPlot( bool printplots = false ){
   gulcband_line->SetFillStyle(3002);
   gulcband_line->Draw("samef");
 
+  gband->Draw("samef");
+  g->Draw("samel");
 
   if( plotObserved ){
     if( !logInterpolate ){
@@ -540,6 +542,9 @@ void makeGMSBPlot( bool printplots = false ){
   if( printplots ){
     if( isPreliminary) c1->Print("GMSB_Fig12_prelim.pdf");
     else               c1->Print("GMSB_Fig12.pdf");
+
+    c1->Print("Figure11.pdf");
+    c1->Print("Figure11.png");
 
     // c1->Print("GMSB.png");
     // c1->Print("GMSB.eps");
