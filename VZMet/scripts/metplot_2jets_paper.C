@@ -157,8 +157,9 @@ void metplot_2jets_paper(){
    smwz_met->GetZaxis()->SetLabelSize(0.05);
    smwz_met->GetZaxis()->SetTitleSize(0.06);
    smwz_met->GetZaxis()->SetTitleFont(42);
+   smwz_met->GetYaxis()->SetTitle("events / 5 GeV");
    smwz_met->Draw("hist");
-   
+
    THStack *mcstack = new THStack();
    mcstack->SetName("mcstack");
    mcstack->SetTitle("mcstack");
@@ -863,7 +864,7 @@ void metplot_2jets_paper(){
    entry->SetMarkerColor(1);
    entry->SetMarkerStyle(21);
    entry->SetMarkerSize(1);
-   entry=leg->AddEntry("dibosonpred_allB","WZ/ZZ prediction","f");
+   entry=leg->AddEntry("dibosonpred_allB","WZ/ZZ simulation","f");
 
    ci = TColor::GetColor("#009900");
    entry->SetFillColor(ci);
@@ -1033,6 +1034,7 @@ void metplot_2jets_paper(){
    data_pred->SetLineWidth(2);
    data_pred->SetMarkerStyle(20);
    data_pred->GetXaxis()->SetTitle("E_{T}^{miss} [GeV]");
+
    data_pred->GetXaxis()->CenterTitle(true);
    data_pred->GetXaxis()->SetLabelFont(42);
    data_pred->GetXaxis()->SetLabelOffset(0.007);
