@@ -1474,32 +1474,32 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       maxemf_    = -1;
 
 
-      //count JPT's
-      nJPT_ = 0;
+      // //count JPT's
+      // nJPT_ = 0;
 
-      for ( unsigned int ijet = 0 ; ijet < jpts_p4().size() ; ijet++ ) {
+      // for ( unsigned int ijet = 0 ; ijet < jpts_p4().size() ; ijet++ ) {
           
-        LorentzVector vjet   = jpts_cor().at(ijet) * jpts_p4().at(ijet);
-        LorentzVector vlt    = hyp_lt_p4()[hypIdx];
-        LorentzVector vll    = hyp_ll_p4()[hypIdx];
+      //   LorentzVector vjet   = jpts_cor().at(ijet) * jpts_p4().at(ijet);
+      //   LorentzVector vlt    = hyp_lt_p4()[hypIdx];
+      //   LorentzVector vll    = hyp_ll_p4()[hypIdx];
 
-        if( fabs( vjet.eta() ) > 2.5 )           continue;
-        if( vjet.pt()  < 30.         )           continue;
-        //if( !passesCaloJetID( vjet ) )           continue;
+      //   if( fabs( vjet.eta() ) > 2.5 )           continue;
+      //   if( vjet.pt()  < 30.         )           continue;
+      //   //if( !passesCaloJetID( vjet ) )           continue;
 
-        if( generalLeptonVeto ){
-          bool rejectJet = false;
-          for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-            if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-          }
-          if( rejectJet ) continue;
-        }
+      //   if( generalLeptonVeto ){
+      //     bool rejectJet = false;
+      //     for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+      //       if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+      //     }
+      //     if( rejectJet ) continue;
+      //   }
 
-        if( dRbetweenVectors(vjet, vll) < 0.4 ) continue;
-        if( dRbetweenVectors(vjet, vlt) < 0.4 ) continue;
+      //   if( dRbetweenVectors(vjet, vll) < 0.4 ) continue;
+      //   if( dRbetweenVectors(vjet, vlt) < 0.4 ) continue;
 
-        nJPT_++;
-      } 
+      //   nJPT_++;
+      // } 
         
       //reset killedJet vector
       for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
