@@ -96,6 +96,7 @@ class Z_looper
   Int_t   nbvz_;
   Int_t   nbvzres_;
   Float_t mjj_;
+  Float_t mbb_;
   Float_t mjjup_;
   Float_t mjjdn_;
   Float_t ml_;

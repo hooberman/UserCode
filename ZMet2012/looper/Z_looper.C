@@ -63,7 +63,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-23";
+const char* iter                 = "V00-00-24";
 const char* jsonfilename         = "../jsons/Cert_190456-200245_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 8.0/fb
 
 //--------------------------------------------------------------------
@@ -267,6 +267,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   }
   else if( TString(prefix).Contains("ggmsb") ){
     set_vtxreweight_rootfile("vtxreweight_GMSB_4p7fb_Zselection.root",true);
+  }
+  else if( TString(prefix).Contains("massiveb") ){
+    set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS6.root",true);
   }
   else{
     set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS7_5p1fb_Zselection.root",true);
@@ -1822,6 +1825,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( goodJetsUp.size() >= 2 ) mjjup_ = ( goodJetsUp.at(0) + goodJetsUp.at(1) ).mass();
       if( goodJetsDn.size() >= 2 ) mjjdn_ = ( goodJetsDn.at(0) + goodJetsDn.at(1) ).mass();
 
+      mbb_ = -1;
+      if( goodBJets.size() > 1 ) mbb_ = ( *bjet1_ + *bjet2_ ).mass();
 
       //-------------------------
       // M(l,b) variables
@@ -2306,6 +2311,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("nbvzres",      &nbvzres_,      "nbvzres/I"      );
   babyTree_->Branch("jzb",          &jzb_,          "jzb/F"          );
   babyTree_->Branch("mjj",          &mjj_,          "mjj/F"          );
+  babyTree_->Branch("mbb",          &mbb_,          "mbb/F"          );
   babyTree_->Branch("mjjup",        &mjjup_,        "mjjup/F"        );
   babyTree_->Branch("mjjdn",        &mjjdn_,        "mjjdn/F"        );
   babyTree_->Branch("nlep",         &nlep_,         "nlep/I"         );
