@@ -72,8 +72,11 @@ class babylooper
 	Float_t mjj_;
 
 	Int_t   nbl_;
+	Int_t   nbcsvm_;
 	Int_t   nbm_;
 	Int_t   nbt_;
+
+	Float_t ht40_;
 
 	// genmet stuff
 	Float_t genmet_;
@@ -231,6 +234,8 @@ class babylooper
 	LorentzVector*  lep3_;
 	LorentzVector*  pflep1_;
 	LorentzVector*  pflep2_;
+	LorentzVector*  bjet1_;
+	LorentzVector*  bjet2_;
 
 	Int_t el1tv_;
 	Int_t el2tv_;
