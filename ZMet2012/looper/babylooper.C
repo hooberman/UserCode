@@ -33,14 +33,15 @@ enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt
 bool           debug              = false;                  // debug printout statements
 bool           doVtxReweight      = true;                   // reweight templates for nVertices
 bool           bveto              = false;                  // b-veto
+bool           pt40               = true;                   // pt>40 and HT > 100 GeV
 bool           mjjcut             = false;                  // dijet mass requirement
 bool           nlep2              = false;                  // 3rd lepton veto
 bool           setTemplateErrors  = true;                   // calculate template errors
-metType        myMetType          = e_t1newpfmet;              // MET type
+metType        myMetType          = e_pfmet;                // MET type
 templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templates
 templateType   myTemplateType     = e_njets_ht;             // bin templates in njets and HT
 bool           reweight           = false;                  // reweight for photon vs. Z pt
-char*          iter               = "_t1newpfmet";             // label for output file
+char*          iter               = "_pfmet";               // label for output file
 float          lumi               = 5.1;                    // luminosity
 //------------------------------------------------
 
@@ -66,6 +67,9 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   if ( nlep2 ) cout << "Third lepton veto"      << endl;
   else         cout << "NO third lepton veto"   << endl;
 
+  if( pt40 )   cout << "Require >=2 40 GeV jets with HT > 100 GeV"        << endl;
+  else         cout << "DO NOT require >=2 40 GeV jets with HT > 100 GeV" << endl;
+
   // if( !isData && myTemplateSource == e_PhotonJetStitched ){
   //   myTemplateSource = e_PhotonJet;
   //   cout << "Switching MC template to PhotonJet" << endl;
@@ -86,15 +90,18 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   TRandom3 rand;
   //  if( isData ){
 
+  char* vtxchar = "";
+  if( doVtxReweight ) vtxchar = "_vtxreweight";
+  
+  char* bvetochar = "";
+  if( bveto ) bvetochar = "_bveto";
+  
+  char* pt40char = "";
+  if( pt40 ) pt40char = "_pt40";
+  
   if( myTemplateSource == e_PhotonJetStitched ){
 
-    char* vtxchar = "";
-    if( doVtxReweight ) vtxchar = "_vtxreweight";
-
-    char* bvetochar = "";
-    if( bveto ) bvetochar = "_bveto";
-
-    templateFileName =  Form("../photon_output/%s/DoubleElectron_templates%s%s.root",template_version,vtxchar,bvetochar);
+    templateFileName =  Form("../photon_output/%s/DoubleElectron_templates%s%s%s.root",template_version,vtxchar,bvetochar,pt40char);
 
     //templateFileName =  Form("../photon_output/%s/Photon_templates%s%s.root",template_version,vtxchar,bvetochar);
     //if( doVtxReweight ) templateFileName = Form("../photon_output/%s/DoubleElectron_templates_vtxreweight.root",template_version);
@@ -211,6 +218,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
       tree->GetEntry(event);
 
+      
+
       ++nEventsTotal;
 
       // progress feedback to user
@@ -227,7 +236,13 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
       //weight_ = 1;
       float mcweight = 1;
-      if( !isData ) mcweight = lumi * weight_ * vtxweight_;
+      if( !isData ){
+	mcweight = lumi * weight_ * vtxweight_;
+	if     ( leptype_ == 0 ) mcweight *= 0.95;
+	else if( leptype_ == 1 ) mcweight *= 0.88;
+	else if( leptype_ == 2 ) mcweight *= 0.92;
+      }
+
 
       fillUnderOverFlow( hgenps_pthat  , pthat_ , mcweight );
       fillUnderOverFlow( hphotonpt     , etg_   , mcweight );
@@ -238,6 +253,17 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       else if( myMetType == e_pfmet       ) theMet = pfmet_;
       else if( myMetType == e_t1pfmet     ) theMet = pfmett1_;
       else if( myMetType == e_t1newpfmet  ) theMet = pfmett1new_;
+
+      // if( nbcsvm_ >= 2 ){
+
+      // 	float mbb1 = sqrt(  pow(bjet1_->mass(),2) + pow(bjet2_->mass(),2) + 2 * bjet1_->E() * bjet2_->E() - 2 * bjet1_->Px() * bjet2_->Px() - 2 * bjet1_->Py() * bjet2_->Py() - 2 * bjet1_->Pz() * bjet2_->Pz() );
+
+      // 	float mbb2 = ( *bjet1_ + *bjet2_ ).mass();
+
+      // 	//cout << Form("%.2f   %.2f",mbb1,mbb2) << endl;
+      // 	if( fabs(mbb1-mbb2) > 0.01 ) cout << "ERROR! " << mbb1 << " " << mbb2 << " <<<<<<<<<<<<<<<<<<<<<<<<<<<---------------------------------------------" << endl;
+      // }
+
 
       //---------------------------------------------------
       // apply event selection
@@ -250,7 +276,19 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         //------------------------------------------------------------
 
 	if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
-	if( pflep2_->pt() < 20 )                        continue; // PF lepton 2 pt > 20 GeV
+	if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
+	// if( lep1_->pt()   < 20 )                        continue; // lepton 1 pt > 20 GeV
+	// if( lep2_->pt()   < 20 )                        continue; // lepton 2 pt > 20 GeV
+
+	if( lep1_->pt() < 20 )                          continue; // PF lepton 1 pt > 20 GeV
+	if( lep2_->pt() < 10 )                          continue; // PF lepton 2 pt > 20 GeV
+
+	if( fabs( lep1_->pt() - pflep1_->pt() ) > 5.0 ) continue;
+	if( fabs( lep2_->pt() - pflep2_->pt() ) > 5.0 ) continue;
+
+	// if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
+	// if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
+
 	if( bveto && nbm_ > 0 )                         continue; // do b-veto
 	if( mjjcut && ( mjj_ < 70.0 || mjj_ > 110.0 ) ) continue; // mjj requirement
 	if( nlep2 && nlep_ > 2 )                        continue; // 3rd lepton veto
@@ -287,7 +325,6 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	  if( ( TString(prefix).Contains("wz") || TString(prefix).Contains("zz") ) && ngennu_ == 0 ) continue;
 	}
 
-
         //------------------------------------------------------------
         // obsolete: just a dummy check
         //------------------------------------------------------------
@@ -296,13 +333,6 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	  cout << "ERROR! " << el1tv_ << " " << el2tv_ << endl;	
 	  continue; // veto transition region electrons
 	}
-
-
-
-
-
-
-
 
 	if( leptype_ == 0 ) fillUnderOverFlow( hpfdilmassee , dilmasspf_ , 1 );
 	if( leptype_ == 1 ) fillUnderOverFlow( hpfdilmassmm , dilmasspf_ , 1 );
@@ -329,7 +359,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
 	      else if( (eta1 >  1.556 && eta2 <  -1.556) || (eta1 < -1.556 && eta2 > 1.556) ){
 		fillUnderOverFlow( hpfmet_eeeem , pfmet_ , 1 );
-		cout << "eeeem" << endl;
+		//cout << "eeeem" << endl;
 
 	      }
 	    }
@@ -356,7 +386,13 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	  }
 	}
 
-	if( nJets_ < 2 )                 continue; // >=2 jets
+	if( pt40 ){
+	  if( nJets40_ < 2     ) continue;
+	  if( ht40_    < 100.0 ) continue;
+	}
+	else{
+	  if( nJets_ < 2 )                 continue; // >=2 jets
+	}
 
 	//if( fabs( lep1_->eta() ) > 1.479 ) continue;
 	//if( fabs( lep2_->eta() ) > 1.479 ) continue;
@@ -398,12 +434,12 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
 	
 	// if( dilmass_ < 81. || dilmass_ > 101. )                              continue; 
-	// if( fabs( pflep1_->pt() - lep1_->pt() ) > 5.0 ) continue;
-	// if( fabs( pflep2_->pt() - lep2_->pt() ) > 5.0 ) continue;
+	// if( fabs( pflep1_->pt() - lep1_->pt() ) > 10.0 ) continue;
+	// if( fabs( pflep2_->pt() - lep2_->pt() ) > 10.0 ) continue;
 	
 
-	if( dilmasspf_ < 81. || dilmasspf_ > 101. )                              continue; 
-	//if( dilmass_ < 86. || dilmasspf_ > 96. )                              continue; 
+	//if( dilmasspf_ < 81. || dilmasspf_ > 101. )                              continue; 
+	if( dilmass_ < 81. || dilmass_ > 101. )                                    continue; 
 
 	hresponse->Fill( genmet_ , pfmet_ / genmet_ );
 	hgenmet_all->Fill( genmet_ );
@@ -480,11 +516,22 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       fillUnderOverFlow( hpthad[0]  ,  pthad , mcweight );
 
       //fill predicted and observed met histos--------------------------------------------------
-        
-      int iJetBin      = getJetBin( nJets_ );
+      
+      int iJetBin;
+      int iSumJetPtBin;
+
+      if( pt40 ){
+	iJetBin      = getJetBin( nJets40_ );
+	iSumJetPtBin = getSumJetPtBin( ht40_ );
+      }
+      else{
+	iJetBin      = getJetBin( nJets_ );
+	iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
+      }
+
       //int iBosonPtBin  = getBosonPtBin( dilpt_ );
       int iBosonPtBin  = getBosonPtBin( vecJetPt_ );
-      int iSumJetPtBin = getSumJetPtBin( sumJetPt_ );
+
       int iVtxBin      = getVtxBin( nvtx_ );
       int iTrigBin     = getTrigBin( jetmax_pt_ );
         
@@ -657,8 +704,11 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
   
-  if( bveto ) saveHist( Form("../output/%s/babylooper_%s%s%s_bveto.root"   , Z_version , prefix , metTemplateString.c_str() , iter ) );
-  else        saveHist( Form("../output/%s/babylooper_%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter ) );
+  // if( bveto ) saveHist( Form("../output/%s/babylooper_%s%s%s_bveto%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
+  // else        saveHist( Form("../output/%s/babylooper_%s%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
+
+  saveHist( Form("../output/%s/babylooper_%s%s%s%s%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , bvetochar , pt40char ) );
+
   deleteHistos();
   
 } // end ScanChain
@@ -1075,6 +1125,8 @@ void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("event",        &event_        );
   tree->SetBranchAddress("mjj",          &mjj_          );
   tree->SetBranchAddress("nlep",         &nlep_         );
+  tree->SetBranchAddress("ht40",         &ht40_         );
+  tree->SetBranchAddress("njets40",      &nJets40_      );     
 
   tree->SetBranchAddress("nvtx",         &nvtx_         );
   tree->SetBranchAddress("npfmuons",     &npfmuons_     );
@@ -1106,7 +1158,6 @@ void babylooper::setBranches (TTree* tree){
   tree->SetBranchAddress("metpar",       &metPar_       );
   tree->SetBranchAddress("metperp",      &metPerp_      );
   tree->SetBranchAddress("njets",        &nJets_        );     
-  tree->SetBranchAddress("njets40",      &nJets40_      );     
   tree->SetBranchAddress("sumjetpt",     &sumJetPt_     );     
   tree->SetBranchAddress("vecjetpt",     &vecJetPt_     );     
   tree->SetBranchAddress("nbtags",       &nbtags_       );
@@ -1233,6 +1284,11 @@ void babylooper::setBranches (TTree* tree){
     tree->SetBranchAddress("lep3",                 &lep3_                 );
     tree->SetBranchAddress("pflep1",               &pflep1_               );
     tree->SetBranchAddress("pflep2",               &pflep2_               );
+
+    tree->SetBranchAddress("bjet1",                &bjet1_                );
+    tree->SetBranchAddress("bjet2",                &bjet2_                );
+    tree->SetBranchAddress("nbcsvm",               &nbcsvm_               );
+
     tree->SetBranchAddress("el1tv",                &el1tv_                );
     tree->SetBranchAddress("el2tv",                &el2tv_                );
 
