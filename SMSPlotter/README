@@ -1,0 +1,8 @@
+This code will make the trilepton plots for the 3-lepton+MET analysis of SUS-12-006 (Figs. 7a and 7b).
+
+Usage:
+
+root -l
+.L makeTrileptonPlots.C+;
+makeTrileptonPlots();        // make plots without printing files
+makeTrileptonPlots(true);    // make plots and print PDF's
