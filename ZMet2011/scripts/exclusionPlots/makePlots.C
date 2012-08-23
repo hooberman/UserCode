@@ -113,6 +113,41 @@ TGraph* extendGraph(TGraph* gin){
   return gout;
 }
 
+TGraph* fixupGraph(TGraph* gin){
+  
+  const unsigned int nold = gin->GetN();
+  
+  float xgr[nold];
+  float ygr[nold];
+
+  Double_t x;
+  Double_t y;
+
+  //cout << endl << "old" << endl;
+  for(int i = 0 ; i < nold ; ++i){
+  
+    gin->GetPoint(i,x,y);
+    cout << i << " " << x << " " << y << endl;
+
+    if( fabs(x-250)<0.1 && fabs(y-25)<0.1 ){
+      y = -10.0;
+      cout << "SWITCHING Y FROM 25 TO -10" << endl;
+    }
+
+    xgr[i] = x;
+    ygr[i] = y;
+
+  }
+
+  TGraph* gout = new TGraph(nold,xgr,ygr);
+
+  gout->SetLineColor(gin->GetLineColor());
+  gout->SetLineWidth(gin->GetLineWidth());
+  gout->SetLineStyle(gin->GetLineStyle());
+
+  return gout;
+}
+
 void formatHist( TH2D* hist ){
 
   //hist->GetXaxis()->SetTitle("m(#tilde{#chi}_{2}^{0}) = m(#tilde{#chi}_{1}^{#pm}) [GeV]");
@@ -241,10 +276,10 @@ void makePlots( bool printPlots = false){
   //leg->AddEntry(gr2i_1,"observed","l");
   //leg->AddEntry(gr2i_2,"median expected","l");
   //leg->AddEntry(gr2i_3,"expected #pm1#sigma","l");
-  leg->AddEntry(mod2i_observed  ,"observed","l");
-  leg->AddEntry(mod2i_observedP ,"observed (#pm1#sigma^{theory})","l");
-  leg->AddEntry(mod2i_expected  ,"median expected","l");
-  leg->AddEntry(mod2i_expectedP1,"expected (#pm1#sigma)","l");
+  leg->AddEntry(mod2i_observed  ,"Observed","l");
+  leg->AddEntry(mod2i_observedP ,"Observed (#pm1#sigma^{theory})","l");
+  leg->AddEntry(mod2i_expected  ,"Median expected","l");
+  leg->AddEntry(mod2i_expectedP1,"Expected (#pm1#sigma)","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->Draw();
@@ -424,12 +459,12 @@ void makePlots( bool printPlots = false){
   cmsPrelim(4.98,isPreliminary);
 
   TLegend *legwz = new TLegend(0.2,0.6,0.65,0.88);
-  legwz->AddEntry(grwz_combo       ,"combined observed","l");
-  legwz->AddEntry(grwz_comboUp     ,"combined observed (#pm1#sigma^{theory})","l");
-  legwz->AddEntry(grwz_combo_exp   ,"combined median expected","l");
-  legwz->AddEntry(grwz_combo_expp1 ,"combined expected (#pm1#sigma)","l");
+  legwz->AddEntry(grwz_combo       ,"Combined observed","l");
+  legwz->AddEntry(grwz_comboUp     ,"Combined observed (#pm1#sigma^{theory})","l");
+  legwz->AddEntry(grwz_combo_exp   ,"Combined median expected","l");
+  legwz->AddEntry(grwz_combo_expp1 ,"Combined expected (#pm1#sigma)","l");
   legwz->AddEntry(grwz_vzmet       ,"2#font[12]{l}2j observed","l");
-  legwz->AddEntry(grwz_tri         ,"trilepton (M_{T}) observed","l");
+  legwz->AddEntry(grwz_tri         ,"Trilepton (M_{T}) observed","l");
   legwz->SetBorderSize(0);
   legwz->SetFillColor(0);
   legwz->Draw();
@@ -513,6 +548,7 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   //TGraph*  gr_combo_exp    = (TGraph*) fcombo->Get("ExpectedExclusion");
   TGraph*  gr_florida      = (TGraph*) fflorida->Get("ObservedExclusion");
   TGraph*  gr_ss           = new TGraph();
+
 
   // TGraph*  gr_combo_expp1  = (TGraph*) fcombo_band->Get("ExpectedP1SigmaExclusion");
   // TGraph*  gr_combo_expm1  = (TGraph*) fcombo_band->Get("ExpectedM1SigmaExclusion");
@@ -628,7 +664,10 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   //gr_ss_new->SetLineColor(2);
   //gr_ss_new->SetLineWidth(2);
 
-  if( TString(sample).Contains("Tau") && (x==25||x==75) ) gr_ss = extendGraph(gr_ss);
+  if( TString(sample).Contains("Tau")  && (x==25||x==75) ) gr_ss = extendGraph(gr_ss);
+  if( TString(sample).Contains("Left") && (x==50) )        gr_ss = fixupGraph(gr_ss);
+
+  //fixupGraph(gr_ss);
 
   TH2D *hdummy = new TH2D("hdummy","",65,100,750,72,0,725);
   
@@ -668,14 +707,17 @@ void makeFloridaPlot(char* sample, int x, bool printPlots ){
   hobs->Draw("axissame");
   cmsPrelim(4.98,isPreliminary);
 
+  float ymin = 0.67;
+  if( !plotss ) ymin = 0.88 - (5.0/6.0) * ( 0.88-0.67 );
   
-  TLegend *leg = new TLegend(0.2,0.67,0.6,0.88);
-  leg->AddEntry(gr_combo_obs      ,"comb. observed","l");
-  leg->AddEntry(gr_combo_theoryUp ,"comb. observed (#pm1#sigma^{theory})","l");
-  leg->AddEntry(gr_combo_exp      ,"comb. median expected","l");
-  leg->AddEntry(gr_combo_expp1    ,"comb. expected (#pm1#sigma)","l");
-  leg->AddEntry(gr_florida        ,"trilepton (M_{T}) observed","l");
-  leg->AddEntry(gr_ss             ,"SS observed","l");
+  //TLegend *leg = new TLegend(0.2,0.67,0.6,0.88);
+  TLegend *leg = new TLegend(0.2,ymin,0.6,0.88);
+  leg->AddEntry(gr_combo_obs      ,"Comb. observed","l");
+  leg->AddEntry(gr_combo_theoryUp ,"Comb. observed (#pm1#sigma^{theory})","l");
+  leg->AddEntry(gr_combo_exp      ,"Comb. median expected","l");
+  leg->AddEntry(gr_combo_expp1    ,"Comb. expected (#pm1#sigma)","l");
+  leg->AddEntry(gr_florida        ,"Trilepton (M_{T}) observed","l");
+  if( plotss ) leg->AddEntry(gr_ss             ,"SS observed","l");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->Draw();
