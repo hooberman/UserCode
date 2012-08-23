@@ -157,7 +157,7 @@ void metplot_2jets_paper(){
    smwz_met->GetZaxis()->SetLabelSize(0.05);
    smwz_met->GetZaxis()->SetTitleSize(0.06);
    smwz_met->GetZaxis()->SetTitleFont(42);
-   smwz_met->GetYaxis()->SetTitle("events / 5 GeV");
+   smwz_met->GetYaxis()->SetTitle("Events / 5 GeV");
    smwz_met->Draw("hist");
 
    THStack *mcstack = new THStack();
