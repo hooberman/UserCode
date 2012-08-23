@@ -841,7 +841,7 @@ void metplot_2jets_paper(){
    // grdata->SetMarkerSize(0.5);
    grdata->Draw("p");
    
-   TLegend *leg = new TLegend(0.45,0.62,0.9,0.9,NULL,"brNDC");
+   TLegend *leg = new TLegend(0.4,0.6,0.9,0.9,NULL,"brNDC");
    leg->SetBorderSize(0);
    leg->SetTextFont(62);
    leg->SetLineColor(1);
@@ -856,7 +856,10 @@ void metplot_2jets_paper(){
    entry->SetMarkerStyle(20);
    entry->SetMarkerSize(1);
    //entry=leg->AddEntry("hist_photon","total bkg (#gamma+jets)","l");
-   entry=leg->AddEntry("hist_photon","total bkg","l");
+   entry=leg->AddEntry("hist_photon","Total background","l");
+
+   TH1F* hdummy = new TH1F();
+   leg->AddEntry(hdummy,"Z+jets background","f");
 
    ci = TColor::GetColor("#ff0000");
    entry->SetLineColor(ci);
@@ -874,7 +877,7 @@ void metplot_2jets_paper(){
    entry->SetMarkerColor(1);
    entry->SetMarkerStyle(21);
    entry->SetMarkerSize(1);
-   entry=leg->AddEntry("ttbar_pred_pfMET_all_pred_2ge_alleb_nemf70_trBgB","OF prediction","f");
+   entry=leg->AddEntry("ttbar_pred_pfMET_all_pred_2ge_alleb_nemf70_trBgB","OF background","f");
 
    ci = TColor::GetColor("#990099");
    entry->SetFillColor(ci);
@@ -885,7 +888,7 @@ void metplot_2jets_paper(){
    entry->SetMarkerStyle(21);
    entry->SetMarkerSize(1);
    //entry=leg->AddEntry("smwz_met","bkg + WZ E_{T}^{miss} (200,0)","l")
-   entry=leg->AddEntry("smwz_met","bkg + WZ SMS (200,0)","l");
+   entry=leg->AddEntry("smwz_met","Background + WZ SMS (200,0)","l");
    entry->SetFillStyle(1001);
 
    ci = TColor::GetColor("#ff9900");
