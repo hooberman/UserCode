@@ -62,8 +62,9 @@ const bool  vetoTransition       = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
+const bool  pt2020               = true;
 const float lumi                 = 1.0; 
-const char* iter                 = "V00-00-24";
+const char* iter                 = "V00-00-25";
 const char* jsonfilename         = "../jsons/Cert_190456-200245_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 8.0/fb
 
 //--------------------------------------------------------------------
@@ -246,9 +247,9 @@ float Z_looper::gluinoPairCrossSection( float gluinomass ){
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, int my_nEvents, float kFactor){
 
-  // cout << "------------------------" << endl;
-  // cout << "SCALING MC WEIGHT BY 10!" << endl;
-  // cout << "------------------------" << endl;
+  cout << "------------------------------------------------------------" << endl;
+  cout << "WARNING!!!!!!! USING 52X ELECTRON ISOLATION!!!!!!!!!!!!!!!!!" << endl;
+  cout << "------------------------------------------------------------" << endl;
 
   isdata_ = isData ? 1 : 0;
 
@@ -360,8 +361,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   char* tpsuffix = "";
   if( doTenPercent ) tpsuffix = "_tenPercent";
 
-  if( doGenSelection ) MakeBabyNtuple( Form("../output/%s/%s_gen_baby%s.root"  , iter , prefix , tpsuffix ) );
-  else                 MakeBabyNtuple( Form("../output/%s/%s_baby%s.root"      , iter , prefix , tpsuffix ) );
+  char* ptsuffix = "";
+  if( pt2020 ) ptsuffix = "_pt2020";
+
+  if( doGenSelection ) MakeBabyNtuple( Form("../output/%s/%s_gen_baby%s%s.root"  , iter , prefix , tpsuffix , ptsuffix ) );
+  else                 MakeBabyNtuple( Form("../output/%s/%s_baby%s%s.root"      , iter , prefix , tpsuffix , ptsuffix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -621,8 +625,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	else if(TString(prefix).Contains("wzsms") ){
-	  mg_ = sparm_values().at(0);
-	  ml_ = sparm_values().at(1);
+	  mg_ = -1;//sparm_values().at(0);
+	  ml_ = -1;//sparm_values().at(1);
 	  x_  = -999;
 	  int bin = xsec_C1N2->FindBin(mg_);
 	  weight_ = lumi * xsec_C1N2->GetBinContent(bin) * (1.0/100000.);
@@ -735,9 +739,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 
 	  // if( nEventsTotal <= 100 ){
-	  //   printf("RelValZEE:   %u\t%u\t%u\t%4.3f\t%4.3f\t%4.3f\t%u\t%4.3f\t%4.3f\t%4.3f\t%4.3f\n", 
+	  //   printf("RelValZEE:   %u\t%u\t%u\t%4.3f\t%4.3f\t%4.3f\t%u\t%4.3f\n", 
 	  // 	   evt_run() , evt_lumiBlock(), evt_event(), els_p4().at(iel).pt(), els_p4().at(iel).eta(), els_p4().at(iel).phi(), 
-	  // 	   passElectronSelection_ZMet2012_v1_NoIso(iel,true,true) , electronIsoValuePF2012_FastJetEffArea(iel) , 0.0 , 0.0, 0.0 );
+	  // 	   passElectronSelection_ZMet2012_v1_NoIso(iel,true,true) , electronIsoValuePF2012_FastJetEffArea(iel) );
 	  // }
 
           if( els_p4().at(iel).pt() < 10 )                                             continue;
@@ -827,6 +831,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 10. )   continue;
+	if( pt2020 && TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         //if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
       
         //muon ID
@@ -1907,6 +1912,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( nJets_ > 1)
 	mt2j_ = MT2J( evt_pfmet() , evt_pfmetPhi() , hyp_ll_p4()[hypIdx] , hyp_lt_p4()[hypIdx], goodJets );
       
+      csc_       = cms2.evt_cscTightHaloId();
+      hbhe_      = cms2.evt_hbheFilter();
+      hcallaser_ = cms2.filt_hcalLaser();
+      ecaltp_    = cms2.filt_ecalTP();
+      trkfail_   = cms2.filt_trackingFailure();
+      eebadsc_   = cms2.filt_eeBadSc();
+
       //-------------------------
       // fill histos and ntuple
       //-------------------------
@@ -2516,6 +2528,13 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("bjet2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet2_	);
   babyTree_->Branch("bjet3"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet3_	);
   babyTree_->Branch("bjet4"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet4_	);
+
+  babyTree_->Branch("csc"       ,  &csc_       ,  "csc/I");  
+  babyTree_->Branch("hbhe"      ,  &hbhe_      ,  "hbhe/I");  
+  babyTree_->Branch("hcallaser" ,  &hcallaser_ ,  "hcallaser/I");  
+  babyTree_->Branch("ecaltp"    ,  &ecaltp_    ,  "ecaltp/I");  
+  babyTree_->Branch("trkfail"   ,  &trkfail_   ,  "trkfail/I");  
+  babyTree_->Branch("eebadsc"   ,  &eebadsc_   ,  "eebadsc/I");  
 
 }
 
