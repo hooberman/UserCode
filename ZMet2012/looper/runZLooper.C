@@ -101,6 +101,22 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "data2012cv2" ) == 0 ){    
+
+    // 2012C v2
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleMu_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/MuEG_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
+  }
+   
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "zjets_10to50" ) == 0 ){
+    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/DYJetsToLL_M-10To50filter_8TeV-madgraph_Summer12-PU_S7_START52_V9-v1/V05-02-27/merged*root");
+  }
+ 
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "testfilter_newJEC" ) == 0 ){
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/merged_ntuple_193334_0.root");
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012A-PromptReco-v1_AOD/merged/merged_ntuple_193334_0.root");
