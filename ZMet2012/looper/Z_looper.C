@@ -580,7 +580,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // good run+event selection
       //-----------------------------
 
-      //if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
       if( !cleaning_goodVertexApril2011() )                          continue;
 
       if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[1]++;
@@ -826,7 +826,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition) << endl;
 	}
 
-        //if( !passSUSYTrigger2012_v2( isData ) ) continue;
+        if( !passSUSYTrigger2012_v2( isData ) ) continue;
 
 	/*
 	// reco lepton pT's
