@@ -64,8 +64,9 @@ const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
 const bool  pt2020               = true;
 const float lumi                 = 1.0; 
+
 const char* iter                 = "V00-01-00";
-const char* jsonfilename         = "../jsons/Cert_190456-200245_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 8.0/fb
+const char* jsonfilename         = "../jsons/Cert_190456-200601_8TeV_PromptReco_Collisions12_JSON_v2_goodruns.txt"; // 8.5/fb
 
 //--------------------------------------------------------------------
 
