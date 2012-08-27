@@ -296,6 +296,7 @@ class Z_looper
 
   Int_t   csc_;      
   Int_t   hbhe_;   
+  Int_t   hbhenew_;   
   Int_t   hcallaser_;
   Int_t   ecaltp_;
   Int_t   trkfail_;
