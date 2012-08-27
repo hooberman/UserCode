@@ -161,13 +161,13 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "RelValZEE" ) == 0 ){
-    pickSkimIfExists(ch,"RelValZEE.root");
+    pickSkimIfExists(ch,"/tas/benhoob/home/ntupling/CMSSW_5_3_2_patch4/src/CMS2/NtupleMaker/test/RelValZEE_53X.root");
   }
 
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "RelValZMM" ) == 0 ){
-    pickSkimIfExists(ch,"RelValZMM.root");
+    pickSkimIfExists(ch,"/tas/benhoob/home/ntupling/CMSSW_5_3_2_patch4/src/CMS2/NtupleMaker/test/RelValZMM_53X.root");
   }
 
   //----------------------------------------------------------------------------------------
@@ -175,6 +175,24 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   else if( strcmp( prefix , "t" ) == 0 ){
     pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_Summer12-PU_S7_START52_V9-v1/V05-02-27/merged*root");
     pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_Summer12-PU_S7_START52_V9-v1/V05-02-27/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "DoubleElectron_199752" ) == 0 ){
+    pickSkimIfExists(ch,"/tas/benhoob/testFiles/DoubleElectron_Run2012C-PromptReco-v2/V05-03-13/run199752/DoubleElectron_53X_199752.root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "DoubleMu_199752" ) == 0 ){
+    pickSkimIfExists(ch,"/tas/benhoob/testFiles/DoubleMu_Run2012C-PromptReco-v2/V05-03-13/run199752/ntuple_*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "MuEG_199752" ) == 0 ){
+    pickSkimIfExists(ch,"/tas/benhoob/testFiles/MuEG_Run2012C-PromptReco-v2/V05-03-13/run199752/ntuple_*root");
   }
 
   //----------------------------------------------------------------------------------------
