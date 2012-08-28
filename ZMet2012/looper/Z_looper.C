@@ -376,10 +376,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     exit(0);
   }
 
-  TFile* file_C1N2 = TFile::Open("C1N2_referencexSec.root");
+  TFile* file_C1N2 = TFile::Open("C1N2_8TeV.root");
   TFile* file_N1N2 = TFile::Open("N1N2_referencexSec.root");
 
-  TH1F*  xsec_C1N2 = (TH1F*) file_C1N2->Get("C1N2");
+  TH1F*  xsec_C1N2 = (TH1F*) file_C1N2->Get("h_C1N2_xsec");
   TH1F*  xsec_N1N2 = (TH1F*) file_N1N2->Get("N1N2");
 
   //-----------------------
@@ -394,8 +394,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   char* ptsuffix = "";
   if( pt2020 ) ptsuffix = "_pt2020";
 
-  if( doGenSelection ) MakeBabyNtuple( Form("../output/%s/%s_gen_baby%s%s.root"  , iter , prefix , tpsuffix , ptsuffix ) );
-  else                 MakeBabyNtuple( Form("../output/%s/%s_baby%s%s.root"      , iter , prefix , tpsuffix , ptsuffix ) );
+  char* isosuffix = "";
+  if( useOldIsolation ) isosuffix = "_oldIso";
+
+  cout << "Writing baby ntuple " << Form("../output/%s/%s_baby%s%s%s.root"      , iter , prefix , tpsuffix , ptsuffix , isosuffix ) << endl;
+
+  if( doGenSelection ) MakeBabyNtuple( Form("../output/%s/%s_gen_baby%s%s%s.root"  , iter , prefix , tpsuffix , ptsuffix , isosuffix ) );
+  else                 MakeBabyNtuple( Form("../output/%s/%s_baby%s%s%s.root"      , iter , prefix , tpsuffix , ptsuffix , isosuffix ) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -663,8 +668,28 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  mg_ = sparm_values().at(0);
 	  ml_ = sparm_values().at(1);
 	  x_  = -999;
-	  int bin = xsec_C1N2->FindBin(mg_);
-	  weight_ = lumi * xsec_C1N2->GetBinContent(bin) * (1.0/100000.);
+
+	  int   mgbin = xsec_C1N2->FindBin(mg_);
+	  float xsec1 = xsec_C1N2->GetBinContent(mgbin);
+	  float xsec2 = xsec_C1N2->GetBinContent(mgbin+1);
+
+	  int   mgint = (int) mg_;
+	  float xsec  = 0;
+
+	  // temporary fix: have cross sections in 25 GeV steps only....
+	  if( mgint%25 ==  0 ) xsec = xsec1;
+	  if( mgint%25 ==  5 ) xsec = 0.8 * xsec1 + 0.2 * xsec2;
+	  if( mgint%25 == 10 ) xsec = 0.6 * xsec1 + 0.4 * xsec2;
+	  if( mgint%25 == 15 ) xsec = 0.4 * xsec1 + 0.6 * xsec2;
+	  if( mgint%25 == 20 ) xsec = 0.2 * xsec1 + 0.8 * xsec2;
+
+	  // cout << endl;
+	  // cout << "mg    " << mg_      << endl;
+	  // cout << "mgbin " << mgbin    << endl;
+	  // cout << "mod   " << mgint%25 << endl;
+	  // cout << "xsec  " << xsec     << endl;
+
+	  weight_ = lumi * xsec * (1000.0/100000.);
 	}
 
 	else if(TString(prefix).Contains("zzsms") ){
@@ -675,9 +700,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  weight_ = lumi * xsec_N1N2->GetBinContent(bin) * (1.0/52600.);
 	}
 
-	else if(TString(prefix).Contains("ggmsb") ){
+	else if(TString(prefix).Contains("gmsb") ){
 	  weight_ = -999;
-	  mg_ = -1;//susyScan_Mmu();
+	  mg_ = sparm_values().at(0);
 	  ml_ = -999;
 	  x_  = -999;
 	}
@@ -700,8 +725,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       
       pfmett1_     = cms2.evt_pfmet_type1cor();
       pfmett1phi_  = cms2.evt_pfmetPhi_type1cor();
-
-      
 
       std::pair<float, float> Type1PFMetPair = myMetCorrector->getCorrectedMET();
       pfmett1new_     = Type1PFMetPair.first;
@@ -788,7 +811,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 		fabs( els_p4().at(iel).eta() - goodLeptons.at(i2).eta() ) < 0.001 &&
 		fabs( els_p4().at(iel).phi() - goodLeptons.at(i2).phi() ) < 0.001 ){
 	      eldup_ = 1;
-	      cout << "WARNING! FOUND DUPLICATE ELECTRON " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+	      //cout << "WARNING! FOUND DUPLICATE ELECTRON " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 	      foundDuplicate = true;
 	    }
 	  }
