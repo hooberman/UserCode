@@ -62,10 +62,12 @@ const bool  vetoTransition       = true;
 const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
+      bool  useOldIsolation      = true;
 const bool  pt2020               = true;
+
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-01-00";
+const char* iter                 = "V00-01-01";
 const char* jsonfilename         = "../jsons/Cert_190456-200601_8TeV_PromptReco_Collisions12_JSON_v2_goodruns.txt"; // 8.5/fb
 
 //--------------------------------------------------------------------
@@ -95,26 +97,26 @@ pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, d
 
 bool eventInList(char* list){
 
-  ifstream ifile(list);
+  ifstream myfile(list);
 
-  int  run;
-  int  lumi;
-  long event;
+  int  trun;
+  int  tlumi;
+  long tevent;
 
-  while( ifile.good() ){
+  while( myfile.good() ){
 
-    ifile >> run >> lumi >> event;
+    myfile >> trun >> tlumi >> tevent;
 
-    if( run==evt_run() && lumi==evt_lumiBlock() && event==evt_event() ){
+    if( trun==evt_run() && tlumi==evt_lumiBlock() && tevent==evt_event() ){
       cout << endl << endl;
-      cout << "Found! " << run << " " << lumi << " " << event << endl;
-      ifile.close();
+      cout << "Found! " << trun << " " << tlumi << " " << tevent << endl;
+      myfile.close();
       return true;
     }
 
   }
 
-  ifile.close();
+  myfile.close();
   return false;
 
 }
@@ -478,6 +480,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       cms2.GetEntry(event);
       ++nEventsTotal;
 
+      //dumpDocLines();
+      //cout << endl << endl;
+
       //if( !eventInList("../scripts/sync/DoubleEl_dz.txt" ) ) continue;
 
       if( doTenPercent ){
@@ -778,8 +783,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  //  	 passElectronSelection_ZMet2012_v1_NoIso(iel,true,true) , electronIsoValuePF2012_FastJetEffArea(iel) );
 	  //}
 
-          if( els_p4().at(iel).pt() < 10 )                                             continue;
-	  if( ! passElectronSelection_ZMet2012_v2(iel,vetoTransition,vetoTransition) ) continue;
+          if( els_p4().at(iel).pt() < 10 )                                                             continue;
+	  if( ! passElectronSelection_ZMet2012_v2(iel,vetoTransition,vetoTransition,useOldIsolation) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
 	  goodLeptonIDs.push_back( els_charge().at(iel) * 11 );
 	  nlep_++;
@@ -822,8 +827,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  cout << "mass   " << hyp_p4()[hypIdx].mass() << endl;
 	  if( abs(hyp_ll_id()[hypIdx]) == 13 )   cout << "muon ll " << muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 ) << endl;
 	  if( abs(hyp_lt_id()[hypIdx]) == 13 )   cout << "muon lt " << muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 ) << endl;
-	  if( abs(hyp_ll_id()[hypIdx]) == 11 )   cout << "ele ll  " << passElectronSelection_ZMet2012_v2(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition) << endl;
-	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition) << endl;
+	  if( abs(hyp_ll_id()[hypIdx]) == 11 )   cout << "ele ll  " << passElectronSelection_ZMet2012_v2(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation) << endl;
+	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation) << endl;
 	}
 
         if( !passSUSYTrigger2012_v2( isData ) ) continue;
@@ -873,8 +878,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
               
         //electron ID
-        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v2(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition)) ) continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition)) ) continue;
+        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v2(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation)) ) continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation)) ) continue;
         
         nHypPass++;
 	
@@ -892,11 +897,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // triggers
       //-----------------------------
 
+      el27_  = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_v")                                   ? 1 : 0;
       mm_    = passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v")                                     ? 1 : 0;
       mmtk_  = passUnprescaledHLTTriggerPattern("HLT_Mu17_TkMu8_v")                                   ? 1 : 0;
       me_    = passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ? 1 : 0;
       em_    = passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ? 1 : 0;
       mu_    = passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v")                                      ? 1 : 0;
+      mu21_  = passUnprescaledHLTTriggerPattern("HLT_IsoMu24_eta2p1_v")                               ? 1 : 0;
       ee_    = passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ? 1 : 0;
 
       if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[2]++;
@@ -1964,7 +1971,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       hcallaser_ = cms2.filt_hcalLaser();
       ecaltp_    = cms2.filt_ecalTP();
       trkfail_   = cms2.filt_trackingFailure();
-      eebadsc_   = cms2.filt_eeBadSc();
+      eebadsc_   = -1;//cms2.filt_eeBadSc();
       hbhenew_   = passHBHEFilter();
 
       if( csc_==0 && hbhe_==1 && hcallaser_==1 && ecaltp_==1 && trkfail_==1 && eebadsc_==1 && hbhenew_==1 ){
@@ -2444,11 +2451,13 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("mt2",          &mt2_,          "mt2/F"          );
   babyTree_->Branch("mt2j",         &mt2j_,         "mt2j/F"         );
 
+  babyTree_->Branch("el27"     ,    &el27_     ,    "el27/I"        );
   babyTree_->Branch("mm"       ,    &mm_       ,    "mm/I"          );
   babyTree_->Branch("mmtk"     ,    &mmtk_     ,    "mmtk/I"        );
   babyTree_->Branch("me"       ,    &me_       ,    "me/I"          );
   babyTree_->Branch("em"       ,    &em_       ,    "em/I"          );
   babyTree_->Branch("mu"       ,    &mu_       ,    "mu/I"          );
+  babyTree_->Branch("mu21"     ,    &mu21_     ,    "mu21/I"        );
   babyTree_->Branch("ee"       ,    &ee_       ,    "ee/I"          );
 
   //electron-matched jet stuff
