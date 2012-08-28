@@ -279,10 +279,6 @@ float Z_looper::gluinoPairCrossSection( float gluinomass ){
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, int my_nEvents, float kFactor){
 
-  cout << "------------------------------------------------------------" << endl;
-  cout << "WARNING!!!!!!! TURNED OFF DATA TRIGGER!!!!!!!!!!!!!!!!!!!!!!" << endl;
-  cout << "------------------------------------------------------------" << endl;
-
   isdata_ = isData ? 1 : 0;
 
   cout << "version : " << iter         << endl;
@@ -308,8 +304,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS7_5p1fb_Zselection.root",true);
   }
 
-  ofstream* ofile = new ofstream();
-  ofile->open(Form("%s_SNT.txt",prefix),ios::trunc);
+  // ofstream* ofile = new ofstream();
+  // ofile->open(Form("%s_SNT.txt",prefix),ios::trunc);
 
   bookHistos();
 
@@ -664,8 +660,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	else if(TString(prefix).Contains("wzsms") ){
-	  mg_ = -1;//sparm_values().at(0);
-	  ml_ = -1;//sparm_values().at(1);
+	  mg_ = sparm_values().at(0);
+	  ml_ = sparm_values().at(1);
 	  x_  = -999;
 	  int bin = xsec_C1N2->FindBin(mg_);
 	  weight_ = lumi * xsec_C1N2->GetBinContent(bin) * (1.0/100000.);
@@ -773,6 +769,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       nmu_  = 0;
       nel_  = 0;
       
+      eldup_ = 0;
+
       if( generalLeptonVeto ){
               
         for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
@@ -782,6 +780,19 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  //  	 evt_run() , evt_lumiBlock(), evt_event(), els_p4().at(iel).pt(), els_p4().at(iel).eta(), els_p4().at(iel).phi(), 
 	  //  	 passElectronSelection_ZMet2012_v1_NoIso(iel,true,true) , electronIsoValuePF2012_FastJetEffArea(iel) );
 	  //}
+
+	  // check for duplicate electrons
+	  bool foundDuplicate = false;
+	  for( unsigned int i2 = 0 ; i2 < goodLeptons.size() ; ++i2 ){
+	    if( fabs( els_p4().at(iel).pt()  - goodLeptons.at(i2).pt()  ) < 0.001 &&
+		fabs( els_p4().at(iel).eta() - goodLeptons.at(i2).eta() ) < 0.001 &&
+		fabs( els_p4().at(iel).phi() - goodLeptons.at(i2).phi() ) < 0.001 ){
+	      eldup_ = 1;
+	      cout << "WARNING! FOUND DUPLICATE ELECTRON " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+	      foundDuplicate = true;
+	    }
+	  }
+	  if( foundDuplicate ) continue;
 
           if( els_p4().at(iel).pt() < 10 )                                                             continue;
 	  if( ! passElectronSelection_ZMet2012_v2(iel,vetoTransition,vetoTransition,useOldIsolation) ) continue;
@@ -832,39 +843,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
         if( !passSUSYTrigger2012_v2( isData ) ) continue;
-
-	/*
-	// reco lepton pT's
-	float ptll = cms2.hyp_ll_p4()[hypIdx].pt();
-	float ptlt = cms2.hyp_lt_p4()[hypIdx].pt();
-
-	// get PF lepton pT's
-	float ptllpf = 0;
-	float ptltpf = 0;
-
-	if (abs(hyp_ll_id()[hypIdx]) == 13){
-	  int ipfmu = mus_pfmusidx()[hyp_ll_index()[hypIdx]];
-	  if( ipfmu >= 0 ) ptllpf = pfmus_p4()[ipfmu].pt();
-	}
-
-	else if (abs(hyp_ll_id()[hypIdx]) == 11){
-	  int ipfel = els_pfelsidx()[hyp_ll_index()[hypIdx]];
-	  if( ipfel >= 0 ) ptllpf = pfels_p4()[ipfel].pt();
-	}
-
-	if (abs(hyp_lt_id()[hypIdx]) == 13){
-	  int ipfmu = mus_pfmusidx()[hyp_lt_index()[hypIdx]];
-	  if( ipfmu >= 0 ) ptltpf = pfmus_p4()[ipfmu].pt();
-	}
-
-	else if (abs(hyp_lt_id()[hypIdx]) == 11){
-	  int ipfel = els_pfelsidx()[hyp_lt_index()[hypIdx]];
-	  if( ipfel >= 0 ) ptltpf = pfels_p4()[ipfel].pt();
-	}
-
-	if( ptll < 20.0 && ptllpf < 20.0 ) continue;
-	if( ptlt < 20.0 && ptltpf < 20.0 ) continue;
-	*/
 
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
         if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
@@ -1146,8 +1124,22 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	float maxpt = -1.;
 	
 	for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	  if( dRbetweenVectors( *lep1_ , goodLeptons.at(ilep) ) < 0.00001 ) continue;
-	  if( dRbetweenVectors( *lep2_ , goodLeptons.at(ilep) ) < 0.00001 ) continue;
+	  //if( dRbetweenVectors( *lep1_ , goodLeptons.at(ilep) ) < 0.00001 ) continue;
+	  //if( dRbetweenVectors( *lep2_ , goodLeptons.at(ilep) ) < 0.00001 ) continue;
+
+	  // skip lep1
+	  if( fabs( (*lep1_).pt()  - goodLeptons.at(ilep).pt()  ) < 0.001 &&
+	      fabs( (*lep1_).eta() - goodLeptons.at(ilep).eta() ) < 0.001 &&
+	      fabs( (*lep1_).phi() - goodLeptons.at(ilep).phi() ) < 0.001 ){
+	    continue;
+	  }
+
+	  // skip lep2
+	  if( fabs( (*lep2_).pt()  - goodLeptons.at(ilep).pt()  ) < 0.001 &&
+	      fabs( (*lep2_).eta() - goodLeptons.at(ilep).eta() ) < 0.001 &&
+	      fabs( (*lep2_).phi() - goodLeptons.at(ilep).phi() ) < 0.001 ){
+	    continue;
+	  }
 
 	  goodExtraLeptons.push_back( goodLeptons.at(ilep) );
 
@@ -1170,7 +1162,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  
 	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
 
-	    cout << ilep << " " << goodLeptonIDs.at(ilep) << " " << goodLeptons.at(ilep).pt() << endl;
+	    cout << ilep << " " << goodLeptonIDs.at(ilep) << " " << goodLeptons.at(ilep).pt() << " " << goodLeptons.at(ilep).eta() << " " << goodLeptons.at(ilep).phi() << endl;
 
 	    if( dRbetweenVectors( *lep1_ , goodLeptons.at(ilep) ) < 0.00001 ){
 	      cout << "lepton1" << endl;
@@ -1971,9 +1963,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       hcallaser_ = cms2.filt_hcalLaser();
       ecaltp_    = cms2.filt_ecalTP();
       trkfail_   = cms2.filt_trackingFailure();
-      eebadsc_   = -1;//cms2.filt_eeBadSc();
+      eebadsc_   = 1;
+      if( isData ) eebadsc_ = cms2.filt_eeBadSc();
       hbhenew_   = passHBHEFilter();
 
+      /*
       if( csc_==0 && hbhe_==1 && hcallaser_==1 && ecaltp_==1 && trkfail_==1 && eebadsc_==1 && hbhenew_==1 ){
 
 	float pt3 = 0.0;
@@ -1987,9 +1981,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	if( leptype_ == myleptype && pt3 < 20.0 ){
 	  *ofile << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << " " << nJets_ << " " << nbcsvm_ << " " << (pfmet_ > 10.0) << " " << ee_ << " " << mm_ << " " << (em_==1||me_==1) << " " << 0 << endl;
 	}
-
       }
-
+      */
 
       //-------------------------
       // fill histos and ntuple
@@ -2384,6 +2377,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("rho",          &rho_,          "rho/F"          );
   babyTree_->Branch("dataset",      &dataset_,      "dataset[500]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
+  babyTree_->Branch("eldup",        &eldup_,        "eldup/I"        );
   babyTree_->Branch("btagweight",   &btagweight_,   "btagweight/F"   );
   babyTree_->Branch("btagweightup", &btagweightup_, "btagweightup/F" );
   babyTree_->Branch("ht30",         &ht30_,         "ht30/F"         );

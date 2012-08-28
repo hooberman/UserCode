@@ -285,6 +285,7 @@ class Z_looper
   Int_t mu_;
   Int_t mu21_;
   Int_t ee_;
+  Int_t eldup_;
 
   Float_t mlb1_;
   Float_t mlb2_;
