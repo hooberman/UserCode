@@ -277,11 +277,13 @@ class Z_looper
   Int_t   goodvtx_;    
   Int_t   goodtrks_;   
 
+  Int_t el27_;
   Int_t mm_;
   Int_t mmtk_;
   Int_t me_;
   Int_t em_;
   Int_t mu_;
+  Int_t mu21_;
   Int_t ee_;
 
   Float_t mlb1_;
