@@ -1,6 +1,7 @@
 
 #include "StopTreeLooper.h"
 #include "Core/StopTree.h"
+#include "Plotting/PlotUtilities.h"
 
 #include "TROOT.h"
 #include "TH1F.h"
@@ -63,10 +64,9 @@ void StopTreeLooper::loop(TChain *chain, TString name)
 
     cout << "[StopTreeLooper::loop] setting up histos" << endl;
 
-    // hadronic top reconstruction
-    TH1F *h_mhadtop = new TH1F(Form("h_%s_mhadtop", name.Data()), "m(jjj); Hadronic Top", 50, 0, 500.);
-    h_mhadtop->Sumw2();
-    
+    //plotting map
+    std::map<std::string, TH1F*> h_1d;
+
     //
     // file loop
     //
@@ -186,11 +186,11 @@ void StopTreeLooper::loop(TChain *chain, TString name)
 	    } 
 
 	    //store
-	    h_mhadtop->Fill( min(mhadtop, (float)499.99), evtweight);
+	    plot1D("h_mhadtop",min(mhadtop, (float)499.99), evtweight, h_1d, 50, 0, 500.);
 
         } // end event loop
 
-        delete tree;
+	// delete tree;
 
     } // end file loop
 
@@ -198,7 +198,17 @@ void StopTreeLooper::loop(TChain *chain, TString name)
     // finish
     //
 
-    cout << "[StopTreeLooper::loop] done looping!" << endl;
+    TFile outfile(m_outfilename_.c_str(),"RECREATE") ; 
+    printf("[StopTreeLooper::loop] Saving histograms to %s\n", m_outfilename_.c_str());
+
+    std::map<std::string, TH1F*>::iterator it1d;
+    for(it1d=h_1d.begin(); it1d!=h_1d.end(); it1d++) {
+     it1d->second->Write(); 
+     delete it1d->second;
+    }
+
+    outfile.Write();
+    outfile.Close();
     
     gROOT->cd();
 
