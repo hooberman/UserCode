@@ -139,10 +139,32 @@ class Z_looper
   LorentzVector*  jet2_; 
   LorentzVector*  jet3_; 
   LorentzVector*  jet4_; 
+  LorentzVector*  jet5_; 
+  LorentzVector*  jet6_; 
+  LorentzVector*  jet7_; 
+  LorentzVector*  jet8_; 
   LorentzVector*  bjet1_; 
   LorentzVector*  bjet2_; 
   LorentzVector*  bjet3_; 
   LorentzVector*  bjet4_; 
+
+  Float_t tche1_;
+  Float_t tche2_;
+  Float_t tche3_;
+  Float_t tche4_;
+  Float_t tche5_;
+  Float_t tche6_;
+  Float_t tche7_;
+  Float_t tche8_;
+
+  Float_t csv1_;
+  Float_t csv2_;
+  Float_t csv3_;
+  Float_t csv4_;
+  Float_t csv5_;
+  Float_t csv6_;
+  Float_t csv7_;
+  Float_t csv8_;
 
   Int_t   isdata_;
   Int_t   el1tv_;
@@ -235,6 +257,7 @@ class Z_looper
   Int_t   nbm_;
   Int_t   nbcsvm_;
   Int_t   nbcsvl_;
+  Int_t   nbcsvlm_;
   Int_t   nbcsvt_;
   Float_t ht30_;
   Float_t ht40_;
