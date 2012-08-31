@@ -63,7 +63,7 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
       bool  useOldIsolation      = true;
-const bool  pt2020               = true;
+const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
