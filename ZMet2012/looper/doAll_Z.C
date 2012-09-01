@@ -4,10 +4,6 @@
 
   gROOT->ProcessLine(".L runZLooper.C+");
 
-  runZLooper("ttbar_53X"                   , false );  
-  runZLooper("wz_53X"                      , false );  
-  runZLooper("zjets_53X"                   , false );  
-
   // runZLooper("dataskim2010"            , true  );
   // runZLooper("data2012cv2"             , true  );
   // runZLooper("ttbar_massiveb"          , false );  
@@ -22,8 +18,8 @@
   // runZLooper("data"                    , true  );
   // runZLooper("dataskim"                , true  );
   // runZLooper("data2012c"               , true  );
-  // runZLooper("wzsms"                   , false );  
-  // runZLooper("gmsb"                    , false );  
+  runZLooper("wzsms"                   , false );  
+  runZLooper("gmsb"                    , false );  
   // runZLooper("testfilter_newJEC"       , true  );  
 
   //--------------------------------------------------

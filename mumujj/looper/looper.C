@@ -28,9 +28,6 @@
 #include "../CORE/triggerUtils.cc"
 #include "../CORE/jetSelections.cc"
 #include "../Tools/vtxreweight.cc"
-#include "../CORE/electronSelections.cc"
-#include "../CORE/electronSelectionsParameters.cc"
-#include "../CORE/MITConversionUtilities.cc"
 #endif
 
 bool verbose      = false;
@@ -81,30 +78,6 @@ double dRbetweenVectors(const LorentzVector &vec1,
   double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
   double deta = vec1.Eta() - vec2.Eta();
   return sqrt(dphi*dphi + deta*deta);
-}
-
-//--------------------------------------------------------------------
-
-int findCaloJetIndex( int ipfjet ){
-
-  LorentzVector pfjet = pfjets_p4().at(ipfjet);
-
-  float drmin   = 100;
-  int   ijetmin = -1;
-
-  for( unsigned int icjet = 0 ; icjet < jets_p4().size() ; icjet++ ){
-    
-    float dr = dRbetweenVectors( pfjet , jets_p4().at(icjet) );
-
-    if( dr < drmin ){
-      drmin   = dr;
-      ijetmin = icjet;
-    }
-  }
-    
-  if( drmin < 0.1 ) return ijetmin;
-
-  return -1;
 }
 
 //--------------------------------------------------------------------
@@ -298,78 +271,6 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
   
   return false;
     
-}
-
-/*****************************************************************************************/
-// pass dimuon trigger
-/*****************************************************************************************/
-
-bool passMMTrigger( bool isData ){
-  
-  //----------------------------------------
-  // no trigger requirements applied to MC
-  //----------------------------------------
-  
-  if( !isData ) return true; 
-  
-  //---------------------------------
-  // triggers for dilepton datasets
-  //---------------------------------
-
-  if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu7_v" ) )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu8_v" ) )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
-  
-  return false;    
-}
-
-/*****************************************************************************************/
-// pass dielectron trigger
-/*****************************************************************************************/
-
-bool passEETrigger( bool isData ){
-  
-  //----------------------------------------
-  // no trigger requirements applied to MC
-  //----------------------------------------
-  
-  if( !isData ) return true; 
-  
-  //---------------------------------
-  // triggers for dilepton datasets
-  //---------------------------------
-    
-  //ee
-  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )                                   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v") ) return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
-  
-  return false;    
-}
-
-/*****************************************************************************************/
-// pass e-mu trigger
-/*****************************************************************************************/
-
-bool passEMTrigger( bool isData ){
-  
-  //----------------------------------------
-  // no trigger requirements applied to MC
-  //----------------------------------------
-  
-  if( !isData ) return true; 
-  
-  //---------------------------------
-  // triggers for dilepton datasets
-  //---------------------------------
-
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdL_v")           )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdL_v")           )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v") )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v") )   return true;  
-  
-  return false;    
 }
 
 //--------------------------------------------------------------------
@@ -692,13 +593,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       cms2.GetEntry(z);
 
-      // if( evt_event() == 546359772 || evt_event() == 549884803 || evt_event() == 569300619 || evt_event() == 571559717 || evt_event() == 587668707 ){
-      // 	cout << endl << "FOUND! " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
-      // }
-      // else{
-      // 	continue;
-      // }
-
       InitBaby();
 
       pingmass_ = -1;
@@ -739,12 +633,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // require trigger
       //--------------------------------
 
-      if( !( passMuMuJJTrigger_v1(isData) || passMMTrigger(isData) || passEETrigger(isData) || passEETrigger(isData) ) ) continue;
-
-      mtrg_  = passMuMuJJTrigger_v1( isData ) ? 1 : 0;
-      eetrg_ = passEETrigger(isData)          ? 1 : 0;
-      mmtrg_ = passMMTrigger(isData)          ? 1 : 0;
-      emtrg_ = passEMTrigger(isData)          ? 1 : 0;
+      if( !passMuMuJJTrigger_v1( isData ) ) continue;
 
       //---------------------
       // skip duplicates
@@ -791,10 +680,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       ngoodel_  = 0;
       ngoodmu_  = 0;
 
-      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 20 )                                                 continue;
-	if( !pass_electronSelection( iel , electronSelection_el_ping , false , false ) ) continue;
-
+      /*
+	for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 10 )                                                 continue;
+	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepId.push_back( els_charge().at(iel) * 11 );
 	lepIndex.push_back(iel);
@@ -802,8 +691,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	ngoodlep_++;
 	
 	//cout << "Found electron " << ngoodlep_ << " pt " << els_p4().at(iel).pt() << endl;
-      }
-      
+	}
+      */
 
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 20 )            continue;
@@ -873,8 +762,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	}
 	//-----------------------------------------------------------------------------
 	if( trigObjs.size() == 0 ){
-	  //cout << "ERROR! didn't find matching trigger objects" << endl;
-	  //continue;
+	  cout << "ERROR! didn't find matching trigger objects" << endl;
+	  continue;
 	}
 	//-----------------------------------------------------------------------------
       }
@@ -885,8 +774,8 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
 
 	if( trigObjs.size() == 0 ){
-	  //cout << "ERROR! didn't find matching trigger objects" << endl;
-	  //continue;
+	  cout << "ERROR! didn't find matching trigger objects" << endl;
+	  continue;
 	}
       }
 
@@ -936,71 +825,43 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // 	cout << "2nd lepton   " << goodLeptons.at(ilep2).pt() << endl;
       // }
 
+      //-----------------------------------------------------------------------
+      // are either muon matched to trigger object?
+      //-----------------------------------------------------------------------
+
+      hlt1_ = 0;
+      hlt2_ = 0;
+
+      if( objectPassTrigger( goodLeptons.at(ilep1) , trigObjs ,20 ) ) hlt1_ = 1;      
+      if( objectPassTrigger( goodLeptons.at(ilep2) , trigObjs ,20 ) ) hlt2_ = 1;      
       
       //---------------------------------------------------------
       // muon branches
       //---------------------------------------------------------
+
 
       int index1 = lepIndex.at(ilep1);
       int index2 = lepIndex.at(ilep2);
 
       id1_       = lepId.at(ilep1);
       lep1_      = &goodLeptons.at(ilep1);
-      if( abs(id1_) == 13 ){
-	iso1_      = muonIsoValue(index1,false);
-	passid1_   = muonIdNotIsolated( index1 , OSGeneric_v3 ) ? 1 : 0;
-	lep1trk_   = &(mus_trk_p4().at(index1));
-	lep1glb_   = &(mus_gfit_p4().at(index1));
-	lep1sta_   = &(mus_sta_p4().at(index1));
-      }
-      else{
-	iso1_      = electronIsolation_rel_v1(index1,true);
-	passid1_   = pass_electronSelection( index1 , electronSelection_el_OSV3_noiso ) ? 1 : 0 ;
-	lep1trk_   = &goodLeptons.at(ilep1);
-	lep1glb_   = &goodLeptons.at(ilep1);
-	lep1sta_   = &goodLeptons.at(ilep1);
-      }
+      iso1_      = muonIsoValue(index1,false);
+      passid1_   = muonIdNotIsolated( index1 , OSGeneric_v3 ) ? 1 : 0;
 
+      lep1trk_   = &(mus_trk_p4().at(ilep1));
+      lep1glb_   = &(mus_gfit_p4().at(ilep1));
+      lep1sta_   = &(mus_sta_p4().at(ilep1));
+      	
       id2_       = lepId.at(ilep2);
       lep2_      = &goodLeptons.at(ilep2);
-      if( abs(id2_) == 13 ){
-	iso2_      = muonIsoValue(index2,false);
-	passid2_   = muonIdNotIsolated( index2 , OSGeneric_v3 ) ? 1 : 0;
-	lep2trk_   = &(mus_trk_p4().at(index2));
-	lep2glb_   = &(mus_gfit_p4().at(index2));
-	lep2sta_   = &(mus_sta_p4().at(index2));
-      }
-      else{
-	iso2_      = electronIsolation_rel_v1(index2,true);
-	passid2_   = pass_electronSelection( index2 , electronSelection_el_OSV3_noiso ) ? 1 : 0 ;
-	lep2trk_   = &goodLeptons.at(ilep2);
-	lep2glb_   = &goodLeptons.at(ilep2);
-	lep2sta_   = &goodLeptons.at(ilep2);
-      }
+      iso2_      = muonIsoValue(index2,false);
+      passid2_   = muonIdNotIsolated( index2, OSGeneric_v3 ) ? 1 : 0;
+      
+      lep2trk_   = &(mus_trk_p4().at(ilep2));
+      lep2glb_   = &(mus_gfit_p4().at(ilep2));
+      lep2sta_   = &(mus_sta_p4().at(ilep2));
 
       dilmass_   = ( goodLeptons.at(ilep1) + goodLeptons.at(ilep2) ).mass();
-
-      leptype_ = -1;
-      if( abs(id1_) == 11 && abs(id2_) == 11 ) leptype_ = 0;
-      if( abs(id1_) == 13 && abs(id2_) == 13 ) leptype_ = 1;
-      if( abs(id1_) == 11 && abs(id2_) == 13 ) leptype_ = 2;
-      if( abs(id1_) == 13 && abs(id2_) == 11 ) leptype_ = 2;
-
-      //-----------------------------------------------------------------------
-      // are either muon matched to trigger object?
-      //-----------------------------------------------------------------------
-
-      hlt1_ = -1;
-      hlt2_ = -1;
-
-      if( abs(id1_) == 13 ){
-	if( objectPassTrigger( goodLeptons.at(ilep1) , trigObjs ,20 ) ) hlt1_ = 1;      
-	else                                                            hlt1_ = 0;
-      }
-      if( abs(id2_) == 13 ){
-	if( objectPassTrigger( goodLeptons.at(ilep2) , trigObjs ,20 ) ) hlt2_ = 1;      
-	else                                                            hlt2_ = 0;
-      }
 
       //--------------------------------
       // get MC quantities
@@ -1081,29 +942,14 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       // apply residual JEC
       //---------------------
 
-      // cout << "|" << setw(12) << "Index"         << setw(4) 
-      //  	   << "|" << setw(12) << "pT [GeV]"      << setw(4) 
-      //  	   << "|" << setw(12) << "eta"           << setw(4) 
-      // 	   << "|" << setw(12) << "phi"           << setw(4) 
-      //  	   << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
-      
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-	
+          
 	float         jet_cor = 1;
 	if( isData )  jet_cor = jetCorrection(cms2.pfjets_p4().at(ijet), jet_pf_L2L3corrector);
 	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * jet_cor * pfjets_p4().at(ijet);
 
 	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
 	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
-
-	// if( vjet.pt() > 10 ){
-	//   cout << "|" << setw(12) << ijet                    << setw(4) 
-	//        << "|" << setw(12) << Form("%.1f",vjet.pt())                    << setw(4) 
-	//        << "|" << setw(12) << Form("%.2f",vjet.eta())                    << setw(4) 
-	//        << "|" << setw(12) << Form("%.2f",vjet.phi())                    << setw(4) 
-	//        << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(ijet))
-	//        << setw(4) << "|" << endl;
-	// }
 
 	if( vjet.pt() < 25         ) continue;
 	if( fabs(vjet.eta()) > 3.0 ) continue;
@@ -1115,34 +961,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	jetIndex.push_back(ijet);
       }
 
-      //-----------------------------------------
-      /*
-      cout << endl << endl;
-      cout << "CALO" << endl;
-      cout << "|" << setw(12) << "Index"         << setw(4) 
-	   << "|" << setw(12) << "pT [GeV]"      << setw(4) 
-	   << "|" << setw(12) << "eta"           << setw(4) 
-	   << "|" << setw(12) << "phi"           << setw(4) 
-	   << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
-      
-      for (unsigned int ijet = 0 ; ijet < jets_p4().size() ; ijet++) {
-	
-	LorentzVector vjet    = jets_corL1FastL2L3().at(ijet) * jets_p4().at(ijet);
-
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
-
-	if( vjet.pt() > 10 ){
-	  cout << "|" << setw(12) << ijet                    << setw(4) 
-	       << "|" << setw(12) << Form("%.1f",vjet.pt())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",vjet.eta())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",vjet.phi())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(ijet))
-	       << setw(4) << "|" << endl;
-	}
-      }
-      */
-      //-----------------------------------------
 
       maxpt   = -1;
       int   ijet1   = -1;
@@ -1190,112 +1008,20 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       nbtags33_    = 0;
       nbtags20_24_ = 0;
 
-      nbtags20c_    = 0;
-      nbtags20_24c_ = 0;
-
-      /*
-      if( njets_ >= 2 ){
-
-	int jetidx1 = jetIndex.at(ijet1);
-	int jetidx2 = jetIndex.at(ijet2);
-
-	cout << endl;
-	cout << "First selected pfjet" << endl;
-	cout << "|" << setw(12) << "Index"         << setw(4) 
-	     << "|" << setw(12) << "pT [GeV]"      << setw(4) 
-	     << "|" << setw(12) << "eta"           << setw(4) 
-	     << "|" << setw(12) << "phi"           << setw(4) 
-	     << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
-	
-	cout << "|" << setw(12) << jetidx1                                                    << setw(4) 
-	     << "|" << setw(12) << Form("%.1f",vpfjets_p4.at(ijet1).pt())                     << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",vpfjets_p4.at(ijet1).eta())                    << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",vpfjets_p4.at(ijet1).phi())                    << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(jetidx1))
-             << setw(4) << "|" << endl;
-
-	int cjetidx1 = findCaloJetIndex(jetidx1);
-
-	if( cjetidx1 >- 1 ){
-	  cout << "pfjet is matched to calojet index " << cjetidx1 << endl;
-
-	  cout << "|" << setw(12) << cjetidx1                                                    << setw(4) 
-	       << "|" << setw(12) << Form("%.1f",jets_p4().at(cjetidx1).pt())                     << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_p4().at(cjetidx1).eta())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_p4().at(cjetidx1).phi())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_trackCountingHighEffBJetTag().at(cjetidx1))
-	       << setw(4) << "|" << endl;
-	}else{
-	  cout << "no calojet is matched to pfjet within dR < 0.1" << endl;
-	}
-
-	cout << endl;
-	cout << "Second selected pfjet" << endl;
-	cout << "|" << setw(12) << "Index"         << setw(4) 
-	     << "|" << setw(12) << "pT [GeV]"      << setw(4) 
-	     << "|" << setw(12) << "eta"           << setw(4) 
-	     << "|" << setw(12) << "phi"           << setw(4) 
-	     << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
-	
-	cout << "|" << setw(12) << jetidx2                                                    << setw(4) 
-	     << "|" << setw(12) << Form("%.1f",vpfjets_p4.at(ijet2).pt())                     << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",vpfjets_p4.at(ijet2).eta())                    << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",vpfjets_p4.at(ijet2).phi())                    << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(jetidx2))
-             << setw(4) << "|" << endl;
-
-	int cjetidx2 = findCaloJetIndex(jetidx2);
-
-	if( cjetidx2 >- 1 ){
-	  cout << "pfjet is matched to calojet index " << cjetidx2 << endl;
-
-	  cout << "|" << setw(12) << cjetidx2                                                    << setw(4) 
-	       << "|" << setw(12) << Form("%.1f",jets_p4().at(cjetidx2).pt())                     << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_p4().at(cjetidx2).eta())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_p4().at(cjetidx2).phi())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_trackCountingHighEffBJetTag().at(cjetidx2))
-	       << setw(4) << "|" << endl;
-	}else{
-	  cout << "no calojet is matched to pfjet within dR < 0.1" << endl;
-	}
-
-      }
-      */
-
       if( njets_ > 0 ){
-
 	int jetidx1 = jetIndex.at(ijet1);
-
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 1.7 )   nbtags17_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 2.0 )   nbtags20_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 2.0 && fabs( vpfjets_p4.at(ijet1).eta() ) < 2.4 )  nbtags20_24_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 3.3 )   nbtags33_++;
-
-	int cjetidx1 = findCaloJetIndex(jetidx1);
-
-	if( cjetidx1 > -1 ){
-	  if( jets_trackCountingHighEffBJetTag().at(cjetidx1) > 2.0 )   nbtags20c_++;
-	  if( jets_trackCountingHighEffBJetTag().at(cjetidx1) > 2.0 && fabs( jets_p4().at(cjetidx1).eta() ) < 2.4 )  nbtags20_24c_++;
-	}
-
       }
 
       if( njets_ > 1 ){
-
 	int jetidx2 = jetIndex.at(ijet2);
-
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 1.7 )   nbtags17_++;	  
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 2.0 )   nbtags20_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 2.0 && fabs( vpfjets_p4.at(ijet2).eta() ) < 2.4 )  nbtags20_24_++;
 	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 3.3 )   nbtags33_++;
-
-	int cjetidx2 = findCaloJetIndex(jetidx2);
-
-	if( cjetidx2 > -1 ){
-	  if( jets_trackCountingHighEffBJetTag().at(cjetidx2) > 2.0 )   nbtags20c_++;
-	  if( jets_trackCountingHighEffBJetTag().at(cjetidx2) > 2.0 && fabs( jets_p4().at(cjetidx2).eta() ) < 2.4 )  nbtags20_24c_++;
-	}
-
       }
 
       //-----------------------------
@@ -1357,8 +1083,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       mmjjsta_   = -1;
       mjjj_      = -1;
       mmjjuncor_ = -1;
-      mmjjtrkuncor_ = -1;
-      mmjjtrkdef_   = -1;
 
       //--------------------------------------
       // corrected jets
@@ -1387,8 +1111,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	if( njets_ > 2    ) mjjj_ = (*lep1_+*jet1_+*jet2_+*jet3_).mass();
       }
 
-      //cout << "mmjj BEN " << mmjj_ << endl;
-
       //--------------------------------------
       // UN-corrected jets
       //--------------------------------------
@@ -1397,20 +1119,12 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       sort(vpfjets_uncor_p4_sorted.begin(), vpfjets_uncor_p4_sorted.end(), sortByPt);
 
       if( njetsuncor_ >= 2 && ngoodlep_ > 1 ){
-	mmjjuncor_    = (*lep1_    + *lep2_    + vpfjets_uncor_p4_sorted.at(0) + vpfjets_uncor_p4_sorted.at(1)).mass();
-	mmjjtrkuncor_ = (*lep1trk_ + *lep2trk_ + vpfjets_uncor_p4_sorted.at(0) + vpfjets_uncor_p4_sorted.at(1)).mass();
+	mmjjuncor_ = (*lep1_    + *lep2_    + vpfjets_uncor_p4_sorted.at(0) + vpfjets_uncor_p4_sorted.at(1)).mass();
       }
 
-      if( isData ){
-	mmjjdef_     = mmjj_;
-	mmjjtrkdef_  = mmjjtrk_;
-	njetsdef_    = njets_;
-      }
-      else{
-	mmjjdef_     = mmjjuncor_;
-	mmjjtrkdef_  = mmjjtrkuncor_;
-	njetsdef_    = njetsuncor_;
-      }
+      if( isData ) mmjjdef_  = mmjj_;
+      else         mmjjdef_  = mmjjuncor_;
+     
       
       //--------------------------------------
       // plain jets
@@ -1682,19 +1396,12 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   //Set branch addresses
   //variables must be declared in looper.h
-  outTree->Branch("leptype",         &leptype_,          "leptype/I");
-  outTree->Branch("mtrg",            &mtrg_,             "mtrg/I");
-  outTree->Branch("eetrg",           &eetrg_,            "eetrg/I");
-  outTree->Branch("mmtrg",           &mmtrg_,            "mmtrg/I");
-  outTree->Branch("emtrg",           &emtrg_,            "emtrg/I");
   outTree->Branch("diltrig",         &diltrig_,          "diltrig/I");
   outTree->Branch("hlt1",            &hlt1_,             "hlt1/I");
   outTree->Branch("hlt2",            &hlt2_,             "hlt2/I");
   outTree->Branch("pingmass",        &pingmass_,         "pingmass/F");
   outTree->Branch("metnew",          &metnew_,           "metnew/F");
   outTree->Branch("mmjjdef",         &mmjjdef_,          "mmjjdef/F");
-  outTree->Branch("mmjjtrkuncor",    &mmjjtrkuncor_,     "mmjjtrkuncor/F");
-  outTree->Branch("mmjjtrkdef",      &mmjjtrkdef_,       "mmjjtrkdef/F");
   outTree->Branch("mmjjc",           &mmjjc_,            "mmjjc/F");
   outTree->Branch("cor1",            &cor1_,             "cor1/F");
   outTree->Branch("cor2",            &cor2_,             "cor2/F");
@@ -1738,7 +1445,6 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("dilpt",           &dilpt_,            "dilpt/F");
   outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
-  outTree->Branch("njetsdef",        &njetsdef_,         "njetsdef/I");
   outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
   outTree->Branch("njpt",            &njpt_,             "njpt/I");
   outTree->Branch("npfjets25",       &npfjets25_,        "npfjets25/I");
@@ -1752,8 +1458,6 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nbtags17",        &nbtags17_,         "nbtags17/I");
   outTree->Branch("nbtags20",        &nbtags20_,         "nbtags20/I");
   outTree->Branch("nbtags2024",      &nbtags20_24_,      "nbtags2024/I");
-  outTree->Branch("nbtags20c",       &nbtags20c_,        "nbtags20c/I");
-  outTree->Branch("nbtags2024c",     &nbtags20_24c_,     "nbtags2024c/I");
   outTree->Branch("nbtags33",        &nbtags33_,         "nbtags33/I");
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("m12",             &m12_,              "m12/F");

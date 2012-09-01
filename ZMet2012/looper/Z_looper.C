@@ -63,43 +63,14 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
       bool  useOldIsolation      = true;
-const bool  pt2020               = false;
+const bool  pt2020               = true;
 
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-01-02";
+const char* iter                 = "V00-01-01";
 const char* jsonfilename         = "../jsons/Cert_190456-200601_8TeV_PromptReco_Collisions12_JSON_v2_goodruns.txt"; // 8.5/fb
 
 //--------------------------------------------------------------------
-
-int getJetIndex( LorentzVector thisJet , FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3 ){
-
-  for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-
-    if( fabs( pfjets_p4().at(ijet).eta() ) > 5.0 ) continue;
-
-    //---------------------------------------------------------------------------
-    // get total correction: L1FastL2L3 for MC, L1FastL2L3Residual for data
-    //---------------------------------------------------------------------------
-    
-    jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
-    jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
-    jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
-    jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
-    double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
-    
-    LorentzVector vjet   = corr * pfjets_p4().at(ijet);
-
-    if( fabs( vjet.pt() - thisJet.pt() ) < 0.1 && fabs( vjet.eta() - thisJet.eta() ) < 0.1 && fabs( vjet.phi() - thisJet.phi() ) < 0.1 ) return ijet;
-
-  }
-
-  cout << __FILE__ << " " << __LINE__ << " WARNING! should never get here!" << endl;
-  cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
-  cout << thisJet.pt() << " " << thisJet.eta() << " " << thisJet.phi() << endl;
-
-  return 0;
-}
 
 pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, double rescale = 1.0 ){
   float met = p_met.first;
@@ -308,18 +279,6 @@ float Z_looper::gluinoPairCrossSection( float gluinomass ){
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, int my_nEvents, float kFactor){
 
-  if( TString(prefix).Contains("53X") ){
-    useOldIsolation = false;
-    cout << "53X sample: using NEW isolation" << endl;
-  }
-
-  else{
-    useOldIsolation = true;
-    cout << "52X sample: using OLD isolation" << endl;
-  }
-
-  if( TString(prefix).Contains("zjets") ) cout << "Z+jets sample: scale weight by 946 / 111" << endl;
-
   isdata_ = isData ? 1 : 0;
 
   cout << "version : " << iter         << endl;
@@ -507,8 +466,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
-    TTreeCache::SetLearnEntries(100);
-    tree->SetCacheSize(128*1024*1024);
+    //TTreeCache::SetLearnEntries(100);
+    //tree->SetCacheSize(128*1024*1024);
 
     cms2.Init(tree);
 
@@ -517,7 +476,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     for (unsigned int event = 0 ; event < nEvents; ++event){
 
       //Matevz
-      tree->LoadTree(event);
+      //tree->LoadTree(event);
       
       cms2.GetEntry(event);
       ++nEventsTotal;
@@ -651,9 +610,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  
 	if( doTenPercent )	  weight_ *= 10;
 	//weight_ *= 10; // REMOVE
-
-	// running on 111 of 946 Z+jets files, scale weight accordingly
-	if( TString(prefix).Contains("zjets") ) weight_ *=  946.0 / 111.0;
 
 	if( TString(prefix).Contains("LM") ){
 	  if( TString(prefix).Contains("LM0") ) weight_ *= kfactorSUSY( "lm0" );
@@ -1570,7 +1526,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       ht40_         = 0.0;
       nbcsvm_       = 0;
       nbcsvl_       = 0;
-      nbcsvlm_      = 0;
       nbcsvt_       = 0;
 
       LorentzVector jetSystem(0.,0.,0.,0.);        
@@ -1822,14 +1777,6 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  goodTightBJets.push_back(vjet);
 	}
 
-	if( vjet.pt() < 100.0 ){
-	  if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.244 )  nbcsvlm_++;
-	}
-
-	else{
-	  if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.679 )  nbcsvlm_++;
-	}
-
 	//weight (scale factor) branches
 
 	if( !isData ) {
@@ -1920,63 +1867,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       sort(goodJetsDn.begin()  , goodJetsDn.end()  , sortByPt);
       sort(goodBJets.begin()   , goodBJets.end()   , sortByPt);
 
-      if( goodJets.size()  > 0 ){
-	jet1_       = &(goodJets.at(0));
-	int jetidx1 = getJetIndex( goodJets.at(0) , jet_corrector_pfL1FastJetL2L3 );
-	tche1_      = pfjets_trackCountingHighEffBJetTag().at(jetidx1);
-	csv1_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx1);
-      }
-      if( goodJets.size()  > 1 ){
-	jet2_       = &(goodJets.at(1));
-	int jetidx2 = getJetIndex( goodJets.at(1) , jet_corrector_pfL1FastJetL2L3 );
-	tche2_      = pfjets_trackCountingHighEffBJetTag().at(jetidx2);
-	csv2_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx2);
-      }
-      if( goodJets.size()  > 2 ){
-	jet3_       = &(goodJets.at(2));
-	int jetidx3 = getJetIndex( goodJets.at(2) , jet_corrector_pfL1FastJetL2L3 );
-	tche3_      = pfjets_trackCountingHighEffBJetTag().at(jetidx3);
-	csv3_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx3);
-      }
-      if( goodJets.size()  > 3 ){
-	jet4_       = &(goodJets.at(3));
-	int jetidx4 = getJetIndex( goodJets.at(3) , jet_corrector_pfL1FastJetL2L3 );
-	tche4_      = pfjets_trackCountingHighEffBJetTag().at(jetidx4);
-	csv4_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx4);
-      }
-      if( goodJets.size()  > 4 ){
-	jet5_       = &(goodJets.at(4));
-	int jetidx5 = getJetIndex( goodJets.at(4) , jet_corrector_pfL1FastJetL2L3 );
-	tche5_      = pfjets_trackCountingHighEffBJetTag().at(jetidx5);
-	csv5_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx5);
-      }
-      if( goodJets.size()  > 5 ){
-	jet6_       = &(goodJets.at(5));
-	int jetidx6 = getJetIndex( goodJets.at(5) , jet_corrector_pfL1FastJetL2L3 );
-	tche6_      = pfjets_trackCountingHighEffBJetTag().at(jetidx6);
-	csv6_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx6);
-      }
-      if( goodJets.size()  > 6 ){
-	jet7_       = &(goodJets.at(6));
-	int jetidx7 = getJetIndex( goodJets.at(6) , jet_corrector_pfL1FastJetL2L3 );
-	tche7_      = pfjets_trackCountingHighEffBJetTag().at(jetidx7);
-	csv7_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx7);
-      }
-      if( goodJets.size()  > 7 ){
-	jet8_       = &(goodJets.at(7));
-	int jetidx8 = getJetIndex( goodJets.at(7) , jet_corrector_pfL1FastJetL2L3 );
-	tche8_      = pfjets_trackCountingHighEffBJetTag().at(jetidx8);
-	csv8_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx8);
-      }
-
-      // if( goodJets.size()  > 0 ) jet1_   = &(goodJets.at(0));
-      // if( goodJets.size()  > 1 ) jet2_   = &(goodJets.at(1));
-      // if( goodJets.size()  > 2 ) jet3_   = &(goodJets.at(2));
-      // if( goodJets.size()  > 3 ) jet4_   = &(goodJets.at(3));
-      // if( goodJets.size()  > 4 ) jet5_   = &(goodJets.at(4));
-      // if( goodJets.size()  > 5 ) jet6_   = &(goodJets.at(5));
-      // if( goodJets.size()  > 6 ) jet7_   = &(goodJets.at(6));
-      // if( goodJets.size()  > 7 ) jet8_   = &(goodJets.at(7));
+      if( goodJets.size()  > 0 ) jet1_   = &(goodJets.at(0));
+      if( goodJets.size()  > 1 ) jet2_   = &(goodJets.at(1));
+      if( goodJets.size()  > 2 ) jet3_   = &(goodJets.at(2));
+      if( goodJets.size()  > 3 ) jet4_   = &(goodJets.at(3));
 
       if( goodBJets.size() > 0 ) bjet1_  = &(goodBJets.at(0));
       if( goodBJets.size() > 1 ) bjet2_  = &(goodBJets.at(1));
@@ -2289,7 +2183,6 @@ void Z_looper::InitBabyNtuple (){
   ht30_         = -999999.;
   ht40_         = -999999.;
   nbcsvl_       = -999999;
-  nbcsvlm_      = -999999;
   nbcsvm_       = -999999;
   nbcsvt_       = -999999;
   jzb_          = -999999.;
@@ -2359,10 +2252,6 @@ void Z_looper::InitBabyNtuple (){
   jet2_		= 0;
   jet3_		= 0;
   jet4_		= 0;
-  jet5_		= 0;
-  jet6_		= 0;
-  jet7_		= 0;
-  jet8_		= 0;
   bjet1_	= 0;
   bjet2_	= 0;
   bjet3_       	= 0;
@@ -2376,24 +2265,6 @@ void Z_looper::InitBabyNtuple (){
   lep5_         = 0;
   lep6_         = 0;
   w_            = 0;
-
-  tche1_   = -1;
-  tche2_   = -1;
-  tche3_   = -1;
-  tche4_   = -1;
-  tche5_   = -1;
-  tche6_   = -1;
-  tche7_   = -1;
-  tche8_   = -1;
-
-  csv1_   = -1;
-  csv2_   = -1;
-  csv3_   = -1;
-  csv4_   = -1;
-  csv5_   = -1;
-  csv6_   = -1;
-  csv7_   = -1;
-  csv8_   = -1;
 
   mllgen_  = -999.;
   qscale_  = -999.;
@@ -2535,7 +2406,6 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ht30",         &ht30_,         "ht30/F"         );
   babyTree_->Branch("ht40",         &ht40_,         "ht40/F"         );
   babyTree_->Branch("nbcsvl",       &nbcsvl_,       "nbcsvl/I"       );
-  babyTree_->Branch("nbcsvlm",      &nbcsvlm_,      "nbcsvlm/I"      );
   babyTree_->Branch("nbcsvm",       &nbcsvm_,       "nbcsvm/I"       );
   babyTree_->Branch("nbcsvt",       &nbcsvt_,       "nbcsvt/I"       );
   babyTree_->Branch("nbvz",         &nbvz_,         "nbvz/I"         );
@@ -2625,23 +2495,6 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("el1nomuss",    &el1nomuss_,    "el1nomuss/I"   );
   babyTree_->Branch("el2nomuss",    &el2nomuss_,    "el2nomuss/I"   );
 
-  babyTree_->Branch("tche1",        &tche1_,        "tche1/F"       );
-  babyTree_->Branch("tche2",        &tche2_,        "tche2/F"       );
-  babyTree_->Branch("tche3",        &tche3_,        "tche3/F"       );
-  babyTree_->Branch("tche4",        &tche4_,        "tche4/F"       );
-  babyTree_->Branch("tche5",        &tche5_,        "tche5/F"       );
-  babyTree_->Branch("tche6",        &tche6_,        "tche6/F"       );
-  babyTree_->Branch("tche7",        &tche7_,        "tche7/F"       );
-  babyTree_->Branch("tche8",        &tche8_,        "tche8/F"       );
-
-  babyTree_->Branch("csv1",         &csv1_,         "csv1/F"       );
-  babyTree_->Branch("csv2",         &csv2_,         "csv2/F"       );
-  babyTree_->Branch("csv3",         &csv3_,         "csv3/F"       );
-  babyTree_->Branch("csv4",         &csv4_,         "csv4/F"       );
-  babyTree_->Branch("csv5",         &csv5_,         "csv5/F"       );
-  babyTree_->Branch("csv6",         &csv6_,         "csv6/F"       );
-  babyTree_->Branch("csv7",         &csv7_,         "csv7/F"       );
-  babyTree_->Branch("csv8",         &csv8_,         "csv8/F"       );
 
   //met stuff
   babyTree_->Branch("pfmett1new",      &pfmett1new_,      "pfmett1new/F"    );
@@ -2761,10 +2614,6 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
   babyTree_->Branch("jet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet3_	);
   babyTree_->Branch("jet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet4_	);
-  babyTree_->Branch("jet5"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet5_	);
-  babyTree_->Branch("jet6"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet6_	);
-  babyTree_->Branch("jet7"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet7_	);
-  babyTree_->Branch("jet8"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet8_	);
 
   babyTree_->Branch("bjet1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet1_	);
   babyTree_->Branch("bjet2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet2_	);
