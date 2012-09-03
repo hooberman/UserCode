@@ -53,8 +53,8 @@ using namespace tas;
 
 const bool debug                = false;
 const float lumi                = 1.0;
-const char* iter                = "V00-00-13";
-const char* jsonfilename        = "../jsons/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; //5.10/fb
+const char* iter                = "V00-01-00";
+const char* jsonfilename        = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
 
 //--------------------------------------------------------------------
 
@@ -676,6 +676,15 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       if( goodJets.size()  > 2 ) jet3_   = &(goodJets.at(2));
       if( goodJets.size()  > 3 ) jet4_   = &(goodJets.at(3));
       
+      csc_       = cms2.evt_cscTightHaloId();
+      hbhe_      = cms2.evt_hbheFilter();
+      hcallaser_ = cms2.filt_hcalLaser();
+      ecaltp_    = cms2.filt_ecalTP();
+      trkfail_   = cms2.filt_trackingFailure();
+      eebadsc_   = 1;
+      if( isData ) eebadsc_ = cms2.filt_eeBadSc();
+      hbhenew_   = passHBHEFilter();
+
       //-------------------------
       // fill histos and ntuple
       //-------------------------
@@ -1075,6 +1084,14 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
   babyTree_->Branch("jet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet3_	);
   babyTree_->Branch("jet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet4_	);
+
+  babyTree_->Branch("csc"       ,  &csc_       ,  "csc/I");  
+  babyTree_->Branch("hbhe"      ,  &hbhe_      ,  "hbhe/I");  
+  babyTree_->Branch("hbhenew"   ,  &hbhenew_   ,  "hbhenew/I");  
+  babyTree_->Branch("hcallaser" ,  &hcallaser_ ,  "hcallaser/I");  
+  babyTree_->Branch("ecaltp"    ,  &ecaltp_    ,  "ecaltp/I");  
+  babyTree_->Branch("trkfail"   ,  &trkfail_   ,  "trkfail/I");  
+  babyTree_->Branch("eebadsc"   ,  &eebadsc_   ,  "eebadsc/I");  
 
 }
 

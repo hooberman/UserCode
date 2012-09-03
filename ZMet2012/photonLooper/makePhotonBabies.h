@@ -202,6 +202,14 @@ class makePhotonBabies
   Float_t jet_dphimet_;       
   Float_t jet_dpt_;           
   Float_t jet_drgen_;  
+
+  Int_t   csc_;      
+  Int_t   hbhe_;   
+  Int_t   hbhenew_;   
+  Int_t   hcallaser_;
+  Int_t   ecaltp_;
+  Int_t   trkfail_;
+  Int_t   eebadsc_;
   
   TH1F* tcmetTemplate[3][7][4];
   TH1F* pfmetTemplate[3][7][4];
@@ -225,8 +233,7 @@ class makePhotonBabies
   TH1F*   hphotonpt;
   
   ofstream ofile_tcmet;
-  ofstream ofile_events;
-  
+  ofstream ofile_events;  
 };
 
 
