@@ -68,7 +68,7 @@ const bool  pt2020               = false;
 const float lumi                 = 1.0; 
 
 const char* iter                 = "V00-01-02";
-const char* jsonfilename         = "../jsons/Cert_190456-200601_8TeV_PromptReco_Collisions12_JSON_v2_goodruns.txt"; // 8.5/fb
+const char* jsonfilename         = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
 
 //--------------------------------------------------------------------
 
