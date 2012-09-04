@@ -25,7 +25,7 @@
 #include "TMath.h"
 #include <sstream>
 #include <iomanip>
-
+#include "TF1.h"
 
 float histError( TH1F* h , int minbin , int maxbin ){
 
@@ -298,7 +298,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
       chmc[imc]->Draw("leptype>>hyield",sel*weight);
 
       //do efficiency correction
-
+      /*
       //ee
       hyield->SetBinContent  ( 1 , hyield->GetBinContent(1) * 0.95);
       hyield->SetBinError    ( 1 , hyield->GetBinError(1)   * 0.95);
@@ -310,7 +310,8 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
       //emu
       hyield->SetBinContent  ( 3 , hyield->GetBinContent(3) * 0.92);
       hyield->SetBinError    ( 3 , hyield->GetBinError(3)   * 0.92);
-
+      */
+      //cout << "printYieldTable apply trigger efficiencies 0.95, 0.88, 0.92" << endl;
     }
 
     if( imc == 0 ) hmctot = (TH1F*) hyield->Clone();
@@ -369,7 +370,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayData, float x1, float y1, float x2, float y2){
 
   //int colors[]={6,2,7,4,5,8,9,15,12};
-  int colors[]={5,2,7,4,8,9,15,12};
+  int colors[]={4,7,2,5,8,9,15,12};
   
   TLegend *leg = new TLegend(x1,y1,x2,y2);
 
@@ -459,7 +460,7 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
 
 void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata , char* var , 
 		    TCut sel , TCut weight , int nbins ,  float xmin , float xmax ,  
-		    char* xtitle , bool overlayData , bool residual , bool drawLegend , bool log , char* flavor ){
+		    char* xtitle , bool overlayData , bool residual , bool drawLegend , bool log , bool normalize , char* flavor ){
 
   TPad* fullpad = new TPad();
   TPad* plotpad = new TPad();
@@ -481,14 +482,18 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
   TString tvar(var);
   tvar.ReplaceAll("()","");
+  tvar.ReplaceAll("(","");
+  tvar.ReplaceAll(")","");
   tvar.ReplaceAll(".","");
+  tvar.ReplaceAll("*","");
+  tvar.ReplaceAll(" ","");
   const char* myvar = tvar;
 
   cout << "Plotting var " << myvar << " flavor " << flavor << endl;
 
   //int colors[]={6,2,7,4,5,8,9,15,12};
   //int colors[]={kRed+2,5,7,5,5,8,9,15,12};
-  int colors[]={5,2,7,4,8,9,15,12};
+  int colors[]={4,7,2,5,8,9,15,12};
 
   assert( chmc.size() == labels.size() );
   const unsigned int nmc = chmc.size();
@@ -499,10 +504,12 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   TH1F*    datahist = new TH1F(Form("%s_datahist_%s",myvar,flavor),Form("%s_datahist_%s",myvar,flavor),nbins,xmin,xmax);
 
   float trigeff = 1.0;
-  if     ( TString(flavor).Contains("ee")  ) trigeff = 0.95;
-  else if( TString(flavor).Contains("mm")  ) trigeff = 0.88;
-  else if( TString(flavor).Contains("em")  ) trigeff = 0.92;
-  else if( TString(flavor).Contains("all") ) trigeff = 0.91;
+  // if     ( TString(flavor).Contains("ee")  ) trigeff = 0.95;
+  // else if( TString(flavor).Contains("mm")  ) trigeff = 0.88;
+  // else if( TString(flavor).Contains("em")  ) trigeff = 0.92;
+  // else if( TString(flavor).Contains("all") ) trigeff = 0.91;
+
+  cout << "compareDataMC : apply trigeff " << trigeff << endl;
 
   if     ( TString(flavor).Contains("ee")  ) sel+="leptype==0";
   else if( TString(flavor).Contains("mm")  ) sel+="leptype==1";
@@ -511,6 +518,25 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
   TCut trigweight(Form("%.2f",trigeff));
 
+  TH1F* htemp = new TH1F("htemp","htemp",1,0,1);
+
+  float nmctot = 0.0;
+
+  for( int imc = nmc-1 ; imc > -1 ; imc-- ){
+    chmc.at(imc)->Draw("0.5>>htemp",sel*weight*trigweight);
+    nmctot += htemp->Integral();
+  }
+
+  chdata->Draw("0.5>>htemp",sel);
+  float ndata = htemp->Integral();
+
+  float SF = ndata/nmctot;
+  if( normalize ){
+    cout << "Data, MC, SF " << ndata << ", " << nmctot << ", " << SF << endl;
+    cout << "Scaling MC by " << SF << "!!!!!!" << endl;
+  }
+
+  float mcintegral = 0.0;
   //for( unsigned int imc = 0 ; imc < nmc ; imc++ ){
   for( int imc = nmc-1 ; imc > -1 ; imc-- ){
 
@@ -518,6 +544,8 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     mchist[imc]->Sumw2();
 
     chmc.at(imc)->Draw(Form("TMath::Min(%s,%f)>>%s_mc_%i_%s",var,xmax-0.01,myvar,imc,flavor),sel*weight*trigweight);
+
+    if( normalize ) mchist[imc]->Scale(SF);
 
     if( TString( labels.at(imc) ).Contains("LM") || TString( labels.at(imc) ).Contains("T2tt") ){
       mchist[imc]->SetFillColor( 0 );
@@ -538,7 +566,10 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     else               mctothist->Add(mchist[imc]);
 
     cout << "MC yield " << labels[imc] << " " << Form("%.2f",mchist[imc]->Integral()) << endl;
+    mcintegral += mchist[imc]->Integral();
   }
+
+  cout << "MC total yield " << Form("%.2f",mcintegral) << endl;
 
   chdata->Draw(Form("TMath::Min(%s,%f)>>%s_datahist_%s",var,xmax-0.01,myvar,flavor),sel);
 
@@ -550,6 +581,9 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     else      datahist->SetMaximum( 1.4 * max );
 
     datahist->GetXaxis()->SetTitle(xtitle);
+    datahist->GetXaxis()->SetTitleSize(0.05);
+    datahist->GetXaxis()->SetLabelSize(0.04);
+    datahist->GetXaxis()->SetTitleOffset(1.2);
     datahist->Draw("E1");
     mcstack->Draw("samehist");
     datahist->Draw("sameE1");
@@ -577,12 +611,12 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   text->SetTextSize(0.04);
   text->DrawLatex(0.2,0.88,"CMS Preliminary");
   //text->DrawLatex(0.2,0.83,"0.98 fb^{-1} at #sqrt{s} = 7 TeV");
-  text->DrawLatex(0.2,0.83,"#sqrt{s} = 8 TeV, #scale[0.6]{#int}Ldt = 5.10 fb^{-1}");
+  text->DrawLatex(0.2,0.83,"#sqrt{s} = 8 TeV, #scale[0.6]{#int}Ldt = 5.1 fb^{-1}");
 
-  // if     ( TString(flavor).Contains("ee")  ) text->DrawLatex(0.2,0.78,"Events with ee");
-  // else if( TString(flavor).Contains("mm")  ) text->DrawLatex(0.2,0.78,"Events with #mu#mu");
-  // else if( TString(flavor).Contains("em")  ) text->DrawLatex(0.2,0.78,"Events with e#mu");
-  // else if( TString(flavor).Contains("all") ) text->DrawLatex(0.2,0.78,"Events with ee/#mu#mu/e#mu");
+  if     ( TString(flavor).Contains("ee")  ) text->DrawLatex(0.2,0.78,"Events with ee");
+  else if( TString(flavor).Contains("mm")  ) text->DrawLatex(0.2,0.78,"Events with #mu#mu");
+  else if( TString(flavor).Contains("em")  ) text->DrawLatex(0.2,0.78,"Events with e#mu");
+  else if( TString(flavor).Contains("all") ) text->DrawLatex(0.2,0.78,"Events with ee/#mu#mu/e#mu");
 
   if( residual ){
     fullpad->cd();
@@ -601,11 +635,15 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     ratio->GetYaxis()->SetNdivisions(5);
     ratio->GetYaxis()->SetLabelSize(0.2);
     //ratio->GetYaxis()->SetRangeUser(0.5,1.5);
-    ratio->GetYaxis()->SetRangeUser(0.,2.0);
+    ratio->GetYaxis()->SetRangeUser(0.6,1.4);
     ratio->GetYaxis()->SetTitle("data/MC  ");
     ratio->GetXaxis()->SetLabelSize(0);
     ratio->GetXaxis()->SetTitleSize(0);
     ratio->SetMarkerSize(0.7);
+
+    TF1* fpol1 = new TF1("fpol1","pol1",datahist->GetXaxis()->GetXmin(),datahist->GetXaxis()->GetXmax());
+    ratio->Fit(fpol1,"R");
+
     ratio->Draw();
 
     TLine line;
