@@ -318,7 +318,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     cout << "52X sample: using OLD isolation" << endl;
   }
 
-  if( TString(prefix).Contains("zjets") ) cout << "Z+jets sample: scale weight by 946 / 111" << endl;
+  if( TString(prefix).Contains("zjets_53X") ) cout << "Z+jets sample: scale weight by 946 / 111" << endl;
 
   isdata_ = isData ? 1 : 0;
 
@@ -342,7 +342,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS6.root",true);
   }
   else{
-    set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS10_5p1fb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS10_9p7fb_Zselection.root",true);
   }
 
   // ofstream* ofile = new ofstream();
