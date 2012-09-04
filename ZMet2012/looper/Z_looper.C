@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-01-02";
+const char* iter                 = "V00-01-03";
 const char* jsonfilename         = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
 
 //--------------------------------------------------------------------
@@ -342,7 +342,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS6.root",true);
   }
   else{
-    set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS7_5p1fb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS10_5p1fb_Zselection.root",true);
   }
 
   // ofstream* ofile = new ofstream();
