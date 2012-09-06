@@ -145,6 +145,12 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "zjets_MET50_53X" ) == 0 ){
+    pickSkimIfExists(ch,"/hadoop/cms/store/user/benhoob/MET50/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "data2012cv2" ) == 0 ){    
 
     // 2012C v2
