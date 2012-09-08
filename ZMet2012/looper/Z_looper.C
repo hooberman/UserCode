@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-01-03";
+const char* iter                 = "V00-01-04";
 const char* jsonfilename         = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
 
 //--------------------------------------------------------------------
@@ -1572,6 +1572,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       nbcsvl_       = 0;
       nbcsvlm_      = 0;
       nbcsvt_       = 0;
+      njets40up_    = 0;
+      njets40dn_    = 0;
+      ht40up_       = 0.0;
+      ht40dn_       = 0.0;
 
       LorentzVector jetSystem(0.,0.,0.,0.);        
       float maxcosdphi  = -99;
@@ -1732,6 +1736,16 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if ( vjet.pt()   > 40. ){
 	  nJets40_++;
 	  ht40_ += vjet.pt();
+	}
+
+        if ( vjetUp.pt()   > 40. ){
+	  njets40up_++;
+	  ht40up_ += vjet.pt();
+	}
+
+        if ( vjetDn.pt()   > 40. ){
+	  njets40dn_++;
+	  ht40dn_ += vjet.pt();
 	}
 
         if( fabs( vjet.eta() ) > 2.5 ) continue;
@@ -2534,6 +2548,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("btagweightup", &btagweightup_, "btagweightup/F" );
   babyTree_->Branch("ht30",         &ht30_,         "ht30/F"         );
   babyTree_->Branch("ht40",         &ht40_,         "ht40/F"         );
+  babyTree_->Branch("ht40up",       &ht40up_,       "ht40up/F"       );
+  babyTree_->Branch("ht40dn",       &ht40dn_,       "ht40dn/F"       );
   babyTree_->Branch("nbcsvl",       &nbcsvl_,       "nbcsvl/I"       );
   babyTree_->Branch("nbcsvlm",      &nbcsvlm_,      "nbcsvlm/I"      );
   babyTree_->Branch("nbcsvm",       &nbcsvm_,       "nbcsvm/I"       );
@@ -2686,8 +2702,10 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("njetsdn",        &nJetsDn_,          "njetsdn/I"     );
   babyTree_->Branch("njpt",           &nJPT_,             "njpt/I"        );
   babyTree_->Branch("njets40",        &nJets40_,          "njets40/I"     );
+  babyTree_->Branch("njets40up",      &njets40up_,        "njets40up/I"   );
+  babyTree_->Branch("njets40dn",      &njets40dn_,        "njets40dn/I"   );
   babyTree_->Branch("sumjetpt",       &sumJetPt_,         "sumjetpt/F"    );
-  babyTree_->Branch("sumjetpt10",     &sumJetPt10_,       "sumjetpt10/F"    );
+  babyTree_->Branch("sumjetpt10",     &sumJetPt10_,       "sumjetpt10/F"  );
   babyTree_->Branch("vecjetpt",       &vecJetPt_,         "vecjetpt/F"    );
   babyTree_->Branch("nbtags",         &nbtags_,           "nbtags/I");
   babyTree_->Branch("nbl",            &nbl_,              "nbl/I");

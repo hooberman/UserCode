@@ -115,6 +115,10 @@ class Z_looper
   Int_t   ngennum_;
   Int_t   ngennut_;
   Int_t   ngennu_;
+  Int_t   njets40up_;
+  Int_t   njets40dn_;
+  Float_t ht40up_;
+  Float_t ht40dn_;
 
   Float_t pfmett1new_;
   Float_t pfmett1newphi_;
