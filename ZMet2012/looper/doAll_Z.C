@@ -7,13 +7,13 @@
   //runZLooper("data_53X"              , true  );  
   //runZLooper("data_2012C_53X"        , true  );  
 
+  runZLooper("wz_53X"                  , false );  
+  runZLooper("zz_53X"                  , false );  
+  runZLooper("zjets_full_53X"          , false );  
   // runZLooper("ttbar_53X"               , false );  
-  // runZLooper("wz_53X"                  , false );  
-  // runZLooper("zz_53X"                  , false );  
   // runZLooper("zjets_53X"               , false );  
-  // runZLooper("zjets_full_53X"          , false );  
+
   // runZLooper("zjets_MET50_53X"         , false );  
-  runZLooper("wjets_53X"                  , false );  
 
   // runZLooper("dataskim2010"            , true  );
   // runZLooper("data2012cv2"             , true  );
