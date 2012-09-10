@@ -50,6 +50,7 @@
 bool verbose              = false;
 bool doTenPercent         = false;
 bool vetoTransition       = true;
+bool useOldIsolation      = false;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -1124,8 +1125,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       ngoodmu_  = 0;
             
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 10 )                                                continue;
-        if( !passElectronSelection_Stop2012_v1( iel , vetoTransition,vetoTransition) )  continue;
+	if( els_p4().at(iel).pt() < 10 )                                                                continue;
+        if( !passElectronSelection_Stop2012_v2( iel , vetoTransition,vetoTransition,useOldIsolation) )  continue;
 
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepchi2ndf.push_back( -9999. );
@@ -1806,8 +1807,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    if( ID == 1 ){
 	      mlepid_       = 11 * els_charge().at(imatch);
 	      mlep_         = &els_p4().at(imatch);
-	      mleppassid_   = passElectronSelection_Stop2012_v1_NoIso( imatch , vetoTransition,vetoTransition) ? 1 : 0;
-	      mleppassiso_  = passElectronSelection_Stop2012_v1_Iso  ( imatch , vetoTransition,vetoTransition) ? 1 : 0;
+	      mleppassid_   = passElectronSelection_Stop2012_v2_NoIso( imatch , vetoTransition,vetoTransition,useOldIsolation) ? 1 : 0;
+	      mleppassiso_  = passElectronSelection_Stop2012_v2_Iso  ( imatch , vetoTransition,vetoTransition,useOldIsolation) ? 1 : 0;
 	      mlepiso_      = electronIsoValuePF2012_FastJetEffArea( imatch , 0.3 , 0 );
 	    }
 
@@ -2676,8 +2677,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 
-	if( els_p4().at(iel).pt() < 10 )                                                         continue;
-	if( !passElectronSelection_Stop2012_v1_NoIso( iel , vetoTransition,vetoTransition))      continue;
+	if( els_p4().at(iel).pt() < 10 )                                                                         continue;
+	if( !passElectronSelection_Stop2012_v2_NoIso( iel , vetoTransition,vetoTransition,useOldIsolation))      continue;
 
 	// don't count the leptons that we already counted as good
 	bool isGoodLepton = false;
@@ -3009,7 +3010,15 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       lumi_         = evt_lumiBlock();                    //lumi
       event_        = evt_event();                        //event
       nvtxweight_   = vtxweight(isData);
-      hbhe_         = evt_hbheFilter();
+
+      csc_       = cms2.evt_cscTightHaloId();
+      hbhe_      = cms2.evt_hbheFilter();
+      hcallaser_ = cms2.filt_hcalLaser();
+      ecaltp_    = cms2.filt_ecalTP();
+      trkfail_   = cms2.filt_trackingFailure();
+      eebadsc_   = 1;
+      if( isData ) eebadsc_ = cms2.filt_eeBadSc();
+      hbhenew_   = passHBHEFilter();
 
       k_ = 1;
       if     ( strcmp( prefix , "LM0"  )    == 0 ) k_ = kfactorSUSY( "lm0"  );
@@ -3320,7 +3329,15 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("acc_2010",        &acc_2010_,         "acc_2010/I");
   outTree->Branch("acc_highmet",     &acc_highmet_,      "acc_highmet/I");
   outTree->Branch("acc_highht",      &acc_highht_,       "acc_highht/I");
-  outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
+
+  outTree->Branch("csc"       ,  &csc_       ,  "csc/I");  
+  outTree->Branch("hbhe"      ,  &hbhe_      ,  "hbhe/I");  
+  outTree->Branch("hbhenew"   ,  &hbhenew_   ,  "hbhenew/I");  
+  outTree->Branch("hcallaser" ,  &hcallaser_ ,  "hcallaser/I");  
+  outTree->Branch("ecaltp"    ,  &ecaltp_    ,  "ecaltp/I");  
+  outTree->Branch("trkfail"   ,  &trkfail_   ,  "trkfail/I");  
+  outTree->Branch("eebadsc"   ,  &eebadsc_   ,  "eebadsc/I");  
+
   outTree->Branch("isdata",          &isdata_,           "isdata/I");
   outTree->Branch("jetid",           &jetid_,            "jetid/I");
   outTree->Branch("jetid30",         &jetid30_,          "jetid30/I");
