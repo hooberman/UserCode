@@ -5,6 +5,8 @@
   gROOT->ProcessLine(".L runZLooper.C+");
 
   runZLooper("t_53X"                      , false );  
+  runZLooper("wz2l2q_53X"                 , false );  
+  runZLooper("zz2l2q_53X"                 , false );  
 
   // runZLooper("data_53X"                , true  );  
   // runZLooper("data_2012C_53X"          , true  );  
@@ -18,7 +20,6 @@
   // runZLooper("ttbar_53X"               , false );  
   // runZLooper("zjets_53X"               , false );  
   // runZLooper("zjets_MET50_53X"         , false );  
-
 
 
   // runZLooper("dataskim2010"            , true  );
