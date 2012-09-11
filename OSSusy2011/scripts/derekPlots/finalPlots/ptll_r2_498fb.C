@@ -156,8 +156,23 @@ tex->SetNDC();
 
    TCanvas *c1 = new TCanvas();
    c1->cd();
-   gPad->SetLogy();
-   gPad->SetTopMargin(0.1);
+
+   TLatex *t = new TLatex();
+   t->SetNDC();
+   t->SetTextSize(0.04);
+   t->DrawLatex(0.18,0.95,"CMS                                #sqrt{s} = 7 TeV,  #scale[0.6]{#int} Ldt = 4.98 fb^{-1}");
+
+   TPad *mainpad = new TPad("mainpad","mainpad",0.0,0.0,1.0,0.8);
+   mainpad->Draw();
+   mainpad->cd();
+
+   mainpad->SetLogy();
+   mainpad->SetTopMargin(0.1);
+   mainpad->SetRightMargin(0.04);
+
+   // gPad->SetLogy();
+   // gPad->SetTopMargin(0.1);
+   // gPad->SetRightMargin(0.04);
 
    hpt->GetYaxis()->SetTitle("events / 75 GeV");
    hpt->GetXaxis()->SetTitle("E_{T}^{miss} (GeV)");
@@ -180,12 +195,45 @@ tex->SetNDC();
    leg->SetFillColor(0);
    leg->Draw();
 
-   TLatex *t = new TLatex();
-   t->SetNDC();
-   t->SetTextSize(0.04);
-   t->DrawLatex(0.18,0.93,"CMS                                #sqrt{s} = 7 TeV,  #scale[0.6]{#int} Ldt = 4.98 fb^{-1}");
    t->DrawLatex(0.7,0.8,"H_{T} > 600 GeV");
 
+   c1->cd();
+
+   TPad *respad = new TPad("respad","respad",0.0,0.74,1.0,0.92);
+   respad->Draw();
+   respad->cd();
+   respad->SetRightMargin(0.04);
+   respad->SetTopMargin(0.1);
+   respad->SetGridy();
+
+   TH1F* hratio = (TH1F*) hmet->Clone("hratio");
+   hratio->Divide(hpt);
+   hratio->GetYaxis()->SetRangeUser(0,2);
+   hratio->GetYaxis()->SetNdivisions(5);
+   hratio->GetYaxis()->SetLabelSize(0.2);
+   hratio->GetXaxis()->SetTitleSize(0.0);
+   hratio->GetXaxis()->SetLabelSize(0.0);
+   hratio->GetYaxis()->SetTitleSize(0.24);
+   hratio->GetYaxis()->SetTitleOffset(0.3);
+   hratio->GetYaxis()->SetTitle("ratio");
+   //hratio->SetMarkerColor(1);
+   //hratio->SetLineColor(1);
+   hratio->Draw();
+
+   TLine line;
+   line.SetLineWidth(2);
+   line.DrawLine(50,1,425,1);
+   hratio->Draw("same");
+
+   cout << "tight" << endl;
+   cout << "met : " << 2*hmet->GetBinContent(4) << " +/- " << 2*hmet->GetBinError(4) << endl;
+   cout << "met : " << 2*hpt->GetBinContent(4)  << " +/- " << 2*hpt->GetBinError(4)  << endl;
+
+   cout << "high HT" << endl;
+   //cout << "met : " << 2*hmet->GetBinContent(4)+hmet->GetBinContent(3) << " +/- " << 2*hmet->GetBinError(4)+hmet->GetBinError(3) << endl;
+   //cout << "met : " << 2*hpt->GetBinContent(4)+hpt->GetBinContent(3)  << " +/- " << 2*hpt->GetBinError(4)+hpt->GetBinError(3)  << endl;
+   cout << "met : " << hmet->GetBinContent(3) << " +/- " << hmet->GetBinError(3) << endl;
+   cout << "met : " << hpt->GetBinContent(3)  << " +/- " << hpt->GetBinError(3)  << endl;
 
    c1->Print("ptll_SR2_498fb.pdf");
 
