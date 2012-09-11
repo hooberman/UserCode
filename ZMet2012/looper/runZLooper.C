@@ -282,7 +282,8 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "wzsms" ) == 0 ){
-    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/SMS-TChiwz_Mchargino-100to500_mLSP-0to400_8TeV-Pythia6Z_StoreResults-V2-PU_START52_V9_FastSim-v1/V05-02-28/merged*root");
+    pickSkimIfExists(ch,"/nfs-3/userdata/cms2/SMS-TChiwz_Mchargino-100to500_mLSP-0to400_8TeV-Pythia6Z_Summer12-START52_V9_FSIM-v1/V05-03-13/merged*root");
+    //pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/SMS-TChiwz_Mchargino-100to500_mLSP-0to400_8TeV-Pythia6Z_StoreResults-V2-PU_START52_V9_FastSim-v1/V05-02-28/merged*root");
     //pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12MC/SMS-TChiwz_Mchargino-100to500_mLSP-0to400_8TeV-Pythia6Z_StoreResults-V2-PU_START52_V9_FastSim-v1/V05-02-28/merged_ntuple_15.root");
   }
 

@@ -4,9 +4,10 @@
 
   gROOT->ProcessLine(".L runZLooper.C+");
 
-  runZLooper("t_53X"                      , false );  
-  runZLooper("wz2l2q_53X"                 , false );  
-  runZLooper("zz2l2q_53X"                 , false );  
+  runZLooper("wzsms"                         , false );  
+  // runZLooper("t_53X"                      , false );  
+  // runZLooper("wz2l2q_53X"                 , false );  
+  // runZLooper("zz2l2q_53X"                 , false );  
 
   // runZLooper("data_53X"                , true  );  
   // runZLooper("data_2012C_53X"          , true  );  
