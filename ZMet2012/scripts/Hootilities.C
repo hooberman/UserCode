@@ -460,7 +460,8 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
 
 void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata , char* var , 
 		    TCut sel , TCut weight , int nbins ,  float xmin , float xmax ,  
-		    char* xtitle , bool overlayData , bool residual , bool drawLegend , bool log , bool normalize , char* flavor ){
+		    char* xtitle , bool overlayData , bool residual , bool drawLegend , bool log , 
+		    bool normalize , bool fit , char* flavor ){
 
   TPad* fullpad = new TPad();
   TPad* plotpad = new TPad();
@@ -611,7 +612,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   text->SetTextSize(0.04);
   text->DrawLatex(0.2,0.88,"CMS Preliminary");
   //text->DrawLatex(0.2,0.83,"0.98 fb^{-1} at #sqrt{s} = 7 TeV");
-  text->DrawLatex(0.2,0.83,"#sqrt{s} = 8 TeV, #scale[0.6]{#int}Ldt = 5.1 fb^{-1}");
+  text->DrawLatex(0.2,0.83,"#sqrt{s} = 8 TeV, #scale[0.6]{#int}Ldt = 9.2 fb^{-1}");
 
   if     ( TString(flavor).Contains("ee")  ) text->DrawLatex(0.2,0.78,"Events with ee");
   else if( TString(flavor).Contains("mm")  ) text->DrawLatex(0.2,0.78,"Events with #mu#mu");
@@ -642,7 +643,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     ratio->SetMarkerSize(0.7);
 
     TF1* fpol1 = new TF1("fpol1","pol1",datahist->GetXaxis()->GetXmin(),datahist->GetXaxis()->GetXmax());
-    ratio->Fit(fpol1,"R");
+    if( fit ) ratio->Fit(fpol1,"R");
 
     ratio->Draw();
 
