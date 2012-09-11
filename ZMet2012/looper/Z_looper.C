@@ -653,7 +653,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	//weight_ *= 10; // REMOVE
 
 	// running on 111 of 946 Z+jets files, scale weight accordingly
-	if( TString(prefix).Contains("zjets") ) weight_ *=  946.0 / 111.0;
+	if( TString(prefix).Contains("zjets_53X") ) weight_ *=  946.0 / 111.0;
 
 	if( TString(prefix).Contains("LM") ){
 	  if( TString(prefix).Contains("LM0") ) weight_ *= kfactorSUSY( "lm0" );
