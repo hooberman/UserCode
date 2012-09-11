@@ -152,6 +152,12 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "ww_53X" ) == 0 ){
+    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "zz2l2q_53X" ) == 0 ){
     pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/ZZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged*root");
   }

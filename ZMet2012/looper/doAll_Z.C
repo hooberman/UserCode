@@ -4,13 +4,15 @@
 
   gROOT->ProcessLine(".L runZLooper.C+");
 
-  runZLooper("wzsms"                         , false );  
-  // runZLooper("t_53X"                      , false );  
-  // runZLooper("wz2l2q_53X"                 , false );  
-  // runZLooper("zz2l2q_53X"                 , false );  
+  // runZLooper("wzsms"                   , false );  
+  // runZLooper("t_53X"                   , false );  
+  // runZLooper("wz2l2q_53X"              , false );  
+  // runZLooper("zz2l2q_53X"              , false );  
 
   // runZLooper("data_53X"                , true  );  
   // runZLooper("data_2012C_53X"          , true  );  
+  runZLooper("wjets_53X"                  , false );  
+  runZLooper("ww_53X"                     , false );  
   // runZLooper("wz_53X"                  , false );  
   // runZLooper("zz_53X"                  , false );  
   // runZLooper("zjets_full_53X"          , false );  
