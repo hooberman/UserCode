@@ -215,15 +215,23 @@ Based on these studies we currently assess an uncertainty of 80\% on the WZ yiel
 \hline
          Sample   &            ee    &        $\mu\mu$   &        e$\mu$   &          total  \\
 \hline
-             WZ   & 58.9 $\pm$ 0.7   & 82.2 $\pm$ 0.8   &  4.0 $\pm$ 0.2   &145.1 $\pm$ 1.0  \\
-         \ttbar   &  0.6 $\pm$ 0.5   &  4.3 $\pm$ 1.5   &  3.0 $\pm$ 1.2   &  8.0 $\pm$ 2.0  \\
-         \zjets   &  0.4 $\pm$ 0.4   &  4.9 $\pm$ 4.9   &  0.0 $\pm$ 0.0   &  5.3 $\pm$ 4.9  \\
-             ZZ   &  1.4 $\pm$ 0.0   &  2.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  3.5 $\pm$ 0.0  \\
-             WW   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.1   &  0.2 $\pm$ 0.1   &  0.3 $\pm$ 0.1  \\
-     single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1  \\
+
+%Loading babies at       : ../output/V00-01-04
+%Using selection         : ((((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101)
+%Using weight            : weight * 9.2 * trgeff * vtxweight
+
+             WZ   &116.7 $\pm$ 0.8   &151.5 $\pm$ 0.8   &  8.1 $\pm$ 0.2   &276.3 $\pm$ 1.2  \\
+            ttV   &  4.1 $\pm$ 0.2   &  4.9 $\pm$ 0.2   &  1.2 $\pm$ 0.1   & 10.2 $\pm$ 0.3  \\
+         \ttbar   &  1.2 $\pm$ 0.6   &  3.2 $\pm$ 0.9   &  3.6 $\pm$ 1.0   &  7.9 $\pm$ 1.5  \\
+             ZZ   &  2.5 $\pm$ 0.0   &  3.4 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  6.1 $\pm$ 0.0  \\
+         \zjets   &  1.2 $\pm$ 0.9   &  3.0 $\pm$ 1.8   &  0.0 $\pm$ 0.0   &  4.2 $\pm$ 2.1  \\
+            vvv   &  1.6 $\pm$ 0.1   &  2.1 $\pm$ 0.1   &  0.3 $\pm$ 0.0   &  4.0 $\pm$ 0.1  \\
+     single top   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.2   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.2  \\
+             WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.1  \\
 \hline
-    total SM MC   & 61.3 $\pm$ 0.9   & 93.7 $\pm$ 5.2   &  7.3 $\pm$ 1.3   &162.3 $\pm$ 5.4  \\
-           data   &             68   &            108   &             14   &            190  \\
+      tot SM MC   &127.3 $\pm$ 1.4   &168.4 $\pm$ 2.3   & 13.5 $\pm$ 1.0   &309.2 $\pm$ 2.8  \\
+\hline
+           data   &            156   &            178   &             16   &            350  \\
 \hline
 \hline
 
@@ -239,15 +247,23 @@ Based on these studies we currently assess an uncertainty of 80\% on the WZ yiel
 \hline
          Sample   &            ee    &        $\mu\mu$   &        e$\mu$   &          total  \\
 \hline
-             WZ   &  9.8 $\pm$ 0.3   & 13.3 $\pm$ 0.3   &  0.6 $\pm$ 0.1   & 23.6 $\pm$ 0.4  \\
-         \ttbar   &  0.2 $\pm$ 0.2   &  2.0 $\pm$ 0.9   &  2.2 $\pm$ 1.2   &  4.4 $\pm$ 1.5  \\
-         \zjets   &  0.0 $\pm$ 0.0   &  4.9 $\pm$ 4.9   &  0.0 $\pm$ 0.0   &  4.9 $\pm$ 4.9  \\
-             ZZ   &  0.3 $\pm$ 0.0   &  0.4 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.7 $\pm$ 0.0  \\
-             WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
-     single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+
+%Loading babies at       : ../output/V00-01-04
+%Using selection         : (((((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101))&&(njets>=2)
+%Using weight            : weight * 9.2 * trgeff * vtxweight
+
+             WZ   & 19.1 $\pm$ 0.3   & 24.6 $\pm$ 0.3   &  1.3 $\pm$ 0.1   & 44.9 $\pm$ 0.5  \\
+            ttV   &  3.8 $\pm$ 0.2   &  4.5 $\pm$ 0.2   &  1.0 $\pm$ 0.1   &  9.3 $\pm$ 0.3  \\
+         \ttbar   &  0.8 $\pm$ 0.5   &  1.6 $\pm$ 0.7   &  0.9 $\pm$ 0.5   &  3.3 $\pm$ 1.0  \\
+             ZZ   &  0.5 $\pm$ 0.0   &  0.7 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  1.2 $\pm$ 0.0  \\
+         \zjets   &  0.9 $\pm$ 0.9   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.9 $\pm$ 0.9  \\
+            vvv   &  0.9 $\pm$ 0.0   &  1.2 $\pm$ 0.1   &  0.1 $\pm$ 0.0   &  2.2 $\pm$ 0.1  \\
+     single top   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.2   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.2  \\
+             WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
 \hline
-    total SM MC   & 10.3 $\pm$ 0.3   & 20.8 $\pm$ 5.0   &  2.8 $\pm$ 1.2   & 33.8 $\pm$ 5.2  \\
-           data   &             23   &             32   &              5   &             60  \\
+      tot SM MC   & 25.9 $\pm$ 1.1   & 32.9 $\pm$ 0.8   &  3.3 $\pm$ 0.5   & 62.1 $\pm$ 1.5  \\
+\hline
+           data   &             47   &             51   &              8   &            106  \\
 \hline
 \hline
 
@@ -257,10 +273,13 @@ Based on these studies we currently assess an uncertainty of 80\% on the WZ yiel
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=1\linewidth]{plots/WZ.pdf}
+\includegraphics[width=1\linewidth]{plots/WZ_92fb.pdf}
 \caption{\label{fig:wz}\protect 
 Data vs. MC comparisons for the WZ selection discussed in the text for \lumi. 
 The number of jets, missing transverse energy, and Z boson transverse momentum are displayed.
+%Loading babies at       : ../output/V00-01-04
+%Using selection         : ((((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101)
+%Using weight            : weight * 9.2 * trgeff * vtxweight
 }
 \end{center}
 \end{figure}

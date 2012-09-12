@@ -27,22 +27,29 @@ of integrated luminosity (4.5\%), trigger efficiency (3\%), \zjets\ and \ttbar\ 
 
 \begin{table}[htb]
 \begin{center}
-\caption{\label{table:zyields} Data and Monte Carlo yields for events with two selected leptons in the Z mass window. 
+\caption{\label{table:zyields} Data and Monte Carlo yields for events with two selected leptons in the Z mass window 
+(\bf updated to \lumi). 
 }
 \begin{tabular}{lccccc}
 \hline
 \hline
               Sample   &                ee   &            $\mu\mu$   &              e$\mu$   &         total         \\
 \hline
-         \zjets   & 1150211.5 $\pm$ 4886.0   & 1697568.1 $\pm$ 5680.2  &  281.5 $\pm$ 63.7   & 2848061.2 $\pm$ 7492.8  \\
-         \ttbar   &     829.1 $\pm$ 20.0     &    1120.7 $\pm$ 22.6    & 1910.9 $\pm$ 29.7   &    3860.7 $\pm$ 42.4    \\
-             WZ   &    1038.2 $\pm$ 3.6      &    1465.5 $\pm$ 4.1     &   29.5 $\pm$ 0.5    &    2533.2 $\pm$ 5.5     \\
-             ZZ   &     658.0 $\pm$ 2.4      &     933.0 $\pm$ 2.7     &    2.7 $\pm$ 0.1    &    1593.7 $\pm$ 3.6     \\
-             WW   &     146.7 $\pm$ 2.6      &     209.0 $\pm$ 2.9     &  358.9 $\pm$ 3.9    &     714.6 $\pm$ 5.5     \\
-     single top   &      70.9 $\pm$ 4.9      &     103.3 $\pm$ 5.7     &  172.5 $\pm$ 7.4    &     346.7 $\pm$ 10.5    \\
+
+%Loading babies at       : ../output/V00-01-04
+%Using selection         : (((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(dilmass>81 && dilmass<101)
+%Using weight            : weight * 9.2 * trgeff * vtxweight
+
+         \zjets   &22662501 $\pm$ 1660   &3125059 $\pm$ 1873   &1082 $\pm$ 35.8   &5392392 $\pm$ 2503  \\
+           \ttbar   &1579.1 $\pm$ 22.6   &1998.3 $\pm$ 24.4   &3592.2 $\pm$ 33.5   &7169.5 $\pm$ 47.2  \\
+             WW   &290.6 $\pm$ 2.9   &387.2 $\pm$ 3.3   &671.2 $\pm$ 4.4   &1349.0 $\pm$ 6.2  \\
+             WZ   &2052.6 $\pm$ 3.6   &2686.9 $\pm$ 3.9   & 54.1 $\pm$ 0.5   &4793.5 $\pm$ 5.3  \\
+             ZZ   &1294.6 $\pm$ 2.7   &1708.5 $\pm$ 3.0   &  5.2 $\pm$ 0.1   &3008.3 $\pm$ 4.0  \\
+     single top   &150.0 $\pm$ 5.9   &192.6 $\pm$ 6.4   &332.9 $\pm$ 8.6   &675.5 $\pm$ 12.2  \\
 \hline
-    total SM MC   & 1152954.5 $\pm$ 4886.1   & 1701399.6 $\pm$ 5680.3   &2756.1 $\pm$ 70.8   & 2857110.2 $\pm$ 7493.0  \\
-           data   &        1162229   &        1774353   &           3077   &        2939659  \\
+      total SM MC   &2271617 $\pm$ 1661   &3132032 $\pm$ 18723   &5738 $\pm$ 50.0   &5409387 $\pm$ 2503  \\
+\hline
+           data   &        2329993   &        3169480   &           6182   &        5505655  \\
 \hline
 \hline
 \end{tabular}
@@ -59,8 +66,8 @@ We next define the preselection region for the inclusive search using the follow
 \end{itemize}
 
 The dilepton mass distributions in the preselection region of the inclusive search (without the dilepton mass requirement applied) 
-for the ee and $\mu\mu$ final states are shown in Figure~\ref{fig:dilmass_2j}. In Table~\ref{table:zyields_2j} the data and MC yields in the preselection
-region are indicated. Good data vs. MC agreement is observed.
+for the ee and $\mu\mu$ final states are shown in Figure~\ref{fig:dilmass_2j}. In Table~\ref{table:zyields_2j} the data and MC yields 
+in thepreselection region are indicated. Good data vs. MC agreement is observed.
 
 
 \begin{figure}[hbt]
