@@ -41,11 +41,17 @@ void runMakePhotonBabies(char* prefix , bool isData = true, float kFactor = 1.){
   //-----------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "DoubleElectron" ) == 0 ){
-    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
-    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD/V05-03-13/merged*root");
-    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged*root");
-    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
-    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"PhotonTriggerSkim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"PhotonTriggerSkim/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"PhotonTriggerSkim/DoubleElectron_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"PhotonTriggerSkim/DoubleElectron_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"PhotonTriggerSkim/DoubleElectron_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
+  }
+  
+  //-----------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "DoubleElectron_2012Cv2" ) == 0 ){
+    pickSkimIfExists(ch,"PhotonTriggerSkim/DoubleElectron_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
   }
   
   //-----------------------------------------------------------------------------------
