@@ -33,16 +33,16 @@ enum metType        { e_tcmet    = 0 , e_tcmetNew      = 1 , e_pfmet            
 //#include "histtools.h"
 using namespace std;
 
-bool     doKscaling =    true;
-float    K          =    0.14;
-float    Rem        =    1.22; 
-int      rebin      =      10;
-bool     bveto      =   false;
-bool     pt40       =    true;
-bool     latex      =    true;
+bool     doKscaling   =    true;
+float    K            =    0.14;
+float    Rem          =    1.18; 
+int      rebin        =      10;
+bool     bveto        =    true;
+bool     pt40         =   false;
+bool     latex        =   false;
 //metType  myMetType  = e_t1newpfmet; 
 //metType  myMetType  = e_t1pfmet; 
-metType  myMetType  = e_pfmet; 
+metType  myMetType    = e_pfmet; 
 bool     normToLowMet = true;
 
 float histError( TH1F* hist , int lowbin ){
@@ -92,7 +92,7 @@ void simplePlotMacro( bool printplots = false ){
   // data/MC files
   //-----------------------------------
   
-  char* iter = "V00-00-21";
+  char* iter = "V00-01-04";
 
   TFile *f   = new TFile();
   //TFile *fwz = new TFile();
@@ -101,8 +101,8 @@ void simplePlotMacro( bool printplots = false ){
   TChain *chwz = new TChain("T1");
   TChain *chzz = new TChain("T1");
 
-  chwz->Add(Form("../output/%s/wz_baby.root",iter));
-  chzz->Add(Form("../output/%s/zz_baby.root",iter));
+  chwz->Add(Form("../output/%s/wz_53X_baby.root",iter));
+  chzz->Add(Form("../output/%s/zz_53X_baby.root",iter));
 
   //-----------------------------------
   // selection
@@ -117,10 +117,12 @@ void simplePlotMacro( bool printplots = false ){
   TCut em("leptype==2 && (em==1 || me==1 || isdata==0)");
   TCut sf = ee||mm;
   TCut nu("ngennu>0");
-  TCut bvetocut("nbm==0");
+  //TCut bvetocut("nbm==0");
+  TCut bvetocut("nbcsvm==0");
   TCut nlep2("nlep==2");
   TCut mjj("mjj>70.0 && mjj<110.0");
   TCut pt40cuts("njets40>=2 && ht40>=100.0");
+  TCut pt2020("lep1.pt()>20.0 && lep2.pt()>20.0");
   //TCut pfleptons2010("pflep1.pt() > 20 && pflep2.pt() > 10 && abs(lep1.pt()-pflep1.pt())<5.0 && abs(lep2.pt()-pflep2.pt())<5.0");
 
   TCut sel;
@@ -135,8 +137,10 @@ void simplePlotMacro( bool printplots = false ){
 
   else{
     sel += njets2;
-    sel += pfleptons;
-    sel += Zmasspf;
+    //sel += pfleptons;
+    //sel += Zmasspf;
+    sel += Zmass;
+    sel += pt2020;
   }
 
   if( bveto ){
@@ -145,12 +149,14 @@ void simplePlotMacro( bool printplots = false ){
     sel += mjj;
   }
 
-  TCut weight("weight * 5.10 * vtxweight * trgeff");
+  TCut weight("weight * 9.2 * vtxweight * trgeff");
 
   cout << "WZ/ZZ selection : " << sel.GetTitle() << endl;
   cout << "WZ/ZZ weight    : " << sel.GetTitle() << endl;
 
-  char* datafilename = (char*) Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s%s%s_HT100.root",iter,metvar,bvetochar,pt40char);
+  //char* datafilename = (char*) Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s%s%s_HT100.root",iter,metvar,bvetochar,pt40char);
+  char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s.root",iter,metvar,bvetochar,pt40char);
+
   cout << "Opening " << datafilename << endl;
   f   = TFile::Open(datafilename);
 
@@ -262,8 +268,10 @@ void simplePlotMacro( bool printplots = false ){
 
     if( TString(observedHisto.at(i)).Contains("ee") ){
       //h_ofpred[i]->Scale(0.5/Rem);
-      h_ofpred[i]->Scale(0.41);
-      cout << "ee channel: scale em yield by 0.41" << endl;
+      //h_ofpred[i]->Scale(0.41);
+      //cout << "ee channel: scale em yield by 0.41" << endl;
+      h_ofpred[i]->Scale(0.44);
+      cout << "ee channel: scale em yield by 0.44" << endl;
       title     = (char*) "ee events";
       ee_and_mm = false;
       mysel = sel + ee;
@@ -271,8 +279,10 @@ void simplePlotMacro( bool printplots = false ){
 
     else if( TString(observedHisto.at(i)).Contains("mm") ){
       //h_ofpred[i]->Scale(0.5*Rem);
-      h_ofpred[i]->Scale(0.58);
-      cout << "mm channel: scale em yield by 0.58" << endl;
+      //h_ofpred[i]->Scale(0.58);
+      //cout << "mm channel: scale em yield by 0.58" << endl;
+      h_ofpred[i]->Scale(0.55);
+      cout << "mm channel: scale em yield by 0.55" << endl;
       title     = (char*) "#mu#mu events";
       ee_and_mm = false;
       mysel = sel + mm;
@@ -695,7 +705,7 @@ void simplePlotMacro( bool printplots = false ){
 
     t->SetTextSize(0.04);
     t->DrawLatex(0.4,0.85,"CMS Preliminary");
-    t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 5.1 fb^{-1}");
+    t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
     t->DrawLatex(0.4,0.73,title);
 
     can[i]->cd();

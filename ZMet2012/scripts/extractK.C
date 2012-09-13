@@ -27,7 +27,7 @@
 
 using namespace std;
 
-bool pt40 = true;
+bool pt40 = false;
 
 void extractK( bool exclusive = false , bool printplot = false , bool bveto = false );
 
@@ -42,17 +42,28 @@ void doPlots( bool printplot = false ){
 
 void extractK( bool exclusive , bool printplot , bool bveto ){
 
-  char* iter = (char*) "V00-00-21";
+  char* iter = (char*) "V00-01-04";
 
   //char* suffix = "";
   char* suffix = "_2jets";
 
   TChain *data = new TChain("T1");
-  data->Add(Form("../output/%s/dataskim2010_baby%s.root",iter,suffix));
+  data->Add(Form("../output/%s/data_ALL_53X_baby%s.root",iter,suffix));
 
   TChain *mc = new TChain("T1");
-  mc->Add(Form("../output/%s/ttbar_baby%s.root",iter,suffix));
-  mc->Add(Form("../output/%s/zjets_baby%s.root",iter,suffix));
+  mc->Add(Form("../output/%s/ttbar_53X_baby%s.root"       ,iter,suffix));
+  //mc->Add(Form("../output/%s/zjets_full_53X_baby%s.root"  ,iter,suffix));
+  mc->Add(Form("../output/%s/zjets_53X_baby%s.root"  ,iter,suffix));
+  mc->Add(Form("../output/%s/ww_53X_baby%s.root"          ,iter,suffix));
+  mc->Add(Form("../output/%s/wz_53X_baby%s.root"          ,iter,suffix));
+  mc->Add(Form("../output/%s/zz_53X_baby%s.root"          ,iter,suffix));
+  mc->Add(Form("../output/%s/t_53X_baby%s.root"           ,iter,suffix));
+  mc->Add(Form("../output/%s/ttZ_53X_baby%s.root"         ,iter,suffix));
+  mc->Add(Form("../output/%s/ttW_53X_baby%s.root"         ,iter,suffix));
+  mc->Add(Form("../output/%s/VVV_53X_baby%s.root"         ,iter,suffix));
+
+  //mc->Add(Form("../output/%s/ttbar_baby%s.root",iter,suffix));
+  //mc->Add(Form("../output/%s/zjets_baby%s.root",iter,suffix));
   //mc->Add(Form("../output/%s/ww_baby%s.root",iter,suffix));
   //mc->Add(Form("../output/%s/t_baby%s.root",iter,suffix));
 
@@ -67,9 +78,13 @@ void extractK( bool exclusive , bool printplot , bool bveto ){
   TCut pt40cuts("njets40>=2 && ht40>=300");
   TCut pt2010("lep1.pt()>20 && lep2.pt()>10");
   TCut pt2020("lep1.pt()>20 && lep2.pt()>20");
+  TCut filters("csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1");
+  TCut runrange("isdata==0 || (run<197556 || run>198913)");
 
   TCut sel;
   sel += em;
+  sel += filters;
+  sel += runrange;
   //sel += transveto;
   
   if( pt40 ){
@@ -79,13 +94,14 @@ void extractK( bool exclusive , bool printplot , bool bveto ){
 
   else{
     sel += njets2;
-    sel += pfleptons;
+    //sel += pfleptons;
+    sel += pt2020;
   }
 
   if( bveto ){
     sel += nb0;
-    //sel += mjj;
-    //sel += nlep2;
+    sel += mjj;
+    sel += nlep2;
   }
 
   TCut weight("vtxweight * weight");
