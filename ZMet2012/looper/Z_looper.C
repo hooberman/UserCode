@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-01-04";
+const char* iter                 = "V00-01-05";
 const char* jsonfilename         = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
 
 //--------------------------------------------------------------------
@@ -538,9 +538,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // 	continue;
       // }
 
-      // if( TString(prefix).Contains("T5zz") ){
-      //  	if( sparm_mG() < 500 || sparm_mG() > 1000 ) continue;
-      // }
+      if( TString(prefix).Contains("wzsms") ){
+	if( sparm_values().at(0) > 350 ) continue;
+      }
 
       if( !isData ) sigma = cms2.evt_xsec_incl();
 
@@ -937,6 +937,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if(debug) cout << "Found good hyp" << endl;
 
       unsigned int hypIdx = selectBestZHyp(v_goodHyps);
+
+      trkmet_      = cms2.trk_met().at(hypIdx);
+      trkmetphi_   = cms2.trk_metPhi().at(hypIdx);
+      trksumet_    = cms2.trk_sumet().at(hypIdx);
+      minmet_      = TMath::Min(pfmet_,trkmet_);
 
       //-----------------------------
       // triggers
@@ -2662,6 +2667,10 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   //met stuff
   babyTree_->Branch("pfmett1new",      &pfmett1new_,      "pfmett1new/F"    );
   babyTree_->Branch("pfmett1newphi",   &pfmett1newphi_,   "pfmett1newphi/F" );
+  babyTree_->Branch("minmet",       &minmet_,       "minmet/F"     );
+  babyTree_->Branch("trkmet",       &trkmet_,       "trkmet/F"     );
+  babyTree_->Branch("trkmetphi",    &trkmetphi_,    "trkmetphi/F"  );
+  babyTree_->Branch("trksumet",     &trksumet_,     "trksumet/F"   );
   babyTree_->Branch("pfmet",        &pfmet_,        "pfmet/F"      );
   babyTree_->Branch("pfmett1",      &pfmett1_,      "pfmett1/F"    );
   babyTree_->Branch("pfmett1phi",   &pfmett1phi_,   "pfmett1phi/F" );

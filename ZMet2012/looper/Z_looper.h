@@ -192,6 +192,11 @@ class Z_looper
   Float_t gensumet_;
 
   // pfmet stuff
+  Float_t minmet_;
+  Float_t trkmet_;
+  Float_t trkmetphi_;
+  Float_t trksumet_;
+
   Float_t pfmet_;
   Float_t pfmett1_;
   Float_t pfmett1phi_;
