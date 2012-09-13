@@ -27,6 +27,8 @@
 
 using namespace std;
 
+bool pt40 = true;
+
 void extractK( bool exclusive = false , bool printplot = false , bool bveto = false );
 
 void doPlots( bool printplot = false ){
@@ -40,19 +42,19 @@ void doPlots( bool printplot = false ){
 
 void extractK( bool exclusive , bool printplot , bool bveto ){
 
-  char* iter = (char*) "V00-00-17";
+  char* iter = (char*) "V00-00-21";
 
   //char* suffix = "";
   char* suffix = "_2jets";
 
   TChain *data = new TChain("T1");
-  data->Add(Form("../output/%s/dataskim_baby%s.root",iter,suffix));
+  data->Add(Form("../output/%s/dataskim2010_baby%s.root",iter,suffix));
 
   TChain *mc = new TChain("T1");
   mc->Add(Form("../output/%s/ttbar_baby%s.root",iter,suffix));
   mc->Add(Form("../output/%s/zjets_baby%s.root",iter,suffix));
-  mc->Add(Form("../output/%s/ww_baby%s.root",iter,suffix));
-  mc->Add(Form("../output/%s/t_baby%s.root",iter,suffix));
+  //mc->Add(Form("../output/%s/ww_baby%s.root",iter,suffix));
+  //mc->Add(Form("../output/%s/t_baby%s.root",iter,suffix));
 
   TCut pfleptons("pflep1.pt() > 20 && pflep2.pt() > 20");
   TCut transveto("el1tv==0 && el2tv==0");
@@ -62,12 +64,23 @@ void extractK( bool exclusive , bool printplot , bool bveto ){
   TCut nb0("nbm==0");
   TCut mjj("mjj>70.0 && mjj<110.0");
   TCut nlep2("nlep==2");
+  TCut pt40cuts("njets40>=2 && ht40>=300");
+  TCut pt2010("lep1.pt()>20 && lep2.pt()>10");
+  TCut pt2020("lep1.pt()>20 && lep2.pt()>20");
 
   TCut sel;
-  sel += njets2;
-  sel += pfleptons;
-  //sel += transveto;
   sel += em;
+  //sel += transveto;
+  
+  if( pt40 ){
+    sel += pt40cuts;
+    sel += pt2010;
+  }
+
+  else{
+    sel += njets2;
+    sel += pfleptons;
+  }
 
   if( bveto ){
     sel += nb0;
@@ -83,6 +96,7 @@ void extractK( bool exclusive , bool printplot , bool bveto ){
 
   cout << "OF entries (total)  " << data->GetEntries(sel+em) << endl;
   cout << "OF entries (Z mass) " << data->GetEntries(sel+Zmass+em) << endl;
+  cout << "K                   " << (float) data->GetEntries(sel+Zmass+em) / (float) data->GetEntries(sel+em) << endl;
 
   int mynbins = 6;
   if( bveto ) mynbins = 7;

@@ -20,6 +20,8 @@ TChain *ww;
 TChain *wz;
 TChain *zz;
 TChain *t;
+TChain *ttV;
+TChain *vvv;
 
 vector<TChain*> mc;
 vector<char*>   mclabels;

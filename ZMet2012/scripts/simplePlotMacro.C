@@ -28,15 +28,22 @@
 
 #include "mycolors.h"
 
+enum metType        { e_tcmet    = 0 , e_tcmetNew      = 1 , e_pfmet             = 2 , e_t1pfmet = 3 , e_t1newpfmet = 4 };
+
 //#include "histtools.h"
 using namespace std;
 
-bool  doKscaling =    true;
-float K          =    0.14;
-float Rem        =    1.22;   // OR of all triggers
-int   rebin      =      10;
-bool  bveto      =   false;
-bool  latex      =    true;
+bool     doKscaling =    true;
+float    K          =    0.14;
+float    Rem        =    1.22; 
+int      rebin      =      10;
+bool     bveto      =   false;
+bool     pt40       =    true;
+bool     latex      =    true;
+//metType  myMetType  = e_t1newpfmet; 
+//metType  myMetType  = e_t1pfmet; 
+metType  myMetType  = e_pfmet; 
+bool     normToLowMet = true;
 
 float histError( TH1F* hist , int lowbin ){
 
@@ -52,15 +59,44 @@ float histError( TH1F* hist , int lowbin ){
 
 void simplePlotMacro( bool printplots = false ){
 
+  char* metvar = "";
+  
+  if( myMetType == e_pfmet ){
+    metvar = "pfmet";
+    cout << "Using pfmet out-of-the-box" << endl;
+  }
+
+  else if( myMetType == e_t1pfmet ){
+    metvar = "pfmett1";
+    cout << "Using pfmet type1 42X" << endl;
+  }
+
+  else if( myMetType == e_t1newpfmet ){
+    metvar = "pfmett1new";
+    cout << "Using pfmet type1 52X" << endl;
+  }
+
+  char* bvetochar = "";
+  if( bveto ){
+    bvetochar = "_bveto";
+    K = 0.13;
+  }
+
+  char* pt40char = "";
+  if( pt40 ){
+    pt40char = "_pt40";
+    K = 0.12;
+  }
+
   //-----------------------------------
   // data/MC files
   //-----------------------------------
   
-  char* iter = "V00-00-17";
+  char* iter = "V00-00-21";
 
   TFile *f   = new TFile();
-  TFile *fwz = new TFile();
-  TFile *fzz = new TFile();
+  //TFile *fwz = new TFile();
+  //TFile *fzz = new TFile();
 
   TChain *chwz = new TChain("T1");
   TChain *chzz = new TChain("T1");
@@ -72,8 +108,9 @@ void simplePlotMacro( bool printplots = false ){
   // selection
   //-----------------------------------
 
-  TCut pfleptons("pflep1.pt() > 20 && pflep2.pt() > 20");
-  TCut Zmass("dilmasspf>81 && dilmasspf<101");
+  TCut pfleptons("pflep1.pt() > 20 && pflep2.pt() > 20 && abs(lep1.pt()-pflep1.pt())<5.0 && abs(lep2.pt()-pflep2.pt())<5.0 ");
+  TCut Zmass("dilmass>81 && dilmass<101");
+  TCut Zmasspf("dilmasspf>81 && dilmasspf<101");
   TCut njets2("njets>=2");
   TCut ee("leptype==0 && (ee==1 || isdata==0)");
   TCut mm("leptype==1 && (mm==1 || isdata==0)");
@@ -83,30 +120,50 @@ void simplePlotMacro( bool printplots = false ){
   TCut bvetocut("nbm==0");
   TCut nlep2("nlep==2");
   TCut mjj("mjj>70.0 && mjj<110.0");
+  TCut pt40cuts("njets40>=2 && ht40>=100.0");
+  //TCut pfleptons2010("pflep1.pt() > 20 && pflep2.pt() > 10 && abs(lep1.pt()-pflep1.pt())<5.0 && abs(lep2.pt()-pflep2.pt())<5.0");
 
   TCut sel;
-  sel += njets2;
-  sel += pfleptons;
-  sel += Zmass;
   sel += (ee||mm);
   sel += nu;
+
+  if( pt40 ){
+    sel += pt40cuts;
+    sel += Zmass;
+    //sel += pfleptons2010;
+  }
+
+  else{
+    sel += njets2;
+    sel += pfleptons;
+    sel += Zmasspf;
+  }
+
   if( bveto ){
     sel += bvetocut;
     sel += nlep2;
     sel += mjj;
   }
 
-  TCut weight("weight * 5.10 * vtxweight");
+  TCut weight("weight * 5.10 * vtxweight * trgeff");
 
+  cout << "WZ/ZZ selection : " << sel.GetTitle() << endl;
+  cout << "WZ/ZZ weight    : " << sel.GetTitle() << endl;
 
+  char* datafilename = (char*) Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s%s%s_HT100.root",iter,metvar,bvetochar,pt40char);
+  cout << "Opening " << datafilename << endl;
+  f   = TFile::Open(datafilename);
+
+/*
   if( bveto ){
     // f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
     // fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
     // fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2_bveto.root",iter));
 
-    f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplate_pfmet_bveto.root",iter));
-    fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplate_pfmet_bveto.root",iter));
-    fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplate_pfmet_bveto.root",iter));
+    f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplate_%s_bveto.root",iter,metvar));
+    cout << "Opening file " << Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplate_%s_bveto.root",iter,metvar) << endl;
+    //fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplate_pfmet_bveto.root",iter));
+    //fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplate_pfmet_bveto.root",iter));
 
     K = 0.13;
   }
@@ -116,14 +173,17 @@ void simplePlotMacro( bool printplots = false ){
     // fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplatenjetsgeq2.root",iter));
     // fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplatenjetsgeq2.root",iter));
 
-    f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplate_pfmet.root",iter));
-    fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplate_pfmet.root",iter));
-    fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplate_pfmet.root",iter));
+    f   = TFile::Open(Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s.root",iter,metvar));
+    cout << "Opening file " << Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s.root",iter,metvar) << endl;
+
+    //fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplate_t1pfmet.root",iter));
+    //fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplate_t1pfmet.root",iter));
 
     // f   = TFile::Open(Form("../output/%s/babylooper_dataskim_PhotonStitchedTemplate_t1pfmet.root",iter));
     // fwz = TFile::Open(Form("../output/%s/babylooper_wz_PhotonStitchedTemplate_t1pfmet.root",iter));
     // fzz = TFile::Open(Form("../output/%s/babylooper_zz_PhotonStitchedTemplate_t1pfmet.root",iter));
   }
+*/
 
   cout << "B-veto?   " << bveto << endl;
   cout << "K         " << K     << endl;
@@ -244,15 +304,44 @@ void simplePlotMacro( bool printplots = false ){
     h_wz[i]->Sumw2();
     h_zz[i]->Sumw2();
 
+    TCut zzxsecweight("1.0");
+    //TCut zzxsecweight("1.96");
+    //cout << "Scaling ZZ yield by 1.96" << endl;
+
     TCanvas *ctemp = new TCanvas();
     ctemp->cd();
-    chwz->Draw(Form("pfmet>>h_wz_%i",i),mysel*weight);
-    chzz->Draw(Form("pfmet>>h_zz_%i",i),mysel*weight);
+    chwz->Draw(Form("%s>>h_wz_%i",metvar,i),mysel*weight);
+    chzz->Draw(Form("%s>>h_zz_%i",metvar,i),mysel*weight*zzxsecweight);
     delete ctemp;
 
     h_vz[i]     = (TH1F*) h_wz[i]->Clone(Form("h_vz_%i",i));
     h_vz[i]->Add(h_zz[i]);
-    
+
+
+    //-----------------------------------------------------------
+    // normalize templates prediction to data in low MET region
+    //-----------------------------------------------------------
+
+    if( normToLowMet ){
+      int bin60 = h_sf[i]->FindBin(60)-1;
+
+      float ndata60     = h_sf[i]->Integral(1,bin60);
+      float ngjets60    = h_gjets[i]->Integral(1,bin60);
+      float nof60       = h_ofpred[i]->Integral(1,bin60);
+      float nwz60       = h_wz[i]->Integral(1,bin60);
+      float nzz60       = h_zz[i]->Integral(1,bin60);
+
+      cout << "Yields in 0-60 GeV region" << endl;
+      cout << "data   : " << ndata60  << endl;
+      cout << "gjets  : " << ngjets60 << endl;
+      cout << "OF     : " << nof60    << endl;
+      cout << "WZ     : " << nwz60    << endl;
+      cout << "ZZ     : " << nzz60    << endl;
+
+      float SF = ( ndata60 - nof60 - nwz60 - nzz60 ) / ngjets60;
+      cout << "Scaling gjets by : " << SF << endl;
+      h_gjets[i]->Scale(SF);
+    }
 
     //------------------------------------------
     // rebin, style, sum of predictions
@@ -319,7 +408,7 @@ void simplePlotMacro( bool printplots = false ){
       bins[1] =  30;   xbins[1] =  30.0;
       bins[2] =  60;   xbins[2] =  60.0;
       bins[3] = 100;   xbins[3] = 100.0;
-      bins[4] = 200;   xbins[4] = 200.0;
+      bins[4] = 150;   xbins[4] = 150.0;
       bins[5] = 300;   xbins[5] = 300.0;
       xbins[6] = 350.0;
     }
@@ -406,30 +495,61 @@ void simplePlotMacro( bool printplots = false ){
       float Ksyst  = 1.0;
       float Rsyst  = 1.0;
 
-      if( bveto ){
-	Ksyst = 0.02/0.13;
-	if( bins[ibin] >= 150 ) Ksyst = 0.07/0.13;
+      if( !pt40 ){
 
-	Rsyst = 0.06;
-	if( !ee_and_mm ) Rsyst = 0.12;
+	// nominal analysis with b-veto
+	if( bveto ){
+	  Ksyst = 0.02/0.13;
+	  if( bins[ibin] >= 150 ) Ksyst = 0.07/0.13;
+	  if( !doKscaling) Ksyst = 0.0;
 
-	ofsyst = sqrt( Ksyst*Ksyst + Rsyst*Rsyst );
+	  Rsyst = 0.06;
+	  if( !ee_and_mm ) Rsyst = 0.12;
+
+	  ofsyst = sqrt( Ksyst*Ksyst + Rsyst*Rsyst );
+	}
+
+	// nominal analysis without b-veto
+	else{
+	  Ksyst = 0.02/0.14;
+	  if( bins[ibin] == 300 ) Ksyst = 0.08/0.14;
+	  if( !doKscaling) Ksyst = 0.0;
+
+	  Rsyst = 0.06;
+	  if( !ee_and_mm ) Rsyst = 0.12;
+
+	  ofsyst = sqrt( Ksyst*Ksyst + Rsyst*Rsyst );
+	}
+
       }
+
       else{
-	Ksyst = 0.02/0.14;
-	if( bins[ibin] == 300 ) Ksyst = 0.08/0.14;
 
-	Rsyst = 0.06;
-	if( !ee_and_mm ) Rsyst = 0.12;
+	if( bveto ){
+	  cout << "ERROR! not set up for bveto pt40 analysis" << endl;
+	  exit(0);
+	}
 
-	ofsyst = sqrt( Ksyst*Ksyst + Rsyst*Rsyst );
+	// pt40 analysis without bveto
+	else{
+	  Ksyst = 0.02/0.12;
+	  if( bins[ibin] == 300 ) Ksyst = 0.08/0.12;
+	  if( !doKscaling) Ksyst = 0.0;
+
+	  Rsyst = 0.06;
+	  if( !ee_and_mm ) Rsyst = 0.12;
+
+	  ofsyst = sqrt( Ksyst*Ksyst + Rsyst*Rsyst );
+	}
       }
+
+      //cout << bins[ibin] << ": ofsyst " << ofsyst << endl;
 
       // syst uncertainties
       nof_syst[ibin]    = ofsyst * h_ofpred[i]->Integral(bin,1000);   
       ngjets_syst[ibin] = 0.3 * h_gjets[i]->Integral(bin,1000);       // 30% uncertainty on Z+jets
       nwz_syst[ibin]    = 0.8 * h_wz[i]->Integral(bin,1000);          // 80% uncertainty on WZ
-      nzz_syst[ibin]    = 0.8 * h_zz[i]->Integral(bin,1000);          // 80% uncertainty on ZZ
+      nzz_syst[ibin]    = 0.8 * h_zz[i]->Integral(bin,1000);          // 50% uncertainty on ZZ
       ntot_syst[ibin]   = sqrt( pow(ngjets_syst[ibin],2) + pow(nof_syst[ibin],2) + pow(nwz_syst[ibin],2) + pow(nzz_syst[ibin],2));
       
       // stat uncertainties
@@ -612,9 +732,9 @@ void simplePlotMacro( bool printplots = false ){
     }
 
     else{
-      hratio[i]->SetMinimum(0.5);
-      hratio[i]->SetMaximum(1.5);
-      hratio[i]->GetYaxis()->SetRangeUser(0.5,1.5);
+      hratio[i]->SetMinimum(0.0);
+      hratio[i]->SetMaximum(2.0);
+      hratio[i]->GetYaxis()->SetRangeUser(0.0,2.0);
     }
 
 
@@ -627,17 +747,12 @@ void simplePlotMacro( bool printplots = false ){
     if( bveto ) line.DrawLine(0.0,1.0,250,1.0);
     else        line.DrawLine(0.0,1.0,350,1.0);
 
+    char* lep[3] = {"_all","_ee" ,"_mm"};
+
     if( printplots ){
-      if( bveto ){
-	can[i]->Print(Form("../plots/met_bveto_%i.pdf",i));
-	can[i]->Print(Form("../plots/met_bveto_%i.root",i));
-	can[i]->Print(Form("../plots/met_bveto_%i.C",i));
-      }
-      else{
-	can[i]->Print(Form("../plots/met_%i.pdf",i));
-	can[i]->Print(Form("../plots/met_%i.root",i));
-	can[i]->Print(Form("../plots/met_%i.C",i));
-      }
+      can[i]->Print(Form("../plots/%s%s%s%s.pdf" ,metvar,bvetochar,pt40char,lep[i]));
+      can[i]->Print(Form("../plots/%s%s%s%s.C"   ,metvar,bvetochar,pt40char,lep[i]));
+      can[i]->Print(Form("../plots/%s%s%s%s.root",metvar,bvetochar,pt40char,lep[i]));
     }
 
 

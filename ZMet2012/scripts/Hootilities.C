@@ -297,6 +297,11 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
     else{
       chmc[imc]->Draw("leptype>>hyield",sel*weight);
 
+      if(TString(labels[imc]).Contains("zjets") ){
+	cout << "SCALING ZJETS BY 111/946" << endl;
+	hyield->Scale( 111.0 / 946.0 );
+      }
+
       //do efficiency correction
       /*
       //ee
@@ -370,7 +375,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayData, float x1, float y1, float x2, float y2){
 
   //int colors[]={6,2,7,4,5,8,9,15,12};
-  int colors[]={4,7,2,5,8,9,15,12};
+  int colors[]={7,4,2,5,8,9,15,12};
   
   TLegend *leg = new TLegend(x1,y1,x2,y2);
 
@@ -404,6 +409,7 @@ TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayDa
     }
 
     if( strcmp("tt",t)      == 0 ) t = "t#bar{t}";
+    if( strcmp("ttbar",t)   == 0 ) t = "t#bar{t}";
     if( strcmp("ttll",t)    == 0 ) t = "t#bar{t} #rightarrow ll";
     if( strcmp("tttau",t)   == 0 ) t = "t#bar{t} #rightarrow l#tau/#tau#tau";
     if( strcmp("ttfake",t)  == 0 ) t = "t#bar{t} #rightarrow fake";
@@ -494,7 +500,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
   //int colors[]={6,2,7,4,5,8,9,15,12};
   //int colors[]={kRed+2,5,7,5,5,8,9,15,12};
-  int colors[]={4,7,2,5,8,9,15,12};
+  int colors[]={7,4,2,5,8,9,15,12};
 
   assert( chmc.size() == labels.size() );
   const unsigned int nmc = chmc.size();
@@ -545,6 +551,11 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     mchist[imc]->Sumw2();
 
     chmc.at(imc)->Draw(Form("TMath::Min(%s,%f)>>%s_mc_%i_%s",var,xmax-0.01,myvar,imc,flavor),sel*weight*trigweight);
+
+    if(TString(labels[imc]).Contains("zjets") ){
+      cout << "SCALING ZJETS BY 111/946" << endl;
+      mchist[imc]->Scale( 111.0 / 946.0 );
+    }
 
     if( normalize ) mchist[imc]->Scale(SF);
 
@@ -622,9 +633,10 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   if( residual ){
     fullpad->cd();
 
-    respad = new TPad("respad","respad",0,0.8,1,1);
+    respad = new TPad("respad","respad",0,0.8,1,0.98);
     respad->Draw();
     respad->cd();
+    respad->SetTopMargin(0.05);
 
     gPad->SetGridy();
 
@@ -634,9 +646,9 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
     ratio->GetYaxis()->SetTitleOffset(0.3);
     ratio->GetYaxis()->SetTitleSize(0.2);
     ratio->GetYaxis()->SetNdivisions(5);
-    ratio->GetYaxis()->SetLabelSize(0.2);
+    ratio->GetYaxis()->SetLabelSize(0.15);
     //ratio->GetYaxis()->SetRangeUser(0.5,1.5);
-    ratio->GetYaxis()->SetRangeUser(0.6,1.4);
+    ratio->GetYaxis()->SetRangeUser(0.0,2.0);
     ratio->GetYaxis()->SetTitle("data/MC  ");
     ratio->GetXaxis()->SetLabelSize(0);
     ratio->GetXaxis()->SetTitleSize(0);

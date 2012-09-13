@@ -1,11 +1,12 @@
 {
 
-  char* iter = "V00-00-17";
+  char* iter = "V00-00-24";
   //char* iter = "temp";
 
   TCut pfleptons("pflep1.pt() > 20 && pflep2.pt() > 20");
   TCut transveto("el1tv==0 && el2tv==0");
-  TCut Zmass("dilmasspf>81 && dilmasspf<101");
+  TCut Zmasspf("dilmasspf>81 && dilmasspf<101");
+  TCut Zmass("dilmass>81 && dilmass<101");
   TCut njets2("njets>=2");
   //TCut ee("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5");
   TCut ee("leptype==0 && (ee==1 || isdata==0)");
@@ -15,18 +16,22 @@
   TCut bveto("nbm==0");
   TCut nlep2("nlep==2");
   TCut mjj("mjj>70.0 && mjj<110.0");
+  TCut filters("csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1");
+
 
   TCut sel;
   sel += njets2;
+  //sel += "njets40>=2 && ht40>=100.0";
   sel += pfleptons;
   //sel += transveto;
-  sel += Zmass;
+  sel += Zmasspf;
+  //sel += Zmass;
   sel += (ee||mm||em);
-  sel += bveto;
+  //sel += bveto;
   sel += nlep2;
   sel += mjj;
 
-  TCut weight("weight * 5.10 * vtxweight");
+  TCut weight("weight * 5.10 * vtxweight * trgeff");
 
   cout << "Baby location         : " << iter              << endl;
   cout << "Baseline selection    : " << sel.GetTitle()    << endl;
@@ -56,7 +61,10 @@
   data->Add(Form("../output/%s/data_baby.root",iter));
 
   TChain *dataskim = new TChain("T1");
-  dataskim->Add(Form("../output/%s/dataskim_baby.root",iter));
+  dataskim->Add(Form("../output/%s/dataskim2010_baby.root",iter));
+
+  TChain *wzsms = new TChain("T1");
+  wzsms->Add(Form("../output/V00-01-01/wzsms_baby_pt2020_oldIso.root",iter));
 
 
 }

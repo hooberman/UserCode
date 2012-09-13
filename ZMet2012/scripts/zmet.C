@@ -53,6 +53,8 @@ void initialize(char* path){
     wz->Reset();
     zz->Reset();
     t->Reset();
+    ttV->Reset();
+    vvv->Reset();
 
     mc.clear();
     mclabels.clear();
@@ -70,23 +72,32 @@ void initialize(char* path){
     wz	        = new TChain("T1");
     zz  	= new TChain("T1");
     t   	= new TChain("T1");
+    ttV   	= new TChain("T1");
+    vvv   	= new TChain("T1");
   }
 
   cout << endl;
   cout << "Loading babies at       : " << path << endl;
 
-  data->  Add(Form("%s/data_53X_baby.root"         , path));
-  data->  Add(Form("%s/data_2012C_53X_baby.root"         , path));
-  tt->    Add(Form("%s/ttbar_53X_baby.root"        , path));
-  zjets-> Add(Form("%s/zjets_53X_baby.root"        , path));
-  zjets-> Add(Form("%s/zjets_10to50_baby.root"     , path));
-  ww->    Add(Form("%s/ww_baby.root"           , path));
-  wz->    Add(Form("%s/wz_baby.root"           , path));
-  zz->    Add(Form("%s/zz_baby.root"           , path));
-  t->     Add(Form("%s/t_baby.root"            , path));
-
-
   /*
+  data->  Add(Form("%s/data_53X_baby.root"         , path));
+  data->  Add(Form("%s/data_2012C_53X_baby.root"   , path));
+  tt->    Add(Form("%s/ttbar_53X_baby.root"        , path));
+  zjets-> Add(Form("%s/zjets_full_53X_baby.root"   , path));
+  //zjets-> Add(Form("%s/zjets_10to50_baby.root"   , path));
+  ww->    Add(Form("%s/ww_53X_baby.root"           , path));
+  wz->    Add(Form("%s/wz_53X_baby.root"           , path));
+  wz->    Add(Form("%s/wz2l2q_53X_baby.root"       , path));
+  zz->    Add(Form("%s/zz_53X_baby.root"           , path));
+  zz->    Add(Form("%s/zz4l_53X_baby.root"         , path));
+  zz->    Add(Form("%s/zz2l2q_53X_baby.root"       , path));
+  t->     Add(Form("%s/t_53X_baby.root"            , path));
+  ttV->   Add(Form("%s/ttW_53X_baby.root"          , path));
+  ttV->   Add(Form("%s/ttZ_53X_baby.root"          , path));
+  vvv->   Add(Form("%s/VVV_53X_baby.root"          , path));
+  */
+
+
   cout << "-------------------------------------" << endl;
   cout << "USING SKIMMED SAMPLES WITH NJETS >= 2" << endl;
   cout << "-------------------------------------" << endl << endl;
@@ -94,60 +105,31 @@ void initialize(char* path){
   data->  Add(Form("%s/data_53X_baby_2jets.root"         , path));
   data->  Add(Form("%s/data_2012C_53X_baby_2jets.root"   , path));
   tt->    Add(Form("%s/ttbar_53X_baby_2jets.root"        , path));
-  zjets-> Add(Form("%s/zjets_53X_baby_2jets.root"        , path));
-  zjets-> Add(Form("%s/zjets_10to50_baby_2jets.root"     , path));
-  ww->    Add(Form("%s/ww_baby_2jets.root"           , path));
-  wz->    Add(Form("%s/wz_baby_2jets.root"           , path));
-  zz->    Add(Form("%s/zz_baby_2jets.root"           , path));
-  t->     Add(Form("%s/t_baby_2jets.root"            , path));
-  */
+  zjets-> Add(Form("%s/zjets_full_53X_baby_2jets.root"   , path));
+  //zjets-> Add(Form("%s/zjets_10to50_baby_2jets.root"   , path));
+  ww->    Add(Form("%s/ww_53X_baby_2jets.root"           , path));
+  wz->    Add(Form("%s/wz_53X_baby_2jets.root"           , path));
+  wz->    Add(Form("%s/wz2l2q_53X_baby_2jets.root"       , path));
+  zz->    Add(Form("%s/zz_53X_baby_2jets.root"           , path));
+  zz->    Add(Form("%s/zz4l_53X_baby_2jets.root"         , path));
+  zz->    Add(Form("%s/zz2l2q_53X_baby_2jets.root"       , path));
+  t->     Add(Form("%s/t_53X_baby_2jets.root"            , path));
+  ttV->   Add(Form("%s/ttW_53X_baby_2jets.root"          , path));
+  ttV->   Add(Form("%s/ttZ_53X_baby_2jets.root"          , path));
+  vvv->   Add(Form("%s/VVV_53X_baby_2jets.root"          , path));
 
-  /*
-  // 52X SAMPLES
-  data->  Add(Form("%s/dataskim2010_singlemu_baby.root" , path));
-  //data->  Add(Form("%s/data2012c_baby.root"    , path));
-  //data->    Add(Form("%s/data2012cv2_baby.root"    , path));
-  zjets->   Add(Form("%s/zjets_baby.root"        , path));
-  zjets->   Add(Form("%s/zjets_10to50_baby.root"        , path));
-  zjetsee-> Add(Form("%s/zjets_baby_ee.root"     , path));
-  zjetsmm-> Add(Form("%s/zjets_baby_mm.root"     , path));
-  zjetstt-> Add(Form("%s/zjets_baby_tt.root"     , path));
-  //tt->    Add(Form("%s/ttbar_baby.root"        , path));
-  tt->      Add(Form("%s/ttbar_massiveb_baby.root"        , path));
-  //tt->      Add(Form("%s/ttbar_powheg_baby.root" , path));
-  */
-
-  /*
-  cout << "-------------------------------------" << endl;
-  cout << "USING SKIMMED SAMPLES WITH NJETS >= 2" << endl;
-  cout << "-------------------------------------" << endl << endl;
-  
-  //data->    Add(Form("%s/dataskim2010_baby_2jets.root" , path));
-  data->    Add(Form("%s/dataskim2010_singlemu_baby_2jets.root" , path));
-  //data->    Add(Form("%s/data2012cv2_baby_2jets.root" , path));
-  zjets->   Add(Form("%s/zjets_baby_2jets.root"        , path));
-  zjets->   Add(Form("%s/zjets_10to50_baby_2jets.root"        , path));
-  zjetsee-> Add(Form("%s/zjets_baby_ee_2jets.root"     , path));
-  zjetsmm-> Add(Form("%s/zjets_baby_mm_2jets.root"     , path));
-  zjetstt-> Add(Form("%s/zjets_baby_tt_2jets.root"     , path));
-  //tt->      Add(Form("%s/ttbar_baby_2jets.root"        , path));
-  tt->      Add(Form("%s/ttbar_massiveb_baby_2jets.root"        , path));
-  //tt->      Add(Form("%s/ttbar_powheg_baby_2jets.root" , path));
-  ww->      Add(Form("%s/ww_baby_2jets.root"           , path));
-  wz->      Add(Form("%s/wz_baby_2jets.root"           , path));
-  zz->      Add(Form("%s/zz_baby_2jets.root"           , path));
-  t->       Add(Form("%s/t_baby_2jets.root"            , path));
-  */  
-
-  mc.push_back(wz);      mclabels.push_back("wz");
-  mc.push_back(zz);      mclabels.push_back("zz");
   mc.push_back(zjets);   mclabels.push_back("zjets");
+  mc.push_back(wz);      mclabels.push_back("WZ");
+  mc.push_back(zz);      mclabels.push_back("ZZ");
+  mc.push_back(tt);      mclabels.push_back("ttbar");
+  mc.push_back(t);       mclabels.push_back("single top");
+  mc.push_back(ww);      mclabels.push_back("WW");
+  mc.push_back(ttV);     mclabels.push_back("ttV");
+  mc.push_back(vvv);     mclabels.push_back("vvv");
+
   //mc.push_back(zjetsee); mclabels.push_back("zjetsee");
   //mc.push_back(zjetsmm); mclabels.push_back("zjetsmm");
   //mc.push_back(zjetstt); mclabels.push_back("zjetstt");
-  mc.push_back(tt);      mclabels.push_back("tt");
-  mc.push_back(t);       mclabels.push_back("t");
-  mc.push_back(ww);      mclabels.push_back("ww");
 
   alreadyInitialized_ = true;
 }
@@ -179,29 +161,30 @@ TCut selection_TCut(){
   TCut rho40("rho>=0.0 && rho<40.0");
   TCut mjj("mjj>70.0 && mjj<110.0");
   TCut nb1("nbcsvm>=1");
+  TCut nb0("nbcsvm==0");
   TCut dR01("sqrt(  (lep1.eta()-lep2.eta())*(lep1.eta()-lep2.eta())  +  acos(cos((lep1.phi()-lep2.phi())))*acos(cos((lep1.phi()-lep2.phi()) )) ) > 0.1");
   TCut runrange("isdata==0 || (run<197556 || run>198913)");
+  TCut mll15("dilmass>15.0");
+  TCut mll_76_106("dilmass>76.0 && dilmass<106.0");
+  TCut eetype("leptype==0 && (ee==1 || isdata==0)");
+  TCut mmtype("leptype==1 && (mm==1 || isdata==0)");
+  TCut emtype("leptype==2 && (em==1||me==1||isdata==0)");
+  TCut sf = eetype||mmtype;
+  TCut filters("csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1");
 
   // no trigger requirements
   // TCut eetype("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5");
   // TCut mmtype("leptype==1");
   // TCut emtype("leptype==2");
-  
-  //TCut eetype("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5 && (ee==1 || isdata==0)");
-  TCut eetype("leptype==0 && (ee==1 || isdata==0)");
-  TCut mmtype("leptype==1 && (mm==1 || isdata==0)");
-  TCut emtype("leptype==2 && (em==1||me==1||isdata==0)");
-  TCut mll_76_106("dilmass>76.0 && dilmass<106.0");
-
+  // TCut eetype("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5 && (ee==1 || isdata==0)");
   // TCut eetype("leptype==0 && (ee==1)");
   // TCut mmtype("leptype==1 && (mm==1)");
   // TCut emtype("leptype==2 && (em==1||me==1)");
-
   // TCut eetype("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5 && (ee==1 || isdata==0)");
   // TCut mmtype("leptype==1 && (mm==1 || mmtk==1 || mu==1 || weight!=1.0)");
   // TCut emtype("leptype==2 && (em==1 || me==1   || mu==1 || weight!=1.0)");
   
-  TCut sf = eetype||mmtype;
+
   /*
   TCut sel;
   //sel += "njets==2";
@@ -266,7 +249,7 @@ TCut selection_TCut(){
   //------------------------------
   // inclusive ttbar selection
   //------------------------------
-
+  /*
   TCut presel("lep1.pt()>20.0 && lep2.pt()>20.0 && dilmass>15.0 && (dilmass<76.0||dilmass>106.0)");
   TCut eta24("abs(lep1.eta())<2.4 && abs(lep2.eta())<2.4");
   //TCut presel("njets40>=2 && dilmass>12.0 && lep2.pt()>20.0");
@@ -289,20 +272,37 @@ TCut selection_TCut(){
   // sel += nb1;
   // sel += dR01;
   // sel += mll_40_70;
-
+  */
 
   //------------------------------
   // inclusive Z selection
   //------------------------------
   /*
-  TCut presel("lep1.pt()>20.0 && lep2.pt()>20.0 && dilmass>15.0 && abs(lep1.eta())<2.4 && abs(lep2.eta())<2.4");
-
   TCut sel;
-  sel += presel;
-  sel += mll_76_106;
   sel += runrange;
   sel += (eetype||mmtype||emtype);
+  sel += filters;
+  sel += pt2020;
+  sel += mll15;
+  //sel += njets2;
+  //sel += mll_76_106;
+  sel += Zmass;
   */
+  //------------------------------
+  // WZ control region
+  //------------------------------
+
+  TCut sel;
+  sel += runrange;
+  sel += (eetype||mmtype||emtype);
+  sel += filters;
+  sel += pt2020;
+  sel += "nlep==3 && lep3.pt()>20.0";
+  sel += met50;
+  sel += Zmass;
+  sel += njets2;
+  //sel += nb0;
+
   cout << "Using selection         : " << sel.GetTitle() << endl;
 
   return sel;
@@ -311,7 +311,7 @@ TCut weight_TCut(){
 
   //TCut weight("1");
   //TCut weight("weight * 5.10 * vtxweight * trgeff");
-  TCut weight("weight * 9.2 * trgeff");
+  TCut weight("weight * 9.2 * trgeff * vtxweight");
   //TCut weight("weight * 5.10");
   //TCut weight("weight * 2.5 * vtxweight");
   //TCut weight("weight * 5.10");
@@ -365,12 +365,12 @@ void printYieldTable( char* path , bool latex = false ){
 void makePlots( char* path , bool printgif = false ){
 
   bool combine     = true;
-  int  nplots      = 1;
+  int  nplots      = 3;
   bool residual    = true;
   bool log         = false;
   bool overlayData = true;
   bool normalize   = false;
-  bool fit         = true;
+  bool fit         = false;
 
   initialize(path);
 
@@ -410,11 +410,11 @@ void makePlots( char* path , bool printgif = false ){
   // flavor.push_back("all"); 
   // cuts.push_back(TCut("leptype<2"));
 
-  vars.push_back("njets40"); 
-  xt.push_back("n_{jets}");
-  n.push_back(6);  xi.push_back(0.);  xf.push_back(6.); 
-  flavor.push_back("em"); 
-  cuts.push_back(TCut("leptype==2"));
+  // vars.push_back("njets40"); 
+  // xt.push_back("n_{jets}");
+  // n.push_back(6);  xi.push_back(0.);  xf.push_back(6.); 
+  // flavor.push_back("em"); 
+  // cuts.push_back(TCut("leptype==2"));
 
   /*
   char* myvar = "sqrt((lep1.eta()-lep2.eta())*(lep1.eta()-lep2.eta())  +  acos(cos((lep1.phi()-lep2.phi())))*acos(cos((lep1.phi()-lep2.phi()) )))";
@@ -452,21 +452,19 @@ void makePlots( char* path , bool printgif = false ){
   // n.push_back(30);  xi.push_back(20.);  xf.push_back(320.); 
   // flavor.push_back("all"); 
   // cuts.push_back(TCut("leptype<2"));
-
   /*
   vars.push_back("dilmass"); 
   xt.push_back("M(ee) (GeV)");
-  n.push_back(60);  xi.push_back(0.);  xf.push_back(300.); 
+  n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
   flavor.push_back("ee"); 
   cuts.push_back(TCut("leptype==0"));
 
   vars.push_back("dilmass"); 
   xt.push_back("M(#mu#mu) (GeV)");
-  n.push_back(60);  xi.push_back(0.);  xf.push_back(300.); 
+  n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
   flavor.push_back("mm"); 
   cuts.push_back(TCut("leptype==1"));
   */
-  
   // vars.push_back("dilmass"); 
   // xt.push_back("M(e#mu) (GeV)");
   // n.push_back(30);  xi.push_back(0.);  xf.push_back(300.); 
@@ -581,9 +579,9 @@ void makePlots( char* path , bool printgif = false ){
   //vars.push_back("w.pt()");        xt.push_back("W p_{T} (GeV)");      n.push_back(10);  xi.push_back(0);    xf.push_back(400);
 
   // WZ/ZZ control plots
-  // vars.push_back("njets");         xt.push_back("njets");              n.push_back(5);   xi.push_back(0);    xf.push_back(5);       flavor.push_back("all");
-  // vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");        n.push_back(6);   xi.push_back(0.);   xf.push_back(300.0);   flavor.push_back("all");
-  // vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");      n.push_back(6);   xi.push_back(0);    xf.push_back(300.0);   flavor.push_back("all");
+  vars.push_back("njets");         xt.push_back("njets");          n.push_back(5);   xi.push_back(0);    xf.push_back(5);       flavor.push_back("all"); cuts.push_back(TCut(""));
+  vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");    n.push_back(6);   xi.push_back(0.);   xf.push_back(300.0);   flavor.push_back("all"); cuts.push_back(TCut(""));
+  vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");  n.push_back(6);   xi.push_back(0);    xf.push_back(300.0);   flavor.push_back("all"); cuts.push_back(TCut(""));
 
   // vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(10);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("ee");
   // vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(10);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("mm");
@@ -599,6 +597,9 @@ void makePlots( char* path , bool printgif = false ){
   int canCounter = -1;
 
   for( unsigned int ivar = 0 ; ivar < nvars ; ++ivar ){     
+    
+    if( ivar < 2 ) log = true;
+    else           log = false;
     
     //if( TString(vars.at(ivar)).Contains("met") ) log = true;
     //else                                         log = false;
