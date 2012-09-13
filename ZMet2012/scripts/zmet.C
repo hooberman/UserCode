@@ -79,7 +79,7 @@ void initialize(char* path){
   cout << endl;
   cout << "Loading babies at       : " << path << endl;
 
-  /*
+
   data->  Add(Form("%s/data_53X_baby.root"         , path));
   data->  Add(Form("%s/data_2012C_53X_baby.root"   , path));
   tt->    Add(Form("%s/ttbar_53X_baby.root"        , path));
@@ -95,9 +95,9 @@ void initialize(char* path){
   ttV->   Add(Form("%s/ttW_53X_baby.root"          , path));
   ttV->   Add(Form("%s/ttZ_53X_baby.root"          , path));
   vvv->   Add(Form("%s/VVV_53X_baby.root"          , path));
-  */
 
 
+  /*
   cout << "-------------------------------------" << endl;
   cout << "USING SKIMMED SAMPLES WITH NJETS >= 2" << endl;
   cout << "-------------------------------------" << endl << endl;
@@ -117,7 +117,7 @@ void initialize(char* path){
   ttV->   Add(Form("%s/ttW_53X_baby_2jets.root"          , path));
   ttV->   Add(Form("%s/ttZ_53X_baby_2jets.root"          , path));
   vvv->   Add(Form("%s/VVV_53X_baby_2jets.root"          , path));
-
+*/
   mc.push_back(zjets);   mclabels.push_back("zjets");
   mc.push_back(wz);      mclabels.push_back("WZ");
   mc.push_back(zz);      mclabels.push_back("ZZ");
@@ -300,7 +300,7 @@ TCut selection_TCut(){
   sel += "nlep==3 && lep3.pt()>20.0";
   sel += met50;
   sel += Zmass;
-  sel += njets2;
+  //sel += njets2;
   //sel += nb0;
 
   cout << "Using selection         : " << sel.GetTitle() << endl;
