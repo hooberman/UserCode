@@ -19,9 +19,9 @@
 #include <sstream>
 #include "histtools.h"
 
-#include "Math/LorentzVector.h"
-#include "Math/VectorUtil.h"
-#include "TLorentzVector.h"
+// #include "Math/LorentzVector.h"
+// #include "Math/VectorUtil.h"
+// #include "TLorentzVector.h"
 
 enum metType        { e_tcmet    = 0 , e_tcmetNew      = 1 , e_pfmet             = 2 , e_t1pfmet = 3 , e_t1newpfmet = 4 };
 enum templateSource { e_QCD      = 0 , e_PhotonJet     = 1 , e_PhotonJetStitched = 2 };
@@ -32,17 +32,17 @@ enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt
 //------------------------------------------------
 bool           debug              = false;                  // debug printout statements
 bool           doVtxReweight      = true;                   // reweight templates for nVertices
-bool           bveto              = false;                  // b-veto
-bool           pt40               = true;                   // pt>40 and HT > 100 GeV
-bool           mjjcut             = false;                  // dijet mass requirement
-bool           nlep2              = false;                  // 3rd lepton veto
+bool           pt40               = false;                  // pt>40 and HT > 100 GeV
+bool           bveto              = true;                   // b-veto
+bool           mjjcut             = true;                   // dijet mass requirement
+bool           nlep2              = true;                   // 3rd lepton veto
 bool           setTemplateErrors  = true;                   // calculate template errors
 metType        myMetType          = e_pfmet;                // MET type
 templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templates
 templateType   myTemplateType     = e_njets_ht;             // bin templates in njets and HT
 bool           reweight           = false;                  // reweight for photon vs. Z pt
 char*          iter               = "_pfmet";               // label for output file
-float          lumi               = 5.1;                    // luminosity
+float          lumi               = 9.2;                    // luminosity
 //------------------------------------------------
 
 using namespace std;
@@ -94,7 +94,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   if( doVtxReweight ) vtxchar = "_vtxreweight";
   
   char* bvetochar = "";
-  if( bveto ) bvetochar = "_bveto";
+  if( bveto ) bvetochar = "_bvetoLoose";
   
   char* pt40char = "";
   if( pt40 ) pt40char = "_pt40";
@@ -261,7 +261,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       // 	float mbb2 = ( *bjet1_ + *bjet2_ ).mass();
 
       // 	//cout << Form("%.2f   %.2f",mbb1,mbb2) << endl;
-      // 	if( fabs(mbb1-mbb2) > 0.01 ) cout << "ERROR! " << mbb1 << " " << mbb2 << " <<<<<<<<<<<<<<<<<<<<<<<<<<<---------------------------------------------" << endl;
+      // 	if( fabs(mbb1-mbb2) > 0.01 ) cout << "ERROR! " << mbb1 << " " << mbb2 << " <<<<---------------" << endl;
       // }
 
 
@@ -275,21 +275,26 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         // event selection
         //------------------------------------------------------------
 
-	if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
-	if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
-	// if( lep1_->pt()   < 20 )                        continue; // lepton 1 pt > 20 GeV
-	// if( lep2_->pt()   < 20 )                        continue; // lepton 2 pt > 20 GeV
+	if( run_ >= 197556 && run_ <= 198913 )          continue; // veto 2012C-PromptReco-v1
+	if( !(csc_==0 && hbhe_==1 && hcallaser_==1 && ecaltp_==1 && trkfail_==1 && eebadsc_==1 && hbhenew_==1) ) continue; // MET filters
 
-	if( lep1_->pt() < 20 )                          continue; // PF lepton 1 pt > 20 GeV
-	if( lep2_->pt() < 10 )                          continue; // PF lepton 2 pt > 20 GeV
+	// if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
+	// if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
+	if( lep1_->pt()   < 20 )                        continue; // lepton 1 pt > 20 GeV
+	if( lep2_->pt()   < 20 )                        continue; // lepton 2 pt > 20 GeV
 
-	if( fabs( lep1_->pt() - pflep1_->pt() ) > 5.0 ) continue;
-	if( fabs( lep2_->pt() - pflep2_->pt() ) > 5.0 ) continue;
+	// if( lep1_->pt() < 20 )                          continue; // PF lepton 1 pt > 20 GeV
+	// if( lep2_->pt() < 10 )                          continue; // PF lepton 2 pt > 20 GeV
+
+	// if( fabs( lep1_->pt() - pflep1_->pt() ) > 5.0 ) continue;
+	// if( fabs( lep2_->pt() - pflep2_->pt() ) > 5.0 ) continue;
 
 	// if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
 	// if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
 
-	if( bveto && nbm_ > 0 )                         continue; // do b-veto
+	//if( bveto && nbm_ > 0 )                         continue; // do b-veto
+	if( bveto && nbcsvl_ > 0 )                      continue; // do b-veto
+	//if( bveto && nbcsvm_ > 0 )                      continue; // do b-veto
 	if( mjjcut && ( mjj_ < 70.0 || mjj_ > 110.0 ) ) continue; // mjj requirement
 	if( nlep2 && nlep_ > 2 )                        continue; // 3rd lepton veto
 
@@ -1288,6 +1293,7 @@ void babylooper::setBranches (TTree* tree){
     tree->SetBranchAddress("bjet1",                &bjet1_                );
     tree->SetBranchAddress("bjet2",                &bjet2_                );
     tree->SetBranchAddress("nbcsvm",               &nbcsvm_               );
+    tree->SetBranchAddress("nbcsvl",               &nbcsvl_               );
 
     tree->SetBranchAddress("el1tv",                &el1tv_                );
     tree->SetBranchAddress("el2tv",                &el2tv_                );
@@ -1302,6 +1308,14 @@ void babylooper::setBranches (TTree* tree){
     tree->SetBranchAddress("nbl",                  &nbl_                  );
     tree->SetBranchAddress("nbm",                  &nbm_                  );
     //tree->SetBranchAddress("nbt",                  &nbt_                  );
+
+    tree->SetBranchAddress("csc"                 ,        &csc_                   );
+    tree->SetBranchAddress("hbhe"                ,        &hbhe_                  );
+    tree->SetBranchAddress("hcallaser"           ,        &hcallaser_             );
+    tree->SetBranchAddress("ecaltp"              ,        &ecaltp_                );
+    tree->SetBranchAddress("trkfail"             ,        &trkfail_               );
+    tree->SetBranchAddress("eebadsc"             ,        &eebadsc_               );
+    tree->SetBranchAddress("hbhenew"             ,        &hbhenew_               );
 
   }
 

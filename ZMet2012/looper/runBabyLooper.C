@@ -7,7 +7,7 @@ void runBabyLooper(char* Z_version, char* template_version, char* prefix , bool 
 
   TChain* ch = new TChain("T1");
 
-  string file = Form("../output/%s/%s_baby.root",Z_version,prefix);
+  string file = Form("../output/%s/%s_baby_2jets.root",Z_version,prefix);
   //string file = Form("../output/%s/%s_baby_tenPercent.root",Z_version,prefix);
   cout << "Adding " << file << endl;
 

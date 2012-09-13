@@ -71,8 +71,17 @@ class babylooper
         Float_t pthat_;
 	Float_t mjj_;
 
+	Int_t csc_;
+	Int_t hbhe_;
+	Int_t hcallaser_;
+	Int_t ecaltp_;
+	Int_t trkfail_;
+	Int_t eebadsc_;
+	Int_t hbhenew_;
+
 	Int_t   nbl_;
 	Int_t   nbcsvm_;
+	Int_t   nbcsvl_;
 	Int_t   nbm_;
 	Int_t   nbt_;
 
