@@ -27,8 +27,8 @@
 
 const bool debug          = true;
 const bool vtxreweight    = true;
-const bool bveto          = false;
-const bool pt40           = true;
+const bool bveto          = true;
+const bool pt40           = false;
 
 using namespace std;
 
@@ -71,8 +71,8 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
   if( vtxreweight ){ 
 
-    char* vtxfile = (char*) "vtxreweight_Photon_5p1fb.root";
-    if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_5p1fb.root";
+    char* vtxfile = (char*) "vtxreweight_Photon_9p2fb.root";
+    if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_9p2fb.root";
 
     cout << "Using vtx reweighting file " << vtxfile << endl;
 
@@ -152,8 +152,11 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( elveto_ == 1 )                                    continue; // remove photons with nearby electrons
       if( maxleppt_ > 20.0 )                                continue; // veto leptons pt > 20 GeV
       if( acos( cos( phig_ - pfmetphi_ ) ) < 0.14 )         continue; // kill photons aligned with MET
-      if( bveto && nbm_ > 0 )                               continue; // apply b-veto 
+      //if( bveto && nbm_ > 0 )                               continue; // apply b-veto 
+      if( bveto && nbl_ > 0 )                               continue; // apply b-veto 
       if( pt40 && ( nJets40_ < 2 || ht40_ < 100.0 ) )       continue; // require 2 pT > 40 GeV jets with HT > 100 GeV
+      if( run_ >= 197556 && run_ <= 198913 )                continue; // veto 2012C-PromptReco-v1
+      if( !(csc_==0 && hbhe_==1 && hcallaser_==1 && ecaltp_==1 && trkfail_==1 && eebadsc_==1 && hbhenew_==1) ) continue; // MET filters
 
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
@@ -532,6 +535,7 @@ void makePhotonTemplates::bookHistos(){
 
 void makePhotonTemplates::setBranches (TTree* tree){
   
+  tree->SetBranchAddress("run"	               ,        &run_                   );
   tree->SetBranchAddress("tcmet"	       ,        &tcmet_                 );
   tree->SetBranchAddress("pfmet"	       ,        &pfmet_                 );
   tree->SetBranchAddress("pfmett1new"	       ,        &pfmett1new_            );
@@ -542,6 +546,9 @@ void makePhotonTemplates::setBranches (TTree* tree){
   tree->SetBranchAddress("nbl"	               ,        &nbl_                   );
   tree->SetBranchAddress("nbm"	               ,        &nbm_                   );
   tree->SetBranchAddress("nbt"	               ,        &nbt_                   );
+  // tree->SetBranchAddress("nbcsvl"              ,        &nbcsvl_                );
+  // tree->SetBranchAddress("nbcsvm"              ,        &nbcsvm_                );
+  // tree->SetBranchAddress("nbcsvt"              ,        &nbcsvt_                );
   tree->SetBranchAddress("ht"	               ,        &ht_                    );
   tree->SetBranchAddress("ht40"	               ,        &ht40_                  );
   tree->SetBranchAddress("nvtx"		       ,        &nvtx_                  );
@@ -566,5 +573,13 @@ void makePhotonTemplates::setBranches (TTree* tree){
   tree->SetBranchAddress("maxleppt"	       ,	&maxleppt_		);
   tree->SetBranchAddress("elveto"	       ,	&elveto_		);
   tree->SetBranchAddress("jetneutralemfrac"    ,        &jetneutralemfrac_      );
+  tree->SetBranchAddress("csc"                 ,        &csc_                   );
+  tree->SetBranchAddress("hbhe"                ,        &hbhe_                  );
+  tree->SetBranchAddress("hcallaser"           ,        &hcallaser_             );
+  tree->SetBranchAddress("ecaltp"              ,        &ecaltp_                );
+  tree->SetBranchAddress("trkfail"             ,        &trkfail_               );
+  tree->SetBranchAddress("eebadsc"             ,        &eebadsc_               );
+  tree->SetBranchAddress("hbhenew"             ,        &hbhenew_               );
+
 
 }
