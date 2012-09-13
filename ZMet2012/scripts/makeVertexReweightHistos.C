@@ -32,33 +32,46 @@ void makeVertexReweightHistos( bool doPhoton = false ){
   if( doPhoton )  cout << "Using triggers from Photon dataset"         << endl;
   else            cout << "Using triggers from DoubleElectron dataset" << endl;
 
-  char* Zfile        = (char*) "../output/V00-00-17/dataskim_baby.root";
+  char* Zfile1        = (char*) "../output/V00-01-04/data_53X_baby.root";
+  char* Zfile2        = (char*) "../output/V00-01-04/data_2012C_53X_baby.root";
 
-  char* photonfile;
+  //char* photonfile;
   char* photonbaby;
   char* rootfilename;
 
   if( doPhoton ){
-    photonfile   = (char*) "../photon_output/V00-00-12/Photon_templates.root";
+    //photonfile   = (char*) "../photon_output/V00-00-12/Photon_templates.root";
     photonbaby   = (char*) "../photon_output/V00-00-12/Photon_baby.root";
     rootfilename = (char*) "vtxreweight_Photon_5p1fb.root";
   }
 
   else{
-    photonfile   = (char*) "../photon_output/V00-00-12/DoubleElectron_templates.root";
-    photonbaby   = (char*) "../photon_output/V00-00-12/DoubleElectron_baby.root";
-    rootfilename = (char*) "vtxreweight_DoubleElectron_5p1fb.root";
+    //photonfile   = (char*) "../photon_output/V00-01-00/DoubleElectron_templates.root";
+    photonbaby   = (char*) "../photon_output/V00-01-00/DoubleElectron_baby_2jets.root";
+    rootfilename = (char*) "vtxreweight_DoubleElectron_9p2fb.root";
   }
+
+  cout << "Z files:"      << endl;
+  cout << Zfile1          << endl;
+  cout << Zfile2          << endl;
+  cout << "photon files:" << endl;
+  cout << photonbaby      << endl;
+  cout << "output file"   << endl;
+  cout << rootfilename    << endl;
 
   //---------------------------
   // Z
   //---------------------------
 
   TChain *chZ = new TChain("T1");
-  chZ->Add(Zfile);
+  chZ->Add(Zfile1);
+  chZ->Add(Zfile2);
+
+  TCut Zselection("dilmass>81 && dilmass<101 && njets>=2 && (run<197556 || run>198913)");
+  cout << "Using Z selection " << Zselection.GetTitle() << endl;
 
   TH1F* hZ   = new TH1F("hZ","",50,0,50);
-  chZ->Draw("nvtx>>hZ","dilmass>81 && dilmass<101 && njets>=2");
+  chZ->Draw("nvtx>>hZ",Zselection);
 
   //---------------------------
   // photon
@@ -79,6 +92,7 @@ void makeVertexReweightHistos( bool doPhoton = false ){
   TCut lepveto("maxleppt<20");
   TCut dphi("acos(cos( phig-pfmetphi ) ) > 0.14");
   TCut alltrig;
+  TCut runrange("(run<197556 || run>198913)");
   
   if( doPhoton) alltrig = TCut("hlt20>0 || hlt30>0 || hlt50>0 || hlt75>0 || hlt90>0");
   else          alltrig = TCut("hgg22>0 || hgg36>0 || hgg50>0 || hgg75>0 || hgg90>0");
@@ -96,6 +110,9 @@ void makeVertexReweightHistos( bool doPhoton = false ){
   photonSelection += lepveto;
   photonSelection += dphi;
   photonSelection += alltrig;
+  photonSelection += runrange;
+
+  cout << "Using photon selection" << photonSelection.GetTitle() << endl;
 
   TCut hlt90    , hlt75    , hlt50    , hlt30    , hlt20;
   TCut weight90 , weight75 , weight50 , weight30 , weight20;
