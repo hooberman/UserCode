@@ -158,8 +158,18 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
 
-      int iJetBin          = getJetBin       ( nJets_    );
-      int iSumJetPtBin     = getSumJetPtBin  ( ht_       );
+      int iJetBin;
+      int iSumJetPtBin;
+
+      if( pt40 ){
+	iJetBin          = getJetBin       ( nJets40_    );
+	iSumJetPtBin     = getSumJetPtBin  ( ht40_       );
+      }
+      else{
+	iJetBin          = getJetBin       ( nJets_  );
+	iSumJetPtBin     = getSumJetPtBin  ( ht_     );
+      }
+
       int iBosonPtBin      = getBosonPtBin   ( etg_      );
       int iVtxBin          = getVtxBin       ( nvtx_     );
       float templateWeight = 1;
