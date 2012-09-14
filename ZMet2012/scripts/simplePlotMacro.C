@@ -26,7 +26,7 @@
 #include "TColor.h"
 #include "TMath.h"
 
-#include "mycolors.h"
+//#include "mycolors.h"
 
 enum metType        { e_tcmet    = 0 , e_tcmetNew      = 1 , e_pfmet             = 2 , e_t1pfmet = 3 , e_t1newpfmet = 4 };
 
@@ -35,21 +35,26 @@ using namespace std;
 
 bool     doKscaling   =    true;
 float    K            =    0.14;
-float    Rem          =    1.18; 
 int      rebin        =      10;
 bool     bveto        =    true;
+char*    mybvetochar  = "_bvetoLoose";
 bool     pt40         =   false;
-bool     latex        =   false;
+char*    signalRegion = "lowMet";
+bool     latex        =    true;
+metType  myMetType    = e_pfmet; 
+bool     normToLowMet =    true;
+bool     exclusive    =    true;
+bool     blind        =   false;
+
 //metType  myMetType  = e_t1newpfmet; 
 //metType  myMetType  = e_t1pfmet; 
-metType  myMetType    = e_pfmet; 
-bool     normToLowMet = true;
+//float    Rem        =    1.18; 
 
-float histError( TH1F* hist , int lowbin ){
+float histError( TH1F* hist , int lowbin , int binhigh ){
 
   float err2 = 0;
 
-  for( int ibin = lowbin ; ibin <= hist->GetXaxis()->GetNbins() ; ibin++ ){
+  for( int ibin = lowbin ; ibin <= binhigh ; ibin++ ){
     err2 += pow( hist->GetBinError(ibin) , 2 );
   }
 
@@ -78,7 +83,7 @@ void simplePlotMacro( bool printplots = false ){
 
   char* bvetochar = "";
   if( bveto ){
-    bvetochar = "_bveto";
+    bvetochar = mybvetochar;
     K = 0.13;
   }
 
@@ -118,16 +123,21 @@ void simplePlotMacro( bool printplots = false ){
   TCut sf = ee||mm;
   TCut nu("ngennu>0");
   //TCut bvetocut("nbm==0");
-  TCut bvetocut("nbcsvm==0");
+  TCut bvetocut;
+  if( TString(bvetochar).Contains("Loose")  ) bvetocut = TCut("nbcsvl==0");
+  if( TString(bvetochar).Contains("Medium") ) bvetocut = TCut("nbcsvm==0");
+
   TCut nlep2("nlep==2");
   TCut mjj("mjj>70.0 && mjj<110.0");
   TCut pt40cuts("njets40>=2 && ht40>=100.0");
   TCut pt2020("lep1.pt()>20.0 && lep2.pt()>20.0");
+  TCut filters("csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1");
   //TCut pfleptons2010("pflep1.pt() > 20 && pflep2.pt() > 10 && abs(lep1.pt()-pflep1.pt())<5.0 && abs(lep2.pt()-pflep2.pt())<5.0");
 
   TCut sel;
   sel += (ee||mm);
   sel += nu;
+  sel += filters;
 
   if( pt40 ){
     sel += pt40cuts;
@@ -222,6 +232,7 @@ void simplePlotMacro( bool printplots = false ){
   observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
   observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
 
+
   //-----------------------------------
   // define histos, canvas, pads
   //-----------------------------------
@@ -255,6 +266,14 @@ void simplePlotMacro( bool printplots = false ){
     h_gjets[i]  = (TH1F*) f->Get(predictedHisto.at(i));          
     h_ofpred[i] = (TH1F*) h_of->Clone(Form("hofpred_%i",i));     
 
+    if( blind ){
+      int bin100 = h_sf[i]->FindBin(100);
+      for( int ibin = bin100 ; ibin <= h_sf[i]->GetNbinsX() ; ++ibin ){
+	h_sf[i]->SetBinContent(ibin,0);
+      }
+    }
+
+
     //h_wz[i]     = (TH1F*) fwz->Get(observedHisto.at(i));
     //h_zz[i]     = (TH1F*) fzz->Get(observedHisto.at(i));
 
@@ -270,7 +289,7 @@ void simplePlotMacro( bool printplots = false ){
       //h_ofpred[i]->Scale(0.5/Rem);
       //h_ofpred[i]->Scale(0.41);
       //cout << "ee channel: scale em yield by 0.41" << endl;
-      h_ofpred[i]->Scale(0.44);
+      h_ofpred[i]->Scale(0.43);
       cout << "ee channel: scale em yield by 0.44" << endl;
       title     = (char*) "ee events";
       ee_and_mm = false;
@@ -391,7 +410,7 @@ void simplePlotMacro( bool printplots = false ){
     //-----------------------------------------------
 
     int mynbins = 6;
-    if( bveto ) mynbins = 7;
+    if( bveto ) mynbins = 10;
 
     const unsigned int nbins = mynbins;
 
@@ -403,14 +422,26 @@ void simplePlotMacro( bool printplots = false ){
     Double_t xbins[nbins+1];
 
     if( bveto ){
+      // bins[0] =   0;   xbins[0] =   0.0;
+      // bins[1] =  30;   xbins[1] =  30.0;
+      // bins[2] =  60;   xbins[2] =  60.0;
+      // bins[3] =  80;   xbins[3] =  80.0;
+      // bins[4] = 100;   xbins[4] = 100.0;
+      // bins[5] = 150;   xbins[5] = 150.0;
+      // bins[6] = 200;   xbins[6] = 200.0;
+      // xbins[7] = 250.0;
+
       bins[0] =   0;   xbins[0] =   0.0;
       bins[1] =  30;   xbins[1] =  30.0;
       bins[2] =  60;   xbins[2] =  60.0;
       bins[3] =  80;   xbins[3] =  80.0;
       bins[4] = 100;   xbins[4] = 100.0;
-      bins[5] = 150;   xbins[5] = 150.0;
-      bins[6] = 200;   xbins[6] = 200.0;
-      xbins[7] = 250.0;
+      bins[5] = 120;   xbins[5] = 120.0;
+      bins[6] = 140;   xbins[6] = 140.0;
+      bins[7] = 160;   xbins[7] = 160.0;
+      bins[8] = 180;   xbins[8] = 180.0;
+      bins[9] = 200;   xbins[9] = 200.0;
+      xbins[10] = 250.0;
     }
 
     else{
@@ -418,7 +449,7 @@ void simplePlotMacro( bool printplots = false ){
       bins[1] =  30;   xbins[1] =  30.0;
       bins[2] =  60;   xbins[2] =  60.0;
       bins[3] = 100;   xbins[3] = 100.0;
-      bins[4] = 150;   xbins[4] = 150.0;
+      bins[4] = 200;   xbins[4] = 200.0;
       bins[5] = 300;   xbins[5] = 300.0;
       xbins[6] = 350.0;
     }
@@ -449,8 +480,15 @@ void simplePlotMacro( bool printplots = false ){
 
     cout << delim_start << setw(width1) << "" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      if( latex ) cout << delim << setw(width1) << Form("\\MET\\ $>$ %i GeV",bins[ibin]) << setw(width2);
-      else        cout << delim << setw(width1) << Form("MET>%i GeV",bins[ibin]) << setw(width2);
+      if( exclusive && ibin < nbins - 1 ){
+	if( latex ) cout << delim << setw(width1) << Form("\\MET\\ %i--%i GeV",bins[ibin],bins[ibin+1]) << setw(width2);
+	else        cout << delim << setw(width1) << Form("MET %i-%i GeV",bins[ibin],bins[ibin+1]) << setw(width2);
+      }
+
+      else{
+	if( latex ) cout << delim << setw(width1) << Form("\\MET\\ $>$ %i GeV",bins[ibin]) << setw(width2);
+	else        cout << delim << setw(width1) << Form("MET>%i GeV",bins[ibin]) << setw(width2);
+      }
     }
     cout << delim_end << endl;
       
@@ -486,16 +524,22 @@ void simplePlotMacro( bool printplots = false ){
 
     for( unsigned int ibin = 0 ; ibin < nbins ; ++ibin ){
       int bin      = h_sf[i]->FindBin(bins[ibin]);
+      int binhigh  = 1000;
+
+      if( exclusive ){
+	if( ibin == nbins - 1 ) binhigh = 1000;
+	else                    binhigh = h_sf[i]->FindBin(bins[ibin+1]) - 1;
+      }
 
       if( bin > h_sf[i]->GetNbinsX() ) bin = h_sf[i]->GetNbinsX();
 
       // values
-      ndata[ibin]  = h_sf[i]->Integral(bin,1000);
-      ngjets[ibin] = h_gjets[i]->Integral(bin,1000);
-      nof[ibin]    = h_ofpred[i]->Integral(bin,1000);
-      nwz[ibin]    = h_wz[i]->Integral(bin,1000);
-      nzz[ibin]    = h_zz[i]->Integral(bin,1000);
-      ntot[ibin]   = htotpred[i]->Integral(bin,1000);
+      ndata[ibin]  = h_sf[i]->Integral(bin,binhigh);
+      ngjets[ibin] = h_gjets[i]->Integral(bin,binhigh);
+      nof[ibin]    = h_ofpred[i]->Integral(bin,binhigh);
+      nwz[ibin]    = h_wz[i]->Integral(bin,binhigh);
+      nzz[ibin]    = h_zz[i]->Integral(bin,binhigh);
+      ntot[ibin]   = htotpred[i]->Integral(bin,binhigh);
 
 
       //float ofsyst = 0.1;
@@ -510,7 +554,7 @@ void simplePlotMacro( bool printplots = false ){
 	// nominal analysis with b-veto
 	if( bveto ){
 	  Ksyst = 0.02/0.13;
-	  if( bins[ibin] >= 150 ) Ksyst = 0.07/0.13;
+	  if( bins[ibin] >= 150 ) Ksyst = 0.05/0.13;
 	  if( !doKscaling) Ksyst = 0.0;
 
 	  Rsyst = 0.06;
@@ -522,6 +566,7 @@ void simplePlotMacro( bool printplots = false ){
 	// nominal analysis without b-veto
 	else{
 	  Ksyst = 0.02/0.14;
+	  if( bins[ibin] == 200 ) Ksyst = 0.04/0.14;
 	  if( bins[ibin] == 300 ) Ksyst = 0.08/0.14;
 	  if( !doKscaling) Ksyst = 0.0;
 
@@ -556,17 +601,17 @@ void simplePlotMacro( bool printplots = false ){
       //cout << bins[ibin] << ": ofsyst " << ofsyst << endl;
 
       // syst uncertainties
-      nof_syst[ibin]    = ofsyst * h_ofpred[i]->Integral(bin,1000);   
-      ngjets_syst[ibin] = 0.3 * h_gjets[i]->Integral(bin,1000);       // 30% uncertainty on Z+jets
-      nwz_syst[ibin]    = 0.8 * h_wz[i]->Integral(bin,1000);          // 80% uncertainty on WZ
-      nzz_syst[ibin]    = 0.8 * h_zz[i]->Integral(bin,1000);          // 50% uncertainty on ZZ
+      nof_syst[ibin]    = ofsyst * h_ofpred[i]->Integral(bin,binhigh);   
+      ngjets_syst[ibin] = 0.3 * h_gjets[i]->Integral(bin,binhigh);       // 30% uncertainty on Z+jets
+      nwz_syst[ibin]    = 0.7 * h_wz[i]->Integral(bin,binhigh);          // 80% uncertainty on WZ
+      nzz_syst[ibin]    = 0.5 * h_zz[i]->Integral(bin,binhigh);          // 50% uncertainty on ZZ
       ntot_syst[ibin]   = sqrt( pow(ngjets_syst[ibin],2) + pow(nof_syst[ibin],2) + pow(nwz_syst[ibin],2) + pow(nzz_syst[ibin],2));
       
       // stat uncertainties
-      ngjets_stat[ibin] = histError( h_gjets[i]  , bin );
-      nof_stat[ibin]    = histError( h_ofpred[i] , bin );
-      nwz_stat[ibin]    = histError( h_wz[i]     , bin );
-      nzz_stat[ibin]    = histError( h_zz[i]     , bin );
+      ngjets_stat[ibin] = histError( h_gjets[i]  , bin , binhigh );
+      nof_stat[ibin]    = histError( h_ofpred[i] , bin , binhigh );
+      nwz_stat[ibin]    = histError( h_wz[i]     , bin , binhigh );
+      nzz_stat[ibin]    = histError( h_zz[i]     , bin , binhigh );
       ntot_stat[ibin]   = sqrt( pow(ngjets_stat[ibin],2) + pow(nof_stat[ibin],2) + pow(nwz_stat[ibin],2) + pow(nzz_stat[ibin],2));
 
       // ngjets_stat[ibin] = 0.0;
@@ -576,10 +621,10 @@ void simplePlotMacro( bool printplots = false ){
       // ntot_stat[ibin]   = 0.0;
 
       // tot uncertainties
-      ngjets_toterr[ibin] = sqrt( pow(ngjets_syst[ibin],2) + pow(ngjets_stat[ibin],2) );
-      nof_toterr[ibin]    = sqrt( pow(nof_syst[ibin],2) + pow(nof_stat[ibin],2) );
-      nwz_toterr[ibin]    = sqrt( pow(nwz_syst[ibin],2) + pow(nwz_stat[ibin],2) );
-      nzz_toterr[ibin]    = sqrt( pow(nzz_syst[ibin],2) + pow(nzz_stat[ibin],2) );
+      ngjets_toterr[ibin] = TMath::Min( sqrt( pow(ngjets_syst[ibin],2) + pow(ngjets_stat[ibin],2) ), ngjets[ibin] );
+      nof_toterr[ibin]    = TMath::Min( sqrt( pow(nof_syst[ibin],2) + pow(nof_stat[ibin],2) ) , nof[ibin] );
+      nwz_toterr[ibin]    = TMath::Min( sqrt( pow(nwz_syst[ibin],2) + pow(nwz_stat[ibin],2) ) , nwz[ibin] );
+      nzz_toterr[ibin]    = TMath::Min( sqrt( pow(nzz_syst[ibin],2) + pow(nzz_stat[ibin],2) ) , nzz[ibin] );
       ntot_toterr[ibin]   = sqrt( pow(ngjets_toterr[ibin],2) + pow(nof_toterr[ibin],2) + pow(nwz_toterr[ibin],2) + pow(nzz_toterr[ibin],2));
 
       excess[ibin]        = (ndata[ibin]-ntot[ibin])/sqrt( pow(ntot_toterr[ibin],2) + ndata[ibin]);
@@ -745,6 +790,14 @@ void simplePlotMacro( bool printplots = false ){
       hratio[i]->SetMinimum(0.0);
       hratio[i]->SetMaximum(2.0);
       hratio[i]->GetYaxis()->SetRangeUser(0.0,2.0);
+    }
+
+    if( blind ){
+      int bin100 = h_sf[i]->FindBin(100);
+      for( int ibin = bin100 ; ibin <= h_sf[i]->GetNbinsX() ; ++ibin ){
+	hratio[i]->SetBinContent(ibin,100);
+	hratio[i]->SetBinError(ibin,0);
+      }
     }
 
 
