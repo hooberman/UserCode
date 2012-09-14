@@ -9,23 +9,27 @@ An event in the ee final state is required to pass the dielectron trigger, a
 $\mu\mu$ event is required to pass the dimuon trigger, while an e$\mu$ event is required to pass at least one 
 of the two $e-\mu$ cross triggers. The efficiencies of the ee, $\mu\mu$ and e$\mu$ triggers with respect to the
 offline selection have been measured as $0.95\pm0.03$, $0.88\pm0.03$, and $0.92\pm0.03$, respectively~\cite{ref:SSAN}.  
-{\bf These trigger efficiencies were measured with the first 5.1 fb$^{-1}$ and will be updated with the full data sample. Preliminary measurements of the trigger efficiency with the full sample show consistent results within $\sim1-2$\%.}
+These trigger efficiencies were measured with the first 5.1 fb$^{-1}$ and will be updated with the full data sample. 
+Preliminary measurements of the trigger efficiency with the full sample show consistent results within $\sim1-2$\%.
 A sample of \gjets\ events, used as a control sample to estimate the \zjets\
 background, is selected using a set of single photon triggers.
 The golden json of Aug 31st, corresponding to an integrated luminosity of 9.7 fb$^{-1}$, is used as the starting point.
 However, due to a bug in the Run2012C-PromptReco-v1 data samples (corresponding to 0.5 fb$^{-1}$), this portion of the data
 is currently excluded but will be added back after its reprocessed. Thus we currently use a sample corresponding to \lumi.
-{\bf UPDATE DATASETS, MC SAMPLES, AND JSON, AND ADD CROSS SECTIONS USED FOR MC SAMPLES.}
+All data and MC samples are processed in CMSSW\_5\_3\_2\_patch4.
 
 \begin{itemize}
 \item Datasets
   \begin{itemize}
-  \item \verb=/DoubleElectron/Run2021A-PromptReco-v1/AOD=
-  \item \verb=/DoubleMu/Run2021A-PromptReco-v1/AOD=
-  \item \verb=/MuEG/Run2021A-PromptReco-v1/AOD=
-  \item \verb=/DoubleElectron/Run2021B-PromptReco-v1/AOD=
-  \item \verb=/DoubleMu/Run2021B-PromptReco-v1/AOD=
-  \item \verb=/MuEG/Run2021B-PromptReco-v1/AOD=
+  \item \verb=/DoubleElectron/Run2012A-13Jul2012-v1/AOD=
+  \item \verb=/DoubleMu/Run2012A-13Jul2012-v1/AOD=
+  \item \verb=/MuEG/Run2012A-13Jul2012-v1/AOD=
+  \item \verb=/DoubleElectron/Run2012B-13Jul2012-v1/AOD=
+  \item \verb=/DoubleMu/Run2012B-13Jul2012-v1/AOD=
+  \item \verb=/MuEG/Run2012B-13Jul2012-v1/AOD=
+  \item \verb=/DoubleElectron/Run2012C-PromptReco-v2/AOD=         
+  \item \verb=/DoubleMu/Run2012C-PromptReco-v2/AOD=         
+  \item \verb=/MuEG/Run2012C-PromptReco-v2/AOD=         
   \end{itemize}
 
 \item Triggers
@@ -40,24 +44,42 @@ is currently excluded but will be added back after its reprocessed. Thus we curr
     \item \verb=HLT_Photon75_R9Id90_HE10_Iso40_EBOnly_v*=
     \item \verb=HLT_Photon90_R9Id90_HE10_Iso40_EBOnly_v*=
   \end{itemize}
-
-\item Good run list
-  \begin{itemize}
-    \item \verb=Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON.txt=
-  \end{itemize}
-  
-\item MC samples
-  \begin{itemize} 
-  \item {\footnotesize \verb=/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2=}
-  \item {\footnotesize \verb=/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1=}
-  \item {\footnotesize \verb=/WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v2=}
-  \item {\footnotesize \verb=/WZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1=}
-  \item {\footnotesize \verb=/ZZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v3=}
-  \item {\footnotesize \verb=/ZZJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v3=}
-  \item {\footnotesize \verb=/ZZJetsTo4L_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v3=}
-  \item {\footnotesize \verb=/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1=}
-  \item {\footnotesize \verb=/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12-PU_S7_START52_V9-v1=}
-  \item {\footnotesize \verb=/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12-PU_S7_START52_V9-v1=}
- \end{itemize}
 \end{itemize}
-
+  
+\begin{table}[htb]                                                                                                                                                              
+\begin{center}                                                                                                                                                
+\scriptsize
+\caption{\label{tab:mcsamples} List of MC samples.}
+\begin{tabular}{l|l|c}  
+\hline
+\hline
+Process & Dataset Name & Cross Section [pb] \\
+\hline
+\zjets & \verb=/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=   & 3532.8 \\
+\hline
+\ttbar & \verb=/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM= & 225.2 \\
+\hline
+ZZ & \verb=/ZZJetsTo4L_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=   & 0.1769 \\
+& \verb=/ZZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=     & 2.4487 \\
+& \verb=/ZZJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v3/AODSIM= & 0.3648 \\
+\hline
+WZ & \verb=/WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=    & 1.0575 \\
+& \verb=/WZJetsTo2L2Q_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=     & 2.206 \\
+\hline
+WW & \verb=/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=    & 5.8123 \\
+\hline
+single top & \verb=/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM= & 11.177 \\
+           & \verb=/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM= & 11.177 \\
+\hline
+ttV & \verb=/TTZJets_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=    & 0.208 \\
+& \verb=/TTWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=    & 0.232 \\
+\hline
+VVV & \verb=/ZZZNoGstarJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=    & 0.01922 \\
+& \verb=/WWWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=    & 0.08217 \\
+& \verb=/WWZNoGstarJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=   & 0.0633 \\
+%& \verb=/ZZZNoGstarJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM=   & 0.01922 \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+\end{table}
