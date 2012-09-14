@@ -333,7 +333,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   set_goodrun_file( jsonfilename );
 
   if( TString(prefix).Contains("sms") || TString(prefix).Contains("T5zz") ){
-    set_vtxreweight_rootfile("vtxreweight_VZSMS_4p7fb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight_Summer12MC_TChiwz_9p7fb_Zselection.root",true);
   }
   else if( TString(prefix).Contains("ggmsb") ){
     set_vtxreweight_rootfile("vtxreweight_GMSB_4p7fb_Zselection.root",true);
