@@ -335,8 +335,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   if( TString(prefix).Contains("sms") || TString(prefix).Contains("T5zz") ){
     set_vtxreweight_rootfile("vtxreweight_Summer12MC_TChiwz_9p7fb_Zselection.root",true);
   }
-  else if( TString(prefix).Contains("ggmsb") ){
-    set_vtxreweight_rootfile("vtxreweight_GMSB_4p7fb_Zselection.root",true);
+  else if( TString(prefix).Contains("gmsb") ){
+    set_vtxreweight_rootfile("vtxreweight_Summer12MC_GMSB_9p7fb_Zselection.root",true);
   }
   else if( TString(prefix).Contains("massiveb") ){
     set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS6.root",true);
