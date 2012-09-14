@@ -16,11 +16,11 @@
   // runZLooper("wz2l2q_53X"              , false );  
   // runZLooper("zz2l2q_53X"              , false );  
 
-  runZLooper("zjets_full_53X"          , false );  
+  // runZLooper("zjets_full_53X"          , false );  
   // runZLooper("zz4l_53X"                , false );  
-  // runZLooper("ttW_53X"                 , false );  
-  // runZLooper("ttZ_53X"                 , false );  
-  // runZLooper("VVV_53X"                 , false );
+  runZLooper("ttW_53X"                 , false );  
+  runZLooper("ttZ_53X"                 , false );  
+  runZLooper("VVV_53X"                 , false );
   // runZLooper("ttbar_53X"               , false );  
   // runZLooper("zjets_53X"               , false );  
   // runZLooper("zjets_MET50_53X"         , false );  

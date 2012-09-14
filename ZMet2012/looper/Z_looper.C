@@ -1020,17 +1020,17 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( !isData ){
 	zdilep_ = 1;
 	
-	if (abs(id1_) == 13  && mus_mc3_motherid().at(index1) != 22 )  zdilep_ = 0;
-	if (abs(id2_) == 13  && mus_mc3_motherid().at(index2) != 22 )  zdilep_ = 0;
+	if (abs(id1_) == 13  && mus_mc3_motherid().at(index1) != 23 )  zdilep_ = 0;
+	if (abs(id2_) == 13  && mus_mc3_motherid().at(index2) != 23 )  zdilep_ = 0;
 	
-	if (abs(id1_) == 11  && els_mc3_motherid().at(index1) != 22 )  zdilep_ = 0;
-	if (abs(id2_) == 11  && els_mc3_motherid().at(index2) != 22 )  zdilep_ = 0;
+	if (abs(id1_) == 11  && els_mc3_motherid().at(index1) != 23 )  zdilep_ = 0;
+	if (abs(id2_) == 11  && els_mc3_motherid().at(index2) != 23 )  zdilep_ = 0;
 	
-	cout << endl << endl;
-	dumpDocLines();
-	cout << "Lepton 1 pT " << lep1_->pt() << endl;
-	cout << "Lepton 2 pT " << lep2_->pt() << endl;
-	cout << "From Z?     " << zdilep_     << endl;
+	// cout << endl << endl;
+	// dumpDocLines();
+	// cout << "Lepton 1 pT " << lep1_->pt() << endl;
+	// cout << "Lepton 2 pT " << lep2_->pt() << endl;
+	// cout << "From Z?     " << zdilep_     << endl;
       }
       else{
 	zdilep_ = -1;
