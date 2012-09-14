@@ -284,6 +284,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/WZZNoGstarJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged*root");
     pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/WWZNoGstarJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged*root");
     pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/WWWJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/ZZZNoGstarJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged_ntuple*root");
   }
 
   //----------------------------------------------------------------------------------------
