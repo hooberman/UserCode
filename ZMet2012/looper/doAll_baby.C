@@ -1,12 +1,9 @@
 {
 
-  gSystem->Load("../../MiniFWLite/libMiniFWLite.so");
-
   #include "babylooper.h"
 
   gROOT->ProcessLine(".L histtools.C+");
   gROOT->ProcessLine(".L runBabyLooper.C+");
-
 
   char* Z_version        = "V00-01-04";
   char* template_version = "V00-01-00";

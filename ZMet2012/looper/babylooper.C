@@ -485,7 +485,6 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         }
       }
       
-      
       //fill histos and ntuple----------------------------------------------------------- 
       npass++;
 
