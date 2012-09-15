@@ -2566,7 +2566,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //event stuff
   babyTree_->Branch("rho",          &rho_,          "rho/F"          );
-  babyTree_->Branch("zdilep",       &zdilep_,       "zdilep/F"       );
+  babyTree_->Branch("zdilep",       &zdilep_,       "zdilep/I"       );
   babyTree_->Branch("dataset",      &dataset_,      "dataset[500]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
   babyTree_->Branch("eldup",        &eldup_,        "eldup/I"        );
