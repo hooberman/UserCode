@@ -36,11 +36,11 @@ using namespace std;
 bool     doKscaling   =    true;
 float    K            =    0.14;
 int      rebin        =      10;
-bool     bveto        =    true;
+bool     bveto        =   false;
 char*    mybvetochar  = "_bvetoLoose";
-bool     pt40         =   false;
+bool     pt40         =    true;
 char*    signalRegion = "lowMet";
-bool     latex        =    true;
+bool     latex        =    false;
 metType  myMetType    = e_pfmet; 
 bool     normToLowMet =    true;
 bool     exclusive    =    true;
@@ -89,8 +89,18 @@ void simplePlotMacro( bool printplots = false ){
 
   char* pt40char = "";
   if( pt40 ){
-    pt40char = "_pt40";
-    K = 0.12;
+    if( TString(signalRegion).Contains("lowMet") ){
+      cout << "Using pT > 40 GeV jets, low MET signal region" << endl;
+      pt40char = "_pt40_2012AB_lowMet";
+      //pt40char = "_pt40_lowMet";
+      K = 0.14;
+    }
+    else if( TString(signalRegion).Contains("highMet") ){
+      cout << "Using pT > 40 GeV jets, high MET signal region" << endl;
+      pt40char = "_pt40_2012AB_highMet";
+      //pt40char = "_pt40_highMet";
+      K = 0.13;
+    }
   }
 
   //-----------------------------------
@@ -103,11 +113,14 @@ void simplePlotMacro( bool printplots = false ){
   //TFile *fwz = new TFile();
   //TFile *fzz = new TFile();
 
-  TChain *chwz = new TChain("T1");
-  TChain *chzz = new TChain("T1");
+  TChain *chwz   = new TChain("T1");
+  TChain *chzz   = new TChain("T1");
+  TChain *chrare = new TChain("T1");
 
   chwz->Add(Form("../output/%s/wz_53X_baby.root",iter));
   chzz->Add(Form("../output/%s/zz_53X_baby.root",iter));
+  chrare->Add(Form("../output/V00-01-05/ttZ_53X_baby.root",iter));
+  chrare->Add(Form("../output/V00-01-05/VVV_53X_baby.root",iter));
 
   //-----------------------------------
   // selection
@@ -126,30 +139,39 @@ void simplePlotMacro( bool printplots = false ){
   TCut bvetocut;
   if( TString(bvetochar).Contains("Loose")  ) bvetocut = TCut("nbcsvl==0");
   if( TString(bvetochar).Contains("Medium") ) bvetocut = TCut("nbcsvm==0");
-
+  
+  TCut njets3_40("njets40>=3");
+  TCut njets2_40("njets40>=3");
+  TCut ht100_40("ht40>=100.0");
   TCut nlep2("nlep==2");
   TCut mjj("mjj>70.0 && mjj<110.0");
   TCut pt40cuts("njets40>=2 && ht40>=100.0");
   TCut pt2020("lep1.pt()>20.0 && lep2.pt()>20.0");
+  TCut pt2010("lep1.pt()>20.0 && lep2.pt()>10.0");
   TCut filters("csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1");
+  TCut zdilep("zdilep==1");
   //TCut pfleptons2010("pflep1.pt() > 20 && pflep2.pt() > 10 && abs(lep1.pt()-pflep1.pt())<5.0 && abs(lep2.pt()-pflep2.pt())<5.0");
 
   TCut sel;
   sel += (ee||mm);
   sel += nu;
   sel += filters;
+  sel += Zmass;
 
   if( pt40 ){
-    sel += pt40cuts;
-    sel += Zmass;
-    //sel += pfleptons2010;
+    if( TString(signalRegion).Contains("lowMet") ){
+      sel += pt2020;
+      sel += njets3_40;
+    }
+    if( TString(signalRegion).Contains("highMet") ){
+      sel += pt2010;
+      sel += njets2_40;
+      sel += ht100_40;
+    }
   }
 
   else{
     sel += njets2;
-    //sel += pfleptons;
-    //sel += Zmasspf;
-    sel += Zmass;
     sel += pt2020;
   }
 
@@ -159,10 +181,13 @@ void simplePlotMacro( bool printplots = false ){
     sel += mjj;
   }
 
-  TCut weight("weight * 9.2 * vtxweight * trgeff");
+  //TCut weight("weight * 9.2 * vtxweight * trgeff");
+  TCut weight("weight * 5.1 * vtxweight * trgeff");
 
   cout << "WZ/ZZ selection : " << sel.GetTitle() << endl;
   cout << "WZ/ZZ weight    : " << sel.GetTitle() << endl;
+
+  TCut raresel = sel + zdilep;
 
   //char* datafilename = (char*) Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s%s%s_HT100.root",iter,metvar,bvetochar,pt40char);
   char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s.root",iter,metvar,bvetochar,pt40char);
@@ -750,7 +775,8 @@ void simplePlotMacro( bool printplots = false ){
 
     t->SetTextSize(0.04);
     t->DrawLatex(0.4,0.85,"CMS Preliminary");
-    t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
+    //t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
+    t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 5.1 fb^{-1}");
     t->DrawLatex(0.4,0.73,title);
 
     can[i]->cd();
