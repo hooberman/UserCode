@@ -104,7 +104,7 @@ void GridTanb10_v1_OS(int plotmode = 1 , bool drawplots = false ){
    GridCanvas->SetFrameBorderMode(0);
    GridCanvas->SetFrameFillStyle(0);
    GridCanvas->SetFrameBorderMode(0);
-
+   //gPad->SetTopMargin(0.1);
 
    TH2F* hdummy = new TH2F("hdummy","",100,40,3000,100,100,m12max);
    hdummy->Draw();
@@ -3486,8 +3486,8 @@ void GridTanb10_v1_OS(int plotmode = 1 , bool drawplots = false ){
      observedLimitTheoryUp->Draw("samec");
      observedLimitTheoryDown->Draw("samec");
      expectedLimit->Draw("samec");
-     expectedLimitTheoryUp->Draw("samec");
-     expectedLimitTheoryDown->Draw("samec");
+     //expectedLimitTheoryUp->Draw("samec");
+     //expectedLimitTheoryDown->Draw("samec");
      expectedLimitM1->Draw("samec");
      expectedLimitP1->Draw("samec");
    }
@@ -9233,7 +9233,7 @@ void GridTanb10_v1_OS(int plotmode = 1 , bool drawplots = false ){
      myleg->AddEntry(observedLimit          , "observed","l");
      myleg->AddEntry(observedLimitTheoryUp  , "observed (#pm1#sigma theory)","l");
      myleg->AddEntry(expectedLimit          , "expected","l");
-     myleg->AddEntry(expectedLimitTheoryUp  , "expected (#pm1#sigma theory)","l");
+     //myleg->AddEntry(expectedLimitTheoryUp  , "expected (#pm1#sigma theory)","l");
      myleg->AddEntry(expectedLimitM1        , "expected (#pm1#sigma stat)","l");
      myleg->AddEntry(observedLimit2010      , "observed 2010","f");
    }
@@ -9249,7 +9249,8 @@ void GridTanb10_v1_OS(int plotmode = 1 , bool drawplots = false ){
    TLatex *t = new TLatex();
    t->SetNDC();
    t->SetTextSize(0.038);
-   t->DrawLatex(0.38,0.68,"CMS Preliminary    #sqrt{s} = 7 TeV,  #scale[0.6]{#int}L dt 4.98 fb^{-1} ");
+   t->DrawLatex(0.48,0.68,"CMS     #sqrt{s} = 7 TeV,     #scale[0.6]{#int}L dt 4.98 fb^{-1} ");
+   //t->DrawLatex(0.2,0.92,"CMS                   #sqrt{s} = 7 TeV,  #scale[0.6]{#int}L dt 4.98 fb^{-1} ");
 
    // TMarker* LM0 = new TMarker(200.,160.,20);
    TMarker* LM1  = new TMarker(60.  , 250. , 20);
