@@ -66,6 +66,14 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "data_53X_edgeSync" ) == 0 ){    
+
+    pickSkimIfExists(ch,"/home/users/benhoob/ZMet2012/scripts/edgeSync/Pablo_NOT_Ben.root");
+
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "data_2012C_53X" ) == 0 ){    
 
     pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
