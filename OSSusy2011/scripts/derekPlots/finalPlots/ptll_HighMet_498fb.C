@@ -194,7 +194,7 @@ tex->SetNDC();
 
 
    gStyle->SetErrorX(0.5);
-
+   /*
    TCanvas *c1 = new TCanvas();
    c1->cd();
    gPad->SetLogy();
@@ -225,7 +225,82 @@ tex->SetNDC();
    t->SetTextSize(0.04);
    t->DrawLatex(0.18,0.93,"CMS                                #sqrt{s} = 7 TeV,  #scale[0.6]{#int} Ldt = 4.98 fb^{-1}");
    t->DrawLatex(0.7,0.8,"H_{T} > 300 GeV");
+   */
 
+   TCanvas *c1 = new TCanvas();
+   c1->cd();
+
+   TLatex *t = new TLatex();
+   t->SetNDC();
+   t->SetTextSize(0.04);
+   t->DrawLatex(0.18,0.95,"CMS                                #sqrt{s} = 7 TeV,  #scale[0.6]{#int} Ldt = 4.98 fb^{-1}");
+
+   TPad *mainpad = new TPad("mainpad","mainpad",0.0,0.0,1.0,0.8);
+   mainpad->Draw();
+   mainpad->cd();
+
+   mainpad->SetLogy();
+   mainpad->SetTopMargin(0.1);
+   mainpad->SetRightMargin(0.04);
+
+   // gPad->SetLogy();
+   // gPad->SetTopMargin(0.1);
+   // gPad->SetRightMargin(0.04);
+
+   hpt->GetYaxis()->SetTitle("events / 75 GeV");
+   hpt->GetXaxis()->SetTitle("E_{T}^{miss} (GeV)");
+   hpt->SetLineColor(0);
+   hpt->SetMaximum(1000);
+   hpt->SetMinimum(1);
+   hpt->Draw("E2");
+   hmet->Draw("same");
+
+   TLine line;
+   line.SetLineStyle(2);
+   line.SetLineWidth(2);
+   line.DrawLine(200,1,200,1000);
+   line.DrawLine(275,1,275,1000);
+
+   TLegend *leg = new TLegend(0.2,0.2,0.45,0.4);
+   leg->AddEntry(hpt,"predicted","pf");
+   leg->AddEntry(hmet,"observed","lp");
+   leg->SetBorderSize(0);
+   leg->SetFillColor(0);
+   leg->Draw();
+
+   t->DrawLatex(0.7,0.8,"H_{T} > 300 GeV");
+
+   c1->cd();
+
+   TPad *respad = new TPad("respad","respad",0.0,0.74,1.0,0.92);
+   respad->Draw();
+   respad->cd();
+   respad->SetRightMargin(0.04);
+   respad->SetTopMargin(0.1);
+   respad->SetGridy();
+
+   TH1F* hratio = (TH1F*) hmet->Clone("hratio");
+   hratio->Divide(hpt);
+   hratio->GetYaxis()->SetRangeUser(0,2);
+   hratio->GetYaxis()->SetNdivisions(5);
+   hratio->GetYaxis()->SetLabelSize(0.2);
+   hratio->GetXaxis()->SetTitleSize(0.0);
+   hratio->GetXaxis()->SetLabelSize(0.0);
+   hratio->GetYaxis()->SetTitleSize(0.24);
+   hratio->GetYaxis()->SetTitleOffset(0.3);
+   hratio->GetYaxis()->SetTitle("ratio");
+   //hratio->SetMarkerColor(1);
+   //hratio->SetLineColor(1);
+   hratio->Draw();
+
+   TLine line;
+   line.SetLineWidth(2);
+   line.DrawLine(50,1,425,1);
+   hratio->Draw("same");
+
+
+   cout << "met : " << 6*hmet->GetBinContent(10) << " +/- " << 6*hmet->GetBinError(10) << endl;
+   cout << "met : " << 6*hpt->GetBinContent(10)  << " +/- " << 6*hpt->GetBinError(10)  << endl;
 
    c1->Print("ptll_HighMet_498fb.pdf");
 
