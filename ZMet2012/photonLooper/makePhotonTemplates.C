@@ -25,10 +25,10 @@
 #include "Math/VectorUtil.h"
 #include "TLorentzVector.h"
 
-const bool debug          = true;
-const bool vtxreweight    = true;
-const bool bveto          = true;
-const bool pt40           = false;
+const bool debug          =  true;
+const bool vtxreweight    =  true;
+const bool bveto          = false;
+const bool pt40           =  true;
 
 using namespace std;
 
@@ -72,7 +72,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
   if( vtxreweight ){ 
 
     char* vtxfile = (char*) "vtxreweight_Photon_9p2fb.root";
-    if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_9p2fb.root";
+    //if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_9p2fb.root";
+    //if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_9p2fb_2012AB.root";
+    if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_9p2fb_2012C.root";
 
     cout << "Using vtx reweighting file " << vtxfile << endl;
 
@@ -157,6 +159,8 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( pt40 && ( nJets40_ < 2 || ht40_ < 100.0 ) )       continue; // require 2 pT > 40 GeV jets with HT > 100 GeV
       if( run_ >= 197556 && run_ <= 198913 )                continue; // veto 2012C-PromptReco-v1
       if( !(csc_==0 && hbhe_==1 && hcallaser_==1 && ecaltp_==1 && trkfail_==1 && eebadsc_==1 && hbhenew_==1) ) continue; // MET filters
+      //if( run_ > 196531 )                                   continue; // 2012 A+B
+      if( run_ <= 196531 )                                  continue; // 2012 C
 
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
@@ -374,7 +378,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
     if( bveto ) bvetochar = "_bveto";
 
     char* pt40char = "";
-    if( pt40 ) pt40char = "_pt40";
+    //if( pt40 ) pt40char = "_pt40";
+    //if( pt40 ) pt40char = "_pt40_2012AB";
+    if( pt40 ) pt40char = "_pt40_2012C";
 
     cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s%s%s.root",iter,sample,vtxchar,bvetochar,pt40char) << endl;
     saveHist(Form("../photon_output/%s/%s_templates%s%s%s.root",iter,sample,vtxchar,bvetochar,pt40char));
