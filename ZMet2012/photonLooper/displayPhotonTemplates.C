@@ -18,7 +18,7 @@
 #include "TLatex.h"
 #include "TStyle.h"
 #include <sstream>
-#include "/tas03/home/benhoob/.root/benstyle.C"
+#include "benstyle.C"
 
 using namespace std;
 
@@ -31,10 +31,10 @@ const int      nTrigBins        = 5;
 const int      nJetBins         = 3;
 const int      nSumJetPtBins    = 7;
 const metType  myMetType        = e_pfmet;
-const float    maxmet           = 100;
+const float    maxmet           = 200;
 const int      rebin            = 10;
 const bool     twoTemplates     = true;
-const bool     vertical         = false;
+const bool     vertical         = true;
 
 //const char*    filename1        = "../photon_output/V00-00-07/Photon_templates.root";
 //const char*    filename2        = "../photon_output/V00-00-07/DoubleElectron_templates.root";
@@ -45,8 +45,8 @@ const bool     vertical         = false;
 //const char*    filename1        = "../photon_output/V00-00-07/DoubleElectron_templates.root";
 //const char*    filename2        = "../photon_output/V00-00-07/DoubleElectron_templates_vtxreweight.root";
 
-const char*    filename1        = "../photon_output/V00-00-12/DoubleElectron_templates_vtxreweight.root";
-const char*    filename2        = "../photon_output/V00-00-13/DoubleElectron_templates_vtxreweight_pt40.root";
+const char*    filename1        = "../photon_output/V00-01-00/DoubleElectron_templates_vtxreweight_pt40_2012AB.root";
+const char*    filename2        = "../photon_output/V00-01-00/DoubleElectron_templates_vtxreweight_pt40_2012C.root";
 
 //----------------------------------------------------------------------------------------
 
