@@ -42,7 +42,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-01-07";
+  const char* version   = "V00-01-04";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -203,23 +203,23 @@ void doAll(bool skipFWLite = true)
   //Flags for files to run over
   bool rundata_SingleMu = 0;
   bool runping       = 0;
-  bool rundata       = 1;
-  bool rundatamay10  = 0;
-  bool rundataPRv4   = 0;
+  bool rundata       = 0;
+  bool rundatamay10  = 1;
+  bool rundataPRv4   = 1;
   bool rundata165    = 0;
   bool rundata166    = 0;
   bool rundata167    = 0;
   bool rundata168    = 0;
-  bool rundataaug05  = 0;
-  bool rundataPRv6   = 0;
-  bool rundata2011B  = 0;
+  bool rundataaug05  = 1;
+  bool rundataPRv6   = 1;
+  bool rundata2011B  = 1;
 
   bool rundata41   = 0;
   bool rundataskim = 0;
   bool runQCDpt15  = 0;
   bool runQCDpt30  = 0;
   bool runQCD      = 0;
-  bool runttall    = 1;
+  bool runttall    = 0;
   bool runtt42     = 0;
   bool runttpowheg = 0;
   bool runttdil    = 0;
@@ -234,7 +234,7 @@ void doAll(bool skipFWLite = true)
   bool runWjetsMG  = 0;
   bool runWcharm   = 0;
   bool runZjets    = 0;
-  bool runDYtot    = 1;
+  bool runDYtot    = 0;
   bool runDYee     = 0;
   bool runDYmm     = 0;
   bool runDYtautau = 0;
@@ -401,9 +401,11 @@ void doAll(bool skipFWLite = true)
 
   TChain* chtopall = new TChain("Events");
   if (runttall) {
+    
     pickSkimIfExists(chtopall, 
      		     "/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root",
-     		     "TTJets");    
+     		     "TTJets");
+    
   }
   
   TChain* chtop42 = new TChain("Events");
@@ -1126,62 +1128,14 @@ void doAll(bool skipFWLite = true)
   }
 
   if(rundata){
-    	
-    //---------------------------
-    // May10 rereco
-    //---------------------------
     
-    pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
-    pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
-    pickSkimIfExists(chdata,"cms2_data/MuEG_Run2011A-May10ReReco-v1_AOD/V04-02-20/SSignSkim/skim*root");
-    pickSkimIfExists(chdata,"DiMuonPt20/SingleMu_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
+    cout << "adding SingleMu data" << endl;
     
-    //---------------------------
-    // prompt reco v4
-    //---------------------------
-    
-    pickSkimIfExists(chdata,"cms2_data/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleElectronTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"cms2_data/DoubleMu_Run2011A-PromptReco-v4_AOD/V04-02-20/DoubleMuTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/merged*root");
-    pickSkimIfExists(chdata,"DiMuonPt20/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
+    pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_173236_0.root");
 
-    //---------------------------
-    // august rereco
-    //---------------------------
-
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/DoubleMu_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/MuEG_Run2011A-05Aug2011-v1_AOD/V04-02-30/SSignSkim/skim*root");
-    pickSkimIfExists(chdata,"DiMuonPt20/SingleMu_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
-
-    //---------------------------
-    // prompt reco v6
-    //---------------------------
-	
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/DoubleMu_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/MuEG_Run2011A-PromptReco-v6_AOD/V04-02-30/SSignSkim/skim*root");
-    pickSkimIfExists(chdata,"DiMuonPt20/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
-	
-    //---------------------------
-    // Run2011B prompt reco v1
-    //---------------------------
-
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleMuTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-30/SSignSkim/skim*root");
-    pickSkimIfExists(chdata,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/DiMuonPt20/merged*root");
-
-
-    //---------------------------
-    // Run2011B prompt reco v1
-    //---------------------------
-
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleElectronTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/DoubleMuTriggerSkim/skim*root");
-    pickSkimIfExists(chdata,"/nfs-7a/userdata/cms2/MuEG_Run2011B-PromptReco-v1_AOD/V04-02-34/SSignSkim/skim*root");
-    pickSkimIfExists(chdata,"DiMuonPt20/SingleMu_Run2011B-PromptReco-v1_AOD/CMSSW_4_2_7_patch1_V04-02-34_merged/V04-02-34/DiMuonPt20/merged*root");
-
+   //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged_ntuple_165*root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
+    //pickSkimIfExists(chdata,"/hadoop/cms/store/user/jaehyeok/CMSSW_4_2_7_patch1_V04-02-33/SingleMu_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-33_merged/V04-02-33/merged*root");
   }
 
   TChain* chdata_SingleMu = new TChain("Events");

@@ -255,6 +255,7 @@ class singleLeptonLooper
 
 	// MC truth vars
 	Int_t   npartons_;
+	Int_t   nwzpartons_;
 	Float_t maxpartonpt_;
 	Float_t ptt_;
 	Float_t pttbar_;
@@ -505,8 +506,10 @@ class singleLeptonLooper
 	Int_t   w2_;
 	Float_t iso1_;
 	Float_t isont1_;
+	Float_t isopf1_;
 	Float_t iso2_;
 	Float_t isont2_;
+	Float_t isopf2_;
         Float_t ptl2_;
         Float_t etal1_;
         Float_t etal2_;
@@ -539,6 +542,16 @@ class singleLeptonLooper
 	Float_t n3dvtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
+	Float_t eoverpin_;
+	Float_t eoverpout_;
+	Float_t dEtaIn_;
+	Float_t dPhiIn_;
+	Float_t sigmaIEtaIEta_;
+	Float_t hOverE_;
+	Float_t ooemoop_;
+	Float_t d0vtx_;
+	Float_t dzvtx_;
+	Float_t expinnerlayers_;
 	Float_t emjet10_;
 	Float_t emjet20_;
 
