@@ -500,9 +500,9 @@ void makeGMSBPlot( bool printplots = false ){
 
   TLegend *leg = new TLegend(0.33,0.7,0.9,0.88);
   if( plotObserved ){
-    leg->AddEntry(gulc    ,"combined observed UL","l");
+    leg->AddEntry(gulc    ,"Combined observed UL","l");
     //leg->AddEntry(gulcexp ,"combined median expected UL","l");
-    leg->AddEntry(hgexp   ,"combined median expected UL (#pm1#sigma)","lf");
+    leg->AddEntry(hgexp   ,"Combined median expected UL (#pm1#sigma)","lf");
     leg->AddEntry(gul     ,"2#font[12]{l}2j observed UL","l");
     leg->AddEntry(gul2    ,"4#font[12]{l} observed UL","l");
 
