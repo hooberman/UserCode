@@ -36,15 +36,17 @@ using namespace std;
 bool     doKscaling   =    true;
 float    K            =    0.14;
 int      rebin        =      10;
-bool     bveto        =   false;
-char*    mybvetochar  = "_bvetoLoose";
-bool     pt40         =    true;
-char*    signalRegion = "lowMet";
-bool     latex        =    false;
+bool     bveto        =    true;
+char*    mybvetochar  = "_bvetoMedium";
+bool     pt40         =   false;
+char*    signalRegion = "highMet";
+float    xmin         =      -1;
+bool     latex        =   false;
 metType  myMetType    = e_pfmet; 
 bool     normToLowMet =    true;
-bool     exclusive    =    true;
+bool     exclusive    =   false;
 bool     blind        =   false;
+float    lumi         =     9.2;
 
 //metType  myMetType  = e_t1newpfmet; 
 //metType  myMetType  = e_t1pfmet; 
@@ -91,14 +93,16 @@ void simplePlotMacro( bool printplots = false ){
   if( pt40 ){
     if( TString(signalRegion).Contains("lowMet") ){
       cout << "Using pT > 40 GeV jets, low MET signal region" << endl;
-      pt40char = "_pt40_2012AB_lowMet";
       //pt40char = "_pt40_lowMet";
+      //pt40char = "_pt40_2012AB_lowMet";
+      pt40char = "_pt40_2012C_lowMet";
       K = 0.14;
     }
     else if( TString(signalRegion).Contains("highMet") ){
       cout << "Using pT > 40 GeV jets, high MET signal region" << endl;
-      pt40char = "_pt40_2012AB_highMet";
       //pt40char = "_pt40_highMet";
+      //pt40char = "_pt40_2012AB_highMet";
+      pt40char = "_pt40_2012C_highMet";
       K = 0.13;
     }
   }
@@ -141,7 +145,7 @@ void simplePlotMacro( bool printplots = false ){
   if( TString(bvetochar).Contains("Medium") ) bvetocut = TCut("nbcsvm==0");
   
   TCut njets3_40("njets40>=3");
-  TCut njets2_40("njets40>=3");
+  TCut njets2_40("njets40>=2");
   TCut ht100_40("ht40>=100.0");
   TCut nlep2("nlep==2");
   TCut mjj("mjj>70.0 && mjj<110.0");
@@ -163,7 +167,7 @@ void simplePlotMacro( bool printplots = false ){
       sel += pt2020;
       sel += njets3_40;
     }
-    if( TString(signalRegion).Contains("highMet") ){
+    else if( TString(signalRegion).Contains("highMet") ){
       sel += pt2010;
       sel += njets2_40;
       sel += ht100_40;
@@ -181,13 +185,11 @@ void simplePlotMacro( bool printplots = false ){
     sel += mjj;
   }
 
-  //TCut weight("weight * 9.2 * vtxweight * trgeff");
-  TCut weight("weight * 5.1 * vtxweight * trgeff");
+  TCut weight(Form("weight * %.1f * vtxweight * trgeff",lumi));
+  //TCut weight("1");
 
   cout << "WZ/ZZ selection : " << sel.GetTitle() << endl;
-  cout << "WZ/ZZ weight    : " << sel.GetTitle() << endl;
-
-  TCut raresel = sel + zdilep;
+  cout << "WZ/ZZ weight    : " << weight.GetTitle() << endl;
 
   //char* datafilename = (char*) Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s%s%s_HT100.root",iter,metvar,bvetochar,pt40char);
   char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s.root",iter,metvar,bvetochar,pt40char);
@@ -254,8 +256,8 @@ void simplePlotMacro( bool printplots = false ){
   vector<char*> predictedHisto;
 
   observedHisto.push_back((char*)"metObserved");        predictedHisto.push_back((char*)"metPredicted");
-  observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
-  observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
+  //observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
+  //observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
 
 
   //-----------------------------------
@@ -276,6 +278,7 @@ void simplePlotMacro( bool printplots = false ){
   TH1F*    h_wz[nplots];
   TH1F*    h_zz[nplots];
   TH1F*    h_vz[nplots];
+  TH1F*    h_rare[nplots];
   TH1F*    hsysterr[nplots];
 
   TLatex *t = new TLatex();
@@ -352,11 +355,13 @@ void simplePlotMacro( bool printplots = false ){
       metmax   = 250.0;
     }
 
-    h_wz[i]     = new TH1F(Form("h_wz_%i",i),Form("h_wz_%i",i),nmetbins,metmin,metmax);
-    h_zz[i]     = new TH1F(Form("h_zz_%i",i),Form("h_wz_%i",i),nmetbins,metmin,metmax);
+    h_wz[i]     = new TH1F(Form("h_wz_%i",i)   , Form("h_wz_%i",i)   , nmetbins,metmin,metmax);
+    h_zz[i]     = new TH1F(Form("h_zz_%i",i)   , Form("h_wz_%i",i)   , nmetbins,metmin,metmax);
+    h_rare[i]   = new TH1F(Form("h_rare_%i",i) , Form("h_rare_%i",i) , nmetbins,metmin,metmax);
 
     h_wz[i]->Sumw2();
     h_zz[i]->Sumw2();
+    h_rare[i]->Sumw2();
 
     TCut zzxsecweight("1.0");
     //TCut zzxsecweight("1.96");
@@ -364,8 +369,9 @@ void simplePlotMacro( bool printplots = false ){
 
     TCanvas *ctemp = new TCanvas();
     ctemp->cd();
-    chwz->Draw(Form("%s>>h_wz_%i",metvar,i),mysel*weight);
-    chzz->Draw(Form("%s>>h_zz_%i",metvar,i),mysel*weight*zzxsecweight);
+    chwz->  Draw(Form("%s>>h_wz_%i"   , metvar,i),mysel*weight);
+    chzz->  Draw(Form("%s>>h_zz_%i"   , metvar,i),mysel*weight*zzxsecweight);
+    chrare->Draw(Form("%s>>h_rare_%i" , metvar,i),(mysel+zdilep)*weight);
     delete ctemp;
 
     h_vz[i]     = (TH1F*) h_wz[i]->Clone(Form("h_vz_%i",i));
@@ -384,6 +390,7 @@ void simplePlotMacro( bool printplots = false ){
       float nof60       = h_ofpred[i]->Integral(1,bin60);
       float nwz60       = h_wz[i]->Integral(1,bin60);
       float nzz60       = h_zz[i]->Integral(1,bin60);
+      float nrare60     = h_rare[i]->Integral(1,bin60);
 
       cout << "Yields in 0-60 GeV region" << endl;
       cout << "data   : " << ndata60  << endl;
@@ -391,8 +398,9 @@ void simplePlotMacro( bool printplots = false ){
       cout << "OF     : " << nof60    << endl;
       cout << "WZ     : " << nwz60    << endl;
       cout << "ZZ     : " << nzz60    << endl;
+      cout << "Rare   : " << nrare60  << endl;
 
-      float SF = ( ndata60 - nof60 - nwz60 - nzz60 ) / ngjets60;
+      float SF = ( ndata60 - nof60 - nwz60 - nzz60 - nrare60 ) / ngjets60;
       cout << "Scaling gjets by : " << SF << endl;
       h_gjets[i]->Scale(SF);
     }
@@ -407,7 +415,9 @@ void simplePlotMacro( bool printplots = false ){
     h_wz[i]->Rebin(rebin);
     h_zz[i]->Rebin(rebin);
     h_vz[i]->Rebin(rebin);
+    h_rare[i]->Rebin(rebin);
 
+    h_rare[i]->SetFillColor(kMagenta-5);
     h_gjets[i]->SetFillColor(50);
     h_ofpred[i]->SetFillColor(42);
     h_vz[i]->SetFillColor(31);
@@ -418,11 +428,13 @@ void simplePlotMacro( bool printplots = false ){
     pred[i] = new THStack();
     // pred[i]->Add(h_wz[i]);
     // pred[i]->Add(h_zz[i]);
+    pred[i]->Add(h_rare[i]);
     pred[i]->Add(h_vz[i]);
     pred[i]->Add(h_ofpred[i]);
     pred[i]->Add(h_gjets[i]);
 
     htotpred[i] = (TH1F*) h_ofpred[i]->Clone(Form("htotpred_%i",i));
+    htotpred[i]->Add(h_rare[i]);
     htotpred[i]->Add(h_gjets[i]);
     htotpred[i]->Add(h_wz[i]);
     htotpred[i]->Add(h_zz[i]);
@@ -474,7 +486,9 @@ void simplePlotMacro( bool printplots = false ){
       bins[1] =  30;   xbins[1] =  30.0;
       bins[2] =  60;   xbins[2] =  60.0;
       bins[3] = 100;   xbins[3] = 100.0;
-      bins[4] = 200;   xbins[4] = 200.0;
+      if( pt40 && TString(signalRegion).Contains("highMet") ) { bins[4] = 150;   xbins[4] = 150.0; }
+      else                                                    { bins[4] = 200;   xbins[4] = 200.0; }
+      //bins[4] = 200;   xbins[4] = 200.0;
       bins[5] = 300;   xbins[5] = 300.0;
       xbins[6] = 350.0;
     }
@@ -522,24 +536,28 @@ void simplePlotMacro( bool printplots = false ){
     float nof[nbins];
     float nwz[nbins];
     float nzz[nbins];
+    float nrare[nbins];
     float ntot[nbins];
 
     float ngjets_syst[nbins];
     float nof_syst[nbins];
     float nwz_syst[nbins];
     float nzz_syst[nbins];
+    float nrare_syst[nbins];
     float ntot_syst[nbins];
 
     float ngjets_stat[nbins];
     float nof_stat[nbins];
     float nwz_stat[nbins];
     float nzz_stat[nbins];
+    float nrare_stat[nbins];
     float ntot_stat[nbins];
 
     float ngjets_toterr[nbins];
     float nof_toterr[nbins];
     float nwz_toterr[nbins];
     float nzz_toterr[nbins];
+    float nrare_toterr[nbins];
     float ntot_toterr[nbins];
 
     float excess[nbins];
@@ -564,6 +582,7 @@ void simplePlotMacro( bool printplots = false ){
       nof[ibin]    = h_ofpred[i]->Integral(bin,binhigh);
       nwz[ibin]    = h_wz[i]->Integral(bin,binhigh);
       nzz[ibin]    = h_zz[i]->Integral(bin,binhigh);
+      nrare[ibin]  = h_rare[i]->Integral(bin,binhigh);
       ntot[ibin]   = htotpred[i]->Integral(bin,binhigh);
 
 
@@ -612,8 +631,19 @@ void simplePlotMacro( bool printplots = false ){
 
 	// pt40 analysis without bveto
 	else{
-	  Ksyst = 0.02/0.12;
-	  if( bins[ibin] == 300 ) Ksyst = 0.08/0.12;
+
+	  if( TString(signalRegion).Contains("lowMet") ){
+	    Ksyst = 0.02/0.14;	  
+	    if( bins[ibin] == 200 ) Ksyst = 0.03/0.14;
+	    if( bins[ibin] == 300 ) Ksyst = 0.07/0.14;
+	  }
+
+	  else if( TString(signalRegion).Contains("highMet") ){
+	    Ksyst = 0.02/0.13;	  
+	    if( bins[ibin] == 200 ) Ksyst = 0.04/0.13;
+	    if( bins[ibin] == 300 ) Ksyst = 0.05/0.13;
+	  }
+
 	  if( !doKscaling) Ksyst = 0.0;
 
 	  Rsyst = 0.06;
@@ -630,14 +660,16 @@ void simplePlotMacro( bool printplots = false ){
       ngjets_syst[ibin] = 0.3 * h_gjets[i]->Integral(bin,binhigh);       // 30% uncertainty on Z+jets
       nwz_syst[ibin]    = 0.7 * h_wz[i]->Integral(bin,binhigh);          // 80% uncertainty on WZ
       nzz_syst[ibin]    = 0.5 * h_zz[i]->Integral(bin,binhigh);          // 50% uncertainty on ZZ
-      ntot_syst[ibin]   = sqrt( pow(ngjets_syst[ibin],2) + pow(nof_syst[ibin],2) + pow(nwz_syst[ibin],2) + pow(nzz_syst[ibin],2));
+      nrare_syst[ibin]  = 0.5 * h_rare[i]->Integral(bin,binhigh);        // 50% uncertainty on rare
+      ntot_syst[ibin]   = sqrt( pow(ngjets_syst[ibin],2) + pow(nof_syst[ibin],2) + pow(nwz_syst[ibin],2) + pow(nzz_syst[ibin],2) + pow(nrare_syst[ibin],2));
       
       // stat uncertainties
       ngjets_stat[ibin] = histError( h_gjets[i]  , bin , binhigh );
       nof_stat[ibin]    = histError( h_ofpred[i] , bin , binhigh );
       nwz_stat[ibin]    = histError( h_wz[i]     , bin , binhigh );
       nzz_stat[ibin]    = histError( h_zz[i]     , bin , binhigh );
-      ntot_stat[ibin]   = sqrt( pow(ngjets_stat[ibin],2) + pow(nof_stat[ibin],2) + pow(nwz_stat[ibin],2) + pow(nzz_stat[ibin],2));
+      nrare_stat[ibin]  = histError( h_rare[i]   , bin , binhigh );
+      ntot_stat[ibin]   = sqrt( pow(ngjets_stat[ibin],2) + pow(nof_stat[ibin],2) + pow(nwz_stat[ibin],2) + pow(nzz_stat[ibin],2) + pow(nrare_stat[ibin],2));
 
       // ngjets_stat[ibin] = 0.0;
       // nof_stat[ibin]    = 0.0;
@@ -647,10 +679,11 @@ void simplePlotMacro( bool printplots = false ){
 
       // tot uncertainties
       ngjets_toterr[ibin] = TMath::Min( sqrt( pow(ngjets_syst[ibin],2) + pow(ngjets_stat[ibin],2) ), ngjets[ibin] );
-      nof_toterr[ibin]    = TMath::Min( sqrt( pow(nof_syst[ibin],2) + pow(nof_stat[ibin],2) ) , nof[ibin] );
-      nwz_toterr[ibin]    = TMath::Min( sqrt( pow(nwz_syst[ibin],2) + pow(nwz_stat[ibin],2) ) , nwz[ibin] );
-      nzz_toterr[ibin]    = TMath::Min( sqrt( pow(nzz_syst[ibin],2) + pow(nzz_stat[ibin],2) ) , nzz[ibin] );
-      ntot_toterr[ibin]   = sqrt( pow(ngjets_toterr[ibin],2) + pow(nof_toterr[ibin],2) + pow(nwz_toterr[ibin],2) + pow(nzz_toterr[ibin],2));
+      nof_toterr[ibin]    = TMath::Min( sqrt( pow(nof_syst[ibin],2)   + pow(nof_stat[ibin],2) )   , nof[ibin] );
+      nwz_toterr[ibin]    = TMath::Min( sqrt( pow(nwz_syst[ibin],2)   + pow(nwz_stat[ibin],2) )   , nwz[ibin] );
+      nzz_toterr[ibin]    = TMath::Min( sqrt( pow(nzz_syst[ibin],2)   + pow(nzz_stat[ibin],2) )   , nzz[ibin] );
+      nrare_toterr[ibin]  = TMath::Min( sqrt( pow(nrare_syst[ibin],2) + pow(nrare_stat[ibin],2) ) , nrare[ibin] );
+      ntot_toterr[ibin]   = sqrt( pow(ngjets_toterr[ibin],2) + pow(nof_toterr[ibin],2) + pow(nwz_toterr[ibin],2) + pow(nzz_toterr[ibin],2)  + pow(nrare_toterr[ibin],2));
 
       excess[ibin]        = (ndata[ibin]-ntot[ibin])/sqrt( pow(ntot_toterr[ibin],2) + ndata[ibin]);
 
@@ -705,6 +738,17 @@ void simplePlotMacro( bool printplots = false ){
     cout << delim_end << endl;
 
     //-----------------------------
+    // rare MC
+    //-----------------------------
+
+    cout << delim_start << setw(width1) << "rare SM bkg" << setw(width2);
+    for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
+      cout << delim << setw(width1) << Form("%.1f %s %.1f",nrare[ibin],pm,nrare_toterr[ibin]) << setw(width2);
+      //cout << "|" << setw(width1) << Form("%.1f",nzz[ibin]) << setw(width2);
+    }
+    cout << delim_end << endl;
+
+    //-----------------------------
     // total bkg
     //-----------------------------
 
@@ -733,7 +777,7 @@ void simplePlotMacro( bool printplots = false ){
 
     cout << delim_start << setw(width1) << "significance" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
-      cout << delim << setw(width1) << Form("%.1f",excess[ibin]) << setw(width2);
+      cout << delim << setw(width1) << Form("%.1f$\\sigma$",excess[ibin]) << setw(width2);
     }
     cout << delim_end << endl;
 
@@ -749,14 +793,16 @@ void simplePlotMacro( bool printplots = false ){
     mainpad[i]->cd();
     mainpad[i]->SetLeftMargin(0.15);
     mainpad[i]->SetRightMargin(0.05);    
-    mainpad[i]->SetLogy();
+    if( xmin < 0 ) mainpad[i]->SetLogy();
 
     h_sf[i]->GetXaxis()->SetTitle("E_{T}^{miss} [GeV]");
     h_sf[i]->GetYaxis()->SetTitle("entries / 10 GeV");
     h_sf[i]->GetYaxis()->SetTitleOffset(1.0);
+    if( xmin > 0 ) h_sf[i]->GetXaxis()->SetRangeUser(xmin,350);
 
     if( bveto ) h_sf[i]->SetMinimum(0.01);
     else        h_sf[i]->SetMinimum(0.1);
+
     h_sf[i]->Draw("E1");
     pred[i]->Draw("histsame");
     h_sf[i]->Draw("sameE1");
@@ -769,6 +815,7 @@ void simplePlotMacro( bool printplots = false ){
     //leg->AddEntry(h_zz[i],"ZZ","f");
     //leg->AddEntry(h_wz[i],"WZ","f");
     leg->AddEntry(h_vz[i],"WZ+ZZ","f");
+    leg->AddEntry(h_rare[i],"rare SM","f");
     leg->SetFillColor(0);
     leg->SetBorderSize(0);
     leg->Draw();
@@ -776,7 +823,7 @@ void simplePlotMacro( bool printplots = false ){
     t->SetTextSize(0.04);
     t->DrawLatex(0.4,0.85,"CMS Preliminary");
     //t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
-    t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 5.1 fb^{-1}");
+    t->DrawLatex(0.4,0.79,Form("#sqrt{s} = 8 TeV, L_{int} = %.1f fb^{-1}",lumi));
     t->DrawLatex(0.4,0.73,title);
 
     can[i]->cd();
@@ -805,6 +852,7 @@ void simplePlotMacro( bool printplots = false ){
     hratio[i]->GetYaxis()->SetNdivisions(3);
     hratio[i]->GetYaxis()->SetTitle("ratio");
     hratio[i]->GetXaxis()->SetTitle("");
+    if( xmin > 0 ) hratio[i]->GetXaxis()->SetRangeUser(xmin,350);
     
     if( bveto ){
       hratio[i]->SetMinimum(0.0);
@@ -814,7 +862,7 @@ void simplePlotMacro( bool printplots = false ){
 
     else{
       hratio[i]->SetMinimum(0.0);
-      hratio[i]->SetMaximum(2.0);
+      hratio[i]->SetMaximum(3.0);
       hratio[i]->GetYaxis()->SetRangeUser(0.0,2.0);
     }
 
@@ -833,8 +881,15 @@ void simplePlotMacro( bool printplots = false ){
     hratio[i]->Draw("axissame");
 	
     TLine line;
-    if( bveto ) line.DrawLine(0.0,1.0,250,1.0);
-    else        line.DrawLine(0.0,1.0,350,1.0);
+
+    if( xmin > 0 ){
+      if( bveto ) line.DrawLine(xmin,1.0,250,1.0);
+      else        line.DrawLine(xmin,1.0,350,1.0);
+    }
+    else{
+      if( bveto ) line.DrawLine(0.0,1.0,250,1.0);
+      else        line.DrawLine(0.0,1.0,350,1.0);
+    }
 
     char* lep[3] = {"_all","_ee" ,"_mm"};
 
