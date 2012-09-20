@@ -301,6 +301,10 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 	cout << "SCALING ZJETS BY 111/946" << endl;
 	hyield->Scale( 111.0 / 946.0 );
       }
+      // if(TString(labels[imc]).Contains("ZZ") ){
+      // 	cout << "SCALING ZZ BY 1.92" << endl;
+      // 	hyield->Scale( 1.92 );
+      // }
 
       //do efficiency correction
       /*
@@ -375,7 +379,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
 TLegend *getLegend( vector<TChain*> chmc , vector<char*> labels , bool overlayData, float x1, float y1, float x2, float y2){
 
   //int colors[]={6,2,7,4,5,8,9,15,12};
-  int colors[]={7,4,2,5,8,9,15,12};
+  int colors[]={4,7,2,5,8,9,15,12};
   
   TLegend *leg = new TLegend(x1,y1,x2,y2);
 
@@ -500,7 +504,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
   //int colors[]={6,2,7,4,5,8,9,15,12};
   //int colors[]={kRed+2,5,7,5,5,8,9,15,12};
-  int colors[]={7,4,2,5,8,9,15,12};
+  int colors[]={4,7,2,5,8,9,15,12};
 
   assert( chmc.size() == labels.size() );
   const unsigned int nmc = chmc.size();
@@ -521,6 +525,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   if     ( TString(flavor).Contains("ee")  ) sel+="leptype==0";
   else if( TString(flavor).Contains("mm")  ) sel+="leptype==1";
   else if( TString(flavor).Contains("em")  ) sel+="leptype==2";
+  else if( TString(flavor).Contains("sf")  ) sel+="leptype<2";
   //else if( TString(flavor).Contains("all") ) 
 
   TCut trigweight(Form("%.2f",trigeff));
@@ -556,6 +561,11 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
       cout << "SCALING ZJETS BY 111/946" << endl;
       mchist[imc]->Scale( 111.0 / 946.0 );
     }
+
+    // if(TString(labels[imc]).Contains("ZZ") ){
+    //   cout << "SCALING ZJETS BY 1.92" << endl;
+    //   mchist[imc]->Scale( 1.92 );
+    // }
 
     if( normalize ) mchist[imc]->Scale(SF);
 
@@ -629,6 +639,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   else if( TString(flavor).Contains("mm")  ) text->DrawLatex(0.2,0.78,"Events with #mu#mu");
   else if( TString(flavor).Contains("em")  ) text->DrawLatex(0.2,0.78,"Events with e#mu");
   else if( TString(flavor).Contains("all") ) text->DrawLatex(0.2,0.78,"Events with ee/#mu#mu/e#mu");
+  else if( TString(flavor).Contains("sf")  ) text->DrawLatex(0.2,0.78,"Events with ee/#mu#mu");
 
   if( residual ){
     fullpad->cd();
