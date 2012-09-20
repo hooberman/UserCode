@@ -79,7 +79,7 @@ void initialize(char* path){
   cout << endl;
   cout << "Loading babies at       : " << path << endl;
 
-
+  /*
   data->  Add(Form("%s/data_53X_baby.root"         , path));
   data->  Add(Form("%s/data_2012C_53X_baby.root"   , path));
   tt->    Add(Form("%s/ttbar_53X_baby.root"        , path));
@@ -95,9 +95,9 @@ void initialize(char* path){
   ttV->   Add(Form("%s/ttW_53X_baby.root"          , path));
   ttV->   Add(Form("%s/ttZ_53X_baby.root"          , path));
   vvv->   Add(Form("%s/VVV_53X_baby.root"          , path));
+  */
 
 
-  /*
   cout << "-------------------------------------" << endl;
   cout << "USING SKIMMED SAMPLES WITH NJETS >= 2" << endl;
   cout << "-------------------------------------" << endl << endl;
@@ -117,7 +117,8 @@ void initialize(char* path){
   ttV->   Add(Form("%s/ttW_53X_baby_2jets.root"          , path));
   ttV->   Add(Form("%s/ttZ_53X_baby_2jets.root"          , path));
   vvv->   Add(Form("%s/VVV_53X_baby_2jets.root"          , path));
-*/
+
+
   mc.push_back(zjets);   mclabels.push_back("zjets");
   mc.push_back(wz);      mclabels.push_back("WZ");
   mc.push_back(zz);      mclabels.push_back("ZZ");
@@ -125,7 +126,7 @@ void initialize(char* path){
   mc.push_back(t);       mclabels.push_back("single top");
   mc.push_back(ww);      mclabels.push_back("WW");
   mc.push_back(ttV);     mclabels.push_back("ttV");
-  mc.push_back(vvv);     mclabels.push_back("vvv");
+  mc.push_back(vvv);     mclabels.push_back("VVV");
 
   //mc.push_back(zjetsee); mclabels.push_back("zjetsee");
   //mc.push_back(zjetsmm); mclabels.push_back("zjetsmm");
@@ -161,7 +162,8 @@ TCut selection_TCut(){
   TCut rho40("rho>=0.0 && rho<40.0");
   TCut mjj("mjj>70.0 && mjj<110.0");
   TCut nb1("nbcsvm>=1");
-  TCut nb0("nbcsvm==0");
+  TCut nbm0("nbcsvm==0");
+  TCut nbl0("nbcsvl==0");
   TCut dR01("sqrt(  (lep1.eta()-lep2.eta())*(lep1.eta()-lep2.eta())  +  acos(cos((lep1.phi()-lep2.phi())))*acos(cos((lep1.phi()-lep2.phi()) )) ) > 0.1");
   TCut runrange("isdata==0 || (run<197556 || run>198913)");
   TCut mll15("dilmass>15.0");
@@ -171,7 +173,7 @@ TCut selection_TCut(){
   TCut emtype("leptype==2 && (em==1||me==1||isdata==0)");
   TCut sf = eetype||mmtype;
   TCut filters("csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1");
-
+  TCut mt100("sqrt(2*pfmet*lep3.pt()*(1-cos(pfmetphi-lep3.phi())))>100.0"); 
   // no trigger requirements
   // TCut eetype("leptype==0 && jetptll-ptll>-5 && jetptlt-ptlt>-5");
   // TCut mmtype("leptype==1");
@@ -284,10 +286,14 @@ TCut selection_TCut(){
   sel += filters;
   sel += pt2020;
   sel += mll15;
-  //sel += njets2;
+  sel += njets2;
+  sel += nbm0;
+  //sel += nbl0;
+  //sel += mjj;
+  sel += nlep2;
   //sel += mll_76_106;
   sel += Zmass;
-  */
+  */  
   //------------------------------
   // WZ control region
   //------------------------------
@@ -300,9 +306,25 @@ TCut selection_TCut(){
   sel += "nlep==3 && lep3.pt()>20.0";
   sel += met50;
   sel += Zmass;
-  //sel += njets2;
+  sel += njets2;
   //sel += nb0;
+  sel += sf;
+  //sel += mt100;
 
+  //------------------------------
+  // ZZ control region
+  //------------------------------
+  /*
+  TCut sel;
+  sel += runrange;
+  sel += (eetype||mmtype||emtype);
+  sel += filters;
+  sel += pt2020;
+  sel += "nlep==4 && lep3.pt()>20.0 && lep4.pt()>20.0";
+  sel += Zmass;
+  sel += njets2;
+  //sel += nb0;
+  */  
   cout << "Using selection         : " << sel.GetTitle() << endl;
 
   return sel;
@@ -311,7 +333,7 @@ TCut weight_TCut(){
 
   //TCut weight("1");
   //TCut weight("weight * 5.10 * vtxweight * trgeff");
-  TCut weight("weight * 9.2 * trgeff * vtxweight");
+  TCut weight("weight * 9.2 * trgeff * vtxweight * 1.66");
   //TCut weight("weight * 5.10");
   //TCut weight("weight * 2.5 * vtxweight");
   //TCut weight("weight * 5.10");
@@ -365,7 +387,7 @@ void printYieldTable( char* path , bool latex = false ){
 void makePlots( char* path , bool printgif = false ){
 
   bool combine     = true;
-  int  nplots      = 3;
+  int  nplots      = 1;
   bool residual    = true;
   bool log         = false;
   bool overlayData = true;
@@ -452,19 +474,19 @@ void makePlots( char* path , bool printgif = false ){
   // n.push_back(30);  xi.push_back(20.);  xf.push_back(320.); 
   // flavor.push_back("all"); 
   // cuts.push_back(TCut("leptype<2"));
-  /*
-  vars.push_back("dilmass"); 
-  xt.push_back("M(ee) (GeV)");
-  n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
-  flavor.push_back("ee"); 
-  cuts.push_back(TCut("leptype==0"));
 
-  vars.push_back("dilmass"); 
-  xt.push_back("M(#mu#mu) (GeV)");
-  n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
-  flavor.push_back("mm"); 
-  cuts.push_back(TCut("leptype==1"));
-  */
+  // vars.push_back("dilmass"); 
+  // xt.push_back("M(ee) (GeV)");
+  // n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
+  // flavor.push_back("ee"); 
+  // cuts.push_back(TCut("leptype==0"));
+
+  // vars.push_back("dilmass"); 
+  // xt.push_back("M(#mu#mu) (GeV)");
+  // n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
+  // flavor.push_back("mm"); 
+  // cuts.push_back(TCut("leptype==1"));
+
   // vars.push_back("dilmass"); 
   // xt.push_back("M(e#mu) (GeV)");
   // n.push_back(30);  xi.push_back(0.);  xf.push_back(300.); 
@@ -579,13 +601,32 @@ void makePlots( char* path , bool printgif = false ){
   //vars.push_back("w.pt()");        xt.push_back("W p_{T} (GeV)");      n.push_back(10);  xi.push_back(0);    xf.push_back(400);
 
   // WZ/ZZ control plots
-  vars.push_back("njets");         xt.push_back("njets");          n.push_back(5);   xi.push_back(0);    xf.push_back(5);       flavor.push_back("all"); cuts.push_back(TCut(""));
-  vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");    n.push_back(6);   xi.push_back(0.);   xf.push_back(300.0);   flavor.push_back("all"); cuts.push_back(TCut(""));
-  vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");  n.push_back(6);   xi.push_back(0);    xf.push_back(300.0);   flavor.push_back("all"); cuts.push_back(TCut(""));
+  // vars.push_back("njets");         xt.push_back("njets");          n.push_back(5);   xi.push_back(0);    xf.push_back(5);       flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");    n.push_back(6);   xi.push_back(0.);   xf.push_back(300.0);   flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");  n.push_back(6);   xi.push_back(0);    xf.push_back(300.0);   flavor.push_back("sf"); cuts.push_back(TCut(""));
 
-  // vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(10);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("ee");
-  // vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(10);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("mm");
-  // vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(10);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("em");
+  // vars.push_back("lep1.pt()");   xt.push_back("1st lepton p_{T} [GeV]"); n.push_back(10);   xi.push_back(0); xf.push_back(200); flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("lep2.pt()");   xt.push_back("2nd lepton p_{T} [GeV]"); n.push_back(10);   xi.push_back(0); xf.push_back(200); flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("lep3.pt()");   xt.push_back("3rd lepton p_{T} [GeV]"); n.push_back(10);   xi.push_back(0); xf.push_back(200); flavor.push_back("sf"); cuts.push_back(TCut(""));
+
+  // vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(20);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("ee"); cuts.push_back(TCut("leptype==0"));
+  // vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(20);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("mm"); cuts.push_back(TCut("leptype==1"));
+  // vars.push_back("mjj");             xt.push_back("M(jj) (GeV)");      n.push_back(20);   xi.push_back(0);    xf.push_back(400.0);   flavor.push_back("em"); cuts.push_back(TCut("leptype==2"));
+
+  // vars.push_back("sqrt(2*pfmet*lep3.pt()*(1-cos(pfmetphi-lep3.phi())))"); 
+  // xt.push_back("M_{T} [GeV]");  
+  // n.push_back(20);  xi.push_back(0.);  xf.push_back(200.); 
+  // flavor.push_back("sf"); 
+  // cuts.push_back(TCut(""));
+
+
+  // vars.push_back("njets");         xt.push_back("njets");          n.push_back(10);   xi.push_back(0);    xf.push_back(10);       flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("sumjetpt");      xt.push_back("H_{T} [GeV]");    n.push_back(10);   xi.push_back(0);    xf.push_back(500);      flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("nbcsvm");        xt.push_back("b-tags (CSVM)");  n.push_back(4);    xi.push_back(0);    xf.push_back(4);        flavor.push_back("sf"); cuts.push_back(TCut(""));
+
+  //vars.push_back("pfmet");         xt.push_back("E_{T}^{miss} [GeV]");  n.push_back(8);   xi.push_back(0);    xf.push_back(400);    flavor.push_back("sf"); cuts.push_back(TCut(""));
+
+  vars.push_back("mjj");         xt.push_back("dijet mass [GeV]");  n.push_back(20);   xi.push_back(0);    xf.push_back(500);    flavor.push_back("sf"); cuts.push_back(TCut(""));
 
   const unsigned int nvars = vars.size();
   
@@ -598,8 +639,8 @@ void makePlots( char* path , bool printgif = false ){
 
   for( unsigned int ivar = 0 ; ivar < nvars ; ++ivar ){     
     
-    if( ivar < 2 ) log = true;
-    else           log = false;
+    // if( ivar < 2 ) log = true;
+    // else           log = false;
     
     //if( TString(vars.at(ivar)).Contains("met") ) log = true;
     //else                                         log = false;
@@ -665,14 +706,14 @@ void makePlots( char* path , bool printgif = false ){
 
     if( printgif && !combine ){
       can[ivar]->Print(Form("../plots/%s_%s.pdf",myvar,flavor.at(ivar)));
-      can[ivar]->Print(Form("../plots/%s_%s.png",myvar,flavor.at(ivar)));
+      //can[ivar]->Print(Form("../plots/%s_%s.png",myvar,flavor.at(ivar)));
     }
   } 
 
   if( printgif && combine ){
     can[0]->Print("../plots/makePlots.pdf");
-    can[0]->Print("../plots/makePlots.ps");
-    can[0]->Print("../plots/makePlots.png");
+    //can[0]->Print("../plots/makePlots.ps");
+    //can[0]->Print("../plots/makePlots.png");
   }
 
 

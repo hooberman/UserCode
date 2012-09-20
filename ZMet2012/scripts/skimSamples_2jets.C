@@ -31,10 +31,11 @@ void skim(char* version, char* sample);
 
 void skimSamples_2jets(){
 
-  // skim("V00-01-04","data_53X");
+  skim("V00-01-06","data_53X");
   // skim("V00-01-04","data_2012C_53X");
   // skim("V00-01-04","ttbar_53X");
   // skim("V00-01-04","zjets_full_53X");
+  // skim("V00-01-03","zjets_53X");
   // skim("V00-01-04","wz_53X");
   // skim("V00-01-04","wz2l2q_53X");
   // skim("V00-01-04","zz_53X");
@@ -47,8 +48,8 @@ void skimSamples_2jets(){
   // skim("V00-01-04","ttZ_53X");
   // skim("V00-01-04","VVV_53X");
 
-  skim("V00-01-00","DoubleElectron");
-  skim("V00-01-00","DoubleElectron_2012Cv2");
+  // skim("V00-01-00","DoubleElectron");
+  // skim("V00-01-00","DoubleElectron_2012Cv2");
 
 }
 
@@ -61,7 +62,7 @@ void skim(char* version, char* sample){
   //--------------------------------------------------
 
   //char* path                    = Form("../output/%s",version);
-  char* path                    = Form("../photon_output/%s",version);
+  char* path                    = Form("../output/%s",version);
   char* infilename		= Form("%s/%s_baby.root",path,sample);
 
   //--------------------------------------------------
