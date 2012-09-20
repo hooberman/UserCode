@@ -27,7 +27,7 @@
 
 using namespace std;
 
-bool pt40 = false;
+bool pt40 = true;
 
 void extractK( bool exclusive = false , bool printplot = false , bool bveto = false );
 
@@ -75,7 +75,7 @@ void extractK( bool exclusive , bool printplot , bool bveto ){
   TCut nb0("nbm==0");
   TCut mjj("mjj>70.0 && mjj<110.0");
   TCut nlep2("nlep==2");
-  TCut pt40cuts("njets40>=2 && ht40>=300");
+  TCut pt40cuts("njets40>=2");
   TCut pt2010("lep1.pt()>20 && lep2.pt()>10");
   TCut pt2020("lep1.pt()>20 && lep2.pt()>20");
   TCut filters("csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1");
@@ -88,8 +88,9 @@ void extractK( bool exclusive , bool printplot , bool bveto ){
   //sel += transveto;
   
   if( pt40 ){
-    sel += pt40cuts;
-    sel += pt2010;
+    //sel += pt40cuts;
+    sel += "njets40>=3";
+    sel += pt2020;
   }
 
   else{
