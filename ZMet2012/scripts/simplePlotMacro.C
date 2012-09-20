@@ -44,13 +44,16 @@ float    xmin         =      -1;
 bool     latex        =   false;
 metType  myMetType    = e_pfmet; 
 bool     normToLowMet =    true;
-bool     exclusive    =   false;
+bool     exclusive    =    true;
 bool     blind        =   false;
 float    lumi         =     9.2;
+bool     printCards   =   false;
 
 //metType  myMetType  = e_t1newpfmet; 
 //metType  myMetType  = e_t1pfmet; 
 //float    Rem        =    1.18; 
+
+void printCard( char* filename , int nobs , float nbkg , float errbkg );
 
 float histError( TH1F* hist , int lowbin , int binhigh ){
 
@@ -468,6 +471,7 @@ void simplePlotMacro( bool printplots = false ){
       // bins[6] = 200;   xbins[6] = 200.0;
       // xbins[7] = 250.0;
 
+
       bins[0] =   0;   xbins[0] =   0.0;
       bins[1] =  30;   xbins[1] =  30.0;
       bins[2] =  60;   xbins[2] =  60.0;
@@ -479,6 +483,19 @@ void simplePlotMacro( bool printplots = false ){
       bins[8] = 180;   xbins[8] = 180.0;
       bins[9] = 200;   xbins[9] = 200.0;
       xbins[10] = 250.0;
+
+
+      /*
+      bins[0] =  60;   xbins[0] =  60.0;
+      bins[1] =  80;   xbins[1] =  80.0;
+      bins[2] = 100;   xbins[2] = 100.0;
+      bins[3] = 120;   xbins[3] = 120.0;
+      bins[4] = 140;   xbins[4] = 140.0;
+      bins[5] = 160;   xbins[5] = 160.0;
+      bins[6] = 180;   xbins[6] = 180.0;
+      bins[7] = 200;   xbins[7] = 200.0;
+      xbins[8] = 250.0;
+      */
     }
 
     else{
@@ -691,6 +708,8 @@ void simplePlotMacro( bool printplots = false ){
       hsysterr[i]->SetBinContent(ibin+1,1);
       hsysterr[i]->SetBinError(ibin+1,ntot_toterr[ibin]/ntot[ibin]);
       //}
+
+      if( printCards ) printCard( Form("met%i%s.txt",bins[ibin],mybvetochar) , (int)ntot[ibin] , ntot[ibin] , ntot_toterr[ibin]/ntot[ibin] );
     }
 
 
@@ -905,4 +924,29 @@ void simplePlotMacro( bool printplots = false ){
 
   }
   
+}
+
+
+void printCard( char* filename , int nobs , float nbkg , float errbkg ){
+
+  ofstream* ofile = new ofstream(Form("cards/%s",filename),ios::trunc);
+
+  *ofile << "imax 1  number of channels" << endl;
+  *ofile << "jmax 1  number of backgrounds" << endl;
+  *ofile << "kmax 2  number of nuisance parameters (sources of systematical uncertainties)" << endl;
+  *ofile << "------------" << endl;
+  *ofile << "# we have just one channel, in which we observe 0 events" << endl;
+  *ofile << "bin         1" << endl;
+  *ofile << Form("observation %i",nobs) << endl;
+  *ofile << "------------" << endl;
+  *ofile << "bin             1      1" << endl;
+  *ofile << "process       signal  background" << endl;
+  *ofile << "process         0      1" << endl;
+  *ofile << Form("rate            1   %.2f",nbkg) << endl;
+  *ofile << "------------" << endl;
+  *ofile << "deltaS  lnN   1.10    -     uncertainty on signal" << endl;
+  *ofile << Form("deltaB  lnN     -   %.2f    uncertainty on background",1.0+errbkg) << endl;
+
+  ofile->close();
+
 }
