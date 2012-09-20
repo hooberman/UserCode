@@ -28,7 +28,7 @@
   TCut runrange("isdata==0 || (run<197556 || run>198913)");
 
   TCut sel;
-
+  /*
   sel += runrange;
   sel += filters;
   sel += (ee||mm||em);
@@ -39,11 +39,11 @@
   sel += bveto;
   sel += mjj;
   sel += nlep2;
-
+  */
   //------------------------
   // high-MET SR (Aachen)
   //------------------------
-  /*
+
   sel += runrange;
   sel += filters;
   sel += (ee||mm||em);
@@ -51,19 +51,19 @@
   sel += njets40_2;
   sel += ht40_100;
   sel += met150;
-  */
+
 
   //------------------------
   // low-MET SR (ETH)
   //------------------------
-  /*
+
   sel += runrange;
   sel += filters;
   sel += (ee||mm||em);
   sel += pt2020;
   sel += njets40_3;
   sel += met100;
-  */
+
 
   //sel += Zmass;
   //sel += (ee||mm);
