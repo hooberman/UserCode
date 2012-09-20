@@ -1,10 +1,11 @@
 {
 
   TChain *ch = new TChain("T1");
-  ch->Add("../output/V00-00-24/dataskim2010_all_baby_2jets.root");
+  //ch->Add("../output/V00-00-24/dataskim2010_all_baby_2jets.root");
+  ch->Add("../output/V00-01-06/data_53X_baby_2jets.root");
 
-  TCut presel("pfmet>100 && njets40>=3 && lep1.pt()>20.0 && lep2.pt()>20.0 && abs(lep1.eta())<1.4 && abs(lep2.eta())<1.4");
-  //TCut presel("pfmet>150 && njets40>=2 && ht40>=100.0");
+  //TCut presel("pfmet>100 && njets40>=3 && lep1.pt()>20.0 && lep2.pt()>20.0 && dilmass>15.0 && dilmass<70.0");
+  TCut presel("pfmet>150 && njets40>=2 && ht40>=100.0 && dilmass>15.0 && dilmass<70.0");
 
   //TCut leptons("");
 
@@ -72,12 +73,23 @@
   hem->Draw("samehist");
   hemall->Draw("sameE1");
   
-  cout << "ee     " << hee->GetEntries()    << endl;
-  cout << "ee all " << heeall->GetEntries() << endl;
-  cout << "mm     " << hmm->GetEntries()    << endl;
-  cout << "mm all " << hmmall->GetEntries() << endl;
-  cout << "em     " << hem->GetEntries()    << endl;
-  cout << "em all " << hemall->GetEntries() << endl;
+  cout << endl;
+  cout << "ee       " << hee->GetEntries()    << endl;
+  cout << "ee all   " << heeall->GetEntries() << endl;
+  cout << "increase " << heeall->GetEntries() / (float) hee->GetEntries() << endl;
+  cout << endl;
+  cout << "mm       " << hmm->GetEntries()    << endl;
+  cout << "mm all   " << hmmall->GetEntries() << endl;
+  cout << "increase " << hmmall->GetEntries() / (float) hmm->GetEntries() << endl;
+  cout << endl;
+  cout << "em       " << hem->GetEntries()    << endl;
+  cout << "em all   " << hemall->GetEntries() << endl;
+  cout << "increase " << hemall->GetEntries() / (float) hem->GetEntries() << endl;
+
+  // cout << "mm     " << hmm->GetEntries()    << endl;
+  // cout << "mm all " << hmmall->GetEntries() << endl;
+  // cout << "em     " << hem->GetEntries()    << endl;
+  // cout << "em all " << hemall->GetEntries() << endl;
 
   c1->Print("../plots/trig.pdf");
 
