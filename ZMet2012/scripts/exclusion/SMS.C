@@ -1,4 +1,4 @@
-#include "Utils/SMS_utils.C"
+//#include "Utils/SMS_utils.C"
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -25,26 +25,33 @@
 #include <sstream>
 #include <iomanip>
 
-float getObservedLimit( int metcut , float seff , bool do3jets );
-float getExpectedLimit( int metcut , float seff , bool do3jets );
+float getObservedUpperLimit( int metcut );
+float getExpectedUpperLimit( int metcut );
 
 using namespace std;
 
-void SMS(char* sample , bool print = false){
+void SMS(char* sample = "wzsms" , bool print = false){
 
   //--------------------------------------------------
   // input parameters
   //--------------------------------------------------
   
-  const float denom    = 20000;
-  const float lumi     = 4980;
-  const char* filename = Form("../../output/V00-02-04/%s_baby.root",sample);
-  bool do3jets = false;
+  const float denom    = 100000;
+  const float lumi     =   9200;
+  const char* filename = Form("../../output/V00-01-05/%s_baby_oldIso.root",sample);
 
   cout << "Using file        " << filename << endl;
   cout << "Using denominator " << denom    << " events" << endl;
   cout << "Using lumi        " << lumi     << " pb-1" << endl;
-  cout << "Doing 3 jets?     " << do3jets  << endl;
+
+  //--------------------------------------------------
+  // set text stuff
+  //--------------------------------------------------
+
+  char* xtitle  = "m_{#chi_{2}^{0}} = m_{#chi_{1}^{#pm}} [GeV]";
+  char* ytitle  = "m_{#chi_{1}^{0}} [GeV]";
+  char* label   = "CMS Preliminary #sqrt{s} = 8 TeV, #scale[0.6]{#int}Ldt = 9.2 fb^{-1}";
+  char* process = "pp #rightarrow#chi_{2}^{0} #chi_{1}^{#pm} #rightarrow WZ+E_{T}^{miss}";
 
   //--------------------------------------------------
   // read in TChain
@@ -57,27 +64,34 @@ void SMS(char* sample , bool print = false){
   // read in reference cross section
   //--------------------------------------------------
 
-  TFile *xsecfile = TFile::Open("reference_xSec_mg2TeV.root");
-  TH1F* refxsec   = (TH1F*) xsecfile->Get("gluino");
+  TFile *xsecfile = TFile::Open("C1N2_8TeV_finer.root");
+  TH1F* refxsec   = (TH1F*) xsecfile->Get("C1N2_8TeV_NLO");
 
   //--------------------------------------------------
   // preselection
   //--------------------------------------------------
 
-  TCut zmass("dilmass>81 && dilmass<101");
-  TCut njets2("njets >= 2");
-  TCut njets3("njets >= 3");
-  TCut sf("leptype==0||leptype==1");
-  TCut met30 ("pfmet>30");
-  TCut met60 ("pfmet>60");
-  TCut met100("pfmet>100");
-  TCut met200("pfmet>200");
-  TCut met300("pfmet>300");
+  TCut pt2020("lep1.pt()>20.0 && lep2.pt()>20.0");
+  TCut Zmass("dilmass>81 && dilmass<101");
+  TCut sf = "leptype<2";
+  TCut njets2("njets>=2");
+  TCut bveto("nbcsvm==0");
+  TCut nlep2("nlep==2");
+  TCut mjj("mjj>70.0 && mjj<110.0");
 
-  TCut presel  = zmass + njets2 + sf;
-  if( do3jets ) presel  = zmass + njets3 + sf;
+  TCut presel;
+  presel += pt2020;
+  presel += Zmass;
+  presel += sf;
+  presel += njets2;
+  presel += bveto;
+  presel += mjj;
+  presel += nlep2;
+
+  TCut weight("vtxweight * trgeff");
 
   cout << "Using selection   " << presel.GetTitle() << endl;
+  cout << "Using weight      " << weight.GetTitle() << endl;
 
   //--------------------------------------------------
   // signal regions
@@ -88,9 +102,23 @@ void SMS(char* sample , bool print = false){
   vector<string>  labels;
   vector<int>     cuts;
 
+  TCut met60 ("pfmet > 60.0");
+  TCut met80 ("pfmet > 80.0");
+  TCut met100("pfmet > 100.0");
+  TCut met120("pfmet > 120.0");
+  TCut met140("pfmet > 140.0");
+  TCut met160("pfmet > 160.0");
+  TCut met180("pfmet > 180.0");
+  TCut met200("pfmet > 200.0");
+
+  // sigcuts.push_back(TCut(presel+met60));      signames.push_back("E_{T}^{miss} > 60 GeV");      labels.push_back("met60");  cuts.push_back(60);
+  // sigcuts.push_back(TCut(presel+met80));      signames.push_back("E_{T}^{miss} > 80 GeV");      labels.push_back("met80");  cuts.push_back(80);
   sigcuts.push_back(TCut(presel+met100));     signames.push_back("E_{T}^{miss} > 100 GeV");     labels.push_back("met100"); cuts.push_back(100);
-  sigcuts.push_back(TCut(presel+met200));     signames.push_back("E_{T}^{miss} > 200 GeV");     labels.push_back("met200"); cuts.push_back(200);
-  sigcuts.push_back(TCut(presel+met300));     signames.push_back("E_{T}^{miss} > 300 GeV");     labels.push_back("met300"); cuts.push_back(300);
+  // sigcuts.push_back(TCut(presel+met120));     signames.push_back("E_{T}^{miss} > 120 GeV");     labels.push_back("met120"); cuts.push_back(120);
+  // sigcuts.push_back(TCut(presel+met140));     signames.push_back("E_{T}^{miss} > 140 GeV");     labels.push_back("met140"); cuts.push_back(140);
+  // sigcuts.push_back(TCut(presel+met160));     signames.push_back("E_{T}^{miss} > 160 GeV");     labels.push_back("met160"); cuts.push_back(160);
+  // sigcuts.push_back(TCut(presel+met180));     signames.push_back("E_{T}^{miss} > 180 GeV");     labels.push_back("met180"); cuts.push_back(180);
+  // sigcuts.push_back(TCut(presel+met200));     signames.push_back("E_{T}^{miss} > 200 GeV");     labels.push_back("met200"); cuts.push_back(200);
 
   const unsigned int nsig = sigcuts.size();
 
@@ -128,47 +156,57 @@ void SMS(char* sample , bool print = false){
     cout << "Selection up  : " << jesupcut      << endl;
     cout << "Selection dn  : " << jesdncut      << endl;
 
-    heff[i]      = new TH2F(Form("heff_%i",i)        , Form("heff_%i",i)       , 48,0,1200,48,0,1200);
-    heffup[i]    = new TH2F(Form("heffup_%i",i)      , Form("heffup_%i",i)     , 48,0,1200,48,0,1200);
-    heffdn[i]    = new TH2F(Form("heffdn_%i",i)      , Form("heffdn_%i",i)     , 48,0,1200,48,0,1200);
-    hxsec[i]     = new TH2F(Form("hxsec_%i",i)       , Form("hxsec_%i",i)      , 48,0,1200,48,0,1200);
-    hxsec_exp[i] = new TH2F(Form("hxsec_exp_%i",i)   , Form("hxsec_exp_%i",i)  , 48,0,1200,48,0,1200);
-    hexcl[i]     = new TH2F(Form("hexcl_%i",i)       , Form("hexcl_%i",i)      , 48,0,1200,48,0,1200);
-    hjes[i]      = new TH2F(Form("hjes_%i",i)        , Form("hjes_%i",i)       , 48,0,1200,48,0,1200);
+    int   nx   =  26;
+    float xmin =  95;
+    float xmax = 355;
 
-    ch->Draw(Form("ml:mg>>heff_%i",i),sigcuts.at(i));
-    heff[i]->Scale(0.95/denom);
+    int   ny   =  36;
+    float ymin =  -5;
+    float ymax = 355;
+    
+    heff[i]      = new TH2F(Form("heff_%i",i)        , Form("heff_%i",i)       ,  nx , xmin , xmax , ny , ymin , ymax );
+    heffup[i]    = new TH2F(Form("heffup_%i",i)      , Form("heffup_%i",i)     ,  nx , xmin , xmax , ny , ymin , ymax );
+    heffdn[i]    = new TH2F(Form("heffdn_%i",i)      , Form("heffdn_%i",i)     ,  nx , xmin , xmax , ny , ymin , ymax );
+    hxsec[i]     = new TH2F(Form("hxsec_%i",i)       , Form("hxsec_%i",i)      ,  nx , xmin , xmax , ny , ymin , ymax );
+    hxsec_exp[i] = new TH2F(Form("hxsec_exp_%i",i)   , Form("hxsec_exp_%i",i)  ,  nx , xmin , xmax , ny , ymin , ymax );
+    hexcl[i]     = new TH2F(Form("hexcl_%i",i)       , Form("hexcl_%i",i)      ,  nx , xmin , xmax , ny , ymin , ymax );
+    hjes[i]      = new TH2F(Form("hjes_%i",i)        , Form("hjes_%i",i)       ,  nx , xmin , xmax , ny , ymin , ymax );
 
-    ch->Draw(Form("ml:mg>>heffup_%i",i),jesupcut);
-    heffup[i]->Scale(0.95/denom);
+    ch->Draw(Form("ml:mg>>heff_%i",i),sigcuts.at(i)*weight);
+    heff[i]->Scale(1.0/denom);
 
-    ch->Draw(Form("ml:mg>>heffdn_%i",i),jesdncut);
-    heffdn[i]->Scale(0.95/denom);
+    // ch->Draw(Form("ml:mg>>heffup_%i",i),jesupcut*weight);
+    // heffup[i]->Scale(1.0/denom);
 
-    for( unsigned int ibin = 1 ; ibin <= 48 ; ibin++ ){
-      for( unsigned int jbin = 1 ; jbin <= 48 ; jbin++ ){
+    // ch->Draw(Form("ml:mg>>heffdn_%i",i),jesdncut*weight);
+    // heffdn[i]->Scale(1.0/denom);
 
-	float mg = heff[i]->GetXaxis()->GetBinCenter(ibin)-12.5;
-	float ml = heff[i]->GetYaxis()->GetBinCenter(jbin)-12.5;
+    for( unsigned int ibin = 1 ; ibin <= nx ; ibin++ ){
+      for( unsigned int jbin = 1 ; jbin <= ny ; jbin++ ){
+
+	float mg = heff[i]->GetXaxis()->GetBinCenter(ibin);
+	float ml = heff[i]->GetYaxis()->GetBinCenter(jbin);
 
 	float eff    = heff[i]->GetBinContent(ibin,jbin);
-	float effup  = heffup[i]->GetBinContent(ibin,jbin);
-	float effdn  = heffdn[i]->GetBinContent(ibin,jbin);
+	// float effup  = heffup[i]->GetBinContent(ibin,jbin);
+	// float effdn  = heffdn[i]->GetBinContent(ibin,jbin);
 
 	if( eff   < 1e-20 ) continue;
 
-	float dup    = effup/eff-1;
-	float ddn    = 1-effdn/eff;
-	float djes   = 0.5 * (dup+ddn);
-	hjes[i]->SetBinContent(ibin,jbin,djes);
+	// float dup    = effup/eff-1;
+	// float ddn    = 1-effdn/eff;
+	// float djes   = 0.5 * (dup+ddn);
+	// hjes[i]->SetBinContent(ibin,jbin,djes);
 
-	float toterr = sqrt( 0.022*0.022 + 0.05*0.05 + djes*djes );
+	// float toterr = sqrt( 0.04*0.04 + 0.05*0.05 + 0.05*0.05 + djes*djes );
 
-	float this_ul = getObservedLimit( cuts.at(i) , toterr , do3jets );
-	float xsecul  = this_ul / ( lumi * eff * 0.19 );
+	//float this_ul = getObservedLimit( cuts.at(i) , toterr );
+	float this_ul = getObservedUpperLimit( cuts.at(i) );
+	float xsecul  = this_ul / ( lumi * eff );
 
-	float this_ul_exp = getExpectedLimit( cuts.at(i) , toterr , do3jets );
-	float xsecul_exp  = this_ul_exp / ( lumi * eff * 0.19 );
+	//float this_ul_exp = getExpectedLimit( cuts.at(i) , toterr );
+	float this_ul_exp = getExpectedUpperLimit( cuts.at(i) );
+	float xsecul_exp  = this_ul_exp / ( lumi * eff );
 
 	if( eff > 0 ){
 	  hxsec[i]->SetBinContent(ibin,jbin, xsecul );
@@ -205,7 +243,7 @@ void SMS(char* sample , bool print = false){
     //can[i]->Divide(2,1);
     //can[i] = new TCanvas(Form("can_%i",i),Form("can_%i",i),1800,600);
     //can[i]->Divide(3,1);
-    can[i] = new TCanvas(Form("can_%i",i),Form("can_%i",i),1200,1200);
+    can[i] = new TCanvas(Form("can_%i",i),Form("can_%i",i),1000,1000);
     can[i]->Divide(2,2);
 
     //-------------------------------
@@ -216,15 +254,16 @@ void SMS(char* sample , bool print = false){
     gPad->SetTopMargin(0.1);
     gPad->SetRightMargin(0.2);
     heff[i]->GetXaxis()->SetLabelSize(0.035);
-    heff[i]->GetYaxis()->SetTitle("#chi^{0}_{1} mass (GeV)");
-    heff[i]->GetXaxis()->SetTitle("gluino mass (GeV)");
-    heff[i]->GetZaxis()->SetTitle("efficiency");
+    heff[i]->Scale(1000);
+    heff[i]->GetYaxis()->SetTitle(ytitle);
+    heff[i]->GetXaxis()->SetTitle(xtitle);
+    heff[i]->GetZaxis()->SetTitle("efficiency (10^{-3})");
     heff[i]->Draw("colz");
 
-    t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
-    t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
-    t->DrawLatex(0.2,0.71,signames.at(i).c_str());
-    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+    
+    t->DrawLatex(0.2 ,0.83,process);
+    t->DrawLatex(0.2 ,0.71,signames.at(i).c_str());
+    t->DrawLatex(0.18,0.92,label);
 
     //-------------------------------
     // cross section
@@ -240,33 +279,37 @@ void SMS(char* sample , bool print = false){
     hxsec[i]->GetZaxis()->SetTitle("#sigma upper limit");
     hxsec[i]->Draw("colz");
     hxsec[i]->SetMinimum(0.01);
-    hxsec[i]->SetMaximum(10);
+    hxsec[i]->SetMaximum(100);
 
-    TGraph* gr_excl      = getRefXsecGraph(hxsec[i], "T5zz", 1.0);
-    TGraph* gr_excl_down = getRefXsecGraph(hxsec[i], "T5zz", 1./3.);
-    TGraph* gr_excl_up   = getRefXsecGraph(hxsec[i], "T5zz", 3.);
+    // TGraph* gr_excl      = getRefXsecGraph(hxsec[i], "T5zz", 1.0);
+    // TGraph* gr_excl_down = getRefXsecGraph(hxsec[i], "T5zz", 1./3.);
+    // TGraph* gr_excl_up   = getRefXsecGraph(hxsec[i], "T5zz", 3.);
 
-    gr_excl->SetLineWidth(2);
-    gr_excl_up->SetLineWidth(2);
-    gr_excl_down->SetLineWidth(2);
-    gr_excl_up->SetLineStyle(2);
-    gr_excl_down->SetLineStyle(3);
-    gr_excl->Draw("same");
-    gr_excl_up->Draw("same");
-    gr_excl_down->Draw("same");
+    // gr_excl->SetLineWidth(2);
+    // gr_excl_up->SetLineWidth(2);
+    // gr_excl_down->SetLineWidth(2);
+    // gr_excl_up->SetLineStyle(2);
+    // gr_excl_down->SetLineStyle(3);
+    // gr_excl->Draw("same");
+    // gr_excl_up->Draw("same");
+    // gr_excl_down->Draw("same");
 
-    TLegend *leg = new TLegend(0.2,0.53,0.53,0.67);
-    leg->AddEntry(gr_excl,"#sigma^{prod} = #sigma^{NLO-QCD}","l");
-    leg->AddEntry(gr_excl_up,"#sigma^{prod} = 3 #times #sigma^{NLO-QCD}","l");
-    leg->AddEntry(gr_excl_down,"#sigma^{prod} = 1/3 #times #sigma^{NLO-QCD}","l");
-    leg->SetFillColor(0);
-    leg->SetBorderSize(0);
-    leg->Draw();
+    // TLegend *leg = new TLegend(0.2,0.53,0.53,0.67);
+    // leg->AddEntry(gr_excl,"#sigma^{prod} = #sigma^{NLO-QCD}","l");
+    // leg->AddEntry(gr_excl_up,"#sigma^{prod} = 3 #times #sigma^{NLO-QCD}","l");
+    // leg->AddEntry(gr_excl_down,"#sigma^{prod} = 1/3 #times #sigma^{NLO-QCD}","l");
+    // leg->SetFillColor(0);
+    // leg->SetBorderSize(0);
+    // leg->Draw();
 
-    t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
-    t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
-    t->DrawLatex(0.2,0.71,signames.at(i).c_str());
-    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+    // t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
+    // t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
+    // t->DrawLatex(0.2,0.71,signames.at(i).c_str());
+    // t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+
+    t->DrawLatex(0.2 ,0.83,process);
+    t->DrawLatex(0.2 ,0.71,signames.at(i).c_str());
+    t->DrawLatex(0.18,0.92,label);
 
     //-------------------------------
     // excluded points
@@ -281,10 +324,14 @@ void SMS(char* sample , bool print = false){
     hexcl[i]->Draw("colz");
     //gr_excl->Draw("same");
 
-    t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
-    t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
-    t->DrawLatex(0.2,0.71,signames.at(i).c_str());
-    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+    // t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
+    // t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
+    // t->DrawLatex(0.2,0.71,signames.at(i).c_str());
+    // t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+
+    t->DrawLatex(0.2 ,0.83,process);
+    t->DrawLatex(0.2 ,0.71,signames.at(i).c_str());
+    t->DrawLatex(0.18,0.92,label);
 
     //-------------------------------
     // JES uncertainty
@@ -298,10 +345,14 @@ void SMS(char* sample , bool print = false){
     hjes[i]->GetZaxis()->SetTitle("JES uncertainty");
     hjes[i]->Draw("colz");
 
-    t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
-    t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
-    t->DrawLatex(0.2,0.71,signames.at(i).c_str());
-    t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
+    t->DrawLatex(0.2 ,0.83,process);
+    t->DrawLatex(0.2 ,0.71,signames.at(i).c_str());
+    t->DrawLatex(0.18,0.92,label);
+
+    // t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
+    // t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
+    // t->DrawLatex(0.2,0.71,signames.at(i).c_str());
+    // t->DrawLatex(0.18,0.92,"CMS Preliminary            #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
 
     if( print ){
       can[i]->Print(Form("../../plots/%s.pdf",labels.at(i).c_str()));
@@ -309,10 +360,8 @@ void SMS(char* sample , bool print = false){
       //gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.eps  ../plots/%s.pdf",labels.at(i).c_str(),labels.at(i).c_str()));
     }
 
-    int bin = heff[i]->FindBin(600,200);
-    cout << "efficiency (600,200) " << heff[i]->GetBinContent(bin) << endl;
-    bin = heff[i]->FindBin(725,425);
-    cout << "efficiency (600,200) " << heff[i]->GetBinContent(bin) << endl;
+    int bin = heff[i]->FindBin(250,50);
+    cout << "efficiency (250,50)  " << heff[i]->GetBinContent(bin) << endl;
     cout << "xsec UL              " << hxsec[i]->GetBinContent(bin) << endl;
     cout << "xsec UL exp          " << hxsec_exp[i]->GetBinContent(bin) << endl;
     cout << "JES                  " << hjes[i]->GetBinContent(bin) << endl;
@@ -332,191 +381,32 @@ void SMS(char* sample , bool print = false){
 }
 
 
-
-float getObservedLimit( int metcut , float seff , bool do3jets ){
-
-  float ul = 999;
-
-  if( do3jets ){
-    cout << "ERROR!!!! DOING 3 JET!!!" << endl;
-    exit(0);
-
-    if( metcut == 100 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 42.2;
-      if(seff >= 0.1 && seff < 0.2) ul = 45.3;
-      if(seff >= 0.2 && seff < 0.3) ul = 48.6;
-      if(seff >= 0.3 && seff < 0.4) ul = 53.1;
-      if(seff >= 0.4 && seff < 0.5) ul = 57.4;
-      if(seff >= 0.5 && seff < 0.6) ul = 63.0;
-      if(seff >= 0.6 && seff < 0.7) ul = 68.1;
-      if(seff >= 0.7 && seff < 0.8) ul = 73.8;
-      if(seff >= 0.8 && seff < 0.9) ul = 80.7;
-    }
-    else if( metcut == 200 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 6.7;
-      if(seff >= 0.1 && seff < 0.2) ul = 7.3;
-      if(seff >= 0.2 && seff < 0.3) ul = 7.5;
-      if(seff >= 0.3 && seff < 0.4) ul = 7.5;
-      if(seff >= 0.4 && seff < 0.5) ul = 7.8;
-      if(seff >= 0.5 && seff < 0.6) ul = 8.6;
-      if(seff >= 0.6 && seff < 0.7) ul = 9.0;
-      if(seff >= 0.7 && seff < 0.8) ul = 9.9;
-      if(seff >= 0.8 && seff < 0.9) ul = 10.6;
-    }
-    else if( metcut == 300 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 2.8;
-      if(seff >= 0.1 && seff < 0.2) ul = 2.7;
-      if(seff >= 0.2 && seff < 0.3) ul = 2.8;
-      if(seff >= 0.3 && seff < 0.4) ul = 3.0;
-      if(seff >= 0.4 && seff < 0.5) ul = 3.2;
-      if(seff >= 0.5 && seff < 0.6) ul = 3.4;
-      if(seff >= 0.6 && seff < 0.7) ul = 3.7;
-      if(seff >= 0.7 && seff < 0.8) ul = 3.8;
-      if(seff >= 0.8 && seff < 0.9) ul = 4.2;
-    }  
-    else{
-      cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
-      exit(0);
-    }
-  }
-  else{
-    if( metcut == 100 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 57.6;
-      if(seff >= 0.1 && seff < 0.2) ul = 59.9;
-      if(seff >= 0.2 && seff < 0.3) ul = 64.5;
-      if(seff >= 0.3 && seff < 0.4) ul = 69.0;
-      if(seff >= 0.4 && seff < 0.5) ul = 74.5;
-      if(seff >= 0.5 && seff < 0.6) ul = 79.9;
-      if(seff >= 0.6 && seff < 0.7) ul = 86.1;
-      if(seff >= 0.7 && seff < 0.8) ul = 92.1;
-      if(seff >= 0.8 && seff < 0.9) ul = 101.2;
-    }
-    else if( metcut == 200 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 8.3;
-      if(seff >= 0.1 && seff < 0.2) ul = 8.9;
-      if(seff >= 0.2 && seff < 0.3) ul = 8.8;
-      if(seff >= 0.3 && seff < 0.4) ul = 9.5;
-      if(seff >= 0.4 && seff < 0.5) ul = 10.1;
-      if(seff >= 0.5 && seff < 0.6) ul = 10.7;
-      if(seff >= 0.6 && seff < 0.7) ul = 11.2;
-      if(seff >= 0.7 && seff < 0.8) ul = 11.6;
-      if(seff >= 0.8 && seff < 0.9) ul = 12.3;
-    }
-    else if( metcut == 300 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 2.8;
-      if(seff >= 0.1 && seff < 0.2) ul = 2.8;
-      if(seff >= 0.2 && seff < 0.3) ul = 2.8;
-      if(seff >= 0.3 && seff < 0.4) ul = 3.0;
-      if(seff >= 0.4 && seff < 0.5) ul = 3.1;
-      if(seff >= 0.5 && seff < 0.6) ul = 3.3;
-      if(seff >= 0.6 && seff < 0.7) ul = 3.5;
-      if(seff >= 0.7 && seff < 0.8) ul = 3.6;
-      if(seff >= 0.8 && seff < 0.9) ul = 3.6;
-    }  
-  }
-
-  if( ul > 998 ){
-    cout << "Error ul " << ul << " metcut " << metcut << " SEFF " << seff << endl;
-  }
-
+float getObservedUpperLimit( int metcut ){
+  float ul = 9999.;
+  if(metcut == 60)  ul = 161.1;
+  if(metcut == 80)  ul = 26.6;
+  if(metcut == 100) ul = 12.6;
+  if(metcut == 120) ul = 9.1;
+  if(metcut == 140) ul = 7.2;
+  if(metcut == 160) ul = 5.8;
+  if(metcut == 180) ul = 4.4;
+  if(metcut == 200) ul = 3.6;
   return ul;
 }
 
 
-
-float getExpectedLimit( int metcut , float seff , bool do3jets ){
-
-  float ul = 999;
-
-  if( do3jets ){
-    if( metcut == 100 ){
-      cout << "ERROR DOING 3 JETS!!!" << endl;
-      if(seff >= 0.0 && seff < 0.1) ul = 36.0;
-      if(seff >= 0.1 && seff < 0.2) ul = 38.4;
-      if(seff >= 0.2 && seff < 0.3) ul = 40.6;
-      if(seff >= 0.3 && seff < 0.4) ul = 44.6;
-      if(seff >= 0.4 && seff < 0.5) ul = 48.4;
-      if(seff >= 0.5 && seff < 0.6) ul = 51.2;
-      if(seff >= 0.6 && seff < 0.7) ul = 57.3;
-      if(seff >= 0.7 && seff < 0.8) ul = 61.0;
-      if(seff >= 0.8 && seff < 0.9) ul = 66.7;
-    }
-    else if( metcut == 200 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 8.3;
-      if(seff >= 0.1 && seff < 0.2) ul = 9.3;
-      if(seff >= 0.2 && seff < 0.3) ul = 9.2;
-      if(seff >= 0.3 && seff < 0.4) ul = 10.1;
-      if(seff >= 0.4 && seff < 0.5) ul = 12.9;
-      if(seff >= 0.5 && seff < 0.6) ul = 12.2;
-      if(seff >= 0.6 && seff < 0.7) ul = 13.9;
-      if(seff >= 0.7 && seff < 0.8) ul = 14.9;
-      if(seff >= 0.8 && seff < 0.9) ul = 18.0;
-    }
-    else if( metcut == 300 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 4.0;
-      if(seff >= 0.1 && seff < 0.2) ul = 4.2;
-      if(seff >= 0.2 && seff < 0.3) ul = 4.3;
-      if(seff >= 0.3 && seff < 0.4) ul = 4.5;
-      if(seff >= 0.4 && seff < 0.5) ul = 4.8;
-      if(seff >= 0.5 && seff < 0.6) ul = 5.1;
-      if(seff >= 0.6 && seff < 0.7) ul = 5.3;
-      if(seff >= 0.7 && seff < 0.8) ul = 5.6;
-      if(seff >= 0.8 && seff < 0.9) ul = 5.9;
-    }  
-    else{
-      cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
-      exit(0);
-    }
-  }
-  else{
-    if( metcut == 100 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 61.3;
-      if(seff >= 0.1 && seff < 0.2) ul = 63.8;
-      if(seff >= 0.2 && seff < 0.3) ul = 68.1;
-      if(seff >= 0.3 && seff < 0.4) ul = 73.6;
-      if(seff >= 0.4 && seff < 0.5) ul = 79.5;
-      if(seff >= 0.5 && seff < 0.6) ul = 86.3;
-      if(seff >= 0.6 && seff < 0.7) ul = 93.3;
-      if(seff >= 0.7 && seff < 0.8) ul = 100.3;
-      if(seff >= 0.8 && seff < 0.9) ul = 109.5;
-    }
-    else if( metcut == 200 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 11.4;
-      if(seff >= 0.1 && seff < 0.2) ul = 11.8;
-      if(seff >= 0.2 && seff < 0.3) ul = 12.1;
-      if(seff >= 0.3 && seff < 0.4) ul = 13.5;
-      if(seff >= 0.4 && seff < 0.5) ul = 13.7;
-      if(seff >= 0.5 && seff < 0.6) ul = 14.8;
-      if(seff >= 0.6 && seff < 0.7) ul = 16.1;
-      if(seff >= 0.7 && seff < 0.8) ul = 17.2;
-      if(seff >= 0.8 && seff < 0.9) ul = 18.2;
-    }
-    else if( metcut == 300 ){
-      if(seff >= 0.0 && seff < 0.1) ul = 4.8;
-      if(seff >= 0.1 && seff < 0.2) ul = 4.9;
-      if(seff >= 0.2 && seff < 0.3) ul = 5.1;
-      if(seff >= 0.3 && seff < 0.4) ul = 5.3;
-      if(seff >= 0.4 && seff < 0.5) ul = 5.7;
-      if(seff >= 0.5 && seff < 0.6) ul = 5.9;
-      if(seff >= 0.6 && seff < 0.7) ul = 6.3;
-      if(seff >= 0.7 && seff < 0.8) ul = 6.8;
-      if(seff >= 0.8 && seff < 0.9) ul = 7.0;
-    }  
-    else{
-      cout << "ERROR! unrecognized met cut " << metcut << ", quitting" << endl;
-      exit(0);
-    }
-  }
-
-  if( ul > 998 ){
-    cout << "Error ul " << ul << " metcut " << metcut << " SEFF " << seff << endl;
-  }
-
+float getExpectedUpperLimit( int metcut ){
+  float ul = 9999.;
+  if(metcut == 60)  ul = 160.5;
+  if(metcut == 80)  ul = 26.4;
+  if(metcut == 100) ul = 12.9;
+  if(metcut == 120) ul = 9.4;
+  if(metcut == 140) ul = 7.2;
+  if(metcut == 160) ul = 5.9;
+  if(metcut == 180) ul = 4.8;
+  if(metcut == 200) ul = 3.9;
   return ul;
-
-
 }
-
 
 
 
