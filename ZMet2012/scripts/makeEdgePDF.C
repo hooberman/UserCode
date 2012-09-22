@@ -56,15 +56,29 @@ void makeAllPlots(TCanvas * can , char* filename , TChain *ch, TCut sel, char* v
 */
 
 
-void makePlot(TCanvas *can , const char* filename , TChain *ch, TCut sel, char* var, char* xtitle, int nbins, float xmin, float xmax ){
+void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, char* xtitle, int nbins, float xmin, float xmax ){
 
-  cout << __LINE__ << " " << filename << endl;
   can->cd();
   can->Divide(2,2);
 
   char* myvar = var;
   if( TString(var).Contains("mbb") ){
     myvar = "sqrt(  pow(bjet1->mass(),2) + pow(bjet2->mass(),2) + 2 * bjet1->E() * bjet2->E() - 2 * bjet1->Px() * bjet2->Px() - 2 * bjet1->Py() * bjet2->Py() - 2 * bjet1->Pz() * bjet2->Pz() )";
+  }
+  if( TString(var).Contains("st") ){
+    myvar = "pfmet+ht40+lep1->pt()+lep2->pt()";
+  }
+  if( TString(var).Contains("lep1pt") ){
+    myvar = "lep1->pt()";
+  }
+  if( TString(var).Contains("lep2pt") ){
+    myvar = "lep2->pt()";
+  }
+  if( TString(var).Contains("lep1eta") ){
+    myvar = "lep1->eta()";
+  }
+  if( TString(var).Contains("lep2eta") ){
+    myvar = "lep2->eta()";
   }
 
   TCut ee("leptype==0 && ee==1");
@@ -87,14 +101,6 @@ void makePlot(TCanvas *can , const char* filename , TChain *ch, TCut sel, char* 
   ch->Draw(Form("min(%s,%f)>>%s_sf",myvar,xmax-0.001,var),sel+sf);
   ch->Draw(Form("min(%s,%f)>>%s_of",myvar,xmax-0.001,var),sel+em);
 
-  //if( normalize ){
-  //}
-
-  hsf->SetMaximum(0.0);
-  float max = hsf->GetMaximum();
-  if( hof->GetMaximum() > max ) max=hof->GetMaximum();
-  hsf->SetMaximum(1.3*max);
-
   hsf->SetLineColor(2);
   hsf->SetLineWidth(2);
   hsf->SetMarkerColor(2);
@@ -104,6 +110,12 @@ void makePlot(TCanvas *can , const char* filename , TChain *ch, TCut sel, char* 
 
   hsf->GetXaxis()->SetTitle(xtitle);
   hsf->GetYaxis()->SetTitle("entries");
+
+  TH1F* hratio = (TH1F*) hsf->Clone(Form("%s_ratio",var));
+
+  float max = hsf->GetMaximum();
+  if( hof->GetMaximum() > max ) max=hof->GetMaximum();
+  hsf->SetMaximum(1.3*max);
 
   hsf->Draw("E1");
   hof->Draw("sameE2");
@@ -120,6 +132,10 @@ void makePlot(TCanvas *can , const char* filename , TChain *ch, TCut sel, char* 
 
   hsf_norm->Scale(1.0/hsf_norm->Integral());
   hof_norm->Scale(1.0/hof_norm->Integral());
+
+  float max_norm = hsf_norm->GetMaximum();
+  if( hof_norm->GetMaximum() > max_norm ) max_norm=hof_norm->GetMaximum();
+  hsf_norm->SetMaximum(1.3*max_norm);
 
   hsf_norm->GetYaxis()->SetTitle("arbitrary units");
   hsf_norm->Draw("E1");
@@ -138,7 +154,7 @@ void makePlot(TCanvas *can , const char* filename , TChain *ch, TCut sel, char* 
   line.SetLineWidth(2);
   line.SetLineStyle(2);
 
-  TH1F* hratio = (TH1F*) hsf->Clone(Form("%s_ratio",var));
+  //TH1F* hratio = (TH1F*) hsf->Clone(Form("%s_ratio",var));
   hratio->Divide(hof);
   // hratio->GetXaxis()->SetLabelSize(0.0);
   // hratio->GetYaxis()->SetLabelSize(0.2);
@@ -149,7 +165,7 @@ void makePlot(TCanvas *can , const char* filename , TChain *ch, TCut sel, char* 
   // hratio->GetXaxis()->SetTitle("");
   // hratio->SetMinimum(0.0);
   // hratio->SetMaximum(2.0);
-  hratio->GetYaxis()->SetRangeUser(0.0,2.0);
+  //hratio->GetYaxis()->SetRangeUser(0.0,2.0);
   hratio->Draw();
 
   line.DrawLine(xmin,1.0,xmax,1.0);
@@ -169,10 +185,8 @@ void makePlot(TCanvas *can , const char* filename , TChain *ch, TCut sel, char* 
 
   can->Modified();
   can->Update();
-
-  cout << __LINE__  << filename << endl;
   can->Print(Form("../plots/%s.ps",filename));  
-  cout << __LINE__ << " " << filename << endl;
+  can->Clear();
 }
 
 
@@ -181,8 +195,8 @@ void makeEdgePDF(){
   char* SR = "lowMET";
   //char* SR = "highMET";
 
-  char* mll = "lowMass";
-  //char* mll = "highMass";
+  //char* mll = "lowMass";
+  char* mll = "highMass";
 
   cout << "Signal region : " << SR  << endl;
   cout << "Dilepton mass : " << mll << endl;
@@ -267,35 +281,36 @@ void makeEdgePDF(){
   bool log       = false;
   bool normalize = false;
 
-  const char* filename = Form("%s_%s",SR,mll);
-  cout << __LINE__ << " " << filename << endl;
-  TCanvas* canvas = new TCanvas("canvas","canvas",600,600);
+  char* filename = Form("%s_%s",SR,mll);
+  TCanvas* canvas = new TCanvas("canvas","canvas",1000,800);
   //gStyle->SetPaperSize(22,28);
-  cout << __LINE__ << " " << filename << endl;
 
   canvas->Print(Form("../plots/%s.ps[",filename));
 
-  cout << __LINE__ << " " << filename << endl;
-
-  makePlot( canvas , filename , data , sel     , "dilmass" , "M(ll) [GeV]"        , 10 ,  0 ,  100 );
-
-  cout << __LINE__ << " " << filename << endl;
-
-  makePlot( canvas , filename , data , sel     , "njets40" , "n_{jets}"           ,  6 ,  0 ,    6 );
-
-  // makePlot( canvas , filename , data , sel     , "ht40"    , "H_{T} [GeV]"        ,  5 ,  0 , 1000 );
-  // makePlot( canvas , filename , data , sel     , "nbcsvm"  , "n b-tags"           ,  6 ,  0 ,    6 );
-  // makePlot( canvas , filename , data , sel     , "mt2"     , "MT2 [GeV]"          , 15 ,  0 ,  150 );
-  // makePlot( canvas , filename , data , sel     , "mt2j"    , "MT2J [GeV]"         , 20 ,  0 ,  500 );
-  // makePlot( canvas , filename , data , sel     , "mlb1"    , "M(l1,any-b) [GeV]"  , 10 ,  0 ,  300 );
-  // makePlot( canvas , filename , data , sel     , "mlb2"    , "M(l2,any-b) [GeV]"  , 10 ,  0 ,  300 );
-  // makePlot( canvas , filename , data , sel     , "mlbmin"  , "M(l,b)^{min} [GeV]" , 10 ,  0 ,  200 );
-  // makePlot( canvas , filename , data , sel+nb2 , "mbb"     , "M(bb) [GeV]"        , 20 , 15 ,  415 );
-
-  cout << __LINE__ << " " << filename << endl;
+  if( TString(mll).Contains("highMass") ){
+    makePlot( canvas , filename , data , sel     , "dilmass" , "M(ll) [GeV]"  , 20 , 100 ,  300 );  filename = Form("%s_%s",SR,mll);
+  }
+  else{
+    makePlot( canvas , filename , data , sel     , "dilmass" , "M(ll) [GeV]"  , 10 ,  0 ,  100 );  filename = Form("%s_%s",SR,mll);
+  }
+  /*
+  makePlot( canvas , filename , data , sel  , "lep1pt"  , "1st lepton p_{T} [GeV]"  , 10 ,  0 ,  200 );    filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "lep2pt"  , "2st lepton p_{T} [GeV]"  , 10 ,  0 ,  200 );    filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "lep1eta" , "1st lepton #eta"         , 10 ,  -2.5 ,  2.5 ); filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "lep2eta" , "2st lepton #eta"         , 10 ,  -2.5 ,  2.5 ); filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "njets40" , "n_{jets}"           ,  8 ,  0 ,    8 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "ht40"    , "H_{T} [GeV]"        , 10 ,  0 , 1000 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "nbcsvm"  , "n b-tags"           ,  6 ,  0 ,    6 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "pfmet"   , "E_{T}^{miss} [GeV]" , 20 ,  0 ,  400 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "st"      , "S_{T} [GeV]"        , 15 ,  0 , 1500 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "mt2"     , "MT2 [GeV]"          , 15 ,  0 ,  150 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "mt2j"    , "MT2J [GeV]"         , 20 ,  0 ,  500 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "mlb1"    , "M(l1,any-b) [GeV]"  , 10 ,  0 ,  300 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "mlb2"    , "M(l2,any-b) [GeV]"  , 10 ,  0 ,  300 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "mlbmin"  , "M(l,b)^{min} [GeV]" , 10 ,  0 ,  200 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel+nb2 , "mbb"  , "M(bb) [GeV]"        , 20 , 15 ,  415 );  filename = Form("%s_%s",SR,mll);
+  */
   canvas->Print(Form("../plots/%s.ps]",filename));
-  cout << __LINE__ << " " << filename << endl;
-
   //gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.ps ../plots/%s.pdf",filename,filename));
 
 
