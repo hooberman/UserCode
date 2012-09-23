@@ -27,7 +27,7 @@
 
 using namespace std;
 
-void skim(char* version, char* sample);
+void skim(char* path, char* cut, char* label, char* sample);
 
 void skimSamples(){
 
