@@ -59,7 +59,13 @@ void makeAllPlots(TCanvas * can , char* filename , TChain *ch, TCut sel, char* v
 void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, char* xtitle, int nbins, float xmin, float xmax ){
 
   can->cd();
-  can->Divide(2,2);
+  //can->Divide(2,2);
+
+  TPad* mainpad = new TPad(Form("%s_mainpad",var),Form("%s_mainpad",var),0.0,0.0,0.8,1.0);
+  mainpad->Draw();
+  mainpad->cd();
+
+  mainpad->Divide(2,2);
 
   char* myvar = var;
   if( TString(var).Contains("mbb") ){
@@ -80,17 +86,18 @@ void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, c
   if( TString(var).Contains("lep2eta") ){
     myvar = "lep2->eta()";
   }
+  if( TString(var).Contains("dilpt") ){
+    myvar = "dilep->pt()";
+  }
 
   TCut ee("leptype==0 && ee==1");
   TCut mm("leptype==1 && (mm==1 || mmtk==1)");
   TCut em("leptype==2 && (em==1 || me==1)");
   TCut sf = ee||mm;
 
-  // TPad* mainpad = new TPad(Form("%s_mainpad",var),Form("%s_mainpad",var),0.0,0.0,1.0,0.8);
-  // mainpad->Draw();
-  // mainpad->cd();
   // if( log ) mainpad->SetLogy();
-  can->cd(1);
+  //can->cd(1);
+  mainpad->cd(1);
 
   TH1F* hsf = new TH1F(Form("%s_sf",var),Form("%s_sf",var),nbins,xmin,xmax);
   TH1F* hof = new TH1F(Form("%s_of",var),Form("%s_of",var),nbins,xmin,xmax);
@@ -107,6 +114,7 @@ void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, c
 
   hof->SetFillColor(7);
   hof->SetMarkerColor(4);
+  hof->SetLineColor(7);
 
   hsf->GetXaxis()->SetTitle(xtitle);
   hsf->GetYaxis()->SetTitle("entries");
@@ -125,7 +133,8 @@ void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, c
   cout << "SF " << hsf->GetEntries() << endl;
   cout << "OF " << hof->GetEntries() << endl;
 
-  can->cd(2);
+  //can->cd(2);
+  mainpad->cd(2);
 
   TH1F* hsf_norm = (TH1F*) hsf->Clone(Form("%s_norm",hsf->GetName()));
   TH1F* hof_norm = (TH1F*) hof->Clone(Form("%s_norm",hof->GetName()));
@@ -143,7 +152,8 @@ void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, c
   hsf_norm->Draw("sameE1");
   hsf_norm->Draw("axissame");
 
-  can->cd(4);
+  //can->cd(4);
+  mainpad->cd(4);
 
   // TPad* respad = new TPad(Form("%s_respad",var),Form("%s_respad",var),0.0,0.8,1.0,1.0);
   // respad->Draw();
@@ -175,13 +185,45 @@ void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, c
   // fline->SetLineWidth(2);
   // if( fit ) hratio->Fit(fline);
 
-  can->cd(3);
+  //can->cd(3);
+  mainpad->cd(3);
+
   TH1F* hdiff = (TH1F*) hsf->Clone(Form("%s_ratio",var));
   hdiff->Add(hof,-1);
   hdiff->GetYaxis()->SetTitle("SF - OF");
   hdiff->Draw();
 
   line.DrawLine(xmin,0.0,xmax,0.0);
+
+  can->cd();
+
+  TPad* infopad = new TPad(Form("%s_infopad",var),Form("%s_infopad",var),0.8,0.0,1.0,1.0);
+  infopad->Draw();
+  infopad->cd();
+
+  TLatex *t = new TLatex();
+  t->SetNDC();
+  t->SetTextSize(0.12);
+
+  TLegend* leg = new TLegend(0.1,0.7,0.9,0.9);
+  leg->AddEntry(hsf,"SF","lp");
+  leg->AddEntry(hof,"OF","fp");
+  leg->SetFillColor(0);
+  leg->SetBorderSize(0);
+  leg->SetTextSize(0.15);
+  leg->Draw();
+
+  float chi2 = hsf->Chi2Test(hof,"CHI2");
+  int   ndf  = (int) (hsf->Chi2Test(hof,"CHI2") / hsf->Chi2Test(hof,"CHI2/NDF"));
+  float pval = hsf->Chi2Test(hof);
+
+  t->DrawLatex(0.1,0.50,Form("N_{SF} = %.i",(int)hsf->GetEntries()));
+  t->DrawLatex(0.1,0.44,Form("N_{OF} = %.i",(int)hof->GetEntries()));
+  t->DrawLatex(0.1,0.38,Form("KS = %.2f"   ,hsf->KolmogorovTest(hof)));
+  t->DrawLatex(0.1,0.32,Form("#chi^{2}/ndf = %.1f/%.i",chi2,ndf));
+  t->DrawLatex(0.1,0.26,Form("p-value = %.2f",pval));
+
+  hsf->Chi2Test(hof,"p");
 
   can->Modified();
   can->Update();
@@ -190,13 +232,13 @@ void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, c
 }
 
 
-void makeEdgePDF(){
+void makeEdgePDF(char* SR = "lowMET",char* mll = "lowMass"){
 
-  char* SR = "lowMET";
+  //char* SR = "lowMET";
   //char* SR = "highMET";
 
   //char* mll = "lowMass";
-  char* mll = "highMass";
+  //char* mll = "highMass";
 
   cout << "Signal region : " << SR  << endl;
   cout << "Dilepton mass : " << mll << endl;
@@ -234,43 +276,55 @@ void makeEdgePDF(){
   TCut mll20to70("dilmass>20.0 && dilmass<70.0");
   TCut mll120("dilmass>120.0");
   TCut nb2("nbcsvm==2");
+  TCut multilep("nlep>2");
 
   TCut sel;
+  sel += multilep;
+  sel += runrange;
+  sel += filters;
+  sel += (ee||mm||em);
 
   //------------------------
   // high-MET SR (Aachen)
   //------------------------
 
   if( TString(SR).Contains("highMET") ){
-    sel += runrange;
-    sel += filters;
-    sel += (ee||mm||em);
     sel += pt2010;
     sel += njets40_2;
     sel += ht40_100;
     sel += met150;
-
-    if( TString(mll).Contains("lowMass") ) sel += mll15to70;
   }
 
   //------------------------
   // low-MET SR (ETH)
   //------------------------
 
-  if( TString(SR).Contains("lowMET") ){
-    sel += runrange;
-    sel += filters;
-    sel += (ee||mm||em);
+  else if( TString(SR).Contains("lowMET") ){
     sel += pt2020;
     sel += njets40_3;
     sel += met100;
-
-    if( TString(mll).Contains("lowMass") ) sel += mll20to70;
-
   }
 
-  if( TString(mll).Contains("highMass") ) sel += mll120;
+  else{
+    cout << "WARNING!!! NO SIGNAL REGION SELECTED!!!" << endl;
+  }
 
+  //------------------------
+  // low mass vs. high mass
+  //------------------------
+
+  if( TString(mll).Contains("lowMass") ){
+    if( TString(SR).Contains("lowMET") )  sel += mll20to70;
+    if( TString(SR).Contains("highMET") ) sel += mll15to70;
+  }
+
+  else if( TString(mll).Contains("highMass") ){
+    sel += mll120;
+  }
+
+  else{
+    cout << "WARNING!!! NO MASS RANGE SELECTED!!!" << endl;
+  }
 
   cout << "Using selection " << sel.GetTitle() << endl;
 
@@ -293,7 +347,9 @@ void makeEdgePDF(){
   else{
     makePlot( canvas , filename , data , sel     , "dilmass" , "M(ll) [GeV]"  , 10 ,  0 ,  100 );  filename = Form("%s_%s",SR,mll);
   }
-  /*
+
+  makePlot( canvas , filename , data , sel  , "nlep"    , "nleptons (p_{T}>10 GeV)" ,  4 ,  0 ,    4 );    filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "dilpt"   , "dilepton p_{T} [GeV]"    , 10 ,  0 ,  200 );    filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "lep1pt"  , "1st lepton p_{T} [GeV]"  , 10 ,  0 ,  200 );    filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "lep2pt"  , "2st lepton p_{T} [GeV]"  , 10 ,  0 ,  200 );    filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "lep1eta" , "1st lepton #eta"         , 10 ,  -2.5 ,  2.5 ); filename = Form("%s_%s",SR,mll);
@@ -309,11 +365,16 @@ void makeEdgePDF(){
   makePlot( canvas , filename , data , sel  , "mlb2"    , "M(l2,any-b) [GeV]"  , 10 ,  0 ,  300 );  filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "mlbmin"  , "M(l,b)^{min} [GeV]" , 10 ,  0 ,  200 );  filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel+nb2 , "mbb"  , "M(bb) [GeV]"        , 20 , 15 ,  415 );  filename = Form("%s_%s",SR,mll);
-  */
+
   canvas->Print(Form("../plots/%s.ps]",filename));
   //gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.ps ../plots/%s.pdf",filename,filename));
 
 
 }
 
-
+void makeAllEdgePDFs(){
+  makeEdgePDF("lowMET" ,"lowMass");
+  makeEdgePDF("highMET","lowMass");
+  makeEdgePDF("lowMET" ,"highMass");
+  makeEdgePDF("highMET","highMass");
+}
