@@ -30,6 +30,51 @@ float getExpectedUpperLimit( int metcut );
 
 using namespace std;
 
+
+TGraph* getGraph_2011(){
+
+  float x[6];
+  float y[6];
+  int npoints = -1;
+
+  x[0] =  212.5;  y[0] = -12.5;
+  x[1] =  212.5;  y[1] =  25.0;
+  x[2] =  200.0;  y[2] =  37.5;
+  x[3] =  150.0;  y[3] =  37.5;
+  x[4] =  137.5;  y[4] =  25.0;
+  x[5] =  137.5;  y[5] = -12.5;
+  npoints = 6;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+
+  gr->SetLineWidth(3);
+  gr->SetLineStyle(2);
+  return gr;
+
+}
+
+TGraph* getGraph_2012(){
+
+  float x[7];
+  float y[7];
+  int npoints = -1;
+
+  x[0] =  235.0;  y[0] =  -5.0;
+  x[1] =  235.0;  y[1] =  35.0;
+  x[2] =  215.0;  y[2] =  50.0;
+  x[3] =  195.0;  y[3] =  40.0;
+  x[4] =  180.0;  y[4] =  25.0;
+  x[5] =  165.0;  y[5] =   5.0;
+  x[6] =  165.0;  y[6] =  -5.0;
+  npoints = 7;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+  gr->SetLineWidth(3);
+
+  return gr;
+
+}
+
 void SMS(char* sample = "wzsms" , bool print = false){
 
   //--------------------------------------------------
@@ -50,7 +95,7 @@ void SMS(char* sample = "wzsms" , bool print = false){
 
   char* xtitle  = "m_{#chi_{2}^{0}} = m_{#chi_{1}^{#pm}} [GeV]";
   char* ytitle  = "m_{#chi_{1}^{0}} [GeV]";
-  char* label   = "CMS Preliminary #sqrt{s} = 8 TeV, #scale[0.6]{#int}Ldt = 9.2 fb^{-1}";
+  char* label   = "CMS Preliminary   #sqrt{s} = 8 TeV, #scale[0.6]{#int}Ldt = 9.2 fb^{-1}";
   char* process = "pp #rightarrow#chi_{2}^{0} #chi_{1}^{#pm} #rightarrow WZ+E_{T}^{miss}";
 
   //--------------------------------------------------
@@ -113,8 +158,8 @@ void SMS(char* sample = "wzsms" , bool print = false){
 
   // sigcuts.push_back(TCut(presel+met60));      signames.push_back("E_{T}^{miss} > 60 GeV");      labels.push_back("met60");  cuts.push_back(60);
   // sigcuts.push_back(TCut(presel+met80));      signames.push_back("E_{T}^{miss} > 80 GeV");      labels.push_back("met80");  cuts.push_back(80);
-  sigcuts.push_back(TCut(presel+met100));     signames.push_back("E_{T}^{miss} > 100 GeV");     labels.push_back("met100"); cuts.push_back(100);
-  // sigcuts.push_back(TCut(presel+met120));     signames.push_back("E_{T}^{miss} > 120 GeV");     labels.push_back("met120"); cuts.push_back(120);
+  // sigcuts.push_back(TCut(presel+met100));     signames.push_back("E_{T}^{miss} > 100 GeV");     labels.push_back("met100"); cuts.push_back(100);
+  sigcuts.push_back(TCut(presel+met120));     signames.push_back("E_{T}^{miss} > 120 GeV");     labels.push_back("met120"); cuts.push_back(120);
   // sigcuts.push_back(TCut(presel+met140));     signames.push_back("E_{T}^{miss} > 140 GeV");     labels.push_back("met140"); cuts.push_back(140);
   // sigcuts.push_back(TCut(presel+met160));     signames.push_back("E_{T}^{miss} > 160 GeV");     labels.push_back("met160"); cuts.push_back(160);
   // sigcuts.push_back(TCut(presel+met180));     signames.push_back("E_{T}^{miss} > 180 GeV");     labels.push_back("met180"); cuts.push_back(180);
@@ -274,12 +319,20 @@ void SMS(char* sample = "wzsms" , bool print = false){
     gPad->SetRightMargin(0.2);
     gPad->SetLogz();
     hxsec[i]->GetXaxis()->SetLabelSize(0.035);
-    hxsec[i]->GetYaxis()->SetTitle("#chi^{0}_{1} mass (GeV)");
-    hxsec[i]->GetXaxis()->SetTitle("gluino mass (GeV)");
-    hxsec[i]->GetZaxis()->SetTitle("#sigma upper limit");
+    hxsec[i]->GetYaxis()->SetTitle(ytitle);
+    hxsec[i]->GetXaxis()->SetTitle(xtitle);
+    hxsec[i]->GetXaxis()->SetRangeUser(95,305);
+    hxsec[i]->GetYaxis()->SetRangeUser(-5,305);
+    hxsec[i]->GetZaxis()->SetTitle("#sigma upper limit [pb]");
     hxsec[i]->Draw("colz");
     hxsec[i]->SetMinimum(0.01);
     hxsec[i]->SetMaximum(100);
+
+    TGraph* gr2011 = getGraph_2011();
+    TGraph* gr2012 = getGraph_2012();
+
+    gr2011->Draw("same");
+    gr2012->Draw("same");
 
     // TGraph* gr_excl      = getRefXsecGraph(hxsec[i], "T5zz", 1.0);
     // TGraph* gr_excl_down = getRefXsecGraph(hxsec[i], "T5zz", 1./3.);
@@ -294,13 +347,15 @@ void SMS(char* sample = "wzsms" , bool print = false){
     // gr_excl_up->Draw("same");
     // gr_excl_down->Draw("same");
 
-    // TLegend *leg = new TLegend(0.2,0.53,0.53,0.67);
+    TLegend *leg = new TLegend(0.2,0.53,0.53,0.67);
     // leg->AddEntry(gr_excl,"#sigma^{prod} = #sigma^{NLO-QCD}","l");
     // leg->AddEntry(gr_excl_up,"#sigma^{prod} = 3 #times #sigma^{NLO-QCD}","l");
     // leg->AddEntry(gr_excl_down,"#sigma^{prod} = 1/3 #times #sigma^{NLO-QCD}","l");
-    // leg->SetFillColor(0);
-    // leg->SetBorderSize(0);
-    // leg->Draw();
+    leg->AddEntry(gr2011,"2011 observed","l");
+    leg->AddEntry(gr2012,"2012 expected","l");
+    leg->SetFillColor(0);
+    leg->SetBorderSize(0);
+    leg->Draw();
 
     // t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
     // t->DrawLatex(0.2,0.77,"m(#tilde{q}) >> m(#tilde{g})");
@@ -315,13 +370,21 @@ void SMS(char* sample = "wzsms" , bool print = false){
     // excluded points
     //-------------------------------
 
-    can[i]->cd(3);    
+    can[i]->cd(3);
+    gPad->SetGridx();
+    gPad->SetGridy();
     gPad->SetRightMargin(0.2);
     gPad->SetTopMargin(0.1);
+    hexcl[i]->GetXaxis()->SetRangeUser(150,250);
+    hexcl[i]->GetYaxis()->SetRangeUser(-10,100);
     hexcl[i]->GetYaxis()->SetTitle("#chi^{0}_{1} mass (GeV)");
     hexcl[i]->GetXaxis()->SetTitle("gluino mass (GeV)");
     hexcl[i]->GetZaxis()->SetTitle("excluded points");
     hexcl[i]->Draw("colz");
+
+    gr2012->Draw("same");
+    gr2012->Draw("samep");
+
     //gr_excl->Draw("same");
 
     // t->DrawLatex(0.2,0.83,"pp #rightarrow #tilde{g}#tilde{g}, #tilde{g} #rightarrow 2j+#chi_{2}^{0}, #chi_{2}^{0} #rightarrow Z #chi_{1}^{0}");
@@ -382,30 +445,35 @@ void SMS(char* sample = "wzsms" , bool print = false){
 
 
 float getObservedUpperLimit( int metcut ){
-  float ul = 9999.;
-  if(metcut == 60)  ul = 161.1;
-  if(metcut == 80)  ul = 26.6;
-  if(metcut == 100) ul = 12.6;
-  if(metcut == 120) ul = 9.1;
-  if(metcut == 140) ul = 7.2;
-  if(metcut == 160) ul = 5.8;
-  if(metcut == 180) ul = 4.4;
-  if(metcut == 200) ul = 3.6;
-  return ul;
+
+  return 11.8;
+
+  // float ul = 9999.;
+  // if(metcut == 60)  ul = 161.1;
+  // if(metcut == 80)  ul = 26.6;
+  // if(metcut == 100) ul = 12.6;
+  // if(metcut == 120) ul = 9.1;
+  // if(metcut == 140) ul = 7.2;
+  // if(metcut == 160) ul = 5.8;
+  // if(metcut == 180) ul = 4.4;
+  // if(metcut == 200) ul = 3.6;
+  // return ul;
 }
 
 
 float getExpectedUpperLimit( int metcut ){
-  float ul = 9999.;
-  if(metcut == 60)  ul = 160.5;
-  if(metcut == 80)  ul = 26.4;
-  if(metcut == 100) ul = 12.9;
-  if(metcut == 120) ul = 9.4;
-  if(metcut == 140) ul = 7.2;
-  if(metcut == 160) ul = 5.9;
-  if(metcut == 180) ul = 4.8;
-  if(metcut == 200) ul = 3.9;
-  return ul;
+
+  return 11.8;
+  // float ul = 9999.;
+  // if(metcut == 60)  ul = 160.5;
+  // if(metcut == 80)  ul = 26.4;
+  // if(metcut == 100) ul = 12.9;
+  // if(metcut == 120) ul = 9.4;
+  // if(metcut == 140) ul = 7.2;
+  // if(metcut == 160) ul = 5.9;
+  // if(metcut == 180) ul = 4.8;
+  // if(metcut == 200) ul = 3.9;
+  // return ul;
 }
 
 
