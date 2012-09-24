@@ -111,6 +111,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   if( pt40 ){
     pt40char = "_pt40";
     //pt40char = "_pt40_2012AB";
+    //pt40char = "_pt40_2012C";
   }
 
   if( myTemplateSource == e_PhotonJetStitched ){
@@ -289,7 +290,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         // event selection
         //------------------------------------------------------------
 
-	//if( run_ > 196531 ) continue;
+	//if( run_ > 196531 ) continue; // 2012A+B
+	//if( run_ <= 196531 )  continue; // 2012C
 	if( run_ >= 197556 && run_ <= 198913 )          continue; // veto 2012C-PromptReco-v1
 	if( !(csc_==0 && hbhe_==1 && hcallaser_==1 && ecaltp_==1 && trkfail_==1 && eebadsc_==1 && hbhenew_==1) ) continue; // MET filters
 
@@ -739,11 +741,14 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   // if( bveto ) saveHist( Form("../output/%s/babylooper_%s%s%s_bveto%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
   // else        saveHist( Form("../output/%s/babylooper_%s%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
 
+  if( TString(signalRegion).Contains("lowMet") )  pt40char = "_pt40_lowMet";
+  if( TString(signalRegion).Contains("highMet") ) pt40char = "_pt40_highMet";
+
   // if( TString(signalRegion).Contains("lowMet") )  pt40char = "_pt40_2012AB_lowMet";
   // if( TString(signalRegion).Contains("highMet") ) pt40char = "_pt40_2012AB_highMet";
 
-  if( TString(signalRegion).Contains("lowMet") )  pt40char = "_pt40_lowMet";
-  if( TString(signalRegion).Contains("highMet") ) pt40char = "_pt40_highMet";
+  // if( TString(signalRegion).Contains("lowMet") )  pt40char = "_pt40_2012C_lowMet";
+  // if( TString(signalRegion).Contains("highMet") ) pt40char = "_pt40_2012C_highMet";
 
   saveHist( Form("../output/%s/babylooper_%s%s%s%s%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , bvetochar , pt40char ) );
 
