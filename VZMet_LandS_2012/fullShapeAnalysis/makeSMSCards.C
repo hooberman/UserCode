@@ -27,32 +27,33 @@
 
 using namespace std;
 
-void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZtot , int datatot , char* version ){
+void printCard( char* name , float sigtot , float Ztot , float OFtot , float WZtot , float ZZtot , float raretot , int datatot , char* version ){
 
   ofstream* ofile = new ofstream();
 
   ofile->open(Form("cards/%s/%s.txt",version,name));
 
   *ofile <<      "imax 1 number of channels"                                                                  << endl;
-  *ofile <<      "jmax 3 number of background"                                                                << endl;
+  *ofile <<      "jmax 5 number of background"                                                                << endl;
   *ofile <<      "kmax * number of nuisance parameters"                                                       << endl;
   *ofile << Form("Observation %i                                                           ",datatot)         << endl;
-  //*ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
-  //*ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                << endl;
-  *ofile << Form("shapes      *   * %s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" ,  name) << endl;
-  *ofile << Form("shapes data_obs * %s.root  histo_Data" ,  name )                << endl;
-  *ofile <<      "bin                                  1        1      1      1"                              << endl;
-  *ofile << Form("process                        %s     Zbkg  OFbkg  VZbkg" , name )                          << endl;
-  *ofile <<      "process                              0        1      2      3"                              << endl;
-  *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f" , sigtot,Ztot,OFtot,VZtot)   << endl;
-  *ofile <<      "lumi                       lnN   1.022       -       -      -"                              << endl;
-  *ofile <<      "eff_leptons                lnN   1.050       -       -      -"                              << endl;
-  *ofile <<      "btagerr                    lnN   1.040       -       -      -"                              << endl;
-  *ofile <<      "JES_shape                shape     1.0       -       -      -"                              << endl;
-  *ofile <<      "errZ                     shape       -     1.0       -      -"                              << endl;
-  *ofile <<      "errOF                    shape       -       -     1.0      -"                              << endl;
-//*ofile <<      "errVZ                    shape       -       -       -    1.0"                              << endl;
-  *ofile <<      "wz                       shape       -       -       -    1.0"                              << endl;
+  *ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
+  *ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                << endl;
+  //*ofile << Form("shapes      *   * %s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" ,  name) << endl;
+  //*ofile << Form("shapes data_obs * %s.root  histo_Data" ,  name )                << endl;
+  *ofile <<      "bin                                  1        1      1      1     1     1"                  << endl;
+  *ofile << Form("process                        %s     Zbkg  OFbkg  WZbkg  ZZbkg  rarebkg" , name )          << endl;
+  *ofile <<      "process                              0        1      2      3     4     5"                  << endl;
+  *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f   %.1f   %.1f" , sigtot,Ztot,OFtot,WZtot,ZZtot,raretot) << endl;
+  *ofile <<      "lumi                       lnN   1.040       -       -      -     -     -"                  << endl;
+  *ofile <<      "eff_leptons                lnN   1.050       -       -      -     -     -"                  << endl;
+  *ofile <<      "btagerr                    lnN   1.040       -       -      -     -     -"                  << endl;
+  *ofile <<      "JES_shape                shape     1.0       -       -      -     -     -"                  << endl;
+  *ofile <<      "errZ                     shape       -     1.0       -      -     -     -"                  << endl;
+  *ofile <<      "errOF                    shape       -       -     1.0      -     -     -"                  << endl;
+  *ofile <<      "errWZ                    shape       -       -       -    1.0     -     -"                  << endl;
+  *ofile <<      "errZZ                    shape       -       -       -      -   1.0     -"                  << endl;
+  *ofile <<      "errRARE                  shape       -       -       -      -     -   1.0"                  << endl;
   
   ofile->close();
 
@@ -66,14 +67,15 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-01-04/wzsms_baby_pt2020_oldIso.root ");
+  ch->Add("output/V00-01-05/wzsms_baby_oldIso.root ");
   char* version = (char*) "V00-00-00";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("9.2 * trgeff * vtxweight * (1./100000.)");
+  //TCut weight   ("9200 * trgeff * vtxweight * (1./100000.)");
+  TCut weight   ("9.2 * trgeff * vtxweight * weight");
 
   TCut presel   ("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvm==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
   TCut preseljup("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvm==0 && mjjup>70 && mjjup<110 && nlep==2 && njetsup>=2   && leptype<2");
@@ -111,18 +113,22 @@ void makeSMSCards(){
   TH2F* hjup[nbins];
   TH2F* hjdn[nbins];
 
+  int   nx   =    31;
+  float xmin =  -5.0;
+  float xmax = 305.0;
+
   for( unsigned int i = 0 ; i < nbins ; ++i ){
-    h[i]        = new TH2F( Form("h_%i",i)        , Form("h_%i",i)           , 24,0,600,24,0,600);
-    hjup[i]     = new TH2F( Form("hjup_%i",i)     , Form("hjup_%i",i)        , 24,0,600,24,0,600);
-    hjdn[i]     = new TH2F( Form("hjdn_%i",i)     , Form("hjdn_%i",i)        , 24,0,600,24,0,600);
+    h[i]        = new TH2F( Form("h_%i",i)        , Form("h_%i",i)           , nx,xmin,xmax,nx,xmin,xmax);
+    hjup[i]     = new TH2F( Form("hjup_%i",i)     , Form("hjup_%i",i)        , nx,xmin,xmax,nx,xmin,xmax);
+    hjdn[i]     = new TH2F( Form("hjdn_%i",i)     , Form("hjdn_%i",i)        , nx,xmin,xmax,nx,xmin,xmax);
     
     h[i]    ->Sumw2();
     hjup[i] ->Sumw2();
     hjdn[i] ->Sumw2();
   }
   
-  TH2F* hall    = new TH2F( "hall"    , "hall"    , 24,0,600,24,0,600);
-  TH2F* hjdnall = new TH2F( "hjdnall" , "hjdnall" , 24,0,600,24,0,600);
+  TH2F* hall    = new TH2F( "hall"    , "hall"    , nx,xmin,xmax,nx,xmin,xmax);
+  TH2F* hjdnall = new TH2F( "hjdnall" , "hjdnall" , nx,xmin,xmax,nx,xmin,xmax);
   
   hall->Sumw2();
   
@@ -225,25 +231,25 @@ void makeSMSCards(){
 
   TH1F* histo_Data = new TH1F("histo_Data","histo_Data",nbins,0,nbins);
 
-  TH1F* histo_Zbkg               = new TH1F("histo_Zbkg"           ,"histo_Zbkg"           ,nbins,0,nbins);
-  TH1F* histo_Zbkg_errUp         = new TH1F("histo_Zbkg_errZUp"    ,"histo_Zbkg_errZUp"    ,nbins,0,nbins);
-  TH1F* histo_Zbkg_errDown       = new TH1F("histo_Zbkg_errZDown"  ,"histo_Zbkg_errZDown"  ,nbins,0,nbins);
+  TH1F* histo_Zbkg               = new TH1F("histo_Zbkg"                ,"histo_Zbkg"           ,nbins,0,nbins);
+  TH1F* histo_Zbkg_errUp         = new TH1F("histo_Zbkg_errZUp"         ,"histo_Zbkg_errZUp"    ,nbins,0,nbins);
+  TH1F* histo_Zbkg_errDown       = new TH1F("histo_Zbkg_errZDown"       ,"histo_Zbkg_errZDown"  ,nbins,0,nbins);
 
-  TH1F* histo_OFbkg              = new TH1F("histo_OFbkg"          ,"histo_OFbkg"          ,nbins,0,nbins);
-  TH1F* histo_OFbkg_errUp        = new TH1F("histo_OFbkg_errOFUp"  ,"histo_OFbkg_errOFUp"  ,nbins,0,nbins);
-  TH1F* histo_OFbkg_errDown      = new TH1F("histo_OFbkg_errOFDown","histo_OFbkg_errOFDown",nbins,0,nbins);
+  TH1F* histo_OFbkg              = new TH1F("histo_OFbkg"               ,"histo_OFbkg"          ,nbins,0,nbins);
+  TH1F* histo_OFbkg_errUp        = new TH1F("histo_OFbkg_errOFUp"       ,"histo_OFbkg_errOFUp"  ,nbins,0,nbins);
+  TH1F* histo_OFbkg_errDown      = new TH1F("histo_OFbkg_errOFDown"     ,"histo_OFbkg_errOFDown",nbins,0,nbins);
 
-  TH1F* histo_WZbkg              = new TH1F("histo_WZbkg"          ,"histo_WZbkg"          ,nbins,0,nbins);
-  TH1F* histo_WZbkg_errUp        = new TH1F("histo_WZbkg_wzUp"     ,"histo_WZbkg_wzUp"     ,nbins,0,nbins);
-  TH1F* histo_WZbkg_errDown      = new TH1F("histo_WZbkg_wzDown"   ,"histo_WZbkg_wzDown"   ,nbins,0,nbins);
-      
-  TH1F* histo_ZZbkg              = new TH1F("histo_ZZbkg"          ,"histo_ZZbkg"          ,nbins,0,nbins);
-  TH1F* histo_ZZbkg_errUp        = new TH1F("histo_ZZbkg_wzUp"     ,"histo_ZZbkg_wzUp"     ,nbins,0,nbins);
-  TH1F* histo_ZZbkg_errDown      = new TH1F("histo_ZZbkg_wzDown"   ,"histo_ZZbkg_wzDown"   ,nbins,0,nbins);
-      
-  TH1F* histo_rarebkg            = new TH1F("histo_rarebkg"        ,"histo_rarebkg"        ,nbins,0,nbins);
-  TH1F* histo_rarebkg_errUp      = new TH1F("histo_rarebkg_wzUp"   ,"histo_rarebkg_wzUp"   ,nbins,0,nbins);
-  TH1F* histo_rarebkg_errDown    = new TH1F("histo_rarebkg_wzDown" ,"histo_rarebkg_wzDown" ,nbins,0,nbins);
+  TH1F* histo_WZbkg              = new TH1F("histo_WZbkg"               ,"histo_WZbkg"          ,nbins,0,nbins);
+  TH1F* histo_WZbkg_errUp        = new TH1F("histo_WZbkg_errWZUp"       ,"histo_WZbkg_errWZUp"  ,nbins,0,nbins);
+  TH1F* histo_WZbkg_errDown      = new TH1F("histo_WZbkg_errWZDown"     ,"histo_WZbkg_errWZDown",nbins,0,nbins);
+
+  TH1F* histo_ZZbkg              = new TH1F("histo_ZZbkg"               ,"histo_ZZbkg"          ,nbins,0,nbins);
+  TH1F* histo_ZZbkg_errUp        = new TH1F("histo_ZZbkg_errZZUp"       ,"histo_ZZbkg_errZZUp"  ,nbins,0,nbins);
+  TH1F* histo_ZZbkg_errDown      = new TH1F("histo_ZZbkg_errZZDown"     ,"histo_ZZbkg_errZZDown",nbins,0,nbins);
+            
+  TH1F* histo_rarebkg            = new TH1F("histo_rarebkg"             ,"histo_rarebkg"             ,nbins,0,nbins);
+  TH1F* histo_rarebkg_errUp      = new TH1F("histo_rarebkg_errRAREUp"   ,"histo_rarebkg_errRAREUp"   ,nbins,0,nbins);
+  TH1F* histo_rarebkg_errDown    = new TH1F("histo_rarebkg_errRAREDown" ,"histo_rarebkg_errRAREDown" ,nbins,0,nbins);
       
   for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
 
@@ -282,10 +288,26 @@ void makeSMSCards(){
 
       //if( !( mgbin == 17 && mlbin == 5 ) ) continue;
 
-      int mg  = hall->GetXaxis()->GetBinCenter(mgbin)-12.5;
-      int ml  = hall->GetXaxis()->GetBinCenter(mlbin)-12.5;
+      int mg  = hall->GetXaxis()->GetBinCenter(mgbin);
+      int ml  = hall->GetXaxis()->GetBinCenter(mlbin);
 
+      bool pass = false;
+
+      if( mg==150 && ml==0  ) pass = true;
+      if( mg==200 && ml==0  ) pass = true;
+      if( mg==250 && ml==0  ) pass = true;
+      if( mg==150 && ml==25 ) pass = true;
+      if( mg==200 && ml==50 ) pass = true;
+      if( mg==250 && ml==50 ) pass = true;
+      if( mg==200 && ml==80 ) pass = true;
+      if( mg==250 && ml==80 ) pass = true;
+      
+      if( !pass ) continue;
+
+      cout << endl;
+      cout << "----------------------------------" << endl;
       cout << "mg " << mg << " ml " << ml << endl;
+      cout << "----------------------------------" << endl;
 
       if( hjdnall->GetBinContent(mgbin,mlbin) < 1e-10 ) continue;
 
@@ -347,7 +369,7 @@ void makeSMSCards(){
 
       if( mlbin==5 ) *doScript_CLs_mL100 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
 
-      printCard( Form("SMS_%i_%i",mgbin,mlbin) , sigtot , Zbkg_tot , OFbkg_tot , VZbkg_tot , data_tot , version );
+      printCard( Form("SMS_%i_%i",mgbin,mlbin) , sigtot , Zbkg_tot , OFbkg_tot , WZbkg_tot , ZZbkg_tot , rarebkg_tot , data_tot , version );
 
 
       TFile *f = TFile::Open( Form("rootfiles/%s/SMS_%i_%i.root",version,mgbin,mlbin) , "RECREATE");
@@ -359,9 +381,15 @@ void makeSMSCards(){
       histo_OFbkg->Write();
       histo_OFbkg_errUp->Write();
       histo_OFbkg_errDown->Write();
-      histo_VZbkg->Write();
-      histo_VZbkg_errUp->Write();
-      histo_VZbkg_errDown->Write();
+      histo_WZbkg->Write();
+      histo_WZbkg_errUp->Write();
+      histo_WZbkg_errDown->Write();
+      histo_ZZbkg->Write();
+      histo_ZZbkg_errUp->Write();
+      histo_ZZbkg_errDown->Write();
+      histo_rarebkg->Write();
+      histo_rarebkg_errUp->Write();
+      histo_rarebkg_errDown->Write();
       histo_SMS->Write();
       histo_SMS_JES_shapeUp->Write();
       histo_SMS_JES_shapeDown->Write();
