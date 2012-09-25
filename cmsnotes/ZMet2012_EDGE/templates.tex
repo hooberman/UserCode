@@ -4,8 +4,8 @@
 In this section, we use the \MET\ templates technique to derive predictions for the Z background in the Z mass regions for the 
 two signal regions used for the OSSF dilepton analysis. The background estimation methodology used in the \MET\ templates analysis
 is described in AN-2012/254; this AN presents only details which differ from that reference. 
-We then use the predicted Z background to derive an estimate of the low-mass $\gamma^*$/Z contributions, 
-using an extrapolation technique commonly referred to as the ``$R_{out/in}$'' technique.
+We then use the predicted Z background to derive an estimate of the low-mass $\gamma^*$/Z contribution,
+using an extrapolation technique commonly referred to as the ``$R_{out/in}$'' technique~\cite{ref:routin}.
 
 \subsection{Signal Regions}
 
@@ -31,8 +31,8 @@ The two signal regions of the OSSF analysis are defined as:
 We perform a synchronization exercise to make sure that we can reproduce the ETH/Aachen results. In Table~\ref{tab:edgesync} we
 display the yields in the Z mass regions of the 2 signal regions and compare these to results from the ETH group.
 In general we are synchronized to 3\% or better in all channels. Note that for the purposes of this exercise we include an additional
-dimuon trigger (HLT\_Mu17\_TkMu8) which is not yet included in the results that follow. The inclusion of this trigger adds 3 $\mu\mu$
-events in both  the low \MET\ and high \MET\ signal regions.
+dimuon trigger (HLT\_Mu17\_TkMu8) which is not yet included in the results quoted in Sec.~\ref{sec:templates_bkg}-\ref{sec:templates_summary}. 
+The inclusion of this trigger adds 3 $\mu\mu$ events in both  the low \MET\ and high \MET\ signal regions.
 
 \begin{table}[htb]
 \begin{center}
@@ -67,12 +67,14 @@ e$\mu$   & 113 & 113 \\
 \end{table}
 
 \subsection{Background Estimation Methodology}
+\label{sec:templates_bkg}
 
 The strategy is to select Z$\to\ell\ell$ candidates ($81<m_{\ell\ell}<101$ GeV) with jet requirements corresponding to the
 low-\MET\ and high-\MET\ signal regions, and compare the observed \MET\ distribution to the sum of the predictions from the 
 \zjets\ background (from the \MET\ templates method based on the \gjets\ data control sample), the flavor-symmetric (FS) 
-background predicted from e$\mu$ data events, and MC contributions from WZ/ZZ, as well as the rare SM processes with 
-Z bosons ($t\bar{t}\rm{Z}$ and ZZZ, ZZW, ZWW).
+background predicted from e$\mu$ data events, and MC contributions from WZ/ZZ (for which the contribution to the FS background 
+estimate is negligible), as well as the rare SM processes with 
+Z bosons ($t\bar{t}\rm{Z}$ and ZZZ, ZZW, ZWW). The reader is referred to AN-2012/254 for details of the methods.
 
 In order to adapt the \MET\ templates method to predict the Z background in these regions, we make minor modifications
 to the procedure used in AN-2012/254. Specifically, we re-calculate
@@ -80,6 +82,7 @@ the flavor-symmetric (FS) scaling factor $K$ and change the binning used for the
 The FS background is estimated using e$\mu$ events in data.
 To improve the precision of this background estimate, the dilepton mass requirement is not applied, and we apply a scaling
 factor $K$, which is the efficiency for e$\mu$ events to fall in the Z mass window,  extracted from MC.
+The systematic uncertainty on $K$ is assessed by comparing this quantity in data vs. MC.
 The values of $K$ for various \MET\ intervals for the high-\MET\ region (using \pt\ $>$ (20,10) GeV leptons and at least 2 jets) 
 are shown in Fig.~\ref{fig:K_incl_highmet}. 
 Based on this plot we choose $K=0.13\pm0.02$ for \MET\ signal regions up to 200 GeV; for \MET\ 200-300 GeV and \MET\ $>$ 300 GeV
@@ -934,6 +937,7 @@ resulting in a $\gamma^*$/Z prediction of $7.9\pm2.7$ events.
 \clearpage
 
 \subsection{Summary of Results}
+\label{sec:templates_summary}
 
 In this section we summarize the results for the 5.1 fb$^{-1}$ Run2012A+B data (Table~\ref{tab:results_5p1})
 and the 9.2 fb$^{-1}$ Run2012A+B+C data (Table~\ref{tab:results_9p2}).
