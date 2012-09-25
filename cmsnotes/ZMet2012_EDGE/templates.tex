@@ -7,16 +7,18 @@ is described in AN-2012/254; this AN presents only details which differ from tha
 We then use the predicted Z background to derive an estimate of the low-mass $\gamma^*$/Z contributions, 
 using an extrapolation technique commonly referred to as the ``$R_{out/in}$'' technique.
 
+\subsection{Signal Regions}
+
 The two signal regions of the OSSF analysis are defined as:
 
 \begin{itemize}
-\item Low-\MET signal region (ETH)
+\item Low-\MET\ signal region (ETH)
   \begin{itemize}
   \item 2 \pt $>$ 20 GeV leptons with $|\eta|<2.4$
   \item At least 3 jets (\pt\ $>$ 40 GeV, $|\eta|<3$)
   \item \MET\ $>$ 100 GeV
   \end{itemize}
-\item High-\MET signal region (Aachen)
+\item High-\MET\ signal region (Aachen)
   \begin{itemize}
   \item leading lepton \pt $>$ 20 GeV, trailing lepton \pt\ $>$ 10 GeV, both with $|\eta|<2.4$
   \item At least 2 jets (\pt\ $>$ 40 GeV, $|\eta|<3$) with scalar sum $H_{T}>100$~GeV
@@ -24,7 +26,9 @@ The two signal regions of the OSSF analysis are defined as:
   \end{itemize}
 \end{itemize}
 
-We begin with a synchronization exercise to make sure that we can reproduce the ETH/Aachen results. In Table~\ref{tab:edgesync} we
+\subsection{Synchronization Exercise}
+
+We perform a synchronization exercise to make sure that we can reproduce the ETH/Aachen results. In Table~\ref{tab:edgesync} we
 display the yields in the Z mass regions of the 2 signal regions and compare these to results from the ETH group.
 In general we are synchronized to 3\% or better in all channels. Note that for the purposes of this exercise we include an additional
 dimuon trigger (HLT\_Mu17\_TkMu8) which is not yet included in the results that follow. The inclusion of this trigger adds 3 $\mu\mu$
@@ -62,10 +66,18 @@ e$\mu$   & 113 & 113 \\
 \end{center}
 \end{table}
 
+\subsection{Background Estimation Methodology}
+
+The strategy is to select Z$\to\ell\ell$ candidates ($81<m_{\ell\ell}<101$ GeV) with jet requirements corresponding to the
+low-\MET\ and high-\MET\ signal regions, and compare the observed \MET\ distribution to the sum of the predictions from the 
+\zjets\ background (from the \MET\ templates method based on the \gjets\ data control sample), the flavor-symmetric (FS) 
+background predicted from e$\mu$ data events, and MC contributions from WZ/ZZ, as well as the rare SM processes with 
+Z bosons ($t\bar{t}\rm{Z}$ and ZZZ, ZZW, ZWW).
 
 In order to adapt the \MET\ templates method to predict the Z background in these regions, we make minor modifications
-to the flavor-symmetric (FS) scaling factor $K$ and to the binning used for the \MET\ templates. The FS background 
-is estimated using e$\mu$ events in data.
+to the procedure used in AN-2012/254. Specifically, we re-calculate
+the flavor-symmetric (FS) scaling factor $K$ and change the binning used for the \MET\ templates.
+The FS background is estimated using e$\mu$ events in data.
 To improve the precision of this background estimate, the dilepton mass requirement is not applied, and we apply a scaling
 factor $K$, which is the efficiency for e$\mu$ events to fall in the Z mass window,  extracted from MC.
 The values of $K$ for various \MET\ intervals for the high-\MET\ region (using \pt\ $>$ (20,10) GeV leptons and at least 2 jets) 
@@ -78,8 +90,6 @@ Based on this plot we choose $K=0.14\pm0.02$ for \MET\ signal regions up to 200 
 we inflate the uncertainty to $K=0.14\pm0.03$ and $K=0.14\pm0.07$, respectively. In addition, we change the 
 jet \pt\ threshold for the \MET\ templates jet multiplicity binning from 30 to 40 GeV, and change the $H_T$ bins to
 (0,80,100,150,200,250,300,5000) GeV.
-
-\clearpage
 
 \begin{figure}[!ht]
 \begin{center}
@@ -509,10 +519,7 @@ K     : 0.07 +/- 0.034
 
 \end{comment}
 
-The strategy is to select Z$\to\ell\ell$ candidates ($81<m_{\ell\ell}<101$ GeV) with jet requirements corresponding to the
-low-\MET\ and high-\MET\ signal regions, and compare the observed \MET\ distribution to the sum of the predictions from the 
-\zjets\ background (from the \MET\ templates method based on the \gjets\ data control sample), the flavor-symmetric background predicted
-from e$\mu$ data events, and MC contributions from WZ/ZZ, as well as the rare SM processes with Z bosons ($t\bar{t}\rm{Z}$ and ZZZ, ZZW, ZWW).
+\subsection{Results in Z Mass Window}
 
 The results of the low \MET\ signal region are displayed in Fig.~\ref{fig:results_lowmet} and summarized in Table~\ref{tab:results_lowmet},
 separately for the Run2012A+B data (5.1 fb$^{-1}$) and Run2012C data (4.1 fb$^{-1}$).
@@ -522,9 +529,12 @@ In the combined Run2012A+B+C data (Fig.~\ref{fig:results_fulledge} and Table~\re
 agreement over the full \MET\ range. In the \MET\ $>$ 100 GeV region we observe 288 events with a predicted background of $251\pm33$,
 representing an excess of 1.0$\sigma$.
 
-The results of the high \MET\ signal region are displayed in Fig.~\ref{fig:results_highmet} and summarized in Table~\ref{tab:results_highmet},
+The results of the high \MET\ signal region are displayed in Fig.~\ref{fig:results_highmet} and summarized in 
+Table~\ref{tab:results_highmet},
 separately for the Run2012A+B data (5.1 fb$^{-1}$) and Run2012C data (4.1 fb$^{-1}$).
 In both periods we observe good agreement between the data and predicted background over the full \MET\ range.
+In the combined Run2012A+B+C data (Fig.~\ref{fig:results_fulledge} and Table~\ref{tab:results_edgefull}) we observe reasonable
+agreement over the full \MET\ range. 
 In the \MET\ $>$ 150 GeV region corresponding to the high \MET\ signal region in the full sample, we observe 167 events with a predicted
 background of $177\pm25$ events, representing a deficit of -0.4$\sigma$.
 
@@ -877,10 +887,7 @@ ee/#mu#mu events
 \end{table}
 
 
-
-
-\clearpage
-
+\subsection{Extrapolation to Low Mass to Estimate the $\gamma^*/Z$ Contribution}
 
 \begin{figure}[t]
 \begin{center}
@@ -910,30 +917,12 @@ Z background by this quantity, which is displayed in Fig.~\ref{fig:Routin}. Here
 and assess the uncertainty based on the variation with respect to \MET. 
 Based on this plot we choose $R_{low/in}=0.08\pm0.02$ for the low \MET\ signal region and $R_{low/in}=0.13\pm0.03$ for the high \MET\ region.
 
-\clearpage
-
 We find the following results for the first 5.1 fb$^{-1}$. For the low \MET\ signal region, the total predicted Z background in the Z mass region is $39\pm9.6$ 
 (sum of the \zjets, WZ+ZZ, and rare SM backgrounds from Table~\ref{tab:results_lowmet}, \MET\ $>$ 100 GeV region), 
 resulting in a $\gamma^*$/Z prediction of $3.1\pm1.1$ events. 
 For the high \MET\ signal region, the total predicted Z background in the Z mass region is $30\pm8.1$ 
 (sum of the \zjets, WZ+ZZ, and rare SM backgrounds from Table~\ref{tab:results_highmet}, \MET\ $>$ 150 GeV region), 
 resulting in a $\gamma^*$/Z prediction of $3.8\pm1.4$ events. 
-Hence we summarize the 5.1 fb$^{-1}$ results as:
-
-\begin{itemize}
-\item Low \MET\ signal region
-\begin{itemize}
-  \item Total predicted background in Z mass region: $138\pm18$ events
-  \item Total observed yield in Z mass region: 175 events ($+1.6\sigma$)
-  \item Low-mass $\gamma^*$/Z prediction: $3.1\pm1.1$ events
-\end{itemize}
-\item High \MET\ signal region
-\begin{itemize}
-  \item Total predicted background in Z mass region: $98\pm14$ events
-  \item Total observed yield in Z mass region: 95 events ($-0.2\sigma$)
-  \item Low-mass $\gamma^*$/Z prediction: $3.8\pm1.4$ events
-\end{itemize}
-\end{itemize}
 
 We find the following results for the full 9.2 fb$^{-1}$. For the low \MET\ signal region, the total predicted Z background in the Z mass region is $68\pm17$ 
 (sum of the \zjets, WZ+ZZ, and rare SM backgrounds from Table~\ref{tab:results_edgefull}, \MET\ $>$ 100 GeV region), 
@@ -941,21 +930,109 @@ resulting in a $\gamma^*$/Z prediction of $5.4\pm1.9$ events.
 For the high \MET\ signal region, the total predicted Z background in the Z mass region is $60\pm16$ 
 (sum of the \zjets, WZ+ZZ, and rare SM backgrounds from Table~\ref{tab:results_edgefull}, \MET\ $>$ 150 GeV region), 
 resulting in a $\gamma^*$/Z prediction of $7.9\pm2.7$ events. 
-Hence we summarize the 9.2 fb$^{-1}$ results as:
+
+\clearpage
+
+\subsection{Summary of Results}
+
+In this section we summarize the results for the 5.1 fb$^{-1}$ Run2012A+B data (Table~\ref{tab:results_5p1})
+and the 9.2 fb$^{-1}$ Run2012A+B+C data (Table~\ref{tab:results_9p2}).
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{tab:results_5p1} Summary of results in 5.1 fb$^{-1}$ 2012A+B data for the low-\MET\ and high-\MET\ signal regions (SR).
+In the Z mass region, the predicted Z background (Z bkg, sum of \zjets, WZ/ZZ, and rare SM processes with Z bosons), flavor-symmetric
+background (FS bkg), and total background (Total bkg) are indicated, and compared to the observed yield (Data). 
+The Gaussian significance of the difference between the data and the total background is indicated.
+The predicted $\gamma^*/Z$ contribution to the low-mass region (Low mass $\gamma^*/Z$ bkg) is also indicated.}
+\begin{tabular}{l|c|c}
+
+\hline
+\hline
+& Low-\MET\ SR & High-\MET SR \\
+\hline              
+Z bkg                        & $39\pm9.6$          & $30\pm8.1$        \\
+FS bkg                       & $99\pm16$           & $69\pm12$         \\
+Total bkg                    & $138\pm18$          & $98\pm14$         \\
+Data                         & 175                 & 95                \\
+Significance                 & $+1.6\sigma$        & $-0.2\sigma$      \\
+Low mass $\gamma^*/Z$ bkg    & $3.1\pm1.1$         &   $3.8\pm1.4$     \\
+\hline
+\hline
+
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[htb]
+\begin{center}
+\caption{\label{tab:results_9p2} Summary of results in 9.2 fb$^{-1}$ 2012A+B+C data for the low-\MET\ and high-\MET\ signal regions (SR).
+In the Z mass region, the predicted Z background (Z bkg, sum of \zjets, WZ/ZZ, and rare SM processes with Z bosons), flavor-symmetric
+background (FS bkg), and total background (Total bkg) are indicated, and compared to the observed yield (Data). 
+The Gaussian significance of the difference between the data and the total background is indicated.
+The predicted $\gamma^*/Z$ contribution to the low-mass region (Low mass $\gamma^*/Z$ bkg) is also indicated.}
+\begin{tabular}{l|c|c}
+
+\hline
+\hline
+& Low-\MET\ SR & High-\MET SR \\
+\hline              
+Z bkg                        & $68\pm17$           & $60\pm16$         \\
+FS bkg                       & $184\pm29$          & $117\pm20$        \\
+Total bkg                    & $251\pm33$          & $177\pm25$        \\
+Data                         & 288                 & 167               \\
+Significance                 & $+1.0\sigma$        & $-0.4\sigma$      \\
+Low mass $\gamma^*/Z$ bkg    & $5.4\pm1.9$         &   $7.9\pm2.7$     \\
+\hline
+\hline
+
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\begin{comment}
+The 5.1 fb$^{-1}$ results are summarized as:
 
 \begin{itemize}
 \item Low \MET\ signal region
 \begin{itemize}
+  \item Predicted Z background in Z mass region: $39\pm 9.6$ events
+  \item Total predicted background in Z mass region: $138\pm18$ events
+  \item Total observed yield in Z mass region: 175 events ($+1.6\sigma$)
+  \item Low-mass $\gamma^*$/Z prediction: $3.1\pm1.1$ events
+\end{itemize}
+\item High \MET\ signal region
+\begin{itemize}
+  \item Predicted Z background in Z mass region: $30\pm 8.1$ events
+  \item Total predicted background in Z mass region: $98\pm14$ events
+  \item Total observed yield in Z mass region: 95 events ($-0.2\sigma$)
+  \item Low-mass $\gamma^*$/Z prediction: $3.8\pm1.4$ events
+\end{itemize}
+\end{itemize}
+
+
+The 9.2 fb$^{-1}$ results are summarized as:
+
+\begin{itemize}
+\item Low \MET\ signal region
+\begin{itemize}
+  \item Predicted Z background in Z mass region: $68\pm17$ events
   \item Total predicted background in Z mass region: $251\pm33$ events
   \item Total observed yield in Z mass region: 288 events ($+1.0\sigma$)
   \item Low-mass $\gamma^*$/Z prediction: $5.4\pm1.9$ events
 \end{itemize}
 \item High \MET\ signal region
 \begin{itemize}
+  \item Predicted Z background in Z mass region: $60\pm16$ events
   \item Total predicted background in Z mass region: $177\pm25$ events
   \item Total observed yield in Z mass region: 167 events ($-0.4\sigma$)
   \item Low-mass $\gamma^*$/Z prediction: $7.9\pm2.7$ events
 \end{itemize}
 \end{itemize}
+
+\end{comment}
+
+\clearpage
 
 
