@@ -116,41 +116,32 @@ void smoothHist( TH2F* h ){
   }  
 }
 
-void combinePlots(string version , bool print = false){
+void plotProjections( TH2F* h ){
+
+  TH1F* hproj = (TH1F*) h->ProjectionX("hproj",1,1);
+
+
+}
+
+void combinePlots(string version = "V00-00-02" , bool print = false){
+
+  char* xtitle  = "m_{#chi_{2}^{0}} = m_{#chi_{1}^{#pm}} [GeV]";
+  char* ytitle  = "m_{#chi_{1}^{0}} [GeV]";
 
   bool smooth = false;
 
   char* sample;
   char* title;
   char* xsectype;
+  char* xsechist;
   float denom;
 
-  if( version == "V00-02-02" ){
+  if( version == "V00-00-02" ){
     sample   = (char*) "wzsms";
     title    = (char*) "pp#rightarrow #chi^{#pm}#chi^{0} #rightarrow WZ + E_{T}^{miss}";
-    xsectype = (char*) "C1N2";
+    xsectype = (char*) "C1N2_8TeV_finer";
+    xsechist = (char*) "C1N2_8TeV_NLO";
     denom    = 100000.0;
-  } 
-
-  else if( version == "V00-02-03" ){
-    sample   = (char*) "zzsms";
-    title    = (char*) "pp#rightarrow #chi^{0}#chi^{0} #rightarrow ZZ + E_{T}^{miss}";
-    xsectype = (char*) "N1N2";
-    denom    = 52600.0;
-  } 
-
-  else if( version == "V00-02-09" ){
-    sample   = (char*) "wzsms";
-    title    = (char*) "pp#rightarrow #chi^{#pm}#chi^{0} #rightarrow WZ + E_{T}^{miss}";
-    xsectype = (char*) "C1N2";
-    denom    = 100000.0;
-  } 
-
-  else if( version == "V00-02-10" ){
-    sample   = (char*) "zzsms";
-    title    = (char*) "pp#rightarrow #chi^{0}#chi^{0} #rightarrow ZZ + E_{T}^{miss}";
-    xsectype = (char*) "N1N2";
-    denom    = 52600.0;
   } 
   
   //float ymin = 0.;
@@ -158,7 +149,18 @@ void combinePlots(string version , bool print = false){
   TFile *file = TFile::Open(Form("cards/%s/observed_limit.root",version.c_str()));
 
   TH2F* hexcl      = (TH2F*) file->Get("hexcl");
-  hexcl->Scale(1000.0); // pb --> fb
+  TH2F* hexp       = (TH2F*) file->Get("hexp");
+
+  // hexcl->RebinX(2);
+  // hexcl->RebinY(2);
+
+  // hexp->RebinX(2);
+  // hexp->RebinY(2);
+
+  // hexcl->Scale(0.25);
+  // hexp->Scale(0.25);
+
+  //hexcl->Scale(1000.0); // pb --> fb
 
   TLatex *t = new TLatex();
   t->SetNDC();
@@ -167,32 +169,33 @@ void combinePlots(string version , bool print = false){
   // calculate efficiency
   //-------------------------------
 
-  char* babyversion = (char*) "V00-02-14";
+  char* babyversion = (char*) "V00-01-05";
 
   TChain *ch = new TChain("T1");
-  ch->Add(Form("output/%s/%s_baby.root",babyversion,sample));
+  ch->Add(Form("output/%s/%s_baby_oldIso.root",babyversion,sample));
 
+  TCut pt2020("lep1.pt()>20.0 && lep2.pt()>20.0");
   TCut zmass("dilmass>81 && dilmass<101");
   TCut njets2("njets >= 2");
-  TCut bveto("nbvz==0");
+  TCut bveto("nbcsvm==0");
   TCut mjj("mjj>70 && mjj<110");
   TCut nlep2("nlep==2");
   TCut rho("rho>0 && rho<40");
   TCut sf("leptype==0||leptype==1");
-  TCut met60("pfmet>60");
-  TCut weight("btagweight * davtxweight * trgeff");
+  TCut met100("pfmet>100");
+  TCut weight("vtxweight * trgeff");
 
-  TCut sel  = zmass + njets2 + bveto + mjj + nlep2 + sf + met60;
+  TCut sel  = pt2020 + zmass + njets2 + bveto + mjj + nlep2 + sf + met100;
 
   cout << "Using selection: " << sel.GetTitle() << endl;
 
-  TH2F* heff = new TH2F("heff","heff", 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5);
+  TH2F* heff = new TH2F("heff","heff", 31 , -5.0 , 305.0 , 31 , -5.0 , 305.0 );
 
   TCanvas *ctemp = new TCanvas();
   ch->Draw("ml:mg>>heff",sel*weight);
   delete ctemp;
   heff->Scale(1.0/denom);
-  heff->Scale(100);
+  heff->Scale(1000);
 
   int effbin = heff->FindBin(200,0);
   cout << "Efficiency for 200,0  " << heff->GetBinContent(effbin) << endl;
@@ -208,22 +211,26 @@ void combinePlots(string version , bool print = false){
   //-------------------------------
 
   //TFile *xsecfile = TFile::Open("reference_xSec.root");
-  TFile *xsecfile = TFile::Open(Form("%s_referencexSec.root",xsectype));
-  TH1F* refxsec   = (TH1F*) xsecfile->Get(xsectype);
+  TFile *xsecfile = TFile::Open(Form("%s.root",xsectype));
+  TH1F* refxsec   = (TH1F*) xsecfile->Get(xsechist);
 
-  TH2F* hexcluded   = new TH2F("hexcluded","hexcluded"    , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
-  TH2F* hexcluded13 = new TH2F("hexcluded13","hexcluded13", 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
-  TH2F* hexcluded3  = new TH2F("hexcluded3","hexcluded3"  , 21 , -12.5 , 512.5 , 21 , -12.5 , 512.5 );
-  
-  for( unsigned int ibin = 1 ; ibin <= 21 ; ibin++ ){
-    for( unsigned int jbin = 1 ; jbin <= 21 ; jbin++ ){
+  int   nx   =    31;
+  float xmin =  -5.0;
+  float xmax = 305.0;
 
-      float xsecul = hexcl->GetBinContent(ibin,jbin);
+  TH2F* hexcluded     = new TH2F("hexcluded"     ,"hexcluded"     , nx , xmin , xmax , nx , xmin , xmax );
+  TH2F* hexcluded_exp = new TH2F("hexcluded_exp" ,"hexcluded_exp" , nx , xmin , xmax , nx , xmin , xmax );
+
+  for( unsigned int ibin = 1 ; ibin <= nx ; ibin++ ){
+    for( unsigned int jbin = 1 ; jbin <= nx ; jbin++ ){
+
+      float xsecul     = hexcl->GetBinContent(ibin,jbin);
+      float xsecul_exp = hexp->GetBinContent(ibin,jbin);
 
       if( xsecul < 1.e-10 ) continue;
 
-      float mg = hexcluded->GetXaxis()->GetBinCenter(ibin)-12.5;
-      float ml = hexcluded->GetYaxis()->GetBinCenter(jbin)-12.5;
+      float mg = hexcluded->GetXaxis()->GetBinCenter(ibin);
+      float ml = hexcluded->GetYaxis()->GetBinCenter(jbin);
 
       int   bin  = refxsec->FindBin(mg);
       float xsec = refxsec->GetBinContent(bin);
@@ -231,13 +238,10 @@ void combinePlots(string version , bool print = false){
       //cout << ibin << " " << jbin << " " << mg << " " << ml << " " << xsecul << " " << xsec << " " << (xsec > xsecul) << endl;
 
       hexcluded->SetBinContent(ibin,jbin,0);
-      if( xsec > xsecul )   hexcluded->SetBinContent(ibin,jbin,1);
+      if( xsec > xsecul )     hexcluded->SetBinContent(ibin,jbin,1);
 
-      hexcluded3->SetBinContent(ibin,jbin,0);
-      if( 3 * xsec > xsecul )   hexcluded3->SetBinContent(ibin,jbin,1);
-
-      hexcluded13->SetBinContent(ibin,jbin,0);
-      if( (1./3.) * xsec > xsecul )   hexcluded13->SetBinContent(ibin,jbin,1);
+      hexcluded_exp->SetBinContent(ibin,jbin,0);
+      if( xsec > xsecul_exp ) hexcluded_exp->SetBinContent(ibin,jbin,1);
 
       //cout << "ibin jbin mg xsec " << ibin << " " << jbin << " " << mg << " " << xsec << endl;
     }
@@ -266,20 +270,20 @@ void combinePlots(string version , bool print = false){
   heff->GetYaxis()->SetLabelSize(0.035);
   heff->GetZaxis()->SetLabelSize(0.035);
   //heff->SetMaximum(0.35);
-  heff->GetYaxis()->SetTitle("LSP mass [GeV]");
-  heff->GetXaxis()->SetTitle("#chi mass [GeV]");
-  heff->GetZaxis()->SetTitle("A #times #varepsilon (%)");
+  heff->GetYaxis()->SetTitle(ytitle);
+  heff->GetXaxis()->SetTitle(xtitle);
+  heff->GetZaxis()->SetTitle("efficiency (%)");
   heff->Draw("colz");
   //heff->GetYaxis()->SetRangeUser(ymin,1200);
 
   t->SetTextSize(0.04);
 
-  t->DrawLatex(0.2,0.83,"E_{T}^{miss} templates");
+  //t->DrawLatex(0.2,0.83,"E_{T}^{miss} templates");
   t->DrawLatex(0.2,0.77,title);
-  t->DrawLatex(0.2,0.71,"E_{T}^{miss} > 60 GeV");
+  t->DrawLatex(0.2,0.71,"E_{T}^{miss} > 100 GeV");
 
   t->SetTextSize(0.04);
-  t->DrawLatex(0.15,0.93,"CMS Preliminary  #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
+  t->DrawLatex(0.15,0.93,"CMS Preliminary  #sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
 
   //-------------------------------
   // cross section limit
@@ -297,14 +301,15 @@ void combinePlots(string version , bool print = false){
   hexcl->GetXaxis()->SetLabelSize(0.035);
   hexcl->GetYaxis()->SetLabelSize(0.035);
   hexcl->GetZaxis()->SetLabelSize(0.035);
-  hexcl->GetYaxis()->SetTitle("LSP mass [GeV]");
-  hexcl->GetXaxis()->SetTitle("#chi mass [GeV]");
-  hexcl->GetZaxis()->SetTitle("95% CL upper limit on #sigma [fb]");
+  hexcl->GetYaxis()->SetTitle(ytitle);
+  hexcl->GetXaxis()->SetTitle(xtitle);
+  hexcl->GetZaxis()->SetTitle("95% CL upper limit on #sigma [pb]");
   hexcl->Draw("colz");
-  hexcl->SetMinimum(50);
-  hexcl->SetMaximum(5000);
+  //hexcl->SetMinimum(50);
+  //hexcl->SetMaximum(5000);
   //hexcl->GetYaxis()->SetRangeUser(ymin,1200);
 
+  /*
   TGraph* gr_excl      = getGraph_WZ("nom");
   TGraph* gr_excl_down = getGraph_WZ("down");
   TGraph* gr_excl_up   = getGraph_WZ("up");
@@ -328,12 +333,13 @@ void combinePlots(string version , bool print = false){
     leg->SetTextSize(0.06);
     leg->Draw();
   }
-  
+  */
+
   t->SetTextSize(0.04);
-  t->DrawLatex(0.2,0.83,"E_{T}^{miss} templates");
+  //t->DrawLatex(0.2,0.83,"E_{T}^{miss} templates");
   t->DrawLatex(0.2,0.77,title);
 
-  t->DrawLatex(0.15,0.93,"CMS Preliminary  #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
+  t->DrawLatex(0.15,0.93,"CMS Preliminary  #sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
 
   if( print ){
     can->Print(Form("cards/%s/plots/SMS.eps",version.c_str()));
@@ -348,50 +354,39 @@ void combinePlots(string version , bool print = false){
   // TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
   // TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
 
-  TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
-  TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
-  TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
+  // TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
+  // TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
+  // TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
 
   TFile* fout = TFile::Open(Form("cards/%s/limit.root",version.c_str()),"RECREATE");
   fout->cd();
   hexcl->Write();
-  gr_excl->Write();
+  //gr_excl->Write();
   fout->Close();
 
-  TCanvas *c2 = new TCanvas("c2","c2",1500,500);
-  c2->Divide(3,1);
+  TCanvas *c2 = new TCanvas("c2","c2",1200,600);
+  c2->Divide(2,1);
 
   t->SetTextSize(0.07);
 
   c2->cd(1);
   gPad->SetGridx();
   gPad->SetGridy();
-  //hexcluded13->Draw("colz");
-  hexcluded13_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
-  hexcluded13_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
-  hexcluded13_shifted->Draw("colz");
-  gr_excl_down->Draw();
-  t->DrawLatex(0.3,0.8,"1/3 #times #sigma^{NLO-QCD}");
+  hexcluded->GetXaxis()->SetTitle(xtitle);
+  hexcluded->GetYaxis()->SetTitle(ytitle);
+  hexcluded->Draw("colz");
+  //gr_excl_down->Draw();
+  t->DrawLatex(0.3,0.8,"observed");
 
   c2->cd(2);
   gPad->SetGridx();
   gPad->SetGridy();
-  //hexcluded->Draw("colz");
-  hexcluded_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
-  hexcluded_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
-  hexcluded_shifted->Draw("colz");
-  gr_excl->Draw();
-  t->DrawLatex(0.3,0.8,"#sigma^{NLO-QCD}");
+  hexcluded_exp->GetXaxis()->SetTitle(xtitle);
+  hexcluded_exp->GetYaxis()->SetTitle(ytitle);
+  hexcluded_exp->Draw("colz");
+  //gr_excl_down->Draw();
+  t->DrawLatex(0.3,0.8,"expected");
 
-  c2->cd(3);
-  gPad->SetGridx();
-  gPad->SetGridy();
-  //hexcluded3->Draw("colz");
-  hexcluded3_shifted->GetXaxis()->SetTitle("gluino mass [GeV]");
-  hexcluded3_shifted->GetYaxis()->SetTitle("#chi_{1}^{0} mass [GeV]");
-  hexcluded3_shifted->Draw("colz");
-  gr_excl_up->Draw();
-  t->DrawLatex(0.3,0.8,"3 #times #sigma^{NLO-QCD}");
 
   if( print ){
     c2->Print(Form("cards/%s/plots/SMS_points.eps",version.c_str()));
