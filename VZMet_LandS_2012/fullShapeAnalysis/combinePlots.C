@@ -197,7 +197,7 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   TH2F* hexp       = (TH2F*) file->Get("hexp");
   
   // hexcl->Scale(0.9);
-  // hexp->Scale(0.9);
+  //hexp->Scale(sqrt(9.2/15.0));
 
   // hexcl->RebinX(2);
   // hexcl->RebinY(2);
@@ -230,14 +230,18 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   TCut nlep2("nlep==2");
   TCut rho("rho>0 && rho<40");
   TCut sf("leptype==0||leptype==1");
-  TCut met100("pfmet>100");
+  TCut met80("pfmet>80");
   TCut weight("vtxweight * trgeff");
 
-  TCut sel  = pt2020 + zmass + njets2 + bveto + mjj + nlep2 + sf + met100;
+  TCut sel  = pt2020 + zmass + njets2 + bveto + mjj + nlep2 + sf + met80;
 
   cout << "Using selection: " << sel.GetTitle() << endl;
 
-  TH2F* heff = new TH2F("heff","heff", 31 , -5.0 , 305.0 , 31 , -5.0 , 305.0 );
+  int   nx   =    31;
+  float xmin =  -5.0;
+  float xmax = 305.0;
+
+  TH2F* heff = new TH2F("heff","heff", nx , xmin , xmax , nx , xmin , xmax );
 
   TCanvas *ctemp = new TCanvas();
   ch->Draw("ml:mg>>heff",sel*weight);
@@ -263,10 +267,6 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   TH1F* refxsec   = (TH1F*) xsecfile->Get(xsechist);
 
   //plotProjections(hexcl,refxsec);
-
-  int   nx   =    31;
-  float xmin =  -5.0;
-  float xmax = 305.0;
 
   TH2F* hexcluded     = new TH2F("hexcluded"     ,"hexcluded"     , nx , xmin , xmax , nx , xmin , xmax );
   TH2F* hexcluded_exp = new TH2F("hexcluded_exp" ,"hexcluded_exp" , nx , xmin , xmax , nx , xmin , xmax );
@@ -328,7 +328,7 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
 
   //t->DrawLatex(0.2,0.83,"E_{T}^{miss} templates");
   t->DrawLatex(0.2,0.85,title);
-  t->DrawLatex(0.2,0.78,"E_{T}^{miss} > 100 GeV");
+  t->DrawLatex(0.2,0.78,"E_{T}^{miss} > 80 GeV");
 
   t->SetTextSize(0.04);
   t->DrawLatex(0.15,0.93,"CMS Preliminary  #sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
@@ -414,7 +414,7 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   gPad->SetGridy();
   hexcluded->GetXaxis()->SetTitle(xtitle);
   hexcluded->GetYaxis()->SetTitle(ytitle);
-  hexcluded->GetXaxis()->SetRangeUser(150,300);
+  hexcluded->GetXaxis()->SetRangeUser(150,350);
   hexcluded->GetYaxis()->SetRangeUser(0,100);
   hexcluded->Draw("colz");
   grobs->Draw("lp");
@@ -425,11 +425,15 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   gPad->SetGridy();
   hexcluded_exp->GetXaxis()->SetTitle(xtitle);
   hexcluded_exp->GetYaxis()->SetTitle(ytitle);
-  hexcluded_exp->GetXaxis()->SetRangeUser(150,300);
+  hexcluded_exp->GetXaxis()->SetRangeUser(150,350);
   hexcluded_exp->GetYaxis()->SetRangeUser(0,100);
   hexcluded_exp->Draw("colz");
   grexp->Draw("lp");
   t->DrawLatex(0.3,0.8,"expected");
+
+  // TCanvas *c3 = new TCanvas("c3","c3",600,600);
+  // c3->cd();
+  // hexcluded_exp->Draw("colz");
 
   if( print ){
     c2->Print(Form("cards/%s/plots/%s_points.pdf",version.c_str(),sample));
