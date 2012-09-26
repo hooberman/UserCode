@@ -120,6 +120,11 @@ void plotProjections( TH2F* h ){
 
   TH1F* hproj = (TH1F*) h->ProjectionX("hproj",1,1);
 
+  for( int ibin = 1 ; ibin <= hproj->GetXaxis()->GetNbins() ; ibin++ ){
+    cout << ibin << " " << hproj->GetBinCenter(ibin) << " " << hproj->GetBinContent(ibin) << endl;
+  }
+    
+
 
 }
 
@@ -304,7 +309,9 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   hexcl->GetYaxis()->SetTitle(ytitle);
   hexcl->GetXaxis()->SetTitle(xtitle);
   hexcl->GetZaxis()->SetTitle("95% CL upper limit on #sigma [pb]");
+  gPaint->SetTextFormat(".2f");
   hexcl->Draw("colz");
+  hexcl->Draw("sametext");
   //hexcl->SetMinimum(50);
   //hexcl->SetMaximum(5000);
   //hexcl->GetYaxis()->SetRangeUser(ymin,1200);
