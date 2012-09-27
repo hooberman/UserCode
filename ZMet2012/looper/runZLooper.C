@@ -48,7 +48,45 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "data_53X_edgeSync" ) == 0 ){    
+
+    pickSkimIfExists(ch,"/home/users/benhoob/ZMet2012/scripts/edgeSync/Pablo_NOT_Ben.root");
+
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "data_53X" ) == 0 ){    
+
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleMu_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/MuEG_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
+
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleMu_Run2012A-recover-06Aug2012-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/MuEG_Run2012A-recover-06Aug2012-v1_AOD/V05-03-13/merged*root");
+
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleMu_Run2012B-13Jul2012-v4_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/MuEG_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged*root");
+  }
+  
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "data_2012C_53X" ) == 0 ){    
+
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleMu_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/MuEG_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
+    
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleMu_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/MuEG_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
+  }
+  
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "data_allTrig_53X" ) == 0 ){    
 
     pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
     pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleMu_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
@@ -72,22 +110,14 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   
   //----------------------------------------------------------------------------------------
 
-  else if( strcmp( prefix , "data_53X_edgeSync" ) == 0 ){    
-
-    pickSkimIfExists(ch,"/home/users/benhoob/ZMet2012/scripts/edgeSync/Pablo_NOT_Ben.root");
-
-  }
-
-  //----------------------------------------------------------------------------------------
-
-  else if( strcmp( prefix , "data_2012C_53X" ) == 0 ){    
+  else if( strcmp( prefix , "data_allTrig_2012C_53X" ) == 0 ){    
 
     pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
     pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleMu_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
     pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/MuEG_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
-    pickSkimIfExists(ch,"ZMet2012_pt2010/SingleElectron_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
-    pickSkimIfExists(ch,"ZMet2012_pt2010/SingleMu_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
-
+    //pickSkimIfExists(ch,"ZMet2012_pt2010/SingleElectron_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
+    //pickSkimIfExists(ch,"ZMet2012_pt2010/SingleMu_Run2012C-PromptReco-v1_AOD/V05-03-13/merged*root");
+    
     pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleElectron_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
     pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/DoubleMu_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
     pickSkimIfExists(ch,"ZMet2012_pt2010_nfs/MuEG_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
