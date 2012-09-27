@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-01-06";
+const char* iter                 = "V00-01-07";
 const char* jsonfilename         = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
 
 //--------------------------------------------------------------------
@@ -1016,6 +1016,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	
       }
 
+      dphill_ = acos( cos( (*lep1_).phi() - (*lep2_).phi() ) );
+      drll_   = dRbetweenVectors( *lep1_ , *lep2_ );
+
       //muon ID
       if( !isData ){
 	zdilep_ = 1;
@@ -1902,6 +1905,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //---------------
       // OFFICIAL JEC
       //---------------
+      
+      st30_ = ht30_ + pfmet_ + (*lep1_).pt() + (*lep2_).pt();
+      st40_ = ht40_ + pfmet_ + (*lep1_).pt() + (*lep2_).pt();
 
       //---------------------------------------
       // now calculate METup and METdown
@@ -2052,8 +2058,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //-------------------------
 
       if( goodBJets.size() > 0 ){
-	mlb1_ = 9999;
-	mlb2_ = 9999;
+	mlb1_    = 9999;
+	mlb2_    = 9999;
+	drblmin_ = 9999;
 
 	for( int i = 0 ; i < goodBJets.size() ; ++i ){
 	  float m1 = ( *lep1_ + goodBJets.at(i) ).mass();
@@ -2061,12 +2068,20 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	  if( m1 < mlb1_ ) mlb1_ = m1;
 	  if( m2 < mlb2_ ) mlb2_ = m2;
+
+	  float dr1 = dRbetweenVectors( *lep1_ , goodBJets.at(i) );
+	  float dr2 = dRbetweenVectors( *lep2_ , goodBJets.at(i) );
+
+	  if( dr1 < drblmin_ ) drblmin_ = dr1;
+	  if( dr2 < drblmin_ ) drblmin_ = dr2;
+
 	}
       }
 
       else{
-	mlb1_ = -1;
-	mlb2_ = -1;
+	mlb1_    = -1;
+	mlb2_    = -1;
+	drblmin_ = -1;
       }
 
       if( goodBJets.size() == 2 ){
@@ -2826,6 +2841,12 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ecaltp"    ,  &ecaltp_    ,  "ecaltp/I");  
   babyTree_->Branch("trkfail"   ,  &trkfail_   ,  "trkfail/I");  
   babyTree_->Branch("eebadsc"   ,  &eebadsc_   ,  "eebadsc/I");  
+
+  babyTree_->Branch("drll"      ,  &drll_      ,  "drll/F"    );  
+  babyTree_->Branch("dphill"    ,  &dphill_    ,  "dphill/F"  );  
+  babyTree_->Branch("drblmin"   ,  &drblmin_   ,  "drblmin/F" );  
+  babyTree_->Branch("st30"      ,  &st30_      ,  "st30/F"    );  
+  babyTree_->Branch("st40"      ,  &st40_      ,  "st40/F"    );  
 
 }
 

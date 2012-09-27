@@ -120,6 +120,11 @@ class Z_looper
   Float_t ht40up_;
   Float_t ht40dn_;
   Int_t   zdilep_;
+  Float_t drll_;
+  Float_t dphill_;
+  Float_t drblmin_;
+  Float_t st30_;
+  Float_t st40_;
 
   Float_t pfmett1new_;
   Float_t pfmett1newphi_;
