@@ -89,6 +89,12 @@ void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, c
   if( TString(var).Contains("dilpt") ){
     myvar = "dilep->pt()";
   }
+  if( TString(var).Contains("drll") ){
+    myvar = "sqrt((lep1.eta()-lep2.eta())*(lep1.eta()-lep2.eta())  +  acos(cos((lep1.phi()-lep2.phi())))*acos(cos((lep1.phi()-lep2.phi()) )))";}
+  if( TString(var).Contains("dphill") ){
+    myvar = "acos( cos( ( lep1.phi()-lep2.phi() ) ) )";
+  }
+
 
   TCut ee("leptype==0 && ee==1");
   TCut mm("leptype==1 && (mm==1 || mmtk==1)");
@@ -279,7 +285,7 @@ void makeEdgePDF(char* SR = "lowMET",char* mll = "lowMass"){
   TCut multilep("nlep>2");
 
   TCut sel;
-  sel += multilep;
+  //sel += multilep;
   sel += runrange;
   sel += filters;
   sel += (ee||mm||em);
@@ -350,6 +356,8 @@ void makeEdgePDF(char* SR = "lowMET",char* mll = "lowMass"){
 
   makePlot( canvas , filename , data , sel  , "nlep"    , "nleptons (p_{T}>10 GeV)" ,  4 ,  0 ,    4 );    filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "dilpt"   , "dilepton p_{T} [GeV]"    , 10 ,  0 ,  200 );    filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "dphill"  , "#Delta#phi(ll)"          , 10 ,  0 ,  3.2 );    filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel  , "drll"    , "#DeltaR(ll)"             , 10 ,  0 ,  5.0 );    filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "lep1pt"  , "1st lepton p_{T} [GeV]"  , 10 ,  0 ,  200 );    filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "lep2pt"  , "2st lepton p_{T} [GeV]"  , 10 ,  0 ,  200 );    filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "lep1eta" , "1st lepton #eta"         , 10 ,  -2.5 ,  2.5 ); filename = Form("%s_%s",SR,mll);
