@@ -56,7 +56,7 @@ float crossSectionGMSB( int mu ){
   if( mu ==410 ) xsec = 0.0287;
       
   if( xsec < 0 ){
-    cout << __FILE__ << " " << __LINE << " ERROR! couldn't find GMSB cross section for mu " << mu << endl;
+    cout << __FILE__ << " " << __LINE__ << " ERROR! couldn't find GMSB cross section for mu " << mu << endl;
   }
 
   return xsec;
@@ -105,7 +105,7 @@ void extractLimits_GMSB(){
   // loop over CMSSM points
   //------------------------------------------
 
-  const unsigned int nbins = 7;
+  const unsigned int nbins = 15;
   
   vector<float> mgvec;
   vector<float> expvec;
@@ -202,6 +202,8 @@ void extractLimits_GMSB(){
     obs[i0]     = obsvec.at(i0);
     expp1[i0]   = expp1vec.at(i0);
     expm1[i0]   = expm1vec.at(i0);
+
+    cout << mg[i0] << " " << obs[i0] << " " << exp[i0] << endl;
   }
 
   TGraph grobs(n,mg,obs);    
