@@ -49,7 +49,7 @@ void cmsPrelim(double intLumi, bool prelim)
 
         latex.SetTextAlign(31); // align right
         //latex.DrawLatex(0.89, 0.92, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", intLumi));
-        latex.DrawLatex(0.92, 0.92, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", intLumi));
+        latex.DrawLatex(0.92, 0.92, Form("#sqrt{s} = 8 TeV, L_{int} = %4.1f fb^{-1}", intLumi));
 }
 
 
@@ -180,7 +180,7 @@ TGraph* getGraph(TGraph* gin , int ndiv = 10 , bool verbose = false ){
 void makeGMSBPlot( bool printplots = false ){
 
   //getUncertainties();
-
+  /*
   // VZ+MET exclusion
   TFile *f       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit.root");
   TGraph* gul    = (TGraph*) f->Get("grobs");
@@ -192,16 +192,18 @@ void makeGMSBPlot( bool printplots = false ){
   TFile *frutgers = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/20120420_UCSD_GMSB_datacard/observed_limit.root ");
   TGraph* gul2    = (TGraph*) frutgers->Get("grobs");
   TGraph* gul2exp = (TGraph*) frutgers->Get("grexp");
+*/
 
   // VZ+MET exclusion
-  TFile *fc       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit_combined_band.root");
+  TFile *fc       = TFile::Open("/tas/benhoob/home/LandS_t3-06-00/VZMet_LandS_2012/fullShapeAnalysis/cards/V00-00-03/observed_limit.root");
+
   TGraph* gulc      = (TGraph*) fc->Get("grobs");
   TGraph* gulcexp   = (TGraph*) fc->Get("grexp");
   TGraph* gulcexpp1 = (TGraph*) fc->Get("grexpp1");
   TGraph* gulcexpm1 = (TGraph*) fc->Get("grexpm1");
   TGraph* gulcband  = uncertaintyBand( gulcexpp1 , gulcexpm1 );
 
-
+  /*
   Double_t xp;
   Double_t yp;
 
@@ -246,11 +248,8 @@ void makeGMSBPlot( bool printplots = false ){
     // cout << "4l      " << Form("%.0f",yp2) << endl;
     // cout << "combo   " << Form("%.0f",ypc) << endl;
     // cout << "exp     " << Form("%.0f",exp) << endl << endl;    
-
-
-
   }
-
+  */
 
   const unsigned int n = 15;
   float x[n];
@@ -264,21 +263,23 @@ void makeGMSBPlot( bool printplots = false ){
   float xband[30];
   float yband[30];
 
-  x[0]  = 130;   y[0]  = 3057;   yerr[0]  = 0.055 * y[0];
-  x[1]  = 150;   y[1]  = 1719;   yerr[1]  = 0.054 * y[1];
-  x[2]  = 170;   y[2]  = 1035;   yerr[2]  = 0.050 * y[2];
-  x[3]  = 190;   y[3]  =  656;   yerr[3]  = 0.047 * y[3];
-  x[4]  = 210;   y[4]  =  433;   yerr[4]  = 0.048 * y[4];
-  x[5]  = 230;   y[5]  =  293;   yerr[5]  = 0.051 * y[5];
-  x[6]  = 250;   y[6]  =  205;   yerr[6]  = 0.047 * y[6];
-  x[7]  = 270;   y[7]  =  146;   yerr[7]  = 0.048 * y[7];
-  x[8]  = 290;   y[8]  =  105;   yerr[8]  = 0.049 * y[8];
-  x[9]  = 310;   y[9]  =   77;   yerr[9]  = 0.048 * y[9];
-  x[10] = 330;   y[10] =   57;   yerr[10] = 0.053 * y[10];
-  x[11] = 350;   y[11] =   43;   yerr[11] = 0.055 * y[11];   
-  x[12] = 370;   y[12] =   33;   yerr[12] = 0.057 * y[12];   
-  x[13] = 390;   y[13] =   25;   yerr[13] = 0.057 * y[13];   
-  x[14] = 410;   y[14] =   20;   yerr[14] = 0.060 * y[14];   
+  float systerr = 0.06;
+
+  x[0]  = 130;   y[0]  = 3.7640;   yerr[0]  = systerr * y[0];
+  x[1]  = 150;   y[1]  = 2.1410;   yerr[1]  = systerr * y[1];
+  x[2]  = 170;   y[2]  = 1.3040;   yerr[2]  = systerr * y[2];
+  x[3]  = 190;   y[3]  = 0.8370;   yerr[3]  = systerr * y[3];
+  x[4]  = 210;   y[4]  = 0.5580;   yerr[4]  = systerr * y[4];
+  x[5]  = 230;   y[5]  = 0.3820;   yerr[5]  = systerr * y[5];
+  x[6]  = 250;   y[6]  = 0.2710;   yerr[6]  = systerr * y[6];
+  x[7]  = 270;   y[7]  = 0.1950;   yerr[7]  = systerr * y[7];
+  x[8]  = 290;   y[8]  = 0.1420;   yerr[8]  = systerr * y[8];
+  x[9]  = 310;   y[9]  = 0.1060;   yerr[9]  = systerr * y[9];
+  x[10] = 330;   y[10] = 0.0798;   yerr[10] = systerr * y[10];
+  x[11] = 350;   y[11] = 0.0608;   yerr[11] = systerr * y[11];   
+  x[12] = 370;   y[12] = 0.0468;   yerr[12] = systerr * y[12];   
+  x[13] = 390;   y[13] = 0.0366;   yerr[13] = systerr * y[13];   
+  x[14] = 410;   y[14] = 0.0287;   yerr[14] = systerr * y[14];   
 
   for( int i = 0 ; i < 15; ++i ){
     xerr[i] = 0.0;
@@ -307,7 +308,6 @@ void makeGMSBPlot( bool printplots = false ){
   TGraph* gdn   = new TGraph(n,x,ydn);
   TGraph* gband = new TGraph(30,xband,yband);
 
-
   // UP:   248
   // DOWN: 148
 
@@ -320,9 +320,10 @@ void makeGMSBPlot( bool printplots = false ){
   //gPad->SetGridy();
 
   float ymin = 0;
-  if( logplot ) ymin = 99.9;
+  if( logplot ) ymin = 0.01;
 
-  TH2F* hdummy = new TH2F("hdummy","",100,130,300,100,ymin,3000);
+  //TH2F* hdummy = new TH2F("hdummy","",100,130,300,100,ymin,3000);
+  TH2F* hdummy = new TH2F("hdummy","",100,130,400,100,ymin,5);
   hdummy->Draw();
 
   c1->cd();
@@ -337,6 +338,7 @@ void makeGMSBPlot( bool printplots = false ){
   gdn->SetLineStyle(2);
   gband->SetFillColor(5);
 
+  /*
   //2l2j observed
   gul->SetLineColor(6);
   gul->SetLineWidth(3);
@@ -355,6 +357,7 @@ void makeGMSBPlot( bool printplots = false ){
   //4l expected
   gul2exp->SetLineWidth(3);
   gul2exp->SetLineStyle(2);
+  */
 
   //combined observed
   gulc->SetLineWidth(5);
@@ -368,8 +371,8 @@ void makeGMSBPlot( bool printplots = false ){
   //clone TGraphs, with more points
   TGraph* gulc_line       = getGraph(gulc,10);
   TGraph* gulcexp_line    = getGraph(gulcexp,20);
-  TGraph* gul_line        = getGraph(gul,20);
-  TGraph* gul2_line       = getGraph(gul2,20);
+  //TGraph* gul_line        = getGraph(gul,20);
+  //TGraph* gul2_line       = getGraph(gul2,20);
   TGraph* gulcexpp1_line  = getGraph(gulcexpp1,20);
   TGraph* gulcexpm1_line  = getGraph(gulcexpm1,20);
   //TGraph* g_line          = getGraph(g,20);
@@ -418,8 +421,8 @@ void makeGMSBPlot( bool printplots = false ){
 
   if( plotObserved ){
     if( !logInterpolate ){
-      gul->Draw("samel");
-      gul2->Draw("samel");
+      //gul->Draw("samel");
+      //gul2->Draw("samel");
       gulc->Draw("samel");
       gulcexp->Draw("samel");
       //gulcexpp1->Draw("samel");
@@ -427,8 +430,8 @@ void makeGMSBPlot( bool printplots = false ){
     }
 
     else{
-      gul_line->Draw("samel");
-      gul2_line->Draw("samel");
+      //gul_line->Draw("samel");
+      //gul2_line->Draw("samel");
       gulc_line->Draw("samel");
       gulcexp_line->Draw("samel");
       //gulcexpp1_line->Draw("samel");
@@ -442,8 +445,8 @@ void makeGMSBPlot( bool printplots = false ){
   // gulc_line->Draw("samelp");
 
   if( plotExpected ){
-    gulexp->Draw("samel");
-    gul2exp->Draw("samel");
+    //gulexp->Draw("samel");
+    //gul2exp->Draw("samel");
     gulcexp->Draw("samel");
   }
 
@@ -500,17 +503,19 @@ void makeGMSBPlot( bool printplots = false ){
 
   TLegend *leg = new TLegend(0.33,0.7,0.9,0.88);
   if( plotObserved ){
-    leg->AddEntry(gulc    ,"Combined observed UL","l");
+    leg->AddEntry(gulc    ,"Observed UL","l");
+    //leg->AddEntry(gulc    ,"Combined observed UL","l");
     //leg->AddEntry(gulcexp ,"combined median expected UL","l");
-    leg->AddEntry(hgexp   ,"Combined median expected UL (#pm1#sigma)","lf");
-    leg->AddEntry(gul     ,"2#font[12]{l}2j observed UL","l");
-    leg->AddEntry(gul2    ,"4#font[12]{l} observed UL","l");
+    leg->AddEntry(hgexp   ,"Median expected UL (#pm1#sigma)","lf");
+    //leg->AddEntry(gul     ,"2#font[12]{l}2j observed UL","l");
+    //leg->AddEntry(gul2    ,"4#font[12]{l} observed UL","l");
 
   }
   if( plotExpected ){
-    leg->AddEntry(gulexp  ,"expected UL (VZ+E_{T}^{miss})","l");
-    leg->AddEntry(gul2exp ,"expected UL (multi-lepton)","l");
-    leg->AddEntry(gulcexp ,"expected UL (combined)","l");
+    //leg->AddEntry(gulexp  ,"expected UL (VZ+E_{T}^{miss})","l");
+    //leg->AddEntry(gul2exp ,"expected UL (multi-lepton)","l");
+    //leg->AddEntry(gulcexp ,"expected UL (combined)","l");
+    //leg->AddEntry(gulcexp ,"Expected UL","l");
   }
 
 
@@ -534,7 +539,7 @@ void makeGMSBPlot( bool printplots = false ){
   t->SetTextSize(0.04);
   //t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.98 fb^{-1}");
   //t->DrawLatex(0.18,0.93,"CMS Preliminary,  #sqrt{s}=7 TeV,  L_{int}=4.98 fb^{-1}");
-  cmsPrelim(4.98,isPreliminary);
+  cmsPrelim(9.2,isPreliminary);
   t->SetTextSize(0.04);
   //t->DrawLatex(0.47,0.45,"");
   t->DrawLatex(0.57,0.63,"GMSB  ZZ + E_{T}^{miss}");
