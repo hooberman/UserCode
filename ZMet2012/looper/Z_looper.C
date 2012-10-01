@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-01-07";
+const char* iter                 = "V00-01-08";
 const char* jsonfilename         = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
 
 //--------------------------------------------------------------------
@@ -305,6 +305,37 @@ float Z_looper::gluinoPairCrossSection( float gluinomass ){
 
 //--------------------------------------------------------------------
 
+float getGMSBCrossSection( int mu ){
+
+  float xsec = -1;
+
+  if( mu ==110 ) xsec = 7.288;
+  if( mu ==130 ) xsec = 3.764;
+  if( mu ==150 ) xsec = 2.141;
+  if( mu ==170 ) xsec = 1.304;
+  if( mu ==190 ) xsec = 0.837;
+  if( mu ==210 ) xsec = 0.558;
+  if( mu ==230 ) xsec = 0.382;
+  if( mu ==250 ) xsec = 0.271;
+  if( mu ==270 ) xsec = 0.195;
+  if( mu ==290 ) xsec = 0.142;
+  if( mu ==310 ) xsec = 0.106;
+  if( mu ==330 ) xsec = 0.0798;
+  if( mu ==350 ) xsec = 0.0608;
+  if( mu ==370 ) xsec = 0.0468;
+  if( mu ==390 ) xsec = 0.0366;
+  if( mu ==410 ) xsec = 0.0287;
+      
+  if( xsec < 0 ){
+    cout << __FILE__ << " " << __LINE__ << " ERROR! couldn't find GMSB cross section for mu " << mu << endl;
+  }
+
+  return xsec;
+
+}
+
+//--------------------------------------------------------------------
+
 void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
                           bool calculateTCMET, int my_nEvents, float kFactor){
 
@@ -417,10 +448,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     exit(0);
   }
 
-  TFile* file_C1N2 = TFile::Open("C1N2_8TeV.root");
+  TFile* file_C1N2 = TFile::Open("C1N2_8TeV_finer.root");
   TFile* file_N1N2 = TFile::Open("N1N2_referencexSec.root");
 
-  TH1F*  xsec_C1N2 = (TH1F*) file_C1N2->Get("h_C1N2_xsec");
+  TH1F*  xsec_C1N2 = (TH1F*) file_C1N2->Get("C1N2_8TeV_NLO");
   TH1F*  xsec_N1N2 = (TH1F*) file_N1N2->Get("N1N2");
 
   //-----------------------
@@ -714,6 +745,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  x_  = -999;
 
 	  int   mgbin = xsec_C1N2->FindBin(mg_);
+	  float xsec  = xsec_C1N2->GetBinContent(mgbin);
+	  
+	  /*
 	  float xsec1 = xsec_C1N2->GetBinContent(mgbin);
 	  float xsec2 = xsec_C1N2->GetBinContent(mgbin+1);
 
@@ -732,6 +766,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  // cout << "mgbin " << mgbin    << endl;
 	  // cout << "mod   " << mgint%25 << endl;
 	  // cout << "xsec  " << xsec     << endl;
+	  */
 
 	  weight_ = lumi * xsec * (1000.0/100000.);
 	}
@@ -745,8 +780,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	else if(TString(prefix).Contains("gmsb") ){
-	  weight_ = -999;
-	  mg_ = sparm_values().at(0);
+
+	  mg_     = sparm_values().at(0);
+	  weight_ = lumi * getGMSBCrossSection( mg_ ) * (1000.0 / 300000.0);
+
 	  ml_ = -999;
 	  x_  = -999;
 	}
