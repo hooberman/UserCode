@@ -26,10 +26,11 @@
 
 using namespace std;
 
-bool plotExpected  = false;
-bool plotObserved  = true;
-bool logplot       = true;
-bool isPreliminary = false;
+bool plotExpected   = false;
+bool plotObserved   = true;
+bool logplot        = true;
+bool isPreliminary  = false;
+bool logInterpolate = true;
 
 void cmsPrelim(double intLumi, bool prelim)
 {
@@ -51,7 +52,134 @@ void cmsPrelim(double intLumi, bool prelim)
         latex.DrawLatex(0.92, 0.92, Form("#sqrt{s} = 7 TeV, L_{int} = %4.2f fb^{-1}", intLumi));
 }
 
+
+void getUncertainties(){
+
+  ifstream *ip = new ifstream();
+  ifstream *im = new ifstream();
+
+  ip->open("7TeVc1pn2_finer_less.dat");
+  im->open("7TeVc1mn2_finer_less.dat");
+
+  float m;
+  float xsec;
+  float unc;
+  
+  while( *ip >> m >> xsec >> unc ){
+    cout << m << " " << xsec << " " << unc << " " << Form("%.3f",unc/xsec) << endl;
+  }
+
+  while( *im >> m >> xsec >> unc ){
+    cout << m << " " << xsec << " " << unc << " " << Form("%.3f",unc/xsec) << endl;
+  }
+
+}
+
+TGraph* uncertaintyBand( TGraph* gup , TGraph* gdn ){
+
+  const unsigned int npoints = gup->GetN();
+  cout << "npoints " << npoints << endl;
+
+  float x[2*npoints];
+  float y[2*npoints];
+
+  Double_t thisx;
+  Double_t thisy;
+
+  for( int i = 0 ; i < npoints; ++i ){
+    gup->GetPoint(i,thisx,thisy);
+    x[i] = thisx;
+    y[i] = thisy;
+    //cout << x[i] << " " << y[i] << endl;
+  }
+
+  for( int i = 0 ; i < npoints; ++i ){
+    gdn->GetPoint(npoints-1-i,thisx,thisy);
+    x[i+npoints] = thisx;
+    y[i+npoints] = thisy;
+    //cout << x[i+15] << " " << y[i+15] << endl;
+  }
+
+  TGraph* gr = new TGraph(2*npoints,x,y);
+  gr->SetFillColor(7);
+
+  return gr;
+
+}
+
+TGraph* getGraph(TGraph* gin , int ndiv = 10 , bool verbose = false ){
+
+  const unsigned int n = gin->GetN();
+
+  if( verbose ) cout << "npoints " << n << endl;
+
+  float x[n];
+  float y[n];
+
+  Double_t thisx;
+  Double_t thisy;
+
+  for(int i = 0 ; i < n ; ++i){
+    gin->GetPoint(i,thisx,thisy);
+    x[i] = thisx;
+    y[i] = thisy;
+  }
+
+  if( verbose ){
+    cout << endl << "Original points" << endl;
+    for( int i = 0 ; i < n ; i++ ){
+      cout << i << " " << x[i] << " " << y[i] << endl;
+    }
+  }
+
+  const unsigned int nnew = ndiv * (n-1);
+
+  float xnew[nnew];
+  float ynew[nnew];
+
+  if( verbose ) cout << endl << "New points" << endl;
+  for( int i = 0 ; i < n-1 ; ++i){
+
+    float xgraph = x[i];
+    float ygraph = y[i];
+
+    float slope = (y[i+1]-y[i])/(x[i+1]-x[i]);
+
+    if( verbose ) cout << i << " " << xgraph << " " << ygraph << " " << slope << endl;
+
+    for( int j = 0 ; j < ndiv ; ++j ){
+
+      //cout << "counter " << i*10+j << endl;
+      xnew[i*ndiv+j] = xgraph;
+      ynew[i*ndiv+j] = ygraph;
+
+      xgraph += 20.0 / (float)ndiv;
+      ygraph += (20.0/(float)ndiv)*slope;
+    }
+  }
+
+  if( verbose ){
+    cout << endl << "New graph points" << endl;
+    for( int i = 0 ; i < nnew ; i++ ){
+      cout << i << " " << xnew[i] << " " << ynew[i] << endl;
+    }
+  }
+
+  TGraph *gout = new TGraph(nnew,xnew,ynew);
+
+  gout->SetLineColor(gin->GetLineColor());
+  gout->SetLineWidth(gin->GetLineWidth());
+  gout->SetLineStyle(gin->GetLineStyle());
+  //gout->SetMarkerColor(gin->GetLineColor());
+
+  return gout;
+
+
+}
+
 void makeGMSBPlot( bool printplots = false ){
+
+  //getUncertainties();
 
   // VZ+MET exclusion
   TFile *f       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit.root");
@@ -66,9 +194,12 @@ void makeGMSBPlot( bool printplots = false ){
   TGraph* gul2exp = (TGraph*) frutgers->Get("grexp");
 
   // VZ+MET exclusion
-  TFile *fc       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit_combined.root");
-  TGraph* gulc    = (TGraph*) fc->Get("grobs");
-  TGraph* gulcexp = (TGraph*) fc->Get("grexp");
+  TFile *fc       = TFile::Open("/tas/benhoob/home/LandS/VZMet_LandS/fullShapeAnalysis/cards/V00-02-08/observed_limit_combined_band.root");
+  TGraph* gulc      = (TGraph*) fc->Get("grobs");
+  TGraph* gulcexp   = (TGraph*) fc->Get("grexp");
+  TGraph* gulcexpp1 = (TGraph*) fc->Get("grexpp1");
+  TGraph* gulcexpm1 = (TGraph*) fc->Get("grexpm1");
+  TGraph* gulcband  = uncertaintyBand( gulcexpp1 , gulcexpm1 );
 
 
   Double_t xp;
@@ -124,26 +255,65 @@ void makeGMSBPlot( bool printplots = false ){
   const unsigned int n = 15;
   float x[n];
   float y[n];
+  float yup[n];
+  float ydn[n];
 
-  x[0]  = 130;   y[0]  = 3057;
-  x[1]  = 150;   y[1]  = 1719; 
-  x[2]  = 170;   y[2]  = 1035; 
-  x[3]  = 190;   y[3]  =  656;  
-  x[4]  = 210;   y[4]  =  433;  
-  x[5]  = 230;   y[5]  =  293;  
-  x[6]  = 250;   y[6]  =  205;  
-  x[7]  = 270;   y[7]  =  146;     
-  x[8]  = 290;   y[8]  =  105;   
-  x[9]  = 310;   y[9]  =   77;   
-  x[10] = 330;   y[10] =   57;  
-  x[11] = 350;   y[11] =   43;      
-  x[12] = 370;   y[12] =   33;      
-  x[13] = 390;   y[13] =   25;      
-  x[14] = 410;   y[14] =   20;      
+  float xerr[n];
+  float yerr[n];
 
-  TGraph* g  = new TGraph(n,x,y);
+  float xband[30];
+  float yband[30];
 
-  TCanvas *c1 = new TCanvas();
+  x[0]  = 130;   y[0]  = 3057;   yerr[0]  = 0.055 * y[0];
+  x[1]  = 150;   y[1]  = 1719;   yerr[1]  = 0.054 * y[1];
+  x[2]  = 170;   y[2]  = 1035;   yerr[2]  = 0.050 * y[2];
+  x[3]  = 190;   y[3]  =  656;   yerr[3]  = 0.047 * y[3];
+  x[4]  = 210;   y[4]  =  433;   yerr[4]  = 0.048 * y[4];
+  x[5]  = 230;   y[5]  =  293;   yerr[5]  = 0.051 * y[5];
+  x[6]  = 250;   y[6]  =  205;   yerr[6]  = 0.047 * y[6];
+  x[7]  = 270;   y[7]  =  146;   yerr[7]  = 0.048 * y[7];
+  x[8]  = 290;   y[8]  =  105;   yerr[8]  = 0.049 * y[8];
+  x[9]  = 310;   y[9]  =   77;   yerr[9]  = 0.048 * y[9];
+  x[10] = 330;   y[10] =   57;   yerr[10] = 0.053 * y[10];
+  x[11] = 350;   y[11] =   43;   yerr[11] = 0.055 * y[11];   
+  x[12] = 370;   y[12] =   33;   yerr[12] = 0.057 * y[12];   
+  x[13] = 390;   y[13] =   25;   yerr[13] = 0.057 * y[13];   
+  x[14] = 410;   y[14] =   20;   yerr[14] = 0.060 * y[14];   
+
+  for( int i = 0 ; i < 15; ++i ){
+    xerr[i] = 0.0;
+    yup[i]  = y[i] + yerr[i];
+    ydn[i]  = y[i] - yerr[i];
+  }
+
+  for( int i = 0 ; i < 15; ++i ){
+    xband[i] = x[i];
+    yband[i] = y[i] + yerr[i];
+  }
+
+  for( int i = 0 ; i < 15; ++i ){
+    xband[i+15] = x[14-i];
+    yband[i+15] = y[14-i] - yerr[14-i];
+  }
+  
+  // cout << endl << endl;
+  // for( int i = 0 ; i < 30 ; ++i ){
+  //   cout << xband[i] << " " << yband[i] << endl;
+  // }
+  // cout << endl << endl;
+
+  TGraph* g     = new TGraph(n,x,y);
+  TGraph* gup   = new TGraph(n,x,yup);
+  TGraph* gdn   = new TGraph(n,x,ydn);
+  TGraph* gband = new TGraph(30,xband,yband);
+
+
+  // UP:   248
+  // DOWN: 148
+
+  //TGraphErrors* g  = new TGraphErrors(n,x,y,xerr,yerr);
+
+  TCanvas *c1 = new TCanvas("c1","",600,600);
   gPad->SetTopMargin(0.1);
   gPad->SetRightMargin(0.05);
   //gPad->SetGridx();
@@ -159,16 +329,22 @@ void makeGMSBPlot( bool printplots = false ){
   if( logplot ) gPad->SetLogy();
 
   g->SetLineColor(2);
-  g->SetLineWidth(4);
+  g->SetLineWidth(3);
+  g->SetFillColor(5);
+  gup->SetLineColor(2);
+  gdn->SetLineColor(2);
+  gup->SetLineStyle(2);
+  gdn->SetLineStyle(2);
+  gband->SetFillColor(5);
 
   //2l2j observed
-  gul->SetLineColor(4);
+  gul->SetLineColor(6);
   gul->SetLineWidth(3);
   gul->SetLineStyle(4);
 
   //2l2j expected
   gulexp->SetLineColor(2);
-  gulexp->SetLineWidth(4);
+  gulexp->SetLineWidth(3);
   gulexp->SetLineStyle(2);
 
   //4l observed
@@ -177,22 +353,27 @@ void makeGMSBPlot( bool printplots = false ){
   gul2->SetLineColor(kGreen+2);
 
   //4l expected
-  gul2exp->SetLineWidth(4);
+  gul2exp->SetLineWidth(3);
   gul2exp->SetLineStyle(2);
 
   //combined observed
-  gulc->SetLineWidth(4);
+  gulc->SetLineWidth(5);
   gulc->SetLineColor(1);
 
   //combined expected
-  gulcexp->SetLineWidth(4);
-  gulcexp->SetLineColor(1);
+  gulcexp->SetLineWidth(5);
+  gulcexp->SetLineColor(4);
   gulcexp->SetLineStyle(2);
 
-
-
-
-
+  //clone TGraphs, with more points
+  TGraph* gulc_line       = getGraph(gulc,10);
+  TGraph* gulcexp_line    = getGraph(gulcexp,20);
+  TGraph* gul_line        = getGraph(gul,20);
+  TGraph* gul2_line       = getGraph(gul2,20);
+  TGraph* gulcexpp1_line  = getGraph(gulcexpp1,20);
+  TGraph* gulcexpm1_line  = getGraph(gulcexpm1,20);
+  //TGraph* g_line          = getGraph(g,20);
+  TGraph* gulcband_line   = uncertaintyBand( gulcexpp1_line , gulcexpm1_line );
 
   // gulexp->SetLineWidth(2);
   // gulexp->SetLineStyle(2);
@@ -223,12 +404,42 @@ void makeGMSBPlot( bool printplots = false ){
   hdummy->Draw("axissame");
   */
 
+  gband->Draw("samef");
+  g->Draw("samel");
+
+  // gulcband->SetFillStyle(3002);
+  // gulcband->Draw("samef");
+
+  gulcband_line->SetFillStyle(3002);
+  gulcband_line->Draw("samef");
+
+  gband->Draw("samef");
+  g->Draw("samel");
+
   if( plotObserved ){
-    gul->Draw("samel");
-    gul2->Draw("samel");
-    gulc->Draw("samel");
-    gulcexp->Draw("samel");
+    if( !logInterpolate ){
+      gul->Draw("samel");
+      gul2->Draw("samel");
+      gulc->Draw("samel");
+      gulcexp->Draw("samel");
+      //gulcexpp1->Draw("samel");
+      //gulcexpm1->Draw("samel");
+    }
+
+    else{
+      gul_line->Draw("samel");
+      gul2_line->Draw("samel");
+      gulc_line->Draw("samel");
+      gulcexp_line->Draw("samel");
+      //gulcexpp1_line->Draw("samel");
+      //gulcexpm1_line->Draw("samel");
+    }
   }
+
+  // gulc_line->SetLineColor(2);
+  // gulc_line->SetLineWidth(1);
+  // gulc_line->SetMarkerColor(2);
+  // gulc_line->Draw("samelp");
 
   if( plotExpected ){
     gulexp->Draw("samel");
@@ -236,7 +447,13 @@ void makeGMSBPlot( bool printplots = false ){
     gulcexp->Draw("samel");
   }
 
-  g->Draw("samel");
+
+
+
+  //gband->Draw("samef");
+  //g->Draw("samel");
+  //gup->Draw("samel");
+  //gdn->Draw("samel");
 
   //gulexp->Draw("samel");
   //gul2exp->Draw("samel");
@@ -271,12 +488,23 @@ void makeGMSBPlot( bool printplots = false ){
   // gul2->Draw("samel");
 
   //TLegend *leg = new TLegend(0.4,0.6,0.9,0.8);
-  TLegend *leg = new TLegend(0.38,0.7,0.95,0.88);
+
+  TH1F* hgexp = new TH1F("hgexp","",1,0,1);
+  hgexp->SetLineColor(4);
+  hgexp->SetLineWidth(5);
+  hgexp->SetLineStyle(2);
+  hgexp->SetFillColor(7);
+  hgexp->SetFillStyle(3002);
+
+
+
+  TLegend *leg = new TLegend(0.33,0.7,0.9,0.88);
   if( plotObserved ){
-    leg->AddEntry(gulc    ,"combined observed UL","l");
-    leg->AddEntry(gulcexp ,"combined median expected UL","l");
-    leg->AddEntry(gul     ,"2l2j observed UL","l");
-    leg->AddEntry(gul2    ,"4l observed UL","l");
+    leg->AddEntry(gulc    ,"Combined observed UL","l");
+    //leg->AddEntry(gulcexp ,"combined median expected UL","l");
+    leg->AddEntry(hgexp   ,"Combined median expected UL (#pm1#sigma)","lf");
+    leg->AddEntry(gul     ,"2#font[12]{l}2j observed UL","l");
+    leg->AddEntry(gul2    ,"4#font[12]{l} observed UL","l");
 
   }
   if( plotExpected ){
@@ -285,7 +513,16 @@ void makeGMSBPlot( bool printplots = false ){
     leg->AddEntry(gulcexp ,"expected UL (combined)","l");
   }
 
-  leg->AddEntry(g,  "theory","l");
+
+
+  TH1F* hg = new TH1F("h","",1,0,1);
+  hg->SetLineColor(2);
+  hg->SetLineWidth(3);
+  hg->SetFillColor(5);
+
+  //leg->AddEntry(g,  "theory","l");
+  leg->AddEntry(hg,  "#sigma^{NLO} theory (#pm1#sigma)","lf");
+
   //leg->AddEntry(box,"excluded region","f");
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
@@ -302,9 +539,15 @@ void makeGMSBPlot( bool printplots = false ){
   //t->DrawLatex(0.47,0.45,"");
   t->DrawLatex(0.57,0.63,"GMSB  ZZ + E_{T}^{miss}");
 
+  t->DrawLatex(0.2,0.25,"tan #beta = 2");
+  t->DrawLatex(0.2,0.2,"M_{1} = M_{2} = 1 TeV");
+
   if( printplots ){
-    if( isPreliminary ) c1->Print("GMSB_Fig12_prelim.pdf");
-    else                c1->Print("GMSB_Fig12.pdf");
+    if( isPreliminary) c1->Print("GMSB_Fig12_prelim.pdf");
+    else               c1->Print("GMSB_Fig12.pdf");
+
+    c1->Print("Figure11.pdf");
+    c1->Print("Figure11.png");
 
     // c1->Print("GMSB.png");
     // c1->Print("GMSB.eps");
