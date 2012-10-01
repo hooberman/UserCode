@@ -121,9 +121,9 @@ void makeSMSCards(){
   TH2F* hjup[nbins];
   TH2F* hjdn[nbins];
 
-  int   nx   =    41;
+  int   nx   =    31;
   float xmin =  -5.0;
-  float xmax = 405.0;
+  float xmax = 305.0;
 
   for( unsigned int i = 0 ; i < nbins ; ++i ){
     h[i]        = new TH2F( Form("h_%i",i)        , Form("h_%i",i)           , nx,xmin,xmax,nx,xmin,xmax);
