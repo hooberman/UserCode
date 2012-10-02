@@ -422,6 +422,10 @@ void looper::closeTree()
 
 int looper::ScanChain(TChain* chain, char *prefix){
 
+  cout << "----------------------------------------------" << endl;
+  cout << "WARNING!!!!! SKIMMING ON HLT_Mu24_eta2p1!!!!!!" << endl;
+  cout << "----------------------------------------------" << endl;
+
   if( debug )  cout << __LINE__ << ": start ScanChain" << endl;
 
   //------------------------------------------------------------------------------------------------------
@@ -525,6 +529,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       cms2.GetEntry(z);
 
+      if( passTriggerPrescale("HLT_Mu24_eta2p1_v") <= 0 ) continue;
+
       if( debug )  cout << __LINE__ << ": got entry" << endl;
 
       InitBaby();
@@ -612,7 +618,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
           
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 5 )            continue;
-	if( !muonId( imu , NominalSSv4 ))         continue;
+	if( !muonId( imu , MuonPOGTight ))         continue;
 	goodLeptons.push_back( mus_p4().at(imu) );
 	lepId.push_back( mus_charge().at(imu) * 13 );
 	lepIndex.push_back(imu);
@@ -718,7 +724,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 5 )                                    continue;
-	if( !muonIdNotIsolated( imu , NominalSSv4 ))                       continue;
+	if( !muonIdNotIsolated( imu , MuonPOGTight ))                      continue;
 	goodMuonsNoIso.push_back( mus_p4().at(imu) );
 	munoisoIndex.push_back(imu);
 	nmunoiso_ ++;
@@ -1065,6 +1071,11 @@ int looper::ScanChain(TChain* chain, char *prefix){
       iso20mu24_            = goodEventInList("Iso20Mu24_eta2p1_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
       iso30mu24_            = goodEventInList("Iso30Mu24_eta2p1_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
       iso40mu24_            = goodEventInList("Iso40Mu24_eta2p1_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
+
+      // isomu24test_          = goodEventInList("IsoMu24_eta2p1_191830.txt"    ,evt_run(),evt_lumiBlock(),evt_event());
+      // iso20mu24_            = goodEventInList("Iso20Mu24_eta2p1_191830.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
+      // iso30mu24_            = goodEventInList("Iso30Mu24_eta2p1_191830.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
+      // iso40mu24_            = goodEventInList("Iso40Mu24_eta2p1_191830.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
 
       // non-isolated single muon triggers
       mu15_                 = passTriggerPrescale("HLT_Mu15_eta2p1_v");
