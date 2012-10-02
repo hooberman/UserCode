@@ -28,7 +28,9 @@
 
 using namespace std;
 
-bool fit = false;
+bool fit          = false;
+bool convertToPDF = true;
+bool logplot      = true;
 
 // void makePlot(TPad *pad , char* filename , TChain *ch, TCut sel, char* var, char* xtitle, int nbins, float xmin, float xmax, bool log, bool normalize );
 
@@ -101,9 +103,10 @@ void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, c
   TCut em("leptype==2 && (em==1 || me==1)");
   TCut sf = ee||mm;
 
-  // if( log ) mainpad->SetLogy();
+
   //can->cd(1);
   mainpad->cd(1);
+  if( logplot ) gPad->SetLogy();
 
   TH1F* hsf = new TH1F(Form("%s_sf",var),Form("%s_sf",var),nbins,xmin,xmax);
   TH1F* hof = new TH1F(Form("%s_of",var),Form("%s_of",var),nbins,xmin,xmax);
@@ -141,6 +144,7 @@ void makePlot(TCanvas *can , char* filename , TChain *ch, TCut sel, char* var, c
 
   //can->cd(2);
   mainpad->cd(2);
+  if( logplot ) gPad->SetLogy();
 
   TH1F* hsf_norm = (TH1F*) hsf->Clone(Form("%s_norm",hsf->GetName()));
   TH1F* hof_norm = (TH1F*) hof->Clone(Form("%s_norm",hof->GetName()));
@@ -256,8 +260,8 @@ void makeEdgePDF(char* SR = "lowMET",char* mll = "lowMass"){
   //------------------------------------------------------
 
   TChain *data = new TChain("T1");
-  data->Add("../output/V00-01-04/data_53X_baby_2jets_met100.root");
-  data->Add("../output/V00-01-04/data_2012C_53X_baby_2jets_met100.root");
+  data->Add("../output/V00-01-07/data_53X_baby_2jets_met100.root");
+  data->Add("../output/V00-01-07/data_2012C_53X_baby_2jets_met100.root");
 
   TChain *tt = new TChain("T1");
   tt->Add("../output/V00-00-22/ttbar_baby.root");
@@ -281,6 +285,7 @@ void makeEdgePDF(char* SR = "lowMET",char* mll = "lowMass"){
   TCut mll15to70("dilmass>15.0 && dilmass<70.0");
   TCut mll20to70("dilmass>20.0 && dilmass<70.0");
   TCut mll120("dilmass>120.0");
+  TCut nb1("nbcsvm>=1");
   TCut nb2("nbcsvm==2");
   TCut multilep("nlep>2");
 
@@ -338,21 +343,24 @@ void makeEdgePDF(char* SR = "lowMET",char* mll = "lowMass"){
   cout << "mm: " << data->GetEntries(sel+mm) << endl;
   cout << "em: " << data->GetEntries(sel+em) << endl;
 
-  bool log       = false;
-  bool normalize = false;
 
   char* filename = Form("%s_%s",SR,mll);
+
   TCanvas* canvas = new TCanvas("canvas","canvas",1000,800);
   //gStyle->SetPaperSize(22,28);
 
   canvas->Print(Form("../plots/%s.ps[",filename));
 
+  filename = Form("%s_%s",SR,mll);
+
   if( TString(mll).Contains("highMass") ){
-    makePlot( canvas , filename , data , sel     , "dilmass" , "M(ll) [GeV]"  , 20 , 100 ,  300 );  filename = Form("%s_%s",SR,mll);
+    makePlot( canvas , filename , data , sel     , "dilmass" , "M(ll) [GeV]"  , 20 , 100 ,  300 );
   }
   else{
-    makePlot( canvas , filename , data , sel     , "dilmass" , "M(ll) [GeV]"  , 10 ,  0 ,  100 );  filename = Form("%s_%s",SR,mll);
+    makePlot( canvas , filename , data , sel     , "dilmass" , "M(ll) [GeV]"  , 10 ,  0 ,  100 );  
   }
+
+  filename = Form("%s_%s",SR,mll);
 
   makePlot( canvas , filename , data , sel  , "nlep"    , "nleptons (p_{T}>10 GeV)" ,  4 ,  0 ,    4 );    filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "dilpt"   , "dilepton p_{T} [GeV]"    , 10 ,  0 ,  200 );    filename = Form("%s_%s",SR,mll);
@@ -373,9 +381,20 @@ void makeEdgePDF(char* SR = "lowMET",char* mll = "lowMass"){
   makePlot( canvas , filename , data , sel  , "mlb2"    , "M(l2,any-b) [GeV]"  , 10 ,  0 ,  300 );  filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel  , "mlbmin"  , "M(l,b)^{min} [GeV]" , 10 ,  0 ,  200 );  filename = Form("%s_%s",SR,mll);
   makePlot( canvas , filename , data , sel+nb2 , "mbb"  , "M(bb) [GeV]"        , 20 , 15 ,  415 );  filename = Form("%s_%s",SR,mll);
+  makePlot( canvas , filename , data , sel+nb1 , "drblmin" , "min #DeltaR(l,b) [GeV]" , 10 ,  0 ,  4.0 );  filename = Form("%s_%s",SR,mll);
 
   canvas->Print(Form("../plots/%s.ps]",filename));
-  //gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.ps ../plots/%s.pdf",filename,filename));
+  
+  filename = Form("%s_%s",SR,mll);
+
+  if( convertToPDF ) gROOT->ProcessLine(Form(".! ps2pdf ../plots/%s.ps ../plots/%s.pdf",filename,filename));
+
+  // filename = Form("%s_%s",SR,mll);
+
+  if( logplot ){
+    gROOT->ProcessLine(Form(".! mv ../plots/%s.ps  ../plots/%s_log.ps" ,filename,filename));
+    gROOT->ProcessLine(Form(".! mv ../plots/%s.pdf ../plots/%s_log.pdf",filename,filename));
+  }
 
 
 }
