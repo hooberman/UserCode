@@ -192,3 +192,284 @@ The variations considered are
 %\end{tabular}
 %\end{center}
 %\end{table}
+
+
+\subsubsection{Isolated Track Veto: Tag and Probe Studies}
+
+In this section we compare the performance of the isolated track veto in data and MC using tag-and-probe studies
+with samples of Z$\to$ee and Z$\to\mu\mu$. The purpose of these studies is to demonstrate that the efficiency
+to satisfy the isolated track veto requirements is well-reproduced in the MC, since if this were not the case 
+we would need to apply a data-to-MC scale factor in order to correctly predict the \ttll\ background. This study
+addresses possible data vs. MC discrepancies for the {\bf efficiency} to identify (and reject) events with a 
+second {\bf genuine} lepton (e, $\mu$, or $\tau\to$1-prong). It does not address possible data vs. MC discrepancies
+in the fake rate for rejecting events without a second genuine lepton; this is handled separately in the top normalization
+procedure by scaling the \ttlj\ contribution to match the data in the \mt\ peak after applying the isolated track veto. 
+Furthermore, we test the data and MC
+isolated track veto efficiencies for electrons and muons since we are using a Z tag-and-probe technique, but we do not
+directly test the performance for hadronic tracks from $\tau$ decays. The performance for hadronic $\tau$ decay products
+may differ from that of electrons and muons for two reasons. First, the $\tau$ may decay to a hadronic track plus one
+or two $\pi^0$'s, which may decay to $\gamma\gamma$ followed by a photon conversion. As shown in Figure~\ref{fig:absiso},
+the isolation distribution for charged tracks from $\tau$ decays that are not produced in association with $\pi^0$s are 
+consistent with that from $\E$s and $\M$s. Since events from single prong $\tau$ decays produced in association with 
+$\pi^0$s comprise a small fraction of the total sample, and since the kinematics of $\tau$, $\pi^0$ and $\gamma\to e^+e^-$
+decays are well-understood, we currently demonstrate that the isolation is well-reproduced for electrons and muons only.
+Second, hadronic tracks may undergo nuclear interactions and hence their tracks may not be reconstructed.
+As discussed above, independent studies show that the MC reproduces the hadronic tracking efficiency within 4\%,
+leading to a total background uncertainty of less than 0.5\% (after taking into account the fraction of the total background
+due to hadronic $\tau$ decays with \pt\ $>$ 10 GeV tracks), and we hence regard this effect as neglgigible.
+
+The tag-and-probe studies are performed in the full 2011 data sample, and compared with the DYJets madgraph sample.
+All events must contain a tag-probe pair (details below) with opposite-sign and satisfying the Z mass requirement 76--106 GeV.
+We compare the distributions of absolute track isolation for probe electrons/muons in data vs. MC. The contributions to
+this isolation sum are from ambient energy in the event from underlying event, pile-up and jet activitiy, and hence do
+not depend on the \pt\ of the probe lepton. We therefore restrict the probe \pt\ to be $>$ 30 GeV in order to suppress
+fake backgrounds with steeply-falling \pt\ spectra. To suppress non-Z backgrounds (in particular \ttbar) we require 
+\met\ $<$ 30 GeV and 0 b-tagged events. 
+The specific criteria for tags and probes for electrons and muons are:
+
+%We study the isolated track veto efficiency in bins of \njets.
+%We are interested in events with at least 4 jets to emulate the hadronic activity in our signal sample. However since
+%there are limited statistics for Z + $\geq$4 jet events, we study the isolated track performance in events with
+
+
+\begin{itemize}
+  \item{Electrons}
+
+    \begin{itemize}
+    \item{Tag criteria}
+
+      \begin{itemize}
+      \item Electron passes full analysis ID/iso selection 
+      \item \pt\ $>$ 30 GeV, $|\eta|<2.5$
+ 
+      \item Matched to 1 of the 2 electron tag-and-probe triggers
+        \begin{itemize}
+        \item \verb=HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v*=
+        \item \verb=HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30_v*=
+        \end{itemize}
+      \end{itemize}
+
+    \item{Probe criteria}
+      \begin{itemize}
+      \item Electron passes full analysis ID selection
+      \item \pt\ $>$ 30 GeV
+      \end{itemize}
+      \end{itemize}
+  \item{Muons}
+    \begin{itemize}
+    \item{Tag criteria}
+      \begin{itemize}
+      \item Muon passes full analysis ID/iso selection
+      \item \pt\ $>$ 30 GeV, $|\eta|<2.1$
+      \item Matched to 1 of the 2 electron tag-and-probe triggers
+        \begin{itemize}
+        \item \verb=HLT_IsoMu30_v*=
+        \item \verb=HLT_IsoMu30_eta2p1_v*=
+        \end{itemize}
+      \end{itemize}
+    \item{Probe criteria}
+      \begin{itemize}
+      \item Muon passes full analysis ID selection
+      \item \pt\ $>$ 30 GeV
+      \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+The absolute track isolation distributions for passing probes are displayed in Fig.~\ref{fig:tnp}. In general we observe
+good agreement between data and MC. To be more quantitative, we compare the data vs. MC efficiencies to satisfy
+absolute track isolation requirements varying from $>$ 1 GeV to $>$ 5 GeV, as summarized in Table~\ref{tab:isotrk}.
+In the $\geq$0 and $\geq$1 jet bins where the efficiencies can be tested with statistical precision, the data and MC
+efficiencies agree within 7\%, and we apply this as a systematic uncertainty on the isolated track veto efficiency.
+For the higher jet multiplicity bins the statistical precision decreases, but we do not observe any evidence for
+a data vs. MC discrepancy in the isolated track veto efficiency.
+
+
+%This is because our analysis requirement is relative track isolation $<$ 0.1, and m
+%This requirement is chosen because most of the tracks rejected by the isolated
+%track veto have a \pt\ near the 10 GeV threshold, and our analysis requirement is relative track isolation $<$ 1 GeV.
+
+\begin{figure}[hbt]
+  \begin{center}
+	%\includegraphics[width=0.3\linewidth]{plots/el_tkiso_0j.pdf}%
+	%\includegraphics[width=0.3\linewidth]{plots/mu_tkiso_0j.pdf}
+	%\includegraphics[width=0.3\linewidth]{plots/el_tkiso_1j.pdf}%
+	%\includegraphics[width=0.3\linewidth]{plots/mu_tkiso_1j.pdf}
+	%\includegraphics[width=0.3\linewidth]{plots/el_tkiso_2j.pdf}%
+	%\includegraphics[width=0.3\linewidth]{plots/mu_tkiso_2j.pdf}
+	%\includegraphics[width=0.3\linewidth]{plots/el_tkiso_3j.pdf}%
+	%\includegraphics[width=0.3\linewidth]{plots/mu_tkiso_3j.pdf}
+	%\includegraphics[width=0.3\linewidth]{plots/el_tkiso_4j.pdf}%
+	%\includegraphics[width=0.3\linewidth]{plots/mu_tkiso_4j.pdf}
+	\caption{
+	  \label{fig:tnp} Comparison of the absolute track isolation in data vs. MC for electrons (left) and muons (right)
+for events with the \njets\ requirement varied from \njets\ $\geq$ 0 to \njets\ $\geq$ 4. 
+}  
+      \end{center}
+\end{figure}
+
+\clearpage
+
+\begin{table}[!ht]
+\begin{center}
+\caption{\label{tab:isotrk} Comparison of the data vs. MC efficiencies to satisfy the indicated requirements
+on the absolute track isolation, and the ratio of these two efficiencies. Results are indicated separately for electrons and muons and for various
+jet multiplicity requirements.}
+\begin{tabular}{l|l|c|c|c|c|c}
+\hline
+\hline
+ e + $\geq$0 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.088 $\pm$ 0.0003   &  0.030 $\pm$ 0.0002   &  0.013 $\pm$ 0.0001   &  0.007 $\pm$ 0.0001   &  0.005 $\pm$ 0.0001  \\
+        mc   &  0.087 $\pm$ 0.0001   &  0.030 $\pm$ 0.0001   &  0.014 $\pm$ 0.0001   &  0.008 $\pm$ 0.0000   &  0.005 $\pm$ 0.0000  \\
+   data/mc   &     1.01 $\pm$ 0.00   &     0.99 $\pm$ 0.01   &     0.97 $\pm$ 0.01   &     0.95 $\pm$ 0.01   &     0.93 $\pm$ 0.01  \\
+\hline
+\hline
+ $\mu$ + $\geq$0 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.087 $\pm$ 0.0002   &  0.031 $\pm$ 0.0001   &  0.015 $\pm$ 0.0001   &  0.008 $\pm$ 0.0001   &  0.005 $\pm$ 0.0001  \\
+        mc   &  0.085 $\pm$ 0.0001   &  0.030 $\pm$ 0.0001   &  0.014 $\pm$ 0.0000   &  0.008 $\pm$ 0.0000   &  0.005 $\pm$ 0.0000  \\
+   data/mc   &     1.02 $\pm$ 0.00   &     1.06 $\pm$ 0.00   &     1.06 $\pm$ 0.01   &     1.03 $\pm$ 0.01   &     1.02 $\pm$ 0.01  \\
+\hline
+\hline 
+ e + $\geq$1 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.099 $\pm$ 0.0008   &  0.038 $\pm$ 0.0005   &  0.019 $\pm$ 0.0004   &  0.011 $\pm$ 0.0003   &  0.008 $\pm$ 0.0002  \\
+        mc   &  0.100 $\pm$ 0.0004   &  0.038 $\pm$ 0.0003   &  0.019 $\pm$ 0.0002   &  0.012 $\pm$ 0.0002   &  0.008 $\pm$ 0.0001  \\
+   data/mc   &     0.99 $\pm$ 0.01   &     1.00 $\pm$ 0.02   &     0.99 $\pm$ 0.02   &     0.98 $\pm$ 0.03   &     0.97 $\pm$ 0.03  \\
+\hline
+\hline
+ $\mu$ + $\geq$1 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.100 $\pm$ 0.0006   &  0.041 $\pm$ 0.0004   &  0.022 $\pm$ 0.0003   &  0.014 $\pm$ 0.0002   &  0.010 $\pm$ 0.0002  \\
+        mc   &  0.099 $\pm$ 0.0004   &  0.039 $\pm$ 0.0002   &  0.020 $\pm$ 0.0002   &  0.013 $\pm$ 0.0001   &  0.009 $\pm$ 0.0001  \\
+   data/mc   &     1.01 $\pm$ 0.01   &     1.05 $\pm$ 0.01   &     1.05 $\pm$ 0.02   &     1.06 $\pm$ 0.02   &     1.06 $\pm$ 0.03  \\
+\hline
+\hline
+ e + $\geq$2 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.105 $\pm$ 0.0020   &  0.042 $\pm$ 0.0013   &  0.021 $\pm$ 0.0009   &  0.013 $\pm$ 0.0007   &  0.009 $\pm$ 0.0006  \\
+        mc   &  0.109 $\pm$ 0.0011   &  0.043 $\pm$ 0.0007   &  0.021 $\pm$ 0.0005   &  0.013 $\pm$ 0.0004   &  0.009 $\pm$ 0.0003  \\
+   data/mc   &     0.96 $\pm$ 0.02   &     0.97 $\pm$ 0.03   &     1.00 $\pm$ 0.05   &     1.01 $\pm$ 0.06   &     0.97 $\pm$ 0.08  \\
+\hline
+\hline
+ $\mu$ + $\geq$2 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.106 $\pm$ 0.0016   &  0.045 $\pm$ 0.0011   &  0.025 $\pm$ 0.0008   &  0.016 $\pm$ 0.0007   &  0.012 $\pm$ 0.0006  \\
+        mc   &  0.108 $\pm$ 0.0009   &  0.044 $\pm$ 0.0006   &  0.024 $\pm$ 0.0004   &  0.016 $\pm$ 0.0004   &  0.011 $\pm$ 0.0003  \\
+   data/mc   &     0.98 $\pm$ 0.02   &     1.04 $\pm$ 0.03   &     1.04 $\pm$ 0.04   &     1.04 $\pm$ 0.05   &     1.06 $\pm$ 0.06  \\
+\hline
+\hline
+ e + $\geq$3 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.117 $\pm$ 0.0055   &  0.051 $\pm$ 0.0038   &  0.029 $\pm$ 0.0029   &  0.018 $\pm$ 0.0023   &  0.012 $\pm$ 0.0019  \\
+        mc   &  0.120 $\pm$ 0.0031   &  0.052 $\pm$ 0.0021   &  0.027 $\pm$ 0.0015   &  0.018 $\pm$ 0.0012   &  0.013 $\pm$ 0.0011  \\
+   data/mc   &     0.97 $\pm$ 0.05   &     0.99 $\pm$ 0.08   &     1.10 $\pm$ 0.13   &     1.03 $\pm$ 0.15   &     0.91 $\pm$ 0.16  \\
+\hline
+\hline
+ $\mu$ + $\geq$3 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.111 $\pm$ 0.0044   &  0.050 $\pm$ 0.0030   &  0.029 $\pm$ 0.0024   &  0.019 $\pm$ 0.0019   &  0.014 $\pm$ 0.0017  \\
+        mc   &  0.115 $\pm$ 0.0025   &  0.051 $\pm$ 0.0017   &  0.030 $\pm$ 0.0013   &  0.020 $\pm$ 0.0011   &  0.015 $\pm$ 0.0009  \\
+   data/mc   &     0.97 $\pm$ 0.04   &     0.97 $\pm$ 0.07   &     0.95 $\pm$ 0.09   &     0.97 $\pm$ 0.11   &     0.99 $\pm$ 0.13  \\
+\hline
+\hline
+ e + $\geq$4 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.113 $\pm$ 0.0148   &  0.048 $\pm$ 0.0100   &  0.033 $\pm$ 0.0083   &  0.020 $\pm$ 0.0065   &  0.017 $\pm$ 0.0062  \\
+        mc   &  0.146 $\pm$ 0.0092   &  0.064 $\pm$ 0.0064   &  0.034 $\pm$ 0.0048   &  0.024 $\pm$ 0.0040   &  0.021 $\pm$ 0.0037  \\
+   data/mc   &     0.78 $\pm$ 0.11   &     0.74 $\pm$ 0.17   &     0.96 $\pm$ 0.28   &     0.82 $\pm$ 0.30   &     0.85 $\pm$ 0.34  \\
+\hline
+\hline
+ $\mu$ + $\geq$4 jets            &           $>$ 1 GeV   &           $>$ 2 GeV   &           $>$ 3 GeV   &           $>$ 4 GeV   &           $>$ 5 GeV  \\
+\hline
+      data   &  0.130 $\pm$ 0.0128   &  0.052 $\pm$ 0.0085   &  0.028 $\pm$ 0.0063   &  0.019 $\pm$ 0.0052   &  0.019 $\pm$ 0.0052  \\
+        mc   &  0.105 $\pm$ 0.0064   &  0.045 $\pm$ 0.0043   &  0.027 $\pm$ 0.0034   &  0.019 $\pm$ 0.0028   &  0.014 $\pm$ 0.0024  \\
+   data/mc   &     1.23 $\pm$ 0.14   &     1.18 $\pm$ 0.22   &     1.03 $\pm$ 0.27   &     1.01 $\pm$ 0.32   &     1.37 $\pm$ 0.45  \\
+\hline
+\hline
+
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+%Figure.~\ref{fig:reliso} compares the relative track isolation
+%for events with a track with $\pt > 10~\GeV$ in addition to a selected
+%muon for $\Z+4$ jet events and various \ttll\ components. The
+%isolation distributions show significant differences, particularly
+%between the leptons from a \W\ or \Z\ decay and the tracks arising
+%from $\tau$ decays. As can also be seen in the figure, the \pt\
+%distribution for the various categories of tracks is different, where
+%the decay products from $\tau$s are significantly softer. Since the
+%\pt\ enters the denominator of the isolation definition and hence
+%alters the isolation variable...
+
+%\begin{figure}[hbt]
+%  \begin{center}
+%	\includegraphics[width=0.5\linewidth]{plots/pfiso_njets4_log.png}%
+%	\includegraphics[width=0.5\linewidth]{plots/pfpt_njets4.png}
+%	\caption{
+%	  \label{fig:reliso}%\protect 
+%          Comparison of relative track isolation variable for PF cand probe in Z+jets and ttbar 
+%          Z+Jets and ttbar dilepton have similar isolation distributions
+%          ttbar with leptonic and single prong taus tend to be less
+%          isolated. The difference in the isolation can be attributed
+%          to the different \pt\ distribution of the samples, since
+%          $\tau$ decay products tend to be softer than leptons arising
+%          from \W\ or \Z\ decays.}  
+%      \end{center}
+%\end{figure}
+
+%	\includegraphics[width=0.5\linewidth]{plots/pfabsiso_njets4_log.png}
+
+
+%BEGIN SECTION TO WRITE OUT 
+%In detail, the procedure to correct the dilepton background is:
+
+%\begin{itemize}
+%\item Using tag-and-probe studies, we plot the distribution of {\bf absolute} track isolation for identified probe electrons
+%and muons {\bf TODO: need to compare the e vs. $\mu$ track iso distributions, they might differ due to e$\to$e$\gamma$}.
+%\item We verify that the distribution of absolute track isolation does not depend on the \pt\ of the probe lepton.
+%This is due to the fact that this isolation is from ambient PU and jet activity in the event, which is uncorrelated with
+%the lepton \pt {\bf TODO: verify this in data and MC.}.
+%\item Our requirement is {\bf relative} track isolation $<$ 0.1. For a given \ttll\ MC event, we determine the \pt of the 2nd
+%lepton and translate this to find the corresponding requirement on the {\bf absolute} track isolation, which is simply $0.1\times$\pt.
+%\item We measure the efficiency to satisfy this requirement in data and MC, and define a scale-factor $SF_{\epsilon(trk)}$ which
+%is the ratio of the data-to-MC efficiencies. This scale-factor is applied to the \ttll\ MC event.
+%\item {\bf THING 2 we are unsure about: we can measure this SF for electrons and for muons, but we can't measure it for hadronic 
+%tracks from $\tau$ decays. Verena has showed that the absolute track isolation distribution in hadronic $\tau$ tracks is harder due 
+%to $\pi^0\to\gamma\gamma$ with $\gamma\to e^+e^-$.}
+%\end{itemize} 
+%END SECTION TO WRITE OUT 
+
+
+{\bf fix me: What you have written in the next paragraph does not explain how $\epsilon_{fake}$ is measured.
+Why not measure $\epsilon_{fake}$ in the b-veto region?}
+
+A measurement of the $\epsilon_{fake}$ in data is non-trivial. However, it is
+possible to correct for differences in the $\epsilon_{fake}$ between data and MC by
+applying an additional scale factor for the single lepton background
+alone, using the sample in the \mt\ peak region. This scale factor is determined after applying the isolated track
+veto and after subtracting the \ttll\ component, corrected for the
+isolation efficiency derived previously. 
+As shown in Figure~\ref{fig:vetoeffcomp}, the efficiency for selecting an
+isolated track in single lepton events is independent of \mt\, so the use of
+an overall scale factor is justified to estimate the contribution in
+the \mt\ tail. 
+
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.5\linewidth]{plots/vetoeff_comp.png}
+	\caption{
+	  \label{fig:vetoeffcomp}%\protect 
+          Efficiency for selecting an isolated track comparing
+          single lepton \ttlj\ and dilepton \ttll\ events in MC and 
+          data as a function of \mt. The
+          efficiencies in \ttlj\ and \ttll\ exhibit no dependence on
+          \mt\, while the data ranges between the two. This behavior
+          is expected since the low \mt\ region is predominantly \ttlj, while the
+          high \mt\ region contains mostly \ttll\ events.}  
+      \end{center}
+\end{figure}
+

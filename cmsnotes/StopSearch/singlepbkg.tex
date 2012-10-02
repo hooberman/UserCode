@@ -1,119 +1,163 @@
-
 This category of backgrounds includes processes with a single leptonic \W~decay, giving rise to one lepton and \met\ from a single neutrino.
 As a result, the \mt\ variable, constructed from the lepton and the \met, exhibits a kinematic edge at $\mt \sim \mW$. The main contributors
 to this background are \ttlj, \wjets\ and single top, though in the latter case there is a contribution from \tw\ that can give rise to two leptons. 
-As shown in Figure.~\ref{fig:mtsinglelepcomp} (left), these backgrounds exhibit a similar \mt\ shape and are thus combined into a single 
-background estimate. 
+The 2-lepton single top background is included in the rare backgrounds estimate. 
 
-It should be underlined that single lepton events entering the signal sample are in the far \mt~tail for these processes
-and contribute mainly due to the \met\ resolution that smears the \mt\ peak, particularly in the presence of multiple jets. 
-Since these types of effects are challenging to model in simulation, the background estimate for this category of processes is cross checked 
-in a control sample in data. 
-%
-%The control sample is obtained by applying the full selection criteria with the exception of the b-tagging requirement, 
-%that is reversed, vetoing events with b-tagged jets. 
-%
-The control sample used here is the b-veto region defined in Section~\ref{sec:selection}. \met $> 100$~\GeV is required and the 
-isolated track veto is not applied.
-%
-The b-tag veto greatly reduces the contamination from \ttbar, which is particularly important
-in the case of \ttll\ which otherwise populates the \mt\ tail. The resulting sample is dominated by \wjets\ events. The derivation of the background 
-estimate in this control sample serves to validate the method. 
-In addition, the level of agreement between the prediction and the data in the \mt\ tail provides an estimate of the systematic uncertainty for this
-background prediction. 
+\subsubsection{W+Jets MC Modelling Validation}
 
-\begin{figure}[hbt]
-  \begin{center}
-	\includegraphics[width=0.5\linewidth]{plots/mt_singlelepcomp_full.png}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_bkgsubt_bveto_met50.png}
-	\caption{
-	  \label{fig:mtsinglelepcomp}%\protect 
-          Monte Carlo comparison of the shapes (left) of the \mt\ distribution for the main background processes containing a single leptonic \W\ decay (left).
-          The \mt\ shape for \ttlj, \wjets\ and single top are similar and thus combined into a single background estimate. Comparison of the MC 
-        prediction (right) for single lepton processes (blue) and the data after subtracting the non-single lepton background MC prediction.
-        The latter is overlayed in red to show the scale of the subtraction. 
-        Since the control sample is dominated by $\Wfourj$ events, 
-        the MC is not expected to provide an estimate of the overall normalization to better than the $\sim 15\%$ difference observed.}
-  \end{center}
-\end{figure}
+The estimate of the uncertainty on this background is based on CR1, 
+defined by applying the full signal selection, but requiring 0 b-tags. 
+The sample is dominanted by \wjets\ and is thus used to validate the MC modelling of this background. 
 
-To validate the single lepton bkg estimate, we take the right plot in Figure~ref{fig:mtsinglelepcomp},
-form the ratio of yields in the peak region in data (after non-single lepton subtraction), $N_{peak}^{data}$, and in lepton plus jets MC, $N_{peak}^{MC}$, 
-and multiply this ratio by the yield in the tail in lepton plus jets MC, $N_{tail}^{MC}$. The non-single lepton subtraction applied to data is obtained from MC.
-We do so for two \met requirements as shown in Table~\ref{tab:ljetsclosure}. 
-%Based on the statistical precision of this closure test, we assign a 30\%
-%systematic error to the single lepton bkg estimation technique.
-
-%The single lepton background contribution to the tail of the \mt\ is derived from MC and normalized to the data in the \mt\ peak region, defined by the 
-%range $60 < \mt \le 100~\GeV$. In particular, the total yield for the combination of the single lepton + jets samples in MC satisfying $60 < \mt \le 100~\GeV$
-%is scaled to match the entries in data satisfying the same \mt\ requirement. The data is corrected for the expected contamination from non-single 
-%lepton + jets processes, which is obtained from MC. The derivation of this MC to data scale factor is shown in Figure.~\ref{fig:mtsinglelepcomp} (right), where the 
-%contribution from non-single lepton + jets processes in the \mt\ peak is also shown to be small. 
-%Scaling to the data yield in the \mt\ peak largely reduces the dependence on the \ttbar\ cross section and cancels systematic uncertainties associated with
-%effects such as the luminosity, selection efficiencies, etc$\dots$
- 
-
-\begin{figure}[!ht]
-  \begin{center}
-	\includegraphics[width=0.5\linewidth]{plots/mt_met50_bveto.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_met100_bveto.pdf}
-	\caption{
-	  \label{fig:mtbveto}%\protect 
-          Comparison of data and MC in the b-veto sample after scaling the single lepton samples in the \mt\ peak region ($60-100~\GeV$) for two \met\ requirements
-          $\met>50~\GeV$ (left) and $\met>100~\GeV$ (right). The simulation shows reasonable agreement with the data both in the peak and the \mt\ tail, as can also 
-          be seen the ratios.}  
-      \end{center}
-\end{figure}
-
-
-\begin{figure}[!hb]
-  \begin{center}
-        \includegraphics[width=0.5\linewidth]{plots/mt_singlelepcomp_full_stack.png}%
-	\includegraphics[width=0.5\linewidth]{plots/bkg_comp_err_mt_met100.png}
-	\caption{
-	  \label{fig:mtsamplecomperr}%\protect 
-          Stacked plot (left) showing the relative sample composition in MC for the main single lepton + jets components, \ttlj, \wjets\ and single top
-          sample for the b-veto control selection. Note no scalings are applied and the $\met>50~\GeV$ is shown. Percent change in the total single lepton + jets
-          background prediction for variations in the normalization of each single lepton + jets background component (right). Each sample is varied independently and the
-          full background prediction is performed.}
-      \end{center}
-\end{figure}
-
-
-\begin{table}[!ht]
+\begin{table}[!h]
 \begin{center}
-\begin{tabular}{c|c|c}
+\begin{tabular}{l||c||c|c|c|c}
 \hline
-Sample                   &   $\met>50~\GeV$  &   $\met>100~\GeV$  \\
-                         &   $M_T > 150~\GeV$& $M_T > 150~\GeV$ \\
+Sample              & CR1PRESEL & CR1A & CR1B & CR1C & CR1D \\
 \hline
 \hline
-Lepton + Jets Prediction           & $88 \pm 12$  & $38 \pm 8$   \\
-Data in Signal Region               & $106 \pm 13$ & $40 \pm 8$   \\
+Muon \mt-SF 	  & $0.91 \pm 0.03$ & $0.96 \pm 0.07$ & $0.88 \pm 0.11$ & $1.05 \pm 0.21$ & $1.27 \pm 0.41$ \\
 \hline
-Data/MC Closure                     & $1.20 \pm 0.22$ & $1.03 \pm 0.30$   \\
+\hline
+Electron \mt-SF 	  & $0.82 \pm 0.03$ & $0.86 \pm 0.06$ & $1.09 \pm 0.15$ & $1.24 \pm 0.30$ & $1.11 \pm 0.40$ \\
 \hline
 \end{tabular}
-\caption{Summary of closure test in b-veto control sample for two values of the \met\ requirement. The closure serves to estimate the systematic uncertainty for 
-  the prediction of the single lepton + jets background.\label{tab:ljetsclosure}}
+\caption{ \mt\ peak Data/MC scale factors applied to the single lepton
+  samples and \ttdl. The raw MC is used for backgrounds from rare
+  processes. CR1PRESEL refers to a sample with $\met>50$ GeV.
+  The uncertainties are statistical only.
+\label{tab:cr1mtsf}}
 \end{center}
 \end{table}
 
-Figure~\ref{fig:mtbveto} shows a comparison of the \mt\ distribution in data and MC in the b-veto control sample for two values of the \met\ cut after scaling 
-the single lepton contribution to the \mt\ peak region. The simulation models the \mt\ distribution in data reasonably well. Table~\ref{tab:ljetsclosure} shows 
-a comparison of the single lepton + jets prediction and the data in the $\mt>150~\GeV$ region. The prediction and the data are in agreement
-within the statistical uncertainty, which is $30 \%$ for the $\met>100~\GeV$ case. No correction is necessary given the agreement observed and the uncertainty 
-serves as an estimate of the systematic uncertainty on the lepton + jets background. It may be noted that the $30\%$ uncertainty applies to the lepton + jets
-background, which constitues $15\%$ of the sample. The resulting uncertainty on the total background is $\approx5\%$.
-%, within our uncertainty budget of $\approx10\%$.
-
-Given the similarities in the shapes of the \mt\ distributions for the various samples, the resulting dependence on the sample composition is small. 
-Figure.~\ref{fig:mtsamplecomperr} shows the \mt\ distribution for the single lepton + jets components in MC. The distribution on the right shows the impact of 
-varying the relative sample composition on the total single lepton + jets prediction. In this study, each component is varied independently by up to $20\%$ and 
-the corresponding change on the prediction is at the level of a few percent and therefore negligible compared to the statistical uncertainty of the closure test. 
-It should be noted that despite differences in the \mt\ shape for the various single lepton + jets processes, expected for example due to differences in the \pt\ of the \W, 
-this test provides a check for the impact of reconstruction effects, such as the \met\ resolution, that are the dominant contributors to the tail of the \mt\ and similar 
-for the \ttlj\ and \wjets\ processes. 
 
 
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{l||c||c|c|c|c}
+\hline
+Sample              & CR1PRESEL & CR1A & CR1B & CR1C & CR1D \\
+\hline
+\hline
+Muon MC 		  & $456 \pm 73$ & $174 \pm 44$ & $51 \pm 7$ & $18 \pm 2$ & $10 \pm 2$ \\
+Muon Data 		  & $657$ & $246$ & $142$ & $43$ & $12$ \\
+\hline
+Muon Data/MC SF 	  & $1.44 \pm 0.24$ & $1.41 \pm 0.37$ & $2.80 \pm 0.47$ & $2.37 \pm 0.46$ & $1.23 \pm 0.42$ \\
+\hline
+\hline
+Electron MC 		  & $396 \pm 64$ & $147 \pm 36$ & $54 \pm 4$ & $19 \pm 2$ & $8 \pm 2$ \\
+Electron Data 		  & $702$ & $223$ & $144$ & $50$ & $23$ \\
+\hline
+Electron Data/MC SF 	  & $1.77 \pm 0.29$ & $1.52 \pm 0.39$ & $2.68 \pm 0.30$ & $2.57 \pm 0.49$ & $2.73 \pm 0.76$ \\
+\hline
+\end{tabular}
+\caption{ Yields in \mt\ tail comparing the MC prediction (after
+  applying SFs) to data. CR1PRESEL refers to a sample with $\met>50$
+  GeV and $\mt>150$ GeV.
+  The uncertainties are statistical only.
+\label{tab:cr1yields}}
+\end{center}
+\end{table}
 
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/met_met50_leadmuo_nj4.pdf}%
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/met_met50_leadele_nj4.pdf}
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/mt_met100_leadmuo_nj4.pdf}%
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/mt_met100_leadele_nj4.pdf}
+    \caption{
+      Comparison of the \met\ (top) and \mt\ for $\met>100$ (bottom) distributions in data vs. MC for events
+      with a leading muon (left) and leading electron (right)
+      satisfying the requirements of CR1. 
+\label{fig:cr1met} 
+}  
+      \end{center}
+\end{figure}
+
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/mt_met150_leadmuo_nj4.pdf}%
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/mt_met150_leadele_nj4.pdf}
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/mt_met200_leadmuo_nj4.pdf}%
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/mt_met200_leadele_nj4.pdf}
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/mt_met250_leadmuo_nj4.pdf}%
+	\includegraphics[width=0.5\linewidth]{plots/CR1plots/mt_met250_leadele_nj4.pdf}
+    \caption{
+      Comparison of the \mt\ distribution in data vs. MC for events
+      with a leading muon (left) and leading electron (right)
+      satisfying the requirements of CR1. The \met\ requirements used are
+      150 GeV (top), 200 GeV (middle) and 250 GeV (bottom).
+\label{fig:cr1mtrest} 
+}  
+      \end{center}
+\end{figure}
+
+
+\subsubsection{Single Lepton Top MC Modelling Validation}
+
+The \mt\ tail for single-lepton top events (\ttsl\ and single top) is dominated by jet resolution effects. The \W\ cannot be far off-shell because $\mW < \mtop$.
+The modeling of the \mt\ tail from jet resolution effects is studied using \zjets\ data and MC samples. 
+\Z\ events are selection by requiring 2 good leptons (satisfying ID and isolation requirements) and requiring the \mll\ to be in the range $81-101$ GeV. 
+The negative lepton is treated as a neutrino and so is added to the MET: \met\ $\rightarrow$ \pt(\Lepm) + \met, 
+and the \mt\ is recalculated with the positive lepton \mt(\Lepp, \met).
+The resulting ``pseudo-\mt'' is dominated by jet resolution effects, since no off-shell 
+\Z\ production enters the sample due to the \mll\ requirement.
+This section describes how well the MC predicts the tail of ``pseudo-\mt''. 
+
+
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{l||c|c||c|c|c|c}
+\hline
+Sample              & CR2PRESEL0 &CR2PRESEL1 & CR2A & CR2B & CR2C & CR2D \\
+\hline
+\hline
+DY MC 		  & $35 \pm 2$ & $30 \pm 2$ & $18 \pm 2$ & $32 \pm 3$ & $12 \pm 2$ & $5 \pm 1$ \\
+Data - non-DY MC 	  & $65 \pm 9$ & $50 \pm 8$ & $36 \pm 6$ & $49 \pm 7$ & $25 \pm 5$ & $14 \pm 4$ \\
+\hline
+Data/MC SF 	  & $1.88 \pm 0.29$ & $1.68 \pm 0.30$ & $1.94 \pm 0.40$ & $1.54 \pm 0.29$ & $2.12 \pm 0.58$ & $2.96 \pm 1.22$ \\
+\hline
+\end{tabular}
+\caption{ Yields in \mt\ tail comparing the MC prediction (after
+  applying SFs) to data. CR2PRESEL refers to a sample with $\met>50$
+  GeV and $\mt>150$ GeV.
+  The uncertainties are statistical only.
+\label{tab:cr2yields}}
+\end{center}
+\end{table}
+
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.5\linewidth]{plots/CR2plots/met_scaled_nj4_emucomb.pdf}%
+	\includegraphics[width=0.5\linewidth]{plots/CR2plots/met_lepcor_scaled_nj4_emucomb.pdf}
+	\includegraphics[width=0.5\linewidth]{plots/CR2plots/mt_lepcor_scaled_nj4_emucomb.pdf}%
+	\includegraphics[width=0.5\linewidth]{plots/CR2plots/mt_lepcor_scaled_met50_nj4_emucomb.pdf}
+    \caption{
+      Comparison of the \met\ (top, left), pseudo-\met\ (top, right)
+      and pseudo-\mt\ (bottom) distributions in data vs. MC for events
+      satisfying the requirements of CR2, combining both the muon and
+      electron channels. The pseudo-\mt\ distributions are shown
+      before any additional requirements (bottom, left) and after
+      requiring pseudo-\met>50 GeV (bottom, right).
+\label{fig:cr2met} 
+}  
+      \end{center}
+\end{figure}
+
+\begin{figure}[hbt]
+  \begin{center}
+	\includegraphics[width=0.5\linewidth]{plots/CR2plots/mt_lepcor_scaled_met100_nj4_emucomb.pdf}%
+	\includegraphics[width=0.5\linewidth]{plots/CR2plots/mt_lepcor_scaled_met150_nj4_emucomb.pdf}
+	\includegraphics[width=0.5\linewidth]{plots/CR2plots/mt_lepcor_scaled_met200_nj4_emucomb.pdf}%
+	\includegraphics[width=0.5\linewidth]{plots/CR2plots/mt_lepcor_scaled_met250_nj4_emucomb.pdf}
+    \caption{
+      Comparison of the \mt\ distribution in data vs. MC for events
+      satisfying the requirements of CR2, combining both the muon and
+      electron channels. The pseudo-\met\ requirements used are
+      100 GeV (top, left), 150 GeV (top, right), 200 GeV (bottom,
+      left) and 250 GeV (bottom, right).
+\label{fig:cr2mtrest} 
+}  
+      \end{center}
+\end{figure}
