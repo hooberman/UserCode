@@ -41,7 +41,7 @@ void doAll(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version    = "V00-00-08";
+  const char* version    = "V00-00-10";
   const char* jsonfile   = "jsons/json_DCSONLY_190389_191859_goodruns.txt";
   const bool  useMCSkims = true;
 
@@ -78,12 +78,54 @@ void doAll(bool skipFWLite = true)
   bool runElData        = 0;
   bool runMuData        = 0;
   bool runSingleElData  = 0;
-  bool runSingleMuData  = 1;
+  bool runSingleMuData  = 0;
   bool runElHadData     = 0;
   bool runDoubleElData  = 0;
   bool runDoubleMuData  = 0;
   bool runMuHadData     = 0;
   bool runPhotonData    = 0;
+  bool runData2012A     = 1;
+  bool runData2012B     = 1;
+  bool runData2012C     = 1;
+
+  //----------------------------------------------------------------------------------------------------------
+  // muon trigger skim: 2012A
+  //----------------------------------------------------------------------------------------------------------
+
+  TChain* chData2012A = new TChain("Events");
+
+  if( runData2012A ){
+    cout << "Adding all 2012A data muon trigger skim" << endl;
+
+    pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged_ntuple_999999_12_2_skim.root");
+    //pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------------------------
+  // muon trigger skim: 2012B
+  //----------------------------------------------------------------------------------------------------------
+
+  TChain* chData2012B = new TChain("Events");
+
+  if( runData2012A ){
+    cout << "Adding all 2012B data muon trigger skim" << endl;
+
+    pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged_ntuple_999999_21_6_skim.root");
+    //pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------------------------
+  // muon trigger skim: 2012C
+  //----------------------------------------------------------------------------------------------------------
+
+  TChain* chData2012C = new TChain("Events");
+
+  if( runData2012C ){
+    cout << "Adding all 2012C data muon trigger skim" << endl;
+
+    pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012C-PromptReco-v2_AOD/merged_ntuple_202477_0_skim.root");
+    //pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012C-PromptReco-v2_AOD/merged*root");
+  }
 
   //----------------------------------------------------------------------------------------------------------
   // all data
@@ -155,7 +197,10 @@ void doAll(bool skipFWLite = true)
     cout << "Adding single muon data" << endl;
     //pickSkimIfExists(chSingleMuData,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_2_3_patch3_V05-02-07/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/*root");
     //pickSkimIfExists(chSingleMuData,"/tas/benhoob/testFiles/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/store_data_Run2012A_SingleMu_AOD_PromptReco-v1_000_191_718_1031CF12-DC8B-E111-9983-003048F117EC.root");
-    pickSkimIfExists(chSingleMuData,"/tas/benhoob/testFiles/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/store*root");
+    //pickSkimIfExists(chSingleMuData,"/tas/benhoob/testFiles/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/store*root");
+    pickSkimIfExists(chSingleMuData,"/tas/benhoob/testFiles/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/store*191_718*root");
+    //pickSkimIfExists(chSingleMuData,"/tas/benhoob/testFiles/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/store*191_830*root");
+    //pickSkimIfExists(chSingleMuData,"/tas/benhoob/testFiles/SingleMu_Run2012A-PromptReco-v1_AOD/unmerged/store_data_Run2012A_SingleMu_AOD_PromptReco-v1_000_191_830_5E887D82-A98C-E111-9455-003048F117F6.root");
   }
 
   //----------------------------------------------------------------------------------------------------------
@@ -223,6 +268,24 @@ void doAll(bool skipFWLite = true)
   //----------------------------------------------------------------------------------------------------------
   // run on samples
   //----------------------------------------------------------------------------------------------------------
+
+  if (runData2012A) {
+    cout << "Processing all 2012A muon trigger data" << endl;
+    looper->ScanChain(chData2012A,"data2012A_mutrig");
+    cout << "Done processing all 2012A muon trigger data" << endl;
+  }
+
+  if (runData2012B) {
+    cout << "Processing all 2012B muon trigger data" << endl;
+    looper->ScanChain(chData2012B,"data2012B_mutrig");
+    cout << "Done processing all 2012B muon trigger data" << endl;
+  }
+
+  if (runData2012C) {
+    cout << "Processing all 2012C muon trigger data" << endl;
+    looper->ScanChain(chData2012C,"data2012C_mutrig");
+    cout << "Done processing all 2012C muon trigger data" << endl;
+  }
 
   if (runData) {
     cout << "Processing all data" << endl;
