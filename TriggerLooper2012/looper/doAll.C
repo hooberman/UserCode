@@ -42,7 +42,7 @@ void doAll(bool skipFWLite = true)
   //---------------------------------------------------------------
   
   const char* version    = "V00-00-10";
-  const char* jsonfile   = "jsons/json_DCSONLY_190389_191859_goodruns.txt";
+  const char* jsonfile   = "jsons/Cert_190456-202305_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
   cout << "Version : " << version     << endl;
@@ -97,7 +97,7 @@ void doAll(bool skipFWLite = true)
   if( runData2012A ){
     cout << "Adding all 2012A data muon trigger skim" << endl;
 
-    pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged_ntuple_999999_12_2_skim.root");
+    pickSkimIfExists(chData2012A,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged_ntuple_999999_12_2_skim.root");
     //pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
   }
 
@@ -110,7 +110,7 @@ void doAll(bool skipFWLite = true)
   if( runData2012A ){
     cout << "Adding all 2012B data muon trigger skim" << endl;
 
-    pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged_ntuple_999999_21_6_skim.root");
+    pickSkimIfExists(chData2012B,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged_ntuple_999999_21_6_skim.root");
     //pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
   }
 
@@ -123,7 +123,7 @@ void doAll(bool skipFWLite = true)
   if( runData2012C ){
     cout << "Adding all 2012C data muon trigger skim" << endl;
 
-    pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012C-PromptReco-v2_AOD/merged_ntuple_202477_0_skim.root");
+    pickSkimIfExists(chData2012C,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012C-PromptReco-v2_AOD/merged_ntuple_202477_0_skim.root");
     //pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012C-PromptReco-v2_AOD/merged*root");
   }
 

@@ -422,9 +422,9 @@ void looper::closeTree()
 
 int looper::ScanChain(TChain* chain, char *prefix){
 
-  cout << "----------------------------------------------" << endl;
-  cout << "WARNING!!!!! SKIMMING ON HLT_Mu24_eta2p1!!!!!!" << endl;
-  cout << "----------------------------------------------" << endl;
+  cout << "-------------------------------------------------------------------------------" << endl;
+  cout << "WARNING!!!!! SKIMMING ON DILEPTON-HT TRIGGERS AND REQUIRING >=1 GOOD MUON!!!!!!" << endl;
+  cout << "-------------------------------------------------------------------------------" << endl;
 
   if( debug )  cout << __LINE__ << ": start ScanChain" << endl;
 
@@ -529,7 +529,31 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       cms2.GetEntry(z);
 
-      if( passTriggerPrescale("HLT_Mu24_eta2p1_v") <= 0 ) continue;
+      if( cms2.evt_run() <= 196753 ){ 
+	emht175_    = passTriggerPrescale("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v");
+	mmht175_    = passTriggerPrescale("HLT_DoubleMu8_Mass8_PFHT175_v");
+
+	emisoht175_ = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v");
+	mmisoht175_ = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT175_v");
+      }
+
+      else{
+	emht175_    = passTriggerPrescale("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v");
+	mmht175_    = passTriggerPrescale("HLT_DoubleMu8_Mass8_PFNoPUHT175_v");
+
+	emisoht175_ = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v");
+	mmisoht175_ = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT175_v");
+      }
+
+      if( emht175_ <=0 && mmht175_ <=0 ) continue;
+
+      // HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v               190456-196753
+      // HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v           197770-203987
+
+      // HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v7     193806-196753
+      // HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v6 197770-203987
+
+      //if( passTriggerPrescale("HLT_Mu24_eta2p1_v") <= 0 ) continue;
 
       if( debug )  cout << __LINE__ << ": got entry" << endl;
 
@@ -547,7 +571,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       // event cleaning and good run list
       //---------------------------------------------
 
-      if( !cleaning_goodDAVertexApril2011() )                        continue;
+      if( !cleaning_goodVertexApril2011() )                          continue;
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
 
       //---------------------
@@ -618,7 +642,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
           
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 5 )            continue;
-	if( !muonId( imu , MuonPOGTight ))         continue;
+	if( !muonId( imu , ZMet2012_v1 ))          continue;
 	goodLeptons.push_back( mus_p4().at(imu) );
 	lepId.push_back( mus_charge().at(imu) * 13 );
 	lepIndex.push_back(imu);
@@ -724,7 +748,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 5 )                                    continue;
-	if( !muonIdNotIsolated( imu , MuonPOGTight ))                      continue;
+	if( !muonIdNotIsolated( imu , ZMet2012_v1 ))                       continue;
 	goodMuonsNoIso.push_back( mus_p4().at(imu) );
 	munoisoIndex.push_back(imu);
 	nmunoiso_ ++;
@@ -741,7 +765,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso1_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(0) , false );
 	munoiso1_isopf_  = muonIsoValuePF       ( munoisoIndex.at(0) , 0     );
 	munoiso1_isodb03_ = muonIsoValuePF2012_deltaBeta( munoisoIndex.at(0) );
-	munoiso1_isodb04_ = muonIsoValuePF2012_dR04_deltaBeta( munoisoIndex.at(0) );
+	//munoiso1_isodb04_ = muonIsoValuePF2012_dR04_deltaBeta( munoisoIndex.at(0) );
 	munoiso1_mt_     = sqrt( 2 * evt_pfmet() * (*munoiso1_).pt() * ( 1 - cos( evt_pfmetPhi() - (*munoiso1_).eta() ) ) );
 	munoiso1_d0pv_   = mud0PV_smurfV3(munoisoIndex.at(0));
 	munoiso1_d0bs_   = mus_d0corr().at(munoisoIndex.at(0));
@@ -757,7 +781,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	munoiso2_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(1) , false );
 	munoiso2_isopf_  = muonIsoValuePF       ( munoisoIndex.at(1) , 0     );
 	munoiso2_isodb03_ = muonIsoValuePF2012_deltaBeta( munoisoIndex.at(1) );
-	munoiso2_isodb04_ = muonIsoValuePF2012_dR04_deltaBeta( munoisoIndex.at(1) );
+	//munoiso2_isodb04_ = muonIsoValuePF2012_dR04_deltaBeta( munoisoIndex.at(1) );
 	munoiso2_d0pv_   = mud0PV_smurfV3(munoisoIndex.at(1));
 	munoiso2_d0bs_   = mus_d0corr().at(munoisoIndex.at(1));
 	munoiso2_ev_     = mus_iso_ecalvetoDep().at(munoisoIndex.at(1));
@@ -999,12 +1023,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	if(isGoodVertex(v)) ++nvtx_;
       }
 
-      ndavtx_ = 0;
-    
-      for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-	if(isGoodDAVertex(v)) ++ndavtx_;
-      }
-      
       strcpy(dataset_, cms2.evt_dataset().at(0).Data());  //dataset name
       run_          = evt_run();                    //run
       lumi_         = evt_lumiBlock();              //lumi
@@ -1229,7 +1247,6 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
   outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
-  outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
   outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
 
   // outTree->Branch("eledijet_hg",     &eledijet_hg_,      "eledijet_hg/I");
@@ -1507,18 +1524,18 @@ void looper::makeTree(char *prefix ){
 
 //--------------------------------------------------------------------
 
-vector<int> goodDAVertices(){
+// vector<int> goodDAVertices(){
 
-  vector<int> myVertices;
-  myVertices.clear();
+//   vector<int> myVertices;
+//   myVertices.clear();
   
-  for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-    if( !isGoodDAVertex(v) ) continue;
-    myVertices.push_back(v);
-  }
+//   for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+//     if( !isGoodDAVertex(v) ) continue;
+//     myVertices.push_back(v);
+//   }
   
-  return myVertices;
-}
+//   return myVertices;
+// }
 
 //--------------------------------------------------------------------
 
