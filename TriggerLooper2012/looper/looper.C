@@ -218,8 +218,10 @@ bool objectPassTrigger(const LorentzVector &obj, char* trigname, float ptmin, in
   float drMin = 999.99;
 
   for (int i = 0; i < trigp4.size(); ++i){
+    //cout << i << " " << trigId.at(i) << " " << trigp4.at(i).pt() << endl;
     if ( trigp4[i].Pt() < ptmin ) continue;
     if ( trigId[i] != id        ) continue;
+
     float dr = dRbetweenVectors(trigp4[i], obj);
     if (dr < drMin) drMin = dr;
   }
@@ -545,6 +547,11 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	mmisoht175_ = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT175_v");
       }
 
+      // if( passTriggerPrescale("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v") ){
+      // 	cout << endl << endl << "pass trigger" << endl;
+      // 	int temp   = objectPassTrigger( *munoiso1_ , "HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v" , 0.0 , 83 , 0.2 ) ? 1 : 0;
+      // }
+
       if( emht175_ <=0 && mmht175_ <=0 ) continue;
 
       // HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v               190456-196753
@@ -654,7 +661,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       if( ngoodlep_ > 0 ){
  	lep1_      = &( goodLeptons.at(0) );
-	lep1_top_  = objectPassTrigger( *lep1_ , "HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
+	//lep1_top_  = objectPassTrigger( *lep1_ , "HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
       }
       if( ngoodlep_ > 1 ) 	lep2_ = &( goodLeptons.at(1) );
       if( ngoodlep_ > 2 ) 	lep3_ = &( goodLeptons.at(2) );
@@ -760,6 +767,19 @@ int looper::ScanChain(TChain* chain, char *prefix){
  	munoiso1_        = &( goodMuonsNoIso.at(0) );
 	munoiso1_mu24_   = objectPassTrigger( *munoiso1_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso1_mu30_   = objectPassTrigger( *munoiso1_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+
+	if( cms2.evt_run() <= 196753 ){
+	  munoiso1_emht175_   = objectPassTrigger( *munoiso1_ , "HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v" , 5.0 , 83 , 0.2 ) ? 1 : 0;
+	  munoiso1_mmht175_   = objectPassTrigger( *munoiso1_ , "HLT_DoubleMu8_Mass8_PFHT175_v"                , 5.0 , 83 , 0.2 ) ? 1 : 0;
+	}
+	else{
+	  munoiso1_emht175_   = objectPassTrigger( *munoiso1_ , "HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v" , 5.0 , 83 , 0.2 ) ? 1 : 0;
+	  munoiso1_mmht175_   = objectPassTrigger( *munoiso1_ , "HLT_DoubleMu8_Mass8_PFNoPUHT175_v"                , 5.0 , 83 , 0.2 ) ? 1 : 0;
+	}
+
+	//if( munoiso1_emht175_ == 1 ) cout << "EMHT175" << endl;
+	//if( munoiso1_mmht175_ == 1 ) cout << "MMHT175" << endl;
+
 	munoiso1_iso_    = muonIsoValue         ( munoisoIndex.at(0) , false );
 	munoiso1_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(0) , false );
 	munoiso1_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(0) , false );
@@ -776,6 +796,16 @@ int looper::ScanChain(TChain* chain, char *prefix){
  	munoiso2_        = &( goodMuonsNoIso.at(1) );
 	munoiso2_mu24_   = objectPassTrigger( *munoiso2_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso2_mu30_   = objectPassTrigger( *munoiso2_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+
+	if( cms2.evt_run() < 196753 ){
+	  munoiso2_emht175_   = objectPassTrigger( *munoiso2_ , "HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v" , 0.0 , 83 , 0.2 ) ? 1 : 0;
+	  munoiso2_mmht175_   = objectPassTrigger( *munoiso2_ , "HLT_DoubleMu8_Mass8_PFHT175_v"                , 0.0 , 83 , 0.2 ) ? 1 : 0;
+	}
+	else{
+	  munoiso2_emht175_   = objectPassTrigger( *munoiso2_ , "HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v" , 0.0 , 83 , 0.2 ) ? 1 : 0;
+	  munoiso2_mmht175_   = objectPassTrigger( *munoiso2_ , "HLT_DoubleMu8_Mass8_PFNoPUHT175_v"                , 0.0 , 83 , 0.2 ) ? 1 : 0;
+	}
+
 	munoiso2_iso_    = muonIsoValue         ( munoisoIndex.at(1) , false );
 	munoiso2_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(1) , false );
 	munoiso2_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(1) , false );
@@ -1054,7 +1084,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       elnoisotrijet_        = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v");
       elnoisotrijetbackup_  = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet50_Jet40_Jet30_v");
       
-      nelnoisotrijet_       = numTrigObjects("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v",82);
+      //nelnoisotrijet_       = numTrigObjects("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v",82);
 
       // top muon+jets triggers
       mutrijet_             = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_TriCentralPFJet30_v");
@@ -1064,6 +1094,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       munoisotrijet_        = passTriggerPrescale("HLT_Mu20_eta2p1_TriCentralPFJet30_v");
       munoisotrijetbackup_  = passTriggerPrescale("HLT_Mu20_eta2p1_CentralPFJet50_Jet40_Jet30_v");
 
+      /*
       // non-isolated dilepton-HT triggers
       eeht175_              = passTriggerPrescale("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT175_v");
       eeht225_              = passTriggerPrescale("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT225_v");
@@ -1077,6 +1108,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       mmisoht225_           = passTriggerPrescale("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT225_v");
       emisoht175_           = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v");
       emisoht225_           = passTriggerPrescale("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225_v");
+      */
 
       // isolated single muon triggers
       isomu20_              = passTriggerPrescale("HLT_IsoMu20_eta2p1_v");
@@ -1102,7 +1134,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
       mu40_                 = passTriggerPrescale("HLT_Mu40_eta2p1_v");
       mu50_                 = passTriggerPrescale("HLT_Mu50_eta2p1_v");
 
-      nmu24_                = numTrigObjects("HLT_Mu24_eta2p1_v",83);
+      //nmu24_                = numTrigObjects("HLT_Mu24_eta2p1_v",83);
 
       mu5_                  = passTriggerPrescale("HLT_Mu5_v");
       mu8_                  = passTriggerPrescale("HLT_Mu8_v");
@@ -1156,18 +1188,18 @@ int looper::ScanChain(TChain* chain, char *prefix){
       me_                   = passTriggerPrescale("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
 
      
-      mindrej_ = getMinDeltaRBetweenObjects( triggerName("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30") , 82 , 85 ); // 82 = electron  85 = jet 
-      mindrmj_ = getMinDeltaRBetweenObjects( triggerName("HLT_IsoMu17_eta2p1_TriCentralPFJet30")                         , 83 , 85 ); // 83 = muon      85 = jet 
+      //mindrej_ = getMinDeltaRBetweenObjects( triggerName("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30") , 82 , 85 ); // 82 = electron  85 = jet 
+      //mindrmj_ = getMinDeltaRBetweenObjects( triggerName("HLT_IsoMu17_eta2p1_TriCentralPFJet30")                         , 83 , 85 ); // 83 = muon      85 = jet 
       
       // store pt of electron matched to electron-dijet trigger
       elptmatch_ = -1;
 
-      if( evt_run() >= 178420 && evt_run() <= 179889 ){
-	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v4" , 82);
-      }
-      else if( evt_run() >= 179959 && evt_run() <= 180291 ){
-	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v5" , 82);
-      }
+      // if( evt_run() >= 178420 && evt_run() <= 179889 ){
+      // 	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v4" , 82);
+      // }
+      // else if( evt_run() >= 179959 && evt_run() <= 180291 ){
+      // 	elptmatch_ = getTriggerObjectPt( "HLT_Ele27_WP80_DiCentralPFJet25_v5" , 82);
+      // }
       
       // now get trigger objects and store minimum jet dR
 
@@ -1344,6 +1376,11 @@ void looper::makeTree(char *prefix ){
 
   outTree->Branch("elnoiso1mt"               , &elnoiso1_mt_             ,  "elnoiso1mt/F"            );             
   outTree->Branch("munoiso1mt"               , &munoiso1_mt_             ,  "munoiso1mt/F"            );             
+
+  outTree->Branch("munoiso1emht175"          , &munoiso1_emht175_        ,  "munoiso1emht175/I"       );             
+  outTree->Branch("munoiso1mmht175"          , &munoiso1_mmht175_        ,  "munoiso1mmht175/I"       );             
+  outTree->Branch("munoiso2emht175"          , &munoiso2_emht175_        ,  "munoiso2emht175/I"       );             
+  outTree->Branch("munoiso2mmht175"          , &munoiso2_mmht175_        ,  "munoiso2mmht175/I"       );             
 
   outTree->Branch("munoiso1d0pv"             , &munoiso1_d0pv_           ,  "munoiso1d0pv/F"          );             
   outTree->Branch("munoiso1d0bs"             , &munoiso1_d0bs_           ,  "munoiso1d0ns/F"          );             

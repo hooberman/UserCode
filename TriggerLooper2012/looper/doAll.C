@@ -84,7 +84,7 @@ void doAll(bool skipFWLite = true)
   bool runDoubleMuData  = 0;
   bool runMuHadData     = 0;
   bool runPhotonData    = 0;
-  bool runData2012A     = 1;
+  bool runData2012A     = 0;
   bool runData2012B     = 1;
   bool runData2012C     = 1;
 
@@ -107,11 +107,11 @@ void doAll(bool skipFWLite = true)
 
   TChain* chData2012B = new TChain("Events");
 
-  if( runData2012A ){
+  if( runData2012B ){
     cout << "Adding all 2012B data muon trigger skim" << endl;
 
-    pickSkimIfExists(chData2012B,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged_ntuple_999999_21_6_skim.root");
-    //pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012A-13Jul2012-v1_AOD/V05-03-13/merged*root");
+    //pickSkimIfExists(chData2012B,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged_ntuple_999999_21_6_skim.root");
+    pickSkimIfExists(chData2012B,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012B-13Jul2012-v1_AOD/V05-03-13/merged*root");
   }
 
   //----------------------------------------------------------------------------------------------------------
@@ -123,8 +123,8 @@ void doAll(bool skipFWLite = true)
   if( runData2012C ){
     cout << "Adding all 2012C data muon trigger skim" << endl;
 
-    pickSkimIfExists(chData2012C,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012C-PromptReco-v2_AOD/merged_ntuple_202477_0_skim.root");
-    //pickSkimIfExists(chData,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012C-PromptReco-v2_AOD/merged*root");
+    //pickSkimIfExists(chData2012C,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012C-PromptReco-v2_AOD/V05-03-13/merged_ntuple_199572_0_skim.root");
+    pickSkimIfExists(chData2012C,"/home/users/benhoob/CondorSkim/MuonTrigger/MuHad_Run2012C-PromptReco-v2_AOD/V05-03-13/merged*root");
   }
 
   //----------------------------------------------------------------------------------------------------------

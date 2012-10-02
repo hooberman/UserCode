@@ -365,6 +365,10 @@ class looper
 	Int_t em_;                   
 	Int_t me_;                   
 
+	Int_t munoiso1_emht175_;
+	Int_t munoiso1_mmht175_;
+	Int_t munoiso2_emht175_;
+	Int_t munoiso2_mmht175_;
 
 };
 
