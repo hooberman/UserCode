@@ -31,11 +31,24 @@ void skim(char* path, char* cut, char* label, char* sample);
 
 void skimSamples(){
 
-  char* path  = "../output/V00-01-04";
+  char* path  = "../output/V00-01-07";
   char* cut   = "( (njets>=2 || njets40>=2) && pfmet>100.0 )";
-  char* label = "njets2_met100";
+  char* label = "2jets_met100";
 
   skim(path,cut,label,"data_53X_baby");
+  skim(path,cut,label,"data_2012C_53X_baby");
+  // skim(path,cut,label,"ttbar_53X_baby");
+  // skim(path,cut,label,"zjets_full_53X_baby");
+  // skim(path,cut,label,"ww_53X_baby");
+  // skim(path,cut,label,"wz_53X_baby");
+  // skim(path,cut,label,"wz2l2q_53X_baby");
+  // skim(path,cut,label,"zz_53X_baby");
+  // skim(path,cut,label,"zz4l_53X_baby");
+  // skim(path,cut,label,"zz2l2q_53X_baby");
+  // skim(path,cut,label,"t_53X_baby");
+  // skim(path,cut,label,"ttW_53X_baby");
+  // skim(path,cut,label,"ttZ_53X_baby");
+  // skim(path,cut,label,"VVV_53X_baby");
 
 }
 
