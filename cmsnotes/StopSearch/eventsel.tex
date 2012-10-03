@@ -38,6 +38,11 @@ Table~\ref{tab:preselectionyield} shows the yields in data and MC without any co
 
 \subsection{Signal Region Selection}
 
+[MOTIVATIONAL BLURB ON MET AND MT, \\
+CAN ADD SIGNAL VS. TTBAR MC PLOT \\
+ADD SIGNAL YIELDS FOR AVAILABLE POINTS, \\
+DISCUSS CHOICE SIG REGIONS]
+
 The signal regions (SRs) are selected to improve the sensitivity for the
 single lepton requirements and cover a range of scalar top
 scenarios. The \mt\ and \met\ variables are used to define the signal
@@ -93,9 +98,10 @@ Total 		 & $932 \pm 39$& $576 \pm 38$& $195 \pm 27$& $80 \pm 26$ \\
 \end{center}
 \end{table}
 
-[1 PARAGRAPH BLURB ABOUT BACKGROUNDS AND INTRODUCE CONTROL REGIONS]
-
 \subsection{Control Region Selection}
+
+[1 PARAGRAPH BLURB RELATING BACKGROUNDS (IN TABLE FROM PREVIOUS SECTION)
+TO INTRODUCE CONTROL REGIONS]
 
 Control regions (CRs) are used to validate the background estimation
 procedure and derive systematic uncertainties for some
@@ -159,6 +165,8 @@ Selection 	& \multirow{2}{*}{exactly 1 lepton}	& \multirow{2}{*}{exactly 2
 
 \subsubsection{Corrections to Jets and \met}
 
+[UPDATE, ADD FEW MORE DETAILS ON WHAT IS DONE HERE]
+
 The official recommendations from the Jet/MET group are used for 
 the data and MC samples. In particular, the jet
 energy corrections (JEC) are updated using the official recipe.
@@ -207,7 +215,8 @@ Powheg       &       0.108\\
 \subsubsection{Modeling of Additional Hard Jets in Top Dilepton Events}
 \label{sec:jetmultiplicity}
 
-[SUMMARIZE, UPDATE]
+[CHECK, UPDATE, ADD EQUATIONS COMMENTED IN THE BOTTOM OF FILE \\
+REFERENCE APPENDIX INFO. (FROM 7 TEV) AND SUMMARIZE THAT INFORMATION HERE]
 
 Dilepton \ttbar\ events have 2 jets from the top decays, so additional
 jets from radiation or higher order contributions are required to
@@ -227,11 +236,12 @@ events have 2 jets, as expected from the dominant process \ttll. There is also a
 significant fraction of events with additional jets. 
 The 3-jet sample is mainly comprised of \ttbar\ events with 1 additional
 emission and similarly the $\ge4$-jet sample contains primarily
-$\ttbar+\ge2$ jet events. Even though the primary \ttbar\
-Madgraph sample used includes up to 3 additional partons at the Matrix
-Element level, which are intended to describe additional hard jets,
-Figure~\ref{fig:dileptonnjets} shows a slight mis-modeling of the
-additional jets. 
+$\ttbar+\ge2$ jet events. 
+%Even though the primary \ttbar\
+%Madgraph sample used includes up to 3 additional partons at the Matrix
+%Element level, which are intended to describe additional hard jets,
+%Figure~\ref{fig:dileptonnjets} shows a slight mis-modeling of the
+%additional jets. 
 
 
 \begin{figure}[hbt]
@@ -338,134 +348,8 @@ N jets $\ge4$ (sensitive to $\ttbar+\ge2$ extra jets from radiation)   &       $
 \end{table}
 
 
-\begin{figure}[hbt]
-  \begin{center}
-	\includegraphics[width=0.5\linewidth]{plots/ttdl_njets_lepremoval_comp.png}
-	\caption{
-	  \label{fig:dileptonnjets_lepcomp}%\protect 
-          Comparison of the jet multiplicity distribution for \ttll\
-          events in MC in the signal sample before (red) and after
-          (blue) applying the lepton-jet overlap removal. Note only
-          the first 6 jets are shown.}  
-      \end{center}
-\end{figure}
-
-
-In the signal sample, leptons mis-identified as jets are not rare. 
-Figure~\ref{fig:dileptonnjets_lepcomp}  shows the MC jet
-multiplicity distribution for \ttll\ events satisfying the full
-selection criteria before and after subtracting leptons mis-identified
-as jets. Approximately a quarter of the sample is comprised of 4-jet
-events that actually correspond to a 2-lepton + 3 jet event where the second
-lepton is counted as a jet. Lepton mis-identification depends strongly
-on the type of second lepton, occuring more frequently in the case of
-hadronic $\tau$s than leptonic objects. According to the \ttll\
-MC, for hadronic $\tau$s, $\sim85\%$ of multi-prong $\tau$s and about half
-the single-prong $\tau$ are mis-identified as jets. In the case of
-leptonic objects, the fractions are smaller, comprising about a third
-of \E/\M\ from a \W\ decay and $<20\%$ for leptonic $\tau$s, 
-mainly because of the softness of the decay products. 
-The scale factors listed in Table.~\ref{tab:njetskfactors} are applied
-to the ``cleaned'' jet counts in the signal sample (shown in blue in
-Figure~\ref{fig:dileptonnjets_lepcomp}). The impact of applying the
-jet multiplicity scale factors on the \ttll\ is about a $10\%$ reduction in the
-background prediction for the signal region. 
-
-%\begin{itemize}
-%\item Hadronic ($\tau$) objects: most multi-prong $\tau$s and about
-%  half single-prong $\tau$s 
-%\item Leptonic objects: smaller fraction, 
-%\end{itemize}
-%Fraction of various lepton types matched to a jet
-%multi-prong taus ⟹ 85% give additional 30 GeV jet
-%single-prong taus ⟹ ~50% give additional 30 GeV jet
-%leptonic taus ⟹ <20% give additional 30 GeV jet
-%e/mu⟹ ~40% give additional 30 GeV jet 
-
-\begin{figure}[hbt]
-  \begin{center}
-	\includegraphics[width=0.5\linewidth]{plots/ttdl_njets_presel_3j_comp.png}%
-	\includegraphics[width=0.5\linewidth]{plots/ttdl_njets_presel_4j_comp.png}
-	\caption{
-	  \label{fig:dileptonnjets_signalcontrol_comp}%\protect 
-          Comparison of the number of additional jets from radiation
-          in the 3-jet (left) and $\ge4$-jet (right) bins for the control \ttll\
-          sample (with two reconstructed leptons) and the signal
-          sample (with one reconstructed lepton). The distributions
-          show good agreement, indicating that the usage of the
-          reconstructed jet multiplicity in one sample to reweight the
-        signal sample is indeed justified. {\bf Fix me: Is this before or after the isolated track veto?}}  
-      \end{center}
-\end{figure}
-
-Ultimately, the interesting quantity for reweighting is the number of
-additional hard jets from radiation and this information is accessed using the
-number of reconstructed
-jets. Figure~\ref{fig:dileptonnjets_signalcontrol_comp} 
-demonstrates in MC that the \ttll\ control sample, i.e. when both leptons are reconstructed,
-can indeed be used to reweight the \ttll\ signal sample, i.e. when one lepton is missed.
-The figure compares the
-number of additional jets from truth matching probed by N
-reconstructed jets, in this case 3 and $\ge4$ jets. In order to do so,
-jets that are truth-matched to the top decay products (the b-quarks
-and additional leptons) are removed. The 3-jet distribution shows 
-excellent agreement and the differences in the $\ge4$-jet distribution 
-are at most $5\%$. The impact of possible differences in the
-underlying distribution of extra
-jets between the signal and control \ttll\ samples are estimated by
-varying the scale factor contributions by $10\%$ and calculating the
-change in the dilepton prediction. This effect is found to have a
-negligible impact on the prediction, well below $1\%$.
-
-Other effects that have been examined include the impact of 
-additional jets from pileup that may bias the jet multiplicity
-distribution, which  is found to be a negligible effect in this dataset. The
-impact of the non-\ttll\ background on the jet fraction scale factors
-has also been studied. In particular, given the large uncertainty on
-the $\dy+HF$ MC prediction, this component has been varied by a factor
-of 2 and the resulting change on the dilepton prediction is $<1\%$. As
-a result, the dominant source of uncertainty is the statistical
-uncertainty, primarily from the two-lepton control sample size, that
-corresponds to a $3\%$ uncertainty on the dilepton prediction. 
-
-The scale factors for the fraction of additional jets in the dilepton
-sample are applied throughout the analysis. It may be noted that this
-scaling is also performed consistently for the alternative \ttbar\
-samples, always reweighting the jet multiplicity distribution to the
-data in the \ttll\ control sample. In this way, effects truly
-arising from using different MC samples and settings can be examined,
-separately from issues related to the modeling of additional jets. 
 
 \subsubsection{Efficiency Corrections}
 
 [TO BE UDPATED WITH T\&P STUDIES ON ID, TRIGGER ETC]
-
-
-\subsubsection{Dilepton control regions}
-
-We define a dilepton control region requiring two isolated leptons, $ee, e\mu$, or $\mu\mu$ to study the jet multiplicity in data and MC, and derive
-scale factors based on their consistency. This study is documented in Section~\ref{sec:jetmultiplicity}.
-
-In this region we require:
-\begin{itemize}
-\item dilepton triggers
-\item two leptons with $\pt > 20 \GeV$ that pass our lepton id and isolation
-\item $\met > 50 \GeV$
-\item $\ge 1$ b-tag, SSV medium
-\end{itemize}
-
-This sample is only partially overlapping with the single lepton preselection as it requires the dilepton rather than the single lepton triggers, and
-differs in the $\pt$ requirement for the leading lepton. Table~\ref{tab:dileptonyield} shows the raw yields in data and MC prior to any corrections.
-
-\begin{table}[!h]
-\begin{center}
-\begin{tabular}{c|c}
-\hline
-\hline
-\end{tabular}
-\caption{  Raw Data and MC predictions without any corrections are shown for the dilepton control region.
-This region is used for correcting the jet multiplicity seen in MC to that in data.
-\label{tab:dileptonyield}}
-\end{center}
-\end{table}
 

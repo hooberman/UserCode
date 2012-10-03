@@ -1,6 +1,11 @@
 %\section{Systematics Uncertainties on the Background Prediction}
 %\label{sec:systematics}
 
+[ADD INTRODUCTORY BLURB ON UNCERTAINTIES \\
+ADD COMPARISONS OF ALL THE ALTERNATIVE SAMPLES FOR ALL THE SIGNAL
+REGIONS \\
+LIST ALL THE UNCERTAINTIES INCLUDED AND THEIR VALUES]
+
 \subsection{Uncertainty on the \ttll\ Acceptance}
 
 The \ttbar\ background prediction is obtained from MC, with corrections
@@ -30,7 +35,8 @@ The variations considered are
   Pythia (LO). It may also be noted that MC@NLO uses Herwig6 for the 
   hadronisation, while POWHEG uses Pythia6.
 \item Modeling of taus: The alternative sample does not include
-  Tauola and is otherwise identical to the Powheg sample. 
+  Tauola and is otherwise identical to the Powheg sample.  [DONE AT
+  7TEV AND FOUND TO BE NEGLIGIBLE]
 \item The PDF uncertainty is estimated following the PDF4LHC
   recommendations[CITE]. The events are reweighted using alternative
   PDF sets for CT10 and MSTW2008 and the uncertainties for each are derived using the
@@ -38,7 +44,8 @@ The variations considered are
   addition, the NNPDF2.1 set with 100 replicas. The central value is
   determined from the mean and the uncertainty is derived from the
   $1\sigma$ range. The overall uncertainty is derived from the envelope of the
-  alternative predictions and their uncertainties. 
+  alternative predictions and their uncertainties. [DONE AT 7 TEV AND
+  FOUND TO BE NEGLIGIBLE]
 \end{itemize}
 
 
@@ -194,7 +201,10 @@ The variations considered are
 %\end{table}
 
 
-\subsubsection{Isolated Track Veto: Tag and Probe Studies}
+\subsection{Isolated Track Veto: Tag and Probe Studies}
+
+[EVERYTHING IS 7TEV HERE, UPDATE WITH NEW RESULTS \\
+ADD TABLE WITH FRACTION OF EVENTS THAT HAVE A TRUE ISOLATED TRACK]
 
 In this section we compare the performance of the isolated track veto in data and MC using tag-and-probe studies
 with samples of Z$\to$ee and Z$\to\mu\mu$. The purpose of these studies is to demonstrate that the efficiency
@@ -447,29 +457,29 @@ jet multiplicity requirements.}
 {\bf fix me: What you have written in the next paragraph does not explain how $\epsilon_{fake}$ is measured.
 Why not measure $\epsilon_{fake}$ in the b-veto region?}
 
-A measurement of the $\epsilon_{fake}$ in data is non-trivial. However, it is
-possible to correct for differences in the $\epsilon_{fake}$ between data and MC by
-applying an additional scale factor for the single lepton background
-alone, using the sample in the \mt\ peak region. This scale factor is determined after applying the isolated track
-veto and after subtracting the \ttll\ component, corrected for the
-isolation efficiency derived previously. 
-As shown in Figure~\ref{fig:vetoeffcomp}, the efficiency for selecting an
-isolated track in single lepton events is independent of \mt\, so the use of
-an overall scale factor is justified to estimate the contribution in
-the \mt\ tail. 
-
-\begin{figure}[hbt]
-  \begin{center}
-	\includegraphics[width=0.5\linewidth]{plots/vetoeff_comp.png}
-	\caption{
-	  \label{fig:vetoeffcomp}%\protect 
-          Efficiency for selecting an isolated track comparing
-          single lepton \ttlj\ and dilepton \ttll\ events in MC and 
-          data as a function of \mt. The
-          efficiencies in \ttlj\ and \ttll\ exhibit no dependence on
-          \mt\, while the data ranges between the two. This behavior
-          is expected since the low \mt\ region is predominantly \ttlj, while the
-          high \mt\ region contains mostly \ttll\ events.}  
-      \end{center}
-\end{figure}
+%A measurement of the $\epsilon_{fake}$ in data is non-trivial. However, it is
+%possible to correct for differences in the $\epsilon_{fake}$ between data and MC by
+%applying an additional scale factor for the single lepton background
+%alone, using the sample in the \mt\ peak region. This scale factor is determined after applying the isolated track
+%veto and after subtracting the \ttll\ component, corrected for the
+%isolation efficiency derived previously. 
+%As shown in Figure~\ref{fig:vetoeffcomp}, the efficiency for selecting an
+%isolated track in single lepton events is independent of \mt\, so the use of
+%an overall scale factor is justified to estimate the contribution in
+%the \mt\ tail. 
+%
+%\begin{figure}[hbt]
+%  \begin{center}
+%	\includegraphics[width=0.5\linewidth]{plots/vetoeff_comp.png}
+%	\caption{
+%	  \label{fig:vetoeffcomp}%\protect 
+%          Efficiency for selecting an isolated track comparing
+%          single lepton \ttlj\ and dilepton \ttll\ events in MC and 
+%          data as a function of \mt. The
+%          efficiencies in \ttlj\ and \ttll\ exhibit no dependence on
+%          \mt\, while the data ranges between the two. This behavior
+%          is expected since the low \mt\ region is predominantly \ttlj, while the
+%          high \mt\ region contains mostly \ttll\ events.}  
+%      \end{center}
+%\end{figure}
 

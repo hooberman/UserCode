@@ -1,6 +1,11 @@
 %\clearpage
 
-%\section{Background Estimation Technique}
+[MAJOR REWORKING OF TEXT: \\
+ADD GENERAL INTRODUCTION - INCLUDING WHY USING CR HERE \\
+CONSISTENT VARIABLE NAMES \\
+ALSO FOR EACH CR CATEGORY, DESCRIBE PURPOSE, DEFINE SELECTION CLEARLY, EXPLAIN
+SFS AND CLOSURE TEST, CONCLUSIONS]
+
 
 The dominant background to the signal sample comes from \ttll\
 events. Due to the presence of a second neutrino, \ttll\ events do
@@ -9,22 +14,20 @@ selection criteria due to real \met\ and do not depend on detector
 resolution or \met\ mis-measurement effects. As a result, the
 \ttll\ background is expected to be well modeled in the MC. The
 prediction for this background is thus derived from MC and normalized
-to the data in the \mt\ peak region. However,
-there are two aspects that require dedicated corrections and are detailed
-in this section:
-\begin{itemize}
-\item the modeling of additional jets from radiation, required to satisfy the 4-jet
-selection criteria.
-\item the modeling of the isolated track veto efficiency, which is
-  applied to explicitly reject leptons from \W\ and $\W\To\tau$ decays
-  and single prong $\tau$ decays.
-\end{itemize}
+to the data in the \mt\ peak region. 
+
+%the modeling of the isolated track veto efficiency, which is
+ % applied to explicitly reject leptons from \W\ and $\W\To\tau$ decays
+ % and single prong $\tau$ decays.
+
 The systematic uncertainty associated with the MC prediction then has two components.
 One that is
 derived by comparing various generators, and a second from the uncertainties on
-the various correction factors used. These are described at the end of
-this section.  
-
+the various correction factors used. 
+%The \ttll\ sample is checked for differences between data and MC in the isolation for events with a
+%second lepton. This correction is derived using $\Z+4$ jet events and
+%applied to the \ttll\ sample. 
+These are described in section XXX.
 
 \subsubsection{Normalization of the Top Prediction}
 \label{sec:topnorm}
@@ -52,7 +55,7 @@ Specifically, the pre-veto sample is defined by the following requirements
 \begin{itemize}
 \item At least 1 selected electron (muon) with \pt $>$ 30 GeV and $|\eta|<2.5$ ($|\eta|<2.1$)
 \item At least 4 selected jets, of which at least 1 is b-tagged
-\item \met\ $>$ 100 GeV 
+\item \met\ $>$ 100 GeV or corresponding SR requirement
 \end{itemize}
 
 %As in the case of the single lepton + jets sample, 
@@ -69,17 +72,6 @@ Therefore a systematic uncertainty is derived to account for
 the uncertainty in this background component. The normalization of 
 the \wjets\ sample is scaled up and down by $50\%$ and the full 
 background estimate recomputed. 
-
-It should be noted that the background prediction obtained using
-the same normalization scale factor based on the \mt\ peak for the 
-single lepton and dilepton samples is subject to smaller uncertainties
-than the prediction obtained by normalizing the \ttll\ component alone
-to the overall yield in the two-lepton control sample. The reason is 
-that the normalization of the two-lepton control yield depends on
-effects that do not impact the \ttll\ sample with one reconstructed
-lepton (i.e. the signal sample of interest) in the same way. Example
-of these effects include the dilepton trigger and second lepton
-reconstruction efficiencies.
 
 In conclusion, the pre-veto sample is used to define an overall data
 over MC scale factor ($SF^{\rm{all}}$) in the \mt\ peak control region, that is
@@ -147,7 +139,10 @@ $t\bar{t} \rightarrow l^{+}l^{-} (\tau_{\mathrm{had}}\rightarrow \mathrm{3-prong
 \end{tabular}
 \caption{Dilepton events satisfying the full selection criteria
  and \met\ $>$ 100 GeV, \mt\ $>$ 150 GeV,  separated by decay modes.
-Recall that \ttll\ accounts for $\approx80$\% of the total background.{\bf Fix me: Is this before or after the isolated track veto?}
+Recall that \ttll\ accounts for $\approx80$\% of the total
+background.{\bf Fix me: Is this before or after the isolated track
+  veto? This is after the isolated track veto, numbers derived at 7
+  TeV, to be udpdated to 8 TeV}
 \label{tab:ttdlcomposition}}
 \end{center}
 \end{table}
@@ -180,7 +175,7 @@ veto\footnote{Explicitly, the fraction of events that give rise to a
   which are $26\%$ of the sample, $20\%$ of leptonic tau events which
   are $18\%$ of the sample and $30\%$ of single prong $\tau$ events 
   which are $10\%$ of the sample.}. The performance of the isolation
-used in the track veto requirement is the subject of the next section.
+used in the track veto requirement is the subject of section XXX.
 
 It should also be noted that according to the MC, track reconstruction 
 inefficiencies affect a few percent ($\sim 1-2\%$) of the
@@ -219,6 +214,9 @@ main sources of uncertainty in this estimate:
 
 \subsubsection{Summary of the \ttdl\ Background Estimation Procedure}
 
+[ADD CORRECT VARIABLE NAMES TO MATCH EQUATIONS, SHOULD HELP MAKE IT
+EASIER TO FOLLOW]
+
 The SM background in the signal region, defined by requirements of
 large \met\ and \mt, is estimated using MC. The MC is validated using
 data control samples, which are used to derive data-to-MC scale 
@@ -240,9 +238,6 @@ as
   factor in the \mt\ peak region. This scale factor corrects for
   effects of integrated luminosity, \ttbar\ cross section, lepton
   selection and trigger efficiencies.
-\item Correct the \ttll\ sample for differences between data and MC in the isolation for
-  events with a second lepton. This correction is derived using $\Z+4$
-  jet events and applied to the \ttll\ sample. 
 \item In the signal sample, after applying the full selection
   including the isolated track veto, derive a scale factor to
   account for possible data vs. MC discrepancies in the isolated track 
@@ -344,7 +339,8 @@ Electron Data/MC SF 	  & $0.99 \pm 0.08$ & $1.06 \pm 0.12$ & $0.97 \pm 0.21$ & $
 
 \clearpage
 
-\subsubsection{Validation of the lepton + isolated track Sample Prediction}
+\subsubsection{Validation of the lepton + isolated track Sample
+  Prediction [FIX NAME]}
 
 [EXPLAIN ALL THE CHECKS FOR CR5: LEPTON + ISOLATED TRACK SAMPLE]
 
