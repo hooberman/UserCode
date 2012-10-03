@@ -131,6 +131,8 @@ class LeptonTreeMaker {
 	unsigned int HLT_IsoMu24_tag_;
 	unsigned int HLT_IsoMu24_probe_;
 
+	Float_t tagiso_;
+	Float_t probeiso_;
 };
 
 #endif

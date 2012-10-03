@@ -15,6 +15,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 
+
   // ------------------------------------------------------------------------
   // 		For BatchSubmission
   // ------------------------------------------------------------------------
@@ -33,45 +34,35 @@ int main(int argc, char *argv[])
   //  	For local submission
   // ------------------------------------------------------------------------
 
-  TString goodrunlist = "Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
+  TString goodrunlist = "Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
+
+  cout << "Using json: " << goodrunlist << endl;
 
   int ijob     = atoi(argv[1]);
   int prescale = 1;
 
   if( ijob == 1 ){
-    //processLeptonTree("DoubleElectron_May10" , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/merged_ntuple_999999_33_skim.root", true, goodrunlist,prescale);
-    //processLeptonTree("DoubleElectron_B34"   , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-34/merged_ntuple_180093_1_skim.root" , true, goodrunlist,prescale);
+    cout << "Processing single muon data" << endl;
 
-    processLeptonTree("DoubleElectron_May10" , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-20/merged*root", true, goodrunlist,prescale);
-    processLeptonTree("DoubleElectron_PRv4"  , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011A-PromptReco-v4_AOD/V04-02-20/merged*root" , true, goodrunlist,prescale);
-    processLeptonTree("DoubleElectron_Aug05" , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/merged*root"  , true, goodrunlist,prescale);
-    processLeptonTree("DoubleElectron_PRv6"  , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011A-PromptReco-v6_AOD/V04-02-20/merged*root" , true, goodrunlist,prescale);
-    processLeptonTree("DoubleElectron_B30"   , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/merged*root" , true, goodrunlist,prescale);
-    processLeptonTree("DoubleElectron_B34"   , SmurfTree::data, "StopTNPSkim/DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-34/merged*root" , true, goodrunlist,prescale);
+    processLeptonTree("SingleMu_2012A",SmurfTree::data,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_3_2_patch4_V05-03-13/SingleMu_Run2012A-13Jul2012-v1_AOD/merged/merged_ntuple_999999_11_9.root",true, goodrunlist,prescale);
+
+    // processLeptonTree("SingleMu_2012A",SmurfTree::data,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_3_2_patch4_V05-03-13/SingleMu_Run2012A-13Jul2012-v1_AOD/merged/merged*root",true, goodrunlist,prescale);
+    // processLeptonTree("SingleMu_2012B",SmurfTree::data,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_3_2_patch4_V05-03-13/SingleMu_Run2012B-13Jul2012-v1_AOD/merged/merged*root",true, goodrunlist,prescale);
+    // processLeptonTree("SingleMu_2012C",SmurfTree::data,"/hadoop/cms/store/user/jaehyeok/CMSSW_5_3_2_patch4_V05-03-13/SingleMu_Run2012C-PromptReco-v2_AOD/merged/merged*root",true, goodrunlist,prescale);
   }
 
-  else if( ijob == 2 ){
-    processLeptonTree("SingleMu_May10" , SmurfTree::data, "StopTNPSkim/SingleMu_Run2011A-May10ReReco-v1_AOD/V04-02-33/merged*root", true, goodrunlist,prescale);
-    processLeptonTree("SingleMu_PRv4"  , SmurfTree::data, "StopTNPSkim/SingleMu_Run2011A-PromptReco-v4_AOD/V04-02-33/merged*root" , true, goodrunlist,prescale);
-    processLeptonTree("SingleMu_Aug05" , SmurfTree::data, "StopTNPSkim/SingleMu_Run2011A-05Aug2011-v1_AOD/V04-02-33/merged*root"  , true, goodrunlist,prescale);
-    processLeptonTree("SingleMu_PRv6"  , SmurfTree::data, "StopTNPSkim/SingleMu_Run2011A-PromptReco-v6_AOD/V04-02-33/merged*root" , true, goodrunlist,prescale);
-    processLeptonTree("SingleMu_B30"   , SmurfTree::data, "StopTNPSkim/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/merged*root" , true, goodrunlist,prescale);
-    processLeptonTree("SingleMu_B34"   , SmurfTree::data, "StopTNPSkim/SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-34/merged*root" , true, goodrunlist,prescale);
+  if( ijob == 2 ){
+    cout << "Processing single electron data" << endl;
+    processLeptonTree("SingleEl_2012A",SmurfTree::data,"/hadoop/cms/store/user/cwelke/CMSSW_5_3_2_patch4_V05-03-13/SingleElectron_Run2012A-13Jul2012-v1_AOD/merged/merged_ntuple_999999_4.root",true, goodrunlist,prescale);
+
+    // processLeptonTree("SingleEl_2012A",SmurfTree::data,"/hadoop/cms/store/user/cwelke/CMSSW_5_3_2_patch4_V05-03-13/SingleElectron_Run2012A-13Jul2012-v1_AOD/merged/merged*root",true, goodrunlist,prescale);
+    // processLeptonTree("SingleEl_2012B",SmurfTree::data,"/hadoop/cms/store/user/cwelke/CMSSW_5_3_2_patch4_V05-03-13/SingleElectron_Run2012B-13Jul2012-v1_AOD/merged/merged*root",true, goodrunlist,prescale);
+    // processLeptonTree("SingleEl_2012C",SmurfTree::data,"/hadoop/cms/store/user/cwelke/CMSSW_5_3_2_patch4_V05-03-13/SingleElectron_Run2012C-PromptReco-v2_AOD/merged/merged*root",true, goodrunlist,prescale);
   }
 
   else if( ijob == 3 ){
     cout << "Processing DYJets MC" << endl;
-    processLeptonTree("test", SmurfTree::dymm, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple*root", false, "",prescale);
-  }
-
-  else if( ijob == 4 ){
-    cout << "Processing DYJets MC skim" << endl;
-    processLeptonTree("testskim", SmurfTree::dymm, "/hadoop/cms/store/user/vimartin/SingleLeptonAndTwoJets/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/SingleLeptonAndTwoJets/merged*root", false, "",prescale);
-  }
-
-  else if( ijob == 5 ){
-    cout << "Processing ttbar MC skim" << endl;
-    processLeptonTree("testskim", SmurfTree::ttbar, "/hadoop/cms/store/group/snt/papers2011/Summer11MC/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root", false, "",prescale);
+    processLeptonTree("test",SmurfTree::dymm,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged*root",false,"",prescale);
   }
 
   return 0; 
