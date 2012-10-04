@@ -1,7 +1,8 @@
-\section{Overview and Analysis Strategy}
+\section{Overview and Strategy for Background Determination}
 \label{sec:overview}
 
-[REVISE --- MAKE SURE EVERYTHING IS CORRECT]
+[THIS SECTION IS NOW MORE OR LESS OK.  NEED TO FIX THE ``XX'' IN
+FORWARD SECTION REFERENCES]
 
 We are searching for a $t\bar{t}\chi^0\chi^0$ or $W b W \bar{b} \chi^0 \chi^0$ final state
 (after top decay in the first mode, the final states are actually the same).  So to first order 
@@ -15,10 +16,10 @@ initial analysis is simply a counting experiment in the tail of the $M_T$ distri
 The event selection is one-and-only-one high \pt\ isolated lepton, four or more jets, and
 some moderate \met\ cut.  At least one of the jets has to be btagged to reduce $W+$ jets.
 The event sample is then dominated by $t\bar{t}$, but there are also contributions from $W+$ jets,
-single top, dibosons, etc.
+single top, dibosons, as well as rare SM processes such as $ttW$.
 
-In order to be sensitive to $\widetilde{t}\widetilde{t}$ production, the background in the $M_T$
-tail has to be controlled at the level of 10\% or better. So this is (almost) a precision measurement.
+% In order to be sensitive to $\widetilde{t}\widetilde{t}$ production, the background in the $M_T$
+% tail has to be controlled at the level of 10\% or better. So this is (almost) a precision measurement.
 
 The $t\bar{t}$ events in the $M_T$ tail can be broken up into two categories: 
 (i) $t\bar{t} \to \ell $+ jets and (ii) $t\bar{t} \to \ell^+ \ell^-$ where one of the two
@@ -29,44 +30,65 @@ the total.  This is because in dileptons there are two neutrinos from $W$ decay,
 is not bounded by $M_W$.  This is a very important point: while it is true that we are looking in
 the tail of $M_T$, the bulk of the background events end up there not because of some exotic
 \met\ reconstruction failure, but because of well understood physics processes.  This means that 
-the background estimate can be taken from Monte Carlo (MC), after carefully accounting for possible
-data/MC differences.  Sophisticated fully ``data driven'' techniques are not really needed.
+the background estimate can be taken from Monte Carlo (MC) 
+after carefully accounting for possible
+data/MC differences.   
 
-Another important point is that in order to minimize systematic uncertainties, the MC background
-predictions are always normalized to the bulk of the $t\bar{t}$ data, ie, events passing all of the 
+In Section XX we will describe the analysis of various Control Regions
+(CRs)  that are used to test the Monte Carlo model and, if necessary,
+to extract data/MC scale factors.  In this section we give a
+general description of the procedure.  The details of how the
+final background prediction is assembled are given in Section XX.
+
+The search is performed in a number of signal regions defined 
+by minimum requirements on \met\  and $M_T$.  These signal
+regions are defined in Section XX. 
+
+% Sophisticated fully ``data driven'' techniques are not really needed.
+
+One general point is that in order to minimize systematic uncertainties, the MC background
+predictions are whenever possible normalized to the bulk of the $t\bar{t}$ data, ie, events passing all of the 
 requirements but with $M_T \approx 80$ GeV.
-This removes uncertainties
+This (mostly) removes uncertainties
 due to $\sigma(t\bar{t})$, lepton ID, trigger efficiency, luminosity, etc.   
 
-The $\ell +$ jets background, which is dominated by 
-$t\bar{t} \to \ell $+ jets, but also includes some $W +$ jets as well as single top,
-is estimated as follows:
-\begin{enumerate}
-\item We select a control sample of events passing all cuts, but anti-btagged, i.e. b-vetoed.  This
-sample is now dominated by $W +$ jets.  The sample is used to understand the
-$M_T$ tail in $\ell +$ jets processes. 
-\item In MC we measure the ratio of the number of $\ell +$ jets events in the $M_T$ tail to
-the number of events with $M_T \approx$ 80 GeV.  This ratio turns out to be pretty much the
-same for all sources of $\ell +$ jets.
-\item In data we measure the same ratio but after correcting for the $t\bar{t} \to$ dilepton
-contribution, as well as dibosons etc.  The dilepton contribution is taken from MC after 
-the correction described below.  
-\item We compare the two ratios, as well as the shapes of the data and MC $M_T$ distributions. 
-If they do not agree, we try to figure out why and fix it.  If they agree well enough, we define a 
-data-to-MC scale factor (SF) which is the ratio of the  ratios defined in step 2 and 3, keeping track of the 
-uncertainty.  
-\item We next perform the full selection in $t\bar{t} \to \ell +$ jets MC, and measure this ratio
-again (which should be the same as that in step 2).
-\item 
-We perform the full selection in data. We count the number of events with $M_T \approx 80$ GeV, after subtracting off the dilepton contribution,
-  and multiply this count by the ratio from step 5 times the data/MC scale factor from step 4.
-%We count the events with $M_T \approx 80$ GeV, we
-%subtract off the dilepton contribution, we multiply the subtracted event count by the ratio from step 5 (or from 
-%step 2), and also by the data/MC SF from step 4.  
-The result is the prediction for the $\ell +$ jets BG in the $M_T$ tail.
-\end{enumerate}
+\subsection{$\ell +$ jets background}
+\label{sec:ljbg-general}
 
-Steps 1-4 above are all measurements on the b-vetoed samples in data and/or MC. Steps 5 and 6 are performed on the b-tagged sample.
+The $\ell +$ jets background is dominated by 
+$t\bar{t} \to \ell $+ jets, but also includes some $W +$ jets as well as single top.
+The MC input used in the background estimation
+is the ratio of the number of events with $M_T$ in the signal region
+to the number of events with $M_T \approx 80$ GeV.
+This ratio is (possibly) corrected by a data/MC scale factor obtained
+from a study of CRs, as outlined below.
+
+Note that the ratio described above is actually different for 
+$t\bar{t}$/single top and $W +$ jets.  This is because in $W$ events
+there is a significant contribution to the $M_T$ tail from very off-shell
+$W$.
+This contribution is much smaller in top events because $M(\ell \nu)$
+cannot excees $M_{top}-M_b$.
+
+For $W +$ jets the ability of the Monte Carlo to model this ratio
+($R_{wjet}$) is tested in a sample of $\ell +$ jets enriched in 
+$W +$ jets by the application of a b-veto.
+The equivalent ratio for top events ($R_{top}$) is validated in a sample of well
+identified $Z \to \ell \ell$ with one lepton added to the \met\
+calculation.
+This sample is well suited to testing the resolution effects on 
+the $M_T$ tail, since off-shell effects are eliminated by the $Z$-mass
+requirement.
+
+Note that the fact that the ratios are different for 
+$t\bar{t}$/single top and $W +$ jets introduces a systematic
+uncertainty in the background calculation because one needs
+to know the relative fractions of these two components in 
+$M_T \approx 80$ GeV lepton $+$ jets sample.
+
+
+\subsection{Dilepton background}
+\label{sec:dil-general}
 
 To suppress dilepton backgrounds, we veto events with an isolated track of \pt $>$ 10 GeV. 
 Being the common feature for electron, muon, and one-prong
@@ -100,8 +122,9 @@ Monte Carlo studies indicate that these three components populate the $M_T$ tail
 We note that at present we do not attempt to veto 3-prong tau decays as they are only 16\% of the total dilepton background according to the MC.
 
 The high $M_T$ dilepton backgrounds come from MC, but their rate is normalized to the 
-$M_T \approx 80$ GeV peak.  In order to perform this normalization in data, the $W +$ jets
-events in the $M_T$ peak have to be subtracted off.  This introduces a systematic uncertainty.
+$M_T \approx 80$ GeV peak.  In order to perform this normalization in
+data, the non-$t\bar{t}$ (eg, $W +$ jets)
+events in the $M_T$ peak have to be subtracted off.  This also introduces a systematic uncertainty.
 
 There are two types of effects that can influence the MC dilepton prediction: physics effects 
 and instrumental effects.  We discuss these next, starting from physics.
@@ -141,6 +164,16 @@ Note that JES uncertainties are effectively ``calibrated away'' by the $N_{jet}$
 %The sample of events failing the last isolated track veto is an important control sample to 
 %check that we are doing the right thing.
 
+\subsection{Other backgrounds}
+\label{sec:other-general}
+Other backgrounds are $tW$, $ttV$, dibosons, tribosons, Drell Yan.
+These  are small.  They are taken from MC with appropriate scale
+factors
+for trigger efficiency, etc.
+
+
+\subsection{Future improvements}
+\label{sec:improvements-general}
 Finally, there are possible improvements to this basic analysis strategy that can be added in the future:
 \begin{itemize}
 \item Move from counting experiment to shape analysis.  But first, we need to get the counting

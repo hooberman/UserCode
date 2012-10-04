@@ -3,6 +3,60 @@
 
 [THIS IS WHERE THE NUMBERS TO DERIVE THE BACKGROUND ESTIMATES ARE DUMPED AND THE CALCULATION EXPLAINED]
 
+Here we give the details of how we arrive at the background prediction
+in a given signal region.  Here we concentrate on the method used
+to arrive at the central value of the background prediction.  The
+systematic
+uncertainties will be discussed in Section XX.
+
+As mentioned in Section~\ref{sec:overview}, we normalize the main
+$t\bar{t}$
+background to the $M_T$ peak.  This is actually a bit tricky because 
+we want to minimize the effect of the isolated track veto on 
+lepton $+$ jets events, which may not be terribly well reproduced.
+Thus, we define two normaliztion region in the $M_T$ peak (XX $< M_T <$ XX),
+one before and one after the application of the isolated track veto.
+
+The dominant dilepton background is normalized to the pre-veto normalization
+region.  A pre-veto scale factor ($SF_{pre}$) is defined as a common scale
+factors that needs to be applied to the $t\bar{t}$, single-top, and 
+$W +$ jets
+MC to make the data yield in the pre-veto normalization agree with
+the MC prediction (the small rare MC component is held fixed).
+Then, the dilepton background prediction is obtained by multiplying the
+dilepton BG Monte Carlo by $SF_{pre}$.
+
+The $t\bar{t}$ lepton $+$ jet BG is normalized to post-veto 
+normalization region.  A post-veto scale factor  ($SF_{post}$) 
+is defined in (almost) the same way as the pre-veto scale factor.
+The difference here is that this scale factor applies only to 
+the lepton $+$ jets components and not the dilepton component,
+since that component is already rescaled by $SF_{pre}$.  
+This procedure minimizes the reliance on the understanding of 
+the isolated track veto.
+Then the  $t\bar{t}$ lepton $+$ jet BG is obtained by taking the 
+number of MC-predicted $t\bar{t}$ lepton $+$ jets in the post-veto
+normalization region, scaling it by $SF_{post}$, multiplying 
+it by the tail-to-peak ratio $R_{top}$ of Table~\ref{tab:ttp}, and
+finally the data-MC scale factor $SFR_{top}$ from
+Table~\ref{tab:cr2yields}.
+
+The single top background is obtained in exactly the same way
+as the  $t\bar{t}$ lepton $+$ jet BG, using the same tail-to-peak
+ratio and the same data-MC scale-factor.  The $W$ background is
+done in a similar way, but using a different tail-to-peak ratio 
+($R_{wjets}$ of Table~\ref{tab:ttp}), and a different data-MC scale
+factor
+($SFR_{wjet}$ from
+Table~\ref{tab:cr1yields}).
+
+Other (small) backgrounds are taken straight from Monte Carlo, as 
+described in Section~\ref{sec:bkg_other}.
+
+
+
+
+
 \begin{table}[!h]
 \begin{center}
 \begin{tabular}{l||c|c|c|c}
