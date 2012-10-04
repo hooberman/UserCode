@@ -62,5 +62,4 @@ void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TStri
 
     delete looper;
     delete chain;
-
 }
