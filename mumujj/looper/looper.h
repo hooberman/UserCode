@@ -179,7 +179,6 @@ class looper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
-        Int_t   njetsdef_;
         Int_t   njetsplain_;
         Int_t   ngenjets_;
         Int_t   npfjets_;
