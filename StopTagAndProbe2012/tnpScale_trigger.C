@@ -370,11 +370,11 @@ TGraphAsymmErrors* getEfficiencyGraph( TChain* ch , TCut num , TCut denom , char
   float ptbin[] = {30., 40., 60. , 80. , 100. , 300.};
   int   nptbin  = 5;
 
-  //TH1F* hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nptbin,ptbin);
-  //TH1F* hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nptbin,ptbin);
+  TH1F* hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nptbin,ptbin);
+  TH1F* hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nptbin,ptbin);
 
-  TH1F* hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nbins,xmin,xmax);
-  TH1F* hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nbins,xmin,xmax);
+  // TH1F* hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nbins,xmin,xmax);
+  // TH1F* hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nbins,xmin,xmax);
 
   TCanvas *ctemp = new TCanvas();
   ctemp->cd();  
@@ -459,25 +459,31 @@ void printHisto( TChain *data , TChain *mc , TCut num , TCut denom , char* var ,
 }
 
 
-void tnpScale_trigger( bool printplot = false ) {
+void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
+
+  cout << endl;
+  cout << "-------------------" << endl;
+  if     ( leptype == 0 ) cout << "Doing electrons" << endl;
+  else if( leptype == 1 ) cout << "Doing muons"      << endl;
+  else{
+    cout << "ERROR! unrecognized leptype " << leptype << endl;
+    exit(0);
+  }
+  cout << "-------------------" << endl;
 
   //----------------------------------------
   // Files
   //----------------------------------------
 
-  char* version = (char*) "V00-00-07";
+  char* version = (char*) "V00-00-00";
 
   TChain *chdata   = new TChain("leptons");
 
   char* suffix = "";
   //char* suffix = "_2jets";
 
-  chdata->Add(Form("smurf/%s/data_SingleMu_May10%s.root"          , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_PRv4%s.root"           , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_Aug05%s.root"          , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_PRv6%s.root"           , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_B30%s.root"            , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_B34%s.root"            , version , suffix));
+  chdata->Add(Form("smurf/%s/data_SingleMu_2012A%s.root"          , version , suffix));
+  chdata->Add(Form("smurf/%s/data_SingleEl_2012A%s.root"          , version , suffix));
 
   //----------------------------------------
   // bins 
@@ -487,7 +493,7 @@ void tnpScale_trigger( bool printplot = false ) {
   // values used for stop_triggers.pptx
   //----------------------------------------------------
 
-  float ptbin[]  = {30., 40., 60. , 80. , 100. , 200. , 10000.};
+  float ptbin[]  = {30., 40., 60. , 80. , 100. , 200. , 1000.};
   float etabin[] = {0, 0.8 , 1.5 , 2.1};
 
   int nptbin=6;
@@ -533,9 +539,14 @@ void tnpScale_trigger( bool printplot = false ) {
   TCut nbl0("nbl==0");
   TCut mt30("mt<30");
   TCut eltnptrig("HLT_TNP_tag > 0 || HLT_TNPel_tag > 0");
-  TCut mutnptrig("HLT_IsoMu30_eta2p1_tag > 0");
-  TCut tag_trig("HLT_IsoMu30_eta2p1_tag > 0");
-  TCut probe_trig("HLT_IsoMu30_eta2p1_probe > 0");
+  //TCut mutnptrig("HLT_IsoMu30_eta2p1_tag > 0");
+  //TCut tag_trig("HLT_IsoMu30_eta2p1_tag > 0");
+  //TCut probe_trig("HLT_IsoMu30_eta2p1_probe > 0");
+  //TCut mutnptrig("HLT_IsoMu24_tag > 0");
+  TCut mutag_trig  ("HLT_IsoMu24_tag > 0");
+  TCut muprobe_trig("HLT_IsoMu24_probe > 0");
+  TCut eltag_trig  ("HLT_Ele27_WP80_tag > 0");
+  TCut elprobe_trig("HLT_Ele27_WP80_probe > 0");
   TCut mufo 	   = "(leptonSelection&32768)==32768";    // mu fo
   TCut muid 	   = "(leptonSelection&65536)==65536";    // mu id 
   TCut muiso 	   = "(leptonSelection&131072)==131072";  // mu iso 
@@ -547,36 +558,62 @@ void tnpScale_trigger( bool printplot = false ) {
   TCut drprobe     = "drprobe<0.05";                      // dR(probe,pfcandidate)
 
 
-  TCut mutnpcut;
+  TCut tnpcut;
 
+  //----------------------
   // event selection
-  mutnpcut += zmass;
-  mutnpcut += os;
-  mutnpcut += mutnp;
-  mutnpcut += met30;
-  mutnpcut += nbl0;
-  //mutnpcut += njets2;
+  //----------------------
 
+  tnpcut += zmass;
+  tnpcut += os;
+  if( leptype == 0 ) tnpcut += eltnp;
+  if( leptype == 1 ) tnpcut += mutnp;
+  //tnpcut += met30;
+  //tnpcut += nbl0;
+  //tnpcut += njets2;
+
+  //----------------------
   // tag selection
-  mutnpcut += tag_trig;
-  mutnpcut += tag_pt30;
-  mutnpcut += tag_eta21;
+  //----------------------
 
+  if( leptype == 0 ) tnpcut += eltag_trig;
+  if( leptype == 1 ) tnpcut += mutag_trig;
+  tnpcut += tag_pt30;
+  tnpcut += tag_eta21;
+
+  //----------------------
   // probe selection
-  mutnpcut += probe_pt20;
-  mutnpcut += probe_eta21;
-  mutnpcut += muid;
-  mutnpcut += muiso;
+  //----------------------
 
-  cout << "Selection            : " << mutnpcut.GetTitle() << endl;
-  cout << "Total data yield 	: " << chdata->GetEntries(mutnpcut) << endl;
+  tnpcut += probe_pt20;
+  tnpcut += probe_eta21;
+  if( leptype == 0 ){
+    tnpcut += elid;
+    tnpcut += eliso;
+  }
+  if( leptype == 1 ){
+    tnpcut += muid;
+    tnpcut += muiso;
+  }
+
+  TCut probe_trig;
+  if( leptype == 0 ) probe_trig = elprobe_trig;
+  if( leptype == 1 ) probe_trig = muprobe_trig;
+
+  cout << endl;
+  cout << "----------------------------------------------------------" << endl;
+  cout << " Selection            : " << tnpcut.GetTitle()              << endl;
+  cout << " Probe trigger        : " << probe_trig.GetTitle()          << endl;
+  cout << " Total data yield 	 : " << chdata->GetEntries(tnpcut)     << endl;
+  cout << "----------------------------------------------------------" << endl;
+  cout << endl;
 
   //---------------------------------------------
   // make efficiency table
   //---------------------------------------------
 
-  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_deno" , TCut(mutnpcut)            );
-  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_num"  , TCut(mutnpcut+probe_trig) );	
+  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_deno" , TCut(tnpcut)            );
+  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_num"  , TCut(tnpcut+probe_trig) );	
 
   hdataid_eff->Divide(hdataid_num,hdataid_deno,1,1,"B");
 
@@ -588,11 +625,12 @@ void tnpScale_trigger( bool printplot = false ) {
   printline(hdataid_eff);
   
 
-  // TGraphAsymmErrors* gr   = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+probept) , "probe->eta()" , 42 , -2.1 , 2.1 , "probe eta","trigger efficiency");
+  TGraphAsymmErrors* gr   = getEfficiencyGraph( chdata , probe_trig , tnpcut , "probe->pt()" , 20 , 0 , 200 , "probe p_{T} [GeV]","trigger efficiency");
+  //TGraphAsymmErrors* gr   = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+probept) , "probe->eta()" , 42 , -2.1 , 2.1 , "probe eta","trigger efficiency");
 
-  // TCanvas *can = new TCanvas();
-  // can->cd();
-  // gr->Draw("AP");
+  TCanvas *can = new TCanvas();
+  can->cd();
+  gr->Draw("AP");
 
   /*
   //---------------------------------------------
