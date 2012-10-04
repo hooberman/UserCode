@@ -61,7 +61,7 @@ EOF
 #
 
 #tar -chzf ${LOOPER} files/ *.so processData.exe
-tar -chzf ${LOOPER} files/ jetCorrections/ vtxreweight_Summer12MC_PUS10_9p7fb_Zselection.root *.so processData.exe
+tar -chzf ${LOOPER} files/ jetCorrections/ vtxreweight_Summer12MC_PUS10_9p7fb_Zselection.root Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt *.so processData.exe
 
 #
 # This is the wrapper that will run
@@ -95,6 +95,6 @@ echo "[wrapper] File        = " \${File}
 
 # outfile must be in working directory
 # if not already
-mv smurf/V00-00-00/${OUTFILE} ${OUTFILE}
+mv smurf/${OUTFILE} ${OUTFILE}
 EOF
 chmod +x ${WRAPPER}
