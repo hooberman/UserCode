@@ -315,7 +315,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   unsigned int nEventsTotal = 0;
 
   // make smurf ntuples
-  gSystem->MakeDirectory("smurf");
+  gSystem->MakeDirectory("smurf/V00-00-00");
   TFile* fSmurf = TFile::Open(Form("smurf/V00-00-00/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
   assert(fSmurf);
   LeptonTree leptonTree;
@@ -342,35 +342,35 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   // muid_    = 0;
   // muiso_   = 0;
 
-  leptonTree.tree_->Branch("HLT_Ele27_WP80_tag"	       	         	, &HLT_Ele27_WP80_tag_		        	,"HLT_Ele27_WP80_tag/i");
-  leptonTree.tree_->Branch("HLT_Ele27_WP80_probe"    		        , &HLT_Ele27_WP80_probe_		        ,"HLT_Ele27_WP80_probe/i");
+  leptonTree.tree_->Branch("HLT_Ele27_WP80_tag"	       , &HLT_Ele27_WP80_tag_		        	,"HLT_Ele27_WP80_tag/i");
+  leptonTree.tree_->Branch("HLT_Ele27_WP80_probe"      , &HLT_Ele27_WP80_probe_		        ,"HLT_Ele27_WP80_probe/i");
 
-  leptonTree.tree_->Branch("HLT_IsoMu24_tag"	        		, &HLT_IsoMu24_tag_			        ,"HLT_IsoMu24_tag/i");
-  leptonTree.tree_->Branch("HLT_IsoMu24_probe"  			, &HLT_IsoMu24_probe_		                ,"HLT_IsoMu24_probe/i");
+  leptonTree.tree_->Branch("HLT_IsoMu24_tag"	       , &HLT_IsoMu24_tag_			        ,"HLT_IsoMu24_tag/i");
+  leptonTree.tree_->Branch("HLT_IsoMu24_probe"         , &HLT_IsoMu24_probe_		                ,"HLT_IsoMu24_probe/i");
 
-  leptonTree.tree_->Branch("vtxweight"                 			, &vtxweight_	                 	        ,"vtxweight/F");
-  leptonTree.tree_->Branch("drprobe"                 			, &drprobe_	                 	        ,"drprobe/F");
-  leptonTree.tree_->Branch("tkisoold"                 			, &tkiso_old_	                 	        ,"tkisoold/F");
-  leptonTree.tree_->Branch("tkisonew"                 			, &tkiso_new_	                 	        ,"tkisonew/F");
-  leptonTree.tree_->Branch("tkisonewnoveto"                 		, &tkiso_new_noveto_	          	        ,"tkisonewnoveto/F");
-  leptonTree.tree_->Branch("tkisonewpt1"                 		, &tkiso_new_pt1_	            	        ,"tkisonewpt1/F");
-  leptonTree.tree_->Branch("tkisonewpt2"                 		, &tkiso_new_pt2_	            	        ,"tkisonewpt2/F");
-  leptonTree.tree_->Branch("tkisonewpt3"                 		, &tkiso_new_pt3_	            	        ,"tkisonewpt3/F");
-  leptonTree.tree_->Branch("tkisonewpt4"                 		, &tkiso_new_pt4_	            	        ,"tkisonewpt4/F");
-  leptonTree.tree_->Branch("tkisonewpt5"                 		, &tkiso_new_pt5_	            	        ,"tkisonewpt5/F");
-  leptonTree.tree_->Branch("isoch"                          		, &isoch_	                	        ,"isoch/F");
+  leptonTree.tree_->Branch("vtxweight"                 , &vtxweight_	                 	        ,"vtxweight/F");
+  leptonTree.tree_->Branch("drprobe"                   , &drprobe_	                 	        ,"drprobe/F");
+  leptonTree.tree_->Branch("tkisoold"                  , &tkiso_old_	                 	        ,"tkisoold/F");
+  leptonTree.tree_->Branch("tkisonew"                  , &tkiso_new_	                 	        ,"tkisonew/F");
+  leptonTree.tree_->Branch("tkisonewnoveto"            , &tkiso_new_noveto_	          	        ,"tkisonewnoveto/F");
+  leptonTree.tree_->Branch("tkisonewpt1"               , &tkiso_new_pt1_	            	        ,"tkisonewpt1/F");
+  leptonTree.tree_->Branch("tkisonewpt2"               , &tkiso_new_pt2_	            	        ,"tkisonewpt2/F");
+  leptonTree.tree_->Branch("tkisonewpt3"               , &tkiso_new_pt3_	            	        ,"tkisonewpt3/F");
+  leptonTree.tree_->Branch("tkisonewpt4"               , &tkiso_new_pt4_	            	        ,"tkisonewpt4/F");
+  leptonTree.tree_->Branch("tkisonewpt5"               , &tkiso_new_pt5_	            	        ,"tkisonewpt5/F");
+  leptonTree.tree_->Branch("isoch"                     , &isoch_	                	        ,"isoch/F");
 
-  leptonTree.tree_->Branch("nbl"                          		, &nbl_	            	                        ,"nbl/I");
-  leptonTree.tree_->Branch("nbm"                          		, &nbm_	            	                        ,"nbm/I");
+  leptonTree.tree_->Branch("nbl"                       , &nbl_	            	                        ,"nbl/I");
+  leptonTree.tree_->Branch("nbm"                       , &nbm_	            	                        ,"nbm/I");
 
-  leptonTree.tree_->Branch("tagiso"                          		, &tagiso_	            	                ,"tagiso/F");
-  leptonTree.tree_->Branch("probeiso"                          		, &probeiso_	            	                ,"probeiso/F");
+  leptonTree.tree_->Branch("tagiso"                    , &tagiso_	            	                ,"tagiso/F");
+  leptonTree.tree_->Branch("probeiso"                  , &probeiso_	            	                ,"probeiso/F");
 
-  // leptonTree.tree_->Branch("leptype"                          	, &leptype_	                    	        ,"leptype/I");
-  // leptonTree.tree_->Branch("elid"                          		, &elid_	            	                ,"elid/I");
-  // leptonTree.tree_->Branch("eliso"                          		, &eliso_	            	                ,"eliso/I");
-  // leptonTree.tree_->Branch("muid"                          		, &muid_	            	                ,"muid/I");
-  // leptonTree.tree_->Branch("muiso"                          		, &muiso_	            	                ,"muiso/I");
+  // leptonTree.tree_->Branch("leptype"                , &leptype_	                    	        ,"leptype/I");
+  // leptonTree.tree_->Branch("elid"                   , &elid_	            	                ,"elid/I");
+  // leptonTree.tree_->Branch("eliso"                  , &eliso_	            	                ,"eliso/I");
+  // leptonTree.tree_->Branch("muid"                   , &muid_	            	                ,"muid/I");
+  // leptonTree.tree_->Branch("muiso"                  , &muiso_	            	                ,"muiso/I");
 
   std::map<unsigned int, std::set<unsigned int> > runList;
 
@@ -722,8 +722,8 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
 
       leptonTree.tagAndProbeMass_ = (cms2.els_p4()[probe] + cms2.els_p4()[tag]).M();
            
-      HLT_Ele27_WP80_tag_	  = cms2.els_HLT_Ele27_WP80()[tag];
-      HLT_Ele27_WP80_probe_       = cms2.els_HLT_Ele27_WP80()[probe];
+      HLT_Ele27_WP80_tag_	  = isData ? cms2.els_HLT_Ele27_WP80()[tag]   : 1;
+      HLT_Ele27_WP80_probe_       = isData ? cms2.els_HLT_Ele27_WP80()[probe] : 1;
 
       probeiso_                   = electronIsoValuePF2012_FastJetEffArea_v2( probe , 0.3 , 0 );
       tagiso_                     = electronIsoValuePF2012_FastJetEffArea_v2( tag   , 0.3 , 0 );

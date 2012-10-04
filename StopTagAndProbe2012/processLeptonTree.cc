@@ -48,6 +48,7 @@ void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TStri
 
     TChain *chain = new TChain("Events");
     chain->Add(file);
+    std::cout << "Entries in chain: " << chain->GetEntries() << std::endl;
 
     //
     // loop
