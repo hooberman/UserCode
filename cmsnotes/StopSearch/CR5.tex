@@ -39,19 +39,20 @@ is quite good.  Quantitatively, this is also shown in Table~\ref{tab:cr5yields}.
 
 \begin{table}[!h]
 \begin{center}
-\begin{tabular}{l||c|c|c|c}
+{\footnotesize
+\begin{tabular}{l||c||c|c|c|c|c}
 \hline
-Sample              & CR5A & CR5B & CR5C & CR5D \\
-\hline
-\hline
-Muon pre-veto \mt-SF      & $0.98 \pm 0.02$ & $0.95 \pm 0.04$ & $0.99 \pm 0.08$ & $0.89 \pm 0.15$ \\
-Muon post-veto \mt-SF     & $1.28 \pm 0.07$ & $1.20 \pm 0.13$ & $1.22 \pm 0.24$ & $1.25 \pm 0.43$ \\
+Sample              & CR5PRESEL & CR5A & CR5B & CR5C & CR5D & CR5E\\
 \hline
 \hline
-Electron pre-veto \mt-SF          & $0.83 \pm 0.02$ & $0.75 \pm 0.04$ & $0.64 \pm 0.07$ & $0.63 \pm 0.12$ \\
-Electron post-veto \mt-SF         & $1.10 \pm 0.08$ & $1.02 \pm 0.11$ & $0.89 \pm 0.19$ & $1.27 \pm 0.41$ \\
+Muon pre-veto \mt-SF 	  & $0.93 \pm 0.01$ & $0.91 \pm 0.01$ & $0.86 \pm 0.02$ & $0.84 \pm 0.04$ & $0.87 \pm 0.07$ & $0.91 \pm 0.11$ \\
+Muon post-veto \mt-SF 	  & $1.12 \pm 0.03$ & $1.05 \pm 0.05$ & $0.97 \pm 0.10$ & $0.85 \pm 0.17$ & $0.74 \pm 0.27$ & $0.84 \pm 0.48$ \\
 \hline
-\end{tabular}
+\hline
+Electron pre-veto \mt-SF 	  & $0.97 \pm 0.01$ & $0.91 \pm 0.02$ & $0.88 \pm 0.03$ & $0.86 \pm 0.05$ & $0.71 \pm 0.07$ & $0.65 \pm 0.11$ \\
+Electron post-veto \mt-SF 	  & $1.13 \pm 0.04$ & $1.04 \pm 0.06$ & $1.03 \pm 0.12$ & $0.96 \pm 0.22$ & $1.49 \pm 0.44$ & $1.25 \pm 0.67$ \\
+\hline
+\end{tabular}}
 \caption{ \mt\ peak Data/MC scale factors. The pre-veto SFs are applied to the
   \ttdl\ sample, while the post-veto SFs are applied to the single
   lepton samples. The raw MC is used for backgrounds from rare processes.
@@ -63,23 +64,24 @@ Electron post-veto \mt-SF         & $1.10 \pm 0.08$ & $1.02 \pm 0.11$ & $0.89 \p
 
 \begin{table}[!h]
 \begin{center}
-\begin{tabular}{l||c|c|c|c}
+{\footnotesize
+\begin{tabular}{l||c||c|c|c|c|c}
 \hline
-Sample              & CR5A & CR5B & CR5C & CR5D \\
-\hline
-\hline
-Muon MC                   & $293 \pm 9$ & $161 \pm 7$ & $51 \pm 4$ & $16 \pm 2$ \\
-Muon Data                 & $315$ & $165$ & $62$ & $13$ \\
-\hline
-Muon Data/MC SF           & $1.07 \pm 0.07$ & $1.03 \pm 0.09$ & $1.21 \pm 0.18$ & $0.82 \pm 0.25$ \\
+Sample              & CR5PRESEL & CR5A & CR5B & CR5C & CR5D & CR5E\\
 \hline
 \hline
-Electron MC               & $253 \pm 8$ & $126 \pm 5$ & $37 \pm 3$ & $12 \pm 2$ \\
-Electron Data             & $286$ & $135$ & $39$ & $15$ \\
+Muon MC 		  & $493 \pm 8$ & $302 \pm 6$ & $158 \pm 4$ & $52 \pm 2$ & $19 \pm 1$ & $8 \pm 1$ \\
+Muon Data 		  & $514$ & $311$ & $167$ & $57$ & $12$ & $4$ \\
 \hline
-Electron Data/MC SF       & $1.13 \pm 0.08$ & $1.07 \pm 0.10$ & $1.07 \pm 0.19$ & $1.21 \pm 0.35$ \\
+Muon Data/MC SF 	  & $1.04 \pm 0.05$ & $1.03 \pm 0.06$ & $1.06 \pm 0.09$ & $1.10 \pm 0.15$ & $0.63 \pm 0.19$ & $0.52 \pm 0.27$ \\
 \hline
-\end{tabular}
+\hline
+Electron MC 		  & $404 \pm 7$ & $239 \pm 5$ & $127 \pm 4$ & $42 \pm 2$ & $15 \pm 1$ & $7 \pm 1$ \\
+Electron Data 		  & $427$ & $248$ & $120$ & $38$ & $14$ & $4$ \\
+\hline
+Electron Data/MC SF 	  & $1.06 \pm 0.05$ & $1.04 \pm 0.07$ & $0.94 \pm 0.09$ & $0.91 \pm 0.16$ & $0.96 \pm 0.27$ & $0.60 \pm 0.31$ \\
+\hline
+\end{tabular}}
 \caption{ Yields in \mt\ tail comparing the MC prediction (after
   applying SFs) to data. The uncertainties are statistical only.
 \label{tab:cr5yields}}
@@ -103,17 +105,19 @@ Electron Data/MC SF       & $1.13 \pm 0.08$ & $1.07 \pm 0.10$ & $1.07 \pm 0.19$ 
 
 \begin{figure}[hbt]
   \begin{center}
+        \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met50_leadmuo_nj4.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met50_leadele_nj4.pdf}
         \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met150_leadmuo_nj4.pdf}%
         \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met150_leadele_nj4.pdf}
         \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met200_leadmuo_nj4.pdf}%
         \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met200_leadele_nj4.pdf}
-        \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met250_leadmuo_nj4.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met250_leadele_nj4.pdf}
+%        \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met250_leadmuo_nj4.pdf}%
+%        \includegraphics[width=0.5\linewidth]{plots/CR5plots/mt_met250_leadele_nj4.pdf}
     \caption{
       Comparison of the \mt\ distribution in data vs. MC for events
       with a leading muon (left) and leading electron (right)
       satisfying the requirements of CR5. The \met\ requirements used are
-      150 GeV (top), 200 GeV (middle) and 250 GeV (bottom).
+      50 GeV (top), 150 GeV (middle) and 200 GeV (bottom).
 \label{fig:cr5mtrest} 
 }  
       \end{center}

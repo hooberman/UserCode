@@ -7,7 +7,8 @@ All of these different regions are defined in this section.
 
 [UPDATE SELECTION]
 
-The single lepton preselection sample is based on the following criteria
+The single lepton preselection sample is based on the following criteria, starting from the requirements described 
+on \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSYstop#SINGLE_LEPTON_CHANNEL}
 \begin{itemize}
 \item satisfy the trigger requirement (see
   Table.~\ref{tab:DatasetsData}). 
@@ -15,10 +16,12 @@ Note that the analysis triggers are inclusive single lepton triggers.
 Dilepton triggers are used only for the dilepton control region.
 \item select events with one high \pt\ electron or muon, requiring
   \begin{itemize}
-  \item $\pt>30~\GeVc$ and $|\eta|<2.1$
-  \item satisfy the identification and isolation requirements detailed
-    in the same-sign SUSY analysis (SUS-11-010) for electrons and the opposite-sign 
-    SUSY analysis (SUS-11-011) for muons
+  \item $\pt>30~\GeVc$  and $|\eta|<1.4442 (2.4)$ for electrons (muons)
+  \item muon ID criteria is based on the 2012 POG recommended tight working point
+  \item electron ID critera is based on the 2012 POG recommended medium working point
+  \item PF-based isolation ($\Delta R < 0.3$, $\Delta\beta$ corrected) relative  $<$ 0.15 and absolute $<$ 5~GeV
+  \item $|\pt(\rm{PF}_{lep}) - \pt(\rm{RECO}_{lep})| < 10~\GeV$
+  \item $E/p_{in} < 4$ (electrons only)
   \end{itemize} 
   \item require at least 4 PF jets in the event with $\pt>30~\GeV$
     within $|\eta|<2.5$ out of which at least 1 satisfies the CSV
@@ -80,17 +83,17 @@ higher M(\sctop).
 
 \begin{table}[!h]
 \begin{center}
-\begin{tabular}{l||c|c|c|c}
+\begin{tabular}{l||c|c|c|c|c}
 \hline
-Sample              & SRA & SRB & SRC & SRD \\
+Sample              & SRA & SRB & SRC & SRD & SRE\\
 \hline
 \hline
-\ttdl\ 		 & $700 \pm 15$& $408 \pm 12$& $134 \pm 7$& $43 \pm 4$ \\
-\ttsl\ \& single top (1\Lep) 		 & $111 \pm 6$& $71 \pm 5$& $15 \pm 2$& $4 \pm 1$ \\
-\wjets\ 		 & $58 \pm 35$& $57 \pm 35$& $29 \pm 26$& $26 \pm 26$ \\
-Rare 		 & $63 \pm 3$& $40 \pm 3$& $17 \pm 2$& $7 \pm 1$ \\
+\ttdl\ 		 & $672 \pm 9$& $400 \pm 7$& $139 \pm 4$& $48 \pm 2$& $18 \pm 2$ \\
+\ttsl\ \& single top (1\Lep) 		 & $103 \pm 4$& $73 \pm 3$& $16 \pm 2$& $7 \pm 1$& $2 \pm 1$ \\
+\wjets\ 		 & $32 \pm 3$& $17 \pm 2$& $6 \pm 1$& $4 \pm 1$& $1 \pm 0$ \\
+Rare 		 & $64 \pm 4$& $42 \pm 3$& $18 \pm 2$& $9 \pm 1$& $4 \pm 1$ \\
 \hline
-Total 		 & $932 \pm 39$& $576 \pm 38$& $195 \pm 27$& $80 \pm 26$ \\
+Total 		 & $872 \pm 11$& $532 \pm 8$& $179 \pm 5$& $67 \pm 3$& $25 \pm 2$ \\
 \hline
 \end{tabular}
 \caption{ Expected SM background contributions, including both muon
