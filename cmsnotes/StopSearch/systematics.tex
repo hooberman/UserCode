@@ -1,10 +1,94 @@
 %\section{Systematics Uncertainties on the Background Prediction}
 %\label{sec:systematics}
 
-[ADD INTRODUCTORY BLURB ON UNCERTAINTIES \\
-ADD COMPARISONS OF ALL THE ALTERNATIVE SAMPLES FOR ALL THE SIGNAL
-REGIONS \\
-LIST ALL THE UNCERTAINTIES INCLUDED AND THEIR VALUES]
+[DESCRIBE HERE ONE BY ONE THE UNCERTAINTIES THAT ARE PRESENT IN THE SPREADSHHET
+FROM WHICH WE CALCULATE THE TOTAL UNCERTAINTY. WE KNOW HOW TO DO THIS
+AND
+WE HAVE THE TECHNOLOGY FROM THE 7 TEV ANALYSIS TO PROPAGATE ALL
+UNCERTAINTIES
+CORRECTLY THROUGH.  WE WILL DO IT ONCE WE HAVE SETTLED ON THE
+INDIVIDUAL PIECES WHICH ARE STILL IN FLUX]
+
+In this Section we discuss the systematic uncertainty on the BG
+prediction.  This prediction is assembled from the event
+counts in the peak region of the transverse mass distribution as
+well as Monte Carlo 
+with a number of correction factors, as described previously.
+The
+final uncertainty on the prediction is built up from the uncertainties in these
+individual 
+components. 
+The calculation is done for each signal
+region,
+for electrons and muons separately.
+
+The choice to normalizing to the peak region of $M_T$ has the
+advantage that some uncertainties, e.g., luminosity, cancel.
+It does however introduce complications because it couples
+some of the uncertainties in non-trivial ways.  For example, 
+the primary effect of an uncertainty on the rare MC cross-section
+is to introduce an uncertainty in the rare MC background estimate
+which comes entirely from MC.   But this uncertainty also affects,
+for example,
+the $t\bar{t} \to$ dilepton BG estimate because it changes the 
+$t\bar{t}$ normalization to the peak region (because some of the 
+events in the peak region are from rare processes).  These effects
+are carefully accounted for.  The contribution to the overall
+uncertainty from each BG source is tabulated in
+Section~\ref{sec:bgunc-bottomline}.
+First, however, we discuss the uncertainties one-by-one and we comment 
+on their impact on the overall result, at least to first order.
+Second order effects, such as the one described, are also included.
+
+\subsection{Statistical uncertainties on the event counts in the $M_T$
+peak regions}
+These vary between XX and XX \%, depending on the signal region
+(different
+signal regions have different \met\ requirements, thus they also have
+different $M_T$ regions used as control.
+Since 
+the major BG, eg, $t\bar{t}$ are normalized to the peak regions, this 
+fractional uncertainty is pretty much carried through all the way to
+the end.  There is also an uncertainty from the finite MC event counts
+in the $M_T$ peak regions.  This is also included, but it is smaller.
+
+\subsection{Uncertainty from the choice of $M_T$ peak region}
+IN 7 TEV DATA WE HAD SOME SHAPE DIFFERENCES IN THE MTRANS REGION THAT 
+LED US TO CONSERVATIVELY INCLUDE THIS UNCERTAINTY.  WE NEED TO LOOK
+INTO THIS AGAIN
+
+\subsection{Uncertainty on the Wjets cross-section and the rare MC cross-sections}
+These are taken as 50\%, uncorrelated.  
+The primary effect is to introduce a 50\%
+uncertainty
+on the $W +$ jets and rare BG 
+background predictions, respectively.  However they also
+have an effect on the other BGs via the $M_T$ peak normalization
+in a way that tends to reduce the uncertainty.  This is easy
+to understand: if the $W$ cross-section is increased by 50\%, then
+the $W$ background goes up.  But the number of $M_T$ peak events 
+attributed to $t\bar{t}$ goes down, and since the $t\bar{t}$ BG is
+scaled to the number of $t\bar{t}$ events in the peak, the $t\bar{t}$ 
+BG goes down.  
+
+\subsection{Scale factors for the tail-to-peak ratios for lepton +
+  jets top and W events}
+These tail-to-peak ratios are described in Section~\ref{sec:ttp}.
+They are studied in CR1 and CR2.  The studies are described
+in Sections~\ref{sec:cr1} and~\ref{sec:cr2}), respectively, where 
+we also give the uncertainty on the scale factors.
+
+\subsection{Uncertainty on extra jet radiation for dilepton
+  background}
+As discussed in Section~\ref{sec:jetmultiplicity}, the 
+jet distribution in
+$t\bar{t} \to$
+dilepton MC is rescaled by the factors $K_3$ and $K_4$ to make 
+it agree with the data.  The XX\% uncertainties on $K_3$ and $K_4$
+comes from data/MC statistics.  This  
+result directly in a XX\% uncertainty on the dilepton BG, which is by far 
+the most important one.
+
 
 \subsection{Uncertainty on the \ttll\ Acceptance}
 
@@ -64,7 +148,7 @@ The variations considered are
       \end{center}
     \end{figure}
 
-
+\clearpage
 
 %
 %
@@ -200,8 +284,17 @@ The variations considered are
 %\end{center}
 %\end{table}
 
+\subsection{Uncertainty from the isolated track veto}
+This is the uncertainty associated with how well the isolated track
+veto performance is modeled by the Monte Carlo.  This uncertainty
+only applies to the fraction of dilepton BG events that have 
+a second e/$\mu$ or a one prong $\tau \to h$, with 
+$P_T > 10$ GeV in $|\eta| < 2.4$.  This fraction is 1/3 (THIS WAS THE
+7 TEV NUMBER, CHECK).  The uncertainty for these events
+is XX\% and is obtained from Tag and Probe studies of Section~\ref{sec:trkveto}
 
-\subsection{Isolated Track Veto: Tag and Probe Studies}
+\subsubsection{Isolated Track Veto: Tag and Probe Studies}
+\label{sec:trkveto}
 
 [EVERYTHING IS 7TEV HERE, UPDATE WITH NEW RESULTS \\
 ADD TABLE WITH FRACTION OF EVENTS THAT HAVE A TRUE ISOLATED TRACK]
@@ -483,3 +576,7 @@ Why not measure $\epsilon_{fake}$ in the b-veto region?}
 %      \end{center}
 %\end{figure}
 
+\subsection{Summary of uncertainties}
+\label{sec:bgunc-bottomline}.
+
+THIS NEEDS TO BE WRITTEN
