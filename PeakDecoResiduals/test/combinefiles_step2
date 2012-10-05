@@ -1,7 +1,0 @@
-#!/bin/csh -f
-
-export mypath=$1
-echo "Combining files at" $mypath
-
-
-hadd -f ${mypath}/res/merged.root ${mypath}/res/merged_*.root > ${mypath}/res/log.txt 2>&1 &
