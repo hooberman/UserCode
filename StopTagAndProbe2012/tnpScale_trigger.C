@@ -367,14 +367,24 @@ TGraphAsymmErrors* getEfficiencyGraph( TChain* ch , TCut num , TCut denom , char
 
   //float ptbin[] = {10., 15., 20., 30., 40., 50., 7000.};
   //float ptbin[] = { 20.0 , 30.0 , 40.0 , 50.0 , 60.0 , 70.0 , 80.0 , 100.0 , 150.0 , 200.0 , 300.0 };
-  float ptbin[] = {30., 40., 60. , 80. , 100. , 300.};
-  int   nptbin  = 5;
 
-  TH1F* hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nptbin,ptbin);
-  TH1F* hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nptbin,ptbin);
+  //float ptbin[] = {30., 40., 60. , 80. , 100. , 300.};
+  //int   nptbin  = 5;
 
-  // TH1F* hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nbins,xmin,xmax);
-  // TH1F* hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nbins,xmin,xmax);
+  float ptbin[]  = {20., 22., 24., 26., 28., 30., 32., 34., 36., 38., 40., 50., 60. , 80. , 100. , 150., 200. , 300.};
+  int   nptbin  = 17;
+
+  TH1F* hpass;
+  TH1F* hall;
+
+  if( nbins < 0 ){
+    hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nptbin,ptbin);
+    hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nptbin,ptbin);
+  }
+  else{
+    hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nbins,xmin,xmax);
+    hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nbins,xmin,xmax);
+  }
 
   TCanvas *ctemp = new TCanvas();
   ctemp->cd();  
@@ -392,7 +402,6 @@ TGraphAsymmErrors* getEfficiencyGraph( TChain* ch , TCut num , TCut denom , char
   // hpass->SetLineColor(2);
   // hpass->Draw("samehist");
   
-
   TGraphAsymmErrors *gr = new TGraphAsymmErrors();
   gr->BayesDivide(hpass,hall);
 
@@ -482,8 +491,19 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
   char* suffix = "";
   //char* suffix = "_2jets";
 
-  chdata->Add(Form("smurf/%s/data_SingleMu_2012A%s.root"          , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleEl_2012A%s.root"          , version , suffix));
+  //chdata->Add(Form("smurf/%s/data_SingleMu_2012A%s.root"          , version , suffix));
+  //chdata->Add(Form("smurf/%s/data_SingleEl_2012A%s.root"          , version , suffix));
+
+  if( leptype == 1 ){
+    chdata->Add("smurf/SingleMu2012A_V00-00-01/merged.root");
+    chdata->Add("smurf/SingleMu2012B_V00-00-01/merged.root");
+    chdata->Add("smurf/SingleMu2012C_V00-00-01/merged.root");
+  }
+  else{
+    chdata->Add("smurf/SingleEl2012A_V00-00-01/merged.root");
+    chdata->Add("smurf/SingleEl2012B_V00-00-01/merged.root");
+    chdata->Add("smurf/SingleEl2012C_V00-00-01/merged.root");
+  }
 
   //----------------------------------------
   // bins 
@@ -493,11 +513,20 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
   // values used for stop_triggers.pptx
   //----------------------------------------------------
 
-  float ptbin[]  = {30., 40., 60. , 80. , 100. , 200. , 1000.};
-  float etabin[] = {0, 0.8 , 1.5 , 2.1};
+  // float ptbin[]  = {30., 40., 60. , 80. , 100. , 200. , 1000.};
+  // float etabin[] = {0, 0.8 , 1.5 , 2.1};
 
-  int nptbin=6;
-  int netabin=3;
+  // int nptbin=6;
+  // int netabin=3;
+
+  float ptbin[]  = {20., 22., 24., 26., 28., 30., 32., 34., 36., 38., 40., 50., 60. , 80. , 100. , 150. , 200. , 10000.};
+  int   nptbin=17;
+
+  // float etabin[] = {0, 0.8 , 1.5 , 2.1};
+  // int   netabin=3;
+
+  float etabin[] = {0, 1.5 , 2.1};
+  int   netabin=2;
 
   //----------------------------------------------------
   // values used for stop trigger efficiency weights
@@ -527,6 +556,7 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
   TCut os("qProbe*qTag<0");
   TCut tag_eta21("abs(tag->eta())<2.1");
   TCut probe_eta21("abs(probe->eta())<2.1");
+  TCut probe_eta24("abs(probe->eta())<2.4");
   TCut tag_eta25("abs(tag->eta())<2.5");
   TCut njets1("njets>=1");
   TCut njets2("njets>=2");
@@ -538,7 +568,7 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
   TCut nbm0("nbm==0");
   TCut nbl0("nbl==0");
   TCut mt30("mt<30");
-  TCut eltnptrig("HLT_TNP_tag > 0 || HLT_TNPel_tag > 0");
+  //TCut eltnptrig("HLT_TNP_tag > 0 || HLT_TNPel_tag > 0");
   //TCut mutnptrig("HLT_IsoMu30_eta2p1_tag > 0");
   //TCut tag_trig("HLT_IsoMu30_eta2p1_tag > 0");
   //TCut probe_trig("HLT_IsoMu30_eta2p1_probe > 0");
@@ -623,81 +653,102 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
   printline(hdataid_num);
   cout << endl << "Efficiency" << endl;
   printline(hdataid_eff);
-  
 
-  TGraphAsymmErrors* gr   = getEfficiencyGraph( chdata , probe_trig , tnpcut , "probe->pt()" , 20 , 0 , 200 , "probe p_{T} [GeV]","trigger efficiency");
-  //TGraphAsymmErrors* gr   = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+probept) , "probe->eta()" , 42 , -2.1 , 2.1 , "probe eta","trigger efficiency");
 
-  TCanvas *can = new TCanvas();
-  can->cd();
-  gr->Draw("AP");
+  TGraphAsymmErrors* grpt   = getEfficiencyGraph( chdata , probe_trig , tnpcut , "probe->pt()" , -1 , 0 , 300 , "probe p_{T} [GeV]","trigger efficiency");
+  TGraphAsymmErrors* greta   = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+probept) , "probe->eta()" , 42 , -2.1 , 2.1 , "probe eta","trigger efficiency");
 
-  /*
+  TCanvas *can = new TCanvas("can","can",1200,600);
+  can->Divide(2,1);
+
+  can->cd(1);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  grpt->SetMinimum(0);
+  grpt->SetMaximum(1);
+  grpt->Draw("AP");
+
+  can->cd(2);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  greta->SetMinimum(0.6);
+  greta->SetMaximum(1);
+  greta->Draw("AP");
+
+
   //---------------------------------------------
   // make efficiency plots
   //---------------------------------------------
 
+  //muon: 3 bins
   // TCut bin1("abs(probe->eta()) < 0.8");                             char* label1 = "|#eta| < 0.8";
   // TCut bin2("abs(probe->eta()) > 0.8 && abs(probe->eta())<1.5");    char* label2 = "|#eta| 0.8-1.5";
   // TCut bin3("abs(probe->eta()) > 1.5 && abs(probe->eta())<2.1");    char* label3 = "|#eta| 1.5-2.1";
+
+  //electons: 2 bins
+  TCut bin1("abs(probe->eta()) < 1.5");                             char* label1 = "|#eta| < 1.5";
+  TCut bin2("abs(probe->eta()) > 1.5 && abs(probe->eta())<2.1");    char* label2 = "|#eta| 1.5-2.1";
+
   // TCut bin4("abs(probe->eta()) > 2.1 && abs(probe->eta())<2.4");    char* label4 = "|#eta| > 2.4";
+  // TCut bin1("njets == 0");   char* label1 = "n_{jets}=0";
+  // TCut bin2("njets == 1");   char* label2 = "n_{jets}=1";
+  // TCut bin3("njets == 2");   char* label3 = "n_{jets}=2";
+  // TCut bin4("njets == 3");   char* label4 = "n_{jets}=3";
+  // TCut bin5("njets >= 4");   char* label5 = "n_{jets}#geq4";
 
-  TCut bin1("njets == 0");   char* label1 = "n_{jets}=0";
-  TCut bin2("njets == 1");   char* label2 = "n_{jets}=1";
-  TCut bin3("njets == 2");   char* label3 = "n_{jets}=2";
-  TCut bin4("njets == 3");   char* label4 = "n_{jets}=3";
-  TCut bin5("njets >= 4");   char* label5 = "n_{jets}#geq4";
-
-  //TGraphAsymmErrors* gr   = getEfficiencyGraph( chdata , probe_trig , mutnpcut               , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
-  TGraphAsymmErrors* gr1  = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+bin1) , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
-  TGraphAsymmErrors* gr2  = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+bin2) , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
-  TGraphAsymmErrors* gr3  = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+bin3) , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
-  TGraphAsymmErrors* gr4  = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+bin4) , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
-  TGraphAsymmErrors* gr5  = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+bin5) , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
+  TGraphAsymmErrors* gr1  = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+bin1) , "probe->pt()" , -1,0,300,"probe p_{T} [GeV]","trigger efficiency");
+  TGraphAsymmErrors* gr2  = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+bin2) , "probe->pt()" , -1,0,300,"probe p_{T} [GeV]","trigger efficiency");
+  // TGraphAsymmErrors* gr3  = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+bin3) , "probe->pt()" , -1,0,300,"probe p_{T} [GeV]","trigger efficiency");
+  // TGraphAsymmErrors* gr4  = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+bin4) , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
+  // TGraphAsymmErrors* gr5  = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+bin5) , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
 
   TCanvas *c1 = new TCanvas();
   c1->cd();
 
+  gPad->SetGridx();
+  gPad->SetGridy();
   //gr->Draw("AP");
 
-  gr1->GetXaxis()->SetRangeUser(30,300);
-  gr1->GetYaxis()->SetRangeUser(0.6,1.0);
+  // gr1->GetXaxis()->SetRangeUser(30,300);
+  // gr1->GetYaxis()->SetRangeUser(0.6,1.0);
+  gr1->SetMinimum(0);
+  gr1->SetMaximum(1);
 
   gr1->SetLineColor(1);
   gr2->SetLineColor(2);
-  gr3->SetLineColor(4);
-  gr4->SetLineColor(6);
-  gr5->SetLineColor(8);
+  //gr3->SetLineColor(4);
+  //gr4->SetLineColor(6);
+  //gr5->SetLineColor(8);
 
   gr1->SetMarkerColor(1);
   gr2->SetMarkerColor(2);
-  gr3->SetMarkerColor(4);
-  gr4->SetMarkerColor(6);
-  gr5->SetMarkerColor(8);
+  //gr3->SetMarkerColor(4);
+  //gr4->SetMarkerColor(6);
+  //gr5->SetMarkerColor(8);
 
   gr1->SetMarkerStyle(21);
   gr2->SetMarkerStyle(22);
-  gr3->SetMarkerStyle(23);
-  gr4->SetMarkerStyle(24);
-  gr5->SetMarkerStyle(25);
+  //gr3->SetMarkerStyle(23);
+  //gr4->SetMarkerStyle(24);
+  //gr5->SetMarkerStyle(25);
 
   gr1->Draw("AP");
   gr2->Draw("sameP");
-  gr3->Draw("sameP");
-  gr4->Draw("sameP");
-  gr5->Draw("sameP");
+  //gr3->Draw("sameP");
+  //gr4->Draw("sameP");
+  //gr5->Draw("sameP");
 
   TLegend *leg = new TLegend(0.5,0.2,0.7,0.4);
   leg->AddEntry(gr1,label1,"lp");
   leg->AddEntry(gr2,label2,"lp");
-  leg->AddEntry(gr3,label3,"lp");
-  leg->AddEntry(gr4,label4,"lp");
-  leg->AddEntry(gr5,label5,"lp");
+  //leg->AddEntry(gr3,label3,"lp");
+  //leg->AddEntry(gr4,label4,"lp");
+  //leg->AddEntry(gr5,label5,"lp");
 
   leg->SetBorderSize(1);
   leg->SetFillColor(0);
   leg->Draw();
 
-  if( printplot ) c1->Print("TNP_trigeff.pdf");
-  */
+  //if( printplot ) c1->Print("TNP_trigeff.pdf");
+
 }
