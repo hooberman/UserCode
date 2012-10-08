@@ -71,6 +71,23 @@ float getBinomialError( float num , float den ){
   return err;
 }
 
+char* histLabel( char* title ){
+
+  if( TString(title).Contains("el_tkiso_0j") ) return "e + $\\geq$0 jets";
+  if( TString(title).Contains("el_tkiso_1j") ) return "e + $\\geq$1 jets";
+  if( TString(title).Contains("el_tkiso_2j") ) return "e + $\\geq$2 jets";
+  if( TString(title).Contains("el_tkiso_3j") ) return "e + $\\geq$3 jets";
+  if( TString(title).Contains("el_tkiso_4j") ) return "e + $\\geq$4 jets";
+
+  if( TString(title).Contains("mu_tkiso_0j") ) return "$\\mu$ + $\\geq$0 jets";
+  if( TString(title).Contains("mu_tkiso_1j") ) return "$\\mu$ + $\\geq$1 jets";
+  if( TString(title).Contains("mu_tkiso_2j") ) return "$\\mu$ + $\\geq$2 jets";
+  if( TString(title).Contains("mu_tkiso_3j") ) return "$\\mu$ + $\\geq$3 jets";
+  if( TString(title).Contains("mu_tkiso_4j") ) return "$\\mu$ + $\\geq$4 jets";
+
+
+
+}
 
 void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , char* var , int nbins , float xmin , float xmax , char* xtitle , char* plottitle = "" , bool printplot = false , bool residual = false , bool log = false ){
 
@@ -211,7 +228,7 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   float ratio4err   = ratio4 * sqrt(pow(effdata4err/effdata4,2)+pow(effmc4err/effmc4,2));
   float ratio5err   = ratio5 * sqrt(pow(effdata5err/effdata5,2)+pow(effmc5err/effmc5,2));
 
-  cout << endl << endl << plottitle << endl;
+  //cout << endl << endl << plottitle << endl;
 
   int left = 20;
 
@@ -225,8 +242,12 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   char* delim      = "&";
   char* delimend   = "\\\\";
   char* pm         = "$\\pm$";
+  char* hline      = "\\hline";
 
-  cout << delimstart << setw(10) << "" << setw(4)
+  cout << endl;
+  cout << hline << endl;
+  cout << hline << endl;
+  cout << delimstart << setw(10) << histLabel(plottitle) << setw(4)
        << delim << setw(left) << "$>$ 1 GeV" << setw(4)
        << delim << setw(left) << "$>$ 2 GeV" << setw(4)
        << delim << setw(left) << "$>$ 3 GeV" << setw(4) 
@@ -234,6 +255,7 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
        << delim << setw(left) << "$>$ 5 GeV" << setw(4) 
        << delimend << endl;
 
+  cout << hline << endl;
   cout << delimstart << setw(10) << "data" << setw(4)
        << delim << setw(left) << Form("%.3f %s %.4f",effdata1,pm,effdata1err) << setw(4)
        << delim << setw(left) << Form("%.3f %s %.4f",effdata2,pm,effdata2err) << setw(4)
