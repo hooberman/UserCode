@@ -29,7 +29,7 @@ using namespace std;
 bool plotExpected   = false;
 bool plotObserved   = true;
 bool logplot        = true;
-bool isPreliminary  = false;
+bool isPreliminary  = true;
 bool logInterpolate = true;
 
 void cmsPrelim(double intLumi, bool prelim)
@@ -320,7 +320,7 @@ void makeGMSBPlot( bool printplots = false ){
   //gPad->SetGridy();
 
   float ymin = 0;
-  if( logplot ) ymin = 0.01;
+  if( logplot ) ymin = 0.03;
 
   //TH2F* hdummy = new TH2F("hdummy","",100,130,300,100,ymin,3000);
   TH2F* hdummy = new TH2F("hdummy","",100,130,400,100,ymin,5);
@@ -386,7 +386,7 @@ void makeGMSBPlot( bool printplots = false ){
 
 
   hdummy->GetXaxis()->SetTitle("#mu [GeV]");
-  hdummy->GetYaxis()->SetTitle("#sigma [fb]");
+  hdummy->GetYaxis()->SetTitle("#sigma [pb]");
   hdummy->GetYaxis()->SetLabelSize(0.04);
   hdummy->GetXaxis()->SetLabelSize(0.04);
   hdummy->GetYaxis()->SetTitleSize(0.05);
@@ -501,7 +501,7 @@ void makeGMSBPlot( bool printplots = false ){
 
 
 
-  TLegend *leg = new TLegend(0.33,0.7,0.9,0.88);
+  TLegend *leg = new TLegend(0.45,0.7,0.9,0.88);
   if( plotObserved ){
     leg->AddEntry(gulc    ,"Observed UL","l");
     //leg->AddEntry(gulc    ,"Combined observed UL","l");
