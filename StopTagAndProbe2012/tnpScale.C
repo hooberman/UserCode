@@ -85,7 +85,7 @@ char* histLabel( char* title ){
   if( TString(title).Contains("mu_tkiso_3j") ) return "$\\mu$ + $\\geq$3 jets";
   if( TString(title).Contains("mu_tkiso_4j") ) return "$\\mu$ + $\\geq$4 jets";
 
-
+  return title;
 
 }
 
@@ -433,13 +433,13 @@ void tnpScale( bool printplot = false ) {
   char* suffix = "";
   //char* suffix = "_2jets";
 
-  chmc->  Add("smurf/ZJets_V00-00-01/merged.root");
-  chdata->Add("smurf/SingleMu2012A_V00-00-01/merged.root");
-  chdata->Add("smurf/SingleMu2012B_V00-00-01/merged.root");
-  chdata->Add("smurf/SingleMu2012C_V00-00-01/merged.root");
-  chdata->Add("smurf/SingleEl2012A_V00-00-01/merged.root");
-  chdata->Add("smurf/SingleEl2012B_V00-00-01/merged.root");
-  chdata->Add("smurf/SingleEl2012C_V00-00-01/merged.root");
+  chmc->  Add(Form("smurf/ZJets_V00-00-01/merged%s.root"        ,suffix));
+  chdata->Add(Form("smurf/SingleMu2012A_V00-00-01/merged%s.root",suffix));
+  chdata->Add(Form("smurf/SingleMu2012B_V00-00-01/merged%s.root",suffix));
+  chdata->Add(Form("smurf/SingleMu2012C_V00-00-01/merged%s.root",suffix));
+  chdata->Add(Form("smurf/SingleEl2012A_V00-00-01/merged%s.root",suffix));
+  chdata->Add(Form("smurf/SingleEl2012B_V00-00-01/merged%s.root",suffix));
+  chdata->Add(Form("smurf/SingleEl2012C_V00-00-01/merged%s.root",suffix));
 
   //----------------------------------------
   // bins 
@@ -528,7 +528,7 @@ void tnpScale( bool printplot = false ) {
   eltnpcut += zmass;
   eltnpcut += os;
   eltnpcut += eltnp;
-  eltnpcut += tag_eta25;
+  eltnpcut += tag_eta21;
   //eltnpcut += njets2;
   eltnpcut += tag_pt30;
   eltnpcut += eltnptrig;
@@ -568,12 +568,16 @@ void tnpScale( bool printplot = false ) {
 
   TCut vtxweight = "vtxweight";
 
+  
+
   cout << "Electrons:" << endl;
-  cout << "Total MC yields 	: " << chmc->GetEntries(eltnpcut) << endl;
+  cout << "Selection            : " << eltnpcut.GetTitle()          << endl;
+  cout << "Total MC yields 	: " << chmc->GetEntries(eltnpcut)   << endl;
   cout << "Total DATA yields 	: " << chdata->GetEntries(eltnpcut) << endl;
 
   cout << "Muons:" << endl;
-  cout << "Total MC yields 	: " << chmc->GetEntries(mutnpcut) << endl;
+  cout << "Selection            : " << mutnpcut.GetTitle()          << endl;
+  cout << "Total MC yields 	: " << chmc->GetEntries(mutnpcut)   << endl;
   cout << "Total DATA yields 	: " << chdata->GetEntries(mutnpcut) << endl;
 
 
