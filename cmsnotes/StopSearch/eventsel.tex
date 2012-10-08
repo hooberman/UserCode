@@ -256,6 +256,10 @@ for several bins in lepton $|\eta|$.
 Summary of the single muon trigger efficiency HLT\_IsoMu24(\_eta2p1). Uncertainties are statistical.}
 \begin{tabular}{c|c|c|c}
 
+% Selection            : (((((((((abs(tagAndProbeMass-91)<15)&&(qProbe*qTag<0))&&((eventSelection&2)==2))&&(HLT_IsoMu24_tag > 0))&&(tag->pt()>30.0))&&(abs(tag->eta())<2.1))&&(probe->pt()>20))&&(abs(probe->eta())<2.1))&&((leptonSelection&65536)==65536))&&((leptonSelection&131072)==131072)
+% Probe trigger        : HLT_IsoMu24_probe > 0
+% Total data yield     : 5161723
+
 \hline
 \hline
   \pt\ range [GeV] & $|\eta|<0.8$ & $0.8<|\eta|<1.5$ & $1.5<|\eta|<2.1$ \\
@@ -290,6 +294,10 @@ Summary of the single muon trigger efficiency HLT\_IsoMu24(\_eta2p1). Uncertaint
 \caption{\label{tab:eltriggeff}
 Summary of the single electron trigger efficiency HLT\_Ele27\_WP80. Uncertainties are statistical.}
 \begin{tabular}{c|c|c}
+
+% Selection            : (((((((((abs(tagAndProbeMass-91)<15)&&(qProbe*qTag<0))&&((eventSelection&1)==1))&&(HLT_Ele27_WP80_tag > 0))&&(tag->pt()>30.0))&&(abs(tag->eta())<2.1))&&(probe->pt()>20))&&(abs(probe->eta())<2.1))&&((leptonSelection&8)==8))&&((leptonSelection&16)==16)
+% Probe trigger        : HLT_Ele27_WP80_probe > 0
+% Total data yield     : 3405966
 
 \hline
 \hline
