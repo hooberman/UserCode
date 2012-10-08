@@ -403,7 +403,7 @@ void tnpScale( bool printplot = false ) {
   // Files
   //----------------------------------------
 
-  char* version = (char*) "V00-00-07";
+  char* version = (char*) "V00-00-00";
 
   TChain *chmc   = new TChain("leptons");
   TChain *chdata = new TChain("leptons");
@@ -411,24 +411,13 @@ void tnpScale( bool printplot = false ) {
   char* suffix = "";
   //char* suffix = "_2jets";
 
-  chmc->Add(Form("smurf/%s/dymm_test%s.root" , version , suffix));
-  //chmc->Add(Form("smurf/%s/dymm_test%s_INCOMPLETE.root" , version , suffix));
-  //chmc->Add(Form("smurf/%s/dymm_testskim%s.root" , version , suffix));
-  //chmc->Add(Form("smurf/%s/dymm_test%s.root" , version , suffix));
-  
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_May10%s.root"    , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv4%s.root"     , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv6%s.root"     , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_Aug05%s.root"    , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_B30%s.root"      , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_B34%s.root"      , version , suffix));
-
-  chdata->Add(Form("smurf/%s/data_SingleMu_May10%s.root"          , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_PRv4%s.root"           , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_Aug05%s.root"          , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_PRv6%s.root"           , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_B30%s.root"            , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_B34%s.root"            , version , suffix));
+  chmc->  Add("smurf/ZJets_V00-00-01/dymm_test_tenPercent.root");
+  chdata->Add("smurf/SingleMu2012A_V00-00-01/merged.root");
+  chdata->Add("smurf/SingleMu2012B_V00-00-01/merged.root");
+  chdata->Add("smurf/SingleMu2012C_V00-00-01/merged.root");
+  chdata->Add("smurf/SingleEl2012A_V00-00-01/merged.root");
+  chdata->Add("smurf/SingleEl2012B_V00-00-01/merged.root");
+  chdata->Add("smurf/SingleEl2012C_V00-00-01/merged.root");
 
   //----------------------------------------
   // bins 
@@ -497,8 +486,8 @@ void tnpScale( bool printplot = false ) {
   TCut nbm0("nbm==0");
   TCut nbl0("nbl==0");
   TCut mt30("mt<30");
-  TCut eltnptrig("HLT_TNP_tag > 0 || HLT_TNPel_tag > 0");
-  TCut mutnptrig("HLT_IsoMu30_eta2p1_tag > 0");
+  TCut eltnptrig("HLT_Ele27_WP80_tag > 0");
+  TCut mutnptrig("HLT_IsoMu24_tag > 0");
 
   //---------------------------
   // tag cuts
@@ -615,7 +604,7 @@ void tnpScale( bool printplot = false ) {
   
   plotDistribution( chdata , chmc , TCut(eltnpcut)        , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_0j" , printplot , residual , log );
   plotDistribution( chdata , chmc , TCut(mutnpcut)        , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_0j" , printplot , residual , log );
-  
+
   plotDistribution( chdata , chmc , TCut(eltnpcut+njets1) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "el_tkiso_1j" , printplot , residual , log );
   plotDistribution( chdata , chmc , TCut(mutnpcut+njets1) , vtxweight , var , 10 , 0 , 10 , "abs tkiso [GeV]"    , "mu_tkiso_1j" , printplot , residual , log );
   
