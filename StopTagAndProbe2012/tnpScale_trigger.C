@@ -522,9 +522,11 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
   float ptbin[]  = {20., 22., 24., 26., 28., 30., 32., 34., 36., 38., 40., 50., 60. , 80. , 100. , 150. , 200. , 10000.};
   int   nptbin=17;
 
+  // cout << "USING MUON ETA BINS" << endl;
   // float etabin[] = {0, 0.8 , 1.5 , 2.1};
   // int   netabin=3;
 
+  cout << "USING ELECTRON ETA BINS" << endl;
   float etabin[] = {0, 1.5 , 2.1};
   int   netabin=2;
 
@@ -680,14 +682,35 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
   // make efficiency plots
   //---------------------------------------------
 
+  TCut bin1;
+  TCut bin2;
+  TCut bin3;
+
+  char* label1;
+  char* label2;
+  char* label3;
+
   //muon: 3 bins
-  // TCut bin1("abs(probe->eta()) < 0.8");                             char* label1 = "|#eta| < 0.8";
-  // TCut bin2("abs(probe->eta()) > 0.8 && abs(probe->eta())<1.5");    char* label2 = "|#eta| 0.8-1.5";
-  // TCut bin3("abs(probe->eta()) > 1.5 && abs(probe->eta())<2.1");    char* label3 = "|#eta| 1.5-2.1";
+  if( leptype == 1 ){
+    bin1 = TCut("abs(probe->eta()) < 0.8");                             
+    bin2 = TCut("abs(probe->eta()) > 0.8 && abs(probe->eta())<1.5");    
+    bin3 = TCut("abs(probe->eta()) > 1.5 && abs(probe->eta())<2.1");    
+
+    label1 = "|#eta| < 0.8";  
+    label2 = "|#eta| 0.8-1.5";
+    label3 = "|#eta| 1.5-2.1";
+  }
 
   //electons: 2 bins
-  TCut bin1("abs(probe->eta()) < 1.5");                             char* label1 = "|#eta| < 1.5";
-  TCut bin2("abs(probe->eta()) > 1.5 && abs(probe->eta())<2.1");    char* label2 = "|#eta| 1.5-2.1";
+  if( leptype == 0 ){
+    bin1 = TCut("abs(probe->eta()) < 1.5");                             
+    bin2 = TCut("abs(probe->eta()) > 1.5 && abs(probe->eta())<2.1");    
+    bin3 = TCut("abs(probe->eta()) > 2.1 && abs(probe->eta())<2.5");
+
+    label1 = "|#eta| < 1.5";  
+    label2 = "|#eta| 1.5-2.1";
+    label3 = "|#eta| 2.1-2.5";
+  }
 
   // TCut bin4("abs(probe->eta()) > 2.1 && abs(probe->eta())<2.4");    char* label4 = "|#eta| > 2.4";
   // TCut bin1("njets == 0");   char* label1 = "n_{jets}=0";
@@ -698,7 +721,7 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
 
   TGraphAsymmErrors* gr1  = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+bin1) , "probe->pt()" , -1,0,300,"probe p_{T} [GeV]","trigger efficiency");
   TGraphAsymmErrors* gr2  = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+bin2) , "probe->pt()" , -1,0,300,"probe p_{T} [GeV]","trigger efficiency");
-  // TGraphAsymmErrors* gr3  = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+bin3) , "probe->pt()" , -1,0,300,"probe p_{T} [GeV]","trigger efficiency");
+  TGraphAsymmErrors* gr3  = getEfficiencyGraph( chdata , probe_trig , TCut(tnpcut+bin3) , "probe->pt()" , -1,0,300,"probe p_{T} [GeV]","trigger efficiency");
   // TGraphAsymmErrors* gr4  = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+bin4) , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
   // TGraphAsymmErrors* gr5  = getEfficiencyGraph( chdata , probe_trig , TCut(mutnpcut+bin5) , "probe->pt()" , 28,20,300,"probe p_{T} [GeV]","trigger efficiency");
 
@@ -716,32 +739,32 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
 
   gr1->SetLineColor(1);
   gr2->SetLineColor(2);
-  //gr3->SetLineColor(4);
+  gr3->SetLineColor(4);
   //gr4->SetLineColor(6);
   //gr5->SetLineColor(8);
 
   gr1->SetMarkerColor(1);
   gr2->SetMarkerColor(2);
-  //gr3->SetMarkerColor(4);
+  gr3->SetMarkerColor(4);
   //gr4->SetMarkerColor(6);
   //gr5->SetMarkerColor(8);
 
   gr1->SetMarkerStyle(21);
   gr2->SetMarkerStyle(22);
-  //gr3->SetMarkerStyle(23);
+  gr3->SetMarkerStyle(23);
   //gr4->SetMarkerStyle(24);
   //gr5->SetMarkerStyle(25);
 
   gr1->Draw("AP");
   gr2->Draw("sameP");
-  //gr3->Draw("sameP");
+  if( leptype == 1 ) gr3->Draw("sameP");
   //gr4->Draw("sameP");
   //gr5->Draw("sameP");
 
   TLegend *leg = new TLegend(0.5,0.2,0.7,0.4);
   leg->AddEntry(gr1,label1,"lp");
   leg->AddEntry(gr2,label2,"lp");
-  //leg->AddEntry(gr3,label3,"lp");
+  if( leptype == 1) leg->AddEntry(gr3,label3,"lp");
   //leg->AddEntry(gr4,label4,"lp");
   //leg->AddEntry(gr5,label5,"lp");
 
