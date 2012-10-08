@@ -433,7 +433,7 @@ void tnpScale( bool printplot = false ) {
   char* suffix = "";
   //char* suffix = "_2jets";
 
-  chmc->  Add("smurf/ZJets_V00-00-01/dymm_test_tenPercent.root");
+  chmc->  Add("smurf/ZJets_V00-00-01/merged.root");
   chdata->Add("smurf/SingleMu2012A_V00-00-01/merged.root");
   chdata->Add("smurf/SingleMu2012B_V00-00-01/merged.root");
   chdata->Add("smurf/SingleMu2012C_V00-00-01/merged.root");
