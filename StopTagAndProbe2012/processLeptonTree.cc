@@ -11,7 +11,8 @@
 #include "SmurfDataTypes.h"
 #include "processLeptonTree.h"
  
-void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TString file, bool realData, TString goodrunlist, int prescale)
+
+int processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TString file, bool realData, TString goodrunlist, int prescale)
 {
 
 //    gSystem->Load("libTree.so");
@@ -50,6 +51,11 @@ void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TStri
     chain->Add(file);
     std::cout << "Entries in chain: " << chain->GetEntries() << std::endl;
 
+    if( chain->GetEntries() == 0 ){
+      std::cout << "0 entries in chain --> QUITTING!!!" << std::endl;
+      return 666;
+    }
+
     //
     // loop
     //
@@ -62,4 +68,6 @@ void processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TStri
 
     delete looper;
     delete chain;
+
+    return 0;
 }
