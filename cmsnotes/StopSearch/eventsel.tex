@@ -231,8 +231,7 @@ In order to suppress lepton pairs from sources other than Z boson decays, we req
 The muon efficiencies are summarized in Table~\ref{tab:mutnpeff} for inclusive events (i.e. no jet requirements). These efficiencies are displayed in Fig.~\ref{fig:mutnpeff} for
 several different jet multiplicity requirements. We currently observe good agreement for muons with \pt\ up to about 200 GeV. For muons with \pt\ $>$ 200 GeV the data efficiency
 begins to drop, and the effect is especially pronounced for muons with \pt\ $>$ 300 GeV. We are currently investigating the source of this inefficiency.
-%The electron efficiencies are summarized in Table~\ref{tab:eltnpeff} for inclusive events (i.e. no jet requirements). These efficiencies are displayed in Fig.~\ref{fig:eltnpeff} for
-%several different jet multiplicity requirements.
+The electron efficiencies are summarized in Table~\ref{tab:eltnpeff} for inclusive events (i.e. no jet requirements). These efficiencies are displayed in Fig.~\ref{fig:eltnpeff} for several different jet multiplicity requirements. In general we observe good agreement between the data and MC identification and isolation efficiencies.
 
 
 
@@ -363,9 +362,141 @@ Scale Factor ISO & & & \\
       \end{center}
 \end{figure}
 
+\clearpage
 
+\begin{table}[htb]
+\begin{center}
+\scriptsize
+\caption{\label{tab:eltnpeff}
+Summary of the data and MC electron identification and isolation efficiencies measured with tag-and-probe studies.}
+\begin{tabular}{c|c|c}
+
+%Selection  : ((((((((abs(tagAndProbeMass-91)<15)&&(qProbe*qTag<0))&&(abs(tag->eta())<2.1))&&(tag->pt()>30.0))&&(abs(probe->eta())<2.1))&&(met<30))&&(nbl==0))&&((eventSelection&1)==1))&&(HLT_Ele27_WP80_tag > 0)
+%Ndata      : 3577620
+%NMC        : 3240624
+%ID cut     : (leptonSelection&8)==8
+%iso cut    : (leptonSelection&16)==16
+
+\hline
+\hline
+MC ID & & \\
+\pt\ range [GeV] & $|\eta|<1.5$ & $1.5<|\eta|<2.1$ \\
+\hline
+    20 -   30  & 	0.8156 $\pm$ 0.0008 & 	0.6565 $\pm$ 0.0019 \\
+    30 -   40  & 	0.8670 $\pm$ 0.0004 & 	0.7450 $\pm$ 0.0010 \\
+    40 -   50  & 	0.8922 $\pm$ 0.0003 & 	0.7847 $\pm$ 0.0008 \\
+    50 -   60  & 	0.9023 $\pm$ 0.0006 & 	0.7956 $\pm$ 0.0018 \\
+    60 -   80  & 	0.9097 $\pm$ 0.0011 & 	0.8166 $\pm$ 0.0034 \\
+    80 -  100  & 	0.9203 $\pm$ 0.0028 & 	0.8196 $\pm$ 0.0090 \\
+   100 -  150  & 	0.9162 $\pm$ 0.0037 & 	0.8378 $\pm$ 0.0117 \\
+   150 -  200  & 	0.9106 $\pm$ 0.0087 & 	0.8111 $\pm$ 0.0292 \\
+   200 -  300  & 	0.9304 $\pm$ 0.0119 & 	0.9153 $\pm$ 0.0363 \\
+   300 - 10000  & 	0.8684 $\pm$ 0.0388 & 	0.8000 $\pm$ 0.1789 \\
+\hline
+\hline
+MC ISO  & & \\
+
+\pt\ range [GeV] & $|\eta|<1.5$ & $1.5<|\eta|<2.1$ \\
+\hline
+    20 -   30  & 	0.9245 $\pm$ 0.0006 & 	0.9466 $\pm$ 0.0011 \\
+    30 -   40  & 	0.9682 $\pm$ 0.0002 & 	0.9741 $\pm$ 0.0004 \\
+    40 -   50  & 	0.9876 $\pm$ 0.0001 & 	0.9883 $\pm$ 0.0002 \\
+    50 -   60  & 	0.9909 $\pm$ 0.0002 & 	0.9912 $\pm$ 0.0005 \\
+    60 -   80  & 	0.9916 $\pm$ 0.0004 & 	0.9930 $\pm$ 0.0008 \\
+    80 -  100  & 	0.9915 $\pm$ 0.0010 & 	0.9908 $\pm$ 0.0025 \\
+   100 -  150  & 	0.9929 $\pm$ 0.0012 & 	0.9894 $\pm$ 0.0035 \\
+   150 -  200  & 	0.9919 $\pm$ 0.0029 & 	0.9932 $\pm$ 0.0068 \\
+   200 -  300  & 	0.9953 $\pm$ 0.0033 & 	1.0000 $\pm$ 0.0000 \\
+   300 - 10000  & 	1.0000 $\pm$ 0.0000 & 	1.0000 $\pm$ 0.0000 \\
+\hline
+\hline
+DATA ID & & \\
+
+\pt\ range [GeV] & $|\eta|<1.5$ & $1.5<|\eta|<2.1$ \\
+\hline
+    20 -   30  & 	0.8145 $\pm$ 0.0008 & 	0.6528 $\pm$ 0.0018 \\
+    30 -   40  & 	0.8676 $\pm$ 0.0004 & 	0.7462 $\pm$ 0.0010 \\
+    40 -   50  & 	0.8955 $\pm$ 0.0003 & 	0.7922 $\pm$ 0.0008 \\
+    50 -   60  & 	0.9049 $\pm$ 0.0006 & 	0.8072 $\pm$ 0.0018 \\
+    60 -   80  & 	0.9110 $\pm$ 0.0011 & 	0.8212 $\pm$ 0.0035 \\
+    80 -  100  & 	0.9156 $\pm$ 0.0028 & 	0.8358 $\pm$ 0.0091 \\
+   100 -  150  & 	0.9257 $\pm$ 0.0036 & 	0.8507 $\pm$ 0.0116 \\
+   150 -  200  & 	0.9186 $\pm$ 0.0084 & 	0.8929 $\pm$ 0.0292 \\
+   200 -  300  & 	0.9106 $\pm$ 0.0149 & 	0.7576 $\pm$ 0.0746 \\
+   300 - 10000  & 	0.9400 $\pm$ 0.0336 & 	1.0000 $\pm$ 0.0000 \\
+\hline
+\hline
+DATA ISO  & & \\
+
+\pt\ range [GeV] & $|\eta|<1.5$ & $1.5<|\eta|<2.1$ \\
+\hline
+    20 -   30  & 	0.9201 $\pm$ 0.0006 & 	0.9419 $\pm$ 0.0011 \\
+    30 -   40  & 	0.9667 $\pm$ 0.0002 & 	0.9734 $\pm$ 0.0004 \\
+    40 -   50  & 	0.9872 $\pm$ 0.0001 & 	0.9892 $\pm$ 0.0002 \\
+    50 -   60  & 	0.9904 $\pm$ 0.0002 & 	0.9922 $\pm$ 0.0004 \\
+    60 -   80  & 	0.9923 $\pm$ 0.0004 & 	0.9916 $\pm$ 0.0009 \\
+    80 -  100  & 	0.9914 $\pm$ 0.0010 & 	0.9921 $\pm$ 0.0024 \\
+   100 -  150  & 	0.9945 $\pm$ 0.0011 & 	1.0000 $\pm$ 0.0000 \\
+   150 -  200  & 	0.9908 $\pm$ 0.0031 & 	1.0000 $\pm$ 0.0000 \\
+   200 -  300  & 	0.9941 $\pm$ 0.0042 & 	1.0000 $\pm$ 0.0000 \\
+   300 - 10000  & 	0.9792 $\pm$ 0.0206 & 	1.0000 $\pm$ 0.0000 \\
+\hline
+\hline
+ Scale Factor ID  & & \\
+
+\pt\ range [GeV] & $|\eta|<1.5$ & $1.5<|\eta|<2.1$ \\
+\hline
+    20 -   30  & 	0.9987 $\pm$ 0.0014 & 	0.9944 $\pm$ 0.0040 \\
+    30 -   40  & 	1.0007 $\pm$ 0.0006 & 	1.0015 $\pm$ 0.0019 \\
+    40 -   50  & 	1.0036 $\pm$ 0.0005 & 	1.0096 $\pm$ 0.0015 \\
+    50 -   60  & 	1.0029 $\pm$ 0.0010 & 	1.0146 $\pm$ 0.0031 \\
+    60 -   80  & 	1.0014 $\pm$ 0.0018 & 	1.0057 $\pm$ 0.0060 \\
+    80 -  100  & 	0.9949 $\pm$ 0.0043 & 	1.0197 $\pm$ 0.0158 \\
+   100 -  150  & 	1.0104 $\pm$ 0.0057 & 	1.0154 $\pm$ 0.0198 \\
+   150 -  200  & 	1.0087 $\pm$ 0.0134 & 	1.1008 $\pm$ 0.0535 \\
+   200 -  300  & 	0.9786 $\pm$ 0.0203 & 	0.8277 $\pm$ 0.0879 \\
+   300 - 10000  & 	1.0824 $\pm$ 0.0619 & 	1.2500 $\pm$ 0.2795 \\
+\hline
+\hline
+Scale Factor ISO & & \\
+\pt\ range [GeV] & $|\eta|<1.5$ & $1.5<|\eta|<2.1$ \\
+\hline
+    20 -   30  & 	0.9952 $\pm$ 0.0009 & 	0.9950 $\pm$ 0.0016 \\
+    30 -   40  & 	0.9984 $\pm$ 0.0003 & 	0.9992 $\pm$ 0.0006 \\
+    40 -   50  & 	0.9996 $\pm$ 0.0002 & 	1.0009 $\pm$ 0.0003 \\
+    50 -   60  & 	0.9995 $\pm$ 0.0003 & 	1.0009 $\pm$ 0.0006 \\
+    60 -   80  & 	1.0006 $\pm$ 0.0005 & 	0.9985 $\pm$ 0.0012 \\
+    80 -  100  & 	0.9999 $\pm$ 0.0014 & 	1.0013 $\pm$ 0.0035 \\
+   100 -  150  & 	1.0016 $\pm$ 0.0016 & 	1.0108 $\pm$ 0.0036 \\
+   150 -  200  & 	0.9989 $\pm$ 0.0042 & 	1.0068 $\pm$ 0.0069 \\
+   200 -  300  & 	0.9987 $\pm$ 0.0053 & 	1.0000 $\pm$ 0.0000 \\
+   300 - 10000  & 	0.9792 $\pm$ 0.0206 & 	1.0000 $\pm$ 0.0000 \\
+\hline
+\hline
+
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{figure}[hbt]
+  \begin{center}
+  	\includegraphics[width=0.3\linewidth]{plots/el_id_njets0.pdf}%
+	\includegraphics[width=0.3\linewidth]{plots/el_iso_njets0.pdf}
+	\includegraphics[width=0.3\linewidth]{plots/el_id_njets1.pdf}%
+	\includegraphics[width=0.3\linewidth]{plots/el_iso_njets1.pdf}
+	\includegraphics[width=0.3\linewidth]{plots/el_id_njets2.pdf}%
+	\includegraphics[width=0.3\linewidth]{plots/el_iso_njets2.pdf}
+	\includegraphics[width=0.3\linewidth]{plots/el_id_njets3.pdf}%
+	\includegraphics[width=0.3\linewidth]{plots/el_iso_njets3.pdf}
+	\includegraphics[width=0.3\linewidth]{plots/el_id_njets4.pdf}%
+	\includegraphics[width=0.3\linewidth]{plots/el_iso_njets4.pdf}
+	\caption{
+	  \label{fig:eltnpeff} Comparison of the electron identification and isolation efficiencies in data and MC for various jet multiplicity requirements. }  
+      \end{center}
+\end{figure}
 
 \clearpage
+
 
 \subsubsection{Trigger Efficiency Measurements}
 
