@@ -476,6 +476,16 @@ void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut deno
 
 void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
 
+  cout << endl;
+  cout << "-------------------" << endl;
+  if     ( leptype == 0 ) cout << "Doing electrons" << endl;
+  else if( leptype == 1 ) cout << "Doing muons"      << endl;
+  else{
+    cout << "ERROR! unrecognized leptype " << leptype << endl;
+    exit(0);
+  }
+  cout << "-------------------" << endl;
+
   //----------------------------------------
   // Files
   //----------------------------------------
@@ -515,8 +525,11 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0, 10000.0};
   int   nptbin  = 10;
 
-  float etabin[] = {0, 0.8, 1.5, 2.1};
-  int   netabin=3;
+  // float etabin[] = {0, 0.8, 1.5, 2.1};
+  // int   netabin=3;
+
+  float etabin[] = {0, 1.5, 2.1};
+  int   netabin=2;
 
   // float etabin[] = {0,2.1};
   // int   netabin=1;
@@ -557,13 +570,20 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   hsfid->Sumw2();
   hsfiso->Sumw2();
 
-  TCut muid("(leptonSelection&65536)==65536");     // mu id 
-  TCut muiso("(leptonSelection&131072)==131072");  // mu iso 
+  TCut muid ("(leptonSelection&65536)==65536");     // mu id 
+  TCut muiso("(leptonSelection&131072)==131072");   // mu iso 
+  TCut elid ("(leptonSelection&8)==8");             // ele id 
+  TCut eliso("(leptonSelection&16)==16");           // ele iso
 
   TCut zmass("abs(tagAndProbeMass-91)<15");
   TCut os("qProbe*qTag<0");
+
   TCut mutnp("(eventSelection&2)==2");
   TCut mutnptrig("HLT_IsoMu24_tag > 0");
+
+  TCut eltnp("(eventSelection&1)==1");
+  TCut eltnptrig("HLT_Ele27_WP80_tag > 0");
+
   TCut tag_eta21("abs(tag->eta())<2.1");
   TCut tag_pt30("tag->pt()>30.0");
 
@@ -582,29 +602,46 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   TCut tnpcut;
   tnpcut += zmass;
   tnpcut += os;
-  tnpcut += mutnp;
-  tnpcut += mutnptrig;
   tnpcut += tag_eta21;
   tnpcut += tag_pt30;
   tnpcut += probe_eta21;
-
   tnpcut += met30;
   tnpcut += nbl0;
 
-  //tnpcut += njets2;
+  TCut  lepid;
+  TCut  lepiso;
+  char* lepchar = "";
 
+  if( leptype == 0 ){
+    tnpcut += eltnp;
+    tnpcut += eltnptrig;
+    lepid   = TCut(elid);
+    lepiso  = TCut(eliso);
+    lepchar = "el";
+  }
+  else if( leptype == 1 ){
+    tnpcut += mutnp;
+    tnpcut += mutnptrig;
+    lepid   = TCut(muid);
+    lepiso  = TCut(muiso);
+    lepchar = "mu";
+  }
+  
+  //tnpcut += njets2;
   cout << "Selection  : " << tnpcut.GetTitle()          << endl;
   cout << "Ndata      : " << chdata->GetEntries(tnpcut) << endl;
   cout << "NMC        : " << chmc->GetEntries(tnpcut)   << endl;
+  cout << "ID cut     : " << lepid.GetTitle()           << endl;
+  cout << "iso cut    : " << lepiso.GetTitle()          << endl;
 
-  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmcid_deno", 	tnpcut+muiso,	      	"goff");
-  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmcid_num", 	tnpcut+muiso+muid,	"goff");
-  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmciso_deno", 	tnpcut+muid,	      	"goff");
-  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmciso_num", 	tnpcut+muid+muiso,	"goff");
-  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_deno", 	tnpcut+muiso,		"goff");
-  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_num", 	tnpcut+muiso+muid,	"goff");
-  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataiso_deno", 	tnpcut+muid,	       	"goff");
-  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataiso_num", 	tnpcut+muid+muiso,	"goff");
+  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmcid_deno", 	tnpcut+lepiso,	      	"goff");
+  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmcid_num", 	tnpcut+lepiso+lepid,	"goff");
+  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmciso_deno", 	tnpcut+lepid,	      	"goff");
+  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmciso_num", 	tnpcut+lepid+lepiso,	"goff");
+  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_deno", 	tnpcut+lepiso,		"goff");
+  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_num", 	tnpcut+lepiso+lepid,	"goff");
+  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataiso_deno", 	tnpcut+lepid,	       	"goff");
+  chdata->Draw("abs(probe->eta()):probe->pt()>>hdataiso_num", 	tnpcut+lepid+lepiso,	"goff");
 
   // get efficiencies 
   hmcid->Divide(hmcid_num,hmcid_deno,1,1,"B");
@@ -679,13 +716,13 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
 
     c_iso[i] = new TCanvas(Form("c_iso_%i",i),Form("c_iso_%i",i),600,600);
     c_iso[i]->cd();
-    printHisto( c_iso[i] , chdata , chmc , TCut(muiso) , TCut(mysel+muid) , "probe.pt()" , 10 , 0.0 , 340.0 , "lepton p_{T} [GeV]" , "iso efficiency" );
-    if( printplot ) c_iso[i]->Print(Form("plots/mu_iso_njets%i.pdf",i));
+    printHisto( c_iso[i] , chdata , chmc , TCut(lepiso) , TCut(mysel+lepid) , "probe.pt()" , 10 , 0.0 , 340.0 , "lepton p_{T} [GeV]" , "iso efficiency" );
+    if( printplot ) c_iso[i]->Print(Form("plots/%s_iso_njets%i.pdf",lepchar,i));
 
     c_id[i] = new TCanvas(Form("c_id_%i",i),Form("c_id_%i",i),600,600);
     c_id[i]->cd();
-    printHisto( c_id[i] , chdata , chmc , TCut(muid) , TCut(mysel+muiso) , "probe.pt()" , 10 , 0.0 , 340.0 , "lepton p_{T} [GeV]" , "ID efficiency" );
-    if( printplot ) c_id[i]->Print(Form("plots/mu_id_njets%i.pdf",i));
+    printHisto( c_id[i] , chdata , chmc , TCut(lepid) , TCut(mysel+lepiso) , "probe.pt()" , 10 , 0.0 , 340.0 , "lepton p_{T} [GeV]" , "ID efficiency" );
+    if( printplot ) c_id[i]->Print(Form("plots/%s_id_njets%i.pdf",lepchar,i));
 
   }
 
