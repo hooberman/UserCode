@@ -36,7 +36,7 @@ void printline(TH2F* h2)
 
     Float_t min = h2->GetXaxis()->GetBinLowEdge(x);
     Float_t max = min + h2->GetXaxis()->GetBinWidth(x);
-    printf("  %4.1f - %4.1f  & ", min, max);
+    printf("  %4.0f - %4.0f  & ", min, max);
 
     for (int y = 1; y <= h2->GetYaxis()->GetNbins(); ++y)
       {
@@ -282,7 +282,7 @@ void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , c
   //grdata->Draw("sameP");
   //grmc->Draw("sameP");
 
-  TLegend *leg = new TLegend(0.6,0.7,0.8,0.9);
+  TLegend *leg = new TLegend(0.5,0.7,0.7,0.9);
   leg->AddEntry(hdata , "data" , "lp");
   leg->AddEntry(hmc   , "MC"   , "lp");
   leg->SetBorderSize(0);
@@ -350,8 +350,11 @@ void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut deno
   plotpad->Draw();
   plotpad->cd();
 
-  float ptbin[] = {30., 40., 60. , 80. , 100. , 120. , 150. , 200 , 300 };
-  int   nptbin  = 8;
+  // float ptbin[] = {30., 40., 60. , 80. , 100. , 120. , 150. , 200 , 300 };
+  // int   nptbin  = 8;
+
+  float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0 , 350.0 };
+  int   nptbin  = 10;
 
   //TH1F* hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nptbin,ptbin);
   //TH1F* hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nptbin,ptbin);
@@ -391,14 +394,23 @@ void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut deno
   TGraphAsymmErrors *grmc = new TGraphAsymmErrors();
   grmc->BayesDivide(hpass_mc,hall_mc);
 
-  // cout << "data all  " << hall_data->GetBinContent(8) << endl;
-  // cout << "data pass " << hpass_data->GetBinContent(8) << endl;
-  // cout << "data eff  " << hpass_data->GetBinContent(8) / hall_data->GetBinContent(8) << endl;
+  cout << "data all  " << hall_data->GetBinContent(10) << endl;
+  cout << "data pass " << hpass_data->GetBinContent(10) << endl;
+  cout << "data eff  " << hpass_data->GetBinContent(10) / hall_data->GetBinContent(10) << endl;
 
-  // Double_t x;
-  // Double_t y;
-  // grdata->GetPoint(7,x,y);
-  // cout << "data eff2 " << y << endl;
+  Double_t x;
+  Double_t y;
+  grdata->GetPoint(9,x,y);
+  cout << "data eff2 " << y << endl;
+
+  cout << "MC all  " << hall_mc->GetBinContent(10) << endl;
+  cout << "MC pass " << hpass_mc->GetBinContent(10) << endl;
+  cout << "MC eff  " << hpass_mc->GetBinContent(10) / hall_mc->GetBinContent(10) << endl;
+
+  Double_t xmc;
+  Double_t ymc;
+  grmc->GetPoint(9,xmc,ymc);
+  cout << "MC eff2 " << ymc << endl;
 
   gPad->SetGridx();
   gPad->SetGridy();
@@ -409,28 +421,29 @@ void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut deno
   grmc->SetLineColor(4);
   grmc->SetMarkerStyle(25);
 
-  grdata->GetXaxis()->SetRangeUser(30,300);
-  grdata->GetYaxis()->SetRangeUser(0.8,1.0);
+  grdata->GetXaxis()->SetRangeUser(20,350);
+  if( TString(ytitle).Contains("iso") ) grdata->GetYaxis()->SetRangeUser(0.8,1.0);
+  if( TString(ytitle).Contains("ID")  ) grdata->GetYaxis()->SetRangeUser(0.5,1.0);
   grdata->GetXaxis()->SetTitle(xtitle);
   grdata->GetYaxis()->SetTitle(ytitle);
   grdata->Draw("AP");
   grmc->Draw("sameP");
 
-  TLegend *leg = new TLegend(0.5,0.2,0.7,0.4);
+  TLegend *leg = new TLegend(0.6,0.15,0.75,0.3);
   leg->AddEntry(grdata ,"data","lp");
   leg->AddEntry(grmc   ,"mc"  ,"lp");
   leg->SetBorderSize(1);
   leg->SetFillColor(0);
-  //leg->Draw();
+  leg->Draw();
 
   TLatex *t = new TLatex();
   t->SetNDC();
 
-  if( TString(denom.GetTitle()).Contains("njets==0") ) t->DrawLatex(0.2,0.2,"n_{jets}=0");
-  if( TString(denom.GetTitle()).Contains("njets==1") ) t->DrawLatex(0.2,0.2,"n_{jets}=1");
-  if( TString(denom.GetTitle()).Contains("njets==2") ) t->DrawLatex(0.2,0.2,"n_{jets}=2");
-  if( TString(denom.GetTitle()).Contains("njets==3") ) t->DrawLatex(0.2,0.2,"n_{jets}=3");
-  if( TString(denom.GetTitle()).Contains("njets>=4") ) t->DrawLatex(0.2,0.2,"n_{jets}#geq4");
+  if( TString(denom.GetTitle()).Contains("njets>=0") ) t->DrawLatex(0.2,0.2,"n_{jets} #geq 0");
+  if( TString(denom.GetTitle()).Contains("njets>=1") ) t->DrawLatex(0.2,0.2,"n_{jets} #geq 1");
+  if( TString(denom.GetTitle()).Contains("njets>=2") ) t->DrawLatex(0.2,0.2,"n_{jets} #geq 2");
+  if( TString(denom.GetTitle()).Contains("njets>=3") ) t->DrawLatex(0.2,0.2,"n_{jets} #geq 3");
+  if( TString(denom.GetTitle()).Contains("njets>=4") ) t->DrawLatex(0.2,0.2,"n_{jets} #geq 4");
 
   can->cd();
 
@@ -447,7 +460,10 @@ void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut deno
   hratio_mc  ->Divide(hpass_mc  ,hall_mc,1,1,"B");
   hsf        ->Divide(hratio_data,hratio_mc,1,1);
 
-  hsf->GetYaxis()->SetRangeUser(0.9,1.1);
+  if( TString(ytitle).Contains("iso") )   hsf->GetYaxis()->SetRangeUser(0.9,1.1);
+  if( TString(ytitle).Contains("ID") )    hsf->GetYaxis()->SetRangeUser(0.6,1.1);
+
+  hsf->GetXaxis()->SetRangeUser(20,350);
   hsf->GetYaxis()->SetNdivisions(3);
   hsf->GetYaxis()->SetLabelSize(0.2);
   hsf->GetXaxis()->SetLabelSize(0.0);
@@ -458,13 +474,13 @@ void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut deno
 }
 
 
-void tnpScale_IDISO( bool printplot = false ) {
+void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
 
   //----------------------------------------
   // Files
   //----------------------------------------
 
-  char* version = (char*) "V00-00-07";
+  char* version = (char*) "V00-00-00";
 
   TChain *chmc   = new TChain("leptons");
   TChain *chdata = new TChain("leptons");
@@ -472,34 +488,38 @@ void tnpScale_IDISO( bool printplot = false ) {
   char* suffix = "";
   //char* suffix = "_2jets";
 
-  chmc->Add(Form("smurf/%s/dymm_test%s.root" , version , suffix));
-  //chmc->Add(Form("smurf/%s/dymm_test%s_INCOMPLETE.root" , version , suffix));
-  //chmc->Add(Form("smurf/%s/dymm_testskim%s.root" , version , suffix));
-  //chmc->Add(Form("smurf/%s/dymm_test%s.root" , version , suffix));
-  
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_May10%s.root"    , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv4%s.root"     , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv6%s.root"     , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_Aug05%s.root"    , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_B30%s.root"      , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_B34%s.root"      , version , suffix));
+  //chmc->  Add("smurf/ZJets_V00-00-01/dymm_test_tenPercent.root");
+  chmc->  Add("smurf/ZJets_V00-00-01/merged.root");
 
-  chdata->Add(Form("smurf/%s/data_SingleMu_May10%s.root"          , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_PRv4%s.root"           , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_Aug05%s.root"          , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_PRv6%s.root"           , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_B30%s.root"            , version , suffix));
-  chdata->Add(Form("smurf/%s/data_SingleMu_B34%s.root"            , version , suffix));
+  if( leptype == 1 ){
+    chdata->Add("smurf/SingleMu2012A_V00-00-01/merged.root");
+    chdata->Add("smurf/SingleMu2012B_V00-00-01/merged.root");
+    chdata->Add("smurf/SingleMu2012C_V00-00-01/merged.root");
+  }
+  else{
+    chdata->Add("smurf/SingleEl2012A_V00-00-01/merged.root");
+    chdata->Add("smurf/SingleEl2012B_V00-00-01/merged.root");
+    chdata->Add("smurf/SingleEl2012C_V00-00-01/merged.root");
+  }
 
   //----------------------------------------
   // bins 
   //----------------------------------------
 
   //float ptbin[] = {10., 15., 20., 30., 40., 50., 7000.};
-  float ptbin[] = { 30. , 40. , 50. , 60. , 80.0 , 100.0 , 120.0 , 150.0 , 7000.};
+  // float ptbin[] = { 30. , 40. , 50. , 60. , 80.0 , 100.0 , 120.0 , 150.0 , 7000.};
+  // float etabin[] = {0, 0.8, 1.5, 2.1};
+  // int nptbin=8;
+  // int netabin=3;
+
+  float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0, 10000.0};
+  int   nptbin  = 10;
+
   float etabin[] = {0, 0.8, 1.5, 2.1};
-  int nptbin=8;
-  int netabin=3;
+  int   netabin=3;
+
+  // float etabin[] = {0,2.1};
+  // int   netabin=1;
 
   //
   // histogram
@@ -543,17 +563,18 @@ void tnpScale_IDISO( bool printplot = false ) {
   TCut zmass("abs(tagAndProbeMass-91)<15");
   TCut os("qProbe*qTag<0");
   TCut mutnp("(eventSelection&2)==2");
-  TCut mutnptrig("HLT_IsoMu30_eta2p1_tag > 0");
+  TCut mutnptrig("HLT_IsoMu24_tag > 0");
   TCut tag_eta21("abs(tag->eta())<2.1");
   TCut tag_pt30("tag->pt()>30.0");
 
   TCut met30("met<30");
   TCut nbl0("nbl==0");
+  TCut probe_eta21("abs(probe->eta())<2.1");
 
-  TCut njets0("njets==0");
-  TCut njets1("njets==1");
-  TCut njets2("njets==2");
-  TCut njets3("njets==3");
+  TCut njets0("njets>=0");
+  TCut njets1("njets>=1");
+  TCut njets2("njets>=2");
+  TCut njets3("njets>=3");
   TCut njets4("njets>=4");
 
   //TCut tnpcut   = "abs(tagAndProbeMass-91)<15 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && tag->pt()>30.0"; 
@@ -565,6 +586,7 @@ void tnpScale_IDISO( bool printplot = false ) {
   tnpcut += mutnptrig;
   tnpcut += tag_eta21;
   tnpcut += tag_pt30;
+  tnpcut += probe_eta21;
 
   tnpcut += met30;
   tnpcut += nbl0;
@@ -575,10 +597,10 @@ void tnpScale_IDISO( bool printplot = false ) {
   cout << "Ndata      : " << chdata->GetEntries(tnpcut) << endl;
   cout << "NMC        : " << chmc->GetEntries(tnpcut)   << endl;
 
-  chmc->Draw("abs(probe->eta()):probe->pt()>>hmcid_deno", 	tnpcut+muiso,	      	"goff");
-  chmc->Draw("abs(probe->eta()):probe->pt()>>hmcid_num", 	tnpcut+muiso+muid,	"goff");
-  chmc->Draw("abs(probe->eta()):probe->pt()>>hmciso_deno", 	tnpcut+muid,	      	"goff");
-  chmc->Draw("abs(probe->eta()):probe->pt()>>hmciso_num", 	tnpcut+muid+muiso,	"goff");
+  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmcid_deno", 	tnpcut+muiso,	      	"goff");
+  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmcid_num", 	tnpcut+muiso+muid,	"goff");
+  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmciso_deno", 	tnpcut+muid,	      	"goff");
+  chmc->  Draw("abs(probe->eta()):probe->pt()>>hmciso_num", 	tnpcut+muid+muiso,	"goff");
   chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_deno", 	tnpcut+muiso,		"goff");
   chdata->Draw("abs(probe->eta()):probe->pt()>>hdataid_num", 	tnpcut+muiso+muid,	"goff");
   chdata->Draw("abs(probe->eta()):probe->pt()>>hdataiso_deno", 	tnpcut+muid,	       	"goff");
@@ -602,19 +624,46 @@ void tnpScale_IDISO( bool printplot = false ) {
   // Draw histograms	
   //hmcid->Draw("text");
 
+
   // print table
-  cout << " ------ MC ID ----- " << endl;
+  cout << "\\hline" << endl << "\\hline" << endl;
+  cout << "MC ID & & & \\\\" << endl;
+  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
+  cout << "\\hline" << endl;
   printline(hmcid);
-  cout << " ------ MC ISO ----- " << endl;
+
+  cout << "\\hline" << endl << "\\hline" << endl;
+  cout << "MC ISO  & & & \\\\" << endl;
+  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
+  cout << "\\hline" << endl;
   printline(hmciso);
-  cout << " ------ DATA ID ----- " << endl;
+
+  cout << "\\hline" << endl << "\\hline" << endl;
+  cout << "DATA ID & & & \\\\" << endl;
+  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
+  cout << "\\hline" << endl;
   printline(hdataid);
-  cout << " ------ DATA ISO ----- " << endl;
+
+  cout << "\\hline" << endl << "\\hline" << endl;
+  cout << "DATA ISO  & & & \\\\" << endl;
+  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
+  cout << "\\hline" << endl;
   printline(hdataiso);
-  cout << " ------ Scale Factor ID ----- " << endl;
+
+  cout << "\\hline" << endl << "\\hline" << endl;
+  cout << " Scale Factor ID  & & & \\\\" << endl;
+  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
+  cout << "\\hline" << endl;
   printline(hsfid);
-  cout << " ------ Scale Factor ISO ----- " << endl;
+
+  cout << "\\hline" << endl << "\\hline" << endl;
+  cout << "Scale Factor ISO & & & \\\\" << endl;
+  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
+  cout << "\\hline" << endl;
   printline(hsfiso);
+
+  cout << "\\hline" << endl << "\\hline" << endl;
+
 
   TCanvas *c_iso[10];
   TCanvas *c_id[10];
@@ -630,13 +679,13 @@ void tnpScale_IDISO( bool printplot = false ) {
 
     c_iso[i] = new TCanvas(Form("c_iso_%i",i),Form("c_iso_%i",i),600,600);
     c_iso[i]->cd();
-    printHisto( c_iso[i] , chdata , chmc , TCut(muiso) , TCut(mysel+muid) , "probe.pt()" , 10 , 0.0 , 300.0 , "lepton p_{T} [GeV]" , "iso efficiency" );
-    if( printplot ) c_iso[i]->Print(Form("plots/iso_njets%i.pdf",i));
+    printHisto( c_iso[i] , chdata , chmc , TCut(muiso) , TCut(mysel+muid) , "probe.pt()" , 10 , 0.0 , 340.0 , "lepton p_{T} [GeV]" , "iso efficiency" );
+    if( printplot ) c_iso[i]->Print(Form("plots/mu_iso_njets%i.pdf",i));
 
     c_id[i] = new TCanvas(Form("c_id_%i",i),Form("c_id_%i",i),600,600);
     c_id[i]->cd();
-    printHisto( c_id[i] , chdata , chmc , TCut(muid) , TCut(mysel+muiso) , "probe.pt()" , 10 , 0.0 , 300.0 , "lepton p_{T} [GeV]" , "ID efficiency" );
-    if( printplot ) c_id[i]->Print(Form("plots/id_njets%i.pdf",i));
+    printHisto( c_id[i] , chdata , chmc , TCut(muid) , TCut(mysel+muiso) , "probe.pt()" , 10 , 0.0 , 340.0 , "lepton p_{T} [GeV]" , "ID efficiency" );
+    if( printplot ) c_id[i]->Print(Form("plots/mu_id_njets%i.pdf",i));
 
   }
 

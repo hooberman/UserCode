@@ -464,7 +464,7 @@ void tnpScale_IDISO_el( bool printplot = false ) {
   // Files
   //----------------------------------------
 
-  char* version = (char*) "V00-00-07";
+  char* version = (char*) "V00-00-00";
 
   TChain *chmc   = new TChain("leptons");
   TChain *chdata = new TChain("leptons");
@@ -472,24 +472,9 @@ void tnpScale_IDISO_el( bool printplot = false ) {
   char* suffix = "";
   //char* suffix = "_2jets";
 
-  chmc->Add(Form("smurf/%s/dymm_test%s.root" , version , suffix));
-  //chmc->Add(Form("smurf/%s/dymm_test%s_INCOMPLETE.root" , version , suffix));
-  //chmc->Add(Form("smurf/%s/dymm_testskim%s.root" , version , suffix));
-  //chmc->Add(Form("smurf/%s/dymm_test%s.root" , version , suffix));
-  
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_May10%s.root"    , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv4%s.root"     , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_PRv6%s.root"     , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_Aug05%s.root"    , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_B30%s.root"      , version , suffix));
-  chdata->Add(Form("smurf/%s/data_DoubleElectron_B34%s.root"      , version , suffix));
+  chmc->  Add(Form("smurf/%s/dymm_test%s.root"              , version , suffix));  
+  chdata->Add(Form("smurf/%s/data_SingleEl_2012A%s.root"    , version , suffix));
 
-  // chdata->Add(Form("smurf/%s/data_SingleMu_May10%s.root"          , version , suffix));
-  // chdata->Add(Form("smurf/%s/data_SingleMu_PRv4%s.root"           , version , suffix));
-  // chdata->Add(Form("smurf/%s/data_SingleMu_Aug05%s.root"          , version , suffix));
-  // chdata->Add(Form("smurf/%s/data_SingleMu_PRv6%s.root"           , version , suffix));
-  // chdata->Add(Form("smurf/%s/data_SingleMu_B30%s.root"            , version , suffix));
-  // chdata->Add(Form("smurf/%s/data_SingleMu_B34%s.root"            , version , suffix));
 
   //----------------------------------------
   // bins 
@@ -543,7 +528,8 @@ void tnpScale_IDISO_el( bool printplot = false ) {
   TCut zmass("abs(tagAndProbeMass-91)<15");
   TCut os("qProbe*qTag<0");
   TCut eltnp("(eventSelection&1)==1");
-  TCut eltnptrig("HLT_TNP_tag > 0 || HLT_TNPel_tag > 0");
+  //TCut eltnptrig("HLT_TNP_tag > 0 || HLT_TNPel_tag > 0");
+  TCut eltnptrig("HLT_Ele27_WP80_tag > 0");
   TCut tag_eta21("abs(tag->eta())<2.1");
   TCut tag_pt30("tag->pt()>30.0");
 
