@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   else if( ijob == 3 ){
     cout << "Processing DYJets MC" << endl;
     //processLeptonTree("test",SmurfTree::dymm,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged*root",false,"",prescale);
-    processLeptonTree("test",SmurfTree::dymm,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged_ntuple_1.root",false,"",prescale);
+    processLeptonTree("test",SmurfTree::dymm,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged_ntuple*root",false,"",prescale);
   }
 
   return 0; 
