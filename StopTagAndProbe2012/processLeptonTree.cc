@@ -47,8 +47,24 @@ int processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TStrin
     // set up chain
     //
 
+    /*
+    int count = 0;
+    TFile *f;
+    while ((f = TFile::Open(file)) == 0){
+      std::cout << "Couldn't open file, waiting 60s and then retrying..." << std::endl;
+      if (++count > 3){
+	std::cout << "Failed to open file after 3 attempts, quitting" << std::endl;
+	return 999;
+      }
+      gSystem->Sleep(60 * 1000); // In miliseconds
+    }
+
+    TChain *chain = (TChain*) f->Get("Events");
+    */
+
     TChain *chain = new TChain("Events");
     chain->Add(file);
+
     std::cout << "Entries in chain: " << chain->GetEntries() << std::endl;
 
     if( chain->GetEntries() == 0 ){
@@ -59,7 +75,6 @@ int processLeptonTree(TString outfileid, enum SmurfTree::DataType sample, TStrin
     //
     // loop
     //
-
     looper->ScanChain(outfileid, chain, sample, integratedLumi, -1, -1, false, realData, goodrunlist);
 
     //
