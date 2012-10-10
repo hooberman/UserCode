@@ -67,8 +67,7 @@ const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
-//const char* iter                 = "V00-01-08";
-const char* iter                 = "temp";
+const char* iter                 = "V00-01-09";
 const char* jsonfilename         = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
 
 //--------------------------------------------------------------------
@@ -570,9 +569,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // 	continue;
       // }
 
-      if( TString(prefix).Contains("wzsms") ){
-	if( sparm_values().at(0) > 350 ) continue;
-      }
+      // if( TString(prefix).Contains("wzsms") ){
+      // 	if( sparm_values().at(0) > 350 ) continue;
+      // }
 
       if( !isData ) sigma = cms2.evt_xsec_incl();
 
