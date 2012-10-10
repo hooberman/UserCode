@@ -9,12 +9,12 @@ NUMBERS IN THE TABLE]
 
 Dilepton \ttbar\ events have 2 jets from the top decays, so additional
 jets from radiation or higher order contributions are required to
-enter the signal sample. The modeling of addtional jets in \ttbar\
+enter the signal sample. The modeling of additional jets in \ttbar\
 events is checked in a \ttll\ control sample,
 selected by requiring
 \begin{itemize}
 \item exactly 2 selected electrons or muons with \pt $>$ 20 GeV
-\item \met\ $>$ 100 GeV
+\item \met\ $>$ 50 GeV
 \item $\geq1$ b-tagged jet
 \item Z-veto ($|m_{\ell\ell} - 91| > 15$ GeV)
 \end{itemize}
@@ -35,9 +35,9 @@ $\ttbar+\ge2$ jet events.
 
 \begin{figure}[hbt]
   \begin{center}
-	\includegraphics[width=0.5\linewidth]{plots/njets_all_met100_mueg.pdf}
-	\includegraphics[width=0.5\linewidth]{plots/njets_all_met100_diel.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/njets_all_met100_dimu.pdf}
+	\includegraphics[width=0.5\linewidth]{plots/njets_all_met50_mueg.pdf}
+	\includegraphics[width=0.5\linewidth]{plots/njets_all_met50_diel.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/njets_all_met50_dimu.pdf}
 	\caption{
 	  \label{fig:dileptonnjets}%\protect 
           Comparison of the jet multiplicity distribution in data and MC for dilepton events in the \E-\M\
@@ -131,8 +131,11 @@ as follows:
 \noindent This insures that $K_3 M_3/(M_2 + K_3 M_3 + K_4 M_4) = N_3 /
 (N_2+N_3+N_4)$ and similarly for the $\geq 4$ jet bin.
 
+Table~\ref{tab:njetskfactors} also shows the values of $K_3$ and $K_4$ when the \met\ cut in the control sample definition is changed from 50 GeV to 100 GeV and 150 GeV.
+These values of $K_3$ and $K_4$ are not used in the analysis, but demonstrate that there is no statistically significant dependence of $K_3$ and $K_4$ on the \met\ cut.
 
-The factors $K_3$ and $K_4$ are applied to the \ttll\ MC throughout the
+
+The factors $K_3$ and $K_4$ (derived with the 50 GeV \met\ cut) are applied to the \ttll\ MC throughout the
 entire analysis, i.e. 
 whenever \ttll\ MC is used to estimate or subtract
 a yield or distribution. 
@@ -147,21 +150,23 @@ while those that only need one radiation jet  are scaled by $K_3$.
 
 \begin{table}[!ht]
 \begin{center}
-\begin{tabular}{l|c}
+\begin{tabular}{l|c|c|c}
+\cline{2-4}
+                        & \multicolumn{3}{c}{ \met\ cut for Data/MC Scale Factor} \\
 \hline
-            Jet Multiplicity Sample
-            &                Data/MC Scale Factor \\
+Jet Multiplicity Sample &  50 GeV & 100 GeV & 150 GeV  \\
 \hline
 \hline
-N jets $= 3$ (sensitive to $\ttbar+1$ extra jet from radiation)   &
-$K_3 = 1.01 \pm 0.03$\\
+N jets $= 3$ (sensitive to $\ttbar+1$ extra jet from radiation)
+& $K_3 = 0.98 \pm 0.02$ & $K_3 = 1.01 \pm 0.03$ & $K_3 = 1.00 \pm 0.08$ \\
 N jets $\ge4$ (sensitive to $\ttbar+\ge2$ extra jets from radiation)
-&       $K_4 = 0.93 \pm 0.04$\\
+& $K_4 = 0.94 \pm 0.02$ & $K_4 = 0.93 \pm 0.04$ & $K_4 = 1.00 \pm 0.08$ \\
 \hline
 \end{tabular}
 \caption{Data/MC scale factors used to account for differences in the
   fraction of events with additional hard jets from radiation in
-  \ttll\ events. \label{tab:njetskfactors}}
+  \ttll\ events. The values derived with the 50 GeV \met\ cut are applied 
+  to the \ttll\ MC throughout the analysis. \label{tab:njetskfactors}}
 \end{center}
 \end{table}
 
