@@ -55,10 +55,6 @@ class looper
 	char* g_json;      
         TRandom3 *random3_;
 
-	Int_t   mmht150_;
-	Int_t   emht150_;
-	Int_t   eeht150_;
-
         LorentzVector*  eledijet_hltele_; 
         LorentzVector*  eletrijet_hltele_; 
         LorentzVector*  mudijet_hltmu_; 
@@ -71,15 +67,6 @@ class looper
         LorentzVector*  pjet2_; 
         LorentzVector*  pjet3_; 
         LorentzVector*  pjet4_; 
-        LorentzVector*  lep1_; 
-        LorentzVector*  lep2_; 
-        LorentzVector*  lep3_; 
-        LorentzVector*  lep4_; 
-        LorentzVector*  fo1_; 
-        LorentzVector*  fo2_; 
-        LorentzVector*  fo3_; 
-        LorentzVector*  fo4_; 
-	Float_t dilmass_;
 	Float_t pjet1_L1Fast_;
 	Float_t pjet2_L1Fast_;
 	Float_t pjet3_L1Fast_;
@@ -103,9 +90,6 @@ class looper
 	Int_t   ngoodlep_;
 	Int_t   ngoodmu_;
 	Int_t   ngoodel_;
-	Int_t   nfolep_;
-	Int_t   nfomu_;
-	Int_t   nfoel_;
 	Int_t   nosel_;
 	Int_t   ndavtx_;
 	Int_t   nvtx_;

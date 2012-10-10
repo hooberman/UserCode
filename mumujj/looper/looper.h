@@ -96,8 +96,6 @@ class looper
 	Float_t trkpt_;
 	Float_t trkreliso_;
 
-	Int_t   hlt1_;
-	Int_t   hlt2_;
 	Int_t   mlepid_;
 	Int_t   mleppassid_;
 	Int_t   mleppassiso_;
@@ -108,12 +106,6 @@ class looper
 	Float_t iso2_;
 	Int_t   passid1_;
 	Int_t   passid2_;
-
-	/* vector<int> pingruns; */
-	/* vector<int> pinglumis; */
-	/* vector<int> pingevents; */
-	
-	/* ifstream pingfile; */
 
         LorentzVector*  lep1trk_;
         LorentzVector*  lep1glb_;
@@ -136,19 +128,8 @@ class looper
 	Int_t   acc_2010_;
 	Int_t   acc_highmet_;
 	Int_t   acc_highht_;
-	Float_t pingmass_;
-	Float_t jetcor1_;
-	Float_t jetcor2_;
-	Float_t cor1_;
-	Float_t cor2_;
 	Float_t mmjj_;
-	Float_t mmjjuncor_;
-	Float_t mmjjc_;
-	Float_t metnew_;
-	Float_t mmjjdef_;
 	Float_t mmjjtrk_;
-	Float_t mmjjtrkdef_;
-	Float_t mmjjtrkuncor_;
 	Float_t mmjjglb_;
 	Float_t mmjjsta_;
 	Float_t mjjj_;
@@ -179,8 +160,6 @@ class looper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
-        Int_t   njetsdef_;
-        Int_t   njetsplain_;
         Int_t   ngenjets_;
         Int_t   npfjets_;
         Int_t   npfjets40_;
@@ -191,9 +170,6 @@ class looper
         Int_t   nvtx_;
         Int_t   nbtags17_;
         Int_t   nbtags20_;
-        Int_t   nbtags20_24_;
-        Int_t   nbtags20c_;
-        Int_t   nbtags20_24c_;
         Int_t   nbtags33_;
         Float_t dilmass_;
         Float_t topmass_;
@@ -235,7 +211,6 @@ class looper
 	Int_t   id2_;
 	Int_t   w1_;
 	Int_t   w2_;
-	Int_t   diltrig_;
         Float_t ptl2_;
         Float_t ptj1_;
         Float_t ptj2_;
@@ -246,9 +221,9 @@ class looper
         Float_t meff_;
         Float_t mt_;
         char    dataset_[200];
-        ULong64_t  run_;
-        ULong64_t  lumi_;
-        ULong64_t  event_;
+        UInt_t  run_;
+        UInt_t  lumi_;
+        UInt_t  event_;
 	Float_t y_;
 	Float_t ht_;
 	Float_t htoffset_;
@@ -274,10 +249,6 @@ class looper
 	Float_t ndavtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
-	Int_t   mtrg_;
-	Int_t   eetrg_;
-	Int_t   mmtrg_;
-	Int_t   emtrg_;
 
 	Float_t ksusy_;
 	Float_t ksusyup_;
@@ -291,7 +262,6 @@ class looper
         // Lots and lots of histograms
 
         //Z histos
-	TH1F* hping;
         TH1F* hdilMass_Z[4][4];
         TH1F* htcmet_event_Z[4][4];
         TH1F* htcmet_looper_Z[4][4];

@@ -10,7 +10,6 @@
 //#include "../CORE/topmass/ttdilepsolve.h" REPLACETOPMASS
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > P4;
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 typedef map<unsigned int, unsigned int> m_uiui;
 
@@ -75,8 +74,8 @@ class singleLeptonLooper
 	std::vector<float> trackIsoPtRanges( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
 	std::vector<float> totalIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
 	//pair<float,float> getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool is8TeV = false);
-	pair<float,float> getPhiCorrMET( float met, float metphi, int nvtx, bool ismc);
-	pair<float,float> getTrackerMET( P4 *lep, double deltaZCut = 0.1, bool dolepcorr = true );
+	pair<float,float> getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool isA = false);
+
 	bool initialized;
 	TH1D*   stop_xsec_hist;
 	TFile*  stop_xsec_file;
@@ -100,8 +99,6 @@ class singleLeptonLooper
 	Float_t pdfx2_;
         Int_t pdfid1_; 
 	Int_t pdfid2_;
-
-	Int_t   eldup_;    
 
 	// MC truth lepton info
 	Int_t   mcid1_;    
@@ -258,7 +255,6 @@ class singleLeptonLooper
 
 	// MC truth vars
 	Int_t   npartons_;
-	Int_t   nwzpartons_;
 	Float_t maxpartonpt_;
 	Float_t ptt_;
 	Float_t pttbar_;
@@ -334,35 +330,24 @@ class singleLeptonLooper
         LorentzVector*  pfjet4_; 
         LorentzVector*  pfjet5_; 
         LorentzVector*  pfjet6_; 
-	// b-tagging
         Int_t bjet1_; 
         Int_t bjet2_; 
         Int_t bjet3_; 
         Int_t bjet4_; 
         Int_t bjet5_; 
         Int_t bjet6_; 
-	// truth lepton
         Int_t lepjet1_; 
         Int_t lepjet2_; 
         Int_t lepjet3_; 
         Int_t lepjet4_; 
         Int_t lepjet5_; 
         Int_t lepjet6_; 
-	// status 3 parton
         Int_t qgjet1_; 
         Int_t qgjet2_; 
         Int_t qgjet3_; 
         Int_t qgjet4_; 
         Int_t qgjet5_; 
         Int_t qgjet6_; 
-	// gen-jet matching
-        Float_t genjetdr1_; 
-        Float_t genjetdr2_; 
-        Float_t genjetdr3_; 
-        Float_t genjetdr4_; 
-        Float_t genjetdr5_; 
-        Float_t genjetdr6_; 
-
 	Int_t hyptype_;
 
 	Int_t mm_;
@@ -400,8 +385,6 @@ class singleLeptonLooper
         Float_t trgeff_;
         Float_t mutrigweight_;
         Float_t mutrigweight2_;
-        Float_t sltrigweight_;
-        Float_t dltrigweight_;
         Float_t pfmetsig_;
         Float_t smeff_;
         Float_t k_;
@@ -412,15 +395,7 @@ class singleLeptonLooper
         Float_t costhetaweight_;
 	Int_t   njpt_;
 	Float_t htjpt_;
-
-	Int_t   csc_;
-	Int_t   hcallaser_;
-	Int_t   ecaltp_;
-	Int_t   trkfail_;
-	Int_t   eebadsc_;
-	Int_t   hbhenew_;
         Int_t   hbhe_;
-
 	Int_t   jetid_;
 	Int_t   jetid30_;
         Int_t   mull_;
@@ -439,8 +414,6 @@ class singleLeptonLooper
         Int_t   njetsUp_;
         Int_t   npfjets25_;
         Int_t   njetsDown_;
-	Float_t trkmet_nolepcorr_;
-	Float_t trkmetphi_nolepcorr_;
 	Float_t trkmet_;
 	Float_t trkmetphi_;
 	Float_t trkmetproj_;
@@ -513,11 +486,8 @@ class singleLeptonLooper
 	Int_t   w2_;
 	Float_t iso1_;
 	Float_t isont1_;
-	Float_t isopf1_;
-	Float_t isopfold1_;
 	Float_t iso2_;
 	Float_t isont2_;
-	Float_t isopf2_;
         Float_t ptl2_;
         Float_t etal1_;
         Float_t etal2_;
@@ -550,46 +520,8 @@ class singleLeptonLooper
 	Float_t n3dvtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
-	Float_t eoverpin_;
-	Float_t eoverpout_;
-	Float_t dEtaIn_;
-	Float_t dPhiIn_;
-	Float_t sigmaIEtaIEta_;
-	Float_t hOverE_;
-	Float_t ooemoop_;
-	Float_t d0vtx_;
-	Float_t dzvtx_;
-	Float_t expinnerlayers_;
-	Float_t fbrem_;
-	Float_t pfisoch_;
-	Float_t pfisoem_;
-	Float_t pfisonh_;
-	Float_t eSC_;
-	Float_t phiSC_;
-	Float_t eSCRaw_;
-	Float_t eSCPresh_;
 	Float_t emjet10_;
 	Float_t emjet20_;
-	Float_t eoverpin2_;
-	Float_t eoverpout2_;
-	Float_t dEtaIn2_;
-	Float_t dPhiIn2_;
-	Float_t sigmaIEtaIEta2_;
-	Float_t hOverE2_;
-	Float_t ooemoop2_;
-	Float_t d0vtx2_;
-	Float_t dzvtx2_;
-	Float_t expinnerlayers2_;
-	Float_t fbrem2_;
-	Float_t pfisoch2_;
-	Float_t pfisoem2_;
-	Float_t pfisonh2_;
-	Float_t eSC2_;
-	Float_t phiSC2_;
-	Float_t eSCRaw2_;
-	Float_t eSCPresh2_;
-
-
 
 	//recoil
 	Float_t dilrecoil_;

@@ -49,15 +49,18 @@ class singleLeptonLooper
 	
         int  ScanChain(TChain *chain, char *prefix = "", float kFactor = 1., 
 		       int prescale = 1., float lumi = 1.,
+                       JetTypeEnum jetType = e_JPT, 
+                       MetTypeEnum metType = e_tcmet,
+                       ZVetoEnum zveto = e_standard,
                        FREnum frmode  = e_wjets,
-                       bool doFakeApp = false
+                       bool doFakeApp = false,
+                       bool calculateTCMET = false
                        );
         void BookHistos (char *prefix);
+        float getCosThetaStarWeight();
+        float smearMet( float met , float sumjetpt , float metscale );
 	void InitBaby();
-	float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx = 0 );
-	void weight3D_init( std::string WeightFileName );
-	double weight3D( int pv1, int pv2, int pv3 );
-
+	
         // Set globals
         void set_susybaseline (bool  b)    { g_susybaseline = b; }
         void set_createTree   (bool  b)    { g_createTree   = b; }
@@ -70,17 +73,10 @@ class singleLeptonLooper
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
 	float stopPairCrossSection( float stopmass );
         void closeTree ();
-	float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut = false , float pt_thresh = 0.0);
-	std::vector<float> trackIsoPtRanges( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
-	std::vector<float> totalIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 );
-	//pair<float,float> getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool is8TeV = false);
-	pair<float,float> getPhiCorrMET( float met, float metphi, float sumet, bool ismc, bool isA = false);
 
 	bool initialized;
 	TH1D*   stop_xsec_hist;
 	TFile*  stop_xsec_file;
-	//3D Vertex weight
-	double Weight3D[50][50][50];
 
     private:
 
@@ -93,330 +89,14 @@ class singleLeptonLooper
 	TrigEnum g_trig;
         TRandom3 *random3_;
 
-	//PDF information
-        Float_t pdfQ_;
-        Float_t pdfx1_; 
-	Float_t pdfx2_;
-        Int_t pdfid1_; 
-	Int_t pdfid2_;
-
-	// MC truth lepton info
-	Int_t   mcid1_;    
-	Int_t   mcid2_;    
-	Int_t	mcdecay1_; 
-	Int_t   mcdecay2_; 
-	Int_t	mcndec1_; 
-	Int_t   mcndec2_;
-	Int_t	mcndeckls1_; 
-	Int_t   mcndeckls2_; 
-	Int_t	mcndecem1_; 
-	Int_t   mcndecem2_;  
-	Float_t mctaudpt1_;
-	Float_t mctaudpt2_;
-	Int_t   mctaudid1_;    
-	Int_t   mctaudid2_;    
-	Float_t mcdr1_;    
-	Float_t mcdr2_;    
-
-	// isolated track vars
-	Float_t trkpt5_;
-	Float_t mleptrk5_;
-	Float_t trkreliso5_;
-	Float_t trkpt10_;
-	Float_t mleptrk10_;
-	Float_t trkreliso10_;
-
-	Float_t trkpt5loose_;
-	Float_t trkreliso5loose_;
-	Float_t trkpt10loose_;
-	Float_t trkreliso10loose_;
-
-	//min pt cut on particles 
-	//included in the isolation
-	Float_t trkpt10pt0p1_;
-	Float_t trkreliso10pt0p1_;
-	Float_t trkpt10pt0p2_;
-	Float_t trkreliso10pt0p2_;
-	Float_t trkpt10pt0p3_;
-	Float_t trkreliso10pt0p3_;
-	Float_t trkpt10pt0p4_;
-	Float_t trkreliso10pt0p4_;
-	Float_t trkpt10pt0p5_;
-	Float_t trkreliso10pt0p5_;
-	Float_t trkpt10pt0p6_;
-	Float_t trkreliso10pt0p6_;
-	Float_t trkpt10pt0p7_;
-	Float_t trkreliso10pt0p7_;
- 	Float_t trkpt10pt0p8_;
-	Float_t trkreliso10pt0p8_;
-	Float_t trkpt10pt0p9_;
-	Float_t trkreliso10pt0p9_;
-	Float_t trkpt10pt1p0_;
-	Float_t trkreliso10pt1p0_;
-
-	// extra pfcand vars 
-        Float_t pfcandiso5_;     
-        Float_t pfcandiso10_;     
-        Float_t pfcandpt5_;
-        Float_t pfcandpt10_;
-        Float_t pfcandmindrj5_;
-        Float_t pfcandmindrj10_;
-
-	Float_t pfcandpt10pt0p1_;
-	Float_t pfcandiso10pt0p1_;
-	Float_t pfcandpt10pt0p2_;
-	Float_t pfcandiso10pt0p2_;
-	Float_t pfcandpt10pt0p3_;
-	Float_t pfcandiso10pt0p3_;
-	Float_t pfcandpt10pt0p4_;
-	Float_t pfcandiso10pt0p4_;
-	Float_t pfcandpt10pt0p5_;
-	Float_t pfcandiso10pt0p5_;
-	Float_t pfcandpt10pt0p6_;
-	Float_t pfcandiso10pt0p6_;
-	Float_t pfcandpt10pt0p7_;
-	Float_t pfcandiso10pt0p7_;
- 	Float_t pfcandpt10pt0p8_;
-	Float_t pfcandiso10pt0p8_;
-	Float_t pfcandpt10pt0p9_;
-	Float_t pfcandiso10pt0p9_;
-	Float_t pfcandpt10pt1p0_;
-	Float_t pfcandiso10pt1p0_;
-
-	// btag variables
-	Int_t   nbtagsssv_;     
-	Int_t   nbtagstcl_;     
-	Int_t   nbtagstcm_;     
-	Int_t   nbtagscsvl_;    
-	Int_t   nbtagscsvm_;    
-	Int_t   nbtagscsvt_;    
-	Int_t   nbtagsssvcorr_;     
-	Int_t   nbtagstclcorr_;     
-	Int_t   nbtagstcmcorr_;     
-	Int_t   nbtagscsvlcorr_;    
-	Int_t   nbtagscsvmcorr_;    
-	Int_t   nbtagscsvtcorr_;    
-
-	// pfjet counters
-	Int_t   npfjets30_;
-	Int_t   npfjets35_;
-	Int_t   npfjets40_;
-	Int_t   npfjets45_;
-	Int_t   npfresjets30_;
-	Int_t   npfresjets35_;
-	Int_t   npfresjets40_;
-	Int_t   npfresjets45_;
-	Int_t   npfjets30lepcorr_;
-	Float_t knjets_;
-
-	//rho correction
-	Float_t rhovor_;
-
-	// pfht vars
-	Float_t htpf30_;
-	Float_t htpf35_;
-	Float_t htpf40_;
-	Float_t htpf45_;
-	Float_t htpfres30_;
-	Float_t htpfres35_;
-	Float_t htpfres40_;
-	Float_t htpfres45_;
-
-	// matched lepton vars
-	Int_t   mlepid_;
-	Int_t   mleppassid_;
-	Int_t   mleppassiso_;
-	Float_t mlepiso_;
-	Float_t mlepdr_;
-
-	Float_t pflepdr_;
-	Float_t pflepiso_;
-	Float_t pfleppt_;
-	Float_t pflepmindrj_;
-	Float_t pftauddr_;
-	Float_t pftaudiso_;
-	Float_t pftaudpt_;
-	Float_t pftaudmindrj_;
-	
-	//lepton jet matching variable
-	Float_t lep1pfjetdr_;
-	Float_t lep2pfjetdr_;
-
-	// HLT variables
-	Int_t   ldi_;
-	Int_t   ltri_;
-	Int_t   smu_;
-	Int_t   smu30_;
-	Int_t   trgmu30_;
-	Int_t   trg2mu30_;
-	Int_t   dil_;
-
-	// MC truth vars
-	Int_t   npartons_;
-	Float_t maxpartonpt_;
-	Float_t ptt_;
-	Float_t pttbar_;
-	Float_t ptttbar_;
-	Float_t mttbar_;
-	Float_t etattbar_;
-	Float_t mgcor_;
-	Int_t   wflav_;
-
-	// Type1 pfmet
-	Float_t t1met10_;
-	Float_t t1met20_;
-	Float_t t1met30_;
-	Float_t t1met10phi_;
-	Float_t t1met20phi_;
-	Float_t t1met30phi_;
-	Float_t t1met10mt_;
-	Float_t t1met20mt_;
-	Float_t t1met30mt_;
-	Float_t lepmetpt_;
-	Float_t lept1met10pt_;
-
-	//phi corrected type1 mets
-	Float_t t1metphicorr_;
-	Float_t t1metphicorrphi_;
-	Float_t t1metphicorrphiup_;
-	Float_t t1metphicorrphidn_;
-	Float_t t1metphicorrmt_;
-	Float_t t1metphicorrlepmt_;
-	Float_t t1metphicorrlep_;
-	Float_t t1metphicorrlepphi_;
-	Float_t t1metphicorrup_;
-	Float_t t1metphicorrdn_;
-	Float_t t1metphicorrmtup_;
-	Float_t t1metphicorrmtdn_;
-
-	// assorted p4's
-	LorentzVector*  t_;   
-	LorentzVector*  tbar_;   
-	LorentzVector*  ttbar_;   
-	LorentzVector*  mlep_;   
-	LorentzVector*  mclep1_;   
-	LorentzVector*  mclep2_;   
-	LorentzVector*  mctaud1_;   
-	LorentzVector*  mctaud2_;  
-	LorentzVector*  mctaudvis1_;   
-	LorentzVector*  mctaudvis2_;  
-        LorentzVector*  pflep_;
-        LorentzVector*  pftaud_;
-        LorentzVector*  pfcand5_;
-        LorentzVector*  pfcand10_;
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
-        LorentzVector*  trklep1_;
-        LorentzVector*  trklep2_;
-        LorentzVector*  gfitlep1_;
-        LorentzVector*  gfitlep2_;
-        LorentzVector*  lepp_;
-        LorentzVector*  lepm_;
-        LorentzVector*  pflep1_;
-        LorentzVector*  pflep2_;
-        LorentzVector*  leppfjet1_;
-        LorentzVector*  leppfjet2_;
         LorentzVector*  dilep_;
         LorentzVector*  jet_; 
-	LorentzVector*  mcnu_;
-	LorentzVector*  mclep_;
-
-	// jet p4's
-        LorentzVector*  pfjet1_; 
-        LorentzVector*  pfjet2_; 
-        LorentzVector*  pfjet3_; 
-        LorentzVector*  pfjet4_; 
-        LorentzVector*  pfjet5_; 
-        LorentzVector*  pfjet6_; 
-        Float_t beta1jet1_; 
-        Float_t beta1jet2_; 
-        Float_t beta1jet3_; 
-        Float_t beta1jet4_; 
-        Float_t beta1jet5_; 
-        Float_t beta1jet6_; 
-        Float_t beta2jet1_; 
-        Float_t beta2jet2_; 
-        Float_t beta2jet3_; 
-        Float_t beta2jet4_; 
-        Float_t beta2jet5_; 
-        Float_t beta2jet6_; 
-        Float_t beta10p1jet1_; 
-        Float_t beta10p1jet2_; 
-        Float_t beta10p1jet3_; 
-        Float_t beta10p1jet4_; 
-        Float_t beta10p1jet5_; 
-        Float_t beta10p1jet6_; 
-        Float_t beta20p1jet1_; 
-        Float_t beta20p1jet2_; 
-        Float_t beta20p1jet3_; 
-        Float_t beta20p1jet4_; 
-        Float_t beta20p1jet5_; 
-        Float_t beta20p1jet6_; 
-        Float_t beta10p15jet1_; 
-        Float_t beta10p15jet2_; 
-        Float_t beta10p15jet3_; 
-        Float_t beta10p15jet4_; 
-        Float_t beta10p15jet5_; 
-        Float_t beta10p15jet6_; 
-        Float_t beta20p15jet1_; 
-        Float_t beta20p15jet2_; 
-        Float_t beta20p15jet3_; 
-        Float_t beta20p15jet4_; 
-        Float_t beta20p15jet5_; 
-        Float_t beta20p15jet6_; 
-        Float_t beta10p2jet1_; 
-        Float_t beta10p2jet2_; 
-        Float_t beta10p2jet3_; 
-        Float_t beta10p2jet4_; 
-        Float_t beta10p2jet5_; 
-        Float_t beta10p2jet6_; 
-        Float_t beta20p2jet1_; 
-        Float_t beta20p2jet2_; 
-        Float_t beta20p2jet3_; 
-        Float_t beta20p2jet4_; 
-        Float_t beta20p2jet5_; 
-        Float_t beta20p2jet6_; 
-        Int_t bjet1_; 
-        Int_t bjet2_; 
-        Int_t bjet3_; 
-        Int_t bjet4_; 
-        Int_t bjet5_; 
-        Int_t bjet6_; 
-        Int_t bcsvjet1_; 
-        Int_t bcsvjet2_; 
-        Int_t bcsvjet3_; 
-        Int_t bcsvjet4_; 
-        Int_t bcsvjet5_; 
-        Int_t bcsvjet6_; 
-        Int_t lepjet1_; 
-        Int_t lepjet2_; 
-        Int_t lepjet3_; 
-        Int_t lepjet4_; 
-        Int_t lepjet5_; 
-        Int_t lepjet6_; 
-        Int_t qgjet1_; 
-        Int_t qgjet2_; 
-        Int_t qgjet3_; 
-        Int_t qgjet4_; 
-        Int_t qgjet5_; 
-        Int_t qgjet6_; 
-        Float_t genjetdr1_; 
-        Float_t genjetdr2_; 
-        Float_t genjetdr3_; 
-        Float_t genjetdr4_; 
-        Float_t genjetdr5_; 
-        Float_t genjetdr6_; 
-
- 	LorentzVector*  nonisoel_;   
- 	LorentzVector*  nonisomu_;   
 
         // Baby ntuple variables
- 	Float_t mcmln_;
- 	Float_t mcmtln_;
-	Float_t mjj_;
 	Float_t dphilm_;
 	Float_t mG_;
-	Float_t x_;
 	Float_t mL_;
 	Float_t ecalveto1_;
 	Float_t ecalveto2_;
@@ -431,14 +111,10 @@ class singleLeptonLooper
 	Float_t qscale_;
         Float_t weight_;
         Float_t trgeff_;
-        Float_t mutrigweight_;
-        Float_t mutrigweight2_;
         Float_t pfmetsig_;
         Float_t smeff_;
         Float_t k_;
         Float_t mllgen_;
-        Float_t ptzgen_;
-        Float_t ptwgen_;
         Float_t dphijm_;
         Float_t costhetaweight_;
 	Int_t   njpt_;
@@ -454,11 +130,14 @@ class singleLeptonLooper
         Int_t   nlep_;
         Int_t   ngoodlep_;
         Int_t   ngoodel_;
-        Int_t   nosel_;
         Int_t   ngoodmu_;
         Int_t   proc_;
         Int_t   leptype_;
+        Int_t   njets_;
         Int_t   ngenjets_;
+        Int_t   npfjets_;
+        Int_t   npfjets40_;
+        Int_t   npfjetspv_;
         Int_t   njetsUp_;
         Int_t   npfjets25_;
         Int_t   njetsDown_;
@@ -476,10 +155,10 @@ class singleLeptonLooper
 	Float_t trkjetmetproj_;
         Float_t htUp_;
         Float_t htDown_;
-        Int_t   npu_;
-        Int_t   npuMinusOne_;
-        Int_t   npuPlusOne_;
         Int_t   nvtx_;
+        Int_t   nbtags_;
+        Int_t   nbtagstcl_;
+        Int_t   nbtagstcm_;
         Float_t dilmass_;
         Float_t topmass_;
         Float_t tcmet_;
@@ -522,14 +201,8 @@ class singleLeptonLooper
         Float_t m0_;
         Float_t m12_;
         Float_t ptl1_;
-	Float_t lep1chi2ndf_;
-	Float_t lep2chi2ndf_;
-	Float_t lep1dpt_;
-	Float_t lep2dpt_;
 	Int_t   id1_;
 	Int_t   id2_;
-	Int_t   leptype1_;
-	Int_t   leptype2_;
 	Int_t   w1_;
 	Int_t   w2_;
 	Float_t iso1_;
@@ -537,6 +210,8 @@ class singleLeptonLooper
 	Float_t iso2_;
 	Float_t isont2_;
         Float_t ptl2_;
+        Float_t ptj1_;
+        Float_t ptj2_;
         Float_t etal1_;
         Float_t etal2_;
         Float_t phil1_;
@@ -544,9 +219,9 @@ class singleLeptonLooper
         Float_t meff_;
         Float_t mt_;
         char    dataset_[200];
-        UInt_t  run_;
-        UInt_t  lumi_;
-        UInt_t  event_;
+        Int_t   run_;
+        Int_t   lumi_;
+        Int_t   event_;
 	Float_t y_;
 	Float_t ht_;
 	Float_t htoffset_;
@@ -555,27 +230,23 @@ class singleLeptonLooper
 	Int_t   njetsoffset_;
 	Float_t htgen_;
 	Float_t htpf_;
+	Float_t htpf40_;
+	Float_t htpf25_;
+	Float_t htpfpv_;
 	Float_t ptjetraw_;
 	Float_t ptjet23_;
 	Float_t ptjetF23_;
 	Float_t ptjetO23_;
 	Float_t cosphijz_;
+	Int_t   njets15_;
 	Int_t   ndavtx_;
 	Int_t   nels_;
 	Int_t   nmus_;
 	Int_t   ntaus_;
 	Int_t   nleps_;
 	Float_t ndavtxweight_;
-	Float_t n3dvtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
-	Float_t emjet10_;
-	Float_t emjet20_;
-
-	//recoil
-	Float_t dilrecoil_;
-	Float_t dilrecoilparl_;
-	Float_t dilrecoilperp_;
 
 	Float_t ksusy_;
 	Float_t ksusyup_;
@@ -583,15 +254,168 @@ class singleLeptonLooper
 	Float_t xsecsusy_;
 	Float_t xsecsusy2_;
 
-	Float_t mbb_;
-	Int_t   isdata_;
-
         // for fakeRates
         double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
 
         // Lots and lots of histograms
-        TH1F* h_PU_trkpt;
-        TH1F* h_dz_vtx_trk;
+
+        //Z histos
+        TH1F* hdilMass_Z[4][4];
+        TH1F* htcmet_event_Z[4][4];
+        TH1F* htcmet_looper_Z[4][4];
+        TH1F* hpfmet_Z[4][4];
+        TH1F* hmucormet_Z[4][4];
+        TH1F* hmucorjesmet_Z[4][4];
+
+        TH1F* hyield;
+        TH1F* hyield_weight;
+        TH1F* hyieldsig;
+        TH1F* hyield_unweighted;
+        TH1F* hyieldsig_unweighted;
+
+        TH2F*     hdtcmetevent_genmet[4][4];
+        TProfile* tdtcmetevent_genmet[4][4];
+        TH2F*     hdtcmetlooper_genmet[4][4];
+        TProfile* tdtcmetlooper_genmet[4][4];
+        TH2F*     hdpfmet_genmet[4][4];
+        TProfile* tdpfmet_genmet[4][4];
+        TH2F*     hdmucormet_genmet[4][4];
+        TProfile* tdmucormet_genmet[4][4];
+        TH2F*     hdmucorjesmet_genmet[4][4];
+        TProfile* tdmucorjesmet_genmet[4][4];
+
+        TH1F* hmt2j_signal[4][4];
+        TH1F* hmt2j_control[4][4];
+        TH1F* hmt2j_all[4][4];
+        TH2F* hmet_dilpt_signal[4][4];
+        TH2F* hmet_dilpt_control[4][4];
+        TH2F* hmet_dilpt_all[4][4];
+              
+        TH1F* hmt[4][4];
+        TH1F* hetaz[4][4];
+        TProfile* htcsumet_tcmet_prof[4][4]; 
+        TProfile* hsumJetPt_tcmetsqrtsumet_prof[4][4]; 
+        TProfile* hgensumet_genmet_prof[4][4]; 
+        //TProfile* hsumJetPt_tcmetpowtcsumet_prof[4][4][101]; 
+        //TH2F* hsumJetPt_tcmetpowtcsumet_th2[4][4][101];
+        //TH2F*     hsumJetPt_tcmetpowtcsumet_th2[101];
+        //TProfile* hsumJetPt_tcmetpowtcsumet_prof[101];
+
+	TH2F* msugra_highmet;
+	TH2F* msugra_highht;
+	TH2F* msugra_all;
+
+	TH2F* msugra_highmet_kup;
+	TH2F* msugra_highmet_kdn;
+	TH2F* msugra_highmet_jup;
+	TH2F* msugra_highmet_jdn;
+
+	TH2F* msugra_highht_kup;
+	TH2F* msugra_highht_kdn;
+	TH2F* msugra_highht_jup;
+	TH2F* msugra_highht_jdn;
+
+        TH2F* hsumJetPt_tcmet[4][4];
+        TH2F* hsumJetPt_tcmetsqrtsumet[4][4]; 
+        TH2F* hsumJetPt_tcmetsumet[4][4]; 
+        TH2F* hetaZ_tcmet[4][4]; 
+        TH2F* hetaZ_tcmetsqrtsumet[4][4]; 
+        TH2F* hetaZ_tcmetsumet[4][4]; 
+
+        TH2F* hdilMass_tcmet[4][4];
+        TH1F* hmt2core[4][4];               // MT2 from CORE
+        TH1F* hmt2jcore[4][4];               // MT2J from CORE
+        TH1F* hmt2j[4][4];                   // potentially custom MT2J
+        TH1F* hsumJetPt[4][4];               // scalar sum jet Et
+        TH1F* hsumJetPt_cut[4][4];               // scalar sum jet Et
+        TH2F* hDtcmetgenmetVsumJetPt[4][4];
+        TH2F* hDmetmuonjesgenmetVsumJetPt[4][4];
+        TH1F* hmeffJet[4][4];                // scalar sum jet pt + scalar sum dil pt + (tc)met
+
+        TH2F* habcd[4][4];                   
+        TProfile* habcd_tprof[4][4];                   
+        TH2F* habcd_nopresel[4][4];                   
+        TProfile* habcd_tprof_nopresel[4][4];                   
+        TH1F* hsumJptPt[4][4];               // scalar sum JPT jet Et
+        TH1F* hsumJptPt_cut[4][4];               // scalar sum JPT jet Et
+        TH1F* hmeffJPT[4][4];                // scalar sum JPT jet pt + scalar sum dil pt + (tc)met
+
+        TH1F* hsumHypPt[4][4];               // scalar sum JPT jet Et
+        TH1F* hmeffHyp[4][4];                // scalar sum JPT jet pt + scalar sum dil pt + (tc)met
+
+        TH1F* hnJet[4];                      // Njet distributions
+        TH1F* hnJpt[4];                      // Njpt distributions
+        TH1F* hnBtagJpt[4];                  // N btag jpts
+        TH1F* hnHypJet[4];                   // Hyp Njet distributions
+        TH1F* helePt[4][4];                  // electron Pt
+        TH1F* hmuPt[4][4];                   // muon Pt
+        TH1F* hminLepPt[4][4];               // minimum lepton Pt
+        TH1F* hmaxLepPt[4][4];               // maximum lepton Pt
+        TH1F* hminLepEta[4][4];              // minimum lepton eta
+        TH1F* hmaxLepEta[4][4];              // maximum lepton eta
+        TH1F* helePhi[4][4];                 // electron phi
+        TH1F* hmuPhi[4][4];                  // muon phi
+        TH1F* hdphiLep[4][4];                // delta phi between leptons
+        TH1F* hdrLep[4][4];                  // dR between leptons
+        TH1F* hdrJ1J2[4][4];                 // dR between 2 leading jets
+        TH1F* heleEta[4][4];                 // electron eta
+        TH1F* hmuEta[4][4];                  // muon eta
+        TH1F* htopMass[4][4];                // top mass estimate for 2 highest pt jets
+        TH1F* htopMassAllComb[4][4];         // top mass estimate for all jets
+        TH1F* hdilMass[4][4];                // dilepton mass
+        TH1F* hdilMass_cut[4][4];            // dilepton mass
+        TH1F* hdilPt[4][4];                  // dilepton Pt
+        TH1F* hdilPt_zveto[4][4];            // dilepton Pt with z-veto applied
+        TH1F* hdilPtSmeared[4][4];           // dilepton Pt with Gaussian smearing
+
+        TH1F* hgenmet[4][4];                 // MET corrected for muons and JES
+        TH1F* hgenmetPhi[4][4];              // MET corrected for muons and JES phi
+        TH1F* hmetmuon[4][4];                // MET corrected for muons and JES
+        TH1F* hmetmuonPhi[4][4];             // MET corrected for muons and JES phi
+        TH1F* hmetmuonjes[4][4];             // MET corrected for muons and JES
+        TH1F* hmetmuonjesPhi[4][4];          // MET corrected for muons and JES phi
+        TH1F* htcmet[4][4];                  // tc MET
+        TH1F* htcmet_sqrtht[4][4];           // tc MET
+        TH1F* htcmetPhi[4][4];               // tc MET phi
+        TH1F* hpfmet[4][4];                  // tc MET
+        TH1F* hpfmetPhi[4][4];               // tc MET phi
+
+        TH2F* hmetmuonVsDilepPt[4][4];       // MET vs dilepton Pt
+        TH2F* hmetmuonOverPtVsDphi[4][4];    // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
+        TH2F* hmetmuonjesVsDilepPt[4][4];    // MET vs dilepton Pt
+        TH2F* hmetmuonjesOverPtVsDphi[4][4]; // MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
+        TH2F* htcmetVsDilepPt[4][4];         // tc MET vs dilepton Pt
+        TH2F* htcmetOverPtVsDphi[4][4];      // tc MET/Lepton Pt vs DeltaPhi between MET and Lepton Pt
+
+        TH2F* hdphillvsmll[4][4];            // delta phi between leptons vs dilepton mass
+        TH1F* hptJet1[4][4];                 // Pt of 1st jet
+        TH1F* hptJet2[4][4];                 // Pt of 2nd jet
+        TH1F* hptJet3[4][4];                 // Pt of 3rd jet
+        TH1F* hptJet4[4][4];                 // Pt of 4th jet
+        TH1F* hetaJet1[4][4];                // eta of 1st jet
+        TH1F* hetaJet2[4][4];                // eta of 2nd jet
+        TH1F* hetaJet3[4][4];                // eta of 3rd jet
+        TH1F* hetaJet4[4][4];                // eta of 4th jet
+        TH1F* hptJpt1[4][4];                 // Pt of 1st JPT jet
+        TH1F* hptJpt2[4][4];                 // Pt of 2nd JPT jet
+        TH1F* hptJpt3[4][4];                 // Pt of 3rd JPT jet
+        TH1F* hptJpt4[4][4];                 // Pt of 4th JPT jet
+        TH1F* hptBtagJpt1[4][4];             // Pt of 1st JPT jet
+        TH1F* hptBtagJpt2[4][4];             // Pt of 2nd JPT jet
+        TH1F* hptBtagJpt3[4][4];             // Pt of 3rd JPT jet
+        TH1F* hptBtagJpt4[4][4];             // Pt of 4th JPT jet
+        TH1F* hetaJpt1[4][4];                // eta of 1st JPT jet
+        TH1F* hetaJpt2[4][4];                // eta of 2nd JPT jet
+        TH1F* hetaJpt3[4][4];                // eta of 3rd JPT jet
+        TH1F* hetaJpt4[4][4];                // eta of 4th JPT jet=
+        TH1F* hptHypJet1[4][4];              // Pt of 1st JPT jet
+        TH1F* hptHypJet2[4][4];              // Pt of 2nd JPT jet
+        TH1F* hptHypJet3[4][4];              // Pt of 3rd JPT jet
+        TH1F* hptHypJet4[4][4];              // Pt of 4th JPT jet
+        TH1F* hetaHypJet1[4][4];             // eta of 1st JPT jet
+        TH1F* hetaHypJet2[4][4];             // eta of 2nd JPT jet
+        TH1F* hetaHypJet3[4][4];             // eta of 3rd JPT jet
+        TH1F* hetaHypJet4[4][4];             // eta of 4th JPT jet
 };
 
 #endif

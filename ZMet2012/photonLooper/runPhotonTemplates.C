@@ -5,7 +5,7 @@ void runPhotonTemplates( char* iter , char* sample ){
 
   TChain* ch = new TChain("T1");
 
-  string file = Form("../photon_output/%s/%s_baby_2jets.root",iter,sample);
+  string file = Form("../photon_output/%s/%s_baby.root",iter,sample);
 
   cout << "Adding " << file << endl;
 

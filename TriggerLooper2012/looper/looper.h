@@ -60,39 +60,6 @@ class looper
 	Int_t   eeht150_;
 
 	Float_t dilmass_;
-	Float_t elnoiso1_mt_;
-	Float_t munoiso1_mt_;
-
-	Float_t munoiso1_d0pv_;
-	Float_t munoiso1_d0bs_;
-	Float_t elnoiso1_d0pv_;
-	Float_t elnoiso1_d0bs_;
-	Float_t munoiso2_d0pv_;
-	Float_t munoiso2_d0bs_;
-	Float_t elnoiso2_d0pv_;
-	Float_t elnoiso2_d0bs_;
-
-	Float_t munoiso1_ev_;
-	Float_t munoiso1_hv_;
-	Float_t munoiso2_ev_;
-	Float_t munoiso2_hv_;
-
-	Int_t elnoiso1_conv_;
-	Int_t elnoiso1_conv2_;
-	Int_t elnoiso1_hitp_;
-	Int_t elnoiso1_inner_;
-	Int_t elnoiso1_mit_;
-	Int_t elnoiso2_conv_;
-	Int_t elnoiso2_conv2_;
-	Int_t elnoiso2_hitp_;
-	Int_t elnoiso2_inner_;
-	Int_t elnoiso2_mit_;
-
-	Int_t mu5_;
-	Int_t mu8_;
-	Int_t mu12_;
-	Int_t mu15_;
-	Int_t mu17_;
 	Int_t elnoiso1_wp80_;
 	Int_t elnoiso1_top_;
 	Int_t elnoiso2_wp80_;
@@ -142,14 +109,10 @@ class looper
 	Float_t munoiso1_isofj_;
 	Float_t munoiso1_isovtx_;
 	Float_t munoiso1_isopf_;
-	Float_t munoiso1_isodb03_;
-	Float_t munoiso1_isodb04_;
 	Float_t munoiso2_iso_;
 	Float_t munoiso2_isofj_;
 	Float_t munoiso2_isovtx_;
 	Float_t munoiso2_isopf_;
-	Float_t munoiso2_isodb03_;
-	Float_t munoiso2_isodb04_;
 	Float_t munoiso3_iso_;
 	Float_t munoiso3_isofj_;
 	Float_t munoiso3_isovtx_;
@@ -171,10 +134,6 @@ class looper
         LorentzVector*  pjet2_; 
         LorentzVector*  pjet3_; 
         LorentzVector*  pjet4_; 
-        LorentzVector*  pjetnoiso1_; 
-        LorentzVector*  pjetnoiso2_; 
-        LorentzVector*  pjetnoiso3_; 
-        LorentzVector*  pjetnoiso4_; 
         LorentzVector*  lep1_; 
         LorentzVector*  lep2_; 
         LorentzVector*  lep3_; 
@@ -187,7 +146,6 @@ class looper
         LorentzVector*  munoiso2_; 
         LorentzVector*  munoiso3_; 
         LorentzVector*  munoiso4_; 
-        Int_t   lep1_top_; 
 	Float_t pjet1_res_;
 	Float_t pjet2_res_;
 	Float_t pjet3_res_;
@@ -205,10 +163,8 @@ class looper
         UInt_t  lumi_;
         UInt_t  event_;
 	Int_t   njets_;
-	Int_t   njetsnoiso_;
 	Int_t   ncjets_;
 	Float_t ht_;
-	Float_t htnoiso_;
 	Float_t htc_;
 	Float_t pfmet_;
 	Float_t pfmetphi_;
@@ -264,17 +220,12 @@ class looper
 	Float_t mutrijet_trigdr_pjet3_;
 	Float_t mutrijet_trigdr_pjet4_;
 
-	// custom top triggers
-	Int_t eltrijetcaloisovl_;
-	Int_t eltrijettest_;
-
 	// top electron+jets triggers
 	Int_t eltrijet_;             
 	Int_t eltrijetbackup_;       
 	Int_t eldijet_;              
 	Int_t eljet_;                
 	Int_t elnoisotrijet_;        
-	Int_t nelnoisotrijet_;        
 	Int_t elnoisotrijetbackup_;  
 
 	// top muon+jets triggers
@@ -306,15 +257,8 @@ class looper
 	Int_t isomu34_;              
 	Int_t isomu40_;              
 
-	// custom isomu triggers
-	Int_t isomu24test_;              
-	Int_t iso20mu24_;              
-	Int_t iso30mu24_;              
-	Int_t iso40mu24_;              
-
 	// non-isolated single muon triggers
 	Int_t mu24_;                 
-	Int_t nmu24_;                 
 	Int_t mu30_;                 
 	Int_t mu40_;                 
 	Int_t mu50_;                 
@@ -356,7 +300,6 @@ class looper
 	Int_t el17vl_;               
 	Int_t el8noiso_;                  
 	Int_t el8noisojet30_;                  
-	Int_t el30noiso_;                  
 
 	// Higgs dilepton triggers
 	Int_t ee_;                   
@@ -365,10 +308,6 @@ class looper
 	Int_t em_;                   
 	Int_t me_;                   
 
-	Int_t munoiso1_emht175_;
-	Int_t munoiso1_mmht175_;
-	Int_t munoiso2_emht175_;
-	Int_t munoiso2_mmht175_;
 
 };
 
