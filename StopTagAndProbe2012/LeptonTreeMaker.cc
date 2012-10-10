@@ -350,6 +350,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   munpix_    = 0;
   munlayers_ = 0;
   mutrk_     = 0;
+  muglb_     = 0;
   mud0_      = 0.0;
   mudz_      = 0.0;
   muchi2ndf_ = 0.0;
@@ -365,6 +366,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   leptonTree.tree_->Branch("munpix"	       , &munpix_		        ,"munpix/i"    );
   leptonTree.tree_->Branch("munlayers"	       , &munlayers_		        ,"munlayers/i" );
   leptonTree.tree_->Branch("mutrk"	       , &mutrk_		        ,"mutrk/i"     );
+  leptonTree.tree_->Branch("muglb"	       , &muglb_		        ,"muglb/i"     );
   leptonTree.tree_->Branch("mud0"	       , &mud0_		        	,"mud0/F"      );
   leptonTree.tree_->Branch("mudz"	       , &mudz_		        	,"mudz/F"      );
   leptonTree.tree_->Branch("muchi2ndf"	       , &muchi2ndf_		        ,"muchi2ndf/F" );
@@ -951,13 +953,7 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       // basic probe denominator
       if (cms2.mus_p4()[probe].Pt() < 10.0)                continue; // pt cut
       if (fabs(cms2.mus_p4()[probe].Eta()) > 2.4)          continue; // eta cut
-      if (((cms2.mus_type()[probe]) & (1<<1)) == 0)        continue; // global muon
-
-      // require muon has track index, and at least 1 good vertex
-      int trkidx = cms2.mus_trkidx().at(probe);
-      int vtxidx = firstGoodVertex();
-      if ( trkidx < 0 ) continue;
-      if ( vtxidx < 0 ) continue;
+      //if (((cms2.mus_type()[probe]) & (1<<1)) == 0)        continue; // global muon
 
       SetCommonTreeVariables(leptonTree, weight, sample);
 
@@ -965,11 +961,33 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       muchi2ndf_ = cms2.mus_gfit_chi2().at(probe)/cms2.mus_gfit_ndof().at(probe); // chi2/ndf
       mustahits_ = cms2.mus_gfit_validSTAHits().at(probe);                        // standalone hits
       munsegs_   = cms2.mus_numberOfMatchedStations().at(probe);                  // muon segments
-      munpix_    = cms2.trks_valid_pixelhits().at(trkidx);                        // pixel hits
-      munlayers_ = cms2.trks_nlayers().at(trkidx);                                // nlayers
       mutrk_     = (((cms2.mus_type()[probe]) & (1<<2)) == 0) ? 0 : 1;            // tracker muon
-      mud0_      = fabs(trks_d0_pv(trkidx, vtxidx).first);                        // d0
-      mudz_      = fabs(trks_dz_pv(trkidx, vtxidx).first);                        // dz
+      muglb_     = (((cms2.mus_type()[probe]) & (1<<1)) == 0) ? 0 : 1;            // tracker muon
+
+      // require muon has track index, and at least 1 good vertex
+      int trkidx = cms2.mus_trkidx().at(probe);
+      int vtxidx = firstGoodVertex();
+
+      //if ( trkidx < 0 ) continue;
+      //if ( vtxidx < 0 ) continue;
+
+      if( trkidx >= 0 ){
+	munpix_    = cms2.trks_valid_pixelhits().at(trkidx);                        // pixel hits
+	munlayers_ = cms2.trks_nlayers().at(trkidx);                                // nlayers
+      }
+      else{
+	munpix_    = -1;
+	munlayers_ = -1;
+      }
+
+      if( trkidx >=0 && vtxidx >= 0 ){
+	mud0_      = fabs(trks_d0_pv(trkidx, vtxidx).first);                        // d0
+	mudz_      = fabs(trks_dz_pv(trkidx, vtxidx).first);                        // dz
+      }
+      else{
+	mud0_      = -1.0;
+	mudz_      = -1.0;
+      }
 
       probepfpt_ = -1;
       int ipf1 = cms2.mus_pfmusidx().at(probe);
@@ -1288,6 +1306,7 @@ void LeptonTreeMaker::SetCommonTreeVariables(LeptonTree &leptonTree, const doubl
   munpix_       = -1;
   munlayers_    = -1;
   mutrk_        = -1;
+  muglb_        = -1;
   mud0_         = -1.0;
   mudz_         = -1.0;
   probepfpt_    = -1;
