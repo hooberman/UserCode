@@ -123,6 +123,7 @@ class LeptonTreeMaker {
 	Int_t   munpix_;
 	Int_t   munlayers_;
 	Int_t   mutrk_;
+	Int_t   muglb_;
 	Float_t mud0_;
 	Float_t mudz_;
 	Float_t muchi2ndf_;
