@@ -1,14 +1,6 @@
 %\section{Systematics Uncertainties on the Background Prediction}
 %\label{sec:systematics}
 
-[DESCRIBE HERE ONE BY ONE THE UNCERTAINTIES THAT ARE PRESENT IN THE SPREADSHHET
-FROM WHICH WE CALCULATE THE TOTAL UNCERTAINTY. WE KNOW HOW TO DO THIS
-AND
-WE HAVE THE TECHNOLOGY FROM THE 7 TEV ANALYSIS TO PROPAGATE ALL
-UNCERTAINTIES
-CORRECTLY THROUGH.  WE WILL DO IT ONCE WE HAVE SETTLED ON THE
-INDIVIDUAL PIECES WHICH ARE STILL IN FLUX]
-
 In this Section we discuss the systematic uncertainty on the BG
 prediction.  This prediction is assembled from the event
 counts in the peak region of the transverse mass distribution as
@@ -42,7 +34,7 @@ Second order effects, such as the one described, are also included.
 
 \subsection{Statistical uncertainties on the event counts in the $M_T$
 peak regions}
-These vary between XX and XX \%, depending on the signal region
+These vary between 2\% and 20\%, depending on the signal region
 (different
 signal regions have different \met\ requirements, thus they also have
 different $M_T$ regions used as control.
@@ -52,10 +44,72 @@ fractional uncertainty is pretty much carried through all the way to
 the end.  There is also an uncertainty from the finite MC event counts
 in the $M_T$ peak regions.  This is also included, but it is smaller.
 
+Normalizing to the $M_T$ peak has the distinct advantages that 
+uncertainties on luminosity, cross-sections, trigger efficiency,
+lepton ID, cancel out.
+For the low statistics regions with high \met requirements, the
+price to pay in terms of event count statistical uncertainties starts
+to become significant.  In the future we may consider a different
+normalization startegy in the low statistics regions.
+
 \subsection{Uncertainty from the choice of $M_T$ peak region}
-IN 7 TEV DATA WE HAD SOME SHAPE DIFFERENCES IN THE MTRANS REGION THAT 
-LED US TO CONSERVATIVELY INCLUDE THIS UNCERTAINTY.  WE NEED TO LOOK
-INTO THIS AGAIN
+
+This choice affects the scale factors of Table~\ref{tab:mtpeaksf}.  
+If the $M_T$ peak region is not well modelled, this would introduce an
+uncertainty.
+
+We have tested this possibility by recalculating the post veto scale factors for a different
+choice
+of $M_T$ peak region ($40 < M_T < 100$ GeV instead of the default
+$50 < M_T < 80$ GeV.  This is shown in Table~\ref{tab:mtpeaksf2}.  
+The two results for the scale factors are very compatible. 
+We do not take any systematic uncertainty for this possible effect.
+
+\begin{table}[!h]
+\begin{center}
+{\footnotesize
+\begin{tabular}{l||c|c|c|c|c|c|c}
+\hline
+Sample              & SRA & SRB & SRC & SRD & SRE & SRF & SRG\\
+\hline
+\hline
+\multicolumn{8}{c}{$50 \leq \mt \leq 80$} \\
+\hline
+$\mu$ pre-veto \mt-SF      & $1.02 \pm 0.02$ & $0.95 \pm 0.03$ & $0.90 \pm 0.05$ & $0.98 \pm 0.08$ & $0.97 \pm 0.13$ & $0.85 \pm 0.18$ & $0.92 \pm 0.31$ \\
+$\mu$ post-veto \mt-SF     & $1.00 \pm 0.02$ & $0.95 \pm 0.03$ & $0.91 \pm 0.05$ & $1.00 \pm 0.09$ & $0.99 \pm 0.13$ & $0.85 \pm 0.18$ & $0.96 \pm 0.31$ \\
+\hline
+$\mu$ veto \mt-SF          & $0.98 \pm 0.01$ & $0.99 \pm 0.01$ & $1.01 \pm 0.02$ & $1.02 \pm 0.04$ & $1.02 \pm 0.06$ & $1.00 \pm 0.09$ & $1.04 \pm 0.11$ \\
+\hline
+\hline
+e pre-veto \mt-SF          & $0.95 \pm 0.02$ & $0.95 \pm 0.03$ & $0.94 \pm 0.06$ & $0.85 \pm 0.09$ & $0.84 \pm 0.13$ & $1.05 \pm 0.23$ & $1.04 \pm 0.33$ \\
+e post-veto \mt-SF         & $0.92 \pm 0.02$ & $0.91 \pm 0.03$ & $0.91 \pm 0.06$ & $0.74 \pm 0.08$ & $0.75 \pm 0.13$ & $0.91 \pm 0.22$ & $1.01 \pm 0.33$ \\
+\hline
+e veto \mt-SF      & $0.97 \pm 0.01$ & $0.96 \pm 0.02$ & $0.97 \pm 0.03$ & $0.87 \pm 0.05$ & $0.89 \pm 0.08$ & $0.86 \pm 0.11$ & $0.97 \pm 0.14$ \\
+\hline
+\hline
+\multicolumn{8}{c}{$40 \leq \mt \leq 100$} \\
+\hline
+$\mu$ pre-veto \mt-SF      & $1.02 \pm 0.01$ & $0.97 \pm 0.02$ & $0.91 \pm 0.05$ & $0.95 \pm 0.06$ & $0.97 \pm 0.10$ & $0.80 \pm 0.14$ & $0.74 \pm 0.22$ \\
+$\mu$ post-veto \mt-SF     & $1.00 \pm 0.01$ & $0.96 \pm 0.02$ & $0.90 \pm 0.04$ & $0.98 \pm 0.07$ & $1.00 \pm 0.11$ & $0.80 \pm 0.15$ & $0.81 \pm 0.24$ \\
+\hline
+$\mu$ veto \mt-SF          & $0.98 \pm 0.01$ & $0.99 \pm 0.01$ & $0.99 \pm 0.02$ & $1.03 \pm 0.03$ & $1.03 \pm 0.05$ & $1.01 \pm 0.08$ & $1.09 \pm 0.09$ \\
+\hline
+\hline
+e pre-veto \mt-SF          & $0.97 \pm 0.01$ & $0.93 \pm 0.02$ & $0.94 \pm 0.04$ & $0.81 \pm 0.06$ & $0.86 \pm 0.10$ & $0.95 \pm 0.17$ & $1.06 \pm 0.26$ \\
+e post-veto \mt-SF         & $0.94 \pm 0.01$ & $0.91 \pm 0.02$ & $0.91 \pm 0.04$ & $0.71 \pm 0.06$ & $0.82 \pm 0.10$ & $0.93 \pm 0.17$ & $1.09 \pm 0.27$ \\
+\hline
+e veto \mt-SF      & $0.97 \pm 0.01$ & $0.98 \pm 0.01$ & $0.97 \pm 0.02$ & $0.88 \pm 0.04$ & $0.95 \pm 0.06$ & $0.98 \pm 0.08$ & $1.03 \pm 0.09$ \\
+\hline
+\end{tabular}}
+\caption{ \mt\ peak Data/MC scale factors. The pre-veto SFs are applied to the
+  \ttdl\ sample, while the post-veto SFs are applied to the single
+  lepton samples. The veto SF is shown for comparison across channels.
+  The raw MC is used for backgrounds from rare processes.
+  The uncertainties are statistical only.
+\label{tab:mtpeaksf2}}
+\end{center}
+\end{table}
+
 
 \subsection{Uncertainty on the Wjets cross-section and the rare MC cross-sections}
 These are taken as 50\%, uncorrelated.  
@@ -76,7 +130,9 @@ BG goes down.
 These tail-to-peak ratios are described in Section~\ref{sec:ttp}.
 They are studied in CR1 and CR2.  The studies are described
 in Sections~\ref{sec:cr1} and~\ref{sec:cr2}), respectively, where 
-we also give the uncertainty on the scale factors.
+we also give the uncertainty on the scale factors.  See
+Tables~\ref{tab:cr1yields}
+and~\ref{tab:cr2yields}, scale factors $SFR_{wjet}$ and $SFR_{top})$.
 
 \subsection{Uncertainty on extra jet radiation for dilepton
   background}
@@ -84,13 +140,16 @@ As discussed in Section~\ref{sec:jetmultiplicity}, the
 jet distribution in
 $t\bar{t} \to$
 dilepton MC is rescaled by the factors $K_3$ and $K_4$ to make 
-it agree with the data.  The XX\% uncertainties on $K_3$ and $K_4$
+it agree with the data.  The 3\% uncertainties on $K_3$ and $K_4$
 comes from data/MC statistics.  This  
-result directly in a XX\% uncertainty on the dilepton BG, which is by far 
+result directly in a 3\% uncertainty on the dilepton BG, which is by far 
 the most important one.
 
 
 \subsection{Uncertainty on the \ttll\ Acceptance}
+
+[CLAUDIO: WE NEED TO DISCUSS THIS A LITTLE MORE -- THEN I CAN PUT THE
+WORDS IN]
 
 The \ttbar\ background prediction is obtained from MC, with corrections
 derived from control samples in data. The uncertainty associated with
@@ -115,9 +174,7 @@ The variations considered are
   value for the scale used is $Q^2 = m_{\mathrm{top}}^2 +
   \sum_{\mathrm{jets}} \pt^2$.
 \item Alternative generators: Samples produced with different
-  generators include MC@NLO and Powheg (NLO generators) and
-  Pythia (LO). It may also be noted that MC@NLO uses Herwig6 for the 
-  hadronisation, while POWHEG uses Pythia6.
+  generators, Powheg (our default) and Madgraph.
 \item Modeling of taus: The alternative sample does not include
   Tauola and is otherwise identical to the Powheg sample.
   This effect was studied earlier using 7~TeV samples and found to be negligible.
@@ -397,15 +454,10 @@ This is the uncertainty associated with how well the isolated track
 veto performance is modeled by the Monte Carlo.  This uncertainty
 only applies to the fraction of dilepton BG events that have 
 a second e/$\mu$ or a one prong $\tau \to h$, with 
-$P_T > 10$ GeV in $|\eta| < 2.4$.  This fraction is 1/3 (THIS WAS THE
-7 TEV NUMBER, CHECK).  The uncertainty for these events
-is XX\% and is obtained from Tag and Probe studies of Section~\ref{sec:trkveto}
-
-\subsubsection{Isolated Track Veto: Tag and Probe Studies}
-\label{sec:trkveto}
-
-[EVERYTHING IS 7TEV HERE, UPDATE WITH NEW RESULTS \\
-ADD TABLE WITH FRACTION OF EVENTS THAT HAVE A TRUE ISOLATED TRACK]
+$P_T > 10$ GeV in $|\eta| < 2.4$.  This fraction is about 1/3, see 
+Table~\ref{tab:trueisotrk}.
+The uncertainty for these events
+is 6\% and is obtained from Tag and Probe studies of Section~\ref{sec:trkveto}
 
 \begin{table}[!h]
 \begin{center}
@@ -426,15 +478,22 @@ e Frac. \ttdl\ with true iso. trk. 	 & $0.32 \pm 0.03$ & $0.31 \pm 0.04$ & $0.33
 \end{center}
 \end{table}
 
+\subsubsection{Isolated Track Veto: Tag and Probe Studies}
+\label{sec:trkveto}
+
 
 In this section we compare the performance of the isolated track veto in data and MC using tag-and-probe studies
 with samples of Z$\to$ee and Z$\to\mu\mu$. The purpose of these studies is to demonstrate that the efficiency
 to satisfy the isolated track veto requirements is well-reproduced in the MC, since if this were not the case 
-we would need to apply a data-to-MC scale factor in order to correctly predict the \ttll\ background. This study
+we would need to apply a data-to-MC scale factor in order to correctly
+predict the \ttll\ background. 
+
+This study
 addresses possible data vs. MC discrepancies for the {\bf efficiency} to identify (and reject) events with a 
 second {\bf genuine} lepton (e, $\mu$, or $\tau\to$1-prong). It does not address possible data vs. MC discrepancies
 in the fake rate for rejecting events without a second genuine lepton; this is handled separately in the top normalization
 procedure by scaling the \ttlj\ contribution to match the data in the \mt\ peak after applying the isolated track veto. 
+
 Furthermore, we test the data and MC
 isolated track veto efficiencies for electrons and muons since we are using a Z tag-and-probe technique, but we do not
 directly test the performance for hadronic tracks from $\tau$ decays. The performance for hadronic $\tau$ decay products
@@ -449,7 +508,7 @@ As discussed above, independent studies show that the MC reproduces the hadronic
 leading to a total background uncertainty of less than 0.5\% (after taking into account the fraction of the total background
 due to hadronic $\tau$ decays with \pt\ $>$ 10 GeV tracks), and we hence regard this effect as neglgigible.
 
-The tag-and-probe studies are performed in the full 2011 data sample, and compared with the DYJets madgraph sample.
+The tag-and-probe studies are performed in the full data sample, and compared with the DYJets madgraph sample.
 All events must contain a tag-probe pair (details below) with opposite-sign and satisfying the Z mass requirement 76--106 GeV.
 We compare the distributions of absolute track isolation for probe electrons/muons in data vs. MC. The contributions to
 this isolation sum are from ambient energy in the event from underlying event, pile-up and jet activitiy, and hence do
@@ -691,8 +750,9 @@ $\mu$ + $\geq$4 jets   &           $>$ 1 GeV   &           $>$ 2 GeV   &        
 %END SECTION TO WRITE OUT 
 
 
-{\bf fix me: What you have written in the next paragraph does not explain how $\epsilon_{fake}$ is measured.
-Why not measure $\epsilon_{fake}$ in the b-veto region?}
+%{\bf fix me: What you have written in the next paragraph does not
+%explain how $\epsilon_{fake}$ is measured.
+%Why not measure $\epsilon_{fake}$ in the b-veto region?}
 
 %A measurement of the $\epsilon_{fake}$ in data is non-trivial. However, it is
 %possible to correct for differences in the $\epsilon_{fake}$ between data and MC by

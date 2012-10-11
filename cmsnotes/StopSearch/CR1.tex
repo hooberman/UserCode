@@ -9,9 +9,11 @@ The sample is dominanted by \wjets\ and is thus used to validate the MC modellin
 
 In Table~\ref{tab:cr1mtsf} we show the amount that we need to scale the Wjets MC
 by in order to have agreement between data and Monte Carlo in the $M_T$ peak 
-region, defined as $60 < M_T < 100$ GeV.  These scale factors are not terribly 
+region, defined as $50 < M_T < 80$ GeV, for the 
+different signal regions.  (Recall, the signal regions have different
+\met\ requirements).  These scale factors are not terribly 
 important, but it is reassuring that they are not too different from
-1.  [UPDATE WITH TRIGGER EFFICIENCIES]
+1. 
 
 
 \begin{table}[!h]
@@ -29,20 +31,22 @@ $\mu$ \mt-SF 	  & $0.92 \pm 0.02$ & $0.97 \pm 0.03$ & $0.90 \pm 0.04$ & $0.91 \p
 e \mt-SF 	  & $0.94 \pm 0.02$ & $0.90 \pm 0.04$ & $0.84 \pm 0.05$ & $0.80 \pm 0.07$ & $0.83 \pm 0.10$ & $0.77 \pm 0.13$ & $0.86 \pm 0.20$ & $0.87 \pm 0.29$ \\
 \hline
 \end{tabular}}
-\caption{ \mt\ peak Data/MC scale factors applied to the single lepton
-  samples and \ttdl. The raw MC is used for backgrounds from rare
+\caption{ \mt\ peak Data/MC scale factors applied to Wjets
+  samples.   The MC is used for backgrounds from rare
   processes. CR1PRESEL refers to a sample with $\met>50$ GeV.
   The uncertainties are statistical only.
 \label{tab:cr1mtsf}}
 \end{center}
 \end{table}
 
-
-In Table~\ref{tab:cr1yields} we compare the data and MC yields in the four $M_T$ signal regions
-and in a looser control region.  We also derive the data/MC scale factors 
-$SFR^{e}_{wjet}$ and  $SFR^{\mu}_{wjet}$.  The underlying \met\ and $M_T$ distributions
-are shown in Fig.~\ref{fig:cr1met}  and~\ref{fig:cr1mtrest}
-
+Next, in Fig~\ref{fig:cr1met},~\ref{fig:cr1mtrest},
+and~\ref{fig:cr1mtrest2}, we show plots of \met\ and then $M_T$
+for different signal regions, i.e., for different \met\ requirements.
+It is clear that there are more events in the $M_T$ tail than
+predicted
+from MC. This implies that we need to rescale the MC Wjets
+background
+in the tail region.
 
 \begin{table}[!h]
 \begin{center}
@@ -96,11 +100,52 @@ $SFR_{wjet}$ 	  & $1.48 \pm 0.26$  & $1.64 \pm 0.38$  & $1.38 \pm 0.30$  & $1.26
 \end{tabular}}
 \caption{ Yields in \mt\ tail comparing the MC prediction (after
   applying SFs) to data. CR1PRESEL refers to a sample with $\met>50$
-  GeV and $\mt>150$ GeV.
-  The uncertainties are statistical only. 
+  GeV and $\mt>150$ GeV.  See text for details.
+%   The uncertainties are statistical only. 
 \label{tab:cr1yields}}
 \end{center}
 \end{table}
+
+
+The rescaling is explored
+in Table~\ref{tab:cr1yields},
+Here we compare the data and MC yields in the $M_T$ signal regions
+and in a looser control region.  Note that the 
+MC is normalized in the $M_T$ peak region by rescaling 
+the \wjets\ component according to Table~\ref{tab:cr1mtsf}.
+
+We also derive data/MC scale factors.
+These are derived in two different ways, separately for muons and
+electrons and then combined, as follows;
+\begin{itemize}
+\item For first three sets of scale factors, above the triple horizontal
+  line, we calculate the scale factor as the amount by which we would
+  need to rescale {\bf all} MC (\wjets\ , \ttbar\ , single top, rare) in
+  order to have data-MC agreement in the $M_T$ tail.
+\item For the next three set of scale factors, below the triple horizontal
+line, we calculate the scale factor as the amount by which we would
+need 
+to scale \wjets\ keeping all other 
+components fixed in order to have data-MC agreement in the tail.
+\end{itemize}
+\noindent  The true \wjets\ scale factor is somewhere in between these
+two extremes.  We also note that there is no statistically significant
+difference between the electron and muon samples.  We use these data
+to extract a data/MC scale factor for \wjets\ which will be used to
+rescale the \wjets\ MC tail.  This scale factor is listed in the last
+line of the Table, and is called $SFR_{wjets}$.  It is calculated as
+follows.
+\begin{itemize}
+\item Separately for each signal region
+\item As the average of the two methods described above
+\item Including the statistical uncertainty
+\item Adding in quadrature to the uncertainty one-half of the
+  deviation from 1.0
+\end{itemize}
+
+ 
+
+
 
 
 \begin{figure}[hbt]

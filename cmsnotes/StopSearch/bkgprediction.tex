@@ -1,57 +1,26 @@
 
 %\section{Background Estimate Derivation}
 
-[THIS IS WHERE THE NUMBERS TO DERIVE THE BACKGROUND ESTIMATES ARE DUMPED AND THE CALCULATION EXPLAINED]
-
 Here we give the details of how we arrive at the background prediction
-in a given signal region.  Here we concentrate on the method used
+in a given signal region.  We concentrate on the method used
 to arrive at the central value of the background prediction.  The
 systematic
 uncertainties will be discussed in Section~\ref{sec:systematics}.
+The actual results for the BG prediction will be given in Section~\ref{sec:results}.
 
 As mentioned in Section~\ref{sec:overview}, we normalize the main
 $t\bar{t}$
 background to the $M_T$ peak.  This is actually a bit tricky because 
 we want to minimize the effect of the isolated track veto on 
 lepton $+$ jets events, which may not be terribly well reproduced.
-Thus, we define two normaliztion region in the $M_T$ peak ($60 < M_T < 100$~GeV),
+Thus, we define two normaliztion region in the $M_T$ peak ($50 < M_T < 80$~GeV),
 one before and one after the application of the isolated track veto.
 
-The dominant dilepton background is normalized to the pre-veto normalization
-region.  A pre-veto scale factor ($SF_{pre}$) is defined as a common scale
-factors that needs to be applied to the $t\bar{t}$, single-top, and 
-$W +$ jets
-MC to make the data yield in the pre-veto normalization agree with
-the MC prediction (the small rare MC component is held fixed).
-Then, the dilepton background prediction is obtained by multiplying the
-dilepton BG Monte Carlo by $SF_{pre}$.
+The event counts in pre-veto and post-veto normalization regions
+are given in Tables \ref{tab:pvmtpeakyields} and~\ref{tab:mtpeakyields}
+The data-MC agreement in these two tables is quite good, and this is 
+certainly a good thing.
 
-The $t\bar{t}$ lepton $+$ jet BG is normalized to post-veto 
-normalization region.  A post-veto scale factor  ($SF_{post}$) 
-is defined in (almost) the same way as the pre-veto scale factor.
-The difference here is that this scale factor applies only to 
-the lepton $+$ jets components and not the dilepton component,
-since that component is already rescaled by $SF_{pre}$.  
-This procedure minimizes the reliance on the understanding of 
-the isolated track veto.
-Then the  $t\bar{t}$ lepton $+$ jet BG is obtained by taking the 
-number of MC-predicted $t\bar{t}$ lepton $+$ jets in the post-veto
-normalization region, scaling it by $SF_{post}$, multiplying 
-it by the tail-to-peak ratio $R_{top}$ of Table~\ref{tab:ttp}, and
-finally the data-MC scale factor $SFR_{top}$ from
-Table~\ref{tab:cr2yields}.
-
-The single top background is obtained in exactly the same way
-as the  $t\bar{t}$ lepton $+$ jet BG, using the same tail-to-peak
-ratio and the same data-MC scale-factor.  The $W$ background is
-done in a similar way, but using a different tail-to-peak ratio 
-($R_{wjets}$ of Table~\ref{tab:ttp}), and a different data-MC scale
-factor
-($SFR_{wjet}$ from
-Table~\ref{tab:cr1yields}).
-
-Other (small) backgrounds are taken straight from Monte Carlo, as 
-described in Section~\ref{sec:bkg_other}.
 
 
 
@@ -164,6 +133,82 @@ Data 		 & $6578$& $1935$& $646$& $235$& $98$& $43$& $21$ \\
 \end{center}
 \end{table}
 
+\clearpage
+
+The dominant dilepton background is normalized to the pre-veto normalization
+region.  A pre-veto scale factor ($SF_{pre}$) is defined as a common scale
+factors that needs to be applied to the $t\bar{t}$, single-top, and 
+$W +$ jets
+MC to make the data yield in the pre-veto normalization agree with
+the MC prediction (the small rare MC component is held fixed).
+Then, the dilepton background prediction is obtained by multiplying the
+dilepton BG Monte Carlo by $SF_{pre}$.
+
+The $t\bar{t}$ lepton $+$ jet BG is normalized to post-veto 
+normalization region.  A post-veto scale factor  ($SF_{post}$) 
+is defined in (almost) the same way as the pre-veto scale factor.
+The difference here is that this scale factor applies only to 
+the lepton $+$ jets components and not the dilepton component,
+since that component is already rescaled by $SF_{pre}$.  
+This procedure minimizes the reliance on the understanding of 
+the isolated track veto.
+
+The pre-veto and post-veto SF are shown in Table~\ref{tab:mtpeaksf}.
+
+
+\begin{table}[!h]
+\begin{center}
+{\footnotesize
+\begin{tabular}{l||c|c|c|c|c|c|c}
+\hline
+Sample              & SRA & SRB & SRC & SRD & SRE & SRF & SRG\\
+\hline
+\hline
+$\mu$ pre-veto \mt-SF 	  & $1.02 \pm 0.02$ & $0.95 \pm 0.03$ & $0.90 \pm 0.05$ & $0.98 \pm 0.08$ & $0.97 \pm 0.13$ & $0.85 \pm 0.18$ & $0.92 \pm 0.31$ \\
+$\mu$ post-veto \mt-SF 	  & $1.00 \pm 0.02$ & $0.95 \pm 0.03$ & $0.91 \pm 0.05$ & $1.00 \pm 0.09$ & $0.99 \pm 0.13$ & $0.85 \pm 0.18$ & $0.96 \pm 0.31$ \\
+\hline
+$\mu$ veto \mt-SF 	  & $0.98 \pm 0.01$ & $0.99 \pm 0.01$ & $1.01 \pm 0.02$ & $1.02 \pm 0.04$ & $1.02 \pm 0.06$ & $1.00 \pm 0.09$ & $1.04 \pm 0.11$ \\
+\hline
+\hline
+e pre-veto \mt-SF 	  & $0.95 \pm 0.02$ & $0.95 \pm 0.03$ & $0.94 \pm 0.06$ & $0.85 \pm 0.09$ & $0.84 \pm 0.13$ & $1.05 \pm 0.23$ & $1.04 \pm 0.33$ \\
+e post-veto \mt-SF 	  & $0.92 \pm 0.02$ & $0.91 \pm 0.03$ & $0.91 \pm 0.06$ & $0.74 \pm 0.08$ & $0.75 \pm 0.13$ & $0.91 \pm 0.22$ & $1.01 \pm 0.33$ \\
+\hline
+e veto \mt-SF 	  & $0.97 \pm 0.01$ & $0.96 \pm 0.02$ & $0.97 \pm 0.03$ & $0.87 \pm 0.05$ & $0.89 \pm 0.08$ & $0.86 \pm 0.11$ & $0.97 \pm 0.14$ \\
+\hline
+\end{tabular}}
+\caption{ \mt\ peak Data/MC scale factors. The pre-veto SFs are applied to the
+  \ttdl\ sample, while the post-veto SFs are applied to the single
+  lepton samples. The veto SF is shown for comparison across channels. 
+  The raw MC is used for backgrounds from rare processes.
+  The uncertainties are statistical only.
+\label{tab:mtpeaksf}}
+\end{center}
+\end{table}
+
+
+
+
+
+Then the  $t\bar{t}$ lepton $+$ jet BG is obtained by taking the 
+number of MC-predicted $t\bar{t}$ lepton $+$ jets in the post-veto
+normalization region, scaling it by $SF_{post}$, multiplying 
+it by the tail-to-peak ratio $R_{top}$ of Table~\ref{tab:ttp}, and
+finally the data-MC scale factor $SFR_{top}$ from
+Table~\ref{tab:cr2yields}.
+
+The single top background is obtained in exactly the same way
+as the  $t\bar{t}$ lepton $+$ jet BG, using the same tail-to-peak
+ratio and the same data-MC scale-factor.  The $W$ background is
+done in a similar way, but using a different tail-to-peak ratio 
+($R_{wjets}$ of Table~\ref{tab:ttp}), and a different data-MC scale
+factor
+($SFR_{wjet}$ from
+Table~\ref{tab:cr1yields}).
+
+Other (small) backgrounds are taken straight from Monte Carlo, as 
+described in Section~\ref{sec:bkg_other}.
+
+
 
 \begin{table}[!h]
 \begin{center}
@@ -213,36 +258,6 @@ Total 		 & $770 \pm 10$& $466 \pm 7$& $157 \pm 4$& $59 \pm 3$& $22 \pm 2$& $10 \
 \label{tab:mtpeakyields2}}
 \end{center}
 \end{table}
-
-\begin{table}[!h]
-\begin{center}
-{\footnotesize
-\begin{tabular}{l||c|c|c|c|c|c|c}
-\hline
-Sample              & SRA & SRB & SRC & SRD & SRE & SRF & SRG\\
-\hline
-\hline
-$\mu$ pre-veto \mt-SF 	  & $1.02 \pm 0.02$ & $0.95 \pm 0.03$ & $0.90 \pm 0.05$ & $0.98 \pm 0.08$ & $0.97 \pm 0.13$ & $0.85 \pm 0.18$ & $0.92 \pm 0.31$ \\
-$\mu$ post-veto \mt-SF 	  & $1.00 \pm 0.02$ & $0.95 \pm 0.03$ & $0.91 \pm 0.05$ & $1.00 \pm 0.09$ & $0.99 \pm 0.13$ & $0.85 \pm 0.18$ & $0.96 \pm 0.31$ \\
-\hline
-$\mu$ veto \mt-SF 	  & $0.98 \pm 0.01$ & $0.99 \pm 0.01$ & $1.01 \pm 0.02$ & $1.02 \pm 0.04$ & $1.02 \pm 0.06$ & $1.00 \pm 0.09$ & $1.04 \pm 0.11$ \\
-\hline
-\hline
-e pre-veto \mt-SF 	  & $0.95 \pm 0.02$ & $0.95 \pm 0.03$ & $0.94 \pm 0.06$ & $0.85 \pm 0.09$ & $0.84 \pm 0.13$ & $1.05 \pm 0.23$ & $1.04 \pm 0.33$ \\
-e post-veto \mt-SF 	  & $0.92 \pm 0.02$ & $0.91 \pm 0.03$ & $0.91 \pm 0.06$ & $0.74 \pm 0.08$ & $0.75 \pm 0.13$ & $0.91 \pm 0.22$ & $1.01 \pm 0.33$ \\
-\hline
-e veto \mt-SF 	  & $0.97 \pm 0.01$ & $0.96 \pm 0.02$ & $0.97 \pm 0.03$ & $0.87 \pm 0.05$ & $0.89 \pm 0.08$ & $0.86 \pm 0.11$ & $0.97 \pm 0.14$ \\
-\hline
-\end{tabular}}
-\caption{ \mt\ peak Data/MC scale factors. The pre-veto SFs are applied to the
-  \ttdl\ sample, while the post-veto SFs are applied to the single
-  lepton samples. The veto SF is shown for comparison across channels. 
-  The raw MC is used for backgrounds from rare processes.
-  The uncertainties are statistical only.
-\label{tab:mtpeaksf}}
-\end{center}
-\end{table}
-
 
 %POSSIBLY ADD SOME EQUATIONS TO MAKE IT MORE EXPLICIT HOW THE CALCULATION IS DERIVED
 %We consider three samples:

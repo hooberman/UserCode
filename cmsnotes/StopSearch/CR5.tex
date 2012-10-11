@@ -1,9 +1,6 @@
 \subsection{Test of control region with isolated track in CR5}
 \label{sec:CR5}
 
-[NEED TO VERIFY THAT THE DESCRIPTION OF SCALE FACTORS IS CORRECT AND
-ADD A LITTLE BIT OF DETAIL, AS NOTED IN THE TEXT]
-
 This CR consists of events that pass all cuts but fail the isolated
 track veto cut.  These events (especially in the tail of $M_T$) are 
 predominantly $t\bar{t}$ dileptons.  Thus the test in this control
@@ -26,16 +23,24 @@ simulation.  This makes the normalization of the top MC a little bit tricky.
 We define a ``pre-veto'' sample as the sample of events that pass
 all cuts without any isolated track requirements.  This sample is
 dominated by $t\bar{t} \to \ell +$ jets.  We normalize the dilepton
-component of the top MC to that sample (NEED TO EXPLAIN EXACTLY HOW).
+component of the top MC to that sample.  This is done by normalizing
+the total \ttbar\ MC to the $M_T$ peak region, $50 < M_T < 80$ GeV
+in this sample.  
+
+
 Next we define a ``post-veto'' sample as the events that have an
 isolated track.  The $t\bar{t} \to \ell +$ jets component is 
-normalized in this sample (ALSO, NEED TO EXPLAIN HOW, EXACTLY).
+normalized in this sample, again by normalizing ti the $M_T$ peak
+region. 
 These normalization factors are summarized in Table~\ref{tab:cr5mtsf}.
+
+The post-veto $\ttdl$ is taken from MC, but with scale factor obtained
+by the normalization of the ``pre-veto'' sample.  
 
 The underlying \met\ and $M_T$ distributions are shown in 
 Figures~\ref{fig:cr5met} and~\ref{fig:cr5mtrest}.  The data-MC agreement
 is quite good.  Quantitatively, this is also shown in Table~\ref{tab:cr5yields}.
-
+This is the second key test of the \ttdl\ modeling
 
 \begin{table}[!h]
 \begin{center}

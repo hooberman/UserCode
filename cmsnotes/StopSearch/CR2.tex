@@ -2,12 +2,15 @@
 \subsection{Single Lepton Top MC Modelling Validation from CR2}
 \label{sec:cr2}
 
-IS THIS GOING TO BE DONE WITH A BVETO OR NOT.  IF SO, IS IT GOING TO
-BE CSVL OR CSVM?  NEED TO DISCUSS THIS.
 
 The \mt\ tail for single-lepton top events (\ttsl\ and single top) is dominated by jet resolution effects. The \W\ cannot be far off-shell because $\mW < \mtop$.
-The modeling of the \mt\ tail from jet resolution effects is studied using \zjets\ data and MC samples. 
-\Z\ events are selection by requiring 2 good leptons (satisfying ID and isolation requirements) and requiring the \mll\ to be in the range $81-101$ GeV. 
+The modeling of the \mt\ tail from jet resolution effects is studied
+using \zjets\ data and MC samples. 
+
+\Z\ events are selection by requiring 2 good leptons (satisfying ID
+and isolation requirements) and requiring the \mll\ to be in the range
+$81-101$ GeV.   To reduce \ttbar\ backgrounds, events with a CSVM tag
+are removed.
 The negative lepton is treated as a neutrino and so is added to the MET: \met\ $\rightarrow$ \pt(\Lepm) + \met, 
 and the \mt\ is recalculated with the positive lepton \mt(\Lepp, \met).
 The resulting ``pseudo-\mt'' is dominated by jet resolution effects, since no off-shell 
@@ -15,9 +18,18 @@ The resulting ``pseudo-\mt'' is dominated by jet resolution effects, since no of
 This section describes how well the MC predicts the tail of ``pseudo-\mt''. 
 
 The underlying distributions are shown in Fig.~\ref{fig:cr2met}
-and~\ref{fig:cr2mtrest}.  The comparison of data and MC event counts 
-is shown in Table~\ref{tab:cr2yields}.  From this table we extract
-the data to MC scale factors $SFR^{e}_{top}$ and  $SFR^{\mu}_{top}$. 
+and~\ref{fig:cr2mtrest}.    Just as in CR1, there is an excess in the
+tails.
+
+We then perform the exact same type of Data/MC comparison and analysis as 
+described for CR1 in Section~\ref{sec:cr1}.  For CR1 we collected
+the data/MC tail information in 
+Table~\ref{tab:cr1yields} ; the equivalent for CR2 is
+Table~\ref{tab:cr2yields}
+(for CR2 the statistics are not sufficient to split electrons and muons).
+The last line of Table~\ref{tab:cr2yields} gives the data/MC scale factor
+for the \ttbar\ lepton $+$ jets $M_T$ tail ($SFR_{top}$).  This is
+calculated in the same way as $SFR_{wjets}$ of Table~\ref{tab:cr1yields}.
 
 
 \begin{table}[!h]
@@ -49,10 +61,6 @@ $SFR_{top}$ 	  & $1.66 \pm 0.40$ & $1.51 \pm 0.35$ & $1.89 \pm 0.56$ & $1.35 \pm
 \caption{ Yields in \mt\ tail comparing the \zjets\ MC prediction (after
   applying SFs) to data after subtracting the non-\zjets\ components. 
   CR2PRESEL refers to a sample with $\met>50$ GeV and $\mt>150$ GeV.
-  The uncertainties are statistical only.  NEED TO ADD THE SYMBOLS
-  DEFINED IN THE TEXT FOR THESE SCALE FACTORS.  IS THIS GOING TO BE
-  DONE SEPARATELY FOR MUONS AND ELECTRONS???
-  MAYBE WANT TO REMOVE LAST ENTRIES WHERE STATS ARE VERY LOW
 \label{tab:cr2yields}}
 \end{center}
 \end{table}
@@ -72,7 +80,8 @@ $SFR_{top}$ 	  & $1.66 \pm 0.40$ & $1.51 \pm 0.35$ & $1.89 \pm 0.56$ & $1.35 \pm
       satisfying the requirements of CR2, combining both the muon and
       electron channels. The pseudo\-\mt\ distributions are shown
       before any additional requirements (top, right) and after
-      requiring pseudo\-\met>50 GeV (bottom, left) and pseudo\-\met>100 GeV (bottom, right) .
+      requiring pseudo\-\met $>$50 GeV (bottom, left) and pseudo\-\met
+      $>$ 100 GeV (bottom, right) .
 \label{fig:cr2met} 
 }  
       \end{center}

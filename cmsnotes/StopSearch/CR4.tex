@@ -4,12 +4,14 @@
 \subsubsection{Modeling of Additional Hard Jets in Top Dilepton Events}
 \label{sec:jetmultiplicity}
 
-[THIS SUBSUBSECTION IS DONE...MODULO THE LATEST PLOTS AND THE LATEST
-NUMBERS IN THE TABLE]
-
 Dilepton \ttbar\ events have 2 jets from the top decays, so additional
 jets from radiation or higher order contributions are required to
-enter the signal sample. The modeling of additional jets in \ttbar\
+enter the signal sample.   In this Section we develop an algorithm
+to be applied to all \ttll\ MC samples to insure that the distribution
+of extra jets is properly modelled.
+
+
+The modeling of additional jets in \ttbar\
 events is checked in a \ttll\ control sample,
 selected by requiring
 \begin{itemize}
@@ -113,10 +115,11 @@ fraction of events with additional jets in MC to the observed fraction
 in data.   These scale factors are calculated from Fig.~\ref{fig:dileptonnjets} 
 as follows:
 \begin{itemize}
-\item $N_{2}=$ data yield minus non-dilepton \ttbar\ MC yield for \njets\ $\leq$ 2
+\item $N_{2}=$ data yield minus non-dilepton \ttbar\ MC yield for
+  \njets\ =1 or 2.
 \item $N_{3}=$ data yield minus non-dilepton \ttbar\ MC yield for \njets\ = 3
 \item $N_{4}=$ data yield minus non-dilepton \ttbar\ MC yield for \njets\ $\geq$ 4
-\item $M_{2}=$ dilepton \ttbar\ MC yield for \njets\ $\leq$ 2
+\item $M_{2}=$ dilepton \ttbar\ MC yield for \njets\ = 1 or 2
 \item $M_{3}=$ dilepton \ttbar\ MC yield for \njets\ = 3
 \item $M_{4}=$ dilepton \ttbar\ MC yield for \njets\ $\geq$ 4
 \end{itemize}
@@ -132,13 +135,16 @@ as follows:
 (N_2+N_3+N_4)$ and similarly for the $\geq 4$ jet bin.
 
 Table~\ref{tab:njetskfactors} also shows the values of $K_3$ and $K_4$ when the \met\ cut in the control sample definition is changed from 50 GeV to 100 GeV and 150 GeV.
-These values of $K_3$ and $K_4$ are not used in the analysis, but demonstrate that there is no statistically significant dependence of $K_3$ and $K_4$ on the \met\ cut.
+% These values of $K_3$ and $K_4$ are not used in the analysis, but 
+This demonstrate that there is no statistically significant dependence of $K_3$ and $K_4$ on the \met\ cut.
 
 
-The factors $K_3$ and $K_4$ (derived with the 50 GeV \met\ cut) are applied to the \ttll\ MC throughout the
+The factors $K_3$ and $K_4$ (derived with the 100 GeV \met\ cut) are applied to the \ttll\ MC throughout the
 entire analysis, i.e. 
 whenever \ttll\ MC is used to estimate or subtract
-a yield or distribution. 
+a yield or distribution.   To be explicit, whenever Powheg is used,
+the Powheg $K_3$ and $K_4$ are used; whenever default MadGraph is 
+used, the MadGraph $K_3$ and $K_4$ are used, etc.
 %
 In order to do so, it is first necessary to count the number of
 additional jets from radiation and exclude leptons mis-identified as
@@ -165,7 +171,7 @@ N jets $\ge4$ (sensitive to $\ttbar+\ge2$ extra jets from radiation)
 \end{tabular}
 \caption{Data/MC scale factors used to account for differences in the
   fraction of events with additional hard jets from radiation in
-  \ttll\ events. The values derived with the 50 GeV \met\ cut are applied 
+  \ttll\ events. The values derived with the 100 GeV \met\ cut are applied 
   to the \ttll\ MC throughout the analysis. \label{tab:njetskfactors}}
 \end{center}
 \end{table}
@@ -177,8 +183,6 @@ N jets $\ge4$ (sensitive to $\ttbar+\ge2$ extra jets from radiation)
 \subsubsection{Validation of the ``Physics'' Modelling of the \ttdl\
   MC in CR4}
 \label{sec:CR4-valid}
-
-[THE TEXT IN THIS SUBSECTION IS ESSENTIALLY COMPLETE]
 
 As mentioned above, $t\bar{t} \to $ dileptons where one of the leptons
 is somehow lost constitutes the main background.
@@ -198,7 +202,10 @@ in Table~\ref{tab:cr4mtsf} and are close to unity.
 The underlying \met\ and $M_T$ distributions are shown in 
 Figures~\ref{fig:cr4met} and~\ref{fig:cr4mtrest}.  The data-MC agreement
 is quite good.  Quantitatively, this is also shown in Table~\ref{tab:cr4yields}.
-
+This is a {\bf very} important Table.  It shows that for well
+identified \ttdl\ , the MC can predict the $M_T$ tail.  Since the
+main background is also \ttdl\ except with one ``missed'' lepton, 
+this is a key test.
 
 \begin{table}[!h]
 \begin{center}

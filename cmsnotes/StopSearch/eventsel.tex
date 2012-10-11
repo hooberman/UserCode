@@ -1,13 +1,17 @@
-
-This analysis uses several different control regions in addition to the signal regions. 
-All of these different regions are defined in this section. 
+Here we define the selections of leptons, jets, and \met.
+We also describe our measurements of the lepton and trigger efficiency.
+The analysis uses several different Control Regions (CRs) in addition
+to the Signal 
+Regions (SRs).
+All of these different regions are defined in this section.
+This section also includes some information on the basic MC
+corrections that we apply.  
 %Figure~\ref{fig:venndiagram} illustrates the relationship between these regions.
 
 \subsection{Single Lepton Selection}
+\label{sec:singlelepselection}
 
-[UPDATE SELECTION]
-
-The single lepton preselection sample is based on the following criteria, starting from the requirements described 
+The single lepton selection is based on the following criteria, starting from the requirements described 
 on \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSYstop#SINGLE_LEPTON_CHANNEL}
 \begin{itemize}
 \item satisfy the trigger requirement (see
@@ -22,11 +26,19 @@ Dilepton triggers are used only for the dilepton control region.
   \item PF-based isolation ($\Delta R < 0.3$, $\Delta\beta$ corrected) relative  $<$ 0.15 and absolute $<$ 5~GeV
   \item $|\pt(\rm{PF}_{lep}) - \pt(\rm{RECO}_{lep})| < 10~\GeV$
   \item $E/p_{in} < 4$ (electrons only)
+  \item We remove electron events with $\met > 50$ GeV and $M_T > 100$
+    GeV with at least one crystal in the supercluster with laser
+    correction in $>$2.\footnote{This is an ad-hoc removal based on
+      run-event numbers, since the
+      problem was found very recently and the filter was not available
+      when we processed the events.}
   \end{itemize} 
   \item require at least 4 PF jets in the event with $\pt>30~\GeV$
     within $|\eta|<2.5$ out of which at least 1 satisfies the CSV
     medium working point b-tagging requirement
-  \item require moderate $\met>50~\GeV$
+  \item require moderate $\met>50~\GeV$  (This is pfMET).
+ \item Isolated track veto, see Section~\ref{sec:tkveto}
+
 \end{itemize}
 
 %Table~\ref{tab:preselectionyield} shows the yields in data and MC without any corrections for this preselection region.
@@ -41,12 +53,23 @@ Dilepton triggers are used only for the dilepton control region.
 %\end{center}
 %\end{table}
 
-\subsection{Signal Region Selection}
+\subsection{Isolated track veto}
+\label{sec:tkveto}
 
-[MOTIVATIONAL BLURB ON MET AND MT, \\
-CAN ADD SIGNAL VS. TTBAR MC PLOT \\
-ADD SIGNAL YIELDS FOR AVAILABLE POINTS, \\
-DISCUSS CHOICE SIG REGIONS]
+The isolated track veto is intended to remove top dilepton events.
+Looking for an isolated track is an effective way of identifying $W
+\to e$, $W \to \mu$, $W \to \tau \to \ell$, and $W \to \tau \to
+h^{\pm} + n\pi^{0}$.  The requirements on the track are
+
+\begin{itemize}
+\item $P_T > 10$ GeV
+\item Relative track isolation $< 10\%$  computed from charged PF
+  candidates with dZ $<$ 0.05 cm from the primary vertex.
+\end{itemize}
+
+
+\subsection{Signal Region Selection}
+\label{sec:SR}
 
 The signal regions (SRs) are selected to improve the sensitivity for the
 single lepton requirements and cover a range of scalar top
@@ -108,9 +131,7 @@ It is meant only as a general guide. The uncertainties are statistical only. ADD
 \end{table}
 
 \subsection{Control Region Selection}
-
-[1 PARAGRAPH BLURB RELATING BACKGROUNDS (IN TABLE FROM PREVIOUS SECTION)
-TO INTRODUCE CONTROL REGIONS]
+\label{sec:CR}
 
 Control regions (CRs) are used to validate the background estimation
 procedure and derive systematic uncertainties for some
@@ -118,7 +139,7 @@ contributions. The CRs are selected to have similar
 kinematics to the SRs, but have a different requirement in terms of
 number of b-tags and number of leptons, thus enhancing them in
 different SM contributions. The four CRs used in this analysis are
-summarized in Table~\ref{tab:crdef}.
+summarized in Table~\ref{tab:crdef}.  
 
 \begin{table}
 \begin{center}
@@ -167,30 +188,26 @@ Selection 	& \multirow{2}{*}{exactly 1 lepton}	& \multirow{2}{*}{exactly 2
 \end{center}
 \end{table}
 
+\subsection{Definition of $M_T$ peak region}
+\label{sec:mtpeakdef}
+
+This region is defined as $50 < M_T < 80$ GeV.
+
+
+\subsection{Default \ttbar\  MC sample}
+
+Our default \ttbar\ MC sample is Powheg.
 
 \subsection{MC Corrections}
+\label{sec:MCCorr}
 
-[UPDATE SECTION]
-
-\subsubsection{Corrections to Jets and \met}
-
-[UPDATE, ADD FEW MORE DETAILS ON WHAT IS DONE HERE]
-
-The official recommendations from the Jet/MET group are used for 
-the data and MC samples. In particular, the jet
-energy corrections (JEC) are updated using the official recipe.
-L1FastL2L3Residual (L1FastL2L3) corrections are applied for data (MC),
-based on the global tags GR\_R\_42\_V23 (DESIGN42\_V17) for
-data (MC). In addition, these jet energy corrections are propagated to
-the \met\ calculation, following the official prescription for
-deriving the Type I corrections. 
-
-Events with anomalous ``rho'' pile-up corrections are excluded from the sample since these 
-correspond to events with unphysically large \met\ and \mt\ tail
-signal region. In addition, the recommended MET filters are applied. 
-
-
-\subsubsection{Branching Fraction Correction}
+All MC samples are corrected for trigger efficiency.  In the case of
+single lepton selections, we apply the $P_T$ and $\eta$-dependent
+scale factors that we measure ourselves, see Sections~\ref{sec:trg}.
+In the case of dilepton selections that require the dilepton triggers,
+we apply overall scale factors of 0.95, 0.88, and 0.92 for $ee$,
+$\mu\mu$,
+and $e\mu$ respectively~\cite{didar}.
 
 The leptonic branching fraction used in some of the \ttbar\ MC samples
 differs from the value listed in the PDG $(10.80 \pm 0.09)\%$. 
@@ -220,20 +237,62 @@ Powheg       &       0.108\\
 \end{center}
 \end{table}
 
+All \ttbar\ dilepton samples are corrected (when needed and
+appropriate) 
+in order to have the correct number of jet distribution.  This
+correction procedure is described in Section~\ref{sec:jetmultiplicity}.
 
-\subsubsection{Lepton Selection Efficiency Measurements}
+
+\subsubsection{Corrections to Jets and \met}
+\label{sec:JetMet}
+
+The official recommendations from the Jet/MET group are used for 
+the data and MC samples. In particular, the jet
+energy corrections (JEC) are updated using the official recipe.
+L1FastL2L3Residual (L1FastL2L3) corrections are applied for data (MC),
+based on the global tags GR\_R\_42\_V23 (DESIGN42\_V17) for
+data (MC). In addition, these jet energy corrections are propagated to
+the \met\ calculation, following the official prescription for
+deriving the Type I corrections. 
+
+Events with anomalous ``rho'' pile-up corrections are excluded from the sample since these 
+correspond to events with unphysically large \met\ and \mt\ tail
+signal region. In addition, the recommended MET filters are applied. 
+A correction to remove the $\phi$ modulation in \met\ is also applied
+to the data.
+
+
+
+\subsection{Lepton Selection Efficiency Measurements}
+\label{sec:lepEff}
 
 In this section we measure the identification and isolation efficiencies for muons and electrons in data and MC using tag-and-probe studies. 
 The tag is required to pass the full offline analysis selection and have \pt\ $>$ 30 GeV, $|\eta|<2.1$, and be matched to the single
 lepton trigger, HLT\_IsoMu24(\_eta2p1) for muons and HLT\_Ele27\_WP80 for electrons. 
 The probe is required to have $|\eta|<2.1$ and \pt\ $>$ 20 GeV. To measure the identification efficiency we require the probe to pass the isolation requirement,
-to measure the isolation efficiency we require the probe to pass the identification requirement.
+to measure the isolation efficiency we require the probe to pass the
+identification requirement.
+
 The tag-probe pair is required to have opposite-sign and an invariant mass in the range 76--106 GeV.
-In order to suppress lepton pairs from sources other than Z boson decays, we require the event to have \met\ $<$ 30 GeV and no b-tagged jets (CSV loose working point).
+In order to suppress lepton pairs from sources other than Z boson
+decays, we require the event to have \met\ $<$ 30 GeV and no b-tagged
+jets (CSV loose working point).
+
 The muon efficiencies are summarized in Table~\ref{tab:mutnpeff} for inclusive events (i.e. no jet requirements). These efficiencies are displayed in Fig.~\ref{fig:mutnpeff} for
 several different jet multiplicity requirements. We currently observe good agreement for muons with \pt\ up to about 200 GeV. For muons with \pt\ $>$ 200 GeV the data efficiency
 begins to drop, and the effect is especially pronounced for muons with \pt\ $>$ 300 GeV. We are currently investigating the source of this inefficiency.
 The electron efficiencies are summarized in Table~\ref{tab:eltnpeff} for inclusive events (i.e. no jet requirements). These efficiencies are displayed in Fig.~\ref{fig:eltnpeff} for several different jet multiplicity requirements. In general we observe good agreement between the data and MC identification and isolation efficiencies.
+
+Pending a better understanding of the very high \pt\ muon efficiency,  we
+do not correct the MC for differences in lepton efficiency.  In the
+background calculation, we do not take any systematics due to lepton
+selection
+efficiency uncertainties.  This is because all backgrounds except the 
+rare MC background are normalized to the $M_TT$ peak, thus the lepton
+identification uncertainty cancels out.  For the rare MC these
+uncertainties
+are negligible compared to the assumed cross-section uncertainty
+(Section~\ref{sec:bkg_other}).
 
 
 
@@ -500,14 +559,18 @@ Scale Factor ISO & & \\
 \clearpage
 
 
-\subsubsection{Trigger Efficiency Measurements}
+\subsection{Trigger Efficiency Measurements}
+\label{sec:trg}
 
 In this section we measure the efficiencies of the single lepton triggers, HLT\_IsoMu24(\_eta2p1) for muons and HLT\_Ele27\_WP80 for electrons, using a tag-and-probe
 approach. The tag is required to pass the full offline analysis selection and have \pt\ $>$ 30 GeV, $|\eta|<2.1$, and be matched to the single
 lepton trigger. The probe is also required to pass the full offline analysis selection and have $|\eta|<2.1$, but the \pt\ requirement is relaxed to 20 GeV
-in order to measure the \pt\ turn-on curve. The tag-probe pair is required to have opposite-sign and an invariant mass in the range 76--106 GeV.
+in order to measure the \pt\ turn-on curve. The tag-probe pair is
+required to have opposite-sign and an invariant mass in the range
+76--106 GeV.
+
 The measured trigger efficiencies are displayed in Fig.~\ref{fig:trigeff} and summarized in Table~\ref{tab:mutriggeff} (muons) and Table~\ref{tab:eltriggeff} (electrons).
-These trigger efficiencies will be applied to the MC when used to predict data yields selected by single lepton triggers. [THESE TRIGGER EFFICIENCIES TO BE APPLIED TO MC]
+These trigger efficiencies are applied to the MC when used to predict data yields selected by single lepton triggers.
 
 
 \begin{figure}[!ht]
