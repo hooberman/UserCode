@@ -12,20 +12,23 @@ corrections that we apply.
 \label{sec:singlelepselection}
 
 The single lepton selection is based on the following criteria, starting from the requirements described 
-on \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSYstop#SINGLE_LEPTON_CHANNEL}
+on \url{https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSYstop#SINGLE_LEPTON_CHANNEL} (revision r20)
 \begin{itemize}
 \item satisfy the trigger requirement (see
-  Table.~\ref{tab:DatasetsData}). 
+  Table.~\ref{tab:TrigData}). 
 Note that the analysis triggers are inclusive single lepton triggers.
 Dilepton triggers are used only for the dilepton control region.
 \item select events with one high \pt\ electron or muon, requiring
   \begin{itemize}
-  \item $\pt>30~\GeVc$  and $|\eta|<1.4442 (2.4)$ for electrons (muons)
+  \item $\pt>30~\GeVc$  and $|\eta|<1.4442 (2.4)$ for electrons (muons). The restriction to the barrel for electrons
+is motivated by an observed excess of events with large \mt\ with endcap electrons in the b-veto control region, 
+and does not significantly reduce the signal acceptance since the leptons tend to be central.
   \item muon ID criteria is based on the 2012 POG recommended tight working point
   \item electron ID critera is based on the 2012 POG recommended medium working point
-  \item PF-based isolation ($\Delta R < 0.3$, $\Delta\beta$ corrected) relative  $<$ 0.15 and absolute $<$ 5~GeV
+  \item PF-based isolation ($\Delta R < 0.3$) relative isolation $<$ 0.15 and absolute isolation $<$ 5~GeV. PU corrections 
+are performed with the $\Delta\beta$ scheme for muons and effective-area fastjet rho scheme for electrons (as recommended by the relevant POGs).
   \item $|\pt(\rm{PF}_{lep}) - \pt(\rm{RECO}_{lep})| < 10~\GeV$
-  \item $E/p_{in} < 4$ (electrons only)
+  \item $E/p_{\rm{in}} < 4$ (electrons only)
   \item We remove electron events with $\met > 50$ GeV and $M_T > 100$
     GeV with at least one crystal in the supercluster with laser
     correction in $>$2.\footnote{This is an ad-hoc removal based on
@@ -36,7 +39,7 @@ Dilepton triggers are used only for the dilepton control region.
   \item require at least 4 PF jets in the event with $\pt>30~\GeV$
     within $|\eta|<2.5$ out of which at least 1 satisfies the CSV
     medium working point b-tagging requirement
-  \item require moderate $\met>50~\GeV$  (This is pfMET).
+  \item require moderate $\met>50~\GeV$  (type1-corrected pfmet with $\phi$ corrections applied as described in Sec.~\ref{sec:JetMet}).
  \item Isolated track veto, see Section~\ref{sec:tkveto}
 
 \end{itemize}
@@ -108,6 +111,7 @@ higher M(\sctop).
 
 \begin{table}[!h]
 \begin{center}
+\footnotesize
 \begin{tabular}{l||c|c|c|c|c|c|c}
 \hline
 Sample              & SRA & SRB & SRC & SRD & SRE & SRF & SRG\\
@@ -120,6 +124,9 @@ Rare 		 & $59 \pm 3$& $38 \pm 3$& $16 \pm 2$& $8 \pm 1$& $4 \pm 1$& $2 \pm 0$& $
 \hline
 Total 		 & $802 \pm 10$& $486 \pm 8$& $164 \pm 5$& $62 \pm 3$& $23 \pm 2$& $10 \pm 1$& $6 \pm 1$ \\
 \hline
+Yield UL (optimistic)  & 147 (10\%) & 94 (10\%)  & 47 (15\%) & 25 (20\%) & 14 (25\%) & 8.6 (30\%) & 7.5 (50\%)  \\
+Yield UL (pessimistic) & 200 (15\%) & 152 (20\%) & 64 (25\%) & 30 (30\%) & 15 (35\%) & 9.7 (50\%) & 8.2 (100\%) \\
+\hline
 T2tt m(stop) = 250 m($\chi^0$) = 0 	& $424 \pm 19$& $256 \pm 15$& $71 \pm 8$& $19 \pm 4$& $1 \pm 0$& $0 \pm 0$& $0 \pm 0$ \\
 T2tt m(stop) = 300 m($\chi^0$) = 50 	& $396 \pm 11$& $316 \pm 10$& $113 \pm 6$& $37 \pm 3$& $14 \pm 2$& $2 \pm 1$& $0 \pm 0$ \\
 T2tt m(stop) = 300 m($\chi^0$) = 100 	& $174 \pm 7$& $130 \pm 7$& $42 \pm 4$& $16 \pm 2$& $8 \pm 2$& $3 \pm 1$& $2 \pm 1$ \\
@@ -127,11 +134,12 @@ T2tt m(stop) = 350 m($\chi^0$) = 0 	& $305 \pm 6$& $282 \pm 6$& $162 \pm 5$& $69
 T2tt m(stop) = 450 m($\chi^0$) = 0 	& $96 \pm 2$& $96 \pm 2$& $72 \pm 1$& $48 \pm 1$& $28 \pm 1$& $14 \pm 1$& $6 \pm 0$ \\
 \hline
 \end{tabular}
-\caption{ Expected SM background contributions, including both muon
-  and electron channels. This is ``dead reckoning'' MC with no
-  correction.
-It is meant only as a general guide. The uncertainties are statistical only. ADD
-  SIGNAL POINTS.
+\caption{ Expected SM background contributions and signal yields for a few sample points, 
+including both muon and electron channels. This is ``dead reckoning'' MC with no
+correction. It is meant only as a general guide. The uncertainties are statistical only.
+The signal yield upper limits are also shown for two values of the total background systematic uncertainty, indicated in parentheses.
+[{\bf VERENA} THESE SIGNAL YIELDS NEED TO BE UPDATED. Do you have a point with larger stop mass to illustrate why we use SRF and SRG? ].
+%HOOBERMAN
 \label{tab:srrawmcyields}}
 \end{center}
 \end{table}
@@ -230,15 +238,15 @@ of the corrected and incorrect branching fractions.
          \ttbar\ Sample - Event Generator & Leptonic Branching Fraction\\
 \hline
 \hline
-Madgraph   &       0.111\\
-MC@NLO    &       0.111\\
-Pythia         &       0.108\\
+Madgraph     &       0.111\\
+MC@NLO       &       0.111\\
+Pythia       &       0.108\\
 Powheg       &       0.108\\
 \hline
 \end{tabular}
 \caption{Leptonic branching fractions for the various \ttbar\ samples
-  used in the analysis. The primary \ttbar\ MC sample produced with
-  Madgraph has a branching fraction that is almost $3\%$ higher than
+  used in the analysis. The \ttbar\ MC samples produced with
+  Madgraph and MC@NLO has a branching fraction that is almost $3\%$ higher than
   the PDG value. \label{tab:wlepbf}}
 \end{center}
 \end{table}
@@ -284,16 +292,21 @@ decays, we require the event to have \met\ $<$ 30 GeV and no b-tagged
 jets (CSV loose working point).
 
 The muon efficiencies are summarized in Table~\ref{tab:mutnpeff} for inclusive events (i.e. no jet requirements). These efficiencies are displayed in Fig.~\ref{fig:mutnpeff} for
-several different jet multiplicity requirements. We currently observe good agreement for muons with \pt\ up to about 200 GeV. For muons with \pt\ $>$ 200 GeV the data efficiency
-begins to drop, and the effect is especially pronounced for muons with \pt\ $>$ 300 GeV. We are currently investigating the source of this inefficiency.
-The electron efficiencies are summarized in Table~\ref{tab:eltnpeff} for inclusive events (i.e. no jet requirements). These efficiencies are displayed in Fig.~\ref{fig:eltnpeff} for several different jet multiplicity requirements. In general we observe good agreement between the data and MC identification and isolation efficiencies.
+several different jet multiplicity requirements. 
+We currently observe good agreement for muons with \pt\ up to about 300 GeV. 
+For high \pt\ muons we observe a source of background in the data with large impact parameters, which we suppress by requiring muon $d_0<0.02$~cm and $d_Z<0.5$~cm.
+%For muons with \pt\ $>$ 200 GeV the data efficiency
+%begins to drop, and the effect is especially pronounced for muons with \pt\ $>$ 300 GeV. 
+We are currently investigating the source of this inefficiency.
+The electron efficiencies are summarized in Table~\ref{tab:eltnpeff} for inclusive events (i.e. no jet requirements). These efficiencies are displayed in Fig.~\ref{fig:eltnpeff} 
+for several different jet multiplicity requirements. In general we observe good agreement between the data and MC identification and isolation efficiencies.
 
 Pending a better understanding of the very high \pt\ muon efficiency,  we
 do not correct the MC for differences in lepton efficiency.  In the
 background calculation, we do not take any systematics due to lepton
 selection
 efficiency uncertainties.  This is because all backgrounds except the 
-rare MC background are normalized to the $M_TT$ peak, thus the lepton
+rare MC background are normalized to the $M_T$ peak, thus the lepton
 identification uncertainty cancels out.  For the rare MC these
 uncertainties
 are negligible compared to the assumed cross-section uncertainty

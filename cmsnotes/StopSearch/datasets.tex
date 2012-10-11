@@ -1,12 +1,14 @@
-
-[UPDATE]
+%HOOBERMAN: I think this is updated already...
+%[UPDATE]
 
 The datasets used for this analysis are summarized in 
 Tables~\ref{tab:DatasetsData} (data) and~\ref{tab:DatasetsMC} (MC).
-The total integrated luminosity is \lumi after
-applying the official good run list. The main Monte Carlo
-samples are generated with Madgraph, though samples with
-alternative generators such as Powheg and MC@NLO are also used for
+The total integrated luminosity is \lumi\ after
+applying the official good run list. 
+The main \ttbar\ Monte Carlo
+sample is generated with Powheg since this sample has the largest number of events, 
+though samples with alternative generators such as Madgraph %and MC@NLO 
+are also used for
 the derivation of systematic uncertainties in the \ttbar~background prediction. 
 The triggers used to select both the signal and control samples are
 also summarized in Table.~\ref{tab:TrigData}.
@@ -24,8 +26,10 @@ Single Lepton Samples \\
   /SingleMu/Run2012A-13Jul2012-v1/AOD   \\
   /SingleElectron/Run2012B-13Jul2012-v1/AOD   \\
   /SingleMu/Run2012B-13Jul2012-v1/AOD   \\
-  /SingleElectron/Run2012C-PromptReco-v*/AOD   \\         
-  /SingleMu/Run2012C-PromptReco-v*/AOD   \\         
+  /SingleElectron/Run2012C-PromptReco-v1/AOD   \\         
+  /SingleMu/Run2012C-PromptReco-v1/AOD   \\         
+  /SingleElectron/Run2012C-PromptReco-v2/AOD   \\         
+  /SingleMu/Run2012C-PromptReco-v2/AOD   \\         
 \hline
 \hline
 Dilepton Samples (only used for dilepton control region)\\
@@ -36,9 +40,12 @@ Dilepton Samples (only used for dilepton control region)\\
   /DoubleElectron/Run2012B-13Jul2012-v1/AOD   \\
   /DoubleMu/Run2012B-13Jul2012-v1/AOD   \\
   /MuEG/Run2012B-13Jul2012-v1/AOD   \\
-  /DoubleElectron/Run2012C-PromptReco-v*/AOD   \\         
-  /DoubleMu/Run2012C-PromptReco-v*/AOD   \\         
-  /MuEG/Run2012C-PromptReco-v*/AOD   \\         
+  /DoubleElectron/Run2012C-PromptReco-v1/AOD   \\         
+  /DoubleMu/Run2012C-PromptReco-v1/AOD   \\         
+  /MuEG/Run2012C-PromptReco-v1/AOD   \\         
+  /DoubleElectron/Run2012C-PromptReco-v2/AOD   \\         
+  /DoubleMu/Run2012C-PromptReco-v2/AOD   \\         
+  /MuEG/Run2012C-PromptReco-v2/AOD   \\         
 \hline
 \end{tabular}
 \caption{Summary of data datasets used.\label{tab:DatasetsData}}
@@ -77,10 +84,10 @@ $\dy \To \ell \ell$+$\geq 4$ jets       & /DY4JetsToLL\_TuneZ2Star\_M-50\_8TeV-m
 $\ttbar W$                              	 &   /TTW\_TuneZ2Star\_8TeV-madgraph (53)                   &  0.23 \\
 $\ttbar Z$                              	 &   /TTZ\_TuneZ2Star\_8TeV-madgraph (53)                   &  0.21 \\
 $\ttbar \gamma$                      &   /TTGJets\_TuneZ2Star\_8TeV-madgraph (53)            &  0.65 \\
-WWW	& /WWW\_TuneZ2Star\_8TeV-madgraph (53) 	&	0.08 \\
-WWZ	& /WWZNoGstar\_TuneZ2Star\_8TeV-madgraph (53) 	& 0.06\\
-WZZ		& /WZZNoGstar\_TuneZ2Star\_8TeV-madgraph (53) 	& 0.01 \\
-ZZZ		& /ZZZNoGstar\_TuneZ2Star\_8TeV-madgraph (53) 	& 0.02 \\
+WWW	& /WWW\_TuneZ2Star\_8TeV-madgraph (53) 	                & 0.082 \\
+WWZ	& /WWZNoGstar\_TuneZ2Star\_8TeV-madgraph (53) 	        & 0.063 \\
+WZZ		& /WZZNoGstar\_TuneZ2Star\_8TeV-madgraph (53) 	& 0.019 \\
+ZZZ		& /ZZZNoGstar\_TuneZ2Star\_8TeV-madgraph (53) 	& 0.019 \\
 $\tilde{t}\bar{\tilde{t}}\rightarrow t\bar{t}\chi^0_1\chi^0_1$ & /SMS-T2tt\_FineBin\_Mstop-225to1200\_mLSP-0to1000\_8TeV-Pythia6Z (52)            &  scan\\
 $\tilde{t}\bar{\tilde{t}}\rightarrow b\bar{b}\chi^+_1\chi^-_1$ & /SMS-T2bw\_FineBin\_Mstop-100to600\_mLSP-0to500\_8TeV-Pythia6Z (52)            &  scan \\
 \hline
@@ -98,7 +105,8 @@ $\ttbar$ ($m_{\mathrm{top}} = 166.5~\GeV$)       &   /TTJets\_TuneZ2Star\_mass16
 \hline
 \end{tabular}
 }
-\caption{Summary of Monte Carlo datasets used. CHECK TRIBOSON XSEC
+\caption{Summary of Monte Carlo datasets used. %CHECK TRIBOSON XSEC 
+%HOOBERMAN: updated VVV cross sections. Clearly there is a bug somewhere because the xsec in cms2 ntuples is the same for WZZ and ZZZ...
 \label{tab:DatasetsMC}}
 \end{center}
 \end{table}
