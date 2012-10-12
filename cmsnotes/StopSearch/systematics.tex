@@ -25,10 +25,12 @@ for example,
 the $t\bar{t} \to$ dilepton BG estimate because it changes the 
 $t\bar{t}$ normalization to the peak region (because some of the 
 events in the peak region are from rare processes).  These effects
-are carefully accounted for.  The contribution to the overall
-uncertainty from each BG source is tabulated in
-Section~\ref{sec:bgunc-bottomline}.
-First, however, we discuss the uncertainties one-by-one and we comment 
+are carefully accounted for.  
+%%%TO ADD BACK IN IF WE HAVE SYSTEMATICS TABLE.
+%The contribution to the overall
+%uncertainty from each BG source is tabulated in
+%Section~\ref{sec:bgunc-bottomline}.
+Here we discuss the uncertainties one-by-one and comment 
 on their impact on the overall result, at least to first order.
 Second order effects, such as the one described, are also included.
 
@@ -39,7 +41,7 @@ These vary between 2\% and 20\%, depending on the signal region
 signal regions have different \met\ requirements, thus they also have
 different $M_T$ regions used as control.
 Since 
-the major BG, eg, $t\bar{t}$ are normalized to the peak regions, this 
+the major backgrounds, eg, $t\bar{t}$ are normalized to the peak regions, this 
 fractional uncertainty is pretty much carried through all the way to
 the end.  There is also an uncertainty from the finite MC event counts
 in the $M_T$ peak regions.  This is also included, but it is smaller.
@@ -47,8 +49,8 @@ in the $M_T$ peak regions.  This is also included, but it is smaller.
 Normalizing to the $M_T$ peak has the distinct advantages that 
 uncertainties on luminosity, cross-sections, trigger efficiency,
 lepton ID, cancel out.
-For the low statistics regions with high \met requirements, the
-price to pay in terms of event count statistical uncertainties starts
+For the low statistics regions with high \met\ requirements, the
+price to pay in terms of event count is that statistical uncertainties start
 to become significant.  In the future we may consider a different
 normalization startegy in the low statistics regions.
 
@@ -130,9 +132,9 @@ BG goes down.
 These tail-to-peak ratios are described in Section~\ref{sec:ttp}.
 They are studied in CR1 and CR2.  The studies are described
 in Sections~\ref{sec:cr1} and~\ref{sec:cr2}), respectively, where 
-we also give the uncertainty on the scale factors.  See
+we also give the uncertainty on the scale factors (see
 Tables~\ref{tab:cr1yields}
-and~\ref{tab:cr2yields}, scale factors $SFR_{wjet}$ and $SFR_{top})$.
+and~\ref{tab:cr2yields}, scale factors $SFR_{wjet}$ and $SFR_{top}$).
 
 \subsection{Uncertainty on extra jet radiation for dilepton
   background}
@@ -142,7 +144,7 @@ $t\bar{t} \to$
 dilepton MC is rescaled by the factors $K_3$ and $K_4$ to make 
 it agree with the data.  The 3\% uncertainties on $K_3$ and $K_4$
 comes from data/MC statistics.  This  
-result directly in a 3\% uncertainty on the dilepton BG, which is by far 
+result directly in a 3\% uncertainty on the dilepton background, which is by far 
 the most important one.
 
 \subsection{Uncertainty from MC statistics}
@@ -183,7 +185,7 @@ The variations considered are
   Tauola and is otherwise identical to the Powheg sample.
   This effect was studied earlier using 7~TeV samples and found to be negligible.
 \item The PDF uncertainty is estimated following the PDF4LHC
-  recommendations[CITE]. The events are reweighted using alternative
+  recommendations. The events are reweighted using alternative
   PDF sets for CT10 and MSTW2008 and the uncertainties for each are derived using the
   alternative eigenvector variations and the ``master equation''. In
   addition, the NNPDF2.1 set with 100 replicas. The central value is
@@ -295,9 +297,9 @@ scale up/scale down variations are inconsistent with the data.
 These are described below.
 
 The first piece of information is that the jet multiplicity in the scale
-up/scale down sample is the most inconsistent with the data.  This can be shown
+up/scale down sample is the most inconsistent with the data.  This is shown
 in Table~\ref{tab:njetskfactors_met100}, where we tabulate the
-$K_3$ and $K_4$ factors of Section~\ref{tab:njetskfactors_met100} for
+$K_3$ and $K_4$ factors of Section~\ref{sec:jetmultiplicity} for
 different \ttbar\ MC samples.  The data/MC disagreement in the $N_{jets}$
 distribution
 for the scale up/scale down samples is also shown in Fig.~\ref{fig:dileptonnjets_scaleup}
@@ -362,7 +364,7 @@ of 6\% would fully cover all of the variations from different MC
 samples in SRA and SRB.
 {\bf Thus, we take a 6\% systematic uncertainty,  constant as a 
 function of signal region, as the systematic due to alternative MC
-models.}.
+models.}
 Note that this 6\% is also consistent with the level at which we are
 able
 to test the closure of the method in CR5 for the high statistics
@@ -599,7 +601,7 @@ a second e/$\mu$ or a one prong $\tau \to h$, with
 $P_T > 10$ GeV in $|\eta| < 2.4$.  This fraction is about 1/3, see 
 Table~\ref{tab:trueisotrk}.
 The uncertainty for these events
-is 6\% and is obtained from Tag and Probe studies of Section~\ref{sec:trkveto}
+is 6\% and is obtained from tag-and-probe studies, see Section~\ref{sec:trkveto}.
 
 \begin{table}[!h]
 \begin{center}
@@ -648,7 +650,7 @@ decays are well-understood, we currently demonstrate that the isolation is well-
 Second, hadronic tracks may undergo nuclear interactions and hence their tracks may not be reconstructed.
 As discussed above, independent studies show that the MC reproduces the hadronic tracking efficiency within 4\%,
 leading to a total background uncertainty of less than 0.5\% (after taking into account the fraction of the total background
-due to hadronic $\tau$ decays with \pt\ $>$ 10 GeV tracks), and we hence regard this effect as neglgigible.
+due to hadronic $\tau$ decays with \pt\ $>$ 10 GeV tracks), and we hence regard this effect as negligible.
 
 The tag-and-probe studies are performed in the full data sample, and compared with the DYJets madgraph sample.
 All events must contain a tag-probe pair (details below) with opposite-sign and satisfying the Z mass requirement 76--106 GeV.
@@ -705,7 +707,7 @@ The specific criteria for tags and probes for electrons and muons are:
 The absolute track isolation distributions for passing probes are displayed in Fig.~\ref{fig:tnp}. In general we observe
 good agreement between data and MC. To be more quantitative, we compare the data vs. MC efficiencies to satisfy
 absolute track isolation requirements varying from $>$ 1 GeV to $>$ 5 GeV, as summarized in Table~\ref{tab:isotrk}.
-In the $\geq$0 and $\geq$1 jet bins where the efficiencies can be tested with statistical precision, the data and MC
+In the $\geq 0$ and $\geq 1$ jet bins where the efficiencies can be tested with statistical precision, the data and MC
 efficiencies agree within 6\%, and we apply this as a systematic uncertainty on the isolated track veto efficiency.
 For the higher jet multiplicity bins the statistical precision decreases, but we do not observe any evidence for
 a data vs. MC discrepancy in the isolated track veto efficiency.
@@ -738,9 +740,6 @@ for events with the \njets\ requirement varied from \njets\ $\geq$ 0 to \njets\ 
 
 \begin{table}[!ht]
 \begin{center}
-\caption{\label{tab:isotrk} Comparison of the data vs. MC efficiencies to satisfy the indicated requirements
-on the absolute track isolation, and the ratio of these two efficiencies. Results are indicated separately for electrons and muons and for various
-jet multiplicity requirements.}
 \begin{tabular}{l|c|c|c|c|c}
 
 %Electrons:
@@ -838,6 +837,9 @@ $\mu$ + $\geq$4 jets   &           $>$ 1 GeV   &           $>$ 2 GeV   &        
 \hline
 
 \end{tabular}
+\caption{\label{tab:isotrk} Comparison of the data vs. MC efficiencies to satisfy the indicated requirements
+on the absolute track isolation, and the ratio of these two efficiencies. Results are indicated separately for electrons and muons and for various
+jet multiplicity requirements.}
 \end{center}
 \end{table}
 
