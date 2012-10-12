@@ -1,156 +1,59 @@
 
-\section{Results}
-\label{sec:results}
+The results of the search, still blinded are shown in Table~\ref{tab':result}.
+The $M_T$ distributions, still blinded, for increasing values of \met\
+are shown in Fig~\ref{fig:mtsig1},\ref{fig:mtsig2},\ref{fig:mtsig3}.
 
-
-Because the pile-up conditions have changed between run 2011A and run 2011B, 
-we split the data sample and perform the background prediction for run 2011A and run 2011B separately,
-and then combine the two datasets and predictions (see Appendix \ref{app:resultsAB}).
-The observed and predicted \MET\ distributions and yields in the signal regions are
-summarized in Tables \ref{resulttable} and \ref{resulttableex}
-and displayed in Fig.~\ref{fig:pfmet_eemm}.
-% (\njets\ $\ge$ 2) and in Fig.~\ref{fig:pfmet_eemmnj3} (\njets\ $\ge$ 3).
-%The results split between $ee$ vs. $\mu\mu$ and for Run2011A vs. Run2011B are displayed in App.~\ref{app:results}.
-
-In all tables and figures described above, the errors include the statistical and systematic errors 
-added in quadrature. Systematic uncertainties on the background prediction are similar to the nominal 
-analysis \cite{ref:osznote}, the differences with respect to the nominal analysis are discussed in Sec.~\ref{sec:systematics}.
-
-For display purposes only, in Fig. \ref{fig:pfmet_eemm}
-we have taken the
-MET distribution from MC and normalized it such that the integral 
-matches the data-driven prediction
-from the OF subtraction. 
-For this figure in the inclusive analysis, the MC distribution 
-was taken from \ttbar\ MC alone because without a b veto, 
-\ttbar\ alone is a good approximation of the full OF sample.
-After a b veto, other OF processes become significant, so we 
-have included them in this distribution.
-The OF MC is not used in any of the final background predictions.
-
-The results of table \ref{resulttable} are split into exclusive \MET\ bins
-for utilization in a shape analysis in table \ref{resulttableex}.
-
-
-\begin{table}[!hb]
-  \begin{center}
-%\scriptsize
-	\caption{\label{resulttable} Summary of data yields and predicted backgrounds in each of the signal regions.
-The total background (total bkg) is the sum of the \zjets\ background predicted from the \gjets\ \MET\ templates,
-the flavor-symmetric background predicted from opposite-flavor events (OF bkg), and the WZ/ZZ background predicted
-from MC (WZ/ZZ bkg).
-The total predicted background is compared to the observed data yields (data).
-All uncertainties indicate the statistical and systematic components added in quadrature. 
-The 95\% confidence level observed and expected upper limits (UL) on the non-SM contributions to the signal regions is also indicated.
-The expected yields from an example point of the \wzmet\ model ($m_\chi=200$~GeV, massless LSP ) 
-and GMSB model ($m_\chi=230$~GeV) described in Sec.~\ref{sec:bsm} are also indicated.
-%as well as the expected yield from the Z-enriched higgsino model from Ref.~\cite{ref:ewkino}
-%with the value of m(\chino) indicated in parentheses.
-}
-\footnotesize
-\begin{tabular}{lcccccc}
-
-\hline
-\hline
-                            & \MET\ $>$ 30~GeV & \MET\ $>$ 60~GeV & \MET\ $>$ 80~GeV & \MET\ $>$ 100~GeV & \MET\ $>$ 150~GeV & \MET\ $>$ 200~GeV        \\
-\hline
-%Z Pred       &  2338.74 $\pm$  749.81  &    40.49 $\pm$   13.43  &     7.57 $\pm$    2.52  &     2.36 $\pm$    0.81  &   0.6283 $\pm$  0.2455  &   0.1902 $\pm$  0.0855 \\
-%\ttbar Pred  &    27.43 $\pm$    5.78  &    16.55 $\pm$    3.62  &     9.99 $\pm$    2.28  &     5.41 $\pm$    1.35  &   0.8121 $\pm$  0.3384  &   0.0602 $\pm$  0.0701 \\
-%diboson Pred &    59.40 $\pm$   29.70  &     9.74 $\pm$    4.87  &     5.82 $\pm$    2.91  &     3.65 $\pm$    1.83  &     1.16 $\pm$    0.59  &   0.4132 $\pm$  0.2294 \\
-%\hline
-%Total Pred   &  2425.57 $\pm$  750.42  &    66.78 $\pm$   14.74  &    23.37 $\pm$    4.47  &    11.43 $\pm$    2.42  &     2.60 $\pm$    0.72  &   0.6635 $\pm$  0.2547 \\
-%\hline
-%Data         &  2478  &  62  &  15  &  8  &  2  &  0 \\
-
-\zjets\ bkg   &  2339 $\pm$  750  &    40 $\pm$   13  &     7.6 $\pm$    2.5  &     2.4 $\pm$    0.8  &   0.6 $\pm$  0.2  &   0.2  $\pm$  0.1  \\
-OF bkg        &    27 $\pm$    6  &    17 $\pm$    4  &    10.0 $\pm$    2.3  &     5.4 $\pm$    1.4  &   0.8 $\pm$  0.3  &   0.06 $\pm$  0.07 \\
-WZ/ZZ bkg     &    59 $\pm$   30  &    10 $\pm$    5  &     5.8 $\pm$    2.9  &     3.6 $\pm$    1.8  &   1.2 $\pm$  0.6  &   0.4  $\pm$  0.2  \\
-\hline		 
-\bf Total bkg &  2426 $\pm$  750  &    67 $\pm$   15  &    23.4 $\pm$    4.5  &    11.4 $\pm$    2.4  &   2.6 $\pm$  0.7  &   0.7  $\pm$  0.3 \\
-\bf Data                 &  2478  &               62  &                   15  &                    8  &                2  &                 0 \\
-\hline
-\hline
-Observed UL        &        -        &    24           &       7.3             &         6.4       &   4.3 & 3.0 \\
-Expected UL        &        -        &    27           &        12             &         8.4       &   4.6 & 3.0 \\
-\hline
-%\wzmet\ model (200/0)   &    13.33 $\pm$    2.84  &    10.66 $\pm$    2.42  &     8.91 $\pm$    2.23  &     6.69 $\pm$    2.05  &     2.10 $\pm$    0.95  &   0.4986 $\pm$  0.1991 \\
-\wzmet\ model (200/0)   &    13 $\pm$    3  &     11 $\pm$    2  &     8.9 $\pm$    2.2  &     6.7 $\pm$    2.1  &     2.1 $\pm$    1.0  &   0.5 $\pm$  0.2 \\
-GMSB model (230)        &    12 $\pm$    1  &     10 $\pm$    1  &     8.3 $\pm$    0.8  &     6.6 $\pm$    0.8  &     2.6 $\pm$    0.5  &   0.6 $\pm$  0.2 \\
-
-\hline
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-
-\begin{table}[!hb]
-  \begin{center}
-%\scriptsize
-	\caption{\label{resulttableex} Summary of data yields and predicted backgrounds in exclusive \MET\ signal regions.
-	  Details are the same as in Table \ref{resulttable}.
-}
-\begin{tabular}{lccc}
-\hline
-& 30 $<$ \MET\ $<$ 60~GeV & 60 $<$ \MET\ $<$ 80~GeV & 80 $<$ \MET\ $<$ 100~GeV \\
-\hline
-%Combined stat/syst table for all using EXLUSIVE MET bins
-%Z Pred       &  2298.25 $\pm$  736.87  &    32.92 $\pm$   11.09  &     5.21 $\pm$    1.78  &     1.73 $\pm$    0.62  &   0.4381 $\pm$  0.1895  &   0.1902 $\pm$  0.0855 \\
-%\ttbar Pred  &    10.88 $\pm$    2.49  &     6.57 $\pm$    1.57  &     4.57 $\pm$    1.18  &     4.60 $\pm$    1.17  &   0.7519 $\pm$  0.3170  &   0.0602 $\pm$  0.0701 \\
-%diboson Pred &    49.66 $\pm$   24.83  &     3.92 $\pm$    1.96  &     2.17 $\pm$    1.09  &     2.50 $\pm$    1.25  &   0.7439 $\pm$  0.3736  &   0.4132 $\pm$  0.2294 \\
-%\hline
-%Total Pred   &  2358.79 $\pm$  737.29  &    43.40 $\pm$   11.37  &    11.95 $\pm$    2.39  &     8.83 $\pm$    1.82  &     1.93 $\pm$    0.53  &   0.6635 $\pm$  0.2547 \\
-%\hline
-%Data         &  2416  &  47  &  7  &  6  &  2  &  0 \\
-
-\zjets\ background &  2298 $\pm$  737  &    32.9 $\pm$   11.1  &     5.2 $\pm$    1.8 \\  
-OF background      &    11 $\pm$    2  &     6.6 $\pm$    1.6  &     4.6 $\pm$    1.2 \\  
-WZ/ZZ background   &    50 $\pm$   25  &     3.9 $\pm$    2.0  &     2.2 $\pm$    1.1 \\
-\hline 
-Total background   &  2359 $\pm$  737  &    43.4 $\pm$   11.4  &    12.0 $\pm$    2.4 \\
-\hline
-Data         &  2416  &  47  &  7 \\
-\hline
-\end{tabular}
-
-\bigskip
-
-\begin{tabular}{lccc}
-\hline
- & 100 $<$ \MET\ $<$ 150~GeV & 150 $<$ \MET\ $<$ 200~GeV & \MET\ $>$ 200~GeV \\
-\hline
-\zjets\ background &   1.7 $\pm$    0.6  &   0.4 $\pm$  0.2  &   0.2  $\pm$  0.09  \\
-OF background      &   4.6 $\pm$    1.2  &   0.8 $\pm$  0.3  &   0.06 $\pm$  0.07  \\
-WZ/ZZ background   &   2.5 $\pm$    1.3  &   0.7 $\pm$  0.4  &   0.4  $\pm$  0.2 \\
-\hline 
-Total background   &   8.8 $\pm$    1.8  &   1.9 $\pm$  0.5  &   0.7 $\pm$  0.3 \\
-\hline       
-Data         &  6  &  2  &  0  \\
-\hline
-\end{tabular}
-
-\end{center}
-\end{table}
-
-
+\input{results_table.tex}
 
 
 \begin{figure}[hbt]
   \begin{center}
-	\includegraphics[width=\linewidth]{plots/pred_sum_all.pdf}
-	\caption{
-	  \label{fig:pfmet_eemm}\protect 
-	  %Predicted \MET\ distribution (red) overlayed with data (black). 
-	  The total predicted \MET\ distribution (red) is the sum of the 
-	  OF prediction (purple histogram),
-	  the diboson prediction (green histogram)
-	  and the \MET\ template prediction from \gjets.
-	  Data is overlayed as black data points.
-	  For illustration of the \MET\ distribution in a signal model 
-	  (see Sec. \ref{sec:bsm}), the WZ SMS (point $m_\chi,m_{LSP}=200,0$~GeV)
-	  \MET\ distribution added to the total background prediction is shown in orange.
-	  Below the \MET\ distribution is plotted the ratio of the observed (data)
-	  and predicted \MET.
-	}
-  \end{center}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met50_ele.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met50_muo.pdf}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met100_ele.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met100_muo.pdf}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met150_ele.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met150_muo.pdf}
+
+    \caption{$M_T$ in the data compared to SM Monte Carlo, for
+      increasing values of \met\.  Note that the MC tails have not
+      been rescaled at this point.
+\label{fig:mtsig1}
+}  
+      \end{center}
 \end{figure}
+
+\begin{figure}[hbt]
+  \begin{center}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met200_ele.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met200_muo.pdf}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met250_ele.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met250_muo.pdf}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met300_ele.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met300_muo.pdf}
+
+    \caption{$M_T$ in the data compared to SM Monte Carlo, for
+      increasing values of \met\.  Note that the MC tails have not
+      been rescaled at this point.
+\label{fig:mtsig2}
+}  
+      \end{center}
+\end{figure}
+
+
+\begin{figure}[hbt]
+  \begin{center}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met350_ele.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met350_muo.pdf}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met400_ele.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met400_muo.pdf}
+
+    \caption{$M_T$ in the data compared to SM Monte Carlo, for
+      increasing values of \met\.  Note that the MC tails have not
+      been rescaled at this point.
+\label{fig:mtsig3}
+}  
+      \end{center}
+\end{figure}
+
+\clearpage
