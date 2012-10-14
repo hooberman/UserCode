@@ -63,18 +63,17 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("t");
-  ch->Add("output/V00-02-21/highpt/LMscanFall11dil_combined_smallTree.root");
-  char* version = "V00-00-11";
+  ch->Add("output/V00-02-12/highpt/LMscanFall11_smallTree.root");
+  char* version = "V00-00-04";
   bool doSigCont = true;
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
-  //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale * ( 1 - sqrt(pow(ksusyup/ksusy-1,2)+0.2*0.2) )");
-  //TCut weight("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
-  TCut weight("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusydn/ksusy");
+  TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
+  TCut weightkup("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
+  TCut weightkdn("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusydn/ksusy");
   TCut presel("pfmet>50 && njets>=2 && ht>100 && !passz");
   TCut preselptll("pfmet>50 && njets>=2 && ht>100 && !passz && ( (leptype==2) || (leptype<2 && pfmet>75) )");
   TCut preseljup("pfmetUp>50   && njetsUp>=2   && htUp>100   && !passz");
@@ -113,9 +112,9 @@ void makeCMSSMCards(){
   // preselection and SR1,SR2,SR3 yields
   //---------------------------------------
 
-  const int   nm0points    = 150;
+  const int   nm0points    = 100;
   const float m0min        = 20.;
-  const float m0max        = 3020.;
+  const float m0max        = 2020.;
   const int   nm12points   = 38;
   const float m12min       = 20.;
   const float m12max       = 780.;
@@ -203,24 +202,24 @@ void makeCMSSMCards(){
   ch->Draw("m12:m0>>hjdnall"    , (preseljdn + sigdn      ) * weight );
   
   //k-factor up
-  // cout << "Filling k up histos" << endl;
-  // ch->Draw("m12:m0>>hkup_0"     , (presel + SR1 + SF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_1"     , (presel + SR1 + OF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_2"     , (presel + SR2 + SF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_3"     , (presel + SR2 + OF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_4"     , (presel + SR3 + SF) * weightkup );
-  // ch->Draw("m12:m0>>hkup_5"     , (presel + SR3 + OF) * weightkup );
-  // ch->Draw("m12:m0>>hkupall"    , (presel + sig     ) * weightkup );
+  cout << "Filling k up histos" << endl;
+  ch->Draw("m12:m0>>hkup_0"     , (presel + SR1 + SF) * weightkup );
+  ch->Draw("m12:m0>>hkup_1"     , (presel + SR1 + OF) * weightkup );
+  ch->Draw("m12:m0>>hkup_2"     , (presel + SR2 + SF) * weightkup );
+  ch->Draw("m12:m0>>hkup_3"     , (presel + SR2 + OF) * weightkup );
+  ch->Draw("m12:m0>>hkup_4"     , (presel + SR3 + SF) * weightkup );
+  ch->Draw("m12:m0>>hkup_5"     , (presel + SR3 + OF) * weightkup );
+  ch->Draw("m12:m0>>hkupall"    , (presel + sig     ) * weightkup );
   
   //k-factor down
-  // cout << "Filling k down histos" << endl;
-  // ch->Draw("m12:m0>>hkdn_0"     , (presel + SR1 + SF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_1"     , (presel + SR1 + OF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_2"     , (presel + SR2 + SF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_3"     , (presel + SR2 + OF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_4"     , (presel + SR3 + SF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdn_5"     , (presel + SR3 + OF) * weightkdn );
-  // ch->Draw("m12:m0>>hkdnall"    , (presel + sig     ) * weightkdn );
+  cout << "Filling k down histos" << endl;
+  ch->Draw("m12:m0>>hkdn_0"     , (presel + SR1 + SF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_1"     , (presel + SR1 + OF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_2"     , (presel + SR2 + SF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_3"     , (presel + SR2 + OF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_4"     , (presel + SR3 + SF) * weightkdn );
+  ch->Draw("m12:m0>>hkdn_5"     , (presel + SR3 + OF) * weightkdn );
+  ch->Draw("m12:m0>>hkdnall"    , (presel + sig     ) * weightkdn );
 
   delete ctemp;
 
@@ -335,26 +334,22 @@ void makeCMSSMCards(){
 
       if( sigtotjdn < 1e-10 ) continue;
       if( sigtot    < 2     ) continue;
-      if( sigtot    > 80    ) continue;
 
       //float sigtot = hall->GetBinContent(m0bin,m12bin);
 
       counter++;
 
-      char* fitoptions = "-M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [0.2,5,x1.1]";
-      //char* fitoptions = "-M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -rMin 0 -rMax 5";
-
       *doScript << Form("../../../../test/lands.exe -M Bayesian -d CMSSM_%i_%i.txt",m0bin,m12bin)         << endl;
 
-      *doScript_CLs << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt %s  -n CMSSM_%i_%i",m0bin,m12bin,fitoptions,m0bin,m12bin) << endl;
+      *doScript_CLs << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
 
-       if( counter%4 == 0 ) *doScript_CLs1 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt %s  -n CMSSM_%i_%i",m0bin,m12bin,fitoptions,m0bin,m12bin) << endl;
+      if( counter%4 == 0 ) *doScript_CLs1 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
 
-       if( counter%4 == 1 ) *doScript_CLs2 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt %s  -n CMSSM_%i_%i",m0bin,m12bin,fitoptions,m0bin,m12bin) << endl;
+      if( counter%4 == 1 ) *doScript_CLs2 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
 
-       if( counter%4 == 2 ) *doScript_CLs3 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt %s  -n CMSSM_%i_%i",m0bin,m12bin,fitoptions,m0bin,m12bin) << endl;
+      if( counter%4 == 2 ) *doScript_CLs3 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
 
-       if( counter%4 == 3 ) *doScript_CLs4 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt %s  -n CMSSM_%i_%i",m0bin,m12bin,fitoptions,m0bin,m12bin) << endl;
+      if( counter%4 == 3 ) *doScript_CLs4 << Form("../../../../test/lands.exe -d CMSSM_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n CMSSM_%i_%i -rMin 0 -rMax 5",m0bin,m12bin,m0bin,m12bin) << endl;
 
       *filelist << Form("cards/%s/CMSSM_%i_%i.txt_Bayesian_bysObsLimit.root",version,m0bin,m12bin)        << endl;
 

@@ -28,9 +28,6 @@ class makePhotonTemplates
   Float_t   pfmet_;
   Float_t   pfmetphi_;
   Int_t     nJets_;
-  Int_t     nbl_;
-  Int_t     nbm_;
-  Int_t     nbt_;
   Float_t   ht_;
   Int_t     nvtx_;
   Float_t   maxjetpt_;
@@ -46,7 +43,6 @@ class makePhotonTemplates
   Float_t   maxleppt_;
   Int_t     elveto_;
   Float_t   jetneutralemfrac_;
-  Float_t   pfmett1new_;
 
   Int_t     hlt20_;
   Int_t     hlt30_;
@@ -66,14 +62,6 @@ class makePhotonTemplates
   TH1F* hphotonPt50;
   TH1F* hphotonPt70;
   TH1F* hphotonPt90;
-  TH1F* hphotonAll;
-
-  TH1F* hnvtxPt20;
-  TH1F* hnvtxPt30;
-  TH1F* hnvtxPt50;
-  TH1F* hnvtxPt70;
-  TH1F* hnvtxPt90;
-  TH1F* hnvtxAll;
 
   TH1F* tcmetTemplate[3][7][4];
   TH1F* pfmetTemplate[3][7][4];
@@ -86,7 +74,6 @@ class makePhotonTemplates
 
   TH1F* tcmetTemplate_photon[5][3][7];
   TH1F* pfmetTemplate_photon[5][3][7];
-  TH1F* t1pfmetTemplate_photon[5][3][7];
   
 };
 

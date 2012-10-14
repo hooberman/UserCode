@@ -84,9 +84,7 @@ class makePhotonBabies
   Float_t pfmet_;
   Float_t pfmetphi_;
   Float_t pfmett1_;
-  Float_t pfmett1phi_;
-  Float_t pfmett1new_;
-  Float_t pfmett1newphi_;
+  Float_t pfmetphit1_;
   Float_t pfsumet_;
   Float_t pfmet_type1_pt30_;
   Float_t pfmet_type1_pt15_;
