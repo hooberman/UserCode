@@ -47,7 +47,7 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float WZt
   *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f   %.1f   %.1f" , sigtot,Ztot,OFtot,WZtot,ZZtot,raretot) << endl;
   *ofile <<      "lumi                       lnN   1.040       -       -      -     -     -"                  << endl;
   *ofile <<      "eff_leptons                lnN   1.050       -       -      -     -     -"                  << endl;
-  *ofile <<      "btagerr                    lnN   1.040       -       -      -     -     -"                  << endl;
+  *ofile <<      "btagerr                    lnN   1.060       -       -      -     -     -"                  << endl;
   *ofile <<      "JES_shape                shape     1.0       -       -      -     -     -"                  << endl;
   *ofile <<      "errZ                     shape       -     1.0       -      -     -     -"                  << endl;
   *ofile <<      "errOF                    shape       -       -     1.0      -     -     -"                  << endl;
@@ -67,8 +67,8 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-01-05/wzsms_baby_oldIso.root ");
-  char* version = (char*) "V00-00-02";
+  ch->Add("output/V00-01-09/wzsms_baby_oldIso.root ");
+  char* version = (char*) "V00-00-04";
 
   //---------------------------------------
   // selection
@@ -121,9 +121,9 @@ void makeSMSCards(){
   TH2F* hjup[nbins];
   TH2F* hjdn[nbins];
 
-  int   nx   =    31;
+  int   nx   =    41;
   float xmin =  -5.0;
-  float xmax = 305.0;
+  float xmax = 405.0;
 
   for( unsigned int i = 0 ; i < nbins ; ++i ){
     h[i]        = new TH2F( Form("h_%i",i)        , Form("h_%i",i)           , nx,xmin,xmax,nx,xmin,xmax);
