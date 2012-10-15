@@ -134,7 +134,7 @@ as follows:
 \noindent This insures that $K_3 M_3/(M_2 + K_3 M_3 + K_4 M_4) = N_3 /
 (N_2+N_3+N_4)$ and similarly for the $\geq 4$ jet bin.
 
-Table~\ref{tab:njetskfactors} also shows the values of $K_3$ and $K_4$ when the \met\ cut in the control sample definition is changed from 50 GeV to 100 GeV and 150 GeV.
+Table~\ref{tab:njetskfactors} also shows the values of $K_3$ and $K_4$ for different values of the \met\ cut in the control sample definition.
 % These values of $K_3$ and $K_4$ are not used in the analysis, but 
 This demonstrates that there is no statistically significant dependence of $K_3$ and $K_4$ on the \met\ cut.
 
@@ -157,22 +157,25 @@ while those that only need one radiation jet  are scaled by $K_3$.
 \begin{table}[!ht]
 \begin{center}
 {\footnotesize
-\begin{tabular}{l|c|c|c}
-\cline{2-4}
-                        & \multicolumn{3}{c}{ \met\ cut for data/MC scale factors} \\
+\begin{tabular}{l|c|c|c|c|c|c}
+\cline{2-7}
+                        & \multicolumn{6}{c}{ \met\ cut for data/MC scale factors} \\
 \hline
-Jet Multiplicity Sample &  50 GeV & 100 GeV & 150 GeV  \\
+Sample &  50 GeV & 100 GeV & 150 GeV & 200 GeV & 250 GeV & 300 GeV \\
 \hline
 \hline
-N jets $= 3$ (sensitive to $\ttbar+1$ extra jet from radiation)
-& $K_3 = 0.98 \pm 0.02$ & $K_3 = 1.01 \pm 0.03$ & $K_3 = 1.00 \pm 0.08$ \\
-N jets $\ge4$ (sensitive to $\ttbar+\ge2$ extra jets from radiation)
-& $K_4 = 0.94 \pm 0.02$ & $K_4 = 0.93 \pm 0.04$ & $K_4 = 1.00 \pm 0.08$ \\
+N jets $= 3$ 
+& $K_3 = 0.98 \pm 0.02$ & $K_3 = 1.01 \pm 0.03$ & $K_3 = 1.00 \pm 0.08$ & $K_3 = 1.03 \pm 0.18$ & $K_3 = 1.29 \pm 0.51$ & $K_3 = 1.58 \pm 1.23$ \\
+N jets $\ge4$ 
+& $K_4 = 0.94 \pm 0.02$ & $K_4 = 0.93 \pm 0.04$ & $K_4 = 1.00 \pm 0.08$ & $K_4 = 1.07 \pm 0.18$ & $K_4 = 1.30 \pm 0.48$ & $K_4 = 1.65 \pm 1.19$ \\
 \hline
 \end{tabular}}
 \caption{Data/MC scale factors used to account for differences in the
   fraction of events with additional hard jets from radiation in
-  \ttll\ events. The values derived with the 100 GeV \met\ cut are applied 
+  \ttll\ events.
+The N jets $= 3$ scale factor, $K_3$, is sensitive to $\ttbar+1$ extra jet from radiation, while
+the N jets $\ge4$ scale factor, $K_4$, is sensitive to $\ttbar+\ge2$ extra jets from radiation.
+The values derived with the 100 GeV \met\ cut are applied 
   to the \ttll\ MC throughout the analysis. \label{tab:njetskfactors}}
 \end{center}
 \end{table}
