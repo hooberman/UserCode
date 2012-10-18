@@ -17,12 +17,17 @@ top events.
 Sample              & SRA & SRB & SRC & SRD & SRE & SRF & SRG\\
 \hline
 \hline
-$R^{\mu}_{top}$ 	  & $0.015 \pm 0.001$  & $0.035 \pm 0.002$  & $0.021 \pm 0.002$  & $0.021 \pm 0.004$  & $0.025 \pm 0.007$  & $0.015 \pm 0.009$  & $0.021 \pm 0.015$  \\
-$R^{\mu}_{wjet}$ 	  & $0.040 \pm 0.001$  & $0.071 \pm 0.003$  & $0.062 \pm 0.004$  & $0.064 \pm 0.006$  & $0.065 \pm 0.009$  & $0.067 \pm 0.012$  & $0.065 \pm 0.016$  \\
+\multicolumn{8}{c}{Muons} \\
+\hline
+$R^{MC}_{top}$ 	  & $0.015 \pm 0.001$  & $0.035 \pm 0.002$  & $0.021 \pm 0.002$  & $0.021 \pm 0.004$  & $0.025 \pm 0.007$  & $0.015 \pm 0.009$  & $0.021 \pm 0.015$  \\
+$R^{MC}_{wjet}$ 	  & $0.040 \pm 0.001$  & $0.071 \pm 0.003$  & $0.062 \pm 0.004$  & $0.064 \pm 0.006$  & $0.065 \pm 0.009$  & $0.067 \pm 0.012$  & $0.065 \pm 0.016$  \\
 \hline
 \hline
-$R^e_{top}$ 	  & $0.015 \pm 0.001$  & $0.031 \pm 0.002$  & $0.026 \pm 0.003$  & $0.025 \pm 0.005$  & $0.009 \pm 0.005$  & $0.021 \pm 0.012$  & $0.034 \pm 0.024$  \\
-$R^e_{wjet}$ 	  & $0.040 \pm 0.002$  & $0.075 \pm 0.004$  & $0.067 \pm 0.005$  & $0.063 \pm 0.007$  & $0.061 \pm 0.010$  & $0.067 \pm 0.015$  & $0.070 \pm 0.021$  \\
+\hline
+\multicolumn{8}{c}{Electrons} \\
+\hline
+$R^{MC}_{top}$ 	  & $0.015 \pm 0.001$  & $0.031 \pm 0.002$  & $0.026 \pm 0.003$  & $0.025 \pm 0.005$  & $0.009 \pm 0.005$  & $0.021 \pm 0.012$  & $0.034 \pm 0.024$  \\
+$R^{MC}_{wjet}$ 	  & $0.040 \pm 0.002$  & $0.075 \pm 0.004$  & $0.067 \pm 0.005$  & $0.063 \pm 0.007$  & $0.061 \pm 0.010$  & $0.067 \pm 0.015$  & $0.070 \pm 0.021$  \\
 \hline
 \end{tabular}}
 \caption{ Ratio of MC events in the \mt-tail over events in the \mt-peak for
@@ -34,32 +39,32 @@ $R^e_{wjet}$ 	  & $0.040 \pm 0.002$  & $0.075 \pm 0.004$  & $0.067 \pm 0.005$  &
 
 The MC values of these ratios are shown in Table~\ref{tab:ttp}. The e and $\mu$ channel results are averaged before corrections are made.
 
-The MC value of $R_{wjet}$ is corrected based on the studies of CR1 (Section~\ref{sec:cr1}), which
-lead to the data/MC scale factor $SFR_{wjet}$ (Table~\ref{tab:cr1yields}).
+The MC value of $R^{MC}_{wjet}$ is corrected based on the studies of CR1 (Section~\ref{sec:cr1}), which
+lead to the data/MC scale factor $SFR_{wjet}$ (Table~\ref{tab:cr1yields}). The corrected $R_{wjet}$ is thus given by $R^{MC}_{wjet} \times SFR_{wjet}$.
 
 %$SFR_{top}$  (Table~\ref{tab:cr2yields})
 
-There is no similar scale factor to correct the MC value of $R_{top}$ due to the lack of events in CR2 (Section~\ref{sec:cr2}).
+There is no similar scale factor to correct the MC value of $R^{MC}_{top}$ due to the lack of events in CR2 (Section~\ref{sec:cr2}).
 We must therefore use a different procedure to derive a corrected value of $R_{top}$.
 
-We start by defining optimistic (too small) and pessimistic (too large) predictions. 
+We start by defining optimistic (too small) and pessimistic (too large) predictions for $R_{top}$. 
 
-For the pessimistic prediction, we use the \wjets\ $M_T$ tail-to-peak ratio and data/MC scale factor, $R_{wjet}$ and $SFR_{wjet}$.
+For the pessimistic prediction, we use the \wjets\ MC tail-to-peak ratio and data/MC scale factor, $R^{MC}_{wjet}$ and $SFR_{wjet}$ (i.e. the pessimistic prediction is the same as $R_{wjet}$).
 This prediction is too large because in \wjets\ events the $M_T$ tail comes from
 off-shell Ws and resolution effects, while in top events to first order
 only resolution effects matter.
 
-For the optimistic prediction, we use the \ttsl\ $M_T$ tail-to-peak ratio $R_{top}$, but take the \wjets\ data/MC scale factor $SFR_{wjet}$.
+For the optimistic prediction, we use the \ttsl\ MC tail-to-peak ratio $R^{MC}_{top}$, but take the \wjets\ data/MC scale factor $SFR_{wjet}$.
 This prediction is too small because
 the true top scale factor is to first order the same as for on-shell Ws, 
 while $SFR_{wjet}$ is a weighted average of the
 scale factor for on-shell Ws (which is $>1$) and the
 scale factor for off-shell Ws (which is close to 1 as it is well modeled by MC). 
 
-The final prediction is given by the average of the optimistic and pessimistic predictions, and
+The final prediction for $R_{top}$ is given by the average of the optimistic and pessimistic predictions, and
 the systematic uncertainty is given by half the difference between the two.
 
-The corrected values of $R_{wjet}$ and $R_{top}$ are given in Table~\ref{tab:ttpcorr}.
+The corrected values of $R_{wjet}$ and $R_{top}$ and their uncertainties are given in Table~\ref{tab:ttpcorr}.
 
 \begin{table}[!h]
 \begin{center}
