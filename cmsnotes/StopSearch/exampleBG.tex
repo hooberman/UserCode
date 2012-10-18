@@ -5,10 +5,10 @@ The calculation of the background prediction is a bit complicated.
 Here we walk the reader through a concrete example. 
 
  {\bf NB: the numbers
-in this section corresponded to the numbers in V2 of the analysis note. 
+in this section corresponded to the numbers in V3 of the analysis note. 
 They will not be updated, because this is meant as an illustration only.}.
 
-The main background is $t\bar{t}$
+The main background is $t\bar{t}$.
 The main idea is to normalize to the $M_T$ peak region ($50 < M_T < 80$ GeV).
 This eliminates dependence on \ttbar\ cross-section, luminosity,
 trigger efficiency, JES, lepton ID, etc.  This gets a bit complicated because
@@ -23,7 +23,7 @@ region.
 
 This complex procedure is important for the high statistics signal regions 
 with relatively low \met\ requirements, eg, SRA.  For these SRs we want to keep the 
-systematics low in order to be sensistive to low mass stop; for the signal regions
+systematics low in order to be sensitive to low mass stop; for the signal regions
 with hard cuts on \met\, this is less important.  However, we apply the same 
 procedure to all SRs.
 
@@ -76,17 +76,16 @@ the \ttsl\ and the \wjets\ backgrounds need to be scaled to have data/MC agreeme
 
 \noindent $SF_{post} = (2787 - 62 - SF_{pre} \cdot 116) / (2595 + 236) = 0.924$.
 
-Then the \ttsl\ background is obtained as the product of the following four factors
+Then the \ttsl\ background is obtained as the product of the following three factors
 
 \begin{itemize}
 \item $SF_{post} = 0.924$ as obtained above
 \item 2595, from the third column of Table~\ref{tab:bgexample}
-\item The tail-to-peak ratio $R_{top} = 0.015$ from Table~\ref{tab:ttp} (we use the average of electrons
-and muons)
-\item The tail-to-peak ratio scale factod $SFR_{top} = 1.89 \pm 0.56$ from Table~\ref{tab:cr2yields}.
+\item The tail-to-peak ratio $R_{top} = 0.045$ from Table~\ref{tab:ttpcorr}
+%\item The tail-to-peak ratio scale factor $SFR_{top} = 1.89 \pm 0.56$ from Table~\ref{tab:cr2yields}.
 \end{itemize}
 
-The result for the central value is 68 events.
+The result for the central value is 108 events.
 
 \subsection{Central value for the \wjets\ background}
 
@@ -94,8 +93,8 @@ It is calculated as the product of
 \begin{itemize}
 \item $SF_{post} = 0.924$ from Section~\ref{sec:cenvttlj}
 \item 236, from the third column of Table~\ref{tab:bgexample}
-\item The tail-to-peak ratio $R_{wjet} = 0.04$ from Table~\ref{tab:ttp} (we use the average of electrons and muons)
-\item The tail-to-peak ratio scale factod $SFR_{wjet} = 1.64 \pm 0.38$ from Table~\ref{tab:cr1yields}.
+\item The tail-to-peak ratio $R_{wjet} = 0.066$ from Table~\ref{tab:ttpcorr}
+%\item The tail-to-peak ratio scale factor $SFR_{wjet} = 1.64 \pm 0.38$ from Table~\ref{tab:cr1yields}.
 \end{itemize}
 
 The result for the central value is 14.3 events.
