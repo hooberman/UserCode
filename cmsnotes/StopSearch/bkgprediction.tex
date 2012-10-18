@@ -190,24 +190,29 @@ e veto \mt-SF 	  & $0.97 \pm 0.01$ & $0.96 \pm 0.02$ & $0.97 \pm 0.03$ & $0.87 \
 \end{table}
 
 
-
+%The \wjets\ background is obtained by taking the 
+%number of MC-predicted \wjets\ events in the post-veto
+%normalization region, scaling it by $SF_{post}$, multiplying 
+%it by the tail-to-peak ratio $R_{wjet}$ of Table~\ref{tab:ttpcorr}.
+%% and finally the data-MC scale factor $SFR_{wjet}$ from Table~\ref{tab:cr1yields}.
 
 
 Then the  $t\bar{t}$ lepton $+$ jet BG is obtained by taking the 
 number of MC-predicted $t\bar{t}$ lepton $+$ jets in the post-veto
-normalization region, scaling it by $SF_{post}$, multiplying 
-it by the tail-to-peak ratio $R_{top}$ of Table~\ref{tab:ttp}, and
-finally the data-MC scale factor $SFR_{top}$ from
-Table~\ref{tab:cr2yields}.
+normalization region, scaling it by $SF_{post}$, and multiplying 
+it by the corrected tail-to-peak ratio $R_{top}$ of Table~\ref{tab:ttpcorr}.
+%and finally the data-MC scale factor $SFR_{top}$ from Table~\ref{tab:cr2yields}.
 
 The single top background is obtained in exactly the same way
 as the  $t\bar{t}$ lepton $+$ jet BG, using the same tail-to-peak
-ratio and the same data-MC scale-factor.  The $W$ background is
+ratio.
+% and the same data-MC scale-factor.
+The \wjets\ background is
 done in a similar way, but using a different tail-to-peak ratio 
-($R_{wjets}$ of Table~\ref{tab:ttp}), and a different data-MC scale
-factor
-($SFR_{wjet}$ from
-Table~\ref{tab:cr1yields}).
+($R_{wjets}$ of Table~\ref{tab:ttpcorr}).
+% and a different data-MC scale factor ($SFR_{wjet}$ from Table~\ref{tab:cr1yields}).
+
+
 
 Other (small) backgrounds are taken straight from Monte Carlo, as 
 described in Section~\ref{sec:bkg_other}.

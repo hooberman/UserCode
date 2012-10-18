@@ -4,7 +4,7 @@
 An important component
 of the background calculation is the ratio of the number of events with $M_T$ in the signal region
 to the number of events with $50 < M_T < 80$~GeV.  
-As discussed in Section~\ref{sec:ljbg-general}, these ratios are different for $W +$ jets and 
+As discussed in Section~\ref{sec:ljbg-general}, these ratios are different for \wjets\ and 
 top events.  
 
 
@@ -32,10 +32,51 @@ $R^e_{wjet}$ 	  & $0.040 \pm 0.002$  & $0.075 \pm 0.004$  & $0.067 \pm 0.005$  &
 \end{center}
 \end{table}
 
-The MC value of these ratios are shown in Table~\ref{tab:ttp}.
-In addition the studies of CR1 and CR2 (Sections~\ref{sec:cr1} and~\ref{sec:cr2})
-lead to data/MC scale factors 
-$SFR_{wjets}$ (Table~\ref{tab:cr1yields}) and
-$SFR_{top}$  (Table~\ref{tab:cr2yields})
+The MC values of these ratios are shown in Table~\ref{tab:ttp}. The e and $\mu$ channel results are averaged before corrections are made.
+
+The MC value of $R_{wjet}$ is corrected based on the studies of CR1 (Section~\ref{sec:cr1}), which
+lead to the data/MC scale factor $SFR_{wjet}$ (Table~\ref{tab:cr1yields}).
+
+%$SFR_{top}$  (Table~\ref{tab:cr2yields})
+
+There is no similar scale factor to correct the MC value of $R_{top}$ due to the lack of events in CR2 (Section~\ref{sec:cr2}).
+We must therefore use a different procedure to derive a corrected value of $R_{top}$.
+
+We start by defining optimistic (too small) and pessimistic (too large) predictions. 
+
+For the pessimistic prediction, we use the \wjets\ $M_T$ tail-to-peak ratio and data/MC scale factor, $R_{wjet}$ and $SFR_{wjet}$.
+This prediction is too large because in \wjets\ events the $M_T$ tail comes from
+off-shell Ws and resolution effects, while in top events to first order
+only resolution effects matter.
+
+For the optimistic prediction, we use the \ttsl\ $M_T$ tail-to-peak ratio $R_{top}$, but take the \wjets\ data/MC scale factor $SFR_{wjet}$.
+This prediction is too small because
+the true top scale factor is to first order the same as for on-shell Ws, 
+while $SFR_{wjet}$ is a weighted average of the
+scale factor for on-shell Ws (which is $>1$) and the
+scale factor for off-shell Ws (which is close to 1 as it is well modeled by MC). 
+
+The final prediction is given by the average of the optimistic and pessimistic predictions, and
+the systematic uncertainty is given by half the difference between the two.
+
+The corrected values of $R_{wjet}$ and $R_{top}$ are given in Table~\ref{tab:ttpcorr}.
+
+\begin{table}[!h]
+\begin{center}
+{\footnotesize
+\begin{tabular}{l||c|c|c|c|c|c|c}
+\hline
+Sample              & SRA & SRB & SRC & SRD & SRE & SRF & SRG\\
+\hline
+\hline
+$R_{top}$ 	  & $0.015 \pm 0.001$  & $0.035 \pm 0.002$  & $0.021 \pm 0.002$  & $0.021 \pm 0.004$  & $0.025 \pm 0.007$  & $0.015 \pm 0.009$  & $0.021 \pm 0.015$  \\
+$R_{wjet}$ 	  & $0.040 \pm 0.001$  & $0.071 \pm 0.003$  & $0.062 \pm 0.004$  & $0.064 \pm 0.006$  & $0.065 \pm 0.009$  & $0.067 \pm 0.012$  & $0.065 \pm 0.016$  \\
+\hline
+\end{tabular}}
+\caption{  Corrected values of $R_{wjet}$ and $R_{top}$.
+***NEEDS TO BE FILLED***  
+\label{tab:ttpcorr}}
+\end{center}
+\end{table}
 
 \clearpage
