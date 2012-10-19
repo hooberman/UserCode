@@ -72,6 +72,12 @@
     h524[i]->SetMarkerStyle(21);
     h526[i]->SetMarkerStyle(25);
 
+    h524[i]->SetMinimum(0);
+
+    float max = h524[i]->GetMaximum();
+    if( h526[i]->GetMaximum() > max ) max = h526[i]->GetMaximum();
+    h524->SetMaximum(1.1*max);
+
     h524[i]->Draw();
     h526[i]->Draw("same");
     
