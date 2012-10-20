@@ -1,22 +1,44 @@
 
-The results of the search, still blinded are shown in Table~\ref{tab:result}.
-The $M_T$ distributions, still blinded, for increasing values of \met\
-are shown in Fig~\ref{fig:mtsig1},\ref{fig:mtsig2},\ref{fig:mtsig3}.
+The results of the search are shown in
+Table~\ref{tab:result}, including both statistical and systematic
+uncertainties. Agreement is observed between the data and the
+predicted background for all signal regions.  
+The predicted and observed \met\ distribution for $\met>150$ GeV and
+$\mt>120$ GeV are shown in Figure~\ref{fig:resultsummary}, obtained
+from the yields for SRB to SRG. Two signal points are shown for comparison,
+corresponding to the low and high stop mass sensitivity
+boundaries for this search. This shows that the lower \met\ region is
+more sensitive to lighter stop signals, while the higher \met\
+region is more sensitive to heavier stops, for the T2tt signal model
+shown. The $M_T$ distributions for increasing values of \met\
+are shown in Fig~\ref{fig:mtsig1} and \ref{fig:mtsig2}.
 
 \input{results_table.tex}
-\input{uncertainties_table.tex}
 
 \begin{figure}[hbt]
   \begin{center}
-        \includegraphics[width=0.5\linewidth]{plots/mt_met50_ele.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_met50_muo.pdf}
-        \includegraphics[width=0.5\linewidth]{plots/mt_met100_ele.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_met100_muo.pdf}
-        \includegraphics[width=0.5\linewidth]{plots/mt_met150_ele.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_met150_muo.pdf}
+        \includegraphics[width=0.75\linewidth]{plots/summaryPlot.pdf}
+    \caption{Predicted and observed \met\ for $\mt>120$ GeV, obtained
+      from the yields for SRB to SRG. Note SRB corresponds to the integral
+      of the distribution, while subsequent signal regions SRC to SRG
+      correspond to integrals from subsequent bins. The band on the
+      ratio (above) corresponds to the full relative background
+      uncertainty. 
+\label{fig:resultsummary}
+}  
+      \end{center}
+\end{figure}
 
+
+\begin{figure}[hbt]
+  \begin{center}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met100_emucomb.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met150_emucomb.pdf}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met200_emucomb.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met250_emucomb.pdf}
     \caption{$M_T$ in the data compared to SM Monte Carlo, for
-      increasing values of \met. Note that the MC tails have not
+      increasing values of \met. Only statistical uncertainties are
+      shown. Note that the MC tails have not
       been rescaled at this point.
 \label{fig:mtsig1}
 }  
@@ -25,35 +47,17 @@ are shown in Fig~\ref{fig:mtsig1},\ref{fig:mtsig2},\ref{fig:mtsig3}.
 
 \begin{figure}[hbt]
   \begin{center}
-        \includegraphics[width=0.5\linewidth]{plots/mt_met200_ele.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_met200_muo.pdf}
-        \includegraphics[width=0.5\linewidth]{plots/mt_met250_ele.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_met250_muo.pdf}
-        \includegraphics[width=0.5\linewidth]{plots/mt_met300_ele.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_met300_muo.pdf}
-
+        \includegraphics[width=0.5\linewidth]{plots/mt_met300_emucomb.pdf}%
+        \includegraphics[width=0.5\linewidth]{plots/mt_met350_emucomb.pdf}
+        \includegraphics[width=0.5\linewidth]{plots/mt_met400_emucomb.pdf}
     \caption{$M_T$ in the data compared to SM Monte Carlo, for
-      increasing values of \met. Note that the MC tails have not
+      increasing values of \met. Only statistical uncertainties are
+      shown. Note that the MC tails have not
       been rescaled at this point.
 \label{fig:mtsig2}
 }  
       \end{center}
 \end{figure}
 
-
-\begin{figure}[hbt]
-  \begin{center}
-        \includegraphics[width=0.5\linewidth]{plots/mt_met350_ele.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_met350_muo.pdf}
-        \includegraphics[width=0.5\linewidth]{plots/mt_met400_ele.pdf}%
-        \includegraphics[width=0.5\linewidth]{plots/mt_met400_muo.pdf}
-
-    \caption{$M_T$ in the data compared to SM Monte Carlo, for
-      increasing values of \met. Note that the MC tails have not
-      been rescaled at this point.
-\label{fig:mtsig3}
-}  
-      \end{center}
-\end{figure}
 
 \clearpage

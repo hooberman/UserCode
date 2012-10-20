@@ -25,11 +25,9 @@ for example,
 the $t\bar{t} \to$ dilepton BG estimate because it changes the 
 $t\bar{t}$ normalization to the peak region (because some of the 
 events in the peak region are from rare processes).  These effects
-are carefully accounted for.  
-%%%TO ADD BACK IN IF WE HAVE SYSTEMATICS TABLE.
-%The contribution to the overall
-%uncertainty from each BG source is tabulated in
-%Section~\ref{sec:bgunc-bottomline}.
+are carefully accounted for. The contribution to the overall
+uncertainty from each background source is tabulated in
+Section~\ref{sec:bgunc-bottomline}.
 Here we discuss the uncertainties one-by-one and comment 
 on their impact on the overall result, at least to first order.
 Second order effects, such as the one described, are also included.
@@ -154,12 +152,36 @@ is negligible in the low \met\ signal regions, and grows to about
 15\% in SRG.
 
 
-\subsection{Uncertainty on the \ttll\ Acceptance}
+\subsection{Uncertainty on the \ttll\ Background}
 
 The \ttbar\ background prediction is obtained from MC, with corrections
 derived from control samples in data. The uncertainty associated with
+the \ttbar\ background is derived from the level of closure of the
+background prediction in CR4 (Table~\ref{tab:cr4yields}) and 
+CR5 (Table~\ref{tab:cr5yields}). The results from these control region
+checks are shown in Figure~\ref{fig:ttdlunc}. The uncertainties assigned
+to the \ttdl\ background prediction based on these tests are 
+5\% (SRA), 10\% (SRB), 15\% (SRC), 25\% (SRD), 40\% (SRE-G).
+
+\begin{figure}[hbt]
+  \begin{center}
+        \includegraphics[width=0.6\linewidth]{plots/ttdilepton_uncertainty.pdf}
+        \caption{
+          \label{fig:ttdlunc}%\protect 
+          Results of the comparison of yields in the \mt\ tail comparing the MC prediction (after
+          applying SFs) to data for CR4 and CR5 for all the signal
+          region requirements considered (A-G). The bands indicate the
+          systematic uncertainties assigned based on these tests,
+          ranging from $5\%$ for SRA to $40\%$ for SRE-G.}
+      \end{center}
+\end{figure}
+
+
+\subsubsection{Check of the uncertainty on the \ttll\ Acceptance}
+
+The uncertainty associated with
 the theoretical modeling of the \ttbar\ production and decay is
-estimated by comparing the background predictions obtained using 
+checked by comparing the background predictions obtained using 
 alternative MC samples. It should be noted that the full analysis is
 performed with the alternative samples under consideration, 
 including the derivation of the various data-to-MC scale factors. 
@@ -361,15 +383,15 @@ down variations by a factor 2, we can see that a systematic
 uncertainty
 of 6\% would fully cover all of the variations from different MC
 samples in SRA and SRB.
-{\bf Thus, we take a 6\% systematic uncertainty,  constant as a 
-function of signal region, as the systematic due to alternative MC
-models.}
+The alternative MC models indicate that a 6\% systematic uncertainty to
+cover the range of reasonable variations. 
 Note that this 6\% is also consistent with the level at which we are
-able
-to test the closure of the method in CR5 for the high statistics
-regions 
-(Table~\ref{tab:hugecr5yields}).
-
+able to test the closure of the method with alternative samples in CR5 for the high statistics
+regions (Table~\ref{tab:hugecr5yields}).
+The range of reasonable variations obtained with the alternative
+samples are consistent with the uncertainties assigned for
+the \ttll\ background based on the closure of the background
+predictions and data in CR4 and CR5.
 
 
 
@@ -842,6 +864,10 @@ jet multiplicity requirements.}
 \end{center}
 \end{table}
 
+\clearpage
+\subsection{Summary of uncertainties}
+\label{sec:bgunc-bottomline}.
+\input{uncertainties_table.tex}
 
 %Figure.~\ref{fig:reliso} compares the relative track isolation
 %for events with a track with $\pt > 10~\GeV$ in addition to a selected
@@ -923,7 +949,6 @@ jet multiplicity requirements.}
 %      \end{center}
 %\end{figure}
 
-% \subsection{Summary of uncertainties}
-% \label{sec:bgunc-bottomline}.
+
 
 % THIS NEEDS TO BE WRITTEN
