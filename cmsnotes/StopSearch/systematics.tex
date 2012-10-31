@@ -178,6 +178,112 @@ to the \ttdl\ background prediction based on these tests are
       \end{center}
 \end{figure}
 
+\clearpage
+\subsubsection{Check of the impact of Signal Contamination}
+
+We examine the contribution of possible signal events in the \ttll\
+control regions (CR4 and CR5). It should be emphasized that these 
+regions are not used to apply data/MC SFs. They are used to quantify 
+the level of data/MC agreement and assign a corresponding uncertainty.
+
+To illustrate how much signal is expected to populate these control
+regions, we examine signal points near the edge of the analysis'
+sensitivity (m(stop) = 450 m($\chi^0$) = 0 for T2tt, m(stop) = 450 
+m($\chi^0$) = 0 for T2bw with x=0.75 and m(stop) = 350 
+m($\chi^0$) = 0 for T2bw with x=0.5). 
+Table~\ref{tab:signalcontamination} compares the expected signal
+yields and the raw total MC background prediction in the control
+regions with the \met\ and \mt\ requirements corresponding to SRB, SRC
+and SRD (these are the signal regions that dominate the
+sensitivity). The signal contamination is smaller than the uncertainty
+on the dilepton background and smaller than the signal/background in
+the signal regions, with the exception of the T2bw scenario with x=0.5.
+However, based on the fact that the CR4 and CR5 are not used to extract
+data/MC SFs and that CR4 shows a slight deficit of data compared to
+the MC prediction, indicating that we do not observe evidence of
+signal contamination, we do not assign an additional uncertainty.
+
+\begin{table}[!h]
+\begin{center}
+{\small
+\begin{tabular}{l l||c|c|c}
+\hline
+\multicolumn{2}{c||}{Sample}              & CR B & CR C & CR D \\
+\hline
+\hline
+\multirow{4}{*}{CR4} & Raw MC            & $168.2 \pm 4.5$& $51.5 \pm 2.5$& $19.6 \pm 1.5$ \\
+%\hline
+& T2tt m(stop) = 450 m($\chi^0$) = 0  & $2.6 \pm 0.3$ $(2\%)$ & $2.0 \pm 0.2$ $(4\%)$ & $1.4 \pm 0.2$ $(7\%)$ \\
+& T2bw x=0.75 m(stop) = 450 m($\chi^0$) = 0 & $10.5 \pm 0.4$ $(6\%)$ &$6.1 \pm 0.3$ $(12\%)$ & $3.1 \pm 0.2$ $(16\%)$ \\
+& T2bw x=0.5  m(stop) = 350 m($\chi^0$) = 0 	& $32.1 \pm 1.5$ $(19\%)$ & $14.7 \pm 1.0$ $(29\%)$ & $5.5 \pm 0.6$ $(28\%)$ \\
+\hline
+\hline
+\multirow{4}{*}{CR5} & Raw MC            & $306.5 \pm 6.2$& $101.8 \pm 3.6$& $38.0 \pm 2.2$ \\
+%\hline
+& T2tt m(stop) = 450 m($\chi^0$) = 0  & $10.6 \pm 0.6$ $(3\%)$ & $7.8 \pm 0.5$ $(8\%)$ & $5.4 \pm 0.4$ $(14\%)$ \\
+& T2bw x=0.75 m(stop) = 450 m($\chi^0$) = 0 & $17.3 \pm 0.5$ $(6\%)$ &$11.3 \pm 0.4$ $(11\%)$ & $6.2 \pm 0.3$ $(16\%)$\\
+& T2bw x=0.5  m(stop) = 350 m($\chi^0$) = 0 	& $33.0 \pm 1.5$ $(11\%)$& $14.4 \pm 1.0$ $(14\%)$& $5.7 \pm 0.6$ $(15\%)$ \\
+\hline
+\hline
+\hline
+\multirow{4}{*}{SIGNAL} & Raw MC 		 & $486.3 \pm 7.8$& $164.3 \pm 4.5$& $61.5 \pm 2.8$ \\
+& T2tt m(stop) = 450 m($\chi^0$) = 0 	& $65.3 \pm 1.4$ $(13\%)$& $48.8 \pm 1.2$ $(30\%)$& $32.9 \pm 1.0$ $(53\%)$ \\
+& T2bw x=0.75 m(stop) = 450 m($\chi^0$) = 0 	& $69.3 \pm 1.0$ $(14\%)$& $47.3 \pm 0.8$ $(29\%)$& $27.3 \pm 0.6$ $(44\%)$ \\
+& T2bw x=0.5  m(stop) = 350 m($\chi^0$) = 0 	& $105.5 \pm 2.8$ $(22\%)$& $44.6 \pm 1.8$ $(27\%)$& $15.9 \pm 1.1$ $(26\%)$ \\
+\hline
+\end{tabular}}
+\caption{ Yields in \mt\ tail comparing the raw SM MC prediction to the
+  yields for a few signal points on the edge of our sensitivity in the \ttll\
+  control regions CR4, CR5 and in the corresponding signal region.
+  The numbers in parenthesis are the expected signal yield divided by
+  the total background. The uncertainties are statistical only.
+\label{tab:signalcontamination}}
+\end{center}
+\end{table}
+
+%CR5 DUMP
+%Total 		 & $880.3 \pm 10.4$& $560.0 \pm 8.3$& $306.5 \pm 6.2$& $101.8 \pm 3.6$& $38.0 \pm 2.2$& $16.4 \pm 1.4$& $8.2 \pm 1.0$& $4.6 \pm 0.8$ \\
+%\hline
+%\hline
+%Data 		 & $941$& $559$& $287$& $95$& $26$& $8$& $5$& $3$ \\
+%\hline
+%T2tt m(stop) = 250 m($\chi^0$) = 0 	& $84.3 \pm 9.2$& $61.9 \pm 7.9$& $35.7 \pm 6.0$& $5.9 \pm 2.4$& $1.0 \pm 1.0$& $1.0 \pm 1.0$& $0.0 \pm 0.0$& $0.0 \pm 0.0$ \\
+%\hline
+%T2tt m(stop) = 300 m($\chi^0$) = 50 	& $61.4 \pm 4.7$& $53.6 \pm 4.4$& $42.0 \pm 3.9$& $14.3 \pm 2.3$& $7.2 \pm 1.6$& $1.8 \pm 0.8$& $0.7 \pm 0.5$& $0.0 \pm 0.0$ \\
+%\hline
+%T2tt m(stop) = 300 m($\chi^0$) = 100 	& $33.3 \pm 3.5$& $28.6 \pm 3.2$& $19.2 \pm 2.6$& $6.1 \pm 1.5$& $1.8 \pm 0.8$& $0.4 \pm 0.4$& $0.4 \pm 0.4$& $0.4 \pm 0.4$ \\
+%\hline
+%T2tt m(stop) = 350 m($\chi^0$) = 0 	& $33.4 \pm 2.2$& $29.8 \pm 2.1$& $27.3 \pm 2.0$& $15.3 \pm 1.5$& $5.6 \pm 0.9$& $1.9 \pm 0.5$& $0.3 \pm 0.2$& $0.0 \pm 0.0$ \\
+%\hline
+%T2tt m(stop) = 450 m($\chi^0$) = 0 	& $12.0 \pm 0.6$& $11.3 \pm 0.6$& $10.6 \pm 0.6$& $7.8 \pm 0.5$& $5.4 \pm 0.4$& $3.1 \pm 0.3$& $1.8 \pm 0.2$& $0.6 \pm 0.1$ \\
+%\hline
+%T2bw m(stop) = 350 x=0.5 m($\chi^0$) = 0 	& $48.5 \pm 1.9$& $40.2 \pm 1.7$& $33.0 \pm 1.5$& $14.4 \pm 1.0$& $5.7 \pm 0.6$& $2.7 \pm 0.4$& $1.3 \pm 0.3$& $0.5 \pm 0.2$ \\
+%\hline
+%T2bw m(stop) = 450 x=0.75 m($\chi^0$) = 0 	& $22.3 \pm 0.6$& $20.2 \pm 0.6$& $17.3 \pm 0.5$& $11.3 \pm 0.4$& $6.2 \pm 0.3$& $3.1 \pm 0.2$& $1.3 \pm 0.1$& $0.7 \pm 0.1$ \\
+%\hline
+
+%CR4 DUMP
+%\hline
+%Total 		 & $510.1 \pm 8.0$& $324.2 \pm 6.3$& $168.2 \pm 4.5$& $51.5 \pm 2.5$& $19.6 \pm 1.5$& $7.8 \pm 1.0$& $2.6 \pm 0.6$& $1.1 \pm 0.3$ \\
+%\hline
+%\hline
+%Data 		 & $462$& $289$& $169$& $45$& $10$& $7$& $5$& $3$ \\
+%\hline
+%T2tt m(stop) = 250 m($\chi^0$) = 0 	& $37.7 \pm 6.1$& $30.9 \pm 5.5$& $18.0 \pm 4.2$& $6.0 \pm 2.5$& $2.0 \pm 1.4$& $0.0 \pm 0.0$& $0.0 \pm 0.0$& $0.0 \pm 0.0$ \\
+%\hline
+%T2tt m(stop) = 300 m($\chi^0$) = 50 	& $16.6 \pm 2.4$& $14.4 \pm 2.3$& $11.3 \pm 2.0$& $5.6 \pm 1.4$& $3.2 \pm 1.1$& $1.8 \pm 0.8$& $0.0 \pm 0.0$& $0.0 \pm 0.0$ \\
+%\hline
+%T2tt m(stop) = 300 m($\chi^0$) = 100 	& $9.6 \pm 1.8$& $6.4 \pm 1.5$& $4.6 \pm 1.3$& $0.7 \pm 0.5$& $0.4 \pm 0.4$& $0.0 \pm 0.0$& $0.0 \pm 0.0$& $0.0 \pm 0.0$ \\
+%\hline
+%T2tt m(stop) = 350 m($\chi^0$) = 0 	& $8.2 \pm 1.1$& $7.6 \pm 1.0$& $5.7 \pm 0.9$& $3.4 \pm 0.7$& $1.9 \pm 0.5$& $0.6 \pm 0.3$& $0.3 \pm 0.2$& $0.1 \pm 0.1$ \\
+%\hline
+%T2tt m(stop) = 450 m($\chi^0$) = 0 	& $3.1 \pm 0.3$& $2.9 \pm 0.3$& $2.6 \pm 0.3$& $2.0 \pm 0.2$& $1.4 \pm 0.2$& $1.0 \pm 0.2$& $0.4 \pm 0.1$& $0.2 \pm 0.1$ \\
+%\hline
+%T2bw m(stop) = 350 x=0.5 m($\chi^0$) = 0 	& $52.6 \pm 1.9$& $42.6 \pm 1.7$& $32.1 \pm 1.5$& $14.7 \pm 1.0$& $5.5 \pm 0.6$& $1.9 \pm 0.4$& $0.6 \pm 0.2$& $0.3 \pm 0.1$ \\
+%\hline
+%T2bw m(stop) = 450 x=0.75 m($\chi^0$) = 0 	& $16.9 \pm 0.5$& $14.9 \pm 0.5$& $10.5 \pm 0.4$& $6.1 \pm 0.3$& $3.1 \pm 0.2$& $1.5 \pm 0.1$& $0.6 \pm 0.1$& $0.3 \pm 0.1$ \\
+%\hline
+
 
 \subsubsection{Check of the uncertainty on the \ttll\ Background}
 
