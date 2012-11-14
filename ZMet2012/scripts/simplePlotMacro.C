@@ -41,13 +41,13 @@ char*    mybvetochar  = "_bvetoMedium";
 bool     pt40         =   false;
 char*    signalRegion = "highMet";
 float    xmin         =      -1;
-bool     latex        =   false;
+bool     latex        =    true;
 metType  myMetType    = e_pfmet; 
 bool     normToLowMet =    true;
 bool     exclusive    =    true;
-bool     blind        =   false;
+bool     blind        =    false;
 float    lumi         =     9.2;
-bool     printCards   =   false;
+bool     printCards   =    false;
 
 //metType  myMetType  = e_t1newpfmet; 
 //metType  myMetType  = e_t1pfmet; 
@@ -321,7 +321,7 @@ void simplePlotMacro( bool printplots = false ){
       //h_ofpred[i]->Scale(0.41);
       //cout << "ee channel: scale em yield by 0.41" << endl;
       h_ofpred[i]->Scale(0.43);
-      cout << "ee channel: scale em yield by 0.44" << endl;
+      cout << "ee channel: scale em yield by 0.43" << endl;
       title     = (char*) "ee events";
       ee_and_mm = false;
       mysel = sel + ee;
@@ -450,7 +450,7 @@ void simplePlotMacro( bool printplots = false ){
     //-----------------------------------------------
 
     int mynbins = 6;
-    if( bveto ) mynbins = 10;
+    if( bveto ) mynbins = 8;
 
     const unsigned int nbins = mynbins;
 
@@ -471,7 +471,7 @@ void simplePlotMacro( bool printplots = false ){
       // bins[6] = 200;   xbins[6] = 200.0;
       // xbins[7] = 250.0;
 
-
+      /*
       bins[0] =   0;   xbins[0] =   0.0;
       bins[1] =  30;   xbins[1] =  30.0;
       bins[2] =  60;   xbins[2] =  60.0;
@@ -483,6 +483,17 @@ void simplePlotMacro( bool printplots = false ){
       bins[8] = 180;   xbins[8] = 180.0;
       bins[9] = 200;   xbins[9] = 200.0;
       xbins[10] = 250.0;
+      */
+
+      bins[0] =   0;   xbins[0] =   0.0;
+      bins[1] =  30;   xbins[1] =  30.0;
+      bins[2] =  60;   xbins[2] =  60.0;
+      bins[3] =  80;   xbins[3] =  80.0;
+      bins[4] = 100;   xbins[4] = 100.0;
+      bins[5] = 120;   xbins[5] = 120.0;
+      bins[6] = 150;   xbins[6] = 150.0;
+      bins[7] = 200;   xbins[7] = 200.0;
+      xbins[8] = 250.0;
 
 
       /*
@@ -709,7 +720,8 @@ void simplePlotMacro( bool printplots = false ){
       hsysterr[i]->SetBinError(ibin+1,ntot_toterr[ibin]/ntot[ibin]);
       //}
 
-      if( printCards ) printCard( Form("met%i%s.txt",bins[ibin],mybvetochar) , (int)ntot[ibin] , ntot[ibin] , ntot_toterr[ibin]/ntot[ibin] );
+      //if( printCards ) printCard( Form("met%i%s.txt",bins[ibin],mybvetochar) , (int)ntot[ibin] , ntot[ibin] , ntot_toterr[ibin]/ntot[ibin] );
+      if( printCards ) printCard( Form("met%i%s.txt",bins[ibin],mybvetochar) , ndata[ibin] , ntot[ibin] , ntot_toterr[ibin]/ntot[ibin] );
     }
 
 
@@ -800,6 +812,137 @@ void simplePlotMacro( bool printplots = false ){
     }
     cout << delim_end << endl;
 
+
+
+
+    /*
+  //signal regions                          60-80      80-100    100-150    150-200  >200
+  int     data_yield[nbins]           = {   47       , 7       , 6        , 2       , 0    };
+
+  float   Zbkg_yield[nbins]           = {   32.9     , 5.2     , 1.7      , 0.4     , 0.20 };
+  float   Zbkg_err[nbins]             = {   11.1     , 1.8     , 0.6      , 0.2     , 0.09 };
+
+  float   OFbkg_yield[nbins]          = {   6.6      , 4.6     , 4.6      , 0.8     , 0.06 };
+  float   OFbkg_err[nbins]            = {   1.6      , 1.2     , 1.2      , 0.3     , 0.07 };     
+
+  float   VZbkg_yield[nbins]          = {   3.9      , 2.2     , 2.5      , 0.7     , 0.4  };
+  float   VZbkg_err[nbins]            = {   2.0      , 1.1     , 1.3      , 0.4     , 0.2  };     
+    */
+
+    
+
+    //-----------------------------
+    // g+jets
+    //-----------------------------
+    
+    width1 = 7;
+
+    cout << endl << endl << endl;
+
+    cout << "float Zbkg_yield[nbins]    = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",ngjets[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,ngjets[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    cout << "float Zbkg_err[nbins]      = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",ngjets_toterr[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,ngjets_toterr[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    //-----------------------------
+    // FS
+    //-----------------------------
+    
+    cout << "float OFbkg_yield[nbins]   = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",nof[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,nof[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    cout << "float OFbkg_err[nbins]     = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",nof_toterr[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,nof_toterr[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    //-----------------------------
+    // WZ
+    //-----------------------------
+    
+    cout << "float WZbkg_yield[nbins]   = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",nwz[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,nwz[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    cout << "float WZbkg_err[nbins]     = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",nwz_toterr[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,nwz_toterr[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    //-----------------------------
+    // ZZ
+    //-----------------------------
+    
+    cout << "float ZZbkg_yield[nbins]   = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",nzz[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,nzz[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    cout << "float ZZbkg_err[nbins]     = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",nzz_toterr[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,nzz_toterr[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    //-----------------------------
+    // rare
+    //-----------------------------
+    
+    cout << "float rarebkg_yield[nbins] = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",nrare[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,nrare[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    cout << "float rarebkg_err[nbins]   = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.1f , ",nrare_toterr[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.1f"   ,nrare_toterr[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    //-----------------------------
+    // data
+    //-----------------------------
+    
+    cout << "int   data_yield[nbins]    = { " << setw(width2);
+    for( unsigned int ibin = 3 ; ibin < nbins ; ibin++ ){
+      if( ibin < nbins - 1 ) cout << setw(width1) << Form("%.i , ",ndata[ibin]) << setw(width2);
+      else                   cout << setw(width1) << Form("%.i"   ,ndata[ibin]) << setw(width2);
+    }
+    cout << "};" << endl;
+
+    cout << endl << endl << endl;
+
+
+
+
+
+
     //------------------------------------------
     // draw plots
     //------------------------------------------
@@ -831,6 +974,7 @@ void simplePlotMacro( bool printplots = false ){
     leg->AddEntry(h_sf[i],"data","lp");
     leg->AddEntry(h_gjets[i],"Z+jets","f");
     leg->AddEntry(h_ofpred[i],"FS","f");
+    //leg->AddEntry(h_ofpred[i],"Flavor Symmetric","f");
     //leg->AddEntry(h_zz[i],"ZZ","f");
     //leg->AddEntry(h_wz[i],"WZ","f");
     leg->AddEntry(h_vz[i],"WZ+ZZ","f");
