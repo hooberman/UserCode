@@ -970,24 +970,24 @@ void simplePlotMacro( bool printplots = false ){
     h_sf[i]->Draw("sameE1");
     h_sf[i]->Draw("sameaxis");
 
-    TLegend* leg = new TLegend(0.75,0.6,0.9,0.9);
+    TLegend* leg = new TLegend(0.65,0.6,0.93,0.9);
     leg->AddEntry(h_sf[i],"data","lp");
     leg->AddEntry(h_gjets[i],"Z+jets","f");
-    leg->AddEntry(h_ofpred[i],"FS","f");
-    //leg->AddEntry(h_ofpred[i],"Flavor Symmetric","f");
+    //leg->AddEntry(h_ofpred[i],"FS","f");
+    leg->AddEntry(h_ofpred[i],"Flavor Symmetric","f");
     //leg->AddEntry(h_zz[i],"ZZ","f");
     //leg->AddEntry(h_wz[i],"WZ","f");
     leg->AddEntry(h_vz[i],"WZ+ZZ","f");
-    leg->AddEntry(h_rare[i],"rare SM","f");
+    leg->AddEntry(h_rare[i],"Rare SM","f");
     leg->SetFillColor(0);
     leg->SetBorderSize(0);
     leg->Draw();
 
-    t->SetTextSize(0.04);
-    t->DrawLatex(0.4,0.85,"CMS Preliminary");
+    t->SetTextSize(0.037);
+    t->DrawLatex(0.35,0.88,"CMS Preliminary");
     //t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
-    t->DrawLatex(0.4,0.79,Form("#sqrt{s} = 8 TeV, L_{int} = %.1f fb^{-1}",lumi));
-    t->DrawLatex(0.4,0.73,title);
+    t->DrawLatex(0.35,0.83,Form("#sqrt{s} = 8 TeV, L_{int} = %.1f fb^{-1}",lumi));
+    t->DrawLatex(0.35,0.78,title);
 
     can[i]->cd();
 
