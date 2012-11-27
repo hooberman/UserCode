@@ -355,13 +355,6 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
-  else if( strcmp( prefix , "gmsb_526" ) == 0 ){
-    //pickSkimIfExists(ch,"/hadoop/cms/store/user/algeorge/CMS2_V05-03-13/Higgsino_mu110-410_8TeV_v1_algeorge-Higgsino_mu110-410_8TeV_v1-800d6ac945c15e195cbd98c0883f9d09/ntuple_8_7_8k5.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/algeorge/CMS2_V05-03-13/Higgsino_mu110-410_8TeV_v1_algeorge-Higgsino_mu110-410_8TeV_v1-800d6ac945c15e195cbd98c0883f9d09/ntuple*root");
-  }
-
-  //----------------------------------------------------------------------------------------
-
   else if( strcmp( prefix , "RelValZEE" ) == 0 ){
     pickSkimIfExists(ch,"/tas/benhoob/home/ntupling/CMSSW_5_3_2_patch4/src/CMS2/NtupleMaker/test/RelValZEE_53X.root");
   }
