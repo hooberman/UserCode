@@ -43,14 +43,13 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
   *ofile << Form("process                        %s     Zbkg  OFbkg  VZbkg" , name )                          << endl;
   *ofile <<      "process                              0        1      2      3"                              << endl;
   *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f" , sigtot,Ztot,OFtot,VZtot)   << endl;
-  *ofile <<      "Lumi                       lnN   1.022       -       -      -"                              << endl;
-  *ofile <<      "LepTrigEff                 lnN   1.050       -       -      -"                              << endl;
+  *ofile <<      "lumi                       lnN   1.022       -       -      -"                              << endl;
+  *ofile <<      "eff_leptons                lnN   1.050       -       -      -"                              << endl;
   *ofile <<      "btagerr                    lnN   1.040       -       -      -"                              << endl;
-  *ofile <<      "Jes                      shape     1.0       -       -      -"                              << endl;
-  *ofile <<      "stat_shape           shapeStat     1.0       -       -      -"                              << endl;
-  *ofile <<      "errZ                     shape       -     1.0       -      -"                              << endl;
-  *ofile <<      "errOF                    shape       -       -     1.0      -"                              << endl;
-  *ofile <<      "BkgMCStat                shape       -       -       -    1.0"                              << endl;
+  *ofile <<      "JES_shape                shape     1.0       -       -      -"                              << endl;
+  *ofile <<      "err                      shape       -     1.0       -      -"                              << endl;
+  *ofile <<      "err                      shape       -       -     1.0      -"                              << endl;
+  *ofile <<      "err                      shape       -       -       -    1.0"                              << endl;
   
   ofile->close();
 
@@ -64,15 +63,14 @@ void makeGMSBCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-19/ggmsb_baby.root");
-  char* version = (char*) "V00-02-08";
+  ch->Add("output/V00-02-14/ggmsb_baby.root");
+  char* version = (char*) "V00-02-04";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  //TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./300000.)");
-  TCut weight   ("4.98 * trgeff * btagweight * davtxweight * weight");
+  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./300000.)");
 
   TCut presel   ("dilmass>81 && dilmass<101 && nbvz==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
   TCut preseljup("dilmass>81 && dilmass<101 && nbvz==0 && mjjup>70 && mjjup<110 && nlep==2 && njetsup>=2   && leptype<2");
@@ -112,21 +110,15 @@ void makeGMSBCards(){
   TH1F* h[nbins];
   TH1F* hjup[nbins];
   TH1F* hjdn[nbins];
-  TH1F* hstatup[nbins];
-  TH1F* hstatdn[nbins];
 
   for( unsigned int i = 0 ; i < nbins ; ++i ){
     h[i]        = new TH1F( Form("h_%i",i)        , Form("h_%i",i)           , 15 , 120 , 420 );
     hjup[i]     = new TH1F( Form("hjup_%i",i)     , Form("hjup_%i",i)        , 15 , 120 , 420 );
     hjdn[i]     = new TH1F( Form("hjdn_%i",i)     , Form("hjdn_%i",i)        , 15 , 120 , 420 );
-    hstatup[i]  = new TH1F( Form("hstatup_%i",i)  , Form("hstatup_%i",i)     , 15 , 120 , 420 );
-    hstatdn[i]  = new TH1F( Form("hstatdn_%i",i)  , Form("hstatdn_%i",i)     , 15 , 120 , 420 );
     
     h[i]    ->Sumw2();
     hjup[i] ->Sumw2();
     hjdn[i] ->Sumw2();
-    hstatup[i] ->Sumw2();
-    hstatdn[i] ->Sumw2();
   }
   
   TH1F* hall    = new TH1F( "hall"    , "hall"    , 15 , 120 , 420 );
@@ -169,14 +161,14 @@ void makeGMSBCards(){
   //signal regions                          60-80      80-100    100-150    150-200  >200
   int     data_yield[nbins]           = {   47       , 7       , 6        , 2       , 0    };
 
-  float   Zbkg_yield[nbins]           = {   32.9     , 5.2     , 1.7      , 0.4     , 0.20 };
-  float   Zbkg_err[nbins]             = {   11.1     , 1.8     , 0.6      , 0.2     , 0.09 };
+  float   Zbkg_yield[nbins]           = {   32.9     , 5.2     , 1.7      , 0.44    , 0.19 };
+  float   Zbkg_err[nbins]             = {   11.1     , 1.8     , 0.6      , 0.19    , 0.09 };
 
-  float   OFbkg_yield[nbins]          = {   6.6      , 4.6     , 4.6      , 0.8     , 0.06 };
-  float   OFbkg_err[nbins]            = {   1.6      , 1.2     , 1.2      , 0.3     , 0.07 };     
+  float   OFbkg_yield[nbins]          = {   6.6      , 4.6     , 4.6      , 0.75    , 0.06 };
+  float   OFbkg_err[nbins]            = {   1.4      , 1.1     , 1.7      , 0.42    , 0.07 };     
 
-  float   VZbkg_yield[nbins]          = {   3.9      , 2.2     , 2.5      , 0.7     , 0.4  };
-  float   VZbkg_err[nbins]            = {   2.0      , 1.1     , 1.3      , 0.4     , 0.2  };     
+  float   VZbkg_yield[nbins]          = {   3.6      , 2.1     , 2.3      , 0.74    , 0.40 };
+  float   VZbkg_err[nbins]            = {   1.8      , 1.0     , 1.2      , 0.37    , 0.22 };     
 
   int   data_tot  = 0;
   float Zbkg_tot  = 0;
@@ -203,17 +195,17 @@ void makeGMSBCards(){
 
   TH1F* histo_Data = new TH1F("histo_Data","histo_Data",nbins,0,nbins);
 
-  TH1F* histo_Zbkg               = new TH1F("histo_Zbkg"               ,"histo_Zbkg"               ,nbins,0,nbins);
-  TH1F* histo_Zbkg_errUp         = new TH1F("histo_Zbkg_errZUp"        ,"histo_Zbkg_errZUp"        ,nbins,0,nbins);
-  TH1F* histo_Zbkg_errDown       = new TH1F("histo_Zbkg_errZDown"      ,"histo_Zbkg_errZDown"      ,nbins,0,nbins);
+  TH1F* histo_Zbkg               = new TH1F("histo_Zbkg"         ,"histo_Zbkg"         ,nbins,0,nbins);
+  TH1F* histo_Zbkg_errUp         = new TH1F("histo_Zbkg_errUp"   ,"histo_Zbkg_errUp"   ,nbins,0,nbins);
+  TH1F* histo_Zbkg_errDown       = new TH1F("histo_Zbkg_errDown" ,"histo_Zbkg_errDown" ,nbins,0,nbins);
 
-  TH1F* histo_OFbkg              = new TH1F("histo_OFbkg"              ,"histo_OFbkg"              ,nbins,0,nbins);
-  TH1F* histo_OFbkg_errUp        = new TH1F("histo_OFbkg_errOFUp"      ,"histo_OFbkg_errOFUp"      ,nbins,0,nbins);
-  TH1F* histo_OFbkg_errDown      = new TH1F("histo_OFbkg_errOFDown"    ,"histo_OFbkg_errOFDown"    ,nbins,0,nbins);
+  TH1F* histo_OFbkg              = new TH1F("histo_OFbkg"        ,"histo_OFbkg"        ,nbins,0,nbins);
+  TH1F* histo_OFbkg_errUp        = new TH1F("histo_OFbkg_errUp"  ,"histo_OFbkg_errUp"  ,nbins,0,nbins);
+  TH1F* histo_OFbkg_errDown      = new TH1F("histo_OFbkg_errDown","histo_OFbkg_errDown",nbins,0,nbins);
 
-  TH1F* histo_VZbkg              = new TH1F("histo_VZbkg"              ,"histo_VZbkg"              ,nbins,0,nbins);
-  TH1F* histo_VZbkg_errUp        = new TH1F("histo_VZbkg_BkgMCStatUp"  ,"histo_VZbkg_BkgMCStatUp"  ,nbins,0,nbins);
-  TH1F* histo_VZbkg_errDown      = new TH1F("histo_VZbkg_BkgMCStatDown","histo_VZbkg_BkgMCStatDown",nbins,0,nbins);
+  TH1F* histo_VZbkg              = new TH1F("histo_VZbkg"        ,"histo_VZbkg"        ,nbins,0,nbins);
+  TH1F* histo_VZbkg_errUp        = new TH1F("histo_VZbkg_errUp"  ,"histo_VZbkg_errUp"  ,nbins,0,nbins);
+  TH1F* histo_VZbkg_errDown      = new TH1F("histo_VZbkg_errDown","histo_VZbkg_errDown",nbins,0,nbins);
       
   for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
 
@@ -255,11 +247,9 @@ void makeGMSBCards(){
     // make signal histos
     //---------------------------------------
 
-    TH1F* histo_SMS                = new TH1F( Form("histo_SMS_%i"               ,mgbin) , Form("histo_SMS_%i"               ,mgbin) , nbins,0,nbins);
-    TH1F* histo_SMS_JES_shapeUp    = new TH1F( Form("histo_SMS_%i_JesUp"         ,mgbin) , Form("histo_SMS_%i_JesUp"         ,mgbin) , nbins,0,nbins);
-    TH1F* histo_SMS_JES_shapeDown  = new TH1F( Form("histo_SMS_%i_JesDown"       ,mgbin) , Form("histo_SMS_%i_JesDown"       ,mgbin) , nbins,0,nbins);
-    TH1F* histo_SMS_stat_shapeUp   = new TH1F( Form("histo_SMS_%i_stat_shapeUp"  ,mgbin) , Form("histo_SMS_%i_stat_shapeUp"  ,mgbin) , nbins,0,nbins);
-    TH1F* histo_SMS_stat_shapeDown = new TH1F( Form("histo_SMS_%i_stat_shapeDown",mgbin) , Form("histo_SMS_%i_stat_shapeDown",mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS               = new TH1F( Form("histo_SMS_%i"              ,mgbin) , Form("histo_SMS_%i"              ,mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS_JES_shapeUp   = new TH1F( Form("histo_SMS_%i_JES_shapeUp"  ,mgbin) , Form("histo_SMS_%i_JES_shapeUp"  ,mgbin) , nbins,0,nbins);
+    TH1F* histo_SMS_JES_shapeDown = new TH1F( Form("histo_SMS_%i_JES_shapeDown",mgbin) , Form("histo_SMS_%i_JES_shapeDown",mgbin) , nbins,0,nbins);
 
     float sigtot    = 0;
     float sigtotjdn = 0;
@@ -274,14 +264,9 @@ void makeGMSBCards(){
       sigtotjdn += yieldjdn;
 
       histo_SMS->SetBinContent              ( ibin + 1 , yieldnom );
-      histo_SMS_JES_shapeUp  ->SetBinContent( ibin + 1 , yieldjup );
+      histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , yieldjup );
       histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , yieldjdn );
       
-      float yielderr = h[ibin]->GetBinError(mgbin);
-
-      histo_SMS_stat_shapeUp  ->SetBinContent( ibin + 1 , yieldnom + yielderr );
-      histo_SMS_stat_shapeDown->SetBinContent( ibin + 1 , TMath::Max( yieldnom - yielderr , (float)0.0 ) );
-
       cout << "Bin " << ibin << " " << yieldnom << endl;
     }
 
@@ -318,8 +303,6 @@ void makeGMSBCards(){
     histo_SMS->Write();
     histo_SMS_JES_shapeUp->Write();
     histo_SMS_JES_shapeDown->Write();
-    histo_SMS_stat_shapeUp->Write();
-    histo_SMS_stat_shapeDown->Write();
     f->Close();
 
     delete histo_SMS;
