@@ -67,8 +67,8 @@ const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-01-09";
-const char* jsonfilename         = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
+const char* iter                 = "V00-02-00";
+const char* jsonfilename         = "../jsons/Cert_190456-207898_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 18.063 fb-1
 
 //--------------------------------------------------------------------
 
