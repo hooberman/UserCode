@@ -31,6 +31,35 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   TChain* ch = new TChain("Events");
 
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "data_53X_2012A_HCP" ) == 0 ){    
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+  }
+
+  else if( strcmp( prefix , "data_53X_2012B_HCP" ) == 0 ){    
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012B-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012B-13Jul2012-v4_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012B-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+  }
+
+  else if( strcmp( prefix , "data_53X_2012C_HCP" ) == 0 ){    
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012C-24Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012C-24Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012C-24Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012C-PromptReco-v2_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012C-PromptReco-v2_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012C-PromptReco-v2_AOD/V05-03-18_slim/merged*root");
+  }
+
   //----------------------------------------------------------------------------------------
 
   if( strcmp( prefix , "data" ) == 0 ){    
@@ -189,7 +218,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zjets_53X" ) == 0 ){
-    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged_ntuple_1*root");
+    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged*root");
     //pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged_ntuple_1.root");
   }
 

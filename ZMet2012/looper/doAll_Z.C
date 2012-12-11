@@ -4,8 +4,12 @@
 
   gROOT->ProcessLine(".L runZLooper.C+");
 
-  runZLooper("data_2012A_53X"             , true  );  
-  runZLooper("data_2012B_53X"             , true  );  
+  runZLooper("data_53X_2012A_HCP"             , true  );  
+  runZLooper("data_53X_2012B_HCP"             , true  );  
+  //runZLooper("data_53X_2012C_HCP"             , true  );  
+
+  //runZLooper("data_2012A_53X"             , true  );  
+  //runZLooper("data_2012B_53X"             , true  );  
   //runZLooper("data_2012C_53X"             , true  );  
   //runZLooper("data_2012D_53X"             , true  );  
 
@@ -29,7 +33,7 @@
   // runZLooper("VVV_53X"                 , false );
   // runZLooper("zjets_full_53X"          , false );  
   // runZLooper("ttbar_53X"               , false );  
-  // runZLooper("zjets_53X"               , false );  
+  runZLooper("zjets_53X"               , false );  
   // runZLooper("zjets_MET50_53X"         , false );  
 
   // runZLooper("dataskim2010"            , true  );
