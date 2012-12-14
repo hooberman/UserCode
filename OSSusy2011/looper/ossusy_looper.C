@@ -8,7 +8,6 @@
 #include "TChainElement.h"
 #include "TDirectory.h"
 #include "TFile.h"
-#include "TF1.h"
 #include "TProfile.h"
 #include "TTree.h"
 #include "TH1F.h"
@@ -20,7 +19,6 @@
 #include "ossusy_looper.h"
 #include "getMt2.C"
 #include "TTreeCache.h"
-#include "TDatabasePDG.h"
 #include "../CORE/CMS2.h"
 #include "../CORE/metSelections.h"
 #include "../CORE/trackSelections.h"
@@ -43,7 +41,6 @@
 
 bool verbose            = false;
 bool genLeptonSelection = false;
-bool doTenPercent       = false;
 
 //#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
 //#include "../CORE/triggerUtils.cc"
@@ -55,14 +52,13 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 //mSUGRA scan parameters-----------------------------
 
-const bool  doGenSelection    = false;
 const bool  generalLeptonVeto = true;
-const int   nm0points         = 100;
-const float m0min             = 20.;
-const float m0max             = 2020.;
-const int   nm12points        = 38;
-const float m12min            = 20.;
-const float m12max            = 780.;
+const int   nm0points    = 100;
+const float m0min        = 20.;
+const float m0max        = 2020.;
+const int   nm12points   = 38;
+const float m12min       = 20.;
+const float m12max       = 780.;
 
 //---------------------------------------------------
 
@@ -78,59 +74,6 @@ float returnSigma(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 
 //--------------------------------------------------------------------
-
-float susySubProcess(){
-
-  // determine the process
-  TDatabasePDG *pdg = new TDatabasePDG(); 
-  std::vector<int> interactions; 
- 
-  for (unsigned int j=0; j<cms2.genps_id().size(); j++) { 
-    if (cms2.genps_status().at(j) != 3) continue; 
-    int ID = abs(cms2.genps_id().at(j)); 
-    int mID = abs(cms2.genps_id_mother().at(j)); 
-    if (ID > 1000000 && ID < 2000016 && (mID < 7 || mID ==21 || mID == 22 || mID == 23 || mID == 24)) { // kept the bosons in case of screw ups 
- 
-      // Check the mother of the SM is a proton 
-      bool isProton = false;        
-      for (unsigned int k=0; k < j; k++) { 
-	int pID = abs(cms2.genps_id().at(k)); 
-	int mpID = abs(cms2.genps_id_mother().at(k)); 
-	if ((pID < 7 || pID ==21 || pID == 22 || pID == 23 || pID == 24)&&(mpID == 2212)) isProton = true;  
-      } 
-      //      if (!isProton) continue;   
-      if (!isProton) { 
-	dumpDocLines(); 
-	continue; 
-      } 
-      interactions.push_back(cms2.genps_id().at(j)); 
- 
-      if (interactions.size() > 2)  
-	cout << setw(4) << left << j << " WARNING mcSUSYkfactor: Something is wrong with " 
-	     << setw(10) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " " 
-	     << setw(10) << left << cms2.genps_id().at(j) << " " 
-	     << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  " 
-	     << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  " 
-	     << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  " 
-	     << setw(4) << right << cms2.genps_status().at(j) << " " 
-	     << setw(10) << left << pdg->GetParticle(cms2.genps_id_mother().at(j))->GetName() 
-	     << " using k=1 " << endl; 
-    } 
-  } 
- 
-  delete pdg; 
-  
-  int subprocess = -1;
-
-  if (interactions.size() == 2 ) { 
-    subprocess = sfinalState(interactions[0], interactions[1]);     
-  } else { 
-    subprocess = -2;
-  } 
- 
-  return subprocess; 
-}
-
 
 void checkElectron( int elidx ){
 
@@ -208,16 +151,6 @@ bool passesCaloJetID (const LorentzVector &jetp4)
 
 //--------------------------------------------------------------------
 
-float ossusy_looper::gluinoPairCrossSection( float gluinomass ){
-
-  int   bin  = gg_xsec_hist->FindBin(gluinomass);
-  float xsec = gg_xsec_hist->GetBinContent(bin);
-
-  return xsec;
-}
-
-//--------------------------------------------------------------------
-
 float ossusy_looper::stopPairCrossSection( float stopmass ){
 
   // stop mass divisible by 10
@@ -267,56 +200,6 @@ bool passesPFJetID(unsigned int pfJetIdx) {
 
   return true;
 }  
-
-//--------------------------------------------------------------------
-
-float getHT(){
-
-  //----------------------------------------
-  // store selected leptons in goodLeptons
-  //----------------------------------------
-
-  VofP4 goodLeptons;
-  goodLeptons.clear();
-  
-  for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-    if( els_p4().at(iel).pt() < 10 )                                                 continue;
-    if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
-    goodLeptons.push_back( els_p4().at(iel) );
-  }
-          
-  for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-    if( mus_p4().at(imu).pt() < 10 )           continue;
-    if( !muonId( imu , OSGeneric_v3 ))         continue;
-    goodLeptons.push_back( mus_p4().at(imu) );
-  }  
-
-  //----------------------------------------
-  // calculate HT
-  //----------------------------------------
-  
-  float ht = 0;
-
-  for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
-    LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-
-    if( vjet.pt() < 30. )                    continue;
-    if( fabs( vjet.eta() ) > 3.0 )           continue;
-    if( !passesPFJetID(ijet) )               continue;
-
-    bool rejectJet = false;
-    for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-      if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-    }
-    if( rejectJet ) continue;
-    
-    ht+=vjet.pt();
-  }
-
-  return ht;
-
-}
 
 //--------------------------------------------------------------------
 
@@ -648,36 +531,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                              JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 {
 
-  bool isData = false;
-  if( TString(prefix).Contains("data")  ){
-    cout << "DATA!!!" << endl;
-    isData = true;
-  }
-  if( TString(prefix).Contains("data")  ){
-    cout << "DATA!!!" << endl;
-    isData       = true;
-    doTenPercent = false;
-  }
-  if( doTenPercent ) cout << "Processing 10% of MC" << endl;
-
-  if( !isData ){
-
-    if( TString(prefix).Contains("PUS6") ){
-      set_vtxreweight_rootfile("vtxreweight_Fall11MC_PUS6_4p7fb_Zselection.root",true);
-    }
-
-    else if( TString(prefix).Contains("LMscanFall11") ){
-      set_vtxreweight_rootfile("vtxreweight_CMSSM_4p7fb_Zselection.root",true);
-    }
-    
-    else{
-      set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root",true);
-    }
-  }
 
   if( !initialized ){
     cout << "setting json " << g_json << endl;
     set_goodrun_file( g_json );
+
+    set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
 
     set_msugra_file("goodModelNames_tanbeta10.txt");
 
@@ -693,28 +552,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     
     if( stop_xsec_hist == 0 ){
       cout << "Error, could not retrieve stop cross section hist, quitting" << endl;
-      exit(0);
-    }
-
-    //set gluino cross section file
-    gg_xsec_file = TFile::Open("reference_xSecs.root");
-  
-    if( !gg_xsec_file->IsOpen() ){
-      cout << "Error, could not open gluino cross section TFile, quitting" << endl;
-      exit(0);
-    }
-    
-    gg_xsec_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL");
-    
-    if( gg_xsec_hist == 0 ){
-      cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
-      exit(0);
-    }
-
-    gg_xsec_unc_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL_unc");
-    
-    if( gg_xsec_unc_hist == 0 ){
-      cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
       exit(0);
     }
 
@@ -748,7 +585,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
   int nSS = 0;
   int nOS = 0;
 
-
+  bool isData = false;
+  if( TString(prefix).Contains("data")  ){
+    cout << "DATA!!!" << endl;
+    isData = true;
+  }
   // instanciate topmass solver REPLACETOPMASS
   //ttdilepsolve * d_llsol = new ttdilepsolve;
 
@@ -851,8 +692,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
-    //TTreeCache::SetLearnEntries(100);
-    //tree->SetCacheSize(128*1024*1024);
+    TTreeCache::SetLearnEntries(100);
+    tree->SetCacheSize(128*1024*1024);
 
     cms2.Init(tree);
       
@@ -860,10 +701,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
     for(unsigned int z = 0; z < nEntries; ++z) {
       ++nEventsTotal;
-
-      if( doTenPercent ){
-	if( !(nEventsTotal%10==0) ) continue;
-      }
 
       // progress feedback to user
       if (nEventsTotal % 1000 == 0){
@@ -878,243 +715,28 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       }
 
       //Matevz
-      //tree->LoadTree(z);
+      tree->LoadTree(z);
 
       cms2.GetEntry(z);
+
       InitBaby();
 
-      if( doGenSelection ){
-
-	weight_ = cms2.evt_scale1fb();
-	  	
-	if( TString(prefix).Contains("LM1") ) weight_ *= kfactorSUSY( "lm1" );
-	if( TString(prefix).Contains("LM3") ) weight_ *= kfactorSUSY( "lm3" );
-	if( TString(prefix).Contains("LM6") ) weight_ *= kfactorSUSY( "lm6" );
-
-	//cout << endl << endl;
-	//dumpDocLines();
-
-	geff_      = GenWeight(isData,0,0);     // no HT or MET
-	geffmet_   = GenWeight(isData,275,300); // high MET
-	geffht_    = GenWeight(isData,200,600); // high HT
-	gefftight_ = GenWeight(isData,275,600); // SR2
-
-	lepEfficiencies(isData);
-
-	ngenjets_ = 0;
-	htgen2_   = 0;
-
-	VofP4 genjets;
-
-	for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
-	  if (cms2.genps_status().at(gidx) != 3)
-	    continue;
-	  if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
-	    continue;
-	  if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
-	    continue;
-	  if (cms2.genps_p4().at(gidx).pt() < 30.)
-	    continue;
-	
-	  ngenjets_++;
-	  htgen2_ += cms2.genps_p4().at(gidx).pt();
-	  genjets.push_back(genps_p4().at(gidx));
-	}
-
-	genmet_ = gen_met();
-	pfmet_  = evt_pfmet();
-	ht_     = getHT();
-
-  
-	// mc leptons
-	VofP4 leps;
-	vector<int> ids;
-	
-	// loop over gen particles: store p4's and ID's of gen leptons
-	for (size_t i = 0; i < cms2.genps_id().size(); ++i){
-
-	  bool jetOverlap = false;
-	  for( unsigned int j = 0 ; j < genjets.size() ; ++j ){
-	    if( dRbetweenVectors( genps_p4().at(i) , genjets.at(j) ) < 0.4 ) jetOverlap = true;
-	  }
-	  if( jetOverlap ) continue;
-	  
-	  int   id  = cms2.genps_id().at(i);
-	  float pt  = cms2.genps_p4().at(i).pt();
-	  float eta = cms2.genps_p4().at(i).eta();
-	  
-	  // require e, mu, or tau
-	  if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
-	  
-	  // e or mu
-	  if( abs(id)==11 || abs(id)==13 ){
-	    
-	    // pt > 10 and |eta| < 2.5
-	    if( pt > 10 && fabs(eta) < 2.5 ){
-	      leps.push_back( genps_p4().at(i) );
-	      ids.push_back( id );
-	    }
-	  }
-
-	  // tau --> get leptonic daughters
-	  else if( abs(id)==15 ){
-	    
-	    for(unsigned int j = 0; j < cms2.genps_lepdaughter_id().at(i).size(); j++) {
-	      
-	      int   id2  = cms2.genps_lepdaughter_id().at(i).at(j);
-	      float pt2  = cms2.genps_lepdaughter_p4().at(i).at(j).pt();
-	      float eta2 = cms2.genps_lepdaughter_p4().at(i).at(j).eta();
-	      
-	      // require e or mu
-	      if( !( abs(id2)==11 || abs(id2)==13 ) ) continue;
-	      
-	      // pt > 10 and |eta| < 2.5
-	      if( pt2 > 10 && fabs(eta2) < 2.5 ){
-		leps.push_back( cms2.genps_lepdaughter_p4().at(i).at(j) );
-		ids.push_back(id2);
-	      }
-	    }
-	  }
-	  
-	  else{
-	    cout << "ERROR! gen particle ID " << id << endl;
-	    exit(0);
-	  }
-	  
-	}
-
-	assert( leps.size() == ids.size() );
-
-	foundPair_ = 0;
-	genlep1_   = 0;
-	genlep2_   = 0;
-	genid1_    = 0;
-	genid2_    = 0;
-
-	// require >=2 leptons
-	if( leps.size() >= 2 ){
-
-	  //look for OS pt > 20,10 GeV pair Z mass veto
-
-	  int   lep1idx   = -1;
-	  int   lep2idx   = -1;
-	  float maxpt     = -1;
-	  
-	  for( unsigned int i = 0 ; i < leps.size() ; ++i ){
-	    
-	    for( unsigned int j = i + 1 ; j < leps.size() ; ++j ){
-
-	      // max pt > 20 GeV
-	      if( max( leps.at(i).pt() , leps.at(j).pt() ) < 20 ) continue;
-
-	      // OS
-	      if( ids.at(i) * ids.at(j) > 0 ) continue;
-
-	      // Z veto
-	      float dilmass = ( leps.at(i) + leps.at(j) ).mass();      
-	      if( abs(ids.at(i)) == abs(ids.at(j)) && dilmass > 76 && dilmass < 106 ) continue;
-	
-	      //found lepton pair!
-	      foundPair_ = 1;
-
-	      if( leps.at(i).pt() + leps.at(j).pt() > maxpt ){
-		maxpt   = leps.at(i).pt() + leps.at(j).pt();
-		lep1idx = i;
-		lep2idx = j;
-	      }
-	    }
-	  }
-
-	  if( foundPair_ == 1 ){
-	    if( leps.at(lep1idx).pt() > leps.at(lep2idx).pt() ){
-	      genlep1_ = &leps.at(lep1idx);
-	      genlep2_ = &leps.at(lep2idx);
-	      genid1_  = ids.at(lep1idx);
-	      genid2_  = ids.at(lep2idx);
-	    }
-	    else{
-	      genlep1_ = &leps.at(lep2idx);
-	      genlep2_ = &leps.at(lep1idx);
-	      genid1_  = ids.at(lep2idx);
-	      genid2_  = ids.at(lep1idx);
-	    }
-	  }
-	}
-
-	VofP4 goodLeptons;
-	
-	ngoodlep_ = 0;
-	ngoodel_  = 0;
-	ngoodmu_  = 0;
-            
-        for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-          if( els_p4().at(iel).pt() < 10 )                                                 continue;
-          if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
-          goodLeptons.push_back( els_p4().at(iel) );
-          ngoodel_++;
-          ngoodlep_++;
-        }
-	
-        for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-          if( mus_p4().at(imu).pt() < 10 )           continue;
-          if( !muonId( imu , OSGeneric_v3 ))         continue;
-          goodLeptons.push_back( mus_p4().at(imu) );
-          ngoodmu_++;
-          ngoodlep_++;
-        }  
-
-	reco1_ = 0;
-	reco2_ = 0;
-
-	if( foundPair_ == 1 ){
-	  for( unsigned int i = 0 ; i < goodLeptons.size() ; ++i ){
-	    if( dRbetweenVectors( *genlep1_ , goodLeptons.at(i) ) < 0.2 ) reco1_ = 1;
-	    if( dRbetweenVectors( *genlep2_ , goodLeptons.at(i) ) < 0.2 ) reco2_ = 1;
-	  }
-        }
-
-	ndavtx_ = 0;
-    
-        for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-          if(isGoodDAVertex(v)) ++ndavtx_;
-        }
-	  
-	outTree->Fill();
-	continue;
-      }
-
-      /*
-      cout << endl << endl;
-      dumpDocLines();
-
-      for (int j=0; j<cms2.genps_id().size(); j++) {
-
-	int id = abs(cms2.genps_id().at(j));
-
-	if( id != 15 ) continue;
-
-	int nd = cms2.genps_lepdaughter_id()[j].size();
-
-	cout << "ndaughters " << nd << endl;
-	if (nd==0) cout << "ERROR! 0 DAUGHTERS!!! <<<<----------------------------" << endl;
-      }
-      */
-
-      if( TString(prefix).Contains("LMscan") ){
-	cout << "ERROR SPARM M0 and M12 branches turned off!!!!" << endl;
-	exit(0);
-       	//if( sparm_m12() > 700                           ) continue;	
-       	//if( sparm_m0()  > 2000.0 && sparm_m12() > 400.0 ) continue;
+      if(strcmp(prefix,"LMscan") == 0){
+	if( sparm_m12() > 500  )                        continue;	
+	if( sparm_m0()  > 1000.0 && sparm_m12() > 300 ) continue;
       }
 
       if(strcmp(prefix,"T2tt") == 0){
-	cout << "ERROR NOT SET UP FOR T2tt!!!" << endl;
-	exit(0);
-	//if( sparm_mG() > 850 ) continue;
+	if( sparm_mG() > 850 ) continue;
       }
 
       if( !cleaning_goodDAVertexApril2011() )                        continue;
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+
+      float pthat_cutoff = 30.;
+      if (strcmp( prefix , "qcdpt15" ) == 0 && genps_pthat() > pthat_cutoff) {
+        continue;
+      }
 
       // skip duplicates
       if( isData ) {
@@ -1232,7 +854,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  cout << endl << "--------------------------------" << endl;
 	  cout << "hyp       " << i << endl;
 	  cout << "lep ll ID " << hyp_ll_id()[i] << " pt " << hyp_ll_p4()[i].pt() << endl;
-	  cout << "lep lt ID " << hyp_lt_id()[i] << " pt " << hyp_lt_p4()[i].pt() << endl;
+	  cout << "lep ll ID " << hyp_lt_id()[i] << " pt " << hyp_lt_p4()[i].pt() << endl;
 	  cout << "mass      " << hyp_p4()[i].mass() << endl;
 	  cout << "trig?     " << passSUSYTrigger2011_v1( isData , hyp_type()[i] , highpt ) << endl;
 	  //PrintTriggers();
@@ -1458,16 +1080,12 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         int nleps = 0;
         
         float dilptgen = -1;
-        mllgen_  = -1;
-	pthat_   = -1;
-	qscale_  = -1;
-	ptttbar_ = -1;
-	ptt_     = -1;
-	pttbar_  = -1;
-
+        mllgen_ = -1;
+	pthat_  = -1;
+	qscale_ = -1;
         if( !isData ){
 
-	  pthat_  = -999; //genps_pthat();
+	  pthat_  = genps_pthat();
 	  qscale_ = genps_qScale();
 
           //splitting ttbar into ttdil/ttotr
@@ -1483,25 +1101,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           if( strcmp(prefix,"ttotr") == 0 && nleps == 2           ) continue;
 
           LorentzVector vdilepton(0,0,0,0);
-          LorentzVector vttbar(0,0,0,0);
           
           for ( int igen = 0 ; igen < genps_id().size() ; igen++ ) { 
             if ( abs( cms2.genps_id().at(igen) ) == 11) vdilepton += genps_p4().at(igen); 
             if ( abs( cms2.genps_id().at(igen) ) == 13) vdilepton += genps_p4().at(igen); 
-
-	    int id = cms2.genps_id().at(igen);
-
-	    if( id == 6 ){
-	      ptt_       = genps_p4().at(igen).pt();
-	      vttbar    += genps_p4().at(igen);
-	    }
-	    if( id == -6 ){
-	      pttbar_    = genps_p4().at(igen).pt();
-	      vttbar    += genps_p4().at(igen);
-	    }
-	  }
-
-	  ptttbar_ = vttbar.pt();
+          }
           
           if( nels + nmus == 2) dilptgen = vdilepton.pt();
           
@@ -1898,7 +1502,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	ngenjets_ = 0;
 	htgen_    = 0;
-	htgen2_   = 0;
 
 	if( !isData ){
 	  for (unsigned int igjet = 0 ; igjet < genjets_p4().size() ; igjet++) {
@@ -1923,21 +1526,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    ngenjets_++;
 	    htgen_ += vgjet.pt();
 	  }
-
-	  for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
-	    if (cms2.genps_status().at(gidx) != 3)
-	      continue;
-	    if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
-	      continue;
-	    if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
-	      continue;
-	    if (cms2.genps_p4().at(gidx).pt() < 30.)
-	      continue;
-	    
-	    htgen2_ += cms2.genps_p4().at(gidx).pt();
-	  }
-
-
 	}
 
         // sumjetpt, meff calculation
@@ -2096,72 +1684,56 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	mG_ = -9999;
 	mL_ = -9999;
 
-	if( TString(prefix).Contains("T1") ){
+        if(strcmp(prefix,"T1lh") == 0){
 	  mG_ = sparm_mG();
 	  mL_ = sparm_mL();
-	  mF_ = sparm_mf();
-	  
-	  weight = lumi * gluinoPairCrossSection(mG_) * (1000./10000.);
-	  if( doTenPercent )	  weight *= 10;
 	}
 
-	else if( TString(prefix).Contains("LMscan") ){
+        else if(strcmp(prefix,"LMscan") == 0){
 
-	  subp_ = susySubProcess();
-          m0    = -1;//sparm_m0();
-          m12   = -1;//sparm_m12();
+          m0  = sparm_m0();
+          m12 = sparm_m12();
 
-	  //ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012");
-	  //ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Scale20_2012");
-	  //ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Scale05_2012");
-	  ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012final");
-	  ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Up_2012final");
-	  ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Dn_2012final");
-	  xsecsusy_  = cmssm_loxsec(m0,m12,"../data/msugra_tanb10_2012_LO.root");
+	  ksusy_     = kfactorSUSY(m0,m12,"tanbeta10");
+	  ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Scale20");
+	  ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Scale05");
+	  xsecsusy_  = cmssm_loxsec(m0,m12);
 	  xsecsusy2_ = getMsugraCrossSection(m0,m12,10);
 
-	  fileff_ = 1;
-	  if( TString(prefix).Contains("dil") )  fileff_ = -999; //sparm_dilepfiltereff();
+	  weight = lumi * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
 
-	  //cout << "m0 " << m0 << " m1/2 " << m12 << " LO xsec " << xsecsusy_ << " k " << ksusy_ << " kup " << ksusyup_ << " ksusydn " << ksusydn_ << endl << endl;
-	  weight = lumi * fileff_ * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
-
-	  if( doTenPercent )	  weight *= 10;
         }
 
 	else if( isData ){
           weight = 1;
         }
 
-	else if( TString(prefix).Contains("T2") ){
+	else if(strcmp(prefix,"T2tt") == 0){
 	  mG_ = sparm_mG();
 	  mL_ = sparm_mL();
-	  mF_ = sparm_mf();
 	  
-	  weight = lumi * stopPairCrossSection(mG_) * (1000./10000.);
-	  if( doTenPercent )	  weight *= 10;
+	  weight = lumi * stopPairCrossSection(mG_) * (1000./50000.);
 	}
 
 	else{
           //weight = kFactor * evt_scale1fb() * lumi * triggerSuperModelEffic( hypIdx );
           weight = kFactor * evt_scale1fb() * lumi;
-	  if( doTenPercent )	  weight *= 10;
 
           if( TString(prefix).Contains("LM") ){
-	    if( TString(prefix).Contains("LM0") )  weight *= kfactorSUSY( "lm0"  );
-	    if( TString(prefix).Contains("LM1") )  weight *= kfactorSUSY( "lm1"  );
-	    if( TString(prefix).Contains("LM2") )  weight *= kfactorSUSY( "lm2"  );
-	    if( TString(prefix).Contains("LM3") )  weight *= kfactorSUSY( "lm3"  );
-	    if( TString(prefix).Contains("LM4") )  weight *= kfactorSUSY( "lm4"  );
-	    if( TString(prefix).Contains("LM5") )  weight *= kfactorSUSY( "lm5"  );
-	    if( TString(prefix).Contains("LM6") )  weight *= kfactorSUSY( "lm6"  );
-	    if( TString(prefix).Contains("LM7") )  weight *= kfactorSUSY( "lm7"  );
-	    if( TString(prefix).Contains("LM8") )  weight *= kfactorSUSY( "lm8"  );
-	    if( TString(prefix).Contains("LM9") )  weight *= kfactorSUSY( "lm9"  );
-	    if( TString(prefix).Contains("LM10") ) weight *= kfactorSUSY( "lm10" );
-	    if( TString(prefix).Contains("LM11") ) weight *= kfactorSUSY( "lm11" );
-	    if( TString(prefix).Contains("LM12") ) weight *= kfactorSUSY( "lm12" );
-	    if( TString(prefix).Contains("LM13") ) weight *= kfactorSUSY( "lm13" );
+            if( strcmp( prefix , "LM0" )  == 0 ) weight *= kfactorSUSY( "lm0" );
+            if( strcmp( prefix , "LM1" )  == 0 ) weight *= kfactorSUSY( "lm1" );
+            if( strcmp( prefix , "LM2" )  == 0 ) weight *= kfactorSUSY( "lm2" );
+            if( strcmp( prefix , "LM3" )  == 0 ) weight *= kfactorSUSY( "lm3" );
+            if( strcmp( prefix , "LM4" )  == 0 ) weight *= kfactorSUSY( "lm4" );
+            if( strcmp( prefix , "LM5" )  == 0 ) weight *= kfactorSUSY( "lm5" );
+            if( strcmp( prefix , "LM6" )  == 0 ) weight *= kfactorSUSY( "lm6" );
+            if( strcmp( prefix , "LM7" )  == 0 ) weight *= kfactorSUSY( "lm7" );
+            if( strcmp( prefix , "LM8" )  == 0 ) weight *= kfactorSUSY( "lm8" );
+            if( strcmp( prefix , "LM9" )  == 0 ) weight *= kfactorSUSY( "lm9" );
+            if( strcmp( prefix , "LM10" ) == 0 ) weight *= kfactorSUSY( "lm10");
+            if( strcmp( prefix , "LM11" ) == 0 ) weight *= kfactorSUSY( "lm11");
+            if( strcmp( prefix , "LM12" ) == 0 ) weight *= kfactorSUSY( "lm12");
+            if( strcmp( prefix , "LM13" ) == 0 ) weight *= kfactorSUSY( "lm13");
           }
         }
 
@@ -2311,7 +1883,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         //        p_met = getMet( "muCorJESMET"    , hypIdx);
         float mucorjesmet = 1234. ;//p_met.first;
 
-	/*
 	// pfmet, corrected for muon veto cone energies
 	metStruct vetoMetStruct = vetoCorMet( hypIdx );
 	pfmetveto_ = vetoMetStruct.met;
@@ -2321,7 +1892,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
 	metStruct hvetoMetStruct = vetoCorMet( hypIdx , 99999 , 6 );
 	pfmethveto_ = hvetoMetStruct.met;
-	*/
 
         //fill tree for baby ntuple 
         if(g_createTree){
@@ -2394,20 +1964,20 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  hbhe_         = evt_hbheFilter();
 
           k_ = 1;
-	  if( TString(prefix).Contains("LM0") )  k_ = kfactorSUSY( "lm0" );
-	  if( TString(prefix).Contains("LM1") )  k_ = kfactorSUSY( "lm1" );
-	  if( TString(prefix).Contains("LM2") )  k_ = kfactorSUSY( "lm2" );
-	  if( TString(prefix).Contains("LM3") )  k_ = kfactorSUSY( "lm3" );
-	  if( TString(prefix).Contains("LM4") )  k_ = kfactorSUSY( "lm4" );
-	  if( TString(prefix).Contains("LM5") )  k_ = kfactorSUSY( "lm5" );
-	  if( TString(prefix).Contains("LM6") )  k_ = kfactorSUSY( "lm6" );
-	  if( TString(prefix).Contains("LM7") )  k_ = kfactorSUSY( "lm7" );
-	  if( TString(prefix).Contains("LM8") )  k_ = kfactorSUSY( "lm8" );
-	  if( TString(prefix).Contains("LM9") )  k_ = kfactorSUSY( "lm9" );
-	  if( TString(prefix).Contains("LM10") ) k_ = kfactorSUSY( "lm10" );
-	  if( TString(prefix).Contains("LM11") ) k_ = kfactorSUSY( "lm11" );
-	  if( TString(prefix).Contains("LM12") ) k_ = kfactorSUSY( "lm12" );
-	  if( TString(prefix).Contains("LM13") ) k_ = kfactorSUSY( "lm13" );
+          if     ( strcmp( prefix , "LM0"  )    == 0 ) k_ = kfactorSUSY( "lm0"  );
+          else if( strcmp( prefix , "LM1"  )    == 0 ) k_ = kfactorSUSY( "lm1"  );
+          else if( strcmp( prefix , "LM2"  )    == 0 ) k_ = kfactorSUSY( "lm2"  );
+          else if( strcmp( prefix , "LM3"  )    == 0 ) k_ = kfactorSUSY( "lm3"  );
+          else if( strcmp( prefix , "LM4"  )    == 0 ) k_ = kfactorSUSY( "lm4"  );
+          else if( strcmp( prefix , "LM5"  )    == 0 ) k_ = kfactorSUSY( "lm5"  );
+          else if( strcmp( prefix , "LM6"  )    == 0 ) k_ = kfactorSUSY( "lm6"  );
+          else if( strcmp( prefix , "LM7"  )    == 0 ) k_ = kfactorSUSY( "lm7"  );
+          else if( strcmp( prefix , "LM8"  )    == 0 ) k_ = kfactorSUSY( "lm8"  );
+          else if( strcmp( prefix , "LM9"  )    == 0 ) k_ = kfactorSUSY( "lm9"  );
+          else if( strcmp( prefix , "LM10" )    == 0 ) k_ = kfactorSUSY( "lm10" );
+          else if( strcmp( prefix , "LM11" )    == 0 ) k_ = kfactorSUSY( "lm11" );
+          else if( strcmp( prefix , "LM12" )    == 0 ) k_ = kfactorSUSY( "lm12" );
+	  else if( strcmp( prefix , "LMscan" )  == 0 ) k_ = kfactorSUSY(m0,m12,"tanbeta10");
 
           float dzcut  = 0.1; // dz(trk,vtx) requirement
           float etacut = 3.0; // neutral PFCandidate eta requirement
@@ -2532,13 +2102,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    if( leptype_ == 2 ) trgeff_ = 0.95;
 	  }
 
-	  lepscale_ = 1;
-	  if(!isData){
-	    if( leptype_ == 0 ) lepscale_ = 1.000;
-	    if( leptype_ == 1 ) lepscale_ = 1.050;
-	    if( leptype_ == 2 ) lepscale_ = 1.025;
-	  }
-
           outTree->Fill();
         }
 
@@ -2577,9 +2140,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	// fill msugra histos
 	//---------------------------
 
-	if( TString(prefix).Contains("LMscan") ){
+	if(strcmp(prefix,"LMscan") == 0){
 
-	  float lmscanweight = weight * trgeff_ * ndavtxweight_ * lepscale_;
+	  float lmscanweight = weight * trgeff_ * ndavtxweight_;
 
 	  msugra_all->Fill(m0,m12,lmscanweight); 
 
@@ -3171,11 +2734,6 @@ void ossusy_looper::BookHistos(char *prefix)
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
-  
-  hel     = new TH1F(Form("%s_el"     , prefix),"",30,0,150);
-  hmu     = new TH1F(Form("%s_mu"     , prefix),"",30,0,150);
-  helpass = new TH1F(Form("%s_elpass" , prefix),"",30,0,150);
-  hmupass = new TH1F(Form("%s_mupass" , prefix),"",30,0,150);
 
   hyield = new TH1F(Form("%s_yield",prefix),Form("%s Event Yields",prefix),4,0,4);
   hyield->GetXaxis()->SetTitle("dil type");
@@ -3227,7 +2785,7 @@ void ossusy_looper::BookHistos(char *prefix)
   double binedges1500[6] = {0., 100., 200., 400., 800., 1500.};
   //double binedges2000[11] = {0., 100., 200., 300., 400., 500., 600., 800., 1000., 1500., 2000.};
 
-  if( TString(prefix).Contains("LMscan") ){
+  if(strcmp("LMscan",prefix)==0){
 
     msugra_highmet	= new TH2F("msugra_highmet","msugra high MET yield",nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
     msugra_highht	= new TH2F("msugra_highht" ,"msugra high HT yield" ,nm0points,m0min-10,m0max-10,nm12points,m12min-10,m12max-10);
@@ -4451,43 +4009,30 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   }
 
   char* isgen = "";
-  if     ( doGenSelection  ) isgen = "_gen";
+  if     ( genLeptonSelection  ) isgen = "_gen";
 
-  char* tpsuffix = "";
-  if( doTenPercent ) tpsuffix = "_tenPercent";
-
-  outFile   = new TFile(Form("../output/%s/%s/%s_smallTree%s%s%s.root",g_version,dir,prefix,frsuffix,isgen,tpsuffix), "RECREATE");
+  outFile   = new TFile(Form("../output/%s/%s/%s_smallTree%s%s.root",g_version,dir,prefix,frsuffix,isgen), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
 
   //Set branch addresses
   //variables must be declared in ossusy_looper.h
-  outTree->Branch("subp",            &subp_,             "subp/I");
-  outTree->Branch("geff",            &geff_,             "geff/F");
-  outTree->Branch("geffmet",         &geffmet_,          "geffmet/F");
-  outTree->Branch("geffht",          &geffht_,           "geffht/F");
-  outTree->Branch("gefftight",       &gefftight_,        "gefftight/F");
   outTree->Branch("acc_2010",        &acc_2010_,         "acc_2010/I");
   outTree->Branch("acc_highmet",     &acc_highmet_,      "acc_highmet/I");
   outTree->Branch("acc_highht",      &acc_highht_,       "acc_highht/I");
   outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
-  outTree->Branch("fileff",          &fileff_,           "fileff/F");
   outTree->Branch("jetid",           &jetid_,            "jetid/I");
   outTree->Branch("jetid30",         &jetid30_,          "jetid30/I");
   outTree->Branch("json",            &json_,             "json/I");
   outTree->Branch("htoffset",        &htoffset_,         "htoffset/F");
   outTree->Branch("htuncor",         &htuncor_,          "htuncor/F");
-  outTree->Branch("lepscale",        &lepscale_,         "lepscale/F");
   outTree->Branch("njetsoffset",     &njetsoffset_,      "njetsoffset/I");
   outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
   outTree->Branch("costhetaweight",  &costhetaweight_,   "costhetaweight/F");
   outTree->Branch("weight",          &weight_,           "weight/F");
   outTree->Branch("trgeff",          &trgeff_,           "trgeff/F");
   outTree->Branch("pthat",           &pthat_,            "pthat/F");
-  outTree->Branch("ptt",             &ptt_,              "ptt/F");
-  outTree->Branch("pttbar",          &pttbar_,           "pttbar/F");
-  outTree->Branch("ptttbar",         &ptttbar_,          "ptttbar/F");
   outTree->Branch("qscale",          &qscale_,           "qscale/F");
   outTree->Branch("ksusy",           &ksusy_,            "ksusy/F");
   outTree->Branch("ksusyup",         &ksusyup_,          "ksusyup/F");
@@ -4580,7 +4125,6 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("mg",              &mG_,               "mg/F");
   outTree->Branch("ml",              &mL_,               "ml/F");
-  outTree->Branch("mf",              &mF_,               "mf/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");
   outTree->Branch("id2",             &id2_,              "id2/I");
@@ -4617,7 +4161,6 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("y",               &y_,                "y/F");  
   outTree->Branch("ht",              &ht_,               "ht/F");  
   outTree->Branch("htgen",           &htgen_,            "htgen/F");  
-  outTree->Branch("htgen2",          &htgen2_,           "htgen2/F");  
   outTree->Branch("htpf",            &htpf_,             "htpf/F");  
   outTree->Branch("htjpt",           &htjpt_,            "htjpt/F");  
   outTree->Branch("htpf25",          &htpf25_,           "htpf25/F");  
@@ -4634,17 +4177,10 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("cosphijz",        &cosphijz_,         "cosphijz/F");  
   outTree->Branch("mlljj",           &mlljj_,            "mlljj/F");  
   outTree->Branch("njets15",         &njets15_,          "njets15/I");  
-  outTree->Branch("foundPair",       &foundPair_,        "foundPair/I");  
-  outTree->Branch("reco1",           &reco1_,            "reco1/I");  
-  outTree->Branch("reco2",           &reco2_,            "reco2/I");  
-  outTree->Branch("genid1",          &genid1_,           "genid1/I");  
-  outTree->Branch("genid2",          &genid2_,           "genid2/I");  
  
   outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
   outTree->Branch("lep2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
-  outTree->Branch("genlep1" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &genlep1_	);
-  outTree->Branch("genlep2" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &genlep2_	);
   outTree->Branch("jet"	    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	        );
   outTree->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
 
@@ -4965,393 +4501,3 @@ std::pair<float,float> ossusy_looper::PFCandidateMET(const unsigned int vtxIdx, 
   
   return make_pair( met , metphi );
 }
-
-
-double fitf (double* x, double* par) {
-  double arg = 0;
-  if (par[2] != 0)
-    arg = (x[0] - par[1])/par[2];
-  
-  double fitval = 0.5 * par[0] * (TMath::Erf(arg) + 1);
-  return fitval;
-}
-
-double mfitf (double* x, double* par) {                                                                                                                                         
-  double arg = 0;                                                                                                                                                                 
-  if (par[2] != 0)                                                                                                                                                                
-    arg = (x[0] - 10.)/par[2];                                                                                                                                                     
-  
-  double fitval = par[0]*TMath::Erf(arg)+par[1]*(1.-TMath::Erf(arg));                                                                                                             
-  return fitval;                                                                                                                                                                  
-}                                                                                                                                                                               
-       
-
-void ossusy_looper::lepEfficiencies( bool isData ){
-    
-  // mc leptons
-  VofP4 leps;
-  vector<int> ids;
-
-  // loop over gen particles: store p4's and ID's of gen leptons
-  for (size_t i = 0; i < cms2.genps_id().size(); ++i){
-    
-    int   id  = cms2.genps_id().at(i);
-    float pt  = cms2.genps_p4().at(i).pt();
-    float eta = cms2.genps_p4().at(i).eta();
-
-    // require e, mu, or tau
-    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
-
-    // e or mu
-    if( abs(id)==11 || abs(id)==13 ){
-
-      // pt > 10 and |eta| < 2.5
-      if( pt > 10 && fabs(eta) < 2.5 ){
-	leps.push_back( genps_p4().at(i) );
-	ids.push_back( id );
-      }
-    }
-
-    // tau --> get leptonic daughters
-    else if( abs(id)==15 ){
-
-      for(unsigned int j = 0; j < cms2.genps_lepdaughter_id().at(i).size(); j++) {
-	
-	int   id2  = cms2.genps_lepdaughter_id().at(i).at(j);
-	float pt2  = cms2.genps_lepdaughter_p4().at(i).at(j).pt();
-	float eta2 = cms2.genps_lepdaughter_p4().at(i).at(j).eta();
-	
-	// require e or mu
-	if( !( abs(id2)==11 || abs(id2)==13 ) ) continue;
-	
-	// pt > 10 and |eta| < 2.5
-	if( pt2 > 10 && fabs(eta2) < 2.5 ){
-	  leps.push_back( cms2.genps_lepdaughter_p4().at(i).at(j) );
-	  ids.push_back(id2);
-	}
-      }
-    }
-
-    else{
-      cout << "ERROR! gen particle ID " << id << endl;
-      exit(0);
-    }
-
-  }
-
-
-  for( unsigned int i = 0 ; i < leps.size() ; ++i ){
-
-    // electron
-    if( abs(ids.at(i))==11 ){
-
-      // fill denominator
-      hel->Fill( leps.at(i).pt() );
-
-      // check for matched reco electron
-      bool match = false;
-
-      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 10 )                                                 continue;
-	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
-	if( dRbetweenVectors( els_p4().at(iel) , leps.at(i) ) < 0.3 ) match = true;
-      }
-
-      if( match ) helpass->Fill( leps.at(i).pt() );
-    }
-
-    // muon
-    if( abs(ids.at(i))==13 ){
-
-      // fill denominator
-      hmu->Fill( leps.at(i).pt() );
-
-      // check for matched reco muon
-      bool match = false;
-
-      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 10 )           continue;
-	if( !muonId( imu , OSGeneric_v3 ))         continue;
-	if( dRbetweenVectors( mus_p4().at(imu) , leps.at(i) ) < 0.3 ) match = true;
-      }
-
-      if( match ) hmupass->Fill( leps.at(i).pt() );
-    }
-  }
-
-}
-
-float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
-  
-  if( isData ) return 0.;
-  
-  VofP4 genjets;
-  genjets.clear();
-
-  // get ht and njets
-  float ht    = 0.;
-  int   njets = 0;
-
-  for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
-    
-    if (cms2.genps_status().at(gidx) != 3)
-      continue;
-    
-    if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
-      continue;
-    
-    if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
-      continue;
-    
-    if (cms2.genps_p4().at(gidx).pt() < 30.)
-      continue;
-    
-    njets++;
-    ht += genps_p4().at(gidx).pt(); 
-    genjets.push_back(genps_p4().at(gidx));
-  }
-
-
-  //---------------------------------------------
-  // does this event pass the analysis selection?
-  //---------------------------------------------
-  
-  // mc leptons
-  VofP4 leps;
-  vector<int> ids;
-
-  // loop over gen particles: store p4's and ID's of gen leptons
-  for (size_t i = 0; i < cms2.genps_id().size(); ++i){
-    
-    int   id  = cms2.genps_id().at(i);
-    float pt  = cms2.genps_p4().at(i).pt();
-    float eta = cms2.genps_p4().at(i).eta();
-
-    bool jetOverlap = false;
-    for( unsigned int j = 0 ; j < genjets.size() ; ++j ){
-      if( dRbetweenVectors( genps_p4().at(i) , genjets.at(j) ) < 0.4 ) jetOverlap = true;
-    }
-    if( jetOverlap ) continue;
-    
-    // require e, mu, or tau
-    if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
-
-    // e or mu
-    if( abs(id)==11 || abs(id)==13 ){
-
-      // pt > 10 and |eta| < 2.5
-      if( pt > 10 && fabs(eta) < 2.5 ){
-	leps.push_back( genps_p4().at(i) );
-	ids.push_back( id );
-      }
-    }
-
-    // tau --> get leptonic daughters
-    else if( abs(id)==15 ){
-
-      for(unsigned int j = 0; j < cms2.genps_lepdaughter_id().at(i).size(); j++) {
-	
-	int   id2  = cms2.genps_lepdaughter_id().at(i).at(j);
-	float pt2  = cms2.genps_lepdaughter_p4().at(i).at(j).pt();
-	float eta2 = cms2.genps_lepdaughter_p4().at(i).at(j).eta();
-	
-	// require e or mu
-	if( !( abs(id2)==11 || abs(id2)==13 ) ) continue;
-	
-	// pt > 10 and |eta| < 2.5
-	if( pt2 > 10 && fabs(eta2) < 2.5 ){
-	  leps.push_back( cms2.genps_lepdaughter_p4().at(i).at(j) );
-	  ids.push_back(id2);
-	}
-      }
-    }
-
-    else{
-      cout << "ERROR! gen particle ID " << id << endl;
-      exit(0);
-    }
-
-  }
-
-  assert( leps.size() == ids.size() );
-
-  // cout << "List of good leptons" << endl;
-  // for( unsigned int i = 0 ; i < leps.size() ; ++i ){
-  //   cout << i << " " << ids.at(i) << " " << Form("%.1f",leps.at(i).pt()) << endl;
-  // }
-  // cout << endl;
-
-  // require >=2 leptons
-  if( leps.size() < 2 ) return 0.0;
-
-  //look for OS pt > 20,10 GeV pair Z mass veto
-  bool  foundPair = false;
-  int   lep1idx   = -1;
-  int   lep2idx   = -1;
-  float maxpt     = -1;
-
-  for( unsigned int i = 0 ; i < leps.size() ; ++i ){
-
-    for( unsigned int j = i + 1 ; j < leps.size() ; ++j ){
-
-      // max pt > 20 GeV
-      if( max( leps.at(i).pt() , leps.at(j).pt() ) < 20 ) continue;
-
-      // OS
-      if( ids.at(i) * ids.at(j) > 0 ) continue;
-
-      // Z veto
-      float dilmass = ( leps.at(i) + leps.at(j) ).mass();      
-      if( abs(ids.at(i)) == abs(ids.at(j)) && dilmass > 76 && dilmass < 106 ) continue;
-	
-      //found lepton pair!
-      foundPair = true;
-
-      if( leps.at(i).pt() + leps.at(j).pt() > maxpt ){
-	maxpt   = leps.at(i).pt() + leps.at(j).pt();
-	lep1idx = i;
-	lep2idx = j;
-      }
-
-    }
-  }
-
-  if( !foundPair ) return 0.;
-
-  // cout << "Found pair" << endl;
-  // cout << ids.at(lep1idx) << " " << Form("%.1f",leps.at(lep1idx).pt()) << endl;
-  // cout << ids.at(lep2idx) << " " << Form("%.1f",leps.at(lep2idx).pt()) << endl;
-  // cout << endl;
-
-
-  // for (size_t j = 0; j < cms2.genjets_p4().size(); ++j){
-
-  //   // pt and eta cuts
-  //   if (cms2.genjets_p4().at(j).pt() < 30.0)       continue;
-  //   if (fabs(cms2.genjets_p4().at(j).eta()) > 3.0) continue;
-
-  //   bool reject = false;
-  //   for( unsigned int i = 0 ; i < leps.size() ; ++i ){
-  //     if( dRbetweenVectors( genjets_p4().at(j) , leps.at(i) ) < 0.4 ) reject = true;
-  //   }
-  //   if( reject ) continue;
-
-  //   njets ++;
-  //   ht += genjets_p4().at(j).pt();
-    
-  // }
-  // if( nGoodJet < 2 ) return 0.;
-
-
-  // pass selection, now calculate weight
-  int lep1id = abs( ids.at(lep1idx) );
-  int lep2id = abs( ids.at(lep2idx) );
-
-  // trigger efficiency
-  float trgeff = 1;
-  if( lep1id == 11 && lep2id == 11 ) trgeff = 1.00;   //ee
-  if( lep1id == 13 && lep2id == 13 ) trgeff = 0.90;   //mm
-  if( lep1id == 13 && lep2id == 11 ) trgeff = 0.95;   //em
-  if( lep1id == 11 && lep2id == 13 ) trgeff = 0.95;   //em
-
-  float lep1eff = 1;
-  float lep2eff = 1;
-
-  float pt1 = leps.at(lep1idx).pt();
-  float pt2 = leps.at(lep2idx).pt();
-
-  TF1* leperf = new TF1("leperf", mfitf, 0, 600, 3);
-
-  // lepton1 is electron
-  if( lep1id == 11 ){
-    leperf->SetParameter(0,0.78);
-    leperf->SetParameter(1,0.34);
-    leperf->SetParameter(2,18.0);
-    lep1eff = leperf->Eval(pt1);
-  }
-
-  // lepton1 is muon
-  else if( lep1id == 13 ){
-    leperf->SetParameter(0,0.89);
-    leperf->SetParameter(1,0.62);
-    leperf->SetParameter(2,30.0);
-    lep1eff = leperf->Eval(pt1);
-  }
-
-  // lepton2 is electron
-  if( lep2id == 11 ){
-    leperf->SetParameter(0,0.78);
-    leperf->SetParameter(1,0.34);
-    leperf->SetParameter(2,18.0);
-    lep2eff = leperf->Eval(pt2);
-  }
-
-  // lepton2 is muon
-  else if( lep2id == 13 ){
-    leperf->SetParameter(0,0.89);
-    leperf->SetParameter(1,0.62);
-    leperf->SetParameter(2,30.0);
-    lep2eff = leperf->Eval(pt2);
-  }
-  
-  TF1* erf = new TF1("erf", fitf, 0, 600, 3);
-  
-  // evaluate met efficiency
-
-  float meteff = 1;
-  
-  if( metcut == 0 ){
-    meteff = 1;
-  }
-
-  else if( metcut == 200 ){
-    erf->SetParameters(1.00, 211, 37);
-    meteff = erf->Eval(cms2.gen_met());
-  }
-
-  else if( metcut == 275 ){
-    erf->SetParameters(1.00, 291, 39);
-    meteff = erf->Eval(cms2.gen_met());
-  }
-
-  else{
-    cout << "ERROR! unrecognized metcut " << metcut << ", quitting" << endl;
-    exit(0);
-  }
-  
-  // evaluate ht efficiency
-
-  float hteff = 1;
-  
-  if( htcut == 0 ){
-    hteff = 1;
-  }
-
-  else if( htcut == 125 ){
-    erf->SetParameters(1.00, 124, 56);
-    hteff = erf->Eval(ht);
-  }
-
-  else if( htcut == 300 ){
-    erf->SetParameters(1.00, 283, 75);
-    hteff = erf->Eval(ht);
-  }
-
-  else if( htcut == 600 ){
-    erf->SetParameters(0.99, 582, 93);
-    hteff = erf->Eval(ht);
-  }
-
-  else{
-    cout << "ERROR! unrecognized htcut " << htcut << ", quitting" << endl;
-    exit(0);
-  }
-  
-  float eff = trgeff * lep1eff * lep2eff * meteff * hteff;
-  
-  return eff;
-
-}
-
-
-
