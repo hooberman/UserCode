@@ -68,7 +68,9 @@ const bool  pt2020               = false;
 const float lumi                 = 1.0; 
 
 const char* iter                 = "V00-02-00";
-const char* jsonfilename         = "../jsons/Cert_190456-207898_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 18.063 fb-1
+const char* jsonfilename         = "../jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
+
+// https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1968.html   19.3 fb-1
 
 //--------------------------------------------------------------------
 
@@ -899,7 +901,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  if( foundDuplicate ) continue;
 
           if( els_p4().at(iel).pt() < 10 )                                                             continue;
-	  if( ! passElectronSelection_ZMet2012_v2(iel,vetoTransition,vetoTransition,useOldIsolation) ) continue;
+	  if( ! passElectronSelection_ZMet2012_v3(iel,vetoTransition,vetoTransition,useOldIsolation) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
 	  goodLeptonIDs.push_back( els_charge().at(iel) * 11 );
 	  nlep_++;
@@ -942,8 +944,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  cout << "mass   " << hyp_p4()[hypIdx].mass() << endl;
 	  if( abs(hyp_ll_id()[hypIdx]) == 13 )   cout << "muon ll " << muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 ) << endl;
 	  if( abs(hyp_lt_id()[hypIdx]) == 13 )   cout << "muon lt " << muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 ) << endl;
-	  if( abs(hyp_ll_id()[hypIdx]) == 11 )   cout << "ele ll  " << passElectronSelection_ZMet2012_v2(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation) << endl;
-	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation) << endl;
+	  if( abs(hyp_ll_id()[hypIdx]) == 11 )   cout << "ele ll  " << passElectronSelection_ZMet2012_v3(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation) << endl;
+	  if( abs(hyp_lt_id()[hypIdx]) == 11 )   cout << "ele lt  " << passElectronSelection_ZMet2012_v3(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation) << endl;
 	}
 
         if( !passSUSYTrigger2012_v2( isData ) ) continue;
@@ -960,8 +962,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
               
         //electron ID
-        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v2(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation)) ) continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation)) ) continue;
+        if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v3(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation)) ) continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v3(hyp_lt_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation)) ) continue;
         
         nHypPass++;
 	
