@@ -41,7 +41,7 @@ templateSource myTemplateSource   = e_PhotonJetStitched;
 templateType   myTemplateType     = e_njets_ht;
 //templateType   myTemplateType     = e_njets_ht_nvtx;
 //templateType   myTemplateType     = e_njets_ht_vecjetpt;
-char*          iter               = "njetsgeq3";
+char*          iter               = "njets_geq3";
 
 //------------------------------------------------
 
@@ -152,9 +152,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       }
       
       else if( myTemplateSource == e_PhotonJet || myTemplateSource == e_PhotonJetStitched ){
-	cout << "WARNING! USING DATA TEMPLATES FOR MC" << endl;
-	templateFileName = Form("../templates/%s/photon_templates.root",template_version);
-	//templateFileName = "/tas03/home/benhoob/metTemplate/output/nov5th/babylooper_PhotonJet_templates.root";
+	templateFileName = "/tas03/home/benhoob/metTemplate/output/nov5th/babylooper_PhotonJet_templates.root";
 	cout << "Using template file " << templateFileName << endl;
         metTemplateString = "_PhotonJetTemplate";
         metTemplateFile = TFile::Open( templateFileName );
@@ -974,7 +972,7 @@ void babylooper::bookHistos(){
   hgenps_pthat = new TH1F("hgenps_pthat","",100,0,100);
   hphotonpt    = new TH1F("hphotonpt","",100,0,100);
 
-  int maxmet = 250;
+  int maxmet = 200;
 
   if( !makeTemplate_ ){
     
