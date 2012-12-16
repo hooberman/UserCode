@@ -33,7 +33,33 @@ void runMakePhotonBabies(char* prefix , bool isData = true, float kFactor = 1.){
 
   //-----------------------------------------------------------------------------------
 
-  if( strcmp( prefix , "Photon" ) == 0 ){
+  if( strcmp( prefix , "data_53X_2012A" ) == 0 ){    
+    pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+  }
+
+  //-----------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "data_53X_2012B" ) == 0 ){    
+    pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012B-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+  }
+
+  //-----------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "data_53X_2012C" ) == 0 ){    
+    pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012C-24Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012C-PromptReco-v2_AOD/V05-03-18_slim/merged*root");
+  }
+
+  //-----------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "data_53X_2012D" ) == 0 ){    
+    pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
+  }
+
+  //-----------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "Photon" ) == 0 ){
     pickSkimIfExists(ch,"/hadoop/cms/store/user/cwelke/CMSSW_5_2_3_patch4_V05-02-27/Photon_Run2012A-PromptReco-v1_AOD/unmerged/store*root");
     pickSkimIfExists(ch,"/hadoop/cms/store/user/cwelke/CMSSW_5_2_3_patch4_V05-02-27/SinglePhoton_Run2012B-PromptReco-v1_AOD/unmerged/store*root");
   }
@@ -64,6 +90,12 @@ void runMakePhotonBabies(char* prefix , bool isData = true, float kFactor = 1.){
   //-----------------------------------------------------------------------------------
     
   bool calculateTCMET = false;  //recalculate tcmet on-the-fly?
+  
+  cout << endl;
+  cout << "Checking for corrupt files" << endl;
+  cout << "Entries " << ch->GetEntries() << endl;
+  ch->Draw("evt_run");
+  cout << endl;
   
   makePhotonBabies* myLooper = new makePhotonBabies();
   

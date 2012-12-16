@@ -53,8 +53,10 @@ using namespace tas;
 
 const bool debug                = false;
 const float lumi                = 1.0;
-const char* iter                = "V00-01-00";
-const char* jsonfilename        = "../jsons/Cert_190456-201678_8TeV_PromptReco_Collisions12_JSON_goodruns.txt"; // 9.7/fb
+const char* iter                = "V00-02-00";
+const char* jsonfilename        = "../jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
+
+// https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1968.html   19.3 fb-1
 
 //--------------------------------------------------------------------
 
@@ -541,6 +543,7 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       // get pt of closest calojet, within dr < 0.3
       calojet_pt_          = -1;
 
+      /*
       float mindr = 100;
 
       for( int ic = 0 ; ic < jets_p4().size() ; ic++ ){
@@ -552,8 +555,8 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 	  mindr = dr;
 	  calojet_pt_ = jets_p4().at(ic).pt();
 	}
-
       }
+      */
 
       //--------------------
       // jet stuff

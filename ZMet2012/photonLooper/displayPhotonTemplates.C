@@ -33,8 +33,8 @@ const int      nSumJetPtBins    = 7;
 const metType  myMetType        = e_pfmet;
 const float    maxmet           = 200;
 const int      rebin            = 10;
-const bool     twoTemplates     = true;
-const bool     vertical         = true;
+const bool     twoTemplates     = false;
+const bool     vertical         = false;
 
 //const char*    filename1        = "../photon_output/V00-00-07/Photon_templates.root";
 //const char*    filename2        = "../photon_output/V00-00-07/DoubleElectron_templates.root";
@@ -45,7 +45,8 @@ const bool     vertical         = true;
 //const char*    filename1        = "../photon_output/V00-00-07/DoubleElectron_templates.root";
 //const char*    filename2        = "../photon_output/V00-00-07/DoubleElectron_templates_vtxreweight.root";
 
-const char*    filename1        = "../photon_output/V00-01-00/DoubleElectron_templates_vtxreweight_pt40_2012AB.root";
+const char*    filename1        = "../photon_output/V00-01-00/DoubleElectron_templates_vtxreweight.root";
+//const char*    filename1        = "../photon_output/V00-01-00/DoubleElectron_templates_vtxreweight_pt40_2012AB.root";
 const char*    filename2        = "../photon_output/V00-01-00/DoubleElectron_templates_vtxreweight_pt40_2012C.root";
 
 //----------------------------------------------------------------------------------------
