@@ -78,7 +78,7 @@ Thus we calculate the quantity:
 
 \begin{equation}
 R_{\mu e} = \sqrt{\frac{N_{\mu\mu}^{\rm{offline}}}{N_{ee}^{\rm{offline}}}} = \sqrt{\frac{N_{\mu\mu}^{\rm{trig}}/\epsilon_{\mu\mu}^{\rm{trig}}}{N_{ee}^{\rm{trig}}/\epsilon_{ee}^{\rm{trig}}}} 
-= \sqrt{\frac{144122/0.88}{110325/0.95}} = 1.19\pm0.07.
+= \sqrt{\frac{297240/0.88}{233805/0.95}} = 1.17\pm0.07.
 \end{equation}
 
 Here we have used the Z$\to\mu\mu$ and Z$\to$ee yields from Table~\ref{table:zyields_2j} and the trigger efficiencies quoted in Sec.~\ref{sec:datasets}.
@@ -87,15 +87,15 @@ The predicted yields in the ee and $\mu\mu$ final states are calculated from the
 
 \begin{itemize}
 \item $N_{ee}^{\rm{predicted}}    = \frac {N_{e\mu}^{\rm{trig}}} {\epsilon_{e\mu}^{\rm{trig}}} \frac {\epsilon_{ee}^{\rm{trig}}} {2 R_{\mu e}} 
-= \frac{N_{e\mu}^{\rm{trig}}}{0.92}\frac{0.95}{2\times1.26} = (0.43\pm0.05) \times N_{e\mu}^{\rm{trig}}$ ,
+= \frac{N_{e\mu}^{\rm{trig}}}{0.92}\frac{0.95}{2\times1.17} = (0.44\pm0.05) \times N_{e\mu}^{\rm{trig}}$ ,
 \item $N_{\mu\mu}^{\rm{predicted}} = \frac {N_{e\mu}^{\rm{trig}}} {\epsilon_{e\mu}^{\rm{trig}}} \frac {\epsilon_{\mu\mu}^{\rm{trig}} R_{\mu e}}  {2}
-= \frac {N_{e\mu}^{\rm{trig}}} {0.95} \frac {0.88 \times 1.26}{2} = (0.55\pm0.07) \times N_{e\mu}^{\rm{trig}}$,
+= \frac {N_{e\mu}^{\rm{trig}}} {0.95} \frac {0.88 \times 1.17}{2} = (0.54\pm0.07) \times N_{e\mu}^{\rm{trig}}$,
 \end{itemize}
 
 and the predicted yield in the combined ee and $\mu\mu$ channel is simply the sum of these two predictions:
 
 \begin{itemize}
-\item $N_{ee+\mu\mu}^{\rm{predicted}} = (0.99\pm0.06)\times N_{e\mu}^{\rm{trig}}$.
+\item $N_{ee+\mu\mu}^{\rm{predicted}} = (0.98\pm0.06)\times N_{e\mu}^{\rm{trig}}$.
 \end{itemize}
 
 Note that the relative uncertainty in the combined ee and $\mu\mu$ prediction is smaller than those for the individual ee and $\mu\mu$ predictions
@@ -113,8 +113,8 @@ for all \MET\ regions up to  \MET\ $>$ 150 GeV. For the \MET\ $>$ 200 GeV region
 \begin{figure}[!ht]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=0.4\textwidth]{plots/extractK_inclusive_92fb.pdf} &
-\includegraphics[width=0.4\textwidth]{plots/extractK_exclusive_92fb.pdf} \\
+\includegraphics[width=0.4\textwidth]{plots/extractK_inclusive_19fb.pdf} &
+\includegraphics[width=0.4\textwidth]{plots/extractK_exclusive_19fb.pdf} \\
 \end{tabular}
 \caption{\label{fig:K_incl}
 The efficiency for e$\mu$ events to satisfy the dilepton mass requirement, $K$, in data and simulation for inclusive \MET\ intervals (left) and
@@ -127,12 +127,11 @@ exclusive \MET\ intervals (right) for the inclusive analysis.
   EXCLUSIVE RESULTS
 ----------------------------------------
 
-root [3] extractK(true,false,false)
 Using selection : ((((leptype==2)&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(isdata==0 || (run<197556 || run>198913)))&&(njets>=2))&&(lep1.pt()>20 && lep2.pt()>20)
 Using weight    : vtxweight * weight
-OF entries (total)  21691
-OF entries (Z mass) 2934
-K                   0.135263
+OF entries (total)  44537
+OF entries (Z mass) 6051
+K                   0.135865
 Warning in <TROOT::Append>: Replacing existing TH1: htot (Potential memory leak).
 Warning in <TROOT::Append>: Replacing existing TH1: hZ (Potential memory leak).
 
@@ -140,9 +139,9 @@ Warning in <TROOT::Append>: Replacing existing TH1: hZ (Potential memory leak).
 pfmet>0   && pfmet<30
 
 data  : 
-total : 3650
-Z     : 461
-K     : 0.13 +/- 0.006
+total : 7563
+Z     : 957
+K     : 0.13 +/- 0.004
 
 MC    : 
 total : 399.019
@@ -155,9 +154,9 @@ K     : 0.13 +/- 0.007
 pfmet>30  && pfmet<60
 
 data  : 
-total : 6951
-Z     : 904
-K     : 0.13 +/- 0.004
+total : 14185
+Z     : 1893
+K     : 0.13 +/- 0.003
 
 MC    : 
 total : 755.309
@@ -170,9 +169,9 @@ K     : 0.15 +/- 0.003
 pfmet>60  && pfmet<100
 
 data  : 
-total : 7206
-Z     : 1037
-K     : 0.14 +/- 0.004
+total : 14928
+Z     : 2122
+K     : 0.14 +/- 0.003
 
 MC    : 
 total : 838.418
@@ -185,9 +184,9 @@ K     : 0.15 +/- 0.003
 pfmet>100 && pfmet<200
 
 data  : 
-total : 3690
-Z     : 512
-K     : 0.14 +/- 0.006
+total : 7437
+Z     : 1029
+K     : 0.14 +/- 0.004
 
 MC    : 
 total : 451.624
@@ -200,9 +199,9 @@ K     : 0.15 +/- 0.004
 pfmet>200 && pfmet<300
 
 data  : 
-total : 172
-Z     : 17
-K     : 0.10 +/- 0.024
+total : 371
+Z     : 44
+K     : 0.12 +/- 0.018
 
 MC    : 
 total : 24.2441
@@ -215,9 +214,9 @@ K     : 0.11 +/- 0.013
 pfmet>300
 
 data  : 
-total : 22
-Z     : 3
-K     : 0.14 +/- 0.079
+total : 53
+Z     : 6
+K     : 0.11 +/- 0.046
 
 MC    : 
 total : 4.53108
@@ -226,17 +225,15 @@ K     : 0.05 +/- 0.022
 --------------------------------------------------------------
 
 
-
 ----------------------------------------
   INCLUSIVE RESULTS
 ----------------------------------------
 
-root [4] extractK(false,false,false)
 Using selection : ((((leptype==2)&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(isdata==0 || (run<197556 || run>198913)))&&(njets>=2))&&(lep1.pt()>20 && lep2.pt()>20)
 Using weight    : vtxweight * weight
-OF entries (total)  21691
-OF entries (Z mass) 2934
-K                   0.135263
+OF entries (total)  44537
+OF entries (Z mass) 6051
+K                   0.135865
 Warning in <TROOT::Append>: Replacing existing TH1: htot (Potential memory leak).
 Warning in <TROOT::Append>: Replacing existing TH1: hZ (Potential memory leak).
 
@@ -244,8 +241,8 @@ Warning in <TROOT::Append>: Replacing existing TH1: hZ (Potential memory leak).
 pfmet>0
 
 data  : 
-total : 21691
-Z     : 2934
+total : 44537
+Z     : 6051
 K     : 0.14 +/- 0.002
 
 MC    : 
@@ -259,9 +256,9 @@ K     : 0.14 +/- 0.002
 pfmet>30
 
 data  : 
-total : 18041
-Z     : 2473
-K     : 0.14 +/- 0.003
+total : 36974
+Z     : 5094
+K     : 0.14 +/- 0.002
 
 MC    : 
 total : 2074.05
@@ -274,9 +271,9 @@ K     : 0.15 +/- 0.002
 pfmet>60
 
 data  : 
-total : 11090
-Z     : 1569
-K     : 0.14 +/- 0.004
+total : 22789
+Z     : 3201
+K     : 0.14 +/- 0.002
 
 MC    : 
 total : 1318.79
@@ -289,9 +286,9 @@ K     : 0.15 +/- 0.002
 pfmet>100
 
 data  : 
-total : 3884
-Z     : 532
-K     : 0.14 +/- 0.006
+total : 7861
+Z     : 1079
+K     : 0.14 +/- 0.004
 
 MC    : 
 total : 480.402
@@ -304,9 +301,9 @@ K     : 0.15 +/- 0.004
 pfmet>200
 
 data  : 
-total : 194
-Z     : 20
-K     : 0.10 +/- 0.023
+total : 424
+Z     : 50
+K     : 0.12 +/- 0.017
 
 MC    : 
 total : 28.7751
@@ -319,9 +316,9 @@ K     : 0.10 +/- 0.012
 pfmet>300
 
 data  : 
-total : 22
-Z     : 3
-K     : 0.14 +/- 0.079
+total : 53
+Z     : 6
+K     : 0.11 +/- 0.046
 
 MC    : 
 total : 4.53108
@@ -337,8 +334,8 @@ K     : 0.05 +/- 0.022
 \begin{figure}[!hb]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=0.4\textwidth]{plots/extractK_inclusive_bvetoMedium_92fb.pdf} &
-\includegraphics[width=0.4\textwidth]{plots/extractK_exclusive_bvetoMedium_92fb.pdf} \\
+\includegraphics[width=0.4\textwidth]{plots/extractK_inclusive_bveto_19fb.pdf} &
+\includegraphics[width=0.4\textwidth]{plots/extractK_exclusive_bveto_19fb.pdf} \\
 \end{tabular}
 \caption{
 The efficiency for e$\mu$ events to satisfy the dilepton mass requirement, $K$, in data and simulation for inclusive \MET\ intervals (left) and
@@ -350,22 +347,21 @@ For higher \MET\ regions we chose $K=0.13\pm0.07$.
 }
 \begin{comment}
 
-root [2] extractK(true,false,true)
 Using selection : (((((leptype==2)&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(isdata==0 || (run<197556 || run>198913)))&&(njets>=2))&&(lep1.pt()>20 && lep2.pt()>20))&&(nbcsvm==0)
 Using weight    : vtxweight * weight
-OF entries (total)  5756
-OF entries (Z mass) 654
-K                   0.113621
-Warning in <TStreamerInfo::Compile>: Counter fNClusterRange should not be skipped from class TTree
-Info in <TCanvas::MakeDefCanvas>:  created default TCanvas with name c1
+OF entries (total)  12006
+OF entries (Z mass) 1407
+K                   0.117191
+Warning in <TROOT::Append>: Replacing existing TH1: htot (Potential memory leak).
+Warning in <TROOT::Append>: Replacing existing TH1: hZ (Potential memory leak).
 
 --------------------------------------------------------------
 pfmet>0   && pfmet<30
 
 data  : 
-total : 1303
-Z     : 126
-K     : 0.10 +/- 0.009
+total : 2719
+Z     : 273
+K     : 0.10 +/- 0.006
 
 MC    : 
 total : 131.974
@@ -378,9 +374,9 @@ K     : 0.12 +/- 0.020
 pfmet>30  && pfmet<60
 
 data  : 
-total : 1818
-Z     : 190
-K     : 0.10 +/- 0.008
+total : 3842
+Z     : 435
+K     : 0.11 +/- 0.005
 
 MC    : 
 total : 172.956
@@ -393,9 +389,9 @@ K     : 0.13 +/- 0.007
 pfmet>60  && pfmet<80
 
 data  : 
-total : 994
-Z     : 122
-K     : 0.12 +/- 0.011
+total : 2029
+Z     : 269
+K     : 0.13 +/- 0.008
 
 MC    : 
 total : 109.789
@@ -408,9 +404,9 @@ K     : 0.13 +/- 0.008
 pfmet>80  && pfmet<100
 
 data  : 
-total : 699
-Z     : 99
-K     : 0.14 +/- 0.014
+total : 1490
+Z     : 194
+K     : 0.13 +/- 0.009
 
 MC    : 
 total : 73.3643
@@ -423,9 +419,9 @@ K     : 0.16 +/- 0.010
 pfmet>100 && pfmet<150
 
 data  : 
-total : 722
-Z     : 93
-K     : 0.13 +/- 0.013
+total : 1467
+Z     : 189
+K     : 0.13 +/- 0.009
 
 MC    : 
 total : 86.7947
@@ -438,9 +434,9 @@ K     : 0.14 +/- 0.009
 pfmet>150 && pfmet<200
 
 data  : 
-total : 163
-Z     : 18
-K     : 0.11 +/- 0.026
+total : 320
+Z     : 31
+K     : 0.10 +/- 0.017
 
 MC    : 
 total : 19.4473
@@ -453,9 +449,9 @@ K     : 0.15 +/- 0.017
 pfmet>200
 
 data  : 
-total : 57
-Z     : 6
-K     : 0.11 +/- 0.043
+total : 139
+Z     : 16
+K     : 0.12 +/- 0.029
 
 MC    : 
 total : 8.99801
@@ -463,15 +459,14 @@ Z     : 0.794136
 K     : 0.09 +/- 0.021
 --------------------------------------------------------------
 
-root [3] Info in <TCanvas::Print>: pdf file /Users/benhoob/tas/ZMet2012/plots/extractK_exclusive_bvetoMedium_92fb.pdf has been created
-
-root [3] 
-root [3] extractK(false,false,true)
+Warning in <TROOT::Append>: Replacing existing TH1: hdummy (Potential memory leak).
+Info in <TCanvas::Print>: pdf file ../plots/extractK_exclusive_bveto.pdf has been created
+root [3] extractK(false,true,true)
 Using selection : (((((leptype==2)&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(isdata==0 || (run<197556 || run>198913)))&&(njets>=2))&&(lep1.pt()>20 && lep2.pt()>20))&&(nbcsvm==0)
 Using weight    : vtxweight * weight
-OF entries (total)  5756
-OF entries (Z mass) 654
-K                   0.113621
+OF entries (total)  12006
+OF entries (Z mass) 1407
+K                   0.117191
 Warning in <TROOT::Append>: Replacing existing TH1: htot (Potential memory leak).
 Warning in <TROOT::Append>: Replacing existing TH1: hZ (Potential memory leak).
 
@@ -479,9 +474,9 @@ Warning in <TROOT::Append>: Replacing existing TH1: hZ (Potential memory leak).
 pfmet>0
 
 data  : 
-total : 5756
-Z     : 654
-K     : 0.11 +/- 0.004
+total : 12006
+Z     : 1407
+K     : 0.12 +/- 0.003
 
 MC    : 
 total : 603.333
@@ -494,9 +489,9 @@ K     : 0.13 +/- 0.005
 pfmet>30
 
 data  : 
-total : 4453
-Z     : 528
-K     : 0.12 +/- 0.005
+total : 9287
+Z     : 1134
+K     : 0.12 +/- 0.004
 
 MC    : 
 total : 471.396
@@ -509,9 +504,9 @@ K     : 0.13 +/- 0.004
 pfmet>60
 
 data  : 
-total : 2635
-Z     : 338
-K     : 0.13 +/- 0.007
+total : 5445
+Z     : 699
+K     : 0.13 +/- 0.005
 
 MC    : 
 total : 298.41
@@ -524,9 +519,9 @@ K     : 0.14 +/- 0.005
 pfmet>80
 
 data  : 
-total : 1641
-Z     : 216
-K     : 0.13 +/- 0.009
+total : 3416
+Z     : 430
+K     : 0.13 +/- 0.006
 
 MC    : 
 total : 188.602
@@ -539,9 +534,9 @@ K     : 0.14 +/- 0.006
 pfmet>100
 
 data  : 
-total : 942
-Z     : 117
-K     : 0.12 +/- 0.011
+total : 1926
+Z     : 236
+K     : 0.12 +/- 0.008
 
 MC    : 
 total : 115.24
@@ -554,9 +549,9 @@ K     : 0.13 +/- 0.008
 pfmet>150
 
 data  : 
-total : 220
-Z     : 24
-K     : 0.11 +/- 0.022
+total : 459
+Z     : 47
+K     : 0.10 +/- 0.015
 
 MC    : 
 total : 28.4454
@@ -569,9 +564,9 @@ K     : 0.13 +/- 0.014
 pfmet>200
 
 data  : 
-total : 57
-Z     : 6
-K     : 0.11 +/- 0.043
+total : 139
+Z     : 16
+K     : 0.12 +/- 0.029
 
 MC    : 
 total : 8.99801
