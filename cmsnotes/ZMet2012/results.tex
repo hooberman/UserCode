@@ -56,11 +56,13 @@ OF events 44581
 \end{comment}
 
                       &   \MET\ 0--30 GeV   &  \MET\ 30--60 GeV   & \MET\ 60--100 GeV   &\MET\ 100--200 GeV   &\MET\ 200--300 GeV   & \MET\ $>$ 300 GeV  \\
+\hline
         \zjets\ bkg   &399165 $\pm$ 119750   &130625 $\pm$ 39188   &   6652 $\pm$ 1996   &      266 $\pm$ 80   &    12.1 $\pm$ 3.8   &     3.0 $\pm$ 1.0  \\
              FS bkg   &    1031 $\pm$ 160   &    1948 $\pm$ 302   &    2056 $\pm$ 319   &    1022 $\pm$ 159   &   51.0 $\pm$ 15.1   &     7.4 $\pm$ 4.4  \\
              WZ bkg   &  128.9 $\pm$ 90.2   & 219.9 $\pm$ 153.9   & 158.2 $\pm$ 110.7   &   86.4 $\pm$ 60.5   &    11.8 $\pm$ 8.3   &     3.3 $\pm$ 3.3  \\
              ZZ bkg   &    15.9 $\pm$ 8.0   &   34.0 $\pm$ 17.0   &   36.5 $\pm$ 18.2   &   33.8 $\pm$ 16.9   &     6.8 $\pm$ 3.4   &     2.0 $\pm$ 2.0  \\
         rare SM bkg   &    10.6 $\pm$ 5.3   &   22.4 $\pm$ 11.2   &   21.9 $\pm$ 11.0   &    19.1 $\pm$ 9.6   &     3.5 $\pm$ 1.8   &     1.2 $\pm$ 1.2  \\
+\hline
           total bkg   &400351 $\pm$ 119750   &132850 $\pm$ 39190   &   8925 $\pm$ 2025   &    1428 $\pm$ 189   &   85.3 $\pm$ 18.1   &    17.0 $\pm$ 6.1  \\
                data   &            398148   &            135053   &              9816   &              1507   &                83   &                 7  \\
        significance   &      -0.0$\sigma$   &       0.1$\sigma$   &       0.4$\sigma$   &       0.4$\sigma$   &      -0.1$\sigma$   &      -1.5$\sigma$  \\
@@ -81,7 +83,7 @@ The separate results for the ee and $\mu\mu$ channels are presented in App.~\ref
 \begin{figure}[!h]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=0.5\textwidth]{plots/pfmet_bvetoMedium_all.pdf}
+\includegraphics[width=0.5\textwidth]{plots/pfmet_bveto_all_19fb.pdf}
 \end{tabular}
 \caption{Results of the $\rm{Z}+{dijet}$ analysis. The observed $\rm{E_{T}^{miss}}$ distribution (black points) is compared with the sum of the predicted $\rm{E_{T}^{miss}}$
 distributions from $\rm{Z}+\rm{jets}$, flavor-symmetric (FS), sum of WZ and ZZ (WZ+ZZ), and rare SM backgrounds. The ratio of observed to predicted yields in each bin is
@@ -102,38 +104,57 @@ the \MET\ templates method (\zjets\ bkg), the flavor-symmetric background predic
 and total background is indicated for signal regions with at least 20 observed events. }
 \begin{tabular}{l|c|c|c|c}
 
-\hline
-\hline
 
-                      &   \MET\ 0--30 GeV   &  \MET\ 30--60 GeV   &  \MET\ 60--80 GeV   & \MET\ 80--100 GeV   \\
-\hline
-        \zjets\ bkg   & 52823 $\pm$ 15847   &  14015 $\pm$ 4205   &     433 $\pm$ 130   &   40.9 $\pm$ 12.4   \\
-             FS bkg   &    41.3 $\pm$ 7.2   &    49.5 $\pm$ 8.6   &    26.4 $\pm$ 4.7   &    17.9 $\pm$ 3.3   \\
-             WZ bkg   &     9.5 $\pm$ 6.6   &   15.9 $\pm$ 11.2   &     6.6 $\pm$ 4.7   &     3.9 $\pm$ 2.7   \\
-             ZZ bkg   &     2.1 $\pm$ 1.0   &     4.1 $\pm$ 2.1   &     2.2 $\pm$ 1.1   &     1.8 $\pm$ 0.9   \\
-        rare SM bkg   &     0.3 $\pm$ 0.2   &     0.7 $\pm$ 0.3   &     0.4 $\pm$ 0.2   &     0.3 $\pm$ 0.2   \\
-\hline
-          total bkg   & 52876 $\pm$ 15847   &  14085 $\pm$ 4205   &     468 $\pm$ 130   &   64.7 $\pm$ 13.2   \\
-               data   &             52485   &             14476   &               510   &                56   \\
-       significance   &      -0.0$\sigma$   &       0.1$\sigma$   &       0.3$\sigma$   &      -0.6$\sigma$   \\
+%Using pfmet out-of-the-box
+%WZ/ZZ selection : ((((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))&&(ngennu>0))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(dilmass>81 && dilmass<101))&&(njets>=2))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==2))&&(mjj>70.0 && mjj<110.0)
+%WZ/ZZ weight    : weight * 19.3 * vtxweight * trgeff
+%Opening ../output/V00-02-00/babylooper_data_53X_2012ALL_PhotonStitchedTemplate_pfmet_bveto.root
+%B-veto?   1
+%K         0.13
+%ee+mm channels: scale em yield by 0.98
+%Yields in 0-60 GeV region
+%data   : 145069
+%gjets  : 145588
+%OF     : 201.547
+%WZ     : 57.8524
+%ZZ     : 13.8061
+%Rare   : 3.53803
+%Scaling gjets by : 0.994532
+%SF events 146811
+%OF events 2632
 
 
+
+\hline
+\hline
+                      &   \MET\ 0--30 GeV   &  \MET\ 30--60 GeV   &  \MET\ 60--80 GeV   & \MET\ 80--100 GeV  \\  
+\hline                                                                                                        
+        \zjets\ bkg   &112673 $\pm$ 33802   &  32119 $\pm$ 9636   &    1088 $\pm$ 327   &      104 $\pm$ 31  \\  
+             FS bkg   &   88.8 $\pm$ 15.0   &      113 $\pm$ 19   &    51.5 $\pm$ 8.9   &    38.0 $\pm$ 6.6  \\  
+             WZ bkg   &   21.5 $\pm$ 15.0   &   36.4 $\pm$ 25.5   &   15.2 $\pm$ 10.6   &     8.7 $\pm$ 6.1  \\  
+             ZZ bkg   &     4.6 $\pm$ 2.3   &     9.2 $\pm$ 4.6   &     4.9 $\pm$ 2.5   &     4.1 $\pm$ 2.1  \\  
+        rare SM bkg   &     1.0 $\pm$ 0.5   &     2.5 $\pm$ 1.3   &     1.4 $\pm$ 0.7   &     1.1 $\pm$ 0.6  \\  
+\hline                                                                                                        
+          total bkg   &112789 $\pm$ 33802   &  32280 $\pm$ 9636   &    1161 $\pm$ 327   &      156 $\pm$ 33  \\  
+               data   &            110883   &             34186   &              1478   &               178  \\  
+       significance   &      -0.1$\sigma$   &       0.2$\sigma$   &       1.0$\sigma$   &       0.6$\sigma$  \\  
 \hline
 \hline
 
                       &\MET\ 100--120 GeV   &\MET\ 120--150 GeV   &\MET\ 150--200 GeV   & \MET\ $>$ 200 GeV  \\
 \hline
-        \zjets\ bkg   &     7.0 $\pm$ 2.2   &     3.1 $\pm$ 0.9   &     1.6 $\pm$ 0.5   &     0.8 $\pm$ 0.3  \\
-             FS bkg   &    11.3 $\pm$ 2.2   &     6.9 $\pm$ 1.5   &     2.4 $\pm$ 1.1   &     0.4 $\pm$ 0.3  \\
-             WZ bkg   &     2.1 $\pm$ 1.5   &     1.6 $\pm$ 1.1   &     1.0 $\pm$ 0.7   &     0.5 $\pm$ 0.5  \\
-             ZZ bkg   &     1.0 $\pm$ 0.5   &     1.1 $\pm$ 0.6   &     0.8 $\pm$ 0.4   &     0.7 $\pm$ 0.7  \\
-        rare SM bkg   &     0.2 $\pm$ 0.1   &     0.3 $\pm$ 0.1   &     0.2 $\pm$ 0.1   &     0.2 $\pm$ 0.2  \\
-\hline                                                                                                         
-          total bkg   &    21.7 $\pm$ 3.5   &    13.0 $\pm$ 2.2   &     6.1 $\pm$ 1.5   &     2.5 $\pm$ 0.9  \\
-               data   &                24   &          16         &                 3   &                 1  \\
-       significance   &       0.4$\sigma$   &                     &                     &                    \\
+        \zjets\ bkg   &    15.9 $\pm$ 4.8   &     8.4 $\pm$ 2.6   &     4.8 $\pm$ 1.6   &     1.3 $\pm$ 0.4  \\
+             FS bkg   &    23.4 $\pm$ 4.2   &    14.0 $\pm$ 2.7   &     6.1 $\pm$ 2.5   &     0.8 $\pm$ 0.4  \\
+             WZ bkg   &     4.7 $\pm$ 3.3   &     3.7 $\pm$ 2.6   &     2.2 $\pm$ 1.6   &     1.0 $\pm$ 1.0  \\
+             ZZ bkg   &     2.4 $\pm$ 1.2   &     2.6 $\pm$ 1.3   &     1.8 $\pm$ 0.9   &     1.6 $\pm$ 1.6  \\
+        rare SM bkg   &     0.6 $\pm$ 0.3   &     1.1 $\pm$ 0.6   &     0.7 $\pm$ 0.4   &     0.5 $\pm$ 0.5  \\
+\hline
+          total bkg   &    47.1 $\pm$ 7.3   &    29.7 $\pm$ 4.7   &    15.6 $\pm$ 3.5   &     5.1 $\pm$ 2.0  \\
+               data   &                47   &                24   &                12   &                 3  \\
+       significance   &      -0.0$\sigma$   &      -0.8$\sigma$   &                     &                    \\
 \hline
 \hline
+
 
 \end{tabular}
 \end{center}
