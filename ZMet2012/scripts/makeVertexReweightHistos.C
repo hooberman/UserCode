@@ -47,8 +47,8 @@ void makeVertexReweightHistos( bool doPhoton = false ){
 
   else{
     //photonfile   = (char*) "../photon_output/V00-01-00/DoubleElectron_templates.root";
-    photonbaby   = (char*) "../photon_output/V00-01-00/DoubleElectron_baby.root";
-    rootfilename = (char*) "vtxreweight_DoubleElectron_9p2fb_2012C.root";
+    photonbaby   = (char*) "../photon_output/V00-01-00/DoubleElectron_baby_2jets.root";
+    rootfilename = (char*) "vtxreweight_DoubleElectron_9p2fb.root";
   }
 
   cout << "Z files:"      << endl;
@@ -67,8 +67,7 @@ void makeVertexReweightHistos( bool doPhoton = false ){
   chZ->Add(Zfile1);
   chZ->Add(Zfile2);
 
-  //TCut Zselection("dilmass>81 && dilmass<101 && njets>=2 && (run<197556 || run>198913)");
-  TCut Zselection("dilmass>81 && dilmass<101 && njets>=2 && run>=196531"); 
+  TCut Zselection("dilmass>81 && dilmass<101 && njets>=2 && (run<197556 || run>198913)");
   cout << "Using Z selection " << Zselection.GetTitle() << endl;
 
   TH1F* hZ   = new TH1F("hZ","",50,0,50);
