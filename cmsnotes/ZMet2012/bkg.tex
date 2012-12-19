@@ -78,7 +78,7 @@ Thus we calculate the quantity:
 
 \begin{equation}
 R_{\mu e} = \sqrt{\frac{N_{\mu\mu}^{\rm{offline}}}{N_{ee}^{\rm{offline}}}} = \sqrt{\frac{N_{\mu\mu}^{\rm{trig}}/\epsilon_{\mu\mu}^{\rm{trig}}}{N_{ee}^{\rm{trig}}/\epsilon_{ee}^{\rm{trig}}}} 
-= \sqrt{\frac{297240/0.88}{233805/0.95}} = 1.17\pm0.07.
+= \sqrt{\frac{304953/0.88}{239661/0.95}} = 1.17\pm0.07.
 \end{equation}
 
 Here we have used the Z$\to\mu\mu$ and Z$\to$ee yields from Table~\ref{table:zyields_2j} and the trigger efficiencies quoted in Sec.~\ref{sec:datasets}.
@@ -1084,6 +1084,54 @@ The number of jets, missing transverse energy, and Z boson transverse momentum a
 \end{center}
 \end{figure}
 
+\begin{comment}
+Loading babies at       : ../output/V00-02-00
+Using selection         : ((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==4 && lep3.pt()>20.0 && lep4.pt()>20.0))&&(dilmass>81 && dilmass<101)
+Using weight            : weight * 19.3 * trgeff * vtxweight
+Plotting var njets flavor sf
+compareDataMC : apply trigeff 1
+
+MC yield VVV 1.40
+MC yield ttV 2.64
+MC yield single top 0.00
+MC yield WW 0.00
+MC yield ttbar 0.00
+SCALING ZJETS BY 111/946
+MC yield zjets 0.00
+MC yield WZ 0.27
+SCALING ZJETS BY 1.92
+MC yield ZZ 125.99
+MC total yield 130.31
+data yield 136
+Plotting var pfmet flavor sf
+compareDataMC : apply trigeff 1
+MC yield VVV 1.40
+MC yield ttV 2.64
+MC yield single top 0.00
+MC yield WW 0.00
+MC yield ttbar 0.00
+SCALING ZJETS BY 111/946
+MC yield zjets 0.00
+MC yield WZ 0.27
+SCALING ZJETS BY 1.92
+MC yield ZZ 126.00
+MC total yield 130.32
+data yield 136
+Plotting var dileppt flavor sf
+compareDataMC : apply trigeff 1
+MC yield VVV 1.40
+MC yield ttV 2.64
+MC yield single top 0.00
+MC yield WW 0.00
+MC yield ttbar 0.00
+SCALING ZJETS BY 111/946
+MC yield zjets 0.00
+MC yield WZ 0.27
+SCALING ZJETS BY 1.92
+MC yield ZZ 126.00
+MC total yield 130.33
+data yield 136
+\end{comment}
 
 
 
