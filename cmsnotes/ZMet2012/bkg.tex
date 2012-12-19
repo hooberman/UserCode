@@ -901,27 +901,28 @@ requiring the jets to be consistent with originating from the signal primary ver
 \begin{center}
 \caption{\label{tab:wz} Data and Monte Carlo yields passing the WZ preselection. }
 \begin{tabular}{lccccc}
-\hline
-\hline
-         Sample   &            ee    &        $\mu\mu$   &        e$\mu$   &          total  \\
-\hline
 
-%Loading babies at       : ../output/V00-01-04
-%Using selection         : ((((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101)
-%Using weight            : weight * 9.2 * trgeff * vtxweight
+%Loading babies at       : ../output/V00-02-00
+%Using selection         : (((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101)
+%Using weight            : weight * 19.3 * trgeff * vtxweight
 
-             WZ   &116.7 $\pm$ 0.8   &151.5 $\pm$ 0.8   &  8.1 $\pm$ 0.2   &276.3 $\pm$ 1.2  \\
-            ttV   &  4.1 $\pm$ 0.2   &  4.9 $\pm$ 0.2   &  1.2 $\pm$ 0.1   & 10.2 $\pm$ 0.3  \\
-         \ttbar   &  1.2 $\pm$ 0.6   &  3.2 $\pm$ 0.9   &  3.6 $\pm$ 1.0   &  7.9 $\pm$ 1.5  \\
-             ZZ   &  2.5 $\pm$ 0.0   &  3.4 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  6.1 $\pm$ 0.0  \\
-         \zjets   &  1.2 $\pm$ 0.9   &  3.0 $\pm$ 1.8   &  0.0 $\pm$ 0.0   &  4.2 $\pm$ 2.1  \\
-            vvv   &  1.6 $\pm$ 0.1   &  2.1 $\pm$ 0.1   &  0.3 $\pm$ 0.0   &  4.0 $\pm$ 0.1  \\
-     single top   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.2   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.2  \\
-             WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.1  \\
 \hline
-      tot SM MC   &127.3 $\pm$ 1.4   &168.4 $\pm$ 2.3   & 13.5 $\pm$ 1.0   &309.2 $\pm$ 2.8  \\
 \hline
-           data   &            156   &            178   &             16   &            350  \\
+         Sample   &             ee   &       $\mu\mu$   &         e$\mu$   &          total  \\
+\hline
+%SCALING ZJETS BY 111/946
+             WZ   &244.9 $\pm$ 1.6   &317.9 $\pm$ 1.8   & 17.0 $\pm$ 0.4   &579.7 $\pm$ 2.4  \\
+         \zjets   &  2.5 $\pm$ 2.0   &  6.4 $\pm$ 3.9   &  0.0 $\pm$ 0.0   &  8.9 $\pm$ 4.3  \\
+             ZZ   &  5.3 $\pm$ 0.0   &  7.1 $\pm$ 0.1   &  0.4 $\pm$ 0.0   & 12.8 $\pm$ 0.1  \\
+         \ttbar   &  2.5 $\pm$ 1.3   &  6.7 $\pm$ 2.0   &  7.5 $\pm$ 2.1   & 16.7 $\pm$ 3.2  \\
+     single top   &  0.0 $\pm$ 0.0   &  0.5 $\pm$ 0.5   &  0.0 $\pm$ 0.0   &  0.5 $\pm$ 0.5  \\
+             WW   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.2 $\pm$ 0.1   &  0.3 $\pm$ 0.1  \\
+            ttV   &  8.6 $\pm$ 0.4   & 10.3 $\pm$ 0.4   &  2.5 $\pm$ 0.2   & 21.5 $\pm$ 0.7  \\
+            VVV   &  3.4 $\pm$ 0.1   &  4.3 $\pm$ 0.1   &  0.6 $\pm$ 0.1   &  8.3 $\pm$ 0.2  \\
+\hline
+      tot SM MC   &267.1 $\pm$ 2.9   &353.3 $\pm$ 4.7   & 28.2 $\pm$ 2.2   &648.6 $\pm$ 6.0  \\
+\hline
+           data   &            312   &            391   &             50   &            753  \\
 \hline
 \hline
 
@@ -933,27 +934,32 @@ requiring the jets to be consistent with originating from the signal primary ver
 \begin{center}
 \caption{\label{tab:wz2j} Data and Monte Carlo yields passing the WZ preselection and \njets\ $\geq$ 2. }
 \begin{tabular}{lccccc}
-\hline
-\hline
-         Sample   &            ee    &        $\mu\mu$   &        e$\mu$   &          total  \\
-\hline
 
-%Loading babies at       : ../output/V00-01-04
-%Using selection         : (((((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101))&&(njets>=2)
-%Using weight            : weight * 9.2 * trgeff * vtxweight
+%Loading babies at       : ../output/V00-02-00
+%-------------------------------------
+%USING SKIMMED SAMPLES WITH NJETS >= 2
+%-------------------------------------
 
-             WZ   & 19.1 $\pm$ 0.3   & 24.6 $\pm$ 0.3   &  1.3 $\pm$ 0.1   & 44.9 $\pm$ 0.5  \\
-            ttV   &  3.8 $\pm$ 0.2   &  4.5 $\pm$ 0.2   &  1.0 $\pm$ 0.1   &  9.3 $\pm$ 0.3  \\
-         \ttbar   &  0.8 $\pm$ 0.5   &  1.6 $\pm$ 0.7   &  0.9 $\pm$ 0.5   &  3.3 $\pm$ 1.0  \\
-             ZZ   &  0.5 $\pm$ 0.0   &  0.7 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  1.2 $\pm$ 0.0  \\
-         \zjets   &  0.9 $\pm$ 0.9   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.9 $\pm$ 0.9  \\
-            vvv   &  0.9 $\pm$ 0.0   &  1.2 $\pm$ 0.1   &  0.1 $\pm$ 0.0   &  2.2 $\pm$ 0.1  \\
-     single top   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.2   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.2  \\
+%Using selection         : ((((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101))&&(njets>=2)
+%Using weight            : weight * 19.3 * trgeff * vtxweight
+
+\hline
+\hline
+         Sample   &             ee   &       $\mu\mu$   &         e$\mu$   &          total  \\
+\hline
+%SCALING ZJETS BY 111/946
+         \ttbar   &  1.6 $\pm$ 0.9   &  3.4 $\pm$ 1.5   &  1.8 $\pm$ 1.1   &  6.9 $\pm$ 2.0  \\
+         \zjets   &  1.9 $\pm$ 1.9   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  1.9 $\pm$ 1.9  \\
+             WZ   & 40.0 $\pm$ 0.7   & 51.5 $\pm$ 0.7   &  2.7 $\pm$ 0.2   & 94.3 $\pm$ 1.0  \\
+             ZZ   &  1.0 $\pm$ 0.0   &  1.4 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  2.6 $\pm$ 0.0  \\
+     single top   &  0.0 $\pm$ 0.0   &  0.5 $\pm$ 0.5   &  0.0 $\pm$ 0.0   &  0.5 $\pm$ 0.5  \\
              WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+            ttV   &  8.0 $\pm$ 0.4   &  9.5 $\pm$ 0.4   &  2.2 $\pm$ 0.2   & 19.6 $\pm$ 0.6  \\
+            VVV   &  1.9 $\pm$ 0.1   &  2.6 $\pm$ 0.1   &  0.2 $\pm$ 0.0   &  4.6 $\pm$ 0.2  \\
 \hline
-      tot SM MC   & 25.9 $\pm$ 1.1   & 32.9 $\pm$ 0.8   &  3.3 $\pm$ 0.5   & 62.1 $\pm$ 1.5  \\
+      tot SM MC   & 54.4 $\pm$ 2.2   & 69.0 $\pm$ 1.8   &  6.9 $\pm$ 1.1   &130.4 $\pm$ 3.1  \\
 \hline
-           data   &             47   &             51   &              8   &            106  \\
+           data   &             87   &             91   &             22   &            200  \\
 \hline
 \hline
 
