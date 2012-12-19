@@ -11,6 +11,8 @@ void runPhotonTemplates( char* iter , char* sample ){
 
   ch->Add( file.c_str() );
 
+  cout << "Entries " << ch->GetEntries() << endl;
+
   makePhotonTemplates* myLooper = new makePhotonTemplates();
   
   myLooper->ScanChain( ch , iter , sample );
