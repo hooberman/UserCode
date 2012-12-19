@@ -23,35 +23,35 @@ of integrated luminosity (4.5\%), trigger efficiency (3\%), \zjets\ and \ttbar\ 
 	  in the ee (left) and $\mu\mu$ (right) final states.}
 
 %Loading babies at       : ../output/V00-02-00
-%Using selection         : ((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0)
+%Using selection         : (((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0)
 %Using weight            : weight * 19.3 * trgeff * vtxweight
 %Plotting var dilmass flavor ee
 %compareDataMC : apply trigeff 1
 %MC yield VVV 42.68
 %MC yield ttV 108.96
-%MC yield WW 3461.22
 %MC yield single top 1779.47
-%MC yield ttbar 18704.12
+%MC yield WW 3461.22
 %MC yield ZZ 3069.20
 %MC yield WZ 4971.64
+%MC yield ttbar 18704.12
 %SCALING ZJETS BY 111/946
 %MC yield zjets 5335948.74
 %MC total yield 5368086.00
-%data yield 5.37556e+06
+%data yield 5.51894e+06
 %Plotting var dilmass flavor mm
 %compareDataMC : apply trigeff 1
 %Warning in <TROOT::Append>: Replacing existing TH1: htemp (Potential memory leak).
 %MC yield VVV 53.17
 %MC yield ttV 134.87
-%MC yield WW 4582.01
 %MC yield single top 2306.47
-%MC yield ttbar 23381.81
+%MC yield WW 4582.01
 %MC yield ZZ 4032.27
 %MC yield WZ 6456.02
+%MC yield ttbar 23381.81
 %SCALING ZJETS BY 111/946
 %MC yield zjets 7324507.81
 %MC total yield 7365454.50
-%data yield 7.11309e+06
+%data yield 7.31115e+06
 
   \end{center}
 \end{figure}
@@ -63,26 +63,27 @@ of integrated luminosity (4.5\%), trigger efficiency (3\%), \zjets\ and \ttbar\ 
 \begin{tabular}{lccccc}
 
 %Loading babies at       : ../output/V00-02-00
-%Using selection         : (((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(dilmass>81 && dilmass<101)
+%Using selection         : ((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(dilmass>81 && dilmass<101)
 %Using weight            : weight * 19.3 * trgeff * vtxweight
+
 
 \hline
 \hline
-         Sample   &           ee   &       $\mu\mu$   &         e$\mu$   &                         total  \\
+         Sample   &             ee   &       $\mu\mu$   &         e$\mu$   &          total  \\
 \hline
 %SCALING ZJETS BY 111/946
-         \zjets   & 4735966 $\pm$ 3483  & 6507981 $\pm$ 3928  & 2271  $\pm$ 75.1   & 11246217 $\pm$ 5251  \\
-          ttbar   & 3313    $\pm$ 47.4  & 4192    $\pm$ 51.2  & 7536  $\pm$ 70.3   & 15041    $\pm$ 99.0  \\
-             WZ   & 4306    $\pm$ 7.5   & 5647    $\pm$ 8.3   & 113.5 $\pm$ 1.1    & 10067    $\pm$ 11.2  \\
-             ZZ   & 2714    $\pm$ 5.7   & 3583    $\pm$ 6.2   &  10.8 $\pm$ 0.1    & 6307     $\pm$ 8.4   \\
-             WW   & 609.5   $\pm$ 6.2   & 812.3   $\pm$ 6.8   & 1408  $\pm$ 9.2    & 2830     $\pm$ 13.0  \\
-     single top   & 314.6   $\pm$ 12.3  & 404.1   $\pm$ 13.3  & 698.4 $\pm$ 18.0   & 1417     $\pm$ 25.5  \\
-            ttV   & 56.6    $\pm$ 1.1   & 69.9    $\pm$ 1.2   & 21.3  $\pm$ 0.7    & 147.8    $\pm$ 1.7   \\
-            VVV   & 26.3    $\pm$ 0.3   & 33.3    $\pm$ 0.4   &  6.8  $\pm$ 0.2    & 66.3     $\pm$ 0.6   \\
+         \zjets   &4735966.0 $\pm$ 3483.0   &6507980.5 $\pm$ 3928.4   &2270.5 $\pm$ 75.1   &11246217.0 $\pm$ 5250.7  \\
+         \ttbar   &3312.7 $\pm$ 47.4   &4192.1 $\pm$ 51.2   &7535.8 $\pm$ 70.3   &15040.6 $\pm$ 99.0  \\
+             WZ   &4306.1 $\pm$ 7.5   &5647.2 $\pm$ 8.3   &113.5 $\pm$ 1.1   &10066.8 $\pm$ 11.2  \\
+             ZZ   &2713.5 $\pm$ 5.7   &3582.7 $\pm$ 6.2   & 10.8 $\pm$ 0.1   &6307.0 $\pm$ 8.4  \\
+             WW   &609.5 $\pm$ 6.2   &812.3 $\pm$ 6.8   &1408.2 $\pm$ 9.2   &2830.0 $\pm$ 13.0  \\
+     single top   &314.6 $\pm$ 12.3   &404.1 $\pm$ 13.3   &698.4 $\pm$ 18.0   &1417.0 $\pm$ 25.5  \\
+            ttV   & 56.6 $\pm$ 1.1   & 69.9 $\pm$ 1.2   & 21.3 $\pm$ 0.7   &147.8 $\pm$ 1.7  \\
+            VVV   & 26.3 $\pm$ 0.3   & 33.3 $\pm$ 0.4   &  6.8 $\pm$ 0.2   & 66.3 $\pm$ 0.6  \\
 \hline
-      tot SM MC   &4747305 $\pm$ 3483   &6522722 $\pm$ 3929   &12065 $\pm$ 104.8   &11282092 $\pm$ 5252   \\
+    total SM MC   &4747305.0 $\pm$ 3483.4   &6522722.0 $\pm$ 3928.8   &12065.3 $\pm$ 104.8   &11282092.3 $\pm$ 5251.7  \\
 \hline
-           data   &        4703564      &        6260100      &          12532     &       10976196       \\
+           data   &        4828868   &        6434546   &          12872   &       11276286  \\
 \hline
 \hline
 
@@ -118,35 +119,36 @@ in the inclusive preselection region are indicated. Good data vs. MC agreement i
 %USING SKIMMED SAMPLES WITH NJETS >= 2
 %-------------------------------------
 
-%Using selection         : (((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdat%a==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(njets>=2)
+%Using selection         : ((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(njets>=2)
 %Using weight            : weight * 19.3 * trgeff * vtxweight
 %Plotting var dilmass flavor ee
 %compareDataMC : apply trigeff 1
 %MC yield VVV 28.97
 %MC yield ttV 102.80
-%MC yield WW 418.46
 %MC yield single top 758.68
-%MC yield ttbar 14406.73
+%MC yield WW 418.46
 %MC yield ZZ 1260.58
 %MC yield WZ 2051.00
+%MC yield ttbar 14406.73
 %SCALING ZJETS BY 111/946
 %MC yield zjets 257952.20
 %MC total yield 276979.41
-%data yield 279741
+%data yield 286743
 %Plotting var dilmass flavor mm
 %compareDataMC : apply trigeff 1
 %Warning in <TROOT::Append>: Replacing existing TH1: htemp (Potential memory leak).
 %MC yield VVV 35.94
 %MC yield ttV 128.07
-%MC yield WW 538.01
 %MC yield single top 970.44
-%MC yield ttbar 18006.61
+%MC yield WW 538.01
 %MC yield ZZ 1633.77
 %MC yield WZ 2626.89
+%MC yield ttbar 18006.61
 %SCALING ZJETS BY 111/946
 %MC yield zjets 345766.46
 %MC total yield 369706.19
-%data yield 353104
+%data yield 362279
+
 
   \end{center}
 \end{figure}
@@ -157,13 +159,12 @@ in the inclusive preselection region are indicated. Good data vs. MC agreement i
 }
 \begin{tabular}{lccccc}
 
-
 %Loading babies at       : ../output/V00-02-00
 %-------------------------------------
 %USING SKIMMED SAMPLES WITH NJETS >= 2
 %-------------------------------------
 
-%Using selection         : ((((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(njets>=2))&&(dilmass>81 && dilmass<101)
+%Using selection         : (((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(njets>=2))&&(dilmass>81 && dilmass<101)
 %Using weight            : weight * 19.3 * trgeff * vtxweight
 
 
@@ -172,21 +173,20 @@ in the inclusive preselection region are indicated. Good data vs. MC agreement i
          Sample   &             ee   &       $\mu\mu$   &         e$\mu$   &          total  \\
 \hline
 %SCALING ZJETS BY 111/946
-         \zjets   & 228270 $\pm$ 751    & 306349 $\pm$ 836   & 125.3 $\pm$ 17.5   & 534744 $\pm$ 1124  \\
-         \ttbar   & 2561   $\pm$ 41.6   &   3241 $\pm$ 45.0  &  5849 $\pm$ 61.8   &  11651 $\pm$ 87.1  \\
-             WZ   & 1790   $\pm$ 4.9    &   2308 $\pm$ 5.4   &  22.4 $\pm$ 0.5    &   4121 $\pm$ 7.3   \\
-             ZZ   & 1117   $\pm$ 3.8    &   1453 $\pm$ 4.2   &   2.5 $\pm$ 0.1    &   2573 $\pm$ 5.6   \\
-             WW   & 68.6   $\pm$ 2.1    &   89.1 $\pm$ 2.3   & 156.7 $\pm$ 3.0    &  314.4 $\pm$ 4.3   \\
-     single top   & 126.7  $\pm$ 7.7    &  153.4 $\pm$ 8.2   & 276.4 $\pm$ 11.2   &  556.6 $\pm$ 15.9  \\
-            ttV   & 54.4   $\pm$ 1.1    &   67.5 $\pm$ 1.1   &  19.7 $\pm$ 0.7    &  141.6 $\pm$ 1.7   \\
-            VVV   & 19.3   $\pm$ 0.3    &   24.4 $\pm$ 0.3   &   3.4 $\pm$ 0.1    &   47.1 $\pm$ 0.5   \\
+         \zjets   &228270.2 $\pm$ 751.0   &306348.9 $\pm$ 836.3   &125.3 $\pm$ 17.5   &534744.4 $\pm$ 1124.2  \\
+         \ttbar   &2561.2 $\pm$ 41.6   &3240.6 $\pm$ 45.0   &5849.1 $\pm$ 61.8   &11650.9 $\pm$ 87.1  \\
+             WZ   &1790.4 $\pm$ 4.9   &2308.4 $\pm$ 5.4   & 22.4 $\pm$ 0.5   &4121.2 $\pm$ 7.3  \\
+             ZZ   &1116.9 $\pm$ 3.8   &1453.3 $\pm$ 4.2   &  2.5 $\pm$ 0.1   &2572.7 $\pm$ 5.6  \\
+             WW   & 68.6 $\pm$ 2.1   & 89.1 $\pm$ 2.3   &156.7 $\pm$ 3.0   &314.4 $\pm$ 4.3  \\
+     single top   &126.7 $\pm$ 7.7   &153.4 $\pm$ 8.2   &276.4 $\pm$ 11.2   &556.6 $\pm$ 15.9  \\
+            ttV   & 54.4 $\pm$ 1.1   & 67.5 $\pm$ 1.1   & 19.7 $\pm$ 0.7   &141.6 $\pm$ 1.7  \\
+            VVV   & 19.3 $\pm$ 0.3   & 24.4 $\pm$ 0.3   &  3.4 $\pm$ 0.1   & 47.1 $\pm$ 0.5  \\
 \hline
-      tot SM MC   &234008 $\pm$ 752     &313686  $\pm$ 838   & 6455.5 $\pm$ 65.3   &554149 $\pm$ 1128  \\
+    total SM MC   &234007.8 $\pm$ 752.3   &313685.7 $\pm$ 837.6   &6455.5 $\pm$ 65.3   &554149.1 $\pm$ 1127.7  \\
 \hline
-           data   &         233805   &         297240   &           6115   &         537160            \\
+           data   &         239661   &         304953   &           6279   &         550893  \\
 \hline
 \hline
-
 
 
 \end{tabular}
@@ -221,7 +221,7 @@ which demonstrates that the MC does a reasonable job of modeling this quantity.
 
 \begin{figure}[hbt]
   \begin{center}
-	\includegraphics[width=1.0\linewidth]{plots/dilmass_2jets_19fb.pdf}
+	\includegraphics[width=1.0\linewidth]{plots/dilmass_targeted_19fb.pdf}
 	\caption{
 	  \label{fig:dilmass_2j_targeted}\protect 
 	  Dilepton mass distribution for events in the preselection region of the targeted search
@@ -233,35 +233,35 @@ which demonstrates that the MC does a reasonable job of modeling this quantity.
 %USING SKIMMED SAMPLES WITH NJETS >= 2
 %-------------------------------------
 
-%Using selection         : ((((((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(njets>=2))&&(nbcsvm==0))&&(mjj>70.0 && mjj<110.0))&&(nlep==2)
+%Using selection         : (((((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(njets>=2))&&(nbcsvm==0))&&(mjj>70.0 && mjj<110.0))&&(nlep==2)
 %Using weight            : weight * 19.3 * trgeff * vtxweight
 %Plotting var dilmass flavor ee
 %compareDataMC : apply trigeff 1
 %MC yield VVV 5.25
 %MC yield ttV 3.50
-%MC yield WW 83.00
 %MC yield single top 43.11
-%MC yield ttbar 527.48
+%MC yield WW 83.00
 %MC yield ZZ 482.09
-%MC yield WZ 623.37
+%MC yield WZ 623.38
+%MC yield ttbar 527.48
 %SCALING ZJETS BY 111/946
-%MC yield zjets 71285.29
-%MC total yield 73053.09
-%data yield 72547
+%MC yield zjets 71286.31
+%MC total yield 73054.11
+%data yield 74303
 %Plotting var dilmass flavor mm
 %compareDataMC : apply trigeff 1
 %Warning in <TROOT::Append>: Replacing existing TH1: htemp (Potential memory leak).
 %MC yield VVV 6.58
 %MC yield ttV 3.59
-%MC yield WW 107.13
 %MC yield single top 58.93
+%MC yield WW 107.13
+%MC yield ZZ 622.74
+%MC yield WZ 808.68
 %MC yield ttbar 607.63
-%MC yield ZZ 622.73
-%MC yield WZ 808.67
 %SCALING ZJETS BY 111/946
-%MC yield zjets 96482.66
-%MC total yield 98697.91
-%data yield 92299
+%MC yield zjets 96483.36
+%MC total yield 98698.63
+%data yield 94596
 
   \end{center}
 \end{figure}
@@ -277,7 +277,7 @@ which demonstrates that the MC does a reasonable job of modeling this quantity.
 %USING SKIMMED SAMPLES WITH NJETS >= 2
 %-------------------------------------
 
-%Using selection         : (((((((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(njets>=2))&&(nbcsvm==0))&&(mjj>70.0 && mjj<110.0))&&(nlep==2))&&(dilmass>81 && dilmass<101)
+%Using selection         : ((((((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(dilmass>15.0))&&(njets>=2))&&(nbcsvm==0))&&(mjj>70.0 && mjj<110.0))&&(nlep==2))&&(dilmass>81 && dilmass<101)
 %Using weight            : weight * 19.3 * trgeff * vtxweight
 
 
@@ -286,18 +286,18 @@ which demonstrates that the MC does a reasonable job of modeling this quantity.
          Sample   &             ee   &       $\mu\mu$   &         e$\mu$   &          total  \\
 \hline
 %SCALING ZJETS BY 111/946
-         \zjets   & 63015 $\pm$ 392   & 85084 $\pm$ 438   &  27.1 $\pm$ 7.8   & 148125 $\pm$ 588   \\
-         \ttbar   & 106.0 $\pm$ 8.5   & 102.9 $\pm$ 7.9   & 220.5 $\pm$ 12.0  & 429.4  $\pm$ 16.7  \\
-             WZ   & 546.8 $\pm$ 2.8   & 712.9 $\pm$ 3.0   &   3.5 $\pm$ 0.2   & 1263   $\pm$ 4.1   \\
-             ZZ   & 428.3 $\pm$ 2.4   & 554.0 $\pm$ 2.6   &   0.4 $\pm$ 0.1   & 982.7  $\pm$ 3.5   \\
-             WW   &  14.2 $\pm$ 0.9   &  18.0 $\pm$ 1.0   &  33.4 $\pm$ 1.4   &  65.6  $\pm$ 2.0   \\
-     single top   &   9.8 $\pm$ 2.2   &  10.5 $\pm$ 2.1   &  17.8 $\pm$ 2.8   &  38.1  $\pm$ 4.2   \\
-            ttV   &   1.6 $\pm$ 0.2   &   1.7 $\pm$ 0.2   &   0.9 $\pm$ 0.1   &   4.2  $\pm$ 0.3   \\
-            VVV   &   2.9 $\pm$ 0.1   &   3.7 $\pm$ 0.1   &   0.9 $\pm$ 0.1   &   7.5  $\pm$ 0.2   \\
+         \zjets   &63014.6 $\pm$ 392.2   &85083.6 $\pm$ 438.2   & 27.1 $\pm$ 7.8   &148125.3 $\pm$ 588.1  \\
+         \ttbar   &106.0 $\pm$ 8.5   &102.9 $\pm$ 7.9   &220.5 $\pm$ 12.0   &429.4 $\pm$ 16.7  \\
+             WZ   &546.8 $\pm$ 2.8   &712.9 $\pm$ 3.0   &  3.5 $\pm$ 0.2   &1263.2 $\pm$ 4.1  \\
+             ZZ   &428.3 $\pm$ 2.4   &554.0 $\pm$ 2.6   &  0.4 $\pm$ 0.1   &982.7 $\pm$ 3.5  \\
+             WW   & 14.2 $\pm$ 0.9   & 18.0 $\pm$ 1.0   & 33.4 $\pm$ 1.4   & 65.6 $\pm$ 2.0  \\
+     single top   &  9.8 $\pm$ 2.2   & 10.5 $\pm$ 2.1   & 17.8 $\pm$ 2.8   & 38.1 $\pm$ 4.2  \\
+            ttV   &  1.6 $\pm$ 0.2   &  1.7 $\pm$ 0.2   &  0.9 $\pm$ 0.1   &  4.2 $\pm$ 0.3  \\
+            VVV   &  2.9 $\pm$ 0.1   &  3.7 $\pm$ 0.1   &  0.9 $\pm$ 0.1   &  7.5 $\pm$ 0.2  \\
 \hline
-      tot SM MC   &64124  $\pm$ 392   & 86487 $\pm$ 438   & 304.5 $\pm$ 14.7  & 150916 $\pm$ 588  \\
+    total SM MC   &64124.2 $\pm$ 392.3   &86487.3 $\pm$ 438.3   &304.5 $\pm$ 14.7   &150916.0 $\pm$ 588.4  \\
 \hline
-           data   &          62860   &          80436   &            301   &         143597  \\
+           data   &          64385   &          82426   &            306   &         147117  \\
 \hline
 \hline
 
