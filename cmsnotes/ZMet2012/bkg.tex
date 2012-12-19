@@ -969,14 +969,56 @@ requiring the jets to be consistent with originating from the signal primary ver
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=1\linewidth]{plots/WZ_eemm_92fb.pdf}
+\includegraphics[width=1\linewidth]{plots/WZ_19fb.pdf}
 \caption{\label{fig:wz}\protect 
 Data vs. MC comparisons for the WZ selection discussed in the text for \lumi. 
 The number of jets, missing transverse energy, and Z boson transverse momentum are displayed.
-%Loading babies at       : ../output/V00-01-04
-%Using selection         : ((((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101)
-%Using weight            : weight * 9.2 * trgeff * vtxweight
 }
+\begin{comment}
+Loading babies at       : ../output/V00-02-00
+Using selection         : (((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101)
+Using weight            : weight * 19.3 * trgeff * vtxweight
+Plotting var njets flavor sf
+compareDataMC : apply trigeff 1
+MC yield VVV 7.73
+MC yield ttV 18.95
+MC yield single top 0.51
+MC yield WW 0.09
+MC yield ZZ 12.38
+MC yield WZ 562.71
+MC yield ttbar 9.18
+SCALING ZJETS BY 111/946
+MC yield zjets 8.85
+MC total yield 620.39
+data yield 703
+Plotting var pfmet flavor sf
+compareDataMC : apply trigeff 1
+MC yield VVV 7.73
+MC yield ttV 18.95
+MC yield single top 0.51
+MC yield WW 0.09
+MC yield ZZ 12.38
+MC yield WZ 562.72
+MC yield ttbar 9.18
+SCALING ZJETS BY 111/946
+MC yield zjets 8.85
+MC total yield 620.40
+data yield 703
+Plotting var dileppt flavor sf
+compareDataMC : apply trigeff 1
+MC yield VVV 7.73
+MC yield ttV 18.95
+MC yield single top 0.51
+MC yield WW 0.09
+MC yield ZZ 12.38
+MC yield WZ 562.71
+MC yield ttbar 9.18
+SCALING ZJETS BY 111/946
+MC yield zjets 8.85
+MC total yield 620.38
+data yield 703
+\end{comment}
+
 \end{center}
 \end{figure}
 
@@ -1002,31 +1044,32 @@ fo 50\% on the ZZ yield.
 \begin{center}
 \caption{\label{tab:zz} Data and Monte Carlo yields for the ZZ preselection. }
 \begin{tabular}{lccccc}
+
+%Loading babies at       : ../output/V00-02-00
+%Using selection         : ((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==4 && lep3.pt()>20.0 && lep4.pt()>20.0))&&(dilmass>81 && dilmass<101)
+%Using weight            : weight * 19.3 * trgeff * vtxweight
+
 \hline
 \hline
          Sample   &             ee   &       $\mu\mu$   &         e$\mu$   &          total  \\
 \hline
-
-%Loading babies at       : ../output/V00-01-04
-%Using selection         : (((((isdata==0 || (run<197556 || run>198913))&&(((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0))))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==4 && lep3.pt()>20.0 && lep4.pt()>20.0))&&(dilmass>81 && dilmass<101)
-%Using weight            : weight * 9.2 * trgeff * vtxweight
-%SCALING ZJETS BY 111/946
 %SCALING ZZ BY 1.92
-
-             ZZ   & 25.1 $\pm$ 0.1   & 34.9 $\pm$ 0.1   &  1.6 $\pm$ 0.0   & 61.7 $\pm$ 0.1  \\
-            ttV   &  0.6 $\pm$ 0.1   &  0.6 $\pm$ 0.1   &  0.2 $\pm$ 0.0   &  1.4 $\pm$ 0.1  \\
-            VVV   &  0.3 $\pm$ 0.0   &  0.4 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.7 $\pm$ 0.0  \\
-             WZ   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
+             ZZ   & 52.7 $\pm$ 0.2   & 73.3 $\pm$ 0.2   &  3.4 $\pm$ 0.0   &129.4 $\pm$ 0.3  \\
+             WZ   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.3 $\pm$ 0.1  \\
+%SCALING ZJETS BY 111/946
          \zjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
          \ttbar   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-     single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
              WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+     single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+            ttV   &  1.3 $\pm$ 0.2   &  1.4 $\pm$ 0.2   &  0.3 $\pm$ 0.1   &  3.0 $\pm$ 0.2  \\
+            VVV   &  0.6 $\pm$ 0.1   &  0.8 $\pm$ 0.1   &  0.0 $\pm$ 0.0   &  1.4 $\pm$ 0.1  \\
 \hline
-      tot SM MC   & 26.1 $\pm$ 0.1   & 36.1 $\pm$ 0.1   &  1.8 $\pm$ 0.0   & 63.9 $\pm$ 0.2  \\
+      tot SM MC   & 54.7 $\pm$ 0.3   & 75.6 $\pm$ 0.3   &  3.8 $\pm$ 0.1   &134.1 $\pm$ 0.4  \\
 \hline
-           data   &             24   &             36   &              0   &             60  \\
+           data   &             56   &             80   &              5   &            141  \\
 \hline
 \hline
+
 \end{tabular}
 \end{center}
 \end{table}
