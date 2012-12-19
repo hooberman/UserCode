@@ -32,28 +32,26 @@ void makeVertexReweightHistos( bool doPhoton = false ){
   if( doPhoton )  cout << "Using triggers from Photon dataset"         << endl;
   else            cout << "Using triggers from DoubleElectron dataset" << endl;
 
-  char* Zfile1        = (char*) "../output/V00-01-04/data_53X_baby.root";
-  char* Zfile2        = (char*) "../output/V00-01-04/data_2012C_53X_baby.root";
+  char* Zfile        = (char*) "../output/V00-02-00/data_53X_2012ALL_baby_2jets.root";
 
   //char* photonfile;
   char* photonbaby;
   char* rootfilename;
 
   if( doPhoton ){
-    //photonfile   = (char*) "../photon_output/V00-00-12/Photon_templates.root";
+    cout << "PHOTON DATASET IS OBSOLETE!!! QUITTING!!!" << endl;
+    exit(0);
     photonbaby   = (char*) "../photon_output/V00-00-12/Photon_baby.root";
     rootfilename = (char*) "vtxreweight_Photon_5p1fb.root";
   }
 
   else{
-    //photonfile   = (char*) "../photon_output/V00-01-00/DoubleElectron_templates.root";
-    photonbaby   = (char*) "../photon_output/V00-01-00/DoubleElectron_baby_2jets.root";
-    rootfilename = (char*) "vtxreweight_DoubleElectron_9p2fb.root";
+    photonbaby   = (char*) "../photon_output/V00-02-00/data_53X_2012*_baby.root";
+    rootfilename = (char*) "vtxreweight_DoubleElectron_19fb.root";
   }
 
   cout << "Z files:"      << endl;
-  cout << Zfile1          << endl;
-  cout << Zfile2          << endl;
+  cout << Zfile           << endl;
   cout << "photon files:" << endl;
   cout << photonbaby      << endl;
   cout << "output file"   << endl;
@@ -64,10 +62,10 @@ void makeVertexReweightHistos( bool doPhoton = false ){
   //---------------------------
 
   TChain *chZ = new TChain("T1");
-  chZ->Add(Zfile1);
-  chZ->Add(Zfile2);
+  chZ->Add(Zfile);
 
-  TCut Zselection("dilmass>81 && dilmass<101 && njets>=2 && (run<197556 || run>198913)");
+  TCut Zselection("dilmass>81 && dilmass<101 && njets>=2");
+  //TCut Zselection("dilmass>81 && dilmass<101 && njets>=2 && (run<197556 || run>198913)");
   cout << "Using Z selection " << Zselection.GetTitle() << endl;
 
   TH1F* hZ   = new TH1F("hZ","",50,0,50);
@@ -105,12 +103,12 @@ void makeVertexReweightHistos( bool doPhoton = false ){
   photonSelection += pix;
   photonSelection += emfrac;
   photonSelection += pfjet;
-  photonSelection += cjet;
+  //photonSelection += cjet;
   photonSelection += elveto;
   photonSelection += lepveto;
   photonSelection += dphi;
   photonSelection += alltrig;
-  photonSelection += runrange;
+  //photonSelection += runrange;
 
   cout << "Using photon selection" << photonSelection.GetTitle() << endl;
 
