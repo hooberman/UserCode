@@ -61,6 +61,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   }
 
   else if( strcmp( prefix , "data_53X_2012D" ) == 0 ){    
+    //pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged_ntuple_205718_0_skim.root");
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
     pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
@@ -446,6 +447,12 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
     
+  cout << endl << endl;
+  cout << "Checking for corrupt files" << endl;
+  cout << "Entries in chain: " << ch->GetEntries() << endl;
+  ch->Draw("evt_run");
+  cout << endl << endl;
+
   bool calculateTCMET = false;  //recalculate tcmet on-the-fly?
   
   Z_looper* myLooper = new Z_looper();
