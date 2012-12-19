@@ -27,8 +27,8 @@
 
 const bool debug          =  true;
 const bool vtxreweight    =  true;
-const bool bveto          = false;
-const bool pt40           =  true;
+const bool bveto          =  true;
+const bool pt40           = false;
 
 using namespace std;
 
@@ -38,8 +38,8 @@ inline double fround(double n, double d){
 
 void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample ){
 
-  bool useHGGTriggers = false;
-  if( TString(sample).Contains("DoubleElectron") ) useHGGTriggers = true;
+  bool useHGGTriggers = true;
+  //if( TString(sample).Contains("DoubleElectron") ) useHGGTriggers = true;
 
   cout << "Sample : " << sample << endl;
   if( useHGGTriggers ) cout << "Using H->gg triggers" << endl;
@@ -71,10 +71,11 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
   if( vtxreweight ){ 
 
-    char* vtxfile = (char*) "vtxreweight_Photon_9p2fb.root";
+    char* vtxfile = (char*) "vtxreweight_DoubleElectron_19fb.root";
     //if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_9p2fb.root";
     //if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_9p2fb_2012AB.root";
-    if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_9p2fb_2012C.root";
+    //if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_9p2fb_2012C.root";
+    //if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_19fb.root";
 
     cout << "Using vtx reweighting file " << vtxfile << endl;
 
@@ -150,19 +151,19 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( photon_pixelseed_ == 1 )                          continue; // veto pixel match
       if( jetneutralemfrac_ < 0.7 )                         continue; // jet neutral EM fraction cut
       if( jet_pt_     - etg_ < -5 )                         continue; // pfjet cleaning
-      if( calojet_pt_ - etg_ < -5 )                         continue; // calojet cleaning
+      //if( calojet_pt_ - etg_ < -5 )                         continue; // calojet cleaning
       if( elveto_ == 1 )                                    continue; // remove photons with nearby electrons
       if( maxleppt_ > 20.0 )                                continue; // veto leptons pt > 20 GeV
       if( acos( cos( phig_ - pfmetphi_ ) ) < 0.14 )         continue; // kill photons aligned with MET
-      //if( bveto && nbm_ > 0 )                               continue; // apply b-veto 
-      if( bveto && nbl_ > 0 )                               continue; // apply b-veto 
+      if( bveto && nbm_ > 0 )                               continue; // apply b-veto 
+      //if( bveto && nbl_ > 0 )                               continue; // apply b-veto 
       if( pt40 && ( nJets40_ < 2 || ht40_ < 100.0 ) )       continue; // require 2 pT > 40 GeV jets with HT > 100 GeV
-      if( run_ >= 197556 && run_ <= 198913 )                continue; // veto 2012C-PromptReco-v1
       if( !(csc_==0 && hbhe_==1 && hcallaser_==1 && ecaltp_==1 && trkfail_==1 && eebadsc_==1 && hbhenew_==1) ) continue; // MET filters
       //if( run_ > 196531 )                                   continue; // 2012 A+B
-      if( run_ <= 196531 )                                  continue; // 2012 C
-
+      //if( run_ <= 196531 )                                  continue; // 2012 C
+      //if( run_ >= 197556 && run_ <= 198913 )                continue; // veto 2012C-PromptReco-v1
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
+
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
 
       int iJetBin;
