@@ -46,7 +46,7 @@ metType  myMetType    = e_pfmet;
 bool     normToLowMet =    true;
 bool     exclusive    =    true;
 bool     blind        =    false;
-float    lumi         =     9.2;
+float    lumi         =    19.3;
 bool     printCards   =    false;
 
 //metType  myMetType  = e_t1newpfmet; 
@@ -320,8 +320,8 @@ void simplePlotMacro( bool printplots = false ){
       //h_ofpred[i]->Scale(0.5/Rem);
       //h_ofpred[i]->Scale(0.41);
       //cout << "ee channel: scale em yield by 0.41" << endl;
-      h_ofpred[i]->Scale(0.43);
-      cout << "ee channel: scale em yield by 0.43" << endl;
+      h_ofpred[i]->Scale(0.44);
+      cout << "ee channel: scale em yield by 0.44" << endl;
       title     = (char*) "ee events";
       ee_and_mm = false;
       mysel = sel + ee;
@@ -331,16 +331,16 @@ void simplePlotMacro( bool printplots = false ){
       //h_ofpred[i]->Scale(0.5*Rem);
       //h_ofpred[i]->Scale(0.58);
       //cout << "mm channel: scale em yield by 0.58" << endl;
-      h_ofpred[i]->Scale(0.55);
-      cout << "mm channel: scale em yield by 0.55" << endl;
+      h_ofpred[i]->Scale(0.54);
+      cout << "mm channel: scale em yield by 0.54" << endl;
       title     = (char*) "#mu#mu events";
       ee_and_mm = false;
       mysel = sel + mm;
     }
 
     else{
-      h_ofpred[i]->Scale(0.99);
-      cout << "ee+mm channels: scale em yield by 0.99" << endl;
+      h_ofpred[i]->Scale(0.98);
+      cout << "ee+mm channels: scale em yield by 0.98" << endl;
       mysel = sel;
     }
 
