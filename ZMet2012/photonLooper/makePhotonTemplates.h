@@ -6,7 +6,9 @@
 #include "TH1.h"
 #include <vector>
 #include <fstream>
+//#include "Math/LorentzVector.h"
 
+//typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 class TChain;
 
@@ -104,7 +106,12 @@ class makePhotonTemplates
   TH1F* pfmetTemplate_photon[5][3][7];
   TH1F* t1pfmetTemplate_photon[5][3][7];
   TH1F* t1newpfmetTemplate_photon[5][3][7];
+
+  // LorentzVector  jet1_;
+  // LorentzVector  jet2_;
   
+  // LorentzVector *jet1Ptr_; 
+  // LorentzVector *jet2Ptr_; 
 };
 
 
@@ -112,3 +119,4 @@ class makePhotonTemplates
 
 
 #endif
+
