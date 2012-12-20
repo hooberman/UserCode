@@ -3,7 +3,6 @@
 \section{Datasets and Triggers}
 \label{sec:datasets}
 
-{\bf This section still corresponds to 9.2 fb$^{-1}$, to be updated.}
 In this section we list the datasets, triggers, and MC samples used in the analysis. For selecting signal
 events, we use dilepton triggers in the DoubleElectron, DoubleMu, and MuEG datasets. 
 An event in the ee final state is required to pass the dielectron trigger, a 
@@ -14,23 +13,27 @@ These trigger efficiencies were measured with the first 5.1 fb$^{-1}$ and will b
 Preliminary measurements of the trigger efficiency with the full sample show consistent results within $\sim1-2$\%.
 A sample of \gjets\ events, used as a control sample to estimate the \zjets\
 background, is selected using a set of single photon triggers.
-The golden json of Aug 31st, corresponding to an integrated luminosity of 9.7 fb$^{-1}$, is used as the starting point.
-However, due to a bug in the Run2012C-PromptReco-v1 data samples (corresponding to 0.5 fb$^{-1}$), this portion of the data
-is currently excluded but will be added back after it is reprocessed. Thus we currently use a sample corresponding to \lumi.
-All data and MC samples are processed in CMSSW\_5\_3\_2\_patch4.
+The golden prompt reco json corresponding to \lumi is used.
+%The golden json of Aug 31st, corresponding to an integrated luminosity of 9.7 fb$^{-1}$, is used as the starting point.
+%However, due to a bug in the Run2012C-PromptReco-v1 data samples (corresponding to 0.5 fb$^{-1}$), this portion of the data
+%is currently excluded but will be added back after it is reprocessed. Thus we currently use a sample corresponding to \lumi.
+%All data and MC samples are processed in CMSSW\_5\_3\_2\_patch4.
 
 \begin{itemize}
 \item Datasets
   \begin{itemize}
-  \item \verb=/DoubleElectron/Run2012A-13Jul2012-v1/AOD=
-  \item \verb=/DoubleMu/Run2012A-13Jul2012-v1/AOD=
-  \item \verb=/MuEG/Run2012A-13Jul2012-v1/AOD=
-  \item \verb=/DoubleElectron/Run2012B-13Jul2012-v1/AOD=
-  \item \verb=/DoubleMu/Run2012B-13Jul2012-v1/AOD=
-  \item \verb=/MuEG/Run2012B-13Jul2012-v1/AOD=
-  \item \verb=/DoubleElectron/Run2012C-PromptReco-v2/AOD=         
-  \item \verb=/DoubleMu/Run2012C-PromptReco-v2/AOD=         
-  \item \verb=/MuEG/Run2012C-PromptReco-v2/AOD=         
+  \item \verb=DoubleElectron=
+  \item \verb=DoubleMu=
+  \item \verb=MuEG=
+  \end{itemize}
+\item Datasets
+  \begin{itemize}
+  \item \verb=Run2012A-13Jul2012-v1=
+  \item \verb=Run2012A-recover-06Aug2012-v1=
+  \item \verb=Run2012B-13Jul2012-v1=
+  \item \verb=Run2012C-24Aug2012-v1=
+  \item \verb=Run2012C-PromptReco-v2=
+  \item \verb=MuEG_Run2012D-PromptReco-v1=
   \end{itemize}
 
 \item Triggers
