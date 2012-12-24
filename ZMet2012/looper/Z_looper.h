@@ -67,6 +67,7 @@ class Z_looper
   UInt_t  event_;
   Int_t   leptype_;
   Int_t   ecaltype_;
+  Float_t xsec_;
   Float_t eveto1_;
   Float_t hveto1_;
   Float_t eveto2_;
