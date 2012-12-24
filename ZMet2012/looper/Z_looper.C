@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-00";
+const char* iter                 = "V00-02-01";
 const char* jsonfilename         = "../jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
 
 // https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1968.html   19.3 fb-1
@@ -349,6 +349,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   else{
     useOldIsolation = true;
     cout << "52X sample: using OLD isolation" << endl;
+  }
+
+  float MCscalefactor = 1;
+
+  if( TString(prefix).Contains("zz2l2q_53X") ){
+    MCscalefactor = 2.45 / 1.275;
+    cout << "ZZJetsTo2L2Q: scale cross section by 2.45/1.275" << endl;
   }
 
   if( TString(prefix).Contains("zjets_53X") ) cout << "Z+jets sample: scale weight by 946 / 111" << endl;
@@ -677,11 +684,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       weight_ = 1.;
       pthat_  = -1;
-      
+      xsec_   = 1.0;
+
       if( !isData ){
 
-	weight_ = cms2.evt_scale1fb() * kFactor * lumi;
-	  
+	weight_ = MCscalefactor * cms2.evt_scale1fb() * kFactor * lumi;
+	xsec_   = MCscalefactor * cms2.evt_xsec_excl();
+
 	if( doTenPercent )	  weight_ *= 10;
 	//weight_ *= 10; // REMOVE
 
@@ -2623,6 +2632,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("zdilep",       &zdilep_,       "zdilep/I"       );
   babyTree_->Branch("dataset",      &dataset_,      "dataset[500]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
+  babyTree_->Branch("xsec",         &xsec_,         "xsec/F"         );
   babyTree_->Branch("eldup",        &eldup_,        "eldup/I"        );
   babyTree_->Branch("btagweight",   &btagweight_,   "btagweight/F"   );
   babyTree_->Branch("btagweightup", &btagweightup_, "btagweightup/F" );
