@@ -4,18 +4,20 @@
 
   gROOT->ProcessLine(".L runZLooper.C+");
 
-  // runZLooper("data_53X_2012A"             , true  );  
-  // runZLooper("data_53X_2012B"             , true  );  
-  // runZLooper("data_53X_2012C"             , true  );  
+  runZLooper("data_53X_2012A"             , true  );  
+  runZLooper("data_53X_2012B"             , true  );  
+  runZLooper("data_53X_2012C"             , true  );  
   runZLooper("data_53X_2012D"             , true  );  
 
+  // runZLooper("zz2l2q_53X_slim"            , true  );  
+  // runZLooper("zz2l2q_53X"                 , true  );  
   // runZLooper("data_53X"                , true  );  
   // runZLooper("data_2012C_53X"          , true  );  
   // runZLooper("data_53X_edgeSync"       , true  );  
   // runZLooper("wz_53X"                  , false );  
   // runZLooper("zz_53X"                  , false );  
   // runZLooper("gmsb"                    , false );  
-  // runZLooper("gmsb_526"                   , false );  
+  // runZLooper("gmsb_526"                , false );  
   // runZLooper("wzsms"                   , false );  
   // runZLooper("wjets_53X"               , false );  
   // runZLooper("ww_53X"                  , false );  
