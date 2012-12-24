@@ -28,7 +28,7 @@
 
 using namespace std;
 
-char* version             = (char*) "V00-02-10";
+char* version             = (char*) "V00-00-02";
 
 bool fileInList(string thisfilename);
 
@@ -153,7 +153,7 @@ void extractLimits_line( bool print = false ){
   grobs50.SetTitle("grobs50");
   grexp50.SetTitle("grexp50");
 
-  TFile* outfile = TFile::Open(Form("cards/%s/observed_limit_line.root",version),"RECREATE");
+  TFile* outfile = TFile::Open(Form("cards/%s/observed_limit.root",version),"RECREATE");
   grobs0.Write();
   grexp0.Write();
   grobs50.Write();

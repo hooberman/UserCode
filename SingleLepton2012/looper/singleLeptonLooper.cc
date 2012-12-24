@@ -1,30 +1,374 @@
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <vector>
+#include <set>
+#include <sstream>
+#include "TChain.h"
+#include "TChainElement.h"
+#include "TDirectory.h"
+#include "TFile.h"
+#include "TProfile.h"
+#include "TTree.h"
+#include "TVector2.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TMath.h"
+#include "TRandom3.h"
+#include "Math/LorentzVector.h"
 #include "histtools.h"
 #include "singleLeptonLooper.h"
 #include "TTreeCache.h"
 #include "TDatabasePDG.h"
 
+#include "../CORE/MT2/MT2Utility.h"
+#include "mt2w_bisect.h"
+#include "mt2bl_bisect.h"
+
+#include "../CORE/CMS2.h"
+#include "../CORE/utilities.h"
+#include "../CORE/ssSelections.h"
+#include "../CORE/electronSelections.h"
+#include "../CORE/electronSelectionsParameters.h"
+#include "../CORE/MITConversionUtilities.h"
+#include "../CORE/muonSelections.h"
+#include "../CORE/eventSelections.h"
+#include "../CORE/trackSelections.h"
+#include "../CORE/metSelections.h"
+#include "../CORE/jetcorr/FactorizedJetCorrector.h"
+#include "../CORE/jetcorr/JetCorrectionUncertainty.h"
+#include "../CORE/jetSelections.h"
+#include "../CORE/jetSmearingTools.h"
+#include "../CORE/photonSelections.h"
+#include "../CORE/triggerUtils.h"
+#include "../CORE/triggerSuperModel.h"
+#include "../CORE/mcSelections.h"
+#include "../CORE/susySelections.h"
+#include "../CORE/mcSUSYkfactor.h"
+#include "../CORE/SimpleFakeRate.h"
 #include "../Tools/goodrun.h"
 #include "../Tools/vtxreweight.h"
 #include "../Tools/msugraCrossSection.h"
 #include "BtagFuncs.h"
 //#include "../Tools/bTagEff_BTV.h"
 
-//#include "stopUtils.h"
-
 bool verbose              = false;
 bool doTenPercent         = false;
 bool vetoTransition       = true;
 bool useOldIsolation      = false;
 
+//#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
+//#include "../CORE/triggerUtils.cc"
+
 using namespace std;
 using namespace tas;
+
+//typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > P4;
+//typedef vector< P4 > VofP4;
+//typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
+
+struct indP4{
+  LorentzVector p4obj;
+  int p4ind;
+};
+
+typedef vector< indP4 > VofiP4;
+
+inline bool sortIP4ByPt(indP4 iP41, indP4 iP42) {
+  return iP41.p4obj.pt() > iP42.p4obj.pt();
+}
+
+
+//mSUGRA scan parameters-----------------------------
+
+const int   nm0points    = 100;
+const float m0min        = 20.;
+const float m0max        = 2020.;
+const int   nm12points   = 38;
+const float m12min       = 20.;
+const float m12max       = 780.;
+
+//---------------------------------------------------
+
+void fillUnderOverFlow(TH1F *h1, float value, float weight = 1.);
+void fillUnderOverFlow(TH2F *h2, float xvalue, float yvalue, float weight = 1.);
+//void fillUnderOverFlow(TProfile *h2, float xvalue, float yvalue);
+void fillOverFlow(TH1F *h1, float value, float weight = 1.);
+void fillOverFlow(TH2F *h2, float xvalue, float yvalue, float weight = 1.);
+void fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsIdx);
+void fillHistos(TH2F *h2[4][4],float xvalue, float yvalue, float weight, int myType, int nJetsIdx);
+void fillHistos(TProfile *h2[4][4],float xvalue, float yvalue,  int myType, int nJetsIdx);
+float getdltrigweight(int id1, int id2);
+float getsltrigweight(int id1, float pt, float eta);
+//--------------------------------------------------------------------
+
+void singleLeptonLooper::weight3D_init( std::string WeightFileName ) { 
+
+  TFile *infile = new TFile(WeightFileName.c_str());
+  TH1F *WHist = (TH1F*)infile->Get("WHist");
+
+  // Check if the histogram exists           
+  if (!WHist) {
+    cout << "Error, could not find the histogram WHist in the file "
+	 << WeightFileName << ", quitting" << endl;
+    exit(0);
+  }
+
+  for (int i=0; i<50; i++) 
+    for(int j=0; j<50; j++)
+      for(int k=0; k<50; k++) {
+	Weight3D[i][j][k] = WHist->GetBinContent(i+1,j+1,k+1);
+      }
+
+  cout << " 3D Weight Matrix initialized! " << endl;
+
+  delete infile;
+
+  return;
+
+
+}
+
+//--------------------------------------------------------------------
+
+double singleLeptonLooper::weight3D( int pv1, int pv2, int pv3 ) {
+
+  using std::min;
+
+  int npm1 = min(pv1,49);
+  int np0 = min(pv2,49);
+  int npp1 = min(pv3,49);
+
+  return Weight3D[npm1][np0][npp1];
+
+}
+
+//--------------------------------------------------------------------
+
+void checkElectron( int elidx ){
+
+  cout << "Check electron" << endl;
+  cout << "Pass all    " << pass_electronSelection( elidx , electronSelection_ssV5			) << endl;
+  cout << "Pass ID     " << pass_electronSelection( elidx , electronSelection_ssV5_noIso		) << endl;
+  cout << "Pass iso    " << pass_electronSelection( elidx , electronSelection_ssV5_iso	        	) << endl;
+  cout << "VBTF90      " << pass_electronSelection( elidx , 1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL	) << endl;
+  cout << "PV          " << pass_electronSelection( elidx , 1ll<<ELEIP_PV_OSV2				) << endl;
+  cout << "nomuon      " << pass_electronSelection( elidx , 1ll<<ELENOMUON_010				) << endl;
+  cout << "hitpattern  " << pass_electronSelection( elidx , 1ll<<ELENOTCONV_HITPATTERN			) << endl;
+  cout << "convrej     " << pass_electronSelection( elidx , 1ll<<ELENOTCONV_DISTDCOT002			) << endl;
+  cout << "pt10        " << pass_electronSelection( elidx , 1ll<<ELEPT_010				) << endl;
+  cout << "eta25       " << pass_electronSelection( elidx , 1ll<<ELEETA_250				) << endl;
+  cout << "transition  " << pass_electronSelection( elidx , 1ll<<ELE_NOT_TRANSITION			) << endl;
+  cout << "HLT iso     " << pass_electronSelection( elidx , 1ll<<ELEISO_ECAL_RELNT020_NPS		) << endl;
+  cout << "offline iso " << pass_electronSelection( elidx , 1ll<<ELEISO_RELNT015			) << endl;
+
+}
+
+void checkMuon( int muidx ){
+
+  cout << "Check muon" << endl;
+  cout << "Pass all  " <<  muonId(muidx , OSGeneric_v3)                                            << endl;
+  cout << "Pass ID   " <<  muonIdNotIsolated(muidx , OSGeneric_v3 )                                << endl;
+  cout << "Pass iso  " <<  ( muonIsoValue(muidx,false) < 0.15 )                                    << endl;
+  cout << "eta24     " <<  ( TMath::Abs(cms2.mus_p4()[muidx].eta()) < 2.4)                         << endl;
+  cout << "chi2/ndf  " <<  ( cms2.mus_gfit_chi2().at(muidx)/cms2.mus_gfit_ndof().at(muidx) < 10)   << endl;
+  cout << "global    " <<  ( ((cms2.mus_type().at(muidx)) & (1<<1)) != 0)                          << endl;
+  cout << "tracker   " <<  ( ((cms2.mus_type().at(muidx)) & (1<<2)) != 0)                          << endl;
+  cout << "nhits     " <<  ( cms2.mus_validHits().at(muidx) > 10)                                  << endl;
+  cout << "stahits   " <<  ( cms2.mus_gfit_validSTAHits().at(muidx) != 0)                          << endl;
+  cout << "d0PV      " <<  ( TMath::Abs(mud0PV_smurfV3(muidx)) < 0.02)                             << endl;
+  cout << "dzPV      " <<  ( TMath::Abs(mudzPV_smurfV3(muidx)) < 1  )                              << endl;
+  cout << "dpt/pt    " <<  ( cms2.mus_ptErr().at(muidx)/cms2.mus_p4().at(muidx).pt()<0.1)          << endl;
+
+}
+
+//--------------------------------------------------------------------
+
+double dRbetweenVectors(const LorentzVector &vec1, 
+			const LorentzVector &vec2 ){ 
+  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
+  double deta = vec1.Eta() - vec2.Eta();
+  return sqrt(dphi*dphi + deta*deta);
+}
+
+//--------------------------------------------------------------------
+
+bool isGenBMatched ( LorentzVector p4, float dR ) {
+
+  //For now only checking status 3 in dR
+    for (unsigned int igen = 0; igen < cms2.genps_p4().size(); igen++) {
+      
+      int id = cms2.genps_id().at(igen);
+      if( abs(id)!=5 ) continue;
+      
+      if( dRbetweenVectors( p4 , cms2.genps_p4().at(igen) ) < dR ) return true;
+
+    } 
+    return false;
+}
+
+//--------------------------------------------------------------------
+
+int isGenQGMatched ( LorentzVector p4, float dR ) {
+  //Start from the end that seems to have the decay products of the W first
+  for (int igen = (cms2.genps_p4().size()-1); igen >-1; igen--) {
+    float deltaR = dRbetweenVectors( p4 , cms2.genps_p4().at(igen) );
+    if ( deltaR > dR ) continue;
+    int id = cms2.genps_id().at(igen);
+    int mothid = genps_id_mother().at(igen);
+    // cout<<"status 3 particle ID "<<id<<" mother "<<mothid
+    // 	<<" dR to jet "<<deltaR<<endl;
+    if (abs(id)<6 && abs(mothid)==24) 
+      return (mothid>0) ? 2 : -2;
+    if (abs(id)==5 && abs(mothid)==6) 
+      return (mothid>0) ? 1 : -1;
+    if (abs(id)==21) return 3;
+    if (abs(id)<6) return 4;
+  }
+  return -9;
+}
+
+//--------------------------------------------------------------------
+
+float dRGenJet ( LorentzVector p4, float genminpt = 20.) {
+
+  //return dR to closest gen-jet with pT > genminpt
+  float mindeltaR = 9999.;
+  for (unsigned int igen = 0; igen < cms2.genjets_p4().size(); igen++) {
+    LorentzVector vgenj = cms2.genjets_p4().at(igen);
+    if ( vgenj.Pt() < genminpt ) continue;
+    float deltaR = dRbetweenVectors( p4 , vgenj );
+    if ( deltaR< mindeltaR ) mindeltaR = deltaR;
+  }
+  return mindeltaR;
+
+}
+
+//--------------------------------------------------------------------
+
+int isSSVMTagged ( int ijet ) {
+
+  if ( pfjets_simpleSecondaryVertexHighEffBJetTag().at(ijet) > 1.74 )
+    return 1;
+
+  return 0;
+
+}
+
+//--------------------------------------------------------------------
+
+int isCSVTagged ( int ijet ) {
+  
+  float discrim = pfjets_combinedSecondaryVertexBJetTag().at(ijet);
+  if ( discrim > 0.679 ) return 1;//medium
+  if ( discrim > 0.244 ) return 2;//loose
+
+  return 0;
+
+}
+
+//--------------------------------------------------------------------
+
+bool isBTagged ( LorentzVector p4, VofP4 bJets ) {
+
+  for( int ijet = 0 ; ijet < (int)bJets.size() ; ijet++ ){
+    if( dRbetweenVectors( p4 , bJets.at(ijet) ) < 0.4 ) return true;
+  }
+
+  return false;
+
+}
+
+//--------------------------------------------------------------------
+
+int getLeptonMatchIndex ( LorentzVector *jet, LorentzVector *lep1, LorentzVector *lep2, float dR ) {
+  if (lep1 && dRbetweenVectors( *lep1 , *jet ) < dR) return 1;
+  if (lep2 && dRbetweenVectors( *lep2 , *jet ) < dR) return 2;
+  return -1;
+  
+}
+
+//--------------------------------------------------------------------
+
+int findTriggerIndex(TString trigName)
+{
+    vector<TString>::const_iterator begin_it = hlt_trigNames().begin();
+    vector<TString>::const_iterator end_it = hlt_trigNames().end();
+    vector<TString>::const_iterator found_it = find(begin_it, end_it, trigName);
+    if(found_it != end_it) return found_it - begin_it;
+    return -1;
+}
+
+//--------------------------------------------------------------------
+
+bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector> &trigObjs, float pt) 
+{
+
+  float drMin = 999.99;
+  for (size_t i = 0; i < trigObjs.size(); ++i)
+    {
+      if (trigObjs[i].Pt() < pt) continue;
+      float dr = dRbetweenVectors(trigObjs[i], obj);
+      if (dr < drMin) drMin = dr;
+    }
+
+  if (drMin < 0.1) return true;
+  return false;
+
+}
+
+//--------------------------------------------------------------------
+
+TString triggerName(TString triggerPattern){
+
+  //-------------------------------------------------------
+  // get exact trigger name corresponding to given pattern
+  //-------------------------------------------------------
+
+  bool    foundTrigger  = false;
+  TString exact_hltname = "";
+
+  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
+    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
+      foundTrigger  = true;
+      exact_hltname = hlt_trigNames().at(itrig);
+      break;
+    }
+  }
+
+  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
+
+  return exact_hltname;
+
+}
+
+//--------------------------------------------------------------------
+
+bool objectPassTrigger(const LorentzVector &obj, char* trigname, float drmax = 0.1 ){
+
+  TString exact_trigname = triggerName( trigname );
+
+  if( exact_trigname.Contains("TRIGGER_NOT_FOUND") ){
+    cout << __FILE__ << " " << __LINE__ << " Error! couldn't find trigger name " << trigname << endl;
+    return false;
+  }
+
+  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(exact_trigname)];
+
+  if( trigp4.size() == 0 ) return false;
+
+  for (unsigned int i = 0; i < trigp4.size(); ++i){
+    float dr = dRbetweenVectors(trigp4[i], obj);
+    if( dr < drmax ) return true;
+  }
+
+  return false;
+}
 
 //--------------------------------------------------------------------
 
 singleLeptonLooper::singleLeptonLooper()
 {
-
-  std::cout << " construct " << std::endl;
   g_susybaseline = false;
   g_createTree   = false;
   g_useBitMask   = false;
@@ -72,6 +416,26 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
   std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
     already_seen.insert(id);
   return !ret.second;
+}
+
+//--------------------------------------------------------------------
+
+int getIndexFromM0(float m0){
+  
+  float binsize = (m0max - m0min) / (float) nm0points;
+  int index     = (int)((m0 - m0min) / binsize);
+  return index;
+    
+}
+
+//--------------------------------------------------------------------
+
+int getIndexFromM12(float m12){
+  
+  float binsize = (m12max - m12min) / (float) nm12points;
+  int index     = (int)((m12 - m12min) / binsize);
+  return index;
+    
 }
 
 //--------------------------------------------------------------------
@@ -146,10 +510,20 @@ void singleLeptonLooper::InitBaby(){
   
   // pfjet vars
   npfjets30_	= 0;
+  npfjets35_	= 0;
+  npfjets40_	= 0;
+  npfjets45_	= 0;
   npfjets30lepcorr_ = 0;
   knjets_       = 1.;
 
   htpf30_	= 0.;
+  htpf35_	= 0.;
+  htpf40_	= 0.;
+  htpf45_	= 0.;
+  htpfres30_	= 0.;
+  htpfres35_	= 0.;
+  htpfres40_	= 0.;
+  htpfres45_	= 0.;
 
   //iso trk vars
   trkpt5_ 	    = -999.;
@@ -218,6 +592,39 @@ void singleLeptonLooper::InitBaby(){
   dilep_	= 0;
   jet_		= 0;
 
+  // jet p4's
+  pfjet1_	= 0;
+  pfjet2_	= 0;
+  pfjet3_	= 0;
+  pfjet4_	= 0;
+  pfjet5_	= 0;
+  pfjet6_	= 0;
+
+  bjet1_      = -999; 
+  bjet2_      = -999; 
+  bjet3_      = -999; 
+  bjet4_      = -999; 
+  bjet5_      = -999; 
+  bjet6_      = -999; 
+  lepjet1_    = -999; 
+  lepjet2_    = -999; 
+  lepjet3_    = -999; 
+  lepjet4_    = -999; 
+  lepjet5_    = -999; 
+  lepjet6_    = -999; 
+  qgjet1_     = -999; 
+  qgjet2_     = -999; 
+  qgjet3_     = -999; 
+  qgjet4_     = -999; 
+  qgjet5_     = -999; 
+  qgjet6_     = -999; 
+  genjetdr1_  = 9999.; 
+  genjetdr2_  = 9999.; 
+  genjetdr3_  = 9999.; 
+  genjetdr4_  = 9999.; 
+  genjetdr5_  = 9999.; 
+  genjetdr6_  = 9999.; 
+
   lep1chi2ndf_	= -9999.;
   lep2chi2ndf_	= -9999.;
   lep1dpt_	= -9999.;
@@ -248,19 +655,12 @@ void singleLeptonLooper::InitBaby(){
 
   pfcand5_        = 0;
   pfcand10_       = 0;
-  pfcanddir10_       = 0;
-  pfcandid5_       =-1; 
-  pfcandid10_      =-1;
-  pfcanddirid10_      =-1;
   pfcandiso5_     = 9999.;     
   pfcandiso10_    = 9999.;     
-  pfcanddiriso10_    = 9999.;     
   pfcandpt5_      = 9999.;
   pfcandpt10_     = 9999.;
-  pfcanddirpt10_     = 9999.;
   pfcandmindrj5_  = 9999.;
   pfcandmindrj10_ = 9999.;
-  pfcanddirmindrj10_ = 9999.;
 
   trkpt10pt0p1_	    = 9999.;
   trkreliso10pt0p1_ = 9999.;
@@ -355,26 +755,6 @@ void singleLeptonLooper::InitBaby(){
   eSCPresh2_ = -9999;  
   ecalveto2_ = -9999;
   hcalveto2_ = -9999;
-
-  //clear vectors
-  pfjets_.clear();
-  pfjets_csv_.clear();
-  pfjets_corr_.clear();
-  pfjets_mc3_.clear();
-  pfjets_qgtag_.clear();
-  pfjets_genJetDr_.clear();
-  pfjets_sigma_.clear();
-  pfjets_lepjet_.clear();
-  pfjets_beta_.clear();
-  pfjets_beta2_.clear();
-  pfjets_beta_0p1_.clear();
-  pfjets_beta2_0p1_.clear();
-  // pfjets_beta_0p15_.clear();
-  // pfjets_beta2_0p15_.clear();
-  // pfjets_beta_0p2_.clear();
-  // pfjets_beta2_0p2_.clear();
-  
-
 }
 
 //--------------------------------------------------------------------
@@ -410,6 +790,27 @@ int getProcessType(char *prefix)
 }
 
 //--------------------------------------------------------------------
+
+pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, double rescale = 1.0 ){
+  float met = p_met.first;
+  float metPhi = p_met.second;
+  float metx = met*cos(metPhi);
+  float mety = met*sin(metPhi);
+
+  float lepx = p4_dilep.Px();
+  float lepy = p4_dilep.Py();
+      
+  //hadronic component of MET (well, mostly), scaled
+  float metHx = (metx + lepx)*rescale;
+  float metHy = (mety + lepy)*rescale;
+  float metNewx = metHx - lepx;
+  float metNewy = metHy - lepy;
+  float metNewPhi = atan2(metNewy, metNewx);
+      
+  pair<float, float> p_met2 = make_pair(sqrt(metNewx*metNewx + metNewy*metNewy), metNewPhi);
+  return p_met2;
+}
+
 //--------------------------------------------------------------------
 
 void singleLeptonLooper::closeTree()
@@ -428,6 +829,35 @@ float singleLeptonLooper::stopPairCrossSection( float stopmass ){
   float xsec = stop_xsec_hist->GetBinContent(bin);
   return xsec;
 
+}
+
+//--------------------------------------------------------------------
+
+pair<float,float> Type1PFMET( VofP4 jets_p4 , vector<float> cors , vector<float> l1cors , float minpt ){
+
+  float metx = evt_pfmet() * cos( evt_pfmetPhi() );
+  float mety = evt_pfmet() * sin( evt_pfmetPhi() );
+
+  assert( jets_p4.size() == cors.size() );
+
+  for( unsigned int i = 0 ; i < jets_p4.size() ; ++i ){
+    float corrpt = jets_p4.at(i).pt() * cors.at(i);
+    if( corrpt < minpt ) continue;
+    float l1corr = (l1cors.size()==0) ? 1. : l1cors.at(i);
+    metx += jets_p4.at(i).px() * l1corr - jets_p4.at(i).px() * cors.at(i);
+    mety += jets_p4.at(i).py() * l1corr - jets_p4.at(i).py() * cors.at(i);
+  }
+
+  pair<float, float> type1met = make_pair( sqrt( metx*metx + mety*mety ), atan2( mety , metx ) );
+  return type1met;
+}
+
+//--------------------------------------------------------------------
+
+float getMT( float leppt , float lepphi , float met , float metphi ) {
+  float dphi = fabs( lepphi - metphi );
+      if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+      return sqrt( 2 * ( leppt * met * (1 - cos( dphi ) ) ) );
 }
 
 //--------------------------------------------------------------------
@@ -530,6 +960,30 @@ float getMuTriggerWeightNew( float pt, float eta ) {
 
 //--------------------------------------------------------------------
 
+float getminjdr( VofiP4 jets, LorentzVector *particle ) {
+  float mindr = 9999.;
+  if (jets.size()==0 || particle==0) return mindr;
+  for ( unsigned int ijet = 0; ijet<jets.size(); ++ijet ) {
+    float partjdr = dRbetweenVectors(jets.at(ijet).p4obj,*particle);
+    if ( partjdr<mindr ) mindr = partjdr;
+  }
+  return mindr;
+}
+
+/* ------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------- */
+float getDataMCRatio(float eta){
+  if (eta >=0.0 && eta < 0.5) return 1.052;
+  if (eta >=0.5 && eta < 1.1) return 1.057;
+  if (eta >=1.1 && eta < 1.7) return 1.096;
+  if (eta >=1.7 && eta < 2.3) return 1.134;
+  if (eta >=2.3 && eta < 5.0) return 1.288;
+  return 1.0;
+}
+
+/* ------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------- */
+
 bool compare_candidates( Candidate x, Candidate y ){
   return x.chi2 < y.chi2;
 }
@@ -592,13 +1046,9 @@ void minuitFunction(int&, double* , double &result, double par[], int){
  * returns a list of candidates sorted by chi2 ( if __sort = true in .h );
 */ 
 
-
-
 list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
                                  LorentzVector* lep, double met, double metphi,
                                  VofP4 jets, std::vector<float> btag){
-
-  assert( jets.size() == btag.size() );
 
   float metx = met * cos( metphi );
   float mety = met * sin( metphi );
@@ -614,11 +1064,8 @@ list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
 
   
   vector<int> mc;
-
-  if (!isData) {
   for (unsigned int i=0; i<jets.size(); i++)
     mc.push_back( isGenQGMatched( jets.at(i), 0.4 ) );
-  }
 
   int ibl[5];
   int iw1[5];
@@ -626,11 +1073,11 @@ list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
   int ib[5];
 
   if ( !isData ){
-     
-     // Matching MC algoritm search over all conbinations  until the 
-     // right combination is found. More than one candidate is suported 
-     //  but later only the first is used.
-     // 
+     /*
+     *  Matching MC algoritm search over all conbinations  until the 
+     *  right combination is found. More than one candidate is suported 
+     *  but later only the first is used.
+     */ 
     int match = 0;
     for (int jbl=0; jbl<n_jets; ++jbl )
       for (int jb=0; jb<n_jets; ++jb )
@@ -647,9 +1094,9 @@ list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
   }
 
 
-  
-////////    * Combinatorics. j_1 Pt must be > PTMIN_W1 and so on.
-  
+   /*
+    * Combinatorics. j_1 Pt must be > PTMIN_W1 and so on.
+   */
   vector<int> v_i, v_j;
   vector<double> v_k1, v_k2;
   for ( int i=0; i<n_jets; ++i )
@@ -659,14 +1106,14 @@ list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
       if (pt_w1 < PTMIN_J1  || pt_w2 < PTMIN_J2)
         continue;
 
-      //
-      //  W
-      //
+      /*
+       *  W
+       */
       LorentzVector hadW = jets[i] + jets[j];
 
-      //
-      //  W Mass Constraint.
-      //
+      /*
+       *  W Mass Constraint.
+       */
       TFitter *minimizer = new TFitter();
       double p1 = -1;
 
@@ -692,14 +1139,14 @@ list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
                 
       delete minimizer;
 
-     
-  //     * W Mass check :)
-  //     *  Never trust a computer you can't throw out a window. 
- //      *  - Steve Wozniak 
+      /*
+       * W Mass check :)
+       *  Never trust a computer you can't throw out a window. 
+       *  - Steve Wozniak 
 
-//      cout << "c1 = " <<  c1 << "  c1 = " << c2 << "   M_jj = " 
-//           << ((jets[i] * c1) + (jets[j] * c2)).mass() << endl;
-      
+      cout << "c1 = " <<  c1 << "  c1 = " << c2 << "   M_jj = " 
+           << ((jets[i] * c1) + (jets[j] * c2)).mass() << endl;
+       */
       v_i.push_back(i);
       v_j.push_back(j);
       v_k1.push_back(c1);
@@ -735,35 +1182,33 @@ list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
       if ( btag[o] < BTAG_MIN && pt_o < PTMIN_O)
         continue;
 
-      ///
-      //  MT2 Variables
-      ///
-
+      /*
+       *  MT2 Variables
+       */
+         
       double pl[4];     // Visible lepton
       double pb1[4];    // bottom on the same side as the visible lepton
       double pb2[4];    // other bottom, paired with the invisible W
       double pmiss[3];  // <unused>, pmx, pmy   missing pT
       pl[0]= lep->E(); pl[1]= lep->Px(); pl[2]= lep->Py(); pl[3]= lep->Pz();
-      pb1[1] = jets[o].Px();  pb1[2] = jets[o].Py();   pb1[3] = jets[o].Pz();
-      pb2[1] = jets[b].Px();  pb2[2] = jets[b].Py();   pb2[3] = jets[b].Pz();
+      pb1[0] = jets[o].E();  pb1[1] = jets[o].Px(); 
+      pb1[2] = jets[o].Py(); pb1[3] = jets[o].Pz();
+      pb2[0] = jets[b].E();  pb2[1] = jets[b].Px(); 
+      pb2[2] = jets[b].Py(); pb2[3] = jets[b].Pz();
       pmiss[0] = 0.; pmiss[1] = metx; pmiss[2] = mety;
 
       double pmiss_lep[3];
       pmiss_lep[0] = 0.;
       pmiss_lep[1] = pmiss[1]+pl[1]; pmiss_lep[2] = pmiss[2]+pl[2];
 
-      pb1[0] = jets[o].mass();
-      pb2[0] = jets[b].mass();
       mt2_event.set_momenta( pb1, pb2, pmiss_lep );
-      mt2_event.set_mn( 80.385 );   // Invisible particle mass
+      mt2_event.set_mn( 0.0 );   // Invisible particle mass
       double c_mt2b = mt2_event.get_mt2();
-
-      pb1[0] = jets[o].E();
-      pb2[0] = jets[b].E();
-      mt2bl_event.set_momenta(pl, pb1, pb2, pmiss);
+         
+      mt2bl_event.set_momenta(pl, pb1, pb2, pmiss); 
       double c_mt2bl = mt2bl_event.get_mt2bl();
 
-      mt2w_event.set_momenta(pl, pb1, pb2, pmiss);
+      mt2w_event.set_momenta(pl, pb1, pb2, pmiss); 
       double c_mt2w = mt2w_event.get_mt2w();
 
 //      cout << b << ":"<< btag[b] << " - " << o << ":" << btag[o] << " = " << c_mt2w << endl;
@@ -777,18 +1222,18 @@ list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
         double pt_w1 = jets[i].Pt();
         double pt_w2 = jets[j].Pt();
 
-	///
-	//  W Mass.
-	///
+	/*
+	 *  W Mass.
+	 */
 	LorentzVector hadW = jets[i] + jets[j];
 	double massW = hadW.mass();
 
 	double c1 = v_k1[w];
 	double c2 = v_k2[w];
 
-	///
-	// Top Mass.
-	///
+	/*
+	 * Top Mass.
+	 */
         LorentzVector hadT = (jets[i] * c1) + (jets[j] * c2) + jets[b];
         double massT = hadT.mass();
 
@@ -830,6 +1275,36 @@ list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
    return chi2candidates;
 }
 
+/* ------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------- */
+
+pair<float,float> Type1PFMETSmear(JetSmearer* jetSmearer, bool isData,
+                                      VofP4 jets_p4 , float met, float metphi){
+  float metx = met * cos( metphi );
+  float mety = met * sin( metphi );
+
+  if (!isData){
+      UInt_t seed = 0;
+
+      for (unsigned int i=0; i<jets_p4.size(); ++i)
+          seed += jets_p4.at(i).Pt()*1000;
+
+      TRandom3 kicker(seed);
+
+      for (unsigned int i=0; i<jets_p4.size(); ++i){
+          LorentzVector recJet = jets_p4.at(i);
+
+          float c = getDataMCRatio(recJet.eta());
+          double sigma = getJetResolution(recJet, jetSmearer);
+          double alpha = kicker.Gaus(0.0, TMath::Sqrt(c*c-1.0)*sigma);
+
+          metx -= alpha*recJet.px();
+          mety -= alpha*recJet.py();
+      }
+  }
+  
+  return make_pair( sqrt( metx*metx + mety*mety ), atan2( mety , metx ) );
+}
 
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
@@ -838,8 +1313,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 				  FREnum frmode, bool doFakeApp)
 
 {
-
-  //  cout << "ciao " << isData << endl;
 
   bool isLM = TString(prefix).Contains("LM");
   bool isData = false;
@@ -850,11 +1323,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     isData       = true;
     doTenPercent = false;
   }
-
-  cout << "IS DATA: " << isData << endl;
-
   if( doTenPercent ) cout << "Processing 10% of MC" << endl;
-
 
   //------------------------------------------------------------------------------------------------------
   // set json, vertex reweighting function and msugra cross section files
@@ -869,7 +1338,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     //    if( TString(prefix).Contains("ttall_massivebin") ) 
     set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer12_DR53X-PU_S10_9p7ifb_Zselection.root",true);
 
-    //   weight3D_init( "vtxreweight/Weight3D.root" );
+    //    weight3D_init( "vtxreweight/Weight3D.root" );
 
     //set msugra cross section file
     set_msugra_file("goodModelNames_tanbeta10.txt");
@@ -891,19 +1360,19 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   //string caloUncertaintyFile;
 
   if ( isData ) {
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_P_V39_AN3_L1FastJet_AK5PF.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_P_V39_AN3_L2Relative_AK5PF.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_P_V39_AN3_L3Absolute_AK5PF.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_P_V39_AN3_L2L3Residual_AK5PF.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_52_V9_L1FastJet_AK5PF.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_52_V9_L2Relative_AK5PF.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_52_V9_L3Absolute_AK5PF.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/GR_R_52_V9_L2L3Residual_AK5PF.txt");
 
-    pfUncertaintyFile = "jetCorrections/GR_P_V39_AN3_Uncertainty_AK5PF.txt";
+    pfUncertaintyFile = "jetCorrections/GR_R_52_V9_Uncertainty_AK5PF.txt";
   } 
   else {
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN53_V15_L1FastJet_AK5PF.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN53_V15_L2Relative_AK5PF.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/DESIGN53_V15_L3Absolute_AK5PF.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/START52_V9B_L1FastJet_AK5PF.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/START52_V9B_L2Relative_AK5PF.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back  ("jetCorrections/START52_V9B_L3Absolute_AK5PF.txt");
     
-    pfUncertaintyFile = "jetCorrections/DESIGN53_V15_Uncertainty_AK5PF.txt";
+    pfUncertaintyFile = "jetCorrections/START52_V9B_Uncertainty_AK5PF.txt";
   }
 
   jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
@@ -919,10 +1388,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   list_of_file_names.push_back("jetSmearData/Spring10_PhiResolution_AK5PF.txt");
   list_of_file_names.push_back("jetSmearData/jet_resolutions.txt");
   JetSmearer *jetSmearer = makeJetSmearer(list_of_file_names);
- 
-  QGLikelihoodCalculator *qglikeli_ = new QGLikelihoodCalculator("QGTaggerConfig/QGTaggerConfig_nCharged_AK5PF.txt",
-								 "QGTaggerConfig/QGTaggerConfig_nNeutral_AK5PF.txt",
-								 "QGTaggerConfig/QGTaggerConfig_ptD_AK5PF.txt");
 
   //------------------------------------------------
   // set stop cross section file
@@ -976,9 +1441,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   rootdir->cd();
 
   BookHistos(prefix);
-
-
-  cout << " done with initialization "  << endl;
   
   unsigned int nEventsChain = chain->GetEntries();
   unsigned int nEventsTotal = 0;
@@ -1023,8 +1485,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     for(unsigned int z = 0; z < nEntries; ++z) {
       ++nEventsTotal;
 
-      /////////      cout << nEventsTotal << endl;
-
       if( doTenPercent ){
 	if( !(nEventsTotal%10==0) ) continue;
       }
@@ -1049,7 +1509,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // PrintTriggers();
       // exit(0);
 
-      if( evt_ww_rho_vor() != evt_ww_rho_vor() ){
+      if( cms2.evt_ww_rho_vor() != cms2.evt_ww_rho_vor() ){
 	cout << "Skipping event with rho = nan!!!" << endl;
 	continue;
       }
@@ -1080,7 +1540,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //---------------------------------------------
 
       if( !cleaning_goodVertexApril2011() )                          continue;
-      if( isData && !goodrun(evt_run(), evt_lumiBlock()) ) continue;
+      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
 
       //---------------------
       // skip duplicates
@@ -1150,7 +1610,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( foundDuplicate ) continue;
 
 	if( els_p4().at(iel).pt() < 10 )                                                                continue;
-        if( !passElectronSelection_Stop2012_v3( iel , vetoTransition,vetoTransition,useOldIsolation) )  continue;
+        if( !passElectronSelection_Stop2012_v2( iel , vetoTransition,vetoTransition,useOldIsolation) )  continue;
 
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepchi2ndf.push_back( -9999. );
@@ -1169,7 +1629,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	goodLeptons.push_back( mus_p4().at(imu) );
 	//in original OSGeneric_v3 version, cut on chi2ndf is at 10
-	lepchi2ndf.push_back( mus_gfit_chi2().at(imu)/mus_gfit_ndof().at(imu) );
+	lepchi2ndf.push_back( cms2.mus_gfit_chi2().at(imu)/cms2.mus_gfit_ndof().at(imu) );
 	//in original OSGeneric_v3, cut on dpt/pt is at 0.1
 	lepdpt.push_back( mus_ptErr().at(imu) / mus_p4().at(imu).pt() );
 	lepId.push_back( mus_charge().at(imu) * 13 );
@@ -1211,7 +1671,25 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       lep1dpt_     = lepdpt.at(imaxpt);
 
       int index1 = lepIndex.at(imaxpt);
+
+      // Matching lepton with pfjet
       LorentzVector minvjet1;
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+	
+	LorentzVector vjet = pfjets_p4().at(ijet);
+
+	if( vjet.pt()  < 10  )             continue;
+	if( fabs(vjet.eta()) > 3.0 )       continue;
+        
+	float dr = dRbetweenVectors( vjet, *lep1_ );
+
+	if( dr < lep1pfjetdr_ ){
+	  lep1pfjetdr_    = dr;
+	  minvjet1         = vjet;
+	}
+      }
+      if (lep1pfjetdr_<9998.) 
+	leppfjet1_ = &minvjet1;
 
       // Matching lepton with pflepton
       // and with trk and gfit where available
@@ -1251,7 +1729,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       dilrecoil_     = -999.;
       dilrecoilparl_ = -999.;
       dilrecoilperp_ = -999.;
-      LorentzVector minvjet2;
 
       hyptype_ = -1;
 
@@ -1297,6 +1774,25 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  lepp_ = &goodLeptons.at(imaxpt2);
 	  lepm_ = &goodLeptons.at(imaxpt);
 	}
+
+	// Matching lepton with pfjet
+	LorentzVector minvjet2;
+	for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+	  
+	  LorentzVector vjet = pfjets_p4().at(ijet);
+	  
+	  if( vjet.pt()  < 10  )             continue;
+	  if( fabs(vjet.eta()) > 3.0 )       continue;
+	  
+	  float dr = dRbetweenVectors( vjet, *lep2_ );
+	  
+	  if( dr < lep2pfjetdr_ ){
+	    lep2pfjetdr_    = dr;
+	    minvjet2        = vjet;
+	  }
+	}
+	if (lep2pfjetdr_<9998.)
+	  leppfjet2_      = &minvjet2;      
 
 	//---------------------------------------------
 	// Matching sub-leading lepton with pflepton
@@ -1372,7 +1868,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 	if( els_p4().at(iel).pt() < 10 )                                                 continue;
 	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
-	if( ROOT::Math::VectorUtil::DeltaR( *lep1_ , els_p4().at(iel) ) < 0.1 )                        continue;
+	if( dRbetweenVectors( *lep1_ , els_p4().at(iel) ) < 0.1 )                        continue;
 	nosel_++;
       }
       
@@ -1411,9 +1907,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       if( !isData ){
 
 	bool foundwz = false;
-	bool foundlep = false;
-	bool foundnu  = false;
-
 	w1_     = leptonOrTauIsFromW( index1 , id1_ , isLM );
 	pthat_  = genps_pthat();
 	qscale_ = genps_qScale();
@@ -1451,10 +1944,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	int ntops = 0;
 
 	for ( int igen = 0 ; igen < (int)genps_id().size() ; igen++ ) { 
-	  if ( abs( genps_id().at(igen) ) == 11) vdilepton += genps_p4().at(igen); 
-	  if ( abs( genps_id().at(igen) ) == 13) vdilepton += genps_p4().at(igen); 
+	  if ( abs( cms2.genps_id().at(igen) ) == 11) vdilepton += genps_p4().at(igen); 
+	  if ( abs( cms2.genps_id().at(igen) ) == 13) vdilepton += genps_p4().at(igen); 
 
-	  int id = genps_id().at(igen);
+	  int id = cms2.genps_id().at(igen);
 	  int pid = abs( genps_id().at(igen) );
 	  int mothid = abs(genps_id_mother().at(igen));
 
@@ -1492,16 +1985,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    }
 	  }
 
-	  // store lepton, neutrino and W for single lepton events                     
-	  if (pid==11 || pid==13) {
-	    foundlep = true;
-	    mclep_ = &genps_p4()[igen];
-	  }
-	  if (pid==12 || pid==14) {
-	    foundnu = true;
-	    mcnu_  = &genps_p4()[igen];
-	  }
-
 	  // store W or Z pT 
 	  // ignoring cases where have more than 1 boson for now
 	  if ( pid == 24 ) {
@@ -1531,7 +2014,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  npartons_ ++;
 	  if( genps_p4().at(igen).pt() > maxpartonpt_ ) maxpartonpt_ = genps_p4().at(igen).pt();
 	  //	  cout << "found parton, igen " << igen << " id " << pid << " motherid " << mothid << " pt " << genps_p4().at(igen).pt() << endl;
-    
+
 	}
 
 	// if( npartons_ > 0 ){
@@ -1550,11 +2033,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  ptttbar_  = ttbar_->pt();
 	  mttbar_   = ttbar_->mass();
 	  etattbar_ = ttbar_->eta();
-	}
-
-	if (foundlep && foundnu) {
-	  mcmln_ = (*mclep_+*mcnu_).mass();
-	  mcmtln_ = getMT( mclep_->Pt() , mclep_->Phi() , mcnu_->Pt() , mcnu_->Phi() );
 	}
 	
 	if( nels + nmus == 2) dilptgen = vdilepton.pt();
@@ -1622,9 +2100,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	if( nleps_ == 1 ){
 
+
 	  int nfoundleps = 0;
 
-	  for ( int igen = 0 ; igen < (int)genps_id().size() ; igen++ ) { 
+	  for ( int igen = 0 ; igen < (int)cms2.genps_id().size() ; igen++ ) { 
 
 	    int id = genps_id().at(igen);
 
@@ -1633,14 +2112,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    nfoundleps++;
 	    mcid1_   = id;
 	    mclep1_  = &genps_p4().at(igen);
-	    mcdr1_   = ROOT::Math::VectorUtil::DeltaR( *lep1_ , *mclep1_ );
+	    mcdr1_   = dRbetweenVectors( *lep1_ , *mclep1_ );
 
 	    if( abs(id)==15 ){
 	      mcdecay1_ = 1;
 	      //variables to calculate the visible tau energy
 	      LorentzVector taudvis; 
-	      for(unsigned int kk = 0; kk < genps_lepdaughter_id().at(igen).size(); kk++) {
-		int daughter = abs(genps_lepdaughter_id()[igen][kk]);
+	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
+		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
 		//4-vector of visible part of tau
 		if ( daughter != 12 && daughter != 14 && daughter != 16 ) {
 		  if (taudvis.pt()==0)
@@ -1652,7 +2131,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 		if( daughter == 11 || daughter == 13 || daughter == 211 || daughter == 321 ){
 		  if( genps_lepdaughter_p4()[igen][kk].pt() > mctaudpt1_ ) {
 		    mctaudpt1_ = genps_lepdaughter_p4()[igen][kk].pt();
-		    mctaudid1_ = genps_lepdaughter_id()[igen][kk];
+		    mctaudid1_ = cms2.genps_lepdaughter_id()[igen][kk];
 		    mctaud1_   = &genps_lepdaughter_p4()[igen][kk];
 		  }
 		}
@@ -1685,7 +2164,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  // find gen lepton closest to reco lepton
 	  //-----------------------------------------------------
 	  
-	  for ( int igen = 0 ; igen < (int)genps_id().size() ; igen++ ) { 
+	  for ( int igen = 0 ; igen < (int)cms2.genps_id().size() ; igen++ ) { 
 
 	    int id = genps_id().at(igen);
 
@@ -1693,8 +2172,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	    nfoundleps++;
 
-	    if( ROOT::Math::VectorUtil::DeltaR( *lep1_ , genps_p4().at(igen) ) < drmin ){
-	      drmin   = ROOT::Math::VectorUtil::DeltaR( *lep1_ , genps_p4().at(igen) );
+	    if( dRbetweenVectors( *lep1_ , genps_p4().at(igen) ) < drmin ){
+	      drmin   = dRbetweenVectors( *lep1_ , genps_p4().at(igen) );
 	      igenmin = igen;
 	    }
 	  }
@@ -1707,7 +2186,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	  mcid1_   = genps_id().at(igenmin);
 	  mclep1_  = &genps_p4().at(igenmin);
-	  mcdr1_   = ROOT::Math::VectorUtil::DeltaR( *lep1_ , *mclep1_ );
+	  mcdr1_   = dRbetweenVectors( *lep1_ , *mclep1_ );
 
 	  if( abs(mcid1_)==15 ){
 	    mcdecay1_ = 1;
@@ -1715,8 +2194,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    //variables to calculate the visible tau energy
 	    LorentzVector taudvis; 
 	    
-	    for(unsigned int kk = 0; kk < genps_lepdaughter_id().at(igenmin).size(); kk++) {
-	      int daughter = abs(genps_lepdaughter_id()[igenmin][kk]);
+	    for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igenmin).size(); kk++) {
+	      int daughter = abs(cms2.genps_lepdaughter_id()[igenmin][kk]);
 	      //4-vector of visible part of tau
 	      if ( daughter != 12 && daughter != 14 && daughter != 16 ) {
 		if (taudvis.pt()==0)
@@ -1728,7 +2207,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	      if( daughter == 11 || daughter == 13 || daughter == 211 || daughter == 321 ){
 		if( genps_lepdaughter_p4()[igenmin][kk].pt() > mctaudpt1_ ) {
 		  mctaudpt1_ = genps_lepdaughter_p4()[igenmin][kk].pt();
-		  mctaudid1_ = genps_lepdaughter_id()[igenmin][kk];
+		  mctaudid1_ = cms2.genps_lepdaughter_id()[igenmin][kk];
 		  mctaud1_   = &genps_lepdaughter_p4()[igenmin][kk];
 		}
 	      }
@@ -1747,7 +2226,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	  int igenmin2 = -1;
 
-	  for ( int igen = 0 ; igen < (int)genps_id().size() ; igen++ ) { 
+	  for ( int igen = 0 ; igen < (int)cms2.genps_id().size() ; igen++ ) { 
 
 	    if( igen == igenmin ) continue; //skip closest lepton
 
@@ -1759,15 +2238,15 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	    mcid2_   = id;
 	    mclep2_  = &genps_p4().at(igen);
-	    if( ngoodlep_ > 1 ) mcdr2_   = ROOT::Math::VectorUtil::DeltaR( *lep2_ , *mclep2_ );
+	    if( ngoodlep_ > 1 ) mcdr2_   = dRbetweenVectors( *lep2_ , *mclep2_ );
 
 	    if( abs(id)==15 ){
 	      mcdecay2_ = 1;
 	      //variables to calculate the visible tau energy
 	      LorentzVector taudvis; 
 	      
-	      for(unsigned int kk = 0; kk < genps_lepdaughter_id().at(igen).size(); kk++) {
-		int daughter = abs(genps_lepdaughter_id()[igen][kk]);
+	      for(unsigned int kk = 0; kk < cms2.genps_lepdaughter_id().at(igen).size(); kk++) {
+		int daughter = abs(cms2.genps_lepdaughter_id()[igen][kk]);
 
 
 		//4-vector of visible part of tau
@@ -1781,7 +2260,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 		if( daughter == 11 || daughter == 13 || daughter == 211 || daughter == 321 ){
 		  if( genps_lepdaughter_p4()[igen][kk].pt() > mctaudpt1_ ) {
 		    mctaudpt2_ = genps_lepdaughter_p4()[igen][kk].pt();
-		    mctaudid2_ = genps_lepdaughter_id()[igen][kk];
+		    mctaudid2_ = cms2.genps_lepdaughter_id()[igen][kk];
 		    mctaud2_   = &genps_lepdaughter_p4()[igen][kk];
 		  }
 		}
@@ -1852,9 +2331,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	    if( ID == 1 ){
 	      mlepid_       = 11 * els_charge().at(imatch);
 	      mlep_         = &els_p4().at(imatch);
-	      mleppassid_   = passElectronSelection_Stop2012_v3_NoIso( imatch , vetoTransition,vetoTransition,useOldIsolation) ? 1 : 0;
-	      mleppassiso_  = passElectronSelection_Stop2012_v3_Iso  ( imatch , vetoTransition,vetoTransition,useOldIsolation) ? 1 : 0;
-	      mlepiso_      = electronIsoValuePF2012_FastJetEffArea_v3( imatch , 0.3 , 0 );
+	      mleppassid_   = passElectronSelection_Stop2012_v2_NoIso( imatch , vetoTransition,vetoTransition,useOldIsolation) ? 1 : 0;
+	      mleppassiso_  = passElectronSelection_Stop2012_v2_Iso  ( imatch , vetoTransition,vetoTransition,useOldIsolation) ? 1 : 0;
+	      mlepiso_      = electronIsoValuePF2012_FastJetEffArea_v2( imatch , 0.3 , 0 );
 	    }
 
 	    // found matched muon
@@ -1866,7 +2345,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	      mlepiso_      = muonIsoValuePF2012_deltaBeta(imatch);
 	    }
 
-	    mlepdr_ = ROOT::Math::VectorUtil::DeltaR( *mlep_ , *mclep2_ );
+	    mlepdr_ = dRbetweenVectors( *mlep_ , *mclep2_ );
 	  }
 	  
 	}
@@ -1877,20 +2356,18 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       }
 
-      /*
-      for (unsigned int ipf = 0; ipf < pfcands_p4().size(); ipf++) {
+      for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
 
 	if( pfcands_charge().at(ipf) == 0   ) continue;
 
- 	int itrk = pfcands_trkidx().at(ipf);
+ 	int itrk = cms2.pfcands_trkidx().at(ipf);
 	
  	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
- 	  if( fabs( trks_dz_pv(itrk,0).first ) > 0.2 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > 0.2 ){
  	    fillOverFlow( h_PU_trkpt , pfcands_p4().at(ipf).pt() );
  	  }
  	}
       }
-      */
 
       //------------------------------------------------------
       // store closest pf cand information for 2nd lepton
@@ -1915,33 +2392,29 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	float pftaudpt_out  = -999.;
 	LorentzVector *pflep_out = 0;
 	LorentzVector *pftaud_out = 0;
-	for (unsigned int ipf = 0; ipf < pfcands_p4().size(); ipf++) {
+	for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
 	  
 	  //	  if( pfcands_p4().at(ipf).pt() < 5   ) continue;
 	  if( pfcands_charge().at(ipf) == 0   ) continue;
 	  
-	  int itrk = pfcands_trkidx().at(ipf);
+	  int itrk = cms2.pfcands_trkidx().at(ipf);
 	  
 	  if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
-	    if( fabs( trks_dz_pv(itrk,0).first ) > 0.2 ) continue;
+	    if( fabs( dz_trk_vtx(itrk,0) ) > 0.2 ) continue;
 	  }
 	  //Only remove leading lepton to see what happens to the sub-leading lepton
 	  // bool isGoodLepton = false;
 	  // for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-	  //   if( ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) 
+	  //   if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) 
 	  //     isGoodLepton = true;  
 	  // }
 	  // if( isGoodLepton ) continue;
-	  if( ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf) , goodLeptons.at(imaxpt) ) < 0.1 ) continue;
+	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(imaxpt) ) < 0.1 ) continue;
 
 	  //Store highest pT track within match radius or if none is found closest pfcand
 	  float matchR = 0.15;
-	  float drpf = ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf) , *mclep2_ );
-
-	  struct myTrackIso myTrackIso=trackIso(ipf);
-	  float iso = myTrackIso.iso_dr03_dz005_pt00 / pfcands_p4().at(ipf).pt();
-
-	  //	  float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
+	  float drpf = dRbetweenVectors( pfcands_p4().at(ipf) , *mclep2_ );
+	  float iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
 	  if ( drpf < matchR && pfcands_p4().at(ipf).pt() > pfleppt_ ) {
 	    pflepdr_ = drpf;
 	    pfleppt_ = pfcands_p4().at(ipf).pt();
@@ -1955,8 +2428,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  }
 	  //check for tau decay and store information for daughter
 	  if (mctaudid2_==-1) continue;
-	  float taudrpf = ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf) , *mctaud2_ );
-	  float tauiso = myTrackIso.iso_dr03_dz005_pt00 / pfcands_p4().at(ipf).pt();
+	  float taudrpf = dRbetweenVectors( pfcands_p4().at(ipf) , *mctaud2_ );
+	  float tauiso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
 	  if ( taudrpf < matchR && pfcands_p4().at(ipf).pt() > pftaudpt_ ) {
 	    pftauddr_ = taudrpf;
 	    pftaudpt_ = pfcands_p4().at(ipf).pt();
@@ -1992,7 +2465,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       float dz_cut_loose = 0.2;
 
       //------------------------------------------------------
-      // store pt and iso for most isolated track (pt>10 GeV) and (pt>5 GeV)
+      // store pt and iso for most isolated track (pt>10 GeV)
       //------------------------------------------------------
 
       trkpt10_           = -1.0;
@@ -2002,127 +2475,59 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       trkpt10loose_      = -1.0;
       trkreliso10loose_  = 1000.;
 
+      for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
 
-      trkpt5_          = -1.0;
-      trkreliso5_      = 1000.;
-      mleptrk5_        = -1.0;
-      float miniso5    = 999;
-      trkpt5loose_     = -1.0;
-      trkreliso5loose_ = 1000.;
-
-
-      for (unsigned int ipf = 0; ipf < pfcands_p4().size(); ipf++) {
-
-	if( pfcands_p4().at(ipf).pt() < 5  ) continue;
-
+	if( pfcands_p4().at(ipf).pt() < 10  ) continue;
 	if( pfcands_charge().at(ipf) == 0   ) continue;
 
-	struct myTrackIso myTrackIso=trackIso(ipf);
-
-	// 	int itrk = pfcands_trkidx().at(ipf);
+ 	int itrk = cms2.pfcands_trkidx().at(ipf);
 	
 	bool isGoodLepton = false;
 	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-	  if( ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) 
+	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) 
 	    isGoodLepton = true;  
 	}
-	bool isLeadLepton = ( ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf) , 
+	bool isLeadLepton = ( dRbetweenVectors( pfcands_p4().at(ipf) , 
 						goodLeptons.at(imaxpt) ) < 0.1 ) ? true : false;
 
-	//////////
-
-	int itrk = -1;
-	float mindz=999;
-
-	if (abs(pfcands_particleId().at(ipf))!=11) {
-	  itrk = pfcands_trkidx().at(ipf);
-	  if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ) continue;
-	  mindz=trks_dz_pv(itrk,0).first;
-	}
-
-	if (abs(pfcands_particleId().at(ipf))==11 && pfcands_pfelsidx().at(ipf)>=0) {
-	  itrk = els_gsftrkidx().at(pfcands_pfelsidx().at(ipf));
-	  if( itrk >= (int)gsftrks_p4().size() || itrk < 0 ) continue;
-	  mindz=gsftrks_dz_pv(itrk,0).first;
-	}
-
-      
 	//store loose definition to compare with previous results
-	float iso = myTrackIso.iso_dr03_dz020_pt00 / pfcands_p4().at(ipf).pt();
+	float iso = trackIso(ipf, 0.3, dz_cut_loose, true) / pfcands_p4().at(ipf).pt();
 
  	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
- 	  if( fabs(mindz) > dz_cut_loose ) continue;
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > dz_cut_loose ) continue;
  	}
 
-	if(pfcands_p4().at(ipf).pt()>=10 && iso < trkreliso10loose_ && !isGoodLepton ){
+	if( iso < trkreliso10loose_ && !isGoodLepton ){
 	  trkpt10loose_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10loose_   = iso;
 	}
 
-
-	if( pfcands_p4().at(ipf).pt()>=5 && iso < trkreliso5loose_ && !isGoodLepton ){
-	  trkpt5loose_     = pfcands_p4().at(ipf).pt();
-	  trkreliso5loose_ = iso;
-	}
-
 	//tighten dz cut
  	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
- 	  if( fabs(mindz) > dz_cut ) continue;
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > dz_cut ) continue;
  	}
 
+	//recalculated definition of the isolation
+	iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
 
-	iso=myTrackIso.isoDir_dr03_dz005_pt00/pfcands_p4().at(ipf).pt();
-
-	if( pfcands_p4().at(ipf).pt()>=10 && iso < pfcanddiriso10_ && !isLeadLepton ){
-
-	  pfcanddiriso10_ = iso;
-          pfcanddirpt10_ = pfcands_p4().at(ipf).pt();
-          pfcanddir10_ = &pfcands_p4().at(ipf);
-          pfcanddirid10_ =  pfcands_particleId().at(ipf);
-
-	}
-
-	//recalculated definition of the isolation with the default values
-	iso = myTrackIso.iso_dr03_dz005_pt00 / pfcands_p4().at(ipf).pt();
-
-	if( pfcands_p4().at(ipf).pt()>=10 && iso < miniso10 && !isGoodLepton ){
+	if( iso < miniso10 && !isGoodLepton ){
 	  miniso10       = iso;
 	  trkpt10_       = pfcands_p4().at(ipf).pt();
 	  mleptrk10_     = (*lep1_+pfcands_p4().at(ipf)).pt();
 	  trkreliso10_   = iso;
 	}
 
-	if( pfcands_p4().at(ipf).pt()>=5 && iso < miniso5 && !isGoodLepton ){
-	  miniso5     = iso;
-	  trkpt5_     = pfcands_p4().at(ipf).pt();
-	  mleptrk5_   = (*lep1_+pfcands_p4().at(ipf)).pt();
-	  trkreliso5_ = iso;
-	  //itrk       = ipf;
-	}
-
-	if (isLeadLepton) continue;
-
-	if( pfcands_p4().at(ipf).pt()>=5 && iso < pfcandiso5_){
-	  pfcandiso5_ = iso;
-	  pfcandpt5_ = pfcands_p4().at(ipf).pt();
-	  pfcand5_ = &pfcands_p4().at(ipf);
-          pfcandid5_ =  pfcands_particleId().at(ipf);
-	}
-
-	if( pfcands_p4().at(ipf).pt() < 10  ) continue;
-
-	/// this is the default case Track with dz<0.05 ; pt>10 ; notLeadingLepton
-
-	if( iso < pfcandiso10_ ){
+	if( iso < pfcandiso10_ && !isLeadLepton ){
 	  pfcandiso10_ = iso;
 	  pfcandpt10_ = pfcands_p4().at(ipf).pt();
 	  pfcand10_ = &pfcands_p4().at(ipf);
-	  pfcandid10_ =  pfcands_particleId().at(ipf);
 	}
+	
+	//add all the variables with various pt thresholds
 
-	/// Pt scan
+	if (isLeadLepton) continue;
 
-	float iso0p1 = myTrackIso.iso_dr03_dz005_pt01 / pfcands_p4().at(ipf).pt();
+	float iso0p1 = trackIso(ipf, 0.3, dz_cut, false, 0.1) / pfcands_p4().at(ipf).pt();
 	if( iso0p1 < trkreliso10pt0p1_ && !isGoodLepton ){
 	  trkpt10pt0p1_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt0p1_   = iso0p1;
@@ -2132,7 +2537,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandiso10pt0p1_ = iso0p1;
 	}
 
-	float iso0p2 = myTrackIso.iso_dr03_dz005_pt02  / pfcands_p4().at(ipf).pt();
+	float iso0p2 = trackIso(ipf, 0.3, dz_cut, false, 0.2) / pfcands_p4().at(ipf).pt();
 	if( iso0p2 < trkreliso10pt0p2_ && !isGoodLepton ){
 	  trkpt10pt0p2_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt0p2_   = iso0p2;
@@ -2142,7 +2547,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandiso10pt0p2_ = iso0p2;
 	}
 
-	float iso0p3 =myTrackIso.iso_dr03_dz005_pt03  / pfcands_p4().at(ipf).pt();
+	float iso0p3 = trackIso(ipf, 0.3, dz_cut, false, 0.3) / pfcands_p4().at(ipf).pt();
 	if( iso0p3 < trkreliso10pt0p3_ && !isGoodLepton ){
 	  trkpt10pt0p3_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt0p3_   = iso0p3;
@@ -2152,7 +2557,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandiso10pt0p3_ = iso0p3;
 	}
 
-	float iso0p4 = myTrackIso.iso_dr03_dz005_pt04  / pfcands_p4().at(ipf).pt();
+	float iso0p4 = trackIso(ipf, 0.3, dz_cut, false, 0.4) / pfcands_p4().at(ipf).pt();
 	if( iso0p4 < trkreliso10pt0p4_ && !isGoodLepton ){
 	  trkpt10pt0p4_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt0p4_   = iso0p4;
@@ -2162,7 +2567,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandiso10pt0p4_ = iso0p4;
 	}
 
-	float iso0p5 = myTrackIso.iso_dr03_dz005_pt05  / pfcands_p4().at(ipf).pt();
+	float iso0p5 = trackIso(ipf, 0.3, dz_cut, false, 0.5) / pfcands_p4().at(ipf).pt();
 	if( iso0p5 < trkreliso10pt0p5_ && !isGoodLepton ){
 	  trkpt10pt0p5_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt0p5_   = iso0p5;
@@ -2172,7 +2577,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandiso10pt0p5_ = iso0p5;
 	}
 
-	float iso0p6 = myTrackIso.iso_dr03_dz005_pt06  / pfcands_p4().at(ipf).pt();
+	float iso0p6 = trackIso(ipf, 0.3, dz_cut, false, 0.6) / pfcands_p4().at(ipf).pt();
 	if( iso0p6 < trkreliso10pt0p6_ && !isGoodLepton ){
 	  trkpt10pt0p6_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt0p6_   = iso0p6;
@@ -2182,7 +2587,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandiso10pt0p6_ = iso0p6;
 	}
 
-	float iso0p7 = myTrackIso.iso_dr03_dz005_pt07  / pfcands_p4().at(ipf).pt();
+	float iso0p7 = trackIso(ipf, 0.3, dz_cut, false, 0.7) / pfcands_p4().at(ipf).pt();
 	if( iso0p7 < trkreliso10pt0p7_ && !isGoodLepton ){
 	  trkpt10pt0p7_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt0p7_   = iso0p7;
@@ -2192,7 +2597,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandiso10pt0p7_ = iso0p7;
 	}
 
-	float iso0p8 = myTrackIso.iso_dr03_dz005_pt08  / pfcands_p4().at(ipf).pt();
+	float iso0p8 = trackIso(ipf, 0.3, dz_cut, false, 0.8) / pfcands_p4().at(ipf).pt();
 	if( iso0p8 < trkreliso10pt0p8_ && !isGoodLepton ){
 	  trkpt10pt0p8_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt0p8_   = iso0p8;
@@ -2202,7 +2607,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandiso10pt0p8_ = iso0p8;
 	}
 
-	float iso0p9 = myTrackIso.iso_dr03_dz005_pt09  / pfcands_p4().at(ipf).pt();
+	float iso0p9 = trackIso(ipf, 0.3, dz_cut, false, 0.9) / pfcands_p4().at(ipf).pt();
 	if( iso0p9 < trkreliso10pt0p9_ && !isGoodLepton ){
 	  trkpt10pt0p9_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt0p9_   = iso0p9;
@@ -2212,7 +2617,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  pfcandiso10pt0p9_ = iso0p9;
 	}
 
-	float iso1p0 = myTrackIso.iso_dr03_dz005_pt10  / pfcands_p4().at(ipf).pt();
+	float iso1p0 = trackIso(ipf, 0.3, dz_cut, false, 1.0) / pfcands_p4().at(ipf).pt();
 	if( iso1p0 < trkreliso10pt1p0_ && !isGoodLepton ){
 	  trkpt10pt1p0_       = pfcands_p4().at(ipf).pt();
 	  trkreliso10pt1p0_   = iso1p0;
@@ -2225,27 +2630,83 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
       }
 
+      //------------------------------------------------------
+      // store pt and iso for most isolated track (pt>5 GeV)
+      //------------------------------------------------------
+
+      trkpt5_          = -1.0;
+      trkreliso5_      = 1000.;
+      mleptrk5_        = -1.0;
+      float miniso5    = 999;
+      trkpt5loose_     = -1.0;
+      trkreliso5loose_ = 1000.;
+
+      for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+
+	if( pfcands_p4().at(ipf).pt() < 5   ) continue;
+	if( pfcands_charge().at(ipf) == 0   ) continue;
+
+ 	int itrk = cms2.pfcands_trkidx().at(ipf);
+	
+	bool isGoodLepton = false;
+	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
+	}
+	bool isLeadLepton = ( dRbetweenVectors( pfcands_p4().at(ipf) , goodLeptons.at(imaxpt) ) < 0.1 ) ? true : false;
+
+ 	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > dz_cut_loose ) continue;
+ 	}
+
+	float iso = trackIso(ipf, 0.3, dz_cut_loose, true) / pfcands_p4().at(ipf).pt();
+
+	if( iso < trkreliso5loose_ && !isGoodLepton ){
+	  trkpt5loose_     = pfcands_p4().at(ipf).pt();
+	  trkreliso5loose_ = iso;
+	}
+
+	//tighten dz cut
+ 	if( itrk < (int)trks_trk_p4().size() && itrk >= 0 ){
+ 	  if( fabs( dz_trk_vtx(itrk,0) ) > dz_cut ) continue;
+ 	}
+ 
+	iso = trackIso(ipf) / pfcands_p4().at(ipf).pt();
+
+	if( iso < miniso5 && !isGoodLepton ){
+	  miniso5     = iso;
+	  trkpt5_     = pfcands_p4().at(ipf).pt();
+	  mleptrk5_   = (*lep1_+pfcands_p4().at(ipf)).pt();
+	  trkreliso5_ = iso;
+	  //itrk       = ipf;
+	}
+
+	if( iso < pfcandiso5_ && !isLeadLepton ){
+	  pfcandiso5_ = iso;
+	  pfcandpt5_ = pfcands_p4().at(ipf).pt();
+	  pfcand5_ = &pfcands_p4().at(ipf);
+	}
+
+      }
+
       //----------------------------------------
       // nvertex variables
       //----------------------------------------
 
       nvtx_ = 0;
     
-      for (size_t v = 0; v < vtxs_position().size(); ++v){
+      for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
 	if(isGoodVertex(v)) ++nvtx_;
       }
-
-      indexfirstGoodVertex_=firstGoodVertex();
 
       npu_ = 0;
       npuMinusOne_ = 0;
       npuPlusOne_ = 0;
       if ( !isData ) {
         //Information for out-of-time PU
-        for (unsigned int nbc=0;nbc<puInfo_nPUvertices().size();++nbc) {
-	  if (puInfo_bunchCrossing().at(nbc)==0) npu_ = puInfo_nPUvertices().at(nbc);
-	  else if (puInfo_bunchCrossing().at(nbc)==-1) npuMinusOne_ = puInfo_nPUvertices().at(nbc);
-	  else if (puInfo_bunchCrossing().at(nbc)==+1) npuPlusOne_ = puInfo_nPUvertices().at(nbc);
+        for (unsigned int nbc=0;nbc<cms2.puInfo_nPUvertices().size();++nbc) {
+	  if (cms2.puInfo_bunchCrossing().at(nbc)==0) npu_ = cms2.puInfo_nPUvertices().at(nbc);
+	  else if (cms2.puInfo_bunchCrossing().at(nbc)==-1) npuMinusOne_ = cms2.puInfo_nPUvertices().at(nbc);
+	  else if (cms2.puInfo_bunchCrossing().at(nbc)==+1) npuPlusOne_ = cms2.puInfo_nPUvertices().at(nbc);
 	}
 	//remove 3d-vtx reweighting for the moment, can do on the fly
 	//	n3dvtxweight_ = weight3D( npuMinusOne_, npu_, npuPlusOne_ );
@@ -2257,11 +2718,11 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // PDF Information
       //----------------------------------------
       if ( !isData ) {
-	pdfid1_ = int(pdfinfo_id1());
-	pdfid2_ = int(pdfinfo_id2()); 
-	pdfQ_   = pdfinfo_scale();
-	pdfx1_  = pdfinfo_x1();
-	pdfx2_  = pdfinfo_x2();
+	pdfid1_ = int(cms2.pdfinfo_id1());
+	pdfid2_ = int(cms2.pdfinfo_id2()); 
+	pdfQ_   = cms2.pdfinfo_scale();
+	pdfx1_  = cms2.pdfinfo_x1();
+	pdfx2_  = cms2.pdfinfo_x2();
       }
       //-------------------------------------
       // jet counting
@@ -2273,14 +2734,13 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       float maxjetpt  = -1.;
       float ht_ = 0.;
 
-      VofP4 vpfjets_p4;
-      vpfjets_p4.clear();
+      //      VofP4 vpfjets_p4;
       VofP4 vpfrawjets_p4;
+      //      vpfjets_p4.clear();
       vpfrawjets_p4.clear();
       VofiP4 vipfjets_p4;
       vipfjets_p4.clear();
-      
-      vector<float> vpfjets_csv;
+
       vector<float> fullcors;
       vector<float> l2l3cors;
       vector<float> rescors;
@@ -2289,9 +2749,8 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       l2l3cors.clear();
       rescors.clear();
       l1cors.clear();
-      vpfjets_csv.clear();
 
-      rhovor_ = evt_ww_rho_vor();
+      rhovor_ = cms2.evt_ww_rho_vor();
 
       float dmetx  = 0.0;
       float dmety  = 0.0;
@@ -2304,17 +2763,17 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if( fabs( pfjets_p4().at(ijet).eta() ) > 5.0 ) continue;
 
 	// get L1FastL2L3Residual total correction
-	jet_corrector_pfL1FastJetL2L3->setRho   ( evt_ww_rho_vor()           );
-	jet_corrector_pfL1FastJetL2L3->setJetA  ( pfjets_area().at(ijet)     );
-	jet_corrector_pfL1FastJetL2L3->setJetPt ( pfjets_p4().at(ijet).pt()  );
-	jet_corrector_pfL1FastJetL2L3->setJetEta( pfjets_p4().at(ijet).eta() );
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
 	double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
 
 	// get L1Fast, L2, L3, Residual individual corrections
-	jet_corrector_pfL1FastJetL2L3->setRho   ( evt_ww_rho_vor()           );
-	jet_corrector_pfL1FastJetL2L3->setJetA  ( pfjets_area().at(ijet)     );
-	jet_corrector_pfL1FastJetL2L3->setJetPt ( pfjets_p4().at(ijet).pt()  );
-	jet_corrector_pfL1FastJetL2L3->setJetEta( pfjets_p4().at(ijet).eta() );
+	jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+	jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
+	jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+	jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
 	vector<float> factors = jet_corrector_pfL1FastJetL2L3->getSubCorrections();
 
 	// get residual correction only
@@ -2341,29 +2800,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	//LorentzVector vjetUp    = corr    * pfjets_p4().at(ijet) * 1.075; // over-estimate...
 	//LorentzVector vjetDown  = corr    * pfjets_p4().at(ijet) * 0.925; // over-estimate...
 
-	//---------------------------------------------------------------------------                                                                                 
-        // Matching leptons with pfjet 
-        //---------------------------------------------------------------------------                                                                                 
-	float dr1 = ROOT::Math::VectorUtil::DeltaR( vjet, *lep1_ );
-
-	if( dr1 < lep1pfjetdr_ ){
-	  lep1pfjetdr_    = dr1;
-	  minvjet1         = vjet;
-	}
-
-	if(lep2_) {
-	  float dr2 = ROOT::Math::VectorUtil::DeltaR( vjet, *lep2_ );
-	  
-	  if( dr2 < lep2pfjetdr_ ){
-	    lep2pfjetdr_    = dr2;
-	    minvjet2        = vjet;
-	  }
-	}
-
 	// lepton-jet overlap removal
 	bool rejectJet = false;
 	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-	  if( ROOT::Math::VectorUtil::DeltaR( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
 	}
 	if( rejectJet ) continue;
 	          
@@ -2407,12 +2847,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 
 	// store L1FastL2L3Residual jet p4's pt > 15 GeV
-	if( vjet.pt() > 20 && fabs( vjet.eta() ) < 4.7 ){
+	if( vjet.pt() > 15 && fabs( vjet.eta() ) < 2.5 ){
+	  //	  vpfjets_p4.push_back( vjet );
 	  vipfjets_p4.push_back( ivjet );
-
-	  // the following 2 vectors are passed to the recoHadronicTop function
-	  vpfjets_p4.push_back(vjet); 
-	  vpfjets_csv.push_back(pfjets_combinedSecondaryVertexBJetTag().at(ijet));
 	}
 
 	// njets JEC up
@@ -2428,19 +2865,40 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	}
 
 	// njets: L1FastL2L3Residual, pt > 30 GeV
+	if( vjet.pt() > 30 && fabs( vjet.eta() ) < 2.5 ){
+	  npfjets30_ ++;
+	  //count jets that are not overlapping with second lepton
+	  npfjets30lepcorr_ ++;
+	  if (nleps_==2 &&  mclep2_->Pt() > 30.
+	      && dRbetweenVectors(*mclep2_, vjet) < 0.4 ) 
+	    npfjets30lepcorr_ --;
+	  htpf30_ += vjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 35 GeV
+	if( vjet.pt() > 35 && fabs( vjet.eta() ) < 2.5 ){
+	  npfjets35_ ++;
+	  htpf35_ += vjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 40 GeV
+	if( vjet.pt() > 40 && fabs( vjet.eta() ) < 2.5 ){
+	  npfjets40_ ++;
+	  htpf40_ += vjet.pt();
+	}
+
+	// njets: L1FastL2L3Residual, pt > 45 GeV
+	if( vjet.pt() > 45 && fabs( vjet.eta() ) < 2.5 ){
+	  npfjets45_ ++;
+	  htpf45_ += vjet.pt();
+	}
+
+	ht_ += vjet.pt();
+
 	if(       vjet.pt()    < 30. )           continue;
 	if( fabs( vjet.eta() ) > 2.5 )           continue;
 
-	htpf30_ += vjet.pt();
-        npfjets30_ ++;
-       
-        //count jets that are not overlapping with second lepton                                                                                             
-        npfjets30lepcorr_ ++;
-	if (nleps_==2 &&  mclep2_->Pt() > 30.
-	    && ROOT::Math::VectorUtil::DeltaR(*mclep2_, vjet) < 0.4 )
-	npfjets30lepcorr_ --;
-     
-
+	
 	//-------------------------------------
 	// b-tag counting
 	//-------------------------------------
@@ -2529,21 +2987,13 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  if (iscorrbtagcsvt) nbtagscsvtcorr_++;
 
 	} 
-
-      
+	
 	// store max jet pt
 	if( vjet.pt() > maxjetpt ){
 	  maxjetpt = vjet.pt();
 	  imaxjet  = ijet;
 	}
-      
       }
-
-
-      // store the lepton jet matching
-      
-      if (lep2pfjetdr_<9998.) leppfjet2_      = &minvjet2;      
-      if (lep1pfjetdr_<9998.) leppfjet1_ = &minvjet1;
 
       // no b-tagging corrections in data, so make counts same
       if (isData) {
@@ -2574,14 +3024,17 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       t1met30phi_     = p_t1met30.second;	  
 
       //phi-corrected type1 met
-      pair<float, float> p_t1metphicorr = getPhiCorrMET( t1met10_, t1met10phi_, nvtx_, !isData);
+      pair<float, float> p_t1metphicorr = 
+	getPhiCorrMET( t1met10_, t1met10phi_, nvtx_, !isData);
       t1metphicorr_    = p_t1metphicorr.first;
       t1metphicorrphi_ = p_t1metphicorr.second;
+
 
       // MET after Jet PT smearing.
       pair<float, float> p_t1met10Smear = Type1PFMETSmear(jetSmearer, isData, vpfrawjets_p4 , t1met10_, t1met10phi_);
       t1met10s_ = p_t1met10Smear.first;
       t1met10sphi_ = p_t1met10Smear.second;
+      
 
       //---------------------------------------
       // now calculate METup and METdown
@@ -2644,34 +3097,59 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //      sort(vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
       sort(vipfjets_p4.begin(), vipfjets_p4.end(), sortIP4ByPt);
 
-      for( int i = 0 ; i < vipfjets_p4.size() ; ++i ){
-	pfjets_.push_back(vipfjets_p4.at(i).p4obj);
-	pfjets_csv_.push_back(pfjets_combinedSecondaryVertexBJetTag().at(vipfjets_p4.at(i).p4ind));
-	pfjets_qgtag_.push_back(QGtagger(vipfjets_p4.at(i).p4obj,vipfjets_p4.at(i).p4ind,qglikeli_));
-
-	pfjets_corr_.push_back(vipfjets_p4.at(i).p4obj.pt()/pfjets_p4().at(vipfjets_p4.at(i).p4ind).pt());
-	pfjets_sigma_.push_back( getJetResolution(vipfjets_p4.at(i).p4obj, jetSmearer ) );
-
-	if( isData ){
-	  pfjets_mc3_.push_back( -1 );
-	  pfjets_genJetDr_.push_back( -1.0 );
-	  pfjets_lepjet_.push_back( -1 );
+      if( vipfjets_p4.size() > 0 ) {
+	pfjet1_  = &vipfjets_p4.at(0).p4obj;
+	bjet1_  = isCSVTagged(  vipfjets_p4.at(0).p4ind );
+	if (!isData) {
+	  lepjet1_ = getLeptonMatchIndex ( pfjet1_, mclep1_, mclep2_, 0.4 );
+	  qgjet1_ = isGenQGMatched( vipfjets_p4.at(0).p4obj, 0.4 );
+	  genjetdr1_ = dRGenJet ( vipfjets_p4.at(0).p4obj );
 	}
-	else{
-	  pfjets_mc3_.push_back(isGenQGLMatched( vipfjets_p4.at(i).p4obj, 0.4 ));
-	  pfjets_genJetDr_.push_back(dRGenJet ( vipfjets_p4.at(i).p4obj ));
-	  pfjets_lepjet_.push_back(getLeptonMatchIndex( &vipfjets_p4.at(i).p4obj,mclep1_, mclep2_, 0.4 ));
+      } 
+      if( vipfjets_p4.size() > 1 ) {
+	pfjet2_  = &vipfjets_p4.at(1).p4obj;
+	bjet2_ = isCSVTagged(  vipfjets_p4.at(1).p4ind );
+	if (!isData) {
+	  lepjet2_ = getLeptonMatchIndex ( pfjet2_, mclep1_, mclep2_, 0.4 );
+	  qgjet2_ = isGenQGMatched( vipfjets_p4.at(1).p4obj, 0.4 );
+	  genjetdr2_ = dRGenJet ( vipfjets_p4.at(1).p4obj );
 	}
-
-	//beta variables
-	pfjets_beta_.push_back(pfjet_beta(vipfjets_p4.at(i).p4ind,1));
-	pfjets_beta2_.push_back(pfjet_beta(vipfjets_p4.at(i).p4ind,2));
-        pfjets_beta_0p1_.push_back(  pfjet_beta( vipfjets_p4.at(i).p4ind, 1, 0.1 ) );
-        pfjets_beta2_0p1_.push_back(  pfjet_beta( vipfjets_p4.at(i).p4ind, 2, 0.1 ) );
-        // pfjets_beta_0p15_.push_back( pfjet_beta( vipfjets_p4.at(i).p4ind, 1, 0.15) );
-        // pfjets_beta2_0p15_.push_back( pfjet_beta( vipfjets_p4.at(i).p4ind, 2, 0.15) );
-        // pfjets_beta_0p2_.push_back(  pfjet_beta( vipfjets_p4.at(i).p4ind, 1, 0.2 ) );
-        // pfjets_beta2_0p2_.push_back(  pfjet_beta( vipfjets_p4.at(i).p4ind, 2, 0.2 ) );	
+      }
+      if( vipfjets_p4.size() > 2 ) {
+	pfjet3_  = &vipfjets_p4.at(2).p4obj;
+	bjet3_ = isCSVTagged(  vipfjets_p4.at(2).p4ind );
+	if (!isData) {
+	  lepjet3_ = getLeptonMatchIndex ( pfjet3_, mclep1_, mclep2_, 0.4 );
+	  qgjet3_ = isGenQGMatched( vipfjets_p4.at(2).p4obj, 0.4 );
+	  genjetdr3_ = dRGenJet ( vipfjets_p4.at(2).p4obj );
+	}
+      }
+      if( vipfjets_p4.size() > 3 ) {
+	pfjet4_  = &vipfjets_p4.at(3).p4obj;
+	bjet4_ = isCSVTagged(  vipfjets_p4.at(3).p4ind );
+	if (!isData) {
+	  lepjet4_ = getLeptonMatchIndex ( pfjet4_, mclep1_, mclep2_, 0.4 );
+	  qgjet4_ = isGenQGMatched( vipfjets_p4.at(3).p4obj, 0.4 );
+	  genjetdr4_ = dRGenJet ( vipfjets_p4.at(3).p4obj );
+	}
+      }
+      if( vipfjets_p4.size() > 4 ) {
+	pfjet5_  = &vipfjets_p4.at(4).p4obj;
+	bjet5_ = isCSVTagged(  vipfjets_p4.at(4).p4ind );
+	if (!isData) {
+	  lepjet5_ = getLeptonMatchIndex ( pfjet5_, mclep1_, mclep2_, 0.4 );
+	  qgjet5_ = isGenQGMatched( vipfjets_p4.at(4).p4obj, 0.4 );
+	  genjetdr5_ = dRGenJet ( vipfjets_p4.at(4).p4obj );
+	}
+      }
+      if( vipfjets_p4.size() > 5 ) {
+	pfjet6_  = &vipfjets_p4.at(5).p4obj;
+	bjet6_ = isCSVTagged(  vipfjets_p4.at(5).p4ind );
+	if (!isData) {
+	  lepjet6_ = getLeptonMatchIndex ( pfjet6_, mclep1_, mclep2_, 0.4 );
+	  qgjet6_ = isGenQGMatched( vipfjets_p4.at(5).p4obj, 0.4 );
+	  genjetdr6_ = dRGenJet ( vipfjets_p4.at(5).p4obj );
+	}
       }
 
       //store distance to closest jet for pfcand
@@ -2702,6 +3180,34 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       emjet10_     = -1;
       emjet20_     = -1;
 
+      //-------------------------------------------------------------
+      // find jet with max EM fraction outside tracker acceptance
+      //-------------------------------------------------------------
+
+      for (unsigned int ijet = 0; ijet < jets_p4().size(); ijet++) {
+	
+	LorentzVector vjet = jets_p4().at(ijet) * jets_corL1FastL2L3().at(ijet);
+
+	if( fabs( vjet.eta() ) < 2.5 )         continue;
+
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+
+	float emfrac = jets_emFrac().at(ijet);
+
+	if( vjet.pt() < 10. ) continue;
+
+	if( emfrac > emjet10_ ) emjet10_ = emfrac;
+
+	if( vjet.pt() < 20. ) continue;
+
+	if( emfrac > emjet20_ ) emjet20_ = emfrac;
+
+      }
+
       //--------------------------------
       // get non-isolated leptons
       //--------------------------------
@@ -2715,19 +3221,19 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
 
 	if( els_p4().at(iel).pt() < 10 )                                                                         continue;
-	if( !passElectronSelection_Stop2012_v3_NoIso( iel , vetoTransition,vetoTransition,useOldIsolation))      continue;
+	if( !passElectronSelection_Stop2012_v2_NoIso( iel , vetoTransition,vetoTransition,useOldIsolation))      continue;
 
 	// don't count the leptons that we already counted as good
 	bool isGoodLepton = false;
 	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-	  if( ROOT::Math::VectorUtil::DeltaR( els_p4().at(iel) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
+	  if( dRbetweenVectors( els_p4().at(iel) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
 	}
 	if( isGoodLepton ) continue;
 
 	// don't count leptons near b-jets (SSVM)
 	bool nearBJet = false;
 	for( int ijet = 0 ; ijet < (int)mediumBJets.size() ; ijet++ ){
-	  if( ROOT::Math::VectorUtil::DeltaR( els_p4().at(iel) , mediumBJets.at(ijet) ) < 0.4 ) nearBJet = true;
+	  if( dRbetweenVectors( els_p4().at(iel) , mediumBJets.at(ijet) ) < 0.4 ) nearBJet = true;
 	}
 	if( nearBJet ) continue;
 	
@@ -2750,14 +3256,14 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	// don't count the leptons that we already counted as good
 	bool isGoodLepton = false;
 	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-	  if( ROOT::Math::VectorUtil::DeltaR( mus_p4().at(imu) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
+	  if( dRbetweenVectors( mus_p4().at(imu) , goodLeptons.at(ilep) ) < 0.1 ) isGoodLepton = true;  
 	}
 	if( isGoodLepton ) continue;
 
 	// don't count leptons near b-jets SSVM)
 	bool nearBJet = false;
 	for( int ijet = 0 ; ijet < (int)mediumBJets.size() ; ijet++ ){
-	  if( ROOT::Math::VectorUtil::DeltaR( mus_p4().at(imu) , mediumBJets.at(ijet) ) < 0.4 ) nearBJet = true;
+	  if( dRbetweenVectors( mus_p4().at(imu) , mediumBJets.at(ijet) ) < 0.4 ) nearBJet = true;
 	}
 	if( nearBJet ) continue;
 	
@@ -2781,8 +3287,58 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       // }
 
       //---------------------------------
-      // gen jets
+      // L1offset jets
       //---------------------------------
+      
+      htoffset_    = 0.;
+      njetsoffset_ = 0;
+
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+	LorentzVector vjet = pfjets_corL1L2L3().at(ijet) * pfjets_p4().at(ijet);
+
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+          
+	if( fabs( vjet.eta() ) > 2.5 )           continue;
+	if( !passesPFJetID(ijet) )               continue;
+	if( vjet.pt() < 30. )                    continue;
+
+	njetsoffset_++;
+	htoffset_ += vjet.pt();
+
+      }
+
+      //---------------------------------
+      // uncorrected jets
+      //---------------------------------
+
+      htuncor_    = 0.;
+      njetsuncor_ = 0;
+
+      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+          
+	LorentzVector vjet = pfjets_cor().at(ijet) * pfjets_p4().at(ijet);
+
+	bool rejectJet = false;
+	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
+	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	}
+	if( rejectJet ) continue;
+          
+	if( fabs( vjet.eta() ) > 2.5 )           continue;
+	if( !passesPFJetID(ijet) )               continue;
+	if( vjet.pt() < 15. )                    continue;
+
+	if( vjet.pt() < 30. )                    continue;
+
+	njetsuncor_++;
+	htuncor_ += vjet.pt();
+
+      }
 
       ngenjets_ = 0;
       htgen_    = 0;
@@ -2794,7 +3350,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	  bool rejectJet = false;
 	  for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-	    if( ROOT::Math::VectorUtil::DeltaR( vgjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+	    if( dRbetweenVectors( vgjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
 	  }
 	  if( rejectJet ) continue;
 	    
@@ -2953,6 +3509,28 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	mbb_ = (mediumBJets.at(0)+mediumBJets.at(1)).M();
       }
 
+      //ugly bit of code to store information about the lepton, neutrino and W
+      //for single lepton events
+      if( !isData ){
+	bool foundlep = false;
+	bool foundnu  = false;
+	for (int igen = (cms2.genps_p4().size()-1); igen >-1; igen--) {
+	  int id = genps_id().at(igen);
+	  if (abs(id)==11 || abs(id)==13) {
+	    foundlep = true;
+	    mclep_ = &cms2.genps_p4()[igen];
+	  }
+	  if (abs(id)==12 || abs(id)==14) {
+	    foundnu = true;
+	    mcnu_  = &cms2.genps_p4()[igen];
+	  }
+	}
+	if (foundlep && foundnu) {
+	  mcmln_ = (*mclep_+*mcnu_).mass();
+	  mcmtln_ = getMT( mclep_->Pt() , mclep_->Phi() , mcnu_->Pt() , mcnu_->Phi() );
+	}
+      }
+
       /*
       //REPLACETOPMASS
       // calculate the top mass
@@ -2986,19 +3564,19 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       topmass_      = -999;//topMass;                      //topepton mass //REPLACE TOPMASS
       y_	    = pfmet_ / sqrt( ht_ ); //y=MET/sqrt(HT)
 
-      strcpy(dataset_, evt_dataset().at(0).Data());  //dataset name
+      strcpy(dataset_, cms2.evt_dataset().at(0).Data());  //dataset name
       run_          = evt_run();                          //run
       lumi_         = evt_lumiBlock();                    //lumi
       event_        = evt_event();                        //event
       nvtxweight_   = vtxweight(isData);
 
-      csc_       = evt_cscTightHaloId();
-      hbhe_      = evt_hbheFilter();
-      hcallaser_ = filt_hcalLaser();
-      ecaltp_    = filt_ecalTP();
-      trkfail_   = filt_trackingFailure();
+      csc_       = cms2.evt_cscTightHaloId();
+      hbhe_      = cms2.evt_hbheFilter();
+      hcallaser_ = cms2.filt_hcalLaser();
+      ecaltp_    = cms2.filt_ecalTP();
+      trkfail_   = cms2.filt_trackingFailure();
       eebadsc_   = 1;
-      if( isData ) eebadsc_ = filt_eeBadSc();
+      if( isData ) eebadsc_ = cms2.filt_eeBadSc();
       hbhenew_   = passHBHEFilter();
 
       k_ = 1;
@@ -3027,26 +3605,26 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	iso1_   = electronIsolation_rel   ( index1 , true ); //truncated
 	isont1_ = electronIsolation_rel_v1( index1 , true ); //non-truncated
 	isopfold1_ = electronIsoValuePF2012_FastJetEffArea( index1 , 0.3 , 0 );
-	isopf1_ = electronIsoValuePF2012_FastJetEffArea_v3( index1 , 0.3 , 0 , false);
+	isopf1_ = electronIsoValuePF2012_FastJetEffArea_v2( index1 , 0.3 , 0 , false);
 	etasc1_ = els_etaSC()[index1];
 	eoverpin_  = els_eOverPIn ()[index1];
 	eoverpout_ = els_eOverPOut()[index1];
-	dEtaIn_ = els_dEtaIn()[index1];
-	dPhiIn_ = els_dPhiIn()[index1];
-	sigmaIEtaIEta_ = els_sigmaIEtaIEta()[index1];
-	hOverE_ = els_hOverE()[index1];
-	ooemoop_ = fabs( (1.0/els_ecalEnergy()[index1]) - (els_eOverPIn()[index1]/els_ecalEnergy()[index1]) );
+	dEtaIn_ = cms2.els_dEtaIn()[index1];
+	dPhiIn_ = cms2.els_dPhiIn()[index1];
+	sigmaIEtaIEta_ = cms2.els_sigmaIEtaIEta()[index1];
+	hOverE_ = cms2.els_hOverE()[index1];
+	ooemoop_ = fabs( (1.0/cms2.els_ecalEnergy()[index1]) - (cms2.els_eOverPIn()[index1]/cms2.els_ecalEnergy()[index1]) );
 	d0vtx_ = electron_d0PV_smurfV3(index1);
 	dzvtx_ = electron_dzPV_smurfV3(index1);
-	expinnerlayers_ = els_exp_innerlayers()[index1];
-	fbrem_ = els_fbrem()[index1];
-	pfisoch_ = els_iso03_pf2012ext_ch().at(index1);
-	pfisoem_ = els_iso03_pf2012ext_em().at(index1);
-	pfisonh_ = els_iso03_pf2012ext_nh().at(index1);
-	eSC_ = els_eSC()[index1];
-	phiSC_ = els_phiSC()[index1];
-	eSCRaw_ = els_eSCRaw()[index1];
-	eSCPresh_ = els_eSCPresh()[index1];
+	expinnerlayers_ = cms2.els_exp_innerlayers()[index1];
+	fbrem_ = cms2.els_fbrem()[index1];
+	pfisoch_ = cms2.els_iso03_pf2012ext_ch().at(index1);
+	pfisoem_ = cms2.els_iso03_pf2012ext_em().at(index1);
+	pfisonh_ = cms2.els_iso03_pf2012ext_nh().at(index1);
+	eSC_ = cms2.els_eSC()[index1];
+	phiSC_ = cms2.els_phiSC()[index1];
+	eSCRaw_ = cms2.els_eSCRaw()[index1];
+	eSCPresh_ = cms2.els_eSCPresh()[index1];
       }
       else if( leptype_ == 1 ){
 	iso1_   = muonIsoValue( index1 , true  ); //truncated 
@@ -3064,22 +3642,22 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	etasc2_ = els_etaSC()[index2];
 	eoverpin2_  = els_eOverPIn ()[index2];
 	eoverpout2_ = els_eOverPOut()[index2];
-	dEtaIn2_ = els_dEtaIn()[index2];
-	dPhiIn2_ = els_dPhiIn()[index2];
-	sigmaIEtaIEta2_ = els_sigmaIEtaIEta()[index2];
-	hOverE2_ = els_hOverE()[index2];
-	ooemoop2_ = fabs( (1.0/els_ecalEnergy()[index2]) - (els_eOverPIn()[index2]/els_ecalEnergy()[index2]) );
+	dEtaIn2_ = cms2.els_dEtaIn()[index2];
+	dPhiIn2_ = cms2.els_dPhiIn()[index2];
+	sigmaIEtaIEta2_ = cms2.els_sigmaIEtaIEta()[index2];
+	hOverE2_ = cms2.els_hOverE()[index2];
+	ooemoop2_ = fabs( (1.0/cms2.els_ecalEnergy()[index2]) - (cms2.els_eOverPIn()[index2]/cms2.els_ecalEnergy()[index2]) );
 	d0vtx2_ = electron_d0PV_smurfV3(index2);
 	dzvtx2_ = electron_dzPV_smurfV3(index2);
-	expinnerlayers2_ = els_exp_innerlayers()[index2];
-	fbrem2_ = els_fbrem()[index2];
-	pfisoch2_ = els_iso03_pf2012ext_ch().at(index2);
-	pfisoem2_ = els_iso03_pf2012ext_em().at(index2);
-	pfisonh2_ = els_iso03_pf2012ext_nh().at(index2);
-	eSC2_ = els_eSC()[index2];
-	phiSC2_ = els_phiSC()[index2];
-	eSCRaw2_ = els_eSCRaw()[index2];
-	eSCPresh2_ = els_eSCPresh()[index2];
+	expinnerlayers2_ = cms2.els_exp_innerlayers()[index2];
+	fbrem2_ = cms2.els_fbrem()[index2];
+	pfisoch2_ = cms2.els_iso03_pf2012ext_ch().at(index2);
+	pfisoem2_ = cms2.els_iso03_pf2012ext_em().at(index2);
+	pfisonh2_ = cms2.els_iso03_pf2012ext_nh().at(index2);
+	eSC2_ = cms2.els_eSC()[index2];
+	phiSC2_ = cms2.els_phiSC()[index2];
+	eSCRaw2_ = cms2.els_eSCRaw()[index2];
+	eSCPresh2_ = cms2.els_eSCPresh()[index2];
       }
       else if(abs(id2_) == 13) {
 	iso2_   = muonIsoValue( index2 , true  ); //truncated 
@@ -3171,19 +3749,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       dltrigweight_ = (!isData && ngoodlep_>1) ? getdltrigweight( id1_, id2_ ) : 1.;
     
 
-      /// hadronic stop reconstruction
       candidates_.clear(); 
-
-      // OLD: used uncorrected jets
-      // list<Candidate> candidates = recoHadronicTop(jetSmearer, isData, lep1_,
-      //                   t1metphicorr_, t1metphicorrphi_,
-      //                   vpfrawjets_p4, pfjets_combinedSecondaryVertexBJetTag());
-
-      // NEW: use corrected jets and corresponding CSV values
       list<Candidate> candidates = recoHadronicTop(jetSmearer, isData, lep1_,
                         t1metphicorr_, t1metphicorrphi_,
-                        vpfjets_p4, vpfjets_csv);
-
+                        vpfrawjets_p4, pfjets_combinedSecondaryVertexBJetTag());
       for (list<Candidate>::iterator it = candidates.begin(); it != candidates.end(); ++it)
           candidates_.push_back(*it);
 
@@ -3193,7 +3762,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
          jets_.push_back(vpfrawjets_p4.at(i));
          btag_.push_back( pfjets_combinedSecondaryVertexBJetTag().at(i) );
       }
-
 
       outTree->Fill();
     
@@ -3208,7 +3776,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   cout << endl;
   cout << "Sample: " << prefix << endl;
   cout << endl;
-  cout << "-----------------------" << endl; 
+  cout << "-----------------------" << endl;
   cout << "| Lepton yields       |" << endl;
   cout << "-----------------------" << endl;
   cout << "ne  " << netot       << endl;
@@ -3260,6 +3828,106 @@ void singleLeptonLooper::BookHistos(char *prefix)
   cout << "End book histos..." << endl;
 }// CMS2::BookHistos()
 
+//--------------------------------------------------------------------
+
+void fillUnderOverFlow(TH1F *h1, float value, float weight)
+{
+  float min = h1->GetXaxis()->GetXmin();
+  float max = h1->GetXaxis()->GetXmax();
+
+  if (value > max) value = h1->GetBinCenter(h1->GetNbinsX());
+  if (value < min) value = h1->GetBinCenter(1);
+
+  h1->Fill(value, weight);
+}
+
+//--------------------------------------------------------------------
+
+void fillUnderOverFlow(TH2F *h2, float xvalue, float yvalue, float weight)
+{
+  float maxx = h2->GetXaxis()->GetXmax();
+  float minx = h2->GetXaxis()->GetXmin();
+  float maxy = h2->GetYaxis()->GetXmax();
+  float miny = h2->GetYaxis()->GetXmin();
+
+  if (xvalue > maxx) xvalue = h2->GetXaxis()->GetBinCenter(h2->GetNbinsX());
+  if (xvalue < minx) xvalue = h2->GetXaxis()->GetBinCenter(1);
+  if (yvalue > maxy) yvalue = h2->GetYaxis()->GetBinCenter(h2->GetNbinsY());
+  if (yvalue < miny) yvalue = h2->GetYaxis()->GetBinCenter(1);
+
+  h2->Fill(xvalue, yvalue, weight);
+}
+
+//--------------------------------------------------------------------
+
+// void fillUnderOverFlow(TProfile *h2, float xvalue, float yvalue)
+// {
+//   float maxx = h2->GetXaxis()->GetXmax();
+//   float minx = h2->GetXaxis()->GetXmin();
+//   float maxy = h2->GetYaxis()->GetXmax();
+//   float miny = h2->GetYaxis()->GetXmin();
+
+//   if (xvalue > maxx) xvalue = h2->GetXaxis()->GetBinCenter(h2->GetNbinsX());
+//   if (xvalue < minx) xvalue = h2->GetXaxis()->GetBinCenter(1);
+//   if (yvalue > maxy) yvalue = h2->GetYaxis()->GetBinCenter(h2->GetNbinsY());
+//   if (yvalue < miny) yvalue = h2->GetYaxis()->GetBinCenter(1);
+
+//   h2->Fill(xvalue, yvalue);
+// }
+
+//--------------------------------------------------------------------
+
+void fillOverFlow(TH1F *h1, float value, float weight)
+{
+  float max = h1->GetXaxis()->GetXmax();
+  if (value > max) value = h1->GetBinCenter(h1->GetNbinsX());
+  h1->Fill(value, weight);
+}
+
+//--------------------------------------------------------------------
+
+void fillOverFlow(TH2F *h2, float xvalue, float yvalue, float weight)
+{
+  float maxx = h2->GetXaxis()->GetXmax();
+  float maxy = h2->GetYaxis()->GetXmax();
+
+  if (xvalue > maxx) xvalue = h2->GetXaxis()->GetBinCenter(h2->GetNbinsX());
+  if (yvalue > maxy) yvalue = h2->GetYaxis()->GetBinCenter(h2->GetNbinsY());
+
+  h2->Fill(xvalue, yvalue, weight);
+}
+
+//--------------------------------------------------------------------
+
+void fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsIdx)
+{
+  fillUnderOverFlow(h1[myType][nJetsIdx], value, weight);      
+  fillUnderOverFlow(h1[myType][3],        value, weight);      
+  fillUnderOverFlow(h1[3][nJetsIdx],      value, weight);      
+  fillUnderOverFlow(h1[3][3],             value, weight);      
+}
+
+//--------------------------------------------------------------------
+
+void fillHistos(TH2F *h2[4][4],float xvalue, float yvalue, float weight, int myType, int nJetsIdx)
+{
+  fillUnderOverFlow(h2[myType][nJetsIdx], xvalue, yvalue, weight);      
+  fillUnderOverFlow(h2[myType][3],        xvalue, yvalue, weight);      
+  fillUnderOverFlow(h2[3][nJetsIdx],      xvalue, yvalue, weight);      
+  fillUnderOverFlow(h2[3][3],             xvalue, yvalue, weight);      
+}
+
+//--------------------------------------------------------------------
+
+void fillHistos(TProfile *h2[4][4],float xvalue, float yvalue, int myType, int nJetsIdx)
+{
+  h2[myType][nJetsIdx] -> Fill(xvalue, yvalue);      
+  h2[myType][3]        -> Fill(xvalue, yvalue);      
+  h2[3][nJetsIdx]      -> Fill(xvalue, yvalue);      
+  h2[3][3]             -> Fill(xvalue, yvalue);      
+}
+
+//--------------------------------------------------------------------
 
 void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
@@ -3413,12 +4081,19 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   // pfjets L1FastL2L3Res
   outTree->Branch("npfjets30",        &npfjets30_,        "npfjets30/I");
+  outTree->Branch("npfjets35",        &npfjets35_,        "npfjets35/I");
+  outTree->Branch("npfjets40",        &npfjets40_,        "npfjets40/I");
+  outTree->Branch("npfjets45",        &npfjets45_,        "npfjets45/I");
   outTree->Branch("npfjets30lepcorr", &npfjets30lepcorr_, "npfjets30lepcorr/I");
   outTree->Branch("knjets",           &knjets_,           "knjets/F");
 
   //rho correction
   outTree->Branch("rhovor",          &rhovor_,           "rhovor/F");
+
   outTree->Branch("htpf30",          &htpf30_,           "htpf30/F");
+  outTree->Branch("htpf35",          &htpf35_,           "htpf35/F");
+  outTree->Branch("htpf40",          &htpf40_,           "htpf40/F");
+  outTree->Branch("htpf45",          &htpf45_,           "htpf45/F");
 
   // type1 met flavors
   outTree->Branch("t1met10",         &t1met10_,          "t1met10/F");
@@ -3451,6 +4126,11 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("t1metphicorrmtdn"   , &t1metphicorrmtdn_   , "t1metphicorrmtdn/F");
   outTree->Branch("t1metphicorrlepmt"  , &t1metphicorrlepmt_  , "t1metphicorrlepmt/F");
 
+  outTree->Branch("htpfres30",        &htpfres30_,        "htpfres30/F");
+  outTree->Branch("htpfres35",        &htpfres35_,        "htpfres35/F");
+  outTree->Branch("htpfres40",        &htpfres40_,        "htpfres40/F");
+  outTree->Branch("htpfres45",        &htpfres45_,        "htpfres45/F");
+				      
   // btag variables		      
   outTree->Branch("nbtagsssv",        &nbtagsssv_,        "nbtagsssv/I");
   outTree->Branch("nbtagstcl",        &nbtagstcl_,        "nbtagstcl/I");
@@ -3464,6 +4144,30 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("nbtagscsvlcorr",   &nbtagscsvlcorr_,   "nbtagscsvlcorr/I");
   outTree->Branch("nbtagscsvmcorr",   &nbtagscsvmcorr_,   "nbtagscsvmcorr/I");
   outTree->Branch("nbtagscsvtcott",   &nbtagscsvtcorr_,   "nbtagscsvtcorr/I");
+  outTree->Branch("bjet1",            &bjet1_,            "bjet1/I");
+  outTree->Branch("bjet2",            &bjet2_,            "bjet2/I");
+  outTree->Branch("bjet3",            &bjet3_,            "bjet3/I");
+  outTree->Branch("bjet4",            &bjet4_,            "bjet4/I");
+  outTree->Branch("bjet5",            &bjet5_,            "bjet5/I");
+  outTree->Branch("bjet6",            &bjet6_,            "bjet6/I");
+  outTree->Branch("lepjet1",          &lepjet1_,          "lepjet1/I");
+  outTree->Branch("lepjet2",          &lepjet2_,          "lepjet2/I");
+  outTree->Branch("lepjet3",          &lepjet3_,          "lepjet3/I");
+  outTree->Branch("lepjet4",          &lepjet4_,          "lepjet4/I");
+  outTree->Branch("lepjet5",          &lepjet5_,          "lepjet5/I");
+  outTree->Branch("lepjet6",          &lepjet6_,          "lepjet6/I");
+  outTree->Branch("qgjet1",           &qgjet1_,           "qgjet1/I");
+  outTree->Branch("qgjet2",           &qgjet2_,           "qgjet2/I");
+  outTree->Branch("qgjet3",           &qgjet3_,           "qgjet3/I");
+  outTree->Branch("qgjet4",           &qgjet4_,           "qgjet4/I");
+  outTree->Branch("qgjet5",           &qgjet5_,           "qgjet5/I");
+  outTree->Branch("qgjet6",           &qgjet6_,           "qgjet6/I");
+  outTree->Branch("genjetdr1",        &genjetdr1_,        "genjetdr1/F");
+  outTree->Branch("genjetdr2",        &genjetdr2_,        "genjetdr2/F");
+  outTree->Branch("genjetdr3",        &genjetdr3_,        "genjetdr3/F");
+  outTree->Branch("genjetdr4",        &genjetdr4_,        "genjetdr4/F");
+  outTree->Branch("genjetdr5",        &genjetdr5_,        "genjetdr5/F");
+  outTree->Branch("genjetdr6",        &genjetdr6_,        "genjetdr6/F");
   outTree->Branch("njetsUp",          &njetsUp_,          "njetsUp/I");
   outTree->Branch("njetsDown",        &njetsDown_,        "njetsDown/I");
   outTree->Branch("htUp",             &htUp_,             "htUp/F");
@@ -3472,7 +4176,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("npuMinusOne",      &npuMinusOne_,      "npuMinusOne/I");
   outTree->Branch("npuPlusOne",       &npuPlusOne_,       "npuPlusOne/I");
   outTree->Branch("nvtx",             &nvtx_,             "nvtx/I");
-  outTree->Branch("indexfirstGoodVertex_",             &indexfirstGoodVertex_,             "indexfirstGoodVertex/I");
   outTree->Branch("nvtxweight",       &nvtxweight_,       "nvtxweight/F");
   outTree->Branch("n3dvtxweight",     &n3dvtxweight_,     "n3dvtxweight/F");
   outTree->Branch("pdfid1",           &pdfid1_,           "pdfid1/I");
@@ -3604,22 +4307,12 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pftauddr",         &pftauddr_,         "pftauddr/F");  
   outTree->Branch("pftaudpt",         &pftaudpt_,         "pftaudpt/F");  
   outTree->Branch("pftaudmindrj",     &pftaudmindrj_,     "pftaudmindrj/F");  
-
-  outTree->Branch("pfcandid5",        &pfcandid5_,        "pfcandid5/I");
   outTree->Branch("pfcandiso5",       &pfcandiso5_,       "pfcandiso5/F");  
   outTree->Branch("pfcandpt5",        &pfcandpt5_,        "pfcandpt5/F");  
   outTree->Branch("pfcandmindrj5",    &pfcandmindrj5_,    "pfcandmindrj5/F");  
-
-  outTree->Branch("pfcandid10",       &pfcandid10_,       "pfcandid10/I");
   outTree->Branch("pfcandiso10",      &pfcandiso10_,      "pfcandiso10/F");  
   outTree->Branch("pfcandpt10",       &pfcandpt10_,       "pfcandpt10/F");  
   outTree->Branch("pfcandmindrj10",   &pfcandmindrj10_,   "pfcandmindrj10/F");  
-
-  outTree->Branch("pfcanddirid10",       &pfcanddirid10_,       "pfcanddirid10/I");
-  outTree->Branch("pfcanddiriso10",      &pfcanddiriso10_,      "pfcanddiriso10/F");  
-  outTree->Branch("pfcanddirpt10",       &pfcanddirpt10_,       "pfcanddirpt10/F");  
-  outTree->Branch("pfcanddirmindrj10",   &pfcanddirmindrj10_,   "pfcanddirmindrj10/F");  
-
   outTree->Branch("emjet10",          &emjet10_,          "emjet10/F");  
   outTree->Branch("mjj",              &mjj_,              "mjj/F");  
   outTree->Branch("emjet20",          &emjet20_,          "emjet20/F");  
@@ -3708,8 +4401,14 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pftaud"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pftaud_	);
   outTree->Branch("pfcand5"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcand5_	);
   outTree->Branch("pfcand10"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcand10_	);
-  outTree->Branch("pfcanddir10"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcanddir10_	);
   outTree->Branch("jet"	      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
+
+  outTree->Branch("pfjet1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet1_	);
+  outTree->Branch("pfjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet2_	);
+  outTree->Branch("pfjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet3_	);
+  outTree->Branch("pfjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet4_	);
+  outTree->Branch("pfjet5"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet5_	);
+  outTree->Branch("pfjet6"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfjet6_	);
 
   outTree->Branch("nonisoel"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisoel_	);
   outTree->Branch("nonisomu"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisomu_	);
@@ -3728,30 +4427,120 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("jets", "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >", &jets_ );
   outTree->Branch("btag", "std::vector<float>", &btag_ );
 
-  outTree->Branch("pfjets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >", &pfjets_ );
-  outTree->Branch("pfjets_csv", "std::vector<float>", &pfjets_csv_ );
- 
-  outTree->Branch("pfjets_beta",      "std::vector<float>", &pfjets_beta_      );
-  outTree->Branch("pfjets_beta2",     "std::vector<float>", &pfjets_beta2_     );
-  outTree->Branch("pfjets_beta_0p1",  "std::vector<float>", &pfjets_beta_0p1_  );
-  outTree->Branch("pfjets_beta2_0p1", "std::vector<float>", &pfjets_beta2_0p1_ );
-  // outTree->Branch("pfjets_beta_0p15", "std::vector<float>", &pfjets_beta_0p15_ );
-  // outTree->Branch("pfjets_beta2_0p15","std::vector<float>", &pfjets_beta2_0p15_);
-  // outTree->Branch("pfjets_beta_0p2",  "std::vector<float>", &pfjets_beta_0p2_  );
-  // outTree->Branch("pfjets_beta2_0p2", "std::vector<float>", &pfjets_beta2_0p2_ );
-
-  outTree->Branch("pfjets_corr",    "std::vector<float>", &pfjets_corr_     );
-  outTree->Branch("pfjets_mc3",     "std::vector<int>"  , &pfjets_mc3_      ); 
-  outTree->Branch("pfjets_genJetDr","std::vector<float>", &pfjets_genJetDr_ );
-  outTree->Branch("pfjets_qgtag",   "std::vector<float>", &pfjets_qgtag_    );
-  outTree->Branch("pfjets_sigma",   "std::vector<float>", &pfjets_sigma_    );
-  outTree->Branch("pfjets_lepjet",  "std::vector<int>"  , &pfjets_lepjet_   );
-
 }
 
 //--------------------------------------------------------------------
 
-/*
+float singleLeptonLooper::dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx ){
+  
+  return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
+  
+}
+
+float singleLeptonLooper::trackIso( int thisPf , float coneR , float dz_thresh , bool dovtxcut , float pt_thresh ){
+
+  float iso = 0.0;
+
+  for (int ipf = 0; ipf < (int)cms2.pfcands_p4().size(); ipf++) {
+
+    if( ipf == thisPf                 ) continue; // skip this PFCandidate
+    if( cms2.pfcands_charge().at(ipf) == 0 ) continue; // skip neutrals
+    if( cms2.pfcands_p4().at(ipf).pt() < pt_thresh ) continue; // skip pfcands below pt threshold
+
+    if( dRbetweenVectors( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) ) > coneR ) continue;
+
+    int itrk = cms2.pfcands_trkidx().at(ipf);
+    
+    if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ){
+      //note: this should only happen for electrons which do not have a matched track
+      //currently we are just ignoring these guys
+      continue;
+    }
+    
+    //----------------------------------------
+    // find closest PV and dz w.r.t. that PV
+    //----------------------------------------
+    
+    float mindz = 999.;
+    int vtxi    = -1;
+      
+    if (dovtxcut) {
+      for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
+	
+	if(!isGoodVertex(ivtx)) continue;
+	
+	float mydz = dz_trk_vtx(itrk,ivtx);
+	fillOverFlow( h_dz_vtx_trk , mydz );
+	
+	if (fabs(mydz) < fabs(mindz)) {
+	  mindz = mydz;
+	  vtxi = ivtx;
+	}
+	
+      }
+    
+    //----------------------------------------------------------------------------
+    // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons
+    //----------------------------------------------------------------------------
+    
+      if ( vtxi != 0 )     continue;
+    } else {
+      mindz = dz_trk_vtx(itrk,0);
+    }
+    if ( fabs(mindz) > dz_thresh )     continue;
+
+    //---------------------------------------
+    // passes cuts, add up isolation value
+    //---------------------------------------
+
+    iso += cms2.pfcands_p4().at(ipf).pt();
+
+  }
+
+  return iso;
+}
+
+// std::vector<float> trackIsoPtRanges( int thisPf , float coneR , float dz_thresh ){
+
+//   float iso[10];
+//   for (int i=0; i<10; ++i) iso[i] = 0.0;
+  
+//   for (int ipf = 0; ipf < (int)cms2.pfcands_p4().size(); ipf++) {
+
+//     if( ipf == thisPf                 ) continue; // skip this PFCandidate
+//     if( cms2.pfcands_charge().at(ipf) == 0 ) continue; // skip neutrals
+
+//     if( dRbetweenVectors( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) ) > coneR ) continue;
+
+//     int itrk = cms2.pfcands_trkidx().at(ipf);
+    
+//     if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ){
+//       //note: this should only happen for electrons which do not have a matched track
+//       //currently we are just ignoring these guys
+//       continue;
+//     }
+    
+//     float mindz = dz_trk_vtx(itrk,0);
+//     if ( fabs(mindz) > dz_thresh )     continue;
+
+//     //---------------------------------------
+//     // passes cuts, add up isolation value
+//     //---------------------------------------
+    
+//     //figure out which pT threshold this track passes
+//     float pfcandpt = cms2.pfcands_p4().at(ipf).pt();
+//     for int (i=0; i<10; ++i) {
+// 	if ( pfcandpt > 0.1*i+0.1 ) 
+// 	  iso[i] += pfcandpt;	  
+//       }
+//   } 
+
+//   std::vector<float> isovec;
+//   for (int i=0; i<10; ++i) isovec.push_back(iso[i]);
+  
+//   return isovec;
+
+// }
 
 std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , float dz_thresh ){
 
@@ -3764,14 +4553,13 @@ std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , floa
   for (int ipf = 0; ipf < (int)cms2.pfcands_p4().size(); ipf++) {
 
     if( ipf == thisPf                 ) continue; // skip this PFCandidate
-    float dR = ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) );
+    float dR = dRbetweenVectors( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) );
     if( dR > coneR ) continue;
     float pfpt = cms2.pfcands_p4().at(ipf).pt();
 
     //----------------------------------------
     // neutrals
     //----------------------------------------
-
 
     if( cms2.pfcands_charge().at(ipf) == 0 ) {
       // skip neutrals with pT < 1 GeV to reduce pileup dependence
@@ -3784,14 +4572,14 @@ std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , floa
 	//photons 
 	if (pfid == 22) {
 	  // to remove pi0s and possible radiation from their photons
-	    if (deta <= 0.1) continue;
-	      iso += pfpt;
-	        emiso += pfpt;
-		}
-		else {
-		  iso += pfpt;
-		    nhiso += pfpt;
-		    }
+	  if (deta <= 0.1) continue;
+	  iso += pfpt;
+	  emiso += pfpt;
+	}
+	else {
+	  iso += pfpt;
+	  nhiso += pfpt;
+	}
     }
 
     //----------------------------------------
@@ -3803,9 +4591,9 @@ std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , floa
       int itrk = cms2.pfcands_trkidx().at(ipf);
     
       if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ){
-      //note: this should only happen for electrons which do not have a matched track
-      //currently we are just ignoring these guys
-      continue; 
+	//note: this should only happen for electrons which do not have a matched track
+	//currently we are just ignoring these guys
+	continue; 
       }
     
       //----------------------------------------
@@ -3816,15 +4604,15 @@ std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , floa
       // int vtxi    = -1;
       
       // for (unsigned int ivtx = 0; ivtx < cms2.davtxs_position().size(); ivtx++) {
-      
-      // if(!isGoodDAVertex(ivtx)) continue;
+	
+      // 	if(!isGoodDAVertex(ivtx)) continue;
 
-      // float mydz = dz_trk_vtx(itrk,ivtx);
+      // 	float mydz = dz_trk_vtx(itrk,ivtx);
       
-      // if (fabs(mydz) < fabs(mindz)) {
-      //   mindz = mydz;
-      //   vtxi = ivtx;
-      // }
+      // 	if (fabs(mydz) < fabs(mindz)) {
+      // 	  mindz = mydz;
+      // 	  vtxi = ivtx;
+      // 	}
          
       // }
     
@@ -3857,8 +4645,73 @@ std::vector<float> singleLeptonLooper::totalIso( int thisPf , float coneR , floa
   return isos;
 }
 
-*/
+pair<float,float> singleLeptonLooper::getPhiCorrMET( float met, float metphi, int nvtx, bool ismc ) {
 
+  //using met phi corrections from C. Veelken (emails from Oct. 4th)
+  //previous versions are available here:
+  //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/Type1MET/python/pfMETsysShiftCorrections_cfi.py
+
+  // Data
+  // ------
+  // x :  "+2.87340e-01 + 3.29813e-01*Nvtx" 
+  // y : "-2.27938e-01 - 1.71272e-01*Nvtx"
+  // MC
+  // ------            
+  // x : "+8.72683e-02 - 1.66671e-02*Nvtx"
+  // y :  "+1.86650e-01 - 1.21946e-01*Nvtx"
+  
+
+  float metx = met * cos( metphi );
+  float mety = met * sin( metphi );
+
+  float shiftx = 0.;
+  float shifty = 0.;
+
+  //use correction for data vs. mc 
+  shiftx = ismc ? (+8.72683e-02 - 1.66671e-02*nvtx)
+    : (+2.87340e-01 + 3.29813e-01*nvtx);
+  shifty = ismc ? (+1.86650e-01 - 1.21946e-01*nvtx)
+    : (-2.27938e-01 - 1.71272e-01*nvtx);
+  
+  metx -= shiftx;
+  mety -= shifty;
+
+  pair<float, float> phicorrmet = make_pair( sqrt( metx*metx + mety*mety ), atan2( mety , metx ) );
+  return phicorrmet;
+}
+
+pair<float,float> singleLeptonLooper::getTrackerMET( P4 *lep, double deltaZCut, bool dolepcorr )
+{
+
+  if ( cms2.vtxs_sumpt().empty() ) return make_pair(-999.,-999.);
+
+  float pX = 0.;
+  float pY = 0.;
+
+  if (dolepcorr ) {
+    pX -= lep->px();
+    pY -= lep->py();
+  }
+  
+  for (unsigned int i=0; i<cms2.pfcands_particleId().size(); ++i){
+        if ( cms2.pfcands_charge().at(i)==0 ) continue;
+
+	if ( dolepcorr && dRbetweenVectors( cms2.pfcands_p4().at(i) , *lep ) < 0.1 ) continue;
+
+        int trkIndex = cms2.pfcands_trkidx().at(i);
+        if (trkIndex<0) continue;
+        double dzpv = dzPV(cms2.trks_vertex_p4()[trkIndex], cms2.trks_trk_p4()[trkIndex], cms2.vtxs_position().front());
+
+        if ( fabs(dzpv) > deltaZCut) continue;
+
+        pX -= cms2.pfcands_p4().at(i).px();
+        pY -= cms2.pfcands_p4().at(i).py();
+    }
+
+  pair<float, float> trkmet = make_pair( sqrt( pX*pX + pY*pY ), atan2( pY , pX ) );
+  return trkmet;
+  
+}
 
 float getdltrigweight(int id1, int id2)
 { 
@@ -3914,8 +4767,8 @@ float getsltrigweight(int id1, float pt, float eta)
   } else if ( abs(id1)==13 ) {//muon efficiencies
 
     if ( fabs(eta)<0.8 ) {
-      if (pt>=20 && pt<22)  return  0.00; 
-      if (pt>=22 && pt<24)  return  0.03;  
+      if (pt>=20 && pt<22)  return  0.00;	 
+      if (pt>=22 && pt<24)  return  0.03; 	 
       if (pt>=24 && pt<26)  return  0.87; 
       if (pt>=26 && pt<28)  return  0.90; 
       if (pt>=28 && pt<30)  return  0.91; 
@@ -3973,3 +4826,4 @@ float getsltrigweight(int id1, float pt, float eta)
   return 1.;
 
 }
+
