@@ -951,7 +951,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( !passSUSYTrigger2012_v2( isData ) ) continue;
 
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
-        if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
+        //if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 10. )   continue;
 	if( pt2020 && TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
