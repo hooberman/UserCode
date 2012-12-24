@@ -89,6 +89,8 @@ class Z_looper
   Float_t eff100_;
   Float_t eff200_;
   Float_t eff300_;
+  Int_t   ssmu1_;
+  Int_t   ssmu2_;
   Int_t   id1_;
   Int_t   id2_;
   Int_t   nlep_;

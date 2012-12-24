@@ -1036,6 +1036,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       ptll_ = hyp_ll_p4().at(hypIdx).pt();
       ptlt_ = hyp_lt_p4().at(hypIdx).pt();
 
+      ssmu1_ = -1;
+      ssmu2_ = -1;
+
       if( hyp_ll_p4().at(hypIdx).pt() > hyp_lt_p4().at(hypIdx).pt() ){
 	
 	index1 = hyp_ll_index()[hypIdx];
@@ -1046,6 +1049,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	id1_  = hyp_ll_id()[hypIdx];
 	id2_  = hyp_lt_id()[hypIdx];
 	
+	if( abs(id1_) == 13 ) ssmu1_ = muonId( index1 , NominalSSv5 ) ? 1 : 0;
+	if( abs(id2_) == 13 ) ssmu2_ = muonId( index2 , NominalSSv5 ) ? 1 : 0;
       }
       
       //--------------------------
@@ -1061,7 +1066,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	lep2_ = &hyp_ll_p4().at(hypIdx);
 	id1_  = hyp_lt_id()[hypIdx];
 	id2_  = hyp_ll_id()[hypIdx];
-	
+
+	if( abs(id1_) == 13 ) ssmu1_ = muonId( index1 , NominalSSv5 ) ? 1 : 0;
+	if( abs(id2_) == 13 ) ssmu2_ = muonId( index2 , NominalSSv5 ) ? 1 : 0;	
       }
 
       dphill_ = acos( cos( (*lep1_).phi() - (*lep2_).phi() ) );
@@ -2633,6 +2640,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("dataset",      &dataset_,      "dataset[500]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
   babyTree_->Branch("xsec",         &xsec_,         "xsec/F"         );
+  babyTree_->Branch("ssmu1",        &ssmu1_,        "ssmu1/I"        );
+  babyTree_->Branch("ssmu2",        &ssmu2_,        "ssmu2/I"        );
   babyTree_->Branch("eldup",        &eldup_,        "eldup/I"        );
   babyTree_->Branch("btagweight",   &btagweight_,   "btagweight/F"   );
   babyTree_->Branch("btagweightup", &btagweightup_, "btagweightup/F" );
