@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-01";
+const char* iter                 = "V00-02-02";
 const char* jsonfilename         = "../jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
 
 // https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1968.html   19.3 fb-1
@@ -382,7 +382,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS6.root",true);
   }
   else{
-    set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS10_9p7fb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS10_19fb_Zselection.root",true);
   }
 
   // ofstream* ofile = new ofstream();
@@ -751,8 +751,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	else if(TString(prefix).Contains("wzsms") ){
-	  mg_ = sparm_values().at(0);
-	  ml_ = sparm_values().at(1);
+	  mg_ = -1;//sparm_values().at(0);
+	  ml_ = -1;//sparm_values().at(1);
 	  x_  = -999;
 
 	  int   mgbin = xsec_C1N2->FindBin(mg_);
@@ -792,7 +792,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	else if(TString(prefix).Contains("gmsb") ){
 
-	  mg_     = sparm_values().at(0);
+	  mg_     = -1;//sparm_values().at(0);
 	  weight_ = lumi * getGMSBCrossSection( mg_ ) * (1000.0 / 300000.0);
 
 	  ml_ = -999;
@@ -960,7 +960,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( !passSUSYTrigger2012_v2( isData ) ) continue;
 
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
-        //if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
+        if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 10. )   continue;
 	if( pt2020 && TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
