@@ -15,6 +15,7 @@ namespace tas {
 	bool &ls_isValid() { return cms2.ls_isValid(); }
 	bool &filt_ecalBE() { return cms2.filt_ecalBE(); }
 	bool &filt_ecalDR() { return cms2.filt_ecalDR(); }
+	bool &filt_ecalLaser() { return cms2.filt_ecalLaser(); }
 	bool &filt_ecalTP() { return cms2.filt_ecalTP(); }
 	bool &filt_eeBadSc() { return cms2.filt_eeBadSc(); }
 	bool &filt_greedyMuon() { return cms2.filt_greedyMuon(); }
@@ -793,7 +794,6 @@ namespace tas {
 	vector<float> &convs_chi2() { return cms2.convs_chi2(); }
 	vector<float> &convs_dl() { return cms2.convs_dl(); }
 	vector<float> &convs_ndof() { return cms2.convs_ndof(); }
-	vector<float> &sparm_values() { return cms2.sparm_values(); }
 	vector<float> &scs_clustersSize() { return cms2.scs_clustersSize(); }
 	vector<float> &scs_crystalsSize() { return cms2.scs_crystalsSize(); }
 	vector<float> &scs_e1x3() { return cms2.scs_e1x3(); }
@@ -811,6 +811,9 @@ namespace tas {
 	vector<float> &scs_energy() { return cms2.scs_energy(); }
 	vector<float> &scs_eta() { return cms2.scs_eta(); }
 	vector<float> &scs_hoe() { return cms2.scs_hoe(); }
+	vector<float> &scs_laserCorMax() { return cms2.scs_laserCorMax(); }
+	vector<float> &scs_laserCorMean() { return cms2.scs_laserCorMean(); }
+	vector<float> &scs_laserCorSeed() { return cms2.scs_laserCorSeed(); }
 	vector<float> &scs_phi() { return cms2.scs_phi(); }
 	vector<float> &scs_preshowerEnergy() { return cms2.scs_preshowerEnergy(); }
 	vector<float> &scs_rawEnergy() { return cms2.scs_rawEnergy(); }

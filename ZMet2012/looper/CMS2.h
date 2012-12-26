@@ -61,6 +61,9 @@ protected:
 	bool filt_ecalDR_;
 	TBranch *filt_ecalDR_branch;
 	bool filt_ecalDR_isLoaded;
+	bool filt_ecalLaser_;
+	TBranch *filt_ecalLaser_branch;
+	bool filt_ecalLaser_isLoaded;
 	bool filt_ecalTP_;
 	TBranch *filt_ecalTP_branch;
 	bool filt_ecalTP_isLoaded;
@@ -2395,9 +2398,6 @@ protected:
 	vector<float> convs_ndof_;
 	TBranch *convs_ndof_branch;
 	bool convs_ndof_isLoaded;
-	vector<float> sparm_values_;
-	TBranch *sparm_values_branch;
-	bool sparm_values_isLoaded;
 	vector<float> scs_clustersSize_;
 	TBranch *scs_clustersSize_branch;
 	bool scs_clustersSize_isLoaded;
@@ -2449,6 +2449,15 @@ protected:
 	vector<float> scs_hoe_;
 	TBranch *scs_hoe_branch;
 	bool scs_hoe_isLoaded;
+	vector<float> scs_laserCorMax_;
+	TBranch *scs_laserCorMax_branch;
+	bool scs_laserCorMax_isLoaded;
+	vector<float> scs_laserCorMean_;
+	TBranch *scs_laserCorMean_branch;
+	bool scs_laserCorMean_isLoaded;
+	vector<float> scs_laserCorSeed_;
+	TBranch *scs_laserCorSeed_branch;
+	bool scs_laserCorSeed_isLoaded;
 	vector<float> scs_phi_;
 	TBranch *scs_phi_branch;
 	bool scs_phi_isLoaded;
@@ -3861,6398 +3870,6413 @@ void Init(TTree *tree) {
 	hlt_bits_branch = 0;
 	if (tree->GetAlias("hlt_bits") != 0) {
 		hlt_bits_branch = tree->GetBranch(tree->GetAlias("hlt_bits"));
-		hlt_bits_branch->SetAddress(&hlt_bits_);
+		if (hlt_bits_branch) {hlt_bits_branch->SetAddress(&hlt_bits_);}
 	}
 	evt_bsp4_branch = 0;
 	if (tree->GetAlias("evt_bsp4") != 0) {
 		evt_bsp4_branch = tree->GetBranch(tree->GetAlias("evt_bsp4"));
-		evt_bsp4_branch->SetAddress(&evt_bsp4_);
+		if (evt_bsp4_branch) {evt_bsp4_branch->SetAddress(&evt_bsp4_);}
 	}
 	l1_met_p4_branch = 0;
 	if (tree->GetAlias("l1_met_p4") != 0) {
 		l1_met_p4_branch = tree->GetBranch(tree->GetAlias("l1_met_p4"));
-		l1_met_p4_branch->SetAddress(&l1_met_p4_);
+		if (l1_met_p4_branch) {l1_met_p4_branch->SetAddress(&l1_met_p4_);}
 	}
 	l1_mht_p4_branch = 0;
 	if (tree->GetAlias("l1_mht_p4") != 0) {
 		l1_mht_p4_branch = tree->GetBranch(tree->GetAlias("l1_mht_p4"));
-		l1_mht_p4_branch->SetAddress(&l1_mht_p4_);
+		if (l1_mht_p4_branch) {l1_mht_p4_branch->SetAddress(&l1_mht_p4_);}
 	}
 	els_mc_motherp4_branch = 0;
 	if (tree->GetAlias("els_mc_motherp4") != 0) {
 		els_mc_motherp4_branch = tree->GetBranch(tree->GetAlias("els_mc_motherp4"));
-		els_mc_motherp4_branch->SetAddress(&els_mc_motherp4_);
+		if (els_mc_motherp4_branch) {els_mc_motherp4_branch->SetAddress(&els_mc_motherp4_);}
 	}
 	els_mc_p4_branch = 0;
 	if (tree->GetAlias("els_mc_p4") != 0) {
 		els_mc_p4_branch = tree->GetBranch(tree->GetAlias("els_mc_p4"));
-		els_mc_p4_branch->SetAddress(&els_mc_p4_);
+		if (els_mc_p4_branch) {els_mc_p4_branch->SetAddress(&els_mc_p4_);}
 	}
 	jets_mc_gp_p4_branch = 0;
 	if (tree->GetAlias("jets_mc_gp_p4") != 0) {
 		jets_mc_gp_p4_branch = tree->GetBranch(tree->GetAlias("jets_mc_gp_p4"));
-		jets_mc_gp_p4_branch->SetAddress(&jets_mc_gp_p4_);
+		if (jets_mc_gp_p4_branch) {jets_mc_gp_p4_branch->SetAddress(&jets_mc_gp_p4_);}
 	}
 	jets_mc_motherp4_branch = 0;
 	if (tree->GetAlias("jets_mc_motherp4") != 0) {
 		jets_mc_motherp4_branch = tree->GetBranch(tree->GetAlias("jets_mc_motherp4"));
-		jets_mc_motherp4_branch->SetAddress(&jets_mc_motherp4_);
+		if (jets_mc_motherp4_branch) {jets_mc_motherp4_branch->SetAddress(&jets_mc_motherp4_);}
 	}
 	jets_mc_p4_branch = 0;
 	if (tree->GetAlias("jets_mc_p4") != 0) {
 		jets_mc_p4_branch = tree->GetBranch(tree->GetAlias("jets_mc_p4"));
-		jets_mc_p4_branch->SetAddress(&jets_mc_p4_);
+		if (jets_mc_p4_branch) {jets_mc_p4_branch->SetAddress(&jets_mc_p4_);}
 	}
 	mus_mc_motherp4_branch = 0;
 	if (tree->GetAlias("mus_mc_motherp4") != 0) {
 		mus_mc_motherp4_branch = tree->GetBranch(tree->GetAlias("mus_mc_motherp4"));
-		mus_mc_motherp4_branch->SetAddress(&mus_mc_motherp4_);
+		if (mus_mc_motherp4_branch) {mus_mc_motherp4_branch->SetAddress(&mus_mc_motherp4_);}
 	}
 	mus_mc_p4_branch = 0;
 	if (tree->GetAlias("mus_mc_p4") != 0) {
 		mus_mc_p4_branch = tree->GetBranch(tree->GetAlias("mus_mc_p4"));
-		mus_mc_p4_branch->SetAddress(&mus_mc_p4_);
+		if (mus_mc_p4_branch) {mus_mc_p4_branch->SetAddress(&mus_mc_p4_);}
 	}
 	pfjets_mc_gp_p4_branch = 0;
 	if (tree->GetAlias("pfjets_mc_gp_p4") != 0) {
 		pfjets_mc_gp_p4_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_gp_p4"));
-		pfjets_mc_gp_p4_branch->SetAddress(&pfjets_mc_gp_p4_);
+		if (pfjets_mc_gp_p4_branch) {pfjets_mc_gp_p4_branch->SetAddress(&pfjets_mc_gp_p4_);}
 	}
 	pfjets_mc_motherp4_branch = 0;
 	if (tree->GetAlias("pfjets_mc_motherp4") != 0) {
 		pfjets_mc_motherp4_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_motherp4"));
-		pfjets_mc_motherp4_branch->SetAddress(&pfjets_mc_motherp4_);
+		if (pfjets_mc_motherp4_branch) {pfjets_mc_motherp4_branch->SetAddress(&pfjets_mc_motherp4_);}
 	}
 	pfjets_mc_p4_branch = 0;
 	if (tree->GetAlias("pfjets_mc_p4") != 0) {
 		pfjets_mc_p4_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_p4"));
-		pfjets_mc_p4_branch->SetAddress(&pfjets_mc_p4_);
+		if (pfjets_mc_p4_branch) {pfjets_mc_p4_branch->SetAddress(&pfjets_mc_p4_);}
 	}
 	photons_mc_motherp4_branch = 0;
 	if (tree->GetAlias("photons_mc_motherp4") != 0) {
 		photons_mc_motherp4_branch = tree->GetBranch(tree->GetAlias("photons_mc_motherp4"));
-		photons_mc_motherp4_branch->SetAddress(&photons_mc_motherp4_);
+		if (photons_mc_motherp4_branch) {photons_mc_motherp4_branch->SetAddress(&photons_mc_motherp4_);}
 	}
 	photons_mc_p4_branch = 0;
 	if (tree->GetAlias("photons_mc_p4") != 0) {
 		photons_mc_p4_branch = tree->GetBranch(tree->GetAlias("photons_mc_p4"));
-		photons_mc_p4_branch->SetAddress(&photons_mc_p4_);
+		if (photons_mc_p4_branch) {photons_mc_p4_branch->SetAddress(&photons_mc_p4_);}
 	}
 	trk_mcp4_branch = 0;
 	if (tree->GetAlias("trk_mcp4") != 0) {
 		trk_mcp4_branch = tree->GetBranch(tree->GetAlias("trk_mcp4"));
-		trk_mcp4_branch->SetAddress(&trk_mcp4_);
+		if (trk_mcp4_branch) {trk_mcp4_branch->SetAddress(&trk_mcp4_);}
 	}
 	els_conv_pos_p4_branch = 0;
 	if (tree->GetAlias("els_conv_pos_p4") != 0) {
 		els_conv_pos_p4_branch = tree->GetBranch(tree->GetAlias("els_conv_pos_p4"));
-		els_conv_pos_p4_branch->SetAddress(&els_conv_pos_p4_);
+		if (els_conv_pos_p4_branch) {els_conv_pos_p4_branch->SetAddress(&els_conv_pos_p4_);}
 	}
 	els_inner_position_branch = 0;
 	if (tree->GetAlias("els_inner_position") != 0) {
 		els_inner_position_branch = tree->GetBranch(tree->GetAlias("els_inner_position"));
-		els_inner_position_branch->SetAddress(&els_inner_position_);
+		if (els_inner_position_branch) {els_inner_position_branch->SetAddress(&els_inner_position_);}
 	}
 	els_outer_position_branch = 0;
 	if (tree->GetAlias("els_outer_position") != 0) {
 		els_outer_position_branch = tree->GetBranch(tree->GetAlias("els_outer_position"));
-		els_outer_position_branch->SetAddress(&els_outer_position_);
+		if (els_outer_position_branch) {els_outer_position_branch->SetAddress(&els_outer_position_);}
 	}
 	els_p4_branch = 0;
 	if (tree->GetAlias("els_p4") != 0) {
 		els_p4_branch = tree->GetBranch(tree->GetAlias("els_p4"));
-		els_p4_branch->SetAddress(&els_p4_);
+		if (els_p4_branch) {els_p4_branch->SetAddress(&els_p4_);}
 	}
 	els_p4In_branch = 0;
 	if (tree->GetAlias("els_p4In") != 0) {
 		els_p4In_branch = tree->GetBranch(tree->GetAlias("els_p4In"));
-		els_p4In_branch->SetAddress(&els_p4In_);
+		if (els_p4In_branch) {els_p4In_branch->SetAddress(&els_p4In_);}
 	}
 	els_p4Out_branch = 0;
 	if (tree->GetAlias("els_p4Out") != 0) {
 		els_p4Out_branch = tree->GetBranch(tree->GetAlias("els_p4Out"));
-		els_p4Out_branch->SetAddress(&els_p4Out_);
+		if (els_p4Out_branch) {els_p4Out_branch->SetAddress(&els_p4Out_);}
 	}
 	els_trk_p4_branch = 0;
 	if (tree->GetAlias("els_trk_p4") != 0) {
 		els_trk_p4_branch = tree->GetBranch(tree->GetAlias("els_trk_p4"));
-		els_trk_p4_branch->SetAddress(&els_trk_p4_);
+		if (els_trk_p4_branch) {els_trk_p4_branch->SetAddress(&els_trk_p4_);}
 	}
 	els_vertex_p4_branch = 0;
 	if (tree->GetAlias("els_vertex_p4") != 0) {
 		els_vertex_p4_branch = tree->GetBranch(tree->GetAlias("els_vertex_p4"));
-		els_vertex_p4_branch->SetAddress(&els_vertex_p4_);
+		if (els_vertex_p4_branch) {els_vertex_p4_branch->SetAddress(&els_vertex_p4_);}
 	}
 	genjets_p4_branch = 0;
 	if (tree->GetAlias("genjets_p4") != 0) {
 		genjets_p4_branch = tree->GetBranch(tree->GetAlias("genjets_p4"));
-		genjets_p4_branch->SetAddress(&genjets_p4_);
+		if (genjets_p4_branch) {genjets_p4_branch->SetAddress(&genjets_p4_);}
 	}
 	genps_p4_branch = 0;
 	if (tree->GetAlias("genps_p4") != 0) {
 		genps_p4_branch = tree->GetBranch(tree->GetAlias("genps_p4"));
-		genps_p4_branch->SetAddress(&genps_p4_);
+		if (genps_p4_branch) {genps_p4_branch->SetAddress(&genps_p4_);}
 	}
 	genps_prod_vtx_branch = 0;
 	if (tree->GetAlias("genps_prod_vtx") != 0) {
 		genps_prod_vtx_branch = tree->GetBranch(tree->GetAlias("genps_prod_vtx"));
-		genps_prod_vtx_branch->SetAddress(&genps_prod_vtx_);
+		if (genps_prod_vtx_branch) {genps_prod_vtx_branch->SetAddress(&genps_prod_vtx_);}
 	}
 	gsftrks_inner_position_branch = 0;
 	if (tree->GetAlias("gsftrks_inner_position") != 0) {
 		gsftrks_inner_position_branch = tree->GetBranch(tree->GetAlias("gsftrks_inner_position"));
-		gsftrks_inner_position_branch->SetAddress(&gsftrks_inner_position_);
+		if (gsftrks_inner_position_branch) {gsftrks_inner_position_branch->SetAddress(&gsftrks_inner_position_);}
 	}
 	gsftrks_outer_p4_branch = 0;
 	if (tree->GetAlias("gsftrks_outer_p4") != 0) {
 		gsftrks_outer_p4_branch = tree->GetBranch(tree->GetAlias("gsftrks_outer_p4"));
-		gsftrks_outer_p4_branch->SetAddress(&gsftrks_outer_p4_);
+		if (gsftrks_outer_p4_branch) {gsftrks_outer_p4_branch->SetAddress(&gsftrks_outer_p4_);}
 	}
 	gsftrks_outer_position_branch = 0;
 	if (tree->GetAlias("gsftrks_outer_position") != 0) {
 		gsftrks_outer_position_branch = tree->GetBranch(tree->GetAlias("gsftrks_outer_position"));
-		gsftrks_outer_position_branch->SetAddress(&gsftrks_outer_position_);
+		if (gsftrks_outer_position_branch) {gsftrks_outer_position_branch->SetAddress(&gsftrks_outer_position_);}
 	}
 	gsftrks_p4_branch = 0;
 	if (tree->GetAlias("gsftrks_p4") != 0) {
 		gsftrks_p4_branch = tree->GetBranch(tree->GetAlias("gsftrks_p4"));
-		gsftrks_p4_branch->SetAddress(&gsftrks_p4_);
+		if (gsftrks_p4_branch) {gsftrks_p4_branch->SetAddress(&gsftrks_p4_);}
 	}
 	gsftrks_vertex_p4_branch = 0;
 	if (tree->GetAlias("gsftrks_vertex_p4") != 0) {
 		gsftrks_vertex_p4_branch = tree->GetBranch(tree->GetAlias("gsftrks_vertex_p4"));
-		gsftrks_vertex_p4_branch->SetAddress(&gsftrks_vertex_p4_);
+		if (gsftrks_vertex_p4_branch) {gsftrks_vertex_p4_branch->SetAddress(&gsftrks_vertex_p4_);}
 	}
 	hyp_ll_p4_branch = 0;
 	if (tree->GetAlias("hyp_ll_p4") != 0) {
 		hyp_ll_p4_branch = tree->GetBranch(tree->GetAlias("hyp_ll_p4"));
-		hyp_ll_p4_branch->SetAddress(&hyp_ll_p4_);
+		if (hyp_ll_p4_branch) {hyp_ll_p4_branch->SetAddress(&hyp_ll_p4_);}
 	}
 	hyp_ll_trk_p4_branch = 0;
 	if (tree->GetAlias("hyp_ll_trk_p4") != 0) {
 		hyp_ll_trk_p4_branch = tree->GetBranch(tree->GetAlias("hyp_ll_trk_p4"));
-		hyp_ll_trk_p4_branch->SetAddress(&hyp_ll_trk_p4_);
+		if (hyp_ll_trk_p4_branch) {hyp_ll_trk_p4_branch->SetAddress(&hyp_ll_trk_p4_);}
 	}
 	hyp_lt_p4_branch = 0;
 	if (tree->GetAlias("hyp_lt_p4") != 0) {
 		hyp_lt_p4_branch = tree->GetBranch(tree->GetAlias("hyp_lt_p4"));
-		hyp_lt_p4_branch->SetAddress(&hyp_lt_p4_);
+		if (hyp_lt_p4_branch) {hyp_lt_p4_branch->SetAddress(&hyp_lt_p4_);}
 	}
 	hyp_lt_trk_p4_branch = 0;
 	if (tree->GetAlias("hyp_lt_trk_p4") != 0) {
 		hyp_lt_trk_p4_branch = tree->GetBranch(tree->GetAlias("hyp_lt_trk_p4"));
-		hyp_lt_trk_p4_branch->SetAddress(&hyp_lt_trk_p4_);
+		if (hyp_lt_trk_p4_branch) {hyp_lt_trk_p4_branch->SetAddress(&hyp_lt_trk_p4_);}
 	}
 	hyp_p4_branch = 0;
 	if (tree->GetAlias("hyp_p4") != 0) {
 		hyp_p4_branch = tree->GetBranch(tree->GetAlias("hyp_p4"));
-		hyp_p4_branch->SetAddress(&hyp_p4_);
+		if (hyp_p4_branch) {hyp_p4_branch->SetAddress(&hyp_p4_);}
 	}
 	hyp_FVFit_p4_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_p4") != 0) {
 		hyp_FVFit_p4_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_p4"));
-		hyp_FVFit_p4_branch->SetAddress(&hyp_FVFit_p4_);
+		if (hyp_FVFit_p4_branch) {hyp_FVFit_p4_branch->SetAddress(&hyp_FVFit_p4_);}
 	}
 	hyp_FVFit_v4_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4") != 0) {
 		hyp_FVFit_v4_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4"));
-		hyp_FVFit_v4_branch->SetAddress(&hyp_FVFit_v4_);
+		if (hyp_FVFit_v4_branch) {hyp_FVFit_v4_branch->SetAddress(&hyp_FVFit_v4_);}
 	}
 	hyp_ll_mc_p4_branch = 0;
 	if (tree->GetAlias("hyp_ll_mc_p4") != 0) {
 		hyp_ll_mc_p4_branch = tree->GetBranch(tree->GetAlias("hyp_ll_mc_p4"));
-		hyp_ll_mc_p4_branch->SetAddress(&hyp_ll_mc_p4_);
+		if (hyp_ll_mc_p4_branch) {hyp_ll_mc_p4_branch->SetAddress(&hyp_ll_mc_p4_);}
 	}
 	hyp_lt_mc_p4_branch = 0;
 	if (tree->GetAlias("hyp_lt_mc_p4") != 0) {
 		hyp_lt_mc_p4_branch = tree->GetBranch(tree->GetAlias("hyp_lt_mc_p4"));
-		hyp_lt_mc_p4_branch->SetAddress(&hyp_lt_mc_p4_);
+		if (hyp_lt_mc_p4_branch) {hyp_lt_mc_p4_branch->SetAddress(&hyp_lt_mc_p4_);}
 	}
 	jets_p4_branch = 0;
 	if (tree->GetAlias("jets_p4") != 0) {
 		jets_p4_branch = tree->GetBranch(tree->GetAlias("jets_p4"));
-		jets_p4_branch->SetAddress(&jets_p4_);
+		if (jets_p4_branch) {jets_p4_branch->SetAddress(&jets_p4_);}
 	}
 	jets_vertex_p4_branch = 0;
 	if (tree->GetAlias("jets_vertex_p4") != 0) {
 		jets_vertex_p4_branch = tree->GetBranch(tree->GetAlias("jets_vertex_p4"));
-		jets_vertex_p4_branch->SetAddress(&jets_vertex_p4_);
+		if (jets_vertex_p4_branch) {jets_vertex_p4_branch->SetAddress(&jets_vertex_p4_);}
 	}
 	l1_emiso_p4_branch = 0;
 	if (tree->GetAlias("l1_emiso_p4") != 0) {
 		l1_emiso_p4_branch = tree->GetBranch(tree->GetAlias("l1_emiso_p4"));
-		l1_emiso_p4_branch->SetAddress(&l1_emiso_p4_);
+		if (l1_emiso_p4_branch) {l1_emiso_p4_branch->SetAddress(&l1_emiso_p4_);}
 	}
 	l1_emnoiso_p4_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_p4") != 0) {
 		l1_emnoiso_p4_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_p4"));
-		l1_emnoiso_p4_branch->SetAddress(&l1_emnoiso_p4_);
+		if (l1_emnoiso_p4_branch) {l1_emnoiso_p4_branch->SetAddress(&l1_emnoiso_p4_);}
 	}
 	l1_jetsc_p4_branch = 0;
 	if (tree->GetAlias("l1_jetsc_p4") != 0) {
 		l1_jetsc_p4_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_p4"));
-		l1_jetsc_p4_branch->SetAddress(&l1_jetsc_p4_);
+		if (l1_jetsc_p4_branch) {l1_jetsc_p4_branch->SetAddress(&l1_jetsc_p4_);}
 	}
 	l1_jetsf_p4_branch = 0;
 	if (tree->GetAlias("l1_jetsf_p4") != 0) {
 		l1_jetsf_p4_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_p4"));
-		l1_jetsf_p4_branch->SetAddress(&l1_jetsf_p4_);
+		if (l1_jetsf_p4_branch) {l1_jetsf_p4_branch->SetAddress(&l1_jetsf_p4_);}
 	}
 	l1_jetst_p4_branch = 0;
 	if (tree->GetAlias("l1_jetst_p4") != 0) {
 		l1_jetst_p4_branch = tree->GetBranch(tree->GetAlias("l1_jetst_p4"));
-		l1_jetst_p4_branch->SetAddress(&l1_jetst_p4_);
+		if (l1_jetst_p4_branch) {l1_jetst_p4_branch->SetAddress(&l1_jetst_p4_);}
 	}
 	l1_mus_p4_branch = 0;
 	if (tree->GetAlias("l1_mus_p4") != 0) {
 		l1_mus_p4_branch = tree->GetBranch(tree->GetAlias("l1_mus_p4"));
-		l1_mus_p4_branch->SetAddress(&l1_mus_p4_);
+		if (l1_mus_p4_branch) {l1_mus_p4_branch->SetAddress(&l1_mus_p4_);}
 	}
 	mus_ecalpos_p4_branch = 0;
 	if (tree->GetAlias("mus_ecalpos_p4") != 0) {
 		mus_ecalpos_p4_branch = tree->GetBranch(tree->GetAlias("mus_ecalpos_p4"));
-		mus_ecalpos_p4_branch->SetAddress(&mus_ecalpos_p4_);
+		if (mus_ecalpos_p4_branch) {mus_ecalpos_p4_branch->SetAddress(&mus_ecalpos_p4_);}
 	}
 	mus_fitpicky_p4_branch = 0;
 	if (tree->GetAlias("mus_fitpicky_p4") != 0) {
 		mus_fitpicky_p4_branch = tree->GetBranch(tree->GetAlias("mus_fitpicky_p4"));
-		mus_fitpicky_p4_branch->SetAddress(&mus_fitpicky_p4_);
+		if (mus_fitpicky_p4_branch) {mus_fitpicky_p4_branch->SetAddress(&mus_fitpicky_p4_);}
 	}
 	mus_fittev_p4_branch = 0;
 	if (tree->GetAlias("mus_fittev_p4") != 0) {
 		mus_fittev_p4_branch = tree->GetBranch(tree->GetAlias("mus_fittev_p4"));
-		mus_fittev_p4_branch->SetAddress(&mus_fittev_p4_);
+		if (mus_fittev_p4_branch) {mus_fittev_p4_branch->SetAddress(&mus_fittev_p4_);}
 	}
 	mus_fittpfms_p4_branch = 0;
 	if (tree->GetAlias("mus_fittpfms_p4") != 0) {
 		mus_fittpfms_p4_branch = tree->GetBranch(tree->GetAlias("mus_fittpfms_p4"));
-		mus_fittpfms_p4_branch->SetAddress(&mus_fittpfms_p4_);
+		if (mus_fittpfms_p4_branch) {mus_fittpfms_p4_branch->SetAddress(&mus_fittpfms_p4_);}
 	}
 	mus_gfit_outerPos_p4_branch = 0;
 	if (tree->GetAlias("mus_gfit_outerPos_p4") != 0) {
 		mus_gfit_outerPos_p4_branch = tree->GetBranch(tree->GetAlias("mus_gfit_outerPos_p4"));
-		mus_gfit_outerPos_p4_branch->SetAddress(&mus_gfit_outerPos_p4_);
+		if (mus_gfit_outerPos_p4_branch) {mus_gfit_outerPos_p4_branch->SetAddress(&mus_gfit_outerPos_p4_);}
 	}
 	mus_gfit_p4_branch = 0;
 	if (tree->GetAlias("mus_gfit_p4") != 0) {
 		mus_gfit_p4_branch = tree->GetBranch(tree->GetAlias("mus_gfit_p4"));
-		mus_gfit_p4_branch->SetAddress(&mus_gfit_p4_);
+		if (mus_gfit_p4_branch) {mus_gfit_p4_branch->SetAddress(&mus_gfit_p4_);}
 	}
 	mus_gfit_vertex_p4_branch = 0;
 	if (tree->GetAlias("mus_gfit_vertex_p4") != 0) {
 		mus_gfit_vertex_p4_branch = tree->GetBranch(tree->GetAlias("mus_gfit_vertex_p4"));
-		mus_gfit_vertex_p4_branch->SetAddress(&mus_gfit_vertex_p4_);
+		if (mus_gfit_vertex_p4_branch) {mus_gfit_vertex_p4_branch->SetAddress(&mus_gfit_vertex_p4_);}
 	}
 	mus_p4_branch = 0;
 	if (tree->GetAlias("mus_p4") != 0) {
 		mus_p4_branch = tree->GetBranch(tree->GetAlias("mus_p4"));
-		mus_p4_branch->SetAddress(&mus_p4_);
+		if (mus_p4_branch) {mus_p4_branch->SetAddress(&mus_p4_);}
 	}
 	mus_pfp4_branch = 0;
 	if (tree->GetAlias("mus_pfp4") != 0) {
 		mus_pfp4_branch = tree->GetBranch(tree->GetAlias("mus_pfp4"));
-		mus_pfp4_branch->SetAddress(&mus_pfp4_);
+		if (mus_pfp4_branch) {mus_pfp4_branch->SetAddress(&mus_pfp4_);}
 	}
 	mus_pfposAtEcal_p4_branch = 0;
 	if (tree->GetAlias("mus_pfposAtEcal_p4") != 0) {
 		mus_pfposAtEcal_p4_branch = tree->GetBranch(tree->GetAlias("mus_pfposAtEcal_p4"));
-		mus_pfposAtEcal_p4_branch->SetAddress(&mus_pfposAtEcal_p4_);
+		if (mus_pfposAtEcal_p4_branch) {mus_pfposAtEcal_p4_branch->SetAddress(&mus_pfposAtEcal_p4_);}
 	}
 	mus_sta_p4_branch = 0;
 	if (tree->GetAlias("mus_sta_p4") != 0) {
 		mus_sta_p4_branch = tree->GetBranch(tree->GetAlias("mus_sta_p4"));
-		mus_sta_p4_branch->SetAddress(&mus_sta_p4_);
+		if (mus_sta_p4_branch) {mus_sta_p4_branch->SetAddress(&mus_sta_p4_);}
 	}
 	mus_sta_vertex_p4_branch = 0;
 	if (tree->GetAlias("mus_sta_vertex_p4") != 0) {
 		mus_sta_vertex_p4_branch = tree->GetBranch(tree->GetAlias("mus_sta_vertex_p4"));
-		mus_sta_vertex_p4_branch->SetAddress(&mus_sta_vertex_p4_);
+		if (mus_sta_vertex_p4_branch) {mus_sta_vertex_p4_branch->SetAddress(&mus_sta_vertex_p4_);}
 	}
 	mus_trk_p4_branch = 0;
 	if (tree->GetAlias("mus_trk_p4") != 0) {
 		mus_trk_p4_branch = tree->GetBranch(tree->GetAlias("mus_trk_p4"));
-		mus_trk_p4_branch->SetAddress(&mus_trk_p4_);
+		if (mus_trk_p4_branch) {mus_trk_p4_branch->SetAddress(&mus_trk_p4_);}
 	}
 	mus_vertex_p4_branch = 0;
 	if (tree->GetAlias("mus_vertex_p4") != 0) {
 		mus_vertex_p4_branch = tree->GetBranch(tree->GetAlias("mus_vertex_p4"));
-		mus_vertex_p4_branch->SetAddress(&mus_vertex_p4_);
+		if (mus_vertex_p4_branch) {mus_vertex_p4_branch->SetAddress(&mus_vertex_p4_);}
 	}
 	pfcands_p4_branch = 0;
 	if (tree->GetAlias("pfcands_p4") != 0) {
 		pfcands_p4_branch = tree->GetBranch(tree->GetAlias("pfcands_p4"));
-		pfcands_p4_branch->SetAddress(&pfcands_p4_);
+		if (pfcands_p4_branch) {pfcands_p4_branch->SetAddress(&pfcands_p4_);}
 	}
 	pfcands_posAtEcal_p4_branch = 0;
 	if (tree->GetAlias("pfcands_posAtEcal_p4") != 0) {
 		pfcands_posAtEcal_p4_branch = tree->GetBranch(tree->GetAlias("pfcands_posAtEcal_p4"));
-		pfcands_posAtEcal_p4_branch->SetAddress(&pfcands_posAtEcal_p4_);
+		if (pfcands_posAtEcal_p4_branch) {pfcands_posAtEcal_p4_branch->SetAddress(&pfcands_posAtEcal_p4_);}
 	}
 	pfels_p4_branch = 0;
 	if (tree->GetAlias("pfels_p4") != 0) {
 		pfels_p4_branch = tree->GetBranch(tree->GetAlias("pfels_p4"));
-		pfels_p4_branch->SetAddress(&pfels_p4_);
+		if (pfels_p4_branch) {pfels_p4_branch->SetAddress(&pfels_p4_);}
 	}
 	pfels_posAtEcal_p4_branch = 0;
 	if (tree->GetAlias("pfels_posAtEcal_p4") != 0) {
 		pfels_posAtEcal_p4_branch = tree->GetBranch(tree->GetAlias("pfels_posAtEcal_p4"));
-		pfels_posAtEcal_p4_branch->SetAddress(&pfels_posAtEcal_p4_);
+		if (pfels_posAtEcal_p4_branch) {pfels_posAtEcal_p4_branch->SetAddress(&pfels_posAtEcal_p4_);}
 	}
 	pfjets_p4_branch = 0;
 	if (tree->GetAlias("pfjets_p4") != 0) {
 		pfjets_p4_branch = tree->GetBranch(tree->GetAlias("pfjets_p4"));
-		pfjets_p4_branch->SetAddress(&pfjets_p4_);
+		if (pfjets_p4_branch) {pfjets_p4_branch->SetAddress(&pfjets_p4_);}
 	}
 	pfmus_p4_branch = 0;
 	if (tree->GetAlias("pfmus_p4") != 0) {
 		pfmus_p4_branch = tree->GetBranch(tree->GetAlias("pfmus_p4"));
-		pfmus_p4_branch->SetAddress(&pfmus_p4_);
+		if (pfmus_p4_branch) {pfmus_p4_branch->SetAddress(&pfmus_p4_);}
 	}
 	pfmus_posAtEcal_p4_branch = 0;
 	if (tree->GetAlias("pfmus_posAtEcal_p4") != 0) {
 		pfmus_posAtEcal_p4_branch = tree->GetBranch(tree->GetAlias("pfmus_posAtEcal_p4"));
-		pfmus_posAtEcal_p4_branch->SetAddress(&pfmus_posAtEcal_p4_);
+		if (pfmus_posAtEcal_p4_branch) {pfmus_posAtEcal_p4_branch->SetAddress(&pfmus_posAtEcal_p4_);}
 	}
 	photons_p4_branch = 0;
 	if (tree->GetAlias("photons_p4") != 0) {
 		photons_p4_branch = tree->GetBranch(tree->GetAlias("photons_p4"));
-		photons_p4_branch->SetAddress(&photons_p4_);
+		if (photons_p4_branch) {photons_p4_branch->SetAddress(&photons_p4_);}
 	}
 	convs_refitPairMom_p4_branch = 0;
 	if (tree->GetAlias("convs_refitPairMom_p4") != 0) {
 		convs_refitPairMom_p4_branch = tree->GetBranch(tree->GetAlias("convs_refitPairMom_p4"));
-		convs_refitPairMom_p4_branch->SetAddress(&convs_refitPairMom_p4_);
+		if (convs_refitPairMom_p4_branch) {convs_refitPairMom_p4_branch->SetAddress(&convs_refitPairMom_p4_);}
 	}
 	convs_vtxpos_branch = 0;
 	if (tree->GetAlias("convs_vtxpos") != 0) {
 		convs_vtxpos_branch = tree->GetBranch(tree->GetAlias("convs_vtxpos"));
-		convs_vtxpos_branch->SetAddress(&convs_vtxpos_);
+		if (convs_vtxpos_branch) {convs_vtxpos_branch->SetAddress(&convs_vtxpos_);}
 	}
 	scs_p4_branch = 0;
 	if (tree->GetAlias("scs_p4") != 0) {
 		scs_p4_branch = tree->GetBranch(tree->GetAlias("scs_p4"));
-		scs_p4_branch->SetAddress(&scs_p4_);
+		if (scs_p4_branch) {scs_p4_branch->SetAddress(&scs_p4_);}
 	}
 	scs_pos_p4_branch = 0;
 	if (tree->GetAlias("scs_pos_p4") != 0) {
 		scs_pos_p4_branch = tree->GetBranch(tree->GetAlias("scs_pos_p4"));
-		scs_pos_p4_branch->SetAddress(&scs_pos_p4_);
+		if (scs_pos_p4_branch) {scs_pos_p4_branch->SetAddress(&scs_pos_p4_);}
 	}
 	scs_vtx_p4_branch = 0;
 	if (tree->GetAlias("scs_vtx_p4") != 0) {
 		scs_vtx_p4_branch = tree->GetBranch(tree->GetAlias("scs_vtx_p4"));
-		scs_vtx_p4_branch->SetAddress(&scs_vtx_p4_);
+		if (scs_vtx_p4_branch) {scs_vtx_p4_branch->SetAddress(&scs_vtx_p4_);}
 	}
 	svs_flight_branch = 0;
 	if (tree->GetAlias("svs_flight") != 0) {
 		svs_flight_branch = tree->GetBranch(tree->GetAlias("svs_flight"));
-		svs_flight_branch->SetAddress(&svs_flight_);
+		if (svs_flight_branch) {svs_flight_branch->SetAddress(&svs_flight_);}
 	}
 	svs_mc3_p4_branch = 0;
 	if (tree->GetAlias("svs_mc3_p4") != 0) {
 		svs_mc3_p4_branch = tree->GetBranch(tree->GetAlias("svs_mc3_p4"));
-		svs_mc3_p4_branch->SetAddress(&svs_mc3_p4_);
+		if (svs_mc3_p4_branch) {svs_mc3_p4_branch->SetAddress(&svs_mc3_p4_);}
 	}
 	svs_p4_branch = 0;
 	if (tree->GetAlias("svs_p4") != 0) {
 		svs_p4_branch = tree->GetBranch(tree->GetAlias("svs_p4"));
-		svs_p4_branch->SetAddress(&svs_p4_);
+		if (svs_p4_branch) {svs_p4_branch->SetAddress(&svs_p4_);}
 	}
 	svs_position_branch = 0;
 	if (tree->GetAlias("svs_position") != 0) {
 		svs_position_branch = tree->GetBranch(tree->GetAlias("svs_position"));
-		svs_position_branch->SetAddress(&svs_position_);
+		if (svs_position_branch) {svs_position_branch->SetAddress(&svs_position_);}
 	}
 	svs_refitp4_branch = 0;
 	if (tree->GetAlias("svs_refitp4") != 0) {
 		svs_refitp4_branch = tree->GetBranch(tree->GetAlias("svs_refitp4"));
-		svs_refitp4_branch->SetAddress(&svs_refitp4_);
+		if (svs_refitp4_branch) {svs_refitp4_branch->SetAddress(&svs_refitp4_);}
 	}
 	trks_inner_position_branch = 0;
 	if (tree->GetAlias("trks_inner_position") != 0) {
 		trks_inner_position_branch = tree->GetBranch(tree->GetAlias("trks_inner_position"));
-		trks_inner_position_branch->SetAddress(&trks_inner_position_);
+		if (trks_inner_position_branch) {trks_inner_position_branch->SetAddress(&trks_inner_position_);}
 	}
 	trks_outer_p4_branch = 0;
 	if (tree->GetAlias("trks_outer_p4") != 0) {
 		trks_outer_p4_branch = tree->GetBranch(tree->GetAlias("trks_outer_p4"));
-		trks_outer_p4_branch->SetAddress(&trks_outer_p4_);
+		if (trks_outer_p4_branch) {trks_outer_p4_branch->SetAddress(&trks_outer_p4_);}
 	}
 	trks_outer_position_branch = 0;
 	if (tree->GetAlias("trks_outer_position") != 0) {
 		trks_outer_position_branch = tree->GetBranch(tree->GetAlias("trks_outer_position"));
-		trks_outer_position_branch->SetAddress(&trks_outer_position_);
+		if (trks_outer_position_branch) {trks_outer_position_branch->SetAddress(&trks_outer_position_);}
 	}
 	trks_trk_p4_branch = 0;
 	if (tree->GetAlias("trks_trk_p4") != 0) {
 		trks_trk_p4_branch = tree->GetBranch(tree->GetAlias("trks_trk_p4"));
-		trks_trk_p4_branch->SetAddress(&trks_trk_p4_);
+		if (trks_trk_p4_branch) {trks_trk_p4_branch->SetAddress(&trks_trk_p4_);}
 	}
 	trks_vertex_p4_branch = 0;
 	if (tree->GetAlias("trks_vertex_p4") != 0) {
 		trks_vertex_p4_branch = tree->GetBranch(tree->GetAlias("trks_vertex_p4"));
-		trks_vertex_p4_branch->SetAddress(&trks_vertex_p4_);
+		if (trks_vertex_p4_branch) {trks_vertex_p4_branch->SetAddress(&trks_vertex_p4_);}
 	}
 	trkjets_p4_branch = 0;
 	if (tree->GetAlias("trkjets_p4") != 0) {
 		trkjets_p4_branch = tree->GetBranch(tree->GetAlias("trkjets_p4"));
-		trkjets_p4_branch->SetAddress(&trkjets_p4_);
+		if (trkjets_p4_branch) {trkjets_p4_branch->SetAddress(&trkjets_p4_);}
 	}
 	vtxs_position_branch = 0;
 	if (tree->GetAlias("vtxs_position") != 0) {
 		vtxs_position_branch = tree->GetBranch(tree->GetAlias("vtxs_position"));
-		vtxs_position_branch->SetAddress(&vtxs_position_);
+		if (vtxs_position_branch) {vtxs_position_branch->SetAddress(&vtxs_position_);}
 	}
 	bsvtxs_position_branch = 0;
 	if (tree->GetAlias("bsvtxs_position") != 0) {
 		bsvtxs_position_branch = tree->GetBranch(tree->GetAlias("bsvtxs_position"));
-		bsvtxs_position_branch->SetAddress(&bsvtxs_position_);
+		if (bsvtxs_position_branch) {bsvtxs_position_branch->SetAddress(&bsvtxs_position_);}
 	}
   tree->SetMakeClass(1);
 	evt_CMS2tag_branch = 0;
 	if (tree->GetAlias("evt_CMS2tag") != 0) {
 		evt_CMS2tag_branch = tree->GetBranch(tree->GetAlias("evt_CMS2tag"));
-		evt_CMS2tag_branch->SetAddress(&evt_CMS2tag_);
+		if (evt_CMS2tag_branch) {evt_CMS2tag_branch->SetAddress(&evt_CMS2tag_);}
 	}
 	evt_dataset_branch = 0;
 	if (tree->GetAlias("evt_dataset") != 0) {
 		evt_dataset_branch = tree->GetBranch(tree->GetAlias("evt_dataset"));
-		evt_dataset_branch->SetAddress(&evt_dataset_);
+		if (evt_dataset_branch) {evt_dataset_branch->SetAddress(&evt_dataset_);}
 	}
 	hlt_trigNames_branch = 0;
 	if (tree->GetAlias("hlt_trigNames") != 0) {
 		hlt_trigNames_branch = tree->GetBranch(tree->GetAlias("hlt_trigNames"));
-		hlt_trigNames_branch->SetAddress(&hlt_trigNames_);
+		if (hlt_trigNames_branch) {hlt_trigNames_branch->SetAddress(&hlt_trigNames_);}
 	}
 	l1_techtrigNames_branch = 0;
 	if (tree->GetAlias("l1_techtrigNames") != 0) {
 		l1_techtrigNames_branch = tree->GetBranch(tree->GetAlias("l1_techtrigNames"));
-		l1_techtrigNames_branch->SetAddress(&l1_techtrigNames_);
+		if (l1_techtrigNames_branch) {l1_techtrigNames_branch->SetAddress(&l1_techtrigNames_);}
 	}
 	l1_trigNames_branch = 0;
 	if (tree->GetAlias("l1_trigNames") != 0) {
 		l1_trigNames_branch = tree->GetBranch(tree->GetAlias("l1_trigNames"));
-		l1_trigNames_branch->SetAddress(&l1_trigNames_);
+		if (l1_trigNames_branch) {l1_trigNames_branch->SetAddress(&l1_trigNames_);}
 	}
 	evt_errCategory_branch = 0;
 	if (tree->GetAlias("evt_errCategory") != 0) {
 		evt_errCategory_branch = tree->GetBranch(tree->GetAlias("evt_errCategory"));
-		evt_errCategory_branch->SetAddress(&evt_errCategory_);
+		if (evt_errCategory_branch) {evt_errCategory_branch->SetAddress(&evt_errCategory_);}
 	}
 	evt_errModule_branch = 0;
 	if (tree->GetAlias("evt_errModule") != 0) {
 		evt_errModule_branch = tree->GetBranch(tree->GetAlias("evt_errModule"));
-		evt_errModule_branch->SetAddress(&evt_errModule_);
+		if (evt_errModule_branch) {evt_errModule_branch->SetAddress(&evt_errModule_);}
 	}
 	evt_errSeverity_branch = 0;
 	if (tree->GetAlias("evt_errSeverity") != 0) {
 		evt_errSeverity_branch = tree->GetBranch(tree->GetAlias("evt_errSeverity"));
-		evt_errSeverity_branch->SetAddress(&evt_errSeverity_);
+		if (evt_errSeverity_branch) {evt_errSeverity_branch->SetAddress(&evt_errSeverity_);}
 	}
 	evt_eventHasHalo_branch = 0;
 	if (tree->GetAlias("evt_eventHasHalo") != 0) {
 		evt_eventHasHalo_branch = tree->GetBranch(tree->GetAlias("evt_eventHasHalo"));
-		evt_eventHasHalo_branch->SetAddress(&evt_eventHasHalo_);
+		if (evt_eventHasHalo_branch) {evt_eventHasHalo_branch->SetAddress(&evt_eventHasHalo_);}
 	}
 	hcalnoise_HasBadRBXTS4TS5_branch = 0;
 	if (tree->GetAlias("hcalnoise_HasBadRBXTS4TS5") != 0) {
 		hcalnoise_HasBadRBXTS4TS5_branch = tree->GetBranch(tree->GetAlias("hcalnoise_HasBadRBXTS4TS5"));
-		hcalnoise_HasBadRBXTS4TS5_branch->SetAddress(&hcalnoise_HasBadRBXTS4TS5_);
+		if (hcalnoise_HasBadRBXTS4TS5_branch) {hcalnoise_HasBadRBXTS4TS5_branch->SetAddress(&hcalnoise_HasBadRBXTS4TS5_);}
 	}
 	ls_isValid_branch = 0;
 	if (tree->GetAlias("ls_isValid") != 0) {
 		ls_isValid_branch = tree->GetBranch(tree->GetAlias("ls_isValid"));
-		ls_isValid_branch->SetAddress(&ls_isValid_);
+		if (ls_isValid_branch) {ls_isValid_branch->SetAddress(&ls_isValid_);}
 	}
 	filt_ecalBE_branch = 0;
 	if (tree->GetAlias("filt_ecalBE") != 0) {
 		filt_ecalBE_branch = tree->GetBranch(tree->GetAlias("filt_ecalBE"));
-		filt_ecalBE_branch->SetAddress(&filt_ecalBE_);
+		if (filt_ecalBE_branch) {filt_ecalBE_branch->SetAddress(&filt_ecalBE_);}
 	}
 	filt_ecalDR_branch = 0;
 	if (tree->GetAlias("filt_ecalDR") != 0) {
 		filt_ecalDR_branch = tree->GetBranch(tree->GetAlias("filt_ecalDR"));
-		filt_ecalDR_branch->SetAddress(&filt_ecalDR_);
+		if (filt_ecalDR_branch) {filt_ecalDR_branch->SetAddress(&filt_ecalDR_);}
+	}
+	filt_ecalLaser_branch = 0;
+	if (tree->GetAlias("filt_ecalLaser") != 0) {
+		filt_ecalLaser_branch = tree->GetBranch(tree->GetAlias("filt_ecalLaser"));
+		if (filt_ecalLaser_branch) {filt_ecalLaser_branch->SetAddress(&filt_ecalLaser_);}
 	}
 	filt_ecalTP_branch = 0;
 	if (tree->GetAlias("filt_ecalTP") != 0) {
 		filt_ecalTP_branch = tree->GetBranch(tree->GetAlias("filt_ecalTP"));
-		filt_ecalTP_branch->SetAddress(&filt_ecalTP_);
+		if (filt_ecalTP_branch) {filt_ecalTP_branch->SetAddress(&filt_ecalTP_);}
 	}
 	filt_eeBadSc_branch = 0;
 	if (tree->GetAlias("filt_eeBadSc") != 0) {
 		filt_eeBadSc_branch = tree->GetBranch(tree->GetAlias("filt_eeBadSc"));
-		filt_eeBadSc_branch->SetAddress(&filt_eeBadSc_);
+		if (filt_eeBadSc_branch) {filt_eeBadSc_branch->SetAddress(&filt_eeBadSc_);}
 	}
 	filt_greedyMuon_branch = 0;
 	if (tree->GetAlias("filt_greedyMuon") != 0) {
 		filt_greedyMuon_branch = tree->GetBranch(tree->GetAlias("filt_greedyMuon"));
-		filt_greedyMuon_branch->SetAddress(&filt_greedyMuon_);
+		if (filt_greedyMuon_branch) {filt_greedyMuon_branch->SetAddress(&filt_greedyMuon_);}
 	}
 	filt_hcalLaser_branch = 0;
 	if (tree->GetAlias("filt_hcalLaser") != 0) {
 		filt_hcalLaser_branch = tree->GetBranch(tree->GetAlias("filt_hcalLaser"));
-		filt_hcalLaser_branch->SetAddress(&filt_hcalLaser_);
+		if (filt_hcalLaser_branch) {filt_hcalLaser_branch->SetAddress(&filt_hcalLaser_);}
 	}
 	filt_inconsistentMuon_branch = 0;
 	if (tree->GetAlias("filt_inconsistentMuon") != 0) {
 		filt_inconsistentMuon_branch = tree->GetBranch(tree->GetAlias("filt_inconsistentMuon"));
-		filt_inconsistentMuon_branch->SetAddress(&filt_inconsistentMuon_);
+		if (filt_inconsistentMuon_branch) {filt_inconsistentMuon_branch->SetAddress(&filt_inconsistentMuon_);}
 	}
 	filt_jetIDFailure_branch = 0;
 	if (tree->GetAlias("filt_jetIDFailure") != 0) {
 		filt_jetIDFailure_branch = tree->GetBranch(tree->GetAlias("filt_jetIDFailure"));
-		filt_jetIDFailure_branch->SetAddress(&filt_jetIDFailure_);
+		if (filt_jetIDFailure_branch) {filt_jetIDFailure_branch->SetAddress(&filt_jetIDFailure_);}
 	}
 	filt_multiEvent_branch = 0;
 	if (tree->GetAlias("filt_multiEvent") != 0) {
 		filt_multiEvent_branch = tree->GetBranch(tree->GetAlias("filt_multiEvent"));
-		filt_multiEvent_branch->SetAddress(&filt_multiEvent_);
+		if (filt_multiEvent_branch) {filt_multiEvent_branch->SetAddress(&filt_multiEvent_);}
 	}
 	filt_trackingFailure_branch = 0;
 	if (tree->GetAlias("filt_trackingFailure") != 0) {
 		filt_trackingFailure_branch = tree->GetBranch(tree->GetAlias("filt_trackingFailure"));
-		filt_trackingFailure_branch->SetAddress(&filt_trackingFailure_);
+		if (filt_trackingFailure_branch) {filt_trackingFailure_branch->SetAddress(&filt_trackingFailure_);}
 	}
 	evt_hbheFilter_branch = 0;
 	if (tree->GetAlias("evt_hbheFilter") != 0) {
 		evt_hbheFilter_branch = tree->GetBranch(tree->GetAlias("evt_hbheFilter"));
-		evt_hbheFilter_branch->SetAddress(&evt_hbheFilter_);
+		if (evt_hbheFilter_branch) {evt_hbheFilter_branch->SetAddress(&evt_hbheFilter_);}
 	}
 	els_conv_vtx_flag_branch = 0;
 	if (tree->GetAlias("els_conv_vtx_flag") != 0) {
 		els_conv_vtx_flag_branch = tree->GetBranch(tree->GetAlias("els_conv_vtx_flag"));
-		els_conv_vtx_flag_branch->SetAddress(&els_conv_vtx_flag_);
+		if (els_conv_vtx_flag_branch) {els_conv_vtx_flag_branch->SetAddress(&els_conv_vtx_flag_);}
 	}
 	els_passingMvaPreselection_branch = 0;
 	if (tree->GetAlias("els_passingMvaPreselection") != 0) {
 		els_passingMvaPreselection_branch = tree->GetBranch(tree->GetAlias("els_passingMvaPreselection"));
-		els_passingMvaPreselection_branch->SetAddress(&els_passingMvaPreselection_);
+		if (els_passingMvaPreselection_branch) {els_passingMvaPreselection_branch->SetAddress(&els_passingMvaPreselection_);}
 	}
 	els_passingPflowPreselection_branch = 0;
 	if (tree->GetAlias("els_passingPflowPreselection") != 0) {
 		els_passingPflowPreselection_branch = tree->GetBranch(tree->GetAlias("els_passingPflowPreselection"));
-		els_passingPflowPreselection_branch->SetAddress(&els_passingPflowPreselection_);
+		if (els_passingPflowPreselection_branch) {els_passingPflowPreselection_branch->SetAddress(&els_passingPflowPreselection_);}
 	}
 	mus_isRPCMuon_branch = 0;
 	if (tree->GetAlias("mus_isRPCMuon") != 0) {
 		mus_isRPCMuon_branch = tree->GetBranch(tree->GetAlias("mus_isRPCMuon"));
-		mus_isRPCMuon_branch->SetAddress(&mus_isRPCMuon_);
+		if (mus_isRPCMuon_branch) {mus_isRPCMuon_branch->SetAddress(&mus_isRPCMuon_);}
 	}
 	mus_tightMatch_branch = 0;
 	if (tree->GetAlias("mus_tightMatch") != 0) {
 		mus_tightMatch_branch = tree->GetBranch(tree->GetAlias("mus_tightMatch"));
-		mus_tightMatch_branch->SetAddress(&mus_tightMatch_);
+		if (mus_tightMatch_branch) {mus_tightMatch_branch->SetAddress(&mus_tightMatch_);}
 	}
 	mus_updatedSta_branch = 0;
 	if (tree->GetAlias("mus_updatedSta") != 0) {
 		mus_updatedSta_branch = tree->GetBranch(tree->GetAlias("mus_updatedSta"));
-		mus_updatedSta_branch->SetAddress(&mus_updatedSta_);
+		if (mus_updatedSta_branch) {mus_updatedSta_branch->SetAddress(&mus_updatedSta_);}
 	}
 	pfcands_isMuIso_branch = 0;
 	if (tree->GetAlias("pfcands_isMuIso") != 0) {
 		pfcands_isMuIso_branch = tree->GetBranch(tree->GetAlias("pfcands_isMuIso"));
-		pfcands_isMuIso_branch->SetAddress(&pfcands_isMuIso_);
+		if (pfcands_isMuIso_branch) {pfcands_isMuIso_branch->SetAddress(&pfcands_isMuIso_);}
 	}
 	photons_haspixelSeed_branch = 0;
 	if (tree->GetAlias("photons_haspixelSeed") != 0) {
 		photons_haspixelSeed_branch = tree->GetBranch(tree->GetAlias("photons_haspixelSeed"));
-		photons_haspixelSeed_branch->SetAddress(&photons_haspixelSeed_);
+		if (photons_haspixelSeed_branch) {photons_haspixelSeed_branch->SetAddress(&photons_haspixelSeed_);}
 	}
 	jets_closestElectron_DR_branch = 0;
 	if (tree->GetAlias("jets_closestElectron_DR") != 0) {
 		jets_closestElectron_DR_branch = tree->GetBranch(tree->GetAlias("jets_closestElectron_DR"));
-		jets_closestElectron_DR_branch->SetAddress(&jets_closestElectron_DR_);
+		if (jets_closestElectron_DR_branch) {jets_closestElectron_DR_branch->SetAddress(&jets_closestElectron_DR_);}
 	}
 	jets_closestMuon_DR_branch = 0;
 	if (tree->GetAlias("jets_closestMuon_DR") != 0) {
 		jets_closestMuon_DR_branch = tree->GetBranch(tree->GetAlias("jets_closestMuon_DR"));
-		jets_closestMuon_DR_branch->SetAddress(&jets_closestMuon_DR_);
+		if (jets_closestMuon_DR_branch) {jets_closestMuon_DR_branch->SetAddress(&jets_closestMuon_DR_);}
 	}
 	evt_bs_Xwidth_branch = 0;
 	if (tree->GetAlias("evt_bs_Xwidth") != 0) {
 		evt_bs_Xwidth_branch = tree->GetBranch(tree->GetAlias("evt_bs_Xwidth"));
-		evt_bs_Xwidth_branch->SetAddress(&evt_bs_Xwidth_);
+		if (evt_bs_Xwidth_branch) {evt_bs_Xwidth_branch->SetAddress(&evt_bs_Xwidth_);}
 	}
 	evt_bs_XwidthErr_branch = 0;
 	if (tree->GetAlias("evt_bs_XwidthErr") != 0) {
 		evt_bs_XwidthErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_XwidthErr"));
-		evt_bs_XwidthErr_branch->SetAddress(&evt_bs_XwidthErr_);
+		if (evt_bs_XwidthErr_branch) {evt_bs_XwidthErr_branch->SetAddress(&evt_bs_XwidthErr_);}
 	}
 	evt_bs_Ywidth_branch = 0;
 	if (tree->GetAlias("evt_bs_Ywidth") != 0) {
 		evt_bs_Ywidth_branch = tree->GetBranch(tree->GetAlias("evt_bs_Ywidth"));
-		evt_bs_Ywidth_branch->SetAddress(&evt_bs_Ywidth_);
+		if (evt_bs_Ywidth_branch) {evt_bs_Ywidth_branch->SetAddress(&evt_bs_Ywidth_);}
 	}
 	evt_bs_YwidthErr_branch = 0;
 	if (tree->GetAlias("evt_bs_YwidthErr") != 0) {
 		evt_bs_YwidthErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_YwidthErr"));
-		evt_bs_YwidthErr_branch->SetAddress(&evt_bs_YwidthErr_);
+		if (evt_bs_YwidthErr_branch) {evt_bs_YwidthErr_branch->SetAddress(&evt_bs_YwidthErr_);}
 	}
 	evt_bs_dxdz_branch = 0;
 	if (tree->GetAlias("evt_bs_dxdz") != 0) {
 		evt_bs_dxdz_branch = tree->GetBranch(tree->GetAlias("evt_bs_dxdz"));
-		evt_bs_dxdz_branch->SetAddress(&evt_bs_dxdz_);
+		if (evt_bs_dxdz_branch) {evt_bs_dxdz_branch->SetAddress(&evt_bs_dxdz_);}
 	}
 	evt_bs_dxdzErr_branch = 0;
 	if (tree->GetAlias("evt_bs_dxdzErr") != 0) {
 		evt_bs_dxdzErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_dxdzErr"));
-		evt_bs_dxdzErr_branch->SetAddress(&evt_bs_dxdzErr_);
+		if (evt_bs_dxdzErr_branch) {evt_bs_dxdzErr_branch->SetAddress(&evt_bs_dxdzErr_);}
 	}
 	evt_bs_dydz_branch = 0;
 	if (tree->GetAlias("evt_bs_dydz") != 0) {
 		evt_bs_dydz_branch = tree->GetBranch(tree->GetAlias("evt_bs_dydz"));
-		evt_bs_dydz_branch->SetAddress(&evt_bs_dydz_);
+		if (evt_bs_dydz_branch) {evt_bs_dydz_branch->SetAddress(&evt_bs_dydz_);}
 	}
 	evt_bs_dydzErr_branch = 0;
 	if (tree->GetAlias("evt_bs_dydzErr") != 0) {
 		evt_bs_dydzErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_dydzErr"));
-		evt_bs_dydzErr_branch->SetAddress(&evt_bs_dydzErr_);
+		if (evt_bs_dydzErr_branch) {evt_bs_dydzErr_branch->SetAddress(&evt_bs_dydzErr_);}
 	}
 	evt_bs_sigmaZ_branch = 0;
 	if (tree->GetAlias("evt_bs_sigmaZ") != 0) {
 		evt_bs_sigmaZ_branch = tree->GetBranch(tree->GetAlias("evt_bs_sigmaZ"));
-		evt_bs_sigmaZ_branch->SetAddress(&evt_bs_sigmaZ_);
+		if (evt_bs_sigmaZ_branch) {evt_bs_sigmaZ_branch->SetAddress(&evt_bs_sigmaZ_);}
 	}
 	evt_bs_sigmaZErr_branch = 0;
 	if (tree->GetAlias("evt_bs_sigmaZErr") != 0) {
 		evt_bs_sigmaZErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_sigmaZErr"));
-		evt_bs_sigmaZErr_branch->SetAddress(&evt_bs_sigmaZErr_);
+		if (evt_bs_sigmaZErr_branch) {evt_bs_sigmaZErr_branch->SetAddress(&evt_bs_sigmaZErr_);}
 	}
 	evt_bs_xErr_branch = 0;
 	if (tree->GetAlias("evt_bs_xErr") != 0) {
 		evt_bs_xErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_xErr"));
-		evt_bs_xErr_branch->SetAddress(&evt_bs_xErr_);
+		if (evt_bs_xErr_branch) {evt_bs_xErr_branch->SetAddress(&evt_bs_xErr_);}
 	}
 	evt_bs_yErr_branch = 0;
 	if (tree->GetAlias("evt_bs_yErr") != 0) {
 		evt_bs_yErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_yErr"));
-		evt_bs_yErr_branch->SetAddress(&evt_bs_yErr_);
+		if (evt_bs_yErr_branch) {evt_bs_yErr_branch->SetAddress(&evt_bs_yErr_);}
 	}
 	evt_bs_zErr_branch = 0;
 	if (tree->GetAlias("evt_bs_zErr") != 0) {
 		evt_bs_zErr_branch = tree->GetBranch(tree->GetAlias("evt_bs_zErr"));
-		evt_bs_zErr_branch->SetAddress(&evt_bs_zErr_);
+		if (evt_bs_zErr_branch) {evt_bs_zErr_branch->SetAddress(&evt_bs_zErr_);}
 	}
 	evt_bField_branch = 0;
 	if (tree->GetAlias("evt_bField") != 0) {
 		evt_bField_branch = tree->GetBranch(tree->GetAlias("evt_bField"));
-		evt_bField_branch->SetAddress(&evt_bField_);
+		if (evt_bField_branch) {evt_bField_branch->SetAddress(&evt_bField_);}
 	}
 	evt_rho_branch = 0;
 	if (tree->GetAlias("evt_rho") != 0) {
 		evt_rho_branch = tree->GetBranch(tree->GetAlias("evt_rho"));
-		evt_rho_branch->SetAddress(&evt_rho_);
+		if (evt_rho_branch) {evt_rho_branch->SetAddress(&evt_rho_);}
 	}
 	evt_rhoJEC_branch = 0;
 	if (tree->GetAlias("evt_rhoJEC") != 0) {
 		evt_rhoJEC_branch = tree->GetBranch(tree->GetAlias("evt_rhoJEC"));
-		evt_rhoJEC_branch->SetAddress(&evt_rhoJEC_);
+		if (evt_rhoJEC_branch) {evt_rhoJEC_branch->SetAddress(&evt_rhoJEC_);}
 	}
 	evt_fixgrid_all_rho_branch = 0;
 	if (tree->GetAlias("evt_fixgrid_all_rho") != 0) {
 		evt_fixgrid_all_rho_branch = tree->GetBranch(tree->GetAlias("evt_fixgrid_all_rho"));
-		evt_fixgrid_all_rho_branch->SetAddress(&evt_fixgrid_all_rho_);
+		if (evt_fixgrid_all_rho_branch) {evt_fixgrid_all_rho_branch->SetAddress(&evt_fixgrid_all_rho_);}
 	}
 	evt_fixgridfastjet_all_rho_branch = 0;
 	if (tree->GetAlias("evt_fixgridfastjet_all_rho") != 0) {
 		evt_fixgridfastjet_all_rho_branch = tree->GetBranch(tree->GetAlias("evt_fixgridfastjet_all_rho"));
-		evt_fixgridfastjet_all_rho_branch->SetAddress(&evt_fixgridfastjet_all_rho_);
+		if (evt_fixgridfastjet_all_rho_branch) {evt_fixgridfastjet_all_rho_branch->SetAddress(&evt_fixgridfastjet_all_rho_);}
 	}
 	evt_kfactor_branch = 0;
 	if (tree->GetAlias("evt_kfactor") != 0) {
 		evt_kfactor_branch = tree->GetBranch(tree->GetAlias("evt_kfactor"));
-		evt_kfactor_branch->SetAddress(&evt_kfactor_);
+		if (evt_kfactor_branch) {evt_kfactor_branch->SetAddress(&evt_kfactor_);}
 	}
 	evt_scale1fb_branch = 0;
 	if (tree->GetAlias("evt_scale1fb") != 0) {
 		evt_scale1fb_branch = tree->GetBranch(tree->GetAlias("evt_scale1fb"));
-		evt_scale1fb_branch->SetAddress(&evt_scale1fb_);
+		if (evt_scale1fb_branch) {evt_scale1fb_branch->SetAddress(&evt_scale1fb_);}
 	}
 	evt_xsec_excl_branch = 0;
 	if (tree->GetAlias("evt_xsec_excl") != 0) {
 		evt_xsec_excl_branch = tree->GetBranch(tree->GetAlias("evt_xsec_excl"));
-		evt_xsec_excl_branch->SetAddress(&evt_xsec_excl_);
+		if (evt_xsec_excl_branch) {evt_xsec_excl_branch->SetAddress(&evt_xsec_excl_);}
 	}
 	evt_xsec_incl_branch = 0;
 	if (tree->GetAlias("evt_xsec_incl") != 0) {
 		evt_xsec_incl_branch = tree->GetBranch(tree->GetAlias("evt_xsec_incl"));
-		evt_xsec_incl_branch->SetAddress(&evt_xsec_incl_);
+		if (evt_xsec_incl_branch) {evt_xsec_incl_branch->SetAddress(&evt_xsec_incl_);}
 	}
 	gen_met_branch = 0;
 	if (tree->GetAlias("gen_met") != 0) {
 		gen_met_branch = tree->GetBranch(tree->GetAlias("gen_met"));
-		gen_met_branch->SetAddress(&gen_met_);
+		if (gen_met_branch) {gen_met_branch->SetAddress(&gen_met_);}
 	}
 	gen_metPhi_branch = 0;
 	if (tree->GetAlias("gen_metPhi") != 0) {
 		gen_metPhi_branch = tree->GetBranch(tree->GetAlias("gen_metPhi"));
-		gen_metPhi_branch->SetAddress(&gen_metPhi_);
+		if (gen_metPhi_branch) {gen_metPhi_branch->SetAddress(&gen_metPhi_);}
 	}
 	genps_alphaQCD_branch = 0;
 	if (tree->GetAlias("genps_alphaQCD") != 0) {
 		genps_alphaQCD_branch = tree->GetBranch(tree->GetAlias("genps_alphaQCD"));
-		genps_alphaQCD_branch->SetAddress(&genps_alphaQCD_);
+		if (genps_alphaQCD_branch) {genps_alphaQCD_branch->SetAddress(&genps_alphaQCD_);}
 	}
 	genps_pthat_branch = 0;
 	if (tree->GetAlias("genps_pthat") != 0) {
 		genps_pthat_branch = tree->GetBranch(tree->GetAlias("genps_pthat"));
-		genps_pthat_branch->SetAddress(&genps_pthat_);
+		if (genps_pthat_branch) {genps_pthat_branch->SetAddress(&genps_pthat_);}
 	}
 	genps_qScale_branch = 0;
 	if (tree->GetAlias("genps_qScale") != 0) {
 		genps_qScale_branch = tree->GetBranch(tree->GetAlias("genps_qScale"));
-		genps_qScale_branch->SetAddress(&genps_qScale_);
+		if (genps_qScale_branch) {genps_qScale_branch->SetAddress(&genps_qScale_);}
 	}
 	genps_weight_branch = 0;
 	if (tree->GetAlias("genps_weight") != 0) {
 		genps_weight_branch = tree->GetBranch(tree->GetAlias("genps_weight"));
-		genps_weight_branch->SetAddress(&genps_weight_);
+		if (genps_weight_branch) {genps_weight_branch->SetAddress(&genps_weight_);}
 	}
 	gen_sumEt_branch = 0;
 	if (tree->GetAlias("gen_sumEt") != 0) {
 		gen_sumEt_branch = tree->GetBranch(tree->GetAlias("gen_sumEt"));
-		gen_sumEt_branch->SetAddress(&gen_sumEt_);
+		if (gen_sumEt_branch) {gen_sumEt_branch->SetAddress(&gen_sumEt_);}
 	}
 	hcalnoise_GetRecHitEnergy_branch = 0;
 	if (tree->GetAlias("hcalnoise_GetRecHitEnergy") != 0) {
 		hcalnoise_GetRecHitEnergy_branch = tree->GetBranch(tree->GetAlias("hcalnoise_GetRecHitEnergy"));
-		hcalnoise_GetRecHitEnergy_branch->SetAddress(&hcalnoise_GetRecHitEnergy_);
+		if (hcalnoise_GetRecHitEnergy_branch) {hcalnoise_GetRecHitEnergy_branch->SetAddress(&hcalnoise_GetRecHitEnergy_);}
 	}
 	hcalnoise_GetRecHitEnergy15_branch = 0;
 	if (tree->GetAlias("hcalnoise_GetRecHitEnergy15") != 0) {
 		hcalnoise_GetRecHitEnergy15_branch = tree->GetBranch(tree->GetAlias("hcalnoise_GetRecHitEnergy15"));
-		hcalnoise_GetRecHitEnergy15_branch->SetAddress(&hcalnoise_GetRecHitEnergy15_);
+		if (hcalnoise_GetRecHitEnergy15_branch) {hcalnoise_GetRecHitEnergy15_branch->SetAddress(&hcalnoise_GetRecHitEnergy15_);}
 	}
 	hcalnoise_GetTotalCalibCharge_branch = 0;
 	if (tree->GetAlias("hcalnoise_GetTotalCalibCharge") != 0) {
 		hcalnoise_GetTotalCalibCharge_branch = tree->GetBranch(tree->GetAlias("hcalnoise_GetTotalCalibCharge"));
-		hcalnoise_GetTotalCalibCharge_branch->SetAddress(&hcalnoise_GetTotalCalibCharge_);
+		if (hcalnoise_GetTotalCalibCharge_branch) {hcalnoise_GetTotalCalibCharge_branch->SetAddress(&hcalnoise_GetTotalCalibCharge_);}
 	}
 	hcalnoise_TS4TS5NoiseSumE_branch = 0;
 	if (tree->GetAlias("hcalnoise_TS4TS5NoiseSumE") != 0) {
 		hcalnoise_TS4TS5NoiseSumE_branch = tree->GetBranch(tree->GetAlias("hcalnoise_TS4TS5NoiseSumE"));
-		hcalnoise_TS4TS5NoiseSumE_branch->SetAddress(&hcalnoise_TS4TS5NoiseSumE_);
+		if (hcalnoise_TS4TS5NoiseSumE_branch) {hcalnoise_TS4TS5NoiseSumE_branch->SetAddress(&hcalnoise_TS4TS5NoiseSumE_);}
 	}
 	hcalnoise_TS4TS5NoiseSumEt_branch = 0;
 	if (tree->GetAlias("hcalnoise_TS4TS5NoiseSumEt") != 0) {
 		hcalnoise_TS4TS5NoiseSumEt_branch = tree->GetBranch(tree->GetAlias("hcalnoise_TS4TS5NoiseSumEt"));
-		hcalnoise_TS4TS5NoiseSumEt_branch->SetAddress(&hcalnoise_TS4TS5NoiseSumEt_);
+		if (hcalnoise_TS4TS5NoiseSumEt_branch) {hcalnoise_TS4TS5NoiseSumEt_branch->SetAddress(&hcalnoise_TS4TS5NoiseSumEt_);}
 	}
 	hcalnoise_eventChargeFraction_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventChargeFraction") != 0) {
 		hcalnoise_eventChargeFraction_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventChargeFraction"));
-		hcalnoise_eventChargeFraction_branch->SetAddress(&hcalnoise_eventChargeFraction_);
+		if (hcalnoise_eventChargeFraction_branch) {hcalnoise_eventChargeFraction_branch->SetAddress(&hcalnoise_eventChargeFraction_);}
 	}
 	hcalnoise_eventEMEnergy_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventEMEnergy") != 0) {
 		hcalnoise_eventEMEnergy_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventEMEnergy"));
-		hcalnoise_eventEMEnergy_branch->SetAddress(&hcalnoise_eventEMEnergy_);
+		if (hcalnoise_eventEMEnergy_branch) {hcalnoise_eventEMEnergy_branch->SetAddress(&hcalnoise_eventEMEnergy_);}
 	}
 	hcalnoise_eventEMFraction_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventEMFraction") != 0) {
 		hcalnoise_eventEMFraction_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventEMFraction"));
-		hcalnoise_eventEMFraction_branch->SetAddress(&hcalnoise_eventEMFraction_);
+		if (hcalnoise_eventEMFraction_branch) {hcalnoise_eventEMFraction_branch->SetAddress(&hcalnoise_eventEMFraction_);}
 	}
 	hcalnoise_eventHadEnergy_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventHadEnergy") != 0) {
 		hcalnoise_eventHadEnergy_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventHadEnergy"));
-		hcalnoise_eventHadEnergy_branch->SetAddress(&hcalnoise_eventHadEnergy_);
+		if (hcalnoise_eventHadEnergy_branch) {hcalnoise_eventHadEnergy_branch->SetAddress(&hcalnoise_eventHadEnergy_);}
 	}
 	hcalnoise_eventTrackEnergy_branch = 0;
 	if (tree->GetAlias("hcalnoise_eventTrackEnergy") != 0) {
 		hcalnoise_eventTrackEnergy_branch = tree->GetBranch(tree->GetAlias("hcalnoise_eventTrackEnergy"));
-		hcalnoise_eventTrackEnergy_branch->SetAddress(&hcalnoise_eventTrackEnergy_);
+		if (hcalnoise_eventTrackEnergy_branch) {hcalnoise_eventTrackEnergy_branch->SetAddress(&hcalnoise_eventTrackEnergy_);}
 	}
 	hcalnoise_flatNoiseSumE_branch = 0;
 	if (tree->GetAlias("hcalnoise_flatNoiseSumE") != 0) {
 		hcalnoise_flatNoiseSumE_branch = tree->GetBranch(tree->GetAlias("hcalnoise_flatNoiseSumE"));
-		hcalnoise_flatNoiseSumE_branch->SetAddress(&hcalnoise_flatNoiseSumE_);
+		if (hcalnoise_flatNoiseSumE_branch) {hcalnoise_flatNoiseSumE_branch->SetAddress(&hcalnoise_flatNoiseSumE_);}
 	}
 	hcalnoise_flatNoiseSumEt_branch = 0;
 	if (tree->GetAlias("hcalnoise_flatNoiseSumEt") != 0) {
 		hcalnoise_flatNoiseSumEt_branch = tree->GetBranch(tree->GetAlias("hcalnoise_flatNoiseSumEt"));
-		hcalnoise_flatNoiseSumEt_branch->SetAddress(&hcalnoise_flatNoiseSumEt_);
+		if (hcalnoise_flatNoiseSumEt_branch) {hcalnoise_flatNoiseSumEt_branch->SetAddress(&hcalnoise_flatNoiseSumEt_);}
 	}
 	hcalnoise_isolatedNoiseSumE_branch = 0;
 	if (tree->GetAlias("hcalnoise_isolatedNoiseSumE") != 0) {
 		hcalnoise_isolatedNoiseSumE_branch = tree->GetBranch(tree->GetAlias("hcalnoise_isolatedNoiseSumE"));
-		hcalnoise_isolatedNoiseSumE_branch->SetAddress(&hcalnoise_isolatedNoiseSumE_);
+		if (hcalnoise_isolatedNoiseSumE_branch) {hcalnoise_isolatedNoiseSumE_branch->SetAddress(&hcalnoise_isolatedNoiseSumE_);}
 	}
 	hcalnoise_isolatedNoiseSumEt_branch = 0;
 	if (tree->GetAlias("hcalnoise_isolatedNoiseSumEt") != 0) {
 		hcalnoise_isolatedNoiseSumEt_branch = tree->GetBranch(tree->GetAlias("hcalnoise_isolatedNoiseSumEt"));
-		hcalnoise_isolatedNoiseSumEt_branch->SetAddress(&hcalnoise_isolatedNoiseSumEt_);
+		if (hcalnoise_isolatedNoiseSumEt_branch) {hcalnoise_isolatedNoiseSumEt_branch->SetAddress(&hcalnoise_isolatedNoiseSumEt_);}
 	}
 	hcalnoise_max10GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_max10GeVHitTime") != 0) {
 		hcalnoise_max10GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_max10GeVHitTime"));
-		hcalnoise_max10GeVHitTime_branch->SetAddress(&hcalnoise_max10GeVHitTime_);
+		if (hcalnoise_max10GeVHitTime_branch) {hcalnoise_max10GeVHitTime_branch->SetAddress(&hcalnoise_max10GeVHitTime_);}
 	}
 	hcalnoise_max25GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_max25GeVHitTime") != 0) {
 		hcalnoise_max25GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_max25GeVHitTime"));
-		hcalnoise_max25GeVHitTime_branch->SetAddress(&hcalnoise_max25GeVHitTime_);
+		if (hcalnoise_max25GeVHitTime_branch) {hcalnoise_max25GeVHitTime_branch->SetAddress(&hcalnoise_max25GeVHitTime_);}
 	}
 	hcalnoise_maxE10TS_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxE10TS") != 0) {
 		hcalnoise_maxE10TS_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxE10TS"));
-		hcalnoise_maxE10TS_branch->SetAddress(&hcalnoise_maxE10TS_);
+		if (hcalnoise_maxE10TS_branch) {hcalnoise_maxE10TS_branch->SetAddress(&hcalnoise_maxE10TS_);}
 	}
 	hcalnoise_maxE2Over10TS_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxE2Over10TS") != 0) {
 		hcalnoise_maxE2Over10TS_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxE2Over10TS"));
-		hcalnoise_maxE2Over10TS_branch->SetAddress(&hcalnoise_maxE2Over10TS_);
+		if (hcalnoise_maxE2Over10TS_branch) {hcalnoise_maxE2Over10TS_branch->SetAddress(&hcalnoise_maxE2Over10TS_);}
 	}
 	hcalnoise_maxE2TS_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxE2TS") != 0) {
 		hcalnoise_maxE2TS_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxE2TS"));
-		hcalnoise_maxE2TS_branch->SetAddress(&hcalnoise_maxE2TS_);
+		if (hcalnoise_maxE2TS_branch) {hcalnoise_maxE2TS_branch->SetAddress(&hcalnoise_maxE2TS_);}
 	}
 	hcalnoise_min10GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_min10GeVHitTime") != 0) {
 		hcalnoise_min10GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_min10GeVHitTime"));
-		hcalnoise_min10GeVHitTime_branch->SetAddress(&hcalnoise_min10GeVHitTime_);
+		if (hcalnoise_min10GeVHitTime_branch) {hcalnoise_min10GeVHitTime_branch->SetAddress(&hcalnoise_min10GeVHitTime_);}
 	}
 	hcalnoise_min25GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_min25GeVHitTime") != 0) {
 		hcalnoise_min25GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_min25GeVHitTime"));
-		hcalnoise_min25GeVHitTime_branch->SetAddress(&hcalnoise_min25GeVHitTime_);
+		if (hcalnoise_min25GeVHitTime_branch) {hcalnoise_min25GeVHitTime_branch->SetAddress(&hcalnoise_min25GeVHitTime_);}
 	}
 	hcalnoise_minE10TS_branch = 0;
 	if (tree->GetAlias("hcalnoise_minE10TS") != 0) {
 		hcalnoise_minE10TS_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minE10TS"));
-		hcalnoise_minE10TS_branch->SetAddress(&hcalnoise_minE10TS_);
+		if (hcalnoise_minE10TS_branch) {hcalnoise_minE10TS_branch->SetAddress(&hcalnoise_minE10TS_);}
 	}
 	hcalnoise_minE2Over10TS_branch = 0;
 	if (tree->GetAlias("hcalnoise_minE2Over10TS") != 0) {
 		hcalnoise_minE2Over10TS_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minE2Over10TS"));
-		hcalnoise_minE2Over10TS_branch->SetAddress(&hcalnoise_minE2Over10TS_);
+		if (hcalnoise_minE2Over10TS_branch) {hcalnoise_minE2Over10TS_branch->SetAddress(&hcalnoise_minE2Over10TS_);}
 	}
 	hcalnoise_minE2TS_branch = 0;
 	if (tree->GetAlias("hcalnoise_minE2TS") != 0) {
 		hcalnoise_minE2TS_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minE2TS"));
-		hcalnoise_minE2TS_branch->SetAddress(&hcalnoise_minE2TS_);
+		if (hcalnoise_minE2TS_branch) {hcalnoise_minE2TS_branch->SetAddress(&hcalnoise_minE2TS_);}
 	}
 	hcalnoise_minHPDEMF_branch = 0;
 	if (tree->GetAlias("hcalnoise_minHPDEMF") != 0) {
 		hcalnoise_minHPDEMF_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minHPDEMF"));
-		hcalnoise_minHPDEMF_branch->SetAddress(&hcalnoise_minHPDEMF_);
+		if (hcalnoise_minHPDEMF_branch) {hcalnoise_minHPDEMF_branch->SetAddress(&hcalnoise_minHPDEMF_);}
 	}
 	hcalnoise_minRBXEMF_branch = 0;
 	if (tree->GetAlias("hcalnoise_minRBXEMF") != 0) {
 		hcalnoise_minRBXEMF_branch = tree->GetBranch(tree->GetAlias("hcalnoise_minRBXEMF"));
-		hcalnoise_minRBXEMF_branch->SetAddress(&hcalnoise_minRBXEMF_);
+		if (hcalnoise_minRBXEMF_branch) {hcalnoise_minRBXEMF_branch->SetAddress(&hcalnoise_minRBXEMF_);}
 	}
 	hcalnoise_rms10GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_rms10GeVHitTime") != 0) {
 		hcalnoise_rms10GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_rms10GeVHitTime"));
-		hcalnoise_rms10GeVHitTime_branch->SetAddress(&hcalnoise_rms10GeVHitTime_);
+		if (hcalnoise_rms10GeVHitTime_branch) {hcalnoise_rms10GeVHitTime_branch->SetAddress(&hcalnoise_rms10GeVHitTime_);}
 	}
 	hcalnoise_rms25GeVHitTime_branch = 0;
 	if (tree->GetAlias("hcalnoise_rms25GeVHitTime") != 0) {
 		hcalnoise_rms25GeVHitTime_branch = tree->GetBranch(tree->GetAlias("hcalnoise_rms25GeVHitTime"));
-		hcalnoise_rms25GeVHitTime_branch->SetAddress(&hcalnoise_rms25GeVHitTime_);
+		if (hcalnoise_rms25GeVHitTime_branch) {hcalnoise_rms25GeVHitTime_branch->SetAddress(&hcalnoise_rms25GeVHitTime_);}
 	}
 	hcalnoise_spikeNoiseSumE_branch = 0;
 	if (tree->GetAlias("hcalnoise_spikeNoiseSumE") != 0) {
 		hcalnoise_spikeNoiseSumE_branch = tree->GetBranch(tree->GetAlias("hcalnoise_spikeNoiseSumE"));
-		hcalnoise_spikeNoiseSumE_branch->SetAddress(&hcalnoise_spikeNoiseSumE_);
+		if (hcalnoise_spikeNoiseSumE_branch) {hcalnoise_spikeNoiseSumE_branch->SetAddress(&hcalnoise_spikeNoiseSumE_);}
 	}
 	hcalnoise_spikeNoiseSumEt_branch = 0;
 	if (tree->GetAlias("hcalnoise_spikeNoiseSumEt") != 0) {
 		hcalnoise_spikeNoiseSumEt_branch = tree->GetBranch(tree->GetAlias("hcalnoise_spikeNoiseSumEt"));
-		hcalnoise_spikeNoiseSumEt_branch->SetAddress(&hcalnoise_spikeNoiseSumEt_);
+		if (hcalnoise_spikeNoiseSumEt_branch) {hcalnoise_spikeNoiseSumEt_branch->SetAddress(&hcalnoise_spikeNoiseSumEt_);}
 	}
 	hcalnoise_triangleNoiseSumE_branch = 0;
 	if (tree->GetAlias("hcalnoise_triangleNoiseSumE") != 0) {
 		hcalnoise_triangleNoiseSumE_branch = tree->GetBranch(tree->GetAlias("hcalnoise_triangleNoiseSumE"));
-		hcalnoise_triangleNoiseSumE_branch->SetAddress(&hcalnoise_triangleNoiseSumE_);
+		if (hcalnoise_triangleNoiseSumE_branch) {hcalnoise_triangleNoiseSumE_branch->SetAddress(&hcalnoise_triangleNoiseSumE_);}
 	}
 	hcalnoise_triangleNoiseSumEt_branch = 0;
 	if (tree->GetAlias("hcalnoise_triangleNoiseSumEt") != 0) {
 		hcalnoise_triangleNoiseSumEt_branch = tree->GetBranch(tree->GetAlias("hcalnoise_triangleNoiseSumEt"));
-		hcalnoise_triangleNoiseSumEt_branch->SetAddress(&hcalnoise_triangleNoiseSumEt_);
+		if (hcalnoise_triangleNoiseSumEt_branch) {hcalnoise_triangleNoiseSumEt_branch->SetAddress(&hcalnoise_triangleNoiseSumEt_);}
 	}
 	evt_kt6calo_central_rho_branch = 0;
 	if (tree->GetAlias("evt_kt6calo_central_rho") != 0) {
 		evt_kt6calo_central_rho_branch = tree->GetBranch(tree->GetAlias("evt_kt6calo_central_rho"));
-		evt_kt6calo_central_rho_branch->SetAddress(&evt_kt6calo_central_rho_);
+		if (evt_kt6calo_central_rho_branch) {evt_kt6calo_central_rho_branch->SetAddress(&evt_kt6calo_central_rho_);}
 	}
 	evt_kt6calo_muhlt_rho_branch = 0;
 	if (tree->GetAlias("evt_kt6calo_muhlt_rho") != 0) {
 		evt_kt6calo_muhlt_rho_branch = tree->GetBranch(tree->GetAlias("evt_kt6calo_muhlt_rho"));
-		evt_kt6calo_muhlt_rho_branch->SetAddress(&evt_kt6calo_muhlt_rho_);
+		if (evt_kt6calo_muhlt_rho_branch) {evt_kt6calo_muhlt_rho_branch->SetAddress(&evt_kt6calo_muhlt_rho_);}
 	}
 	evt_kt6calo_rho_branch = 0;
 	if (tree->GetAlias("evt_kt6calo_rho") != 0) {
 		evt_kt6calo_rho_branch = tree->GetBranch(tree->GetAlias("evt_kt6calo_rho"));
-		evt_kt6calo_rho_branch->SetAddress(&evt_kt6calo_rho_);
+		if (evt_kt6calo_rho_branch) {evt_kt6calo_rho_branch->SetAddress(&evt_kt6calo_rho_);}
 	}
 	evt_kt6pf_ctrChargedPU_rho_branch = 0;
 	if (tree->GetAlias("evt_kt6pf_ctrChargedPU_rho") != 0) {
 		evt_kt6pf_ctrChargedPU_rho_branch = tree->GetBranch(tree->GetAlias("evt_kt6pf_ctrChargedPU_rho"));
-		evt_kt6pf_ctrChargedPU_rho_branch->SetAddress(&evt_kt6pf_ctrChargedPU_rho_);
+		if (evt_kt6pf_ctrChargedPU_rho_branch) {evt_kt6pf_ctrChargedPU_rho_branch->SetAddress(&evt_kt6pf_ctrChargedPU_rho_);}
 	}
 	evt_kt6pf_ctrNeutral_rho_branch = 0;
 	if (tree->GetAlias("evt_kt6pf_ctrNeutral_rho") != 0) {
 		evt_kt6pf_ctrNeutral_rho_branch = tree->GetBranch(tree->GetAlias("evt_kt6pf_ctrNeutral_rho"));
-		evt_kt6pf_ctrNeutral_rho_branch->SetAddress(&evt_kt6pf_ctrNeutral_rho_);
+		if (evt_kt6pf_ctrNeutral_rho_branch) {evt_kt6pf_ctrNeutral_rho_branch->SetAddress(&evt_kt6pf_ctrNeutral_rho_);}
 	}
 	evt_kt6pf_ctrNeutralTight_rho_branch = 0;
 	if (tree->GetAlias("evt_kt6pf_ctrNeutralTight_rho") != 0) {
 		evt_kt6pf_ctrNeutralTight_rho_branch = tree->GetBranch(tree->GetAlias("evt_kt6pf_ctrNeutralTight_rho"));
-		evt_kt6pf_ctrNeutralTight_rho_branch->SetAddress(&evt_kt6pf_ctrNeutralTight_rho_);
+		if (evt_kt6pf_ctrNeutralTight_rho_branch) {evt_kt6pf_ctrNeutralTight_rho_branch->SetAddress(&evt_kt6pf_ctrNeutralTight_rho_);}
 	}
 	evt_kt6pf_foregiso_rho_branch = 0;
 	if (tree->GetAlias("evt_kt6pf_foregiso_rho") != 0) {
 		evt_kt6pf_foregiso_rho_branch = tree->GetBranch(tree->GetAlias("evt_kt6pf_foregiso_rho"));
-		evt_kt6pf_foregiso_rho_branch->SetAddress(&evt_kt6pf_foregiso_rho_);
+		if (evt_kt6pf_foregiso_rho_branch) {evt_kt6pf_foregiso_rho_branch->SetAddress(&evt_kt6pf_foregiso_rho_);}
 	}
 	l1_met_etTot_branch = 0;
 	if (tree->GetAlias("l1_met_etTot") != 0) {
 		l1_met_etTot_branch = tree->GetBranch(tree->GetAlias("l1_met_etTot"));
-		l1_met_etTot_branch->SetAddress(&l1_met_etTot_);
+		if (l1_met_etTot_branch) {l1_met_etTot_branch->SetAddress(&l1_met_etTot_);}
 	}
 	l1_met_met_branch = 0;
 	if (tree->GetAlias("l1_met_met") != 0) {
 		l1_met_met_branch = tree->GetBranch(tree->GetAlias("l1_met_met"));
-		l1_met_met_branch->SetAddress(&l1_met_met_);
+		if (l1_met_met_branch) {l1_met_met_branch->SetAddress(&l1_met_met_);}
 	}
 	l1_mht_htTot_branch = 0;
 	if (tree->GetAlias("l1_mht_htTot") != 0) {
 		l1_mht_htTot_branch = tree->GetBranch(tree->GetAlias("l1_mht_htTot"));
-		l1_mht_htTot_branch->SetAddress(&l1_mht_htTot_);
+		if (l1_mht_htTot_branch) {l1_mht_htTot_branch->SetAddress(&l1_mht_htTot_);}
 	}
 	l1_mht_mht_branch = 0;
 	if (tree->GetAlias("l1_mht_mht") != 0) {
 		l1_mht_mht_branch = tree->GetBranch(tree->GetAlias("l1_mht_mht"));
-		l1_mht_mht_branch->SetAddress(&l1_mht_mht_);
+		if (l1_mht_mht_branch) {l1_mht_mht_branch->SetAddress(&l1_mht_mht_);}
 	}
 	ls_avgInsDelLumi_branch = 0;
 	if (tree->GetAlias("ls_avgInsDelLumi") != 0) {
 		ls_avgInsDelLumi_branch = tree->GetBranch(tree->GetAlias("ls_avgInsDelLumi"));
-		ls_avgInsDelLumi_branch->SetAddress(&ls_avgInsDelLumi_);
+		if (ls_avgInsDelLumi_branch) {ls_avgInsDelLumi_branch->SetAddress(&ls_avgInsDelLumi_);}
 	}
 	ls_avgInsDelLumiErr_branch = 0;
 	if (tree->GetAlias("ls_avgInsDelLumiErr") != 0) {
 		ls_avgInsDelLumiErr_branch = tree->GetBranch(tree->GetAlias("ls_avgInsDelLumiErr"));
-		ls_avgInsDelLumiErr_branch->SetAddress(&ls_avgInsDelLumiErr_);
+		if (ls_avgInsDelLumiErr_branch) {ls_avgInsDelLumiErr_branch->SetAddress(&ls_avgInsDelLumiErr_);}
 	}
 	ls_avgInsRecLumi_branch = 0;
 	if (tree->GetAlias("ls_avgInsRecLumi") != 0) {
 		ls_avgInsRecLumi_branch = tree->GetBranch(tree->GetAlias("ls_avgInsRecLumi"));
-		ls_avgInsRecLumi_branch->SetAddress(&ls_avgInsRecLumi_);
+		if (ls_avgInsRecLumi_branch) {ls_avgInsRecLumi_branch->SetAddress(&ls_avgInsRecLumi_);}
 	}
 	ls_avgInsRecLumiErr_branch = 0;
 	if (tree->GetAlias("ls_avgInsRecLumiErr") != 0) {
 		ls_avgInsRecLumiErr_branch = tree->GetBranch(tree->GetAlias("ls_avgInsRecLumiErr"));
-		ls_avgInsRecLumiErr_branch->SetAddress(&ls_avgInsRecLumiErr_);
+		if (ls_avgInsRecLumiErr_branch) {ls_avgInsRecLumiErr_branch->SetAddress(&ls_avgInsRecLumiErr_);}
 	}
 	ls_deadFrac_branch = 0;
 	if (tree->GetAlias("ls_deadFrac") != 0) {
 		ls_deadFrac_branch = tree->GetBranch(tree->GetAlias("ls_deadFrac"));
-		ls_deadFrac_branch->SetAddress(&ls_deadFrac_);
+		if (ls_deadFrac_branch) {ls_deadFrac_branch->SetAddress(&ls_deadFrac_);}
 	}
 	ls_intgDelLumi_branch = 0;
 	if (tree->GetAlias("ls_intgDelLumi") != 0) {
 		ls_intgDelLumi_branch = tree->GetBranch(tree->GetAlias("ls_intgDelLumi"));
-		ls_intgDelLumi_branch->SetAddress(&ls_intgDelLumi_);
+		if (ls_intgDelLumi_branch) {ls_intgDelLumi_branch->SetAddress(&ls_intgDelLumi_);}
 	}
 	ls_intgRecLumi_branch = 0;
 	if (tree->GetAlias("ls_intgRecLumi") != 0) {
 		ls_intgRecLumi_branch = tree->GetBranch(tree->GetAlias("ls_intgRecLumi"));
-		ls_intgRecLumi_branch->SetAddress(&ls_intgRecLumi_);
+		if (ls_intgRecLumi_branch) {ls_intgRecLumi_branch->SetAddress(&ls_intgRecLumi_);}
 	}
 	ls_lumiSectionLength_branch = 0;
 	if (tree->GetAlias("ls_lumiSectionLength") != 0) {
 		ls_lumiSectionLength_branch = tree->GetBranch(tree->GetAlias("ls_lumiSectionLength"));
-		ls_lumiSectionLength_branch->SetAddress(&ls_lumiSectionLength_);
+		if (ls_lumiSectionLength_branch) {ls_lumiSectionLength_branch->SetAddress(&ls_lumiSectionLength_);}
 	}
 	evt_ecalendcapm_met_branch = 0;
 	if (tree->GetAlias("evt_ecalendcapm_met") != 0) {
 		evt_ecalendcapm_met_branch = tree->GetBranch(tree->GetAlias("evt_ecalendcapm_met"));
-		evt_ecalendcapm_met_branch->SetAddress(&evt_ecalendcapm_met_);
+		if (evt_ecalendcapm_met_branch) {evt_ecalendcapm_met_branch->SetAddress(&evt_ecalendcapm_met_);}
 	}
 	evt_ecalendcapm_metPhi_branch = 0;
 	if (tree->GetAlias("evt_ecalendcapm_metPhi") != 0) {
 		evt_ecalendcapm_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_ecalendcapm_metPhi"));
-		evt_ecalendcapm_metPhi_branch->SetAddress(&evt_ecalendcapm_metPhi_);
+		if (evt_ecalendcapm_metPhi_branch) {evt_ecalendcapm_metPhi_branch->SetAddress(&evt_ecalendcapm_metPhi_);}
 	}
 	evt_ecalendcapp_met_branch = 0;
 	if (tree->GetAlias("evt_ecalendcapp_met") != 0) {
 		evt_ecalendcapp_met_branch = tree->GetBranch(tree->GetAlias("evt_ecalendcapp_met"));
-		evt_ecalendcapp_met_branch->SetAddress(&evt_ecalendcapp_met_);
+		if (evt_ecalendcapp_met_branch) {evt_ecalendcapp_met_branch->SetAddress(&evt_ecalendcapp_met_);}
 	}
 	evt_ecalendcapp_metPhi_branch = 0;
 	if (tree->GetAlias("evt_ecalendcapp_metPhi") != 0) {
 		evt_ecalendcapp_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_ecalendcapp_metPhi"));
-		evt_ecalendcapp_metPhi_branch->SetAddress(&evt_ecalendcapp_metPhi_);
+		if (evt_ecalendcapp_metPhi_branch) {evt_ecalendcapp_metPhi_branch->SetAddress(&evt_ecalendcapp_metPhi_);}
 	}
 	evt_ecalmet_branch = 0;
 	if (tree->GetAlias("evt_ecalmet") != 0) {
 		evt_ecalmet_branch = tree->GetBranch(tree->GetAlias("evt_ecalmet"));
-		evt_ecalmet_branch->SetAddress(&evt_ecalmet_);
+		if (evt_ecalmet_branch) {evt_ecalmet_branch->SetAddress(&evt_ecalmet_);}
 	}
 	evt_ecalmetPhi_branch = 0;
 	if (tree->GetAlias("evt_ecalmetPhi") != 0) {
 		evt_ecalmetPhi_branch = tree->GetBranch(tree->GetAlias("evt_ecalmetPhi"));
-		evt_ecalmetPhi_branch->SetAddress(&evt_ecalmetPhi_);
+		if (evt_ecalmetPhi_branch) {evt_ecalmetPhi_branch->SetAddress(&evt_ecalmetPhi_);}
 	}
 	evt_endcapm_met_branch = 0;
 	if (tree->GetAlias("evt_endcapm_met") != 0) {
 		evt_endcapm_met_branch = tree->GetBranch(tree->GetAlias("evt_endcapm_met"));
-		evt_endcapm_met_branch->SetAddress(&evt_endcapm_met_);
+		if (evt_endcapm_met_branch) {evt_endcapm_met_branch->SetAddress(&evt_endcapm_met_);}
 	}
 	evt_endcapm_metPhi_branch = 0;
 	if (tree->GetAlias("evt_endcapm_metPhi") != 0) {
 		evt_endcapm_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_endcapm_metPhi"));
-		evt_endcapm_metPhi_branch->SetAddress(&evt_endcapm_metPhi_);
+		if (evt_endcapm_metPhi_branch) {evt_endcapm_metPhi_branch->SetAddress(&evt_endcapm_metPhi_);}
 	}
 	evt_endcapp_met_branch = 0;
 	if (tree->GetAlias("evt_endcapp_met") != 0) {
 		evt_endcapp_met_branch = tree->GetBranch(tree->GetAlias("evt_endcapp_met"));
-		evt_endcapp_met_branch->SetAddress(&evt_endcapp_met_);
+		if (evt_endcapp_met_branch) {evt_endcapp_met_branch->SetAddress(&evt_endcapp_met_);}
 	}
 	evt_endcapp_metPhi_branch = 0;
 	if (tree->GetAlias("evt_endcapp_metPhi") != 0) {
 		evt_endcapp_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_endcapp_metPhi"));
-		evt_endcapp_metPhi_branch->SetAddress(&evt_endcapp_metPhi_);
+		if (evt_endcapp_metPhi_branch) {evt_endcapp_metPhi_branch->SetAddress(&evt_endcapp_metPhi_);}
 	}
 	evt_hcalendcapm_met_branch = 0;
 	if (tree->GetAlias("evt_hcalendcapm_met") != 0) {
 		evt_hcalendcapm_met_branch = tree->GetBranch(tree->GetAlias("evt_hcalendcapm_met"));
-		evt_hcalendcapm_met_branch->SetAddress(&evt_hcalendcapm_met_);
+		if (evt_hcalendcapm_met_branch) {evt_hcalendcapm_met_branch->SetAddress(&evt_hcalendcapm_met_);}
 	}
 	evt_hcalendcapm_metPhi_branch = 0;
 	if (tree->GetAlias("evt_hcalendcapm_metPhi") != 0) {
 		evt_hcalendcapm_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_hcalendcapm_metPhi"));
-		evt_hcalendcapm_metPhi_branch->SetAddress(&evt_hcalendcapm_metPhi_);
+		if (evt_hcalendcapm_metPhi_branch) {evt_hcalendcapm_metPhi_branch->SetAddress(&evt_hcalendcapm_metPhi_);}
 	}
 	evt_hcalendcapp_met_branch = 0;
 	if (tree->GetAlias("evt_hcalendcapp_met") != 0) {
 		evt_hcalendcapp_met_branch = tree->GetBranch(tree->GetAlias("evt_hcalendcapp_met"));
-		evt_hcalendcapp_met_branch->SetAddress(&evt_hcalendcapp_met_);
+		if (evt_hcalendcapp_met_branch) {evt_hcalendcapp_met_branch->SetAddress(&evt_hcalendcapp_met_);}
 	}
 	evt_hcalendcapp_metPhi_branch = 0;
 	if (tree->GetAlias("evt_hcalendcapp_metPhi") != 0) {
 		evt_hcalendcapp_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_hcalendcapp_metPhi"));
-		evt_hcalendcapp_metPhi_branch->SetAddress(&evt_hcalendcapp_metPhi_);
+		if (evt_hcalendcapp_metPhi_branch) {evt_hcalendcapp_metPhi_branch->SetAddress(&evt_hcalendcapp_metPhi_);}
 	}
 	evt_hcalmet_branch = 0;
 	if (tree->GetAlias("evt_hcalmet") != 0) {
 		evt_hcalmet_branch = tree->GetBranch(tree->GetAlias("evt_hcalmet"));
-		evt_hcalmet_branch->SetAddress(&evt_hcalmet_);
+		if (evt_hcalmet_branch) {evt_hcalmet_branch->SetAddress(&evt_hcalmet_);}
 	}
 	evt_hcalmetPhi_branch = 0;
 	if (tree->GetAlias("evt_hcalmetPhi") != 0) {
 		evt_hcalmetPhi_branch = tree->GetBranch(tree->GetAlias("evt_hcalmetPhi"));
-		evt_hcalmetPhi_branch->SetAddress(&evt_hcalmetPhi_);
+		if (evt_hcalmetPhi_branch) {evt_hcalmetPhi_branch->SetAddress(&evt_hcalmetPhi_);}
 	}
 	evt_met_branch = 0;
 	if (tree->GetAlias("evt_met") != 0) {
 		evt_met_branch = tree->GetBranch(tree->GetAlias("evt_met"));
-		evt_met_branch->SetAddress(&evt_met_);
+		if (evt_met_branch) {evt_met_branch->SetAddress(&evt_met_);}
 	}
 	evt_met_EtGt3_branch = 0;
 	if (tree->GetAlias("evt_met_EtGt3") != 0) {
 		evt_met_EtGt3_branch = tree->GetBranch(tree->GetAlias("evt_met_EtGt3"));
-		evt_met_EtGt3_branch->SetAddress(&evt_met_EtGt3_);
+		if (evt_met_EtGt3_branch) {evt_met_EtGt3_branch->SetAddress(&evt_met_EtGt3_);}
 	}
 	evt_metHO_branch = 0;
 	if (tree->GetAlias("evt_metHO") != 0) {
 		evt_metHO_branch = tree->GetBranch(tree->GetAlias("evt_metHO"));
-		evt_metHO_branch->SetAddress(&evt_metHO_);
+		if (evt_metHO_branch) {evt_metHO_branch->SetAddress(&evt_metHO_);}
 	}
 	evt_metHOPhi_branch = 0;
 	if (tree->GetAlias("evt_metHOPhi") != 0) {
 		evt_metHOPhi_branch = tree->GetBranch(tree->GetAlias("evt_metHOPhi"));
-		evt_metHOPhi_branch->SetAddress(&evt_metHOPhi_);
+		if (evt_metHOPhi_branch) {evt_metHOPhi_branch->SetAddress(&evt_metHOPhi_);}
 	}
 	evt_metHOSig_branch = 0;
 	if (tree->GetAlias("evt_metHOSig") != 0) {
 		evt_metHOSig_branch = tree->GetBranch(tree->GetAlias("evt_metHOSig"));
-		evt_metHOSig_branch->SetAddress(&evt_metHOSig_);
+		if (evt_metHOSig_branch) {evt_metHOSig_branch->SetAddress(&evt_metHOSig_);}
 	}
 	evt_metMuonCorr_branch = 0;
 	if (tree->GetAlias("evt_metMuonCorr") != 0) {
 		evt_metMuonCorr_branch = tree->GetBranch(tree->GetAlias("evt_metMuonCorr"));
-		evt_metMuonCorr_branch->SetAddress(&evt_metMuonCorr_);
+		if (evt_metMuonCorr_branch) {evt_metMuonCorr_branch->SetAddress(&evt_metMuonCorr_);}
 	}
 	evt_metMuonCorrPhi_branch = 0;
 	if (tree->GetAlias("evt_metMuonCorrPhi") != 0) {
 		evt_metMuonCorrPhi_branch = tree->GetBranch(tree->GetAlias("evt_metMuonCorrPhi"));
-		evt_metMuonCorrPhi_branch->SetAddress(&evt_metMuonCorrPhi_);
+		if (evt_metMuonCorrPhi_branch) {evt_metMuonCorrPhi_branch->SetAddress(&evt_metMuonCorrPhi_);}
 	}
 	evt_metMuonCorrSig_branch = 0;
 	if (tree->GetAlias("evt_metMuonCorrSig") != 0) {
 		evt_metMuonCorrSig_branch = tree->GetBranch(tree->GetAlias("evt_metMuonCorrSig"));
-		evt_metMuonCorrSig_branch->SetAddress(&evt_metMuonCorrSig_);
+		if (evt_metMuonCorrSig_branch) {evt_metMuonCorrSig_branch->SetAddress(&evt_metMuonCorrSig_);}
 	}
 	evt_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("evt_metMuonJESCorr") != 0) {
 		evt_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("evt_metMuonJESCorr"));
-		evt_metMuonJESCorr_branch->SetAddress(&evt_metMuonJESCorr_);
+		if (evt_metMuonJESCorr_branch) {evt_metMuonJESCorr_branch->SetAddress(&evt_metMuonJESCorr_);}
 	}
 	evt_metMuonJESCorrPhi_branch = 0;
 	if (tree->GetAlias("evt_metMuonJESCorrPhi") != 0) {
 		evt_metMuonJESCorrPhi_branch = tree->GetBranch(tree->GetAlias("evt_metMuonJESCorrPhi"));
-		evt_metMuonJESCorrPhi_branch->SetAddress(&evt_metMuonJESCorrPhi_);
+		if (evt_metMuonJESCorrPhi_branch) {evt_metMuonJESCorrPhi_branch->SetAddress(&evt_metMuonJESCorrPhi_);}
 	}
 	evt_metMuonJESCorrSig_branch = 0;
 	if (tree->GetAlias("evt_metMuonJESCorrSig") != 0) {
 		evt_metMuonJESCorrSig_branch = tree->GetBranch(tree->GetAlias("evt_metMuonJESCorrSig"));
-		evt_metMuonJESCorrSig_branch->SetAddress(&evt_metMuonJESCorrSig_);
+		if (evt_metMuonJESCorrSig_branch) {evt_metMuonJESCorrSig_branch->SetAddress(&evt_metMuonJESCorrSig_);}
 	}
 	evt_metNoHF_branch = 0;
 	if (tree->GetAlias("evt_metNoHF") != 0) {
 		evt_metNoHF_branch = tree->GetBranch(tree->GetAlias("evt_metNoHF"));
-		evt_metNoHF_branch->SetAddress(&evt_metNoHF_);
+		if (evt_metNoHF_branch) {evt_metNoHF_branch->SetAddress(&evt_metNoHF_);}
 	}
 	evt_metNoHFHO_branch = 0;
 	if (tree->GetAlias("evt_metNoHFHO") != 0) {
 		evt_metNoHFHO_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFHO"));
-		evt_metNoHFHO_branch->SetAddress(&evt_metNoHFHO_);
+		if (evt_metNoHFHO_branch) {evt_metNoHFHO_branch->SetAddress(&evt_metNoHFHO_);}
 	}
 	evt_metNoHFHOPhi_branch = 0;
 	if (tree->GetAlias("evt_metNoHFHOPhi") != 0) {
 		evt_metNoHFHOPhi_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFHOPhi"));
-		evt_metNoHFHOPhi_branch->SetAddress(&evt_metNoHFHOPhi_);
+		if (evt_metNoHFHOPhi_branch) {evt_metNoHFHOPhi_branch->SetAddress(&evt_metNoHFHOPhi_);}
 	}
 	evt_metNoHFHOSig_branch = 0;
 	if (tree->GetAlias("evt_metNoHFHOSig") != 0) {
 		evt_metNoHFHOSig_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFHOSig"));
-		evt_metNoHFHOSig_branch->SetAddress(&evt_metNoHFHOSig_);
+		if (evt_metNoHFHOSig_branch) {evt_metNoHFHOSig_branch->SetAddress(&evt_metNoHFHOSig_);}
 	}
 	evt_metNoHFPhi_branch = 0;
 	if (tree->GetAlias("evt_metNoHFPhi") != 0) {
 		evt_metNoHFPhi_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFPhi"));
-		evt_metNoHFPhi_branch->SetAddress(&evt_metNoHFPhi_);
+		if (evt_metNoHFPhi_branch) {evt_metNoHFPhi_branch->SetAddress(&evt_metNoHFPhi_);}
 	}
 	evt_metNoHFSig_branch = 0;
 	if (tree->GetAlias("evt_metNoHFSig") != 0) {
 		evt_metNoHFSig_branch = tree->GetBranch(tree->GetAlias("evt_metNoHFSig"));
-		evt_metNoHFSig_branch->SetAddress(&evt_metNoHFSig_);
+		if (evt_metNoHFSig_branch) {evt_metNoHFSig_branch->SetAddress(&evt_metNoHFSig_);}
 	}
 	evt_metOpt_branch = 0;
 	if (tree->GetAlias("evt_metOpt") != 0) {
 		evt_metOpt_branch = tree->GetBranch(tree->GetAlias("evt_metOpt"));
-		evt_metOpt_branch->SetAddress(&evt_metOpt_);
+		if (evt_metOpt_branch) {evt_metOpt_branch->SetAddress(&evt_metOpt_);}
 	}
 	evt_metOptHO_branch = 0;
 	if (tree->GetAlias("evt_metOptHO") != 0) {
 		evt_metOptHO_branch = tree->GetBranch(tree->GetAlias("evt_metOptHO"));
-		evt_metOptHO_branch->SetAddress(&evt_metOptHO_);
+		if (evt_metOptHO_branch) {evt_metOptHO_branch->SetAddress(&evt_metOptHO_);}
 	}
 	evt_metOptHOPhi_branch = 0;
 	if (tree->GetAlias("evt_metOptHOPhi") != 0) {
 		evt_metOptHOPhi_branch = tree->GetBranch(tree->GetAlias("evt_metOptHOPhi"));
-		evt_metOptHOPhi_branch->SetAddress(&evt_metOptHOPhi_);
+		if (evt_metOptHOPhi_branch) {evt_metOptHOPhi_branch->SetAddress(&evt_metOptHOPhi_);}
 	}
 	evt_metOptHOSig_branch = 0;
 	if (tree->GetAlias("evt_metOptHOSig") != 0) {
 		evt_metOptHOSig_branch = tree->GetBranch(tree->GetAlias("evt_metOptHOSig"));
-		evt_metOptHOSig_branch->SetAddress(&evt_metOptHOSig_);
+		if (evt_metOptHOSig_branch) {evt_metOptHOSig_branch->SetAddress(&evt_metOptHOSig_);}
 	}
 	evt_metOptNoHF_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHF") != 0) {
 		evt_metOptNoHF_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHF"));
-		evt_metOptNoHF_branch->SetAddress(&evt_metOptNoHF_);
+		if (evt_metOptNoHF_branch) {evt_metOptNoHF_branch->SetAddress(&evt_metOptNoHF_);}
 	}
 	evt_metOptNoHFHO_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFHO") != 0) {
 		evt_metOptNoHFHO_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFHO"));
-		evt_metOptNoHFHO_branch->SetAddress(&evt_metOptNoHFHO_);
+		if (evt_metOptNoHFHO_branch) {evt_metOptNoHFHO_branch->SetAddress(&evt_metOptNoHFHO_);}
 	}
 	evt_metOptNoHFHOPhi_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFHOPhi") != 0) {
 		evt_metOptNoHFHOPhi_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFHOPhi"));
-		evt_metOptNoHFHOPhi_branch->SetAddress(&evt_metOptNoHFHOPhi_);
+		if (evt_metOptNoHFHOPhi_branch) {evt_metOptNoHFHOPhi_branch->SetAddress(&evt_metOptNoHFHOPhi_);}
 	}
 	evt_metOptNoHFHOSig_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFHOSig") != 0) {
 		evt_metOptNoHFHOSig_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFHOSig"));
-		evt_metOptNoHFHOSig_branch->SetAddress(&evt_metOptNoHFHOSig_);
+		if (evt_metOptNoHFHOSig_branch) {evt_metOptNoHFHOSig_branch->SetAddress(&evt_metOptNoHFHOSig_);}
 	}
 	evt_metOptNoHFPhi_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFPhi") != 0) {
 		evt_metOptNoHFPhi_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFPhi"));
-		evt_metOptNoHFPhi_branch->SetAddress(&evt_metOptNoHFPhi_);
+		if (evt_metOptNoHFPhi_branch) {evt_metOptNoHFPhi_branch->SetAddress(&evt_metOptNoHFPhi_);}
 	}
 	evt_metOptNoHFSig_branch = 0;
 	if (tree->GetAlias("evt_metOptNoHFSig") != 0) {
 		evt_metOptNoHFSig_branch = tree->GetBranch(tree->GetAlias("evt_metOptNoHFSig"));
-		evt_metOptNoHFSig_branch->SetAddress(&evt_metOptNoHFSig_);
+		if (evt_metOptNoHFSig_branch) {evt_metOptNoHFSig_branch->SetAddress(&evt_metOptNoHFSig_);}
 	}
 	evt_metOptPhi_branch = 0;
 	if (tree->GetAlias("evt_metOptPhi") != 0) {
 		evt_metOptPhi_branch = tree->GetBranch(tree->GetAlias("evt_metOptPhi"));
-		evt_metOptPhi_branch->SetAddress(&evt_metOptPhi_);
+		if (evt_metOptPhi_branch) {evt_metOptPhi_branch->SetAddress(&evt_metOptPhi_);}
 	}
 	evt_metOptSig_branch = 0;
 	if (tree->GetAlias("evt_metOptSig") != 0) {
 		evt_metOptSig_branch = tree->GetBranch(tree->GetAlias("evt_metOptSig"));
-		evt_metOptSig_branch->SetAddress(&evt_metOptSig_);
+		if (evt_metOptSig_branch) {evt_metOptSig_branch->SetAddress(&evt_metOptSig_);}
 	}
 	evt_metPhi_branch = 0;
 	if (tree->GetAlias("evt_metPhi") != 0) {
 		evt_metPhi_branch = tree->GetBranch(tree->GetAlias("evt_metPhi"));
-		evt_metPhi_branch->SetAddress(&evt_metPhi_);
+		if (evt_metPhi_branch) {evt_metPhi_branch->SetAddress(&evt_metPhi_);}
 	}
 	evt_metPhi_EtGt3_branch = 0;
 	if (tree->GetAlias("evt_metPhi_EtGt3") != 0) {
 		evt_metPhi_EtGt3_branch = tree->GetBranch(tree->GetAlias("evt_metPhi_EtGt3"));
-		evt_metPhi_EtGt3_branch->SetAddress(&evt_metPhi_EtGt3_);
+		if (evt_metPhi_EtGt3_branch) {evt_metPhi_EtGt3_branch->SetAddress(&evt_metPhi_EtGt3_);}
 	}
 	evt_metSig_branch = 0;
 	if (tree->GetAlias("evt_metSig") != 0) {
 		evt_metSig_branch = tree->GetBranch(tree->GetAlias("evt_metSig"));
-		evt_metSig_branch->SetAddress(&evt_metSig_);
+		if (evt_metSig_branch) {evt_metSig_branch->SetAddress(&evt_metSig_);}
 	}
 	evt_sumet_branch = 0;
 	if (tree->GetAlias("evt_sumet") != 0) {
 		evt_sumet_branch = tree->GetBranch(tree->GetAlias("evt_sumet"));
-		evt_sumet_branch->SetAddress(&evt_sumet_);
+		if (evt_sumet_branch) {evt_sumet_branch->SetAddress(&evt_sumet_);}
 	}
 	evt_sumet_EtGt3_branch = 0;
 	if (tree->GetAlias("evt_sumet_EtGt3") != 0) {
 		evt_sumet_EtGt3_branch = tree->GetBranch(tree->GetAlias("evt_sumet_EtGt3"));
-		evt_sumet_EtGt3_branch->SetAddress(&evt_sumet_EtGt3_);
+		if (evt_sumet_EtGt3_branch) {evt_sumet_EtGt3_branch->SetAddress(&evt_sumet_EtGt3_);}
 	}
 	evt_sumetHO_branch = 0;
 	if (tree->GetAlias("evt_sumetHO") != 0) {
 		evt_sumetHO_branch = tree->GetBranch(tree->GetAlias("evt_sumetHO"));
-		evt_sumetHO_branch->SetAddress(&evt_sumetHO_);
+		if (evt_sumetHO_branch) {evt_sumetHO_branch->SetAddress(&evt_sumetHO_);}
 	}
 	evt_sumetMuonCorr_branch = 0;
 	if (tree->GetAlias("evt_sumetMuonCorr") != 0) {
 		evt_sumetMuonCorr_branch = tree->GetBranch(tree->GetAlias("evt_sumetMuonCorr"));
-		evt_sumetMuonCorr_branch->SetAddress(&evt_sumetMuonCorr_);
+		if (evt_sumetMuonCorr_branch) {evt_sumetMuonCorr_branch->SetAddress(&evt_sumetMuonCorr_);}
 	}
 	evt_sumetMuonJESCorr_branch = 0;
 	if (tree->GetAlias("evt_sumetMuonJESCorr") != 0) {
 		evt_sumetMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("evt_sumetMuonJESCorr"));
-		evt_sumetMuonJESCorr_branch->SetAddress(&evt_sumetMuonJESCorr_);
+		if (evt_sumetMuonJESCorr_branch) {evt_sumetMuonJESCorr_branch->SetAddress(&evt_sumetMuonJESCorr_);}
 	}
 	evt_sumetNoHF_branch = 0;
 	if (tree->GetAlias("evt_sumetNoHF") != 0) {
 		evt_sumetNoHF_branch = tree->GetBranch(tree->GetAlias("evt_sumetNoHF"));
-		evt_sumetNoHF_branch->SetAddress(&evt_sumetNoHF_);
+		if (evt_sumetNoHF_branch) {evt_sumetNoHF_branch->SetAddress(&evt_sumetNoHF_);}
 	}
 	evt_sumetNoHFHO_branch = 0;
 	if (tree->GetAlias("evt_sumetNoHFHO") != 0) {
 		evt_sumetNoHFHO_branch = tree->GetBranch(tree->GetAlias("evt_sumetNoHFHO"));
-		evt_sumetNoHFHO_branch->SetAddress(&evt_sumetNoHFHO_);
+		if (evt_sumetNoHFHO_branch) {evt_sumetNoHFHO_branch->SetAddress(&evt_sumetNoHFHO_);}
 	}
 	evt_sumetOpt_branch = 0;
 	if (tree->GetAlias("evt_sumetOpt") != 0) {
 		evt_sumetOpt_branch = tree->GetBranch(tree->GetAlias("evt_sumetOpt"));
-		evt_sumetOpt_branch->SetAddress(&evt_sumetOpt_);
+		if (evt_sumetOpt_branch) {evt_sumetOpt_branch->SetAddress(&evt_sumetOpt_);}
 	}
 	evt_sumetOptHO_branch = 0;
 	if (tree->GetAlias("evt_sumetOptHO") != 0) {
 		evt_sumetOptHO_branch = tree->GetBranch(tree->GetAlias("evt_sumetOptHO"));
-		evt_sumetOptHO_branch->SetAddress(&evt_sumetOptHO_);
+		if (evt_sumetOptHO_branch) {evt_sumetOptHO_branch->SetAddress(&evt_sumetOptHO_);}
 	}
 	evt_sumetOptNoHF_branch = 0;
 	if (tree->GetAlias("evt_sumetOptNoHF") != 0) {
 		evt_sumetOptNoHF_branch = tree->GetBranch(tree->GetAlias("evt_sumetOptNoHF"));
-		evt_sumetOptNoHF_branch->SetAddress(&evt_sumetOptNoHF_);
+		if (evt_sumetOptNoHF_branch) {evt_sumetOptNoHF_branch->SetAddress(&evt_sumetOptNoHF_);}
 	}
 	evt_sumetOptNoHFHO_branch = 0;
 	if (tree->GetAlias("evt_sumetOptNoHFHO") != 0) {
 		evt_sumetOptNoHFHO_branch = tree->GetBranch(tree->GetAlias("evt_sumetOptNoHFHO"));
-		evt_sumetOptNoHFHO_branch->SetAddress(&evt_sumetOptNoHFHO_);
+		if (evt_sumetOptNoHFHO_branch) {evt_sumetOptNoHFHO_branch->SetAddress(&evt_sumetOptNoHFHO_);}
 	}
 	pdfinfo_pdf1_branch = 0;
 	if (tree->GetAlias("pdfinfo_pdf1") != 0) {
 		pdfinfo_pdf1_branch = tree->GetBranch(tree->GetAlias("pdfinfo_pdf1"));
-		pdfinfo_pdf1_branch->SetAddress(&pdfinfo_pdf1_);
+		if (pdfinfo_pdf1_branch) {pdfinfo_pdf1_branch->SetAddress(&pdfinfo_pdf1_);}
 	}
 	pdfinfo_pdf2_branch = 0;
 	if (tree->GetAlias("pdfinfo_pdf2") != 0) {
 		pdfinfo_pdf2_branch = tree->GetBranch(tree->GetAlias("pdfinfo_pdf2"));
-		pdfinfo_pdf2_branch->SetAddress(&pdfinfo_pdf2_);
+		if (pdfinfo_pdf2_branch) {pdfinfo_pdf2_branch->SetAddress(&pdfinfo_pdf2_);}
 	}
 	pdfinfo_scale_branch = 0;
 	if (tree->GetAlias("pdfinfo_scale") != 0) {
 		pdfinfo_scale_branch = tree->GetBranch(tree->GetAlias("pdfinfo_scale"));
-		pdfinfo_scale_branch->SetAddress(&pdfinfo_scale_);
+		if (pdfinfo_scale_branch) {pdfinfo_scale_branch->SetAddress(&pdfinfo_scale_);}
 	}
 	pdfinfo_x1_branch = 0;
 	if (tree->GetAlias("pdfinfo_x1") != 0) {
 		pdfinfo_x1_branch = tree->GetBranch(tree->GetAlias("pdfinfo_x1"));
-		pdfinfo_x1_branch->SetAddress(&pdfinfo_x1_);
+		if (pdfinfo_x1_branch) {pdfinfo_x1_branch->SetAddress(&pdfinfo_x1_);}
 	}
 	pdfinfo_x2_branch = 0;
 	if (tree->GetAlias("pdfinfo_x2") != 0) {
 		pdfinfo_x2_branch = tree->GetBranch(tree->GetAlias("pdfinfo_x2"));
-		pdfinfo_x2_branch->SetAddress(&pdfinfo_x2_);
+		if (pdfinfo_x2_branch) {pdfinfo_x2_branch->SetAddress(&pdfinfo_x2_);}
 	}
 	evt_fixgrid_rho_all_branch = 0;
 	if (tree->GetAlias("evt_fixgrid_rho_all") != 0) {
 		evt_fixgrid_rho_all_branch = tree->GetBranch(tree->GetAlias("evt_fixgrid_rho_all"));
-		evt_fixgrid_rho_all_branch->SetAddress(&evt_fixgrid_rho_all_);
+		if (evt_fixgrid_rho_all_branch) {evt_fixgrid_rho_all_branch->SetAddress(&evt_fixgrid_rho_all_);}
 	}
 	evt_fixgrid_rho_ctr_branch = 0;
 	if (tree->GetAlias("evt_fixgrid_rho_ctr") != 0) {
 		evt_fixgrid_rho_ctr_branch = tree->GetBranch(tree->GetAlias("evt_fixgrid_rho_ctr"));
-		evt_fixgrid_rho_ctr_branch->SetAddress(&evt_fixgrid_rho_ctr_);
+		if (evt_fixgrid_rho_ctr_branch) {evt_fixgrid_rho_ctr_branch->SetAddress(&evt_fixgrid_rho_ctr_);}
 	}
 	evt_fixgrid_rho_fwd_branch = 0;
 	if (tree->GetAlias("evt_fixgrid_rho_fwd") != 0) {
 		evt_fixgrid_rho_fwd_branch = tree->GetBranch(tree->GetAlias("evt_fixgrid_rho_fwd"));
-		evt_fixgrid_rho_fwd_branch->SetAddress(&evt_fixgrid_rho_fwd_);
+		if (evt_fixgrid_rho_fwd_branch) {evt_fixgrid_rho_fwd_branch->SetAddress(&evt_fixgrid_rho_fwd_);}
 	}
 	evt_pfmet_branch = 0;
 	if (tree->GetAlias("evt_pfmet") != 0) {
 		evt_pfmet_branch = tree->GetBranch(tree->GetAlias("evt_pfmet"));
-		evt_pfmet_branch->SetAddress(&evt_pfmet_);
+		if (evt_pfmet_branch) {evt_pfmet_branch->SetAddress(&evt_pfmet_);}
 	}
 	evt_pfmetPhi_branch = 0;
 	if (tree->GetAlias("evt_pfmetPhi") != 0) {
 		evt_pfmetPhi_branch = tree->GetBranch(tree->GetAlias("evt_pfmetPhi"));
-		evt_pfmetPhi_branch->SetAddress(&evt_pfmetPhi_);
+		if (evt_pfmetPhi_branch) {evt_pfmetPhi_branch->SetAddress(&evt_pfmetPhi_);}
 	}
 	evt_pfmetPhi_type1cor_branch = 0;
 	if (tree->GetAlias("evt_pfmetPhi_type1cor") != 0) {
 		evt_pfmetPhi_type1cor_branch = tree->GetBranch(tree->GetAlias("evt_pfmetPhi_type1cor"));
-		evt_pfmetPhi_type1cor_branch->SetAddress(&evt_pfmetPhi_type1cor_);
+		if (evt_pfmetPhi_type1cor_branch) {evt_pfmetPhi_type1cor_branch->SetAddress(&evt_pfmetPhi_type1cor_);}
 	}
 	evt_pfmetSig_branch = 0;
 	if (tree->GetAlias("evt_pfmetSig") != 0) {
 		evt_pfmetSig_branch = tree->GetBranch(tree->GetAlias("evt_pfmetSig"));
-		evt_pfmetSig_branch->SetAddress(&evt_pfmetSig_);
+		if (evt_pfmetSig_branch) {evt_pfmetSig_branch->SetAddress(&evt_pfmetSig_);}
 	}
 	evt_pfmetSignificance_branch = 0;
 	if (tree->GetAlias("evt_pfmetSignificance") != 0) {
 		evt_pfmetSignificance_branch = tree->GetBranch(tree->GetAlias("evt_pfmetSignificance"));
-		evt_pfmetSignificance_branch->SetAddress(&evt_pfmetSignificance_);
+		if (evt_pfmetSignificance_branch) {evt_pfmetSignificance_branch->SetAddress(&evt_pfmetSignificance_);}
 	}
 	evt_pfmet_type1cor_branch = 0;
 	if (tree->GetAlias("evt_pfmet_type1cor") != 0) {
 		evt_pfmet_type1cor_branch = tree->GetBranch(tree->GetAlias("evt_pfmet_type1cor"));
-		evt_pfmet_type1cor_branch->SetAddress(&evt_pfmet_type1cor_);
+		if (evt_pfmet_type1cor_branch) {evt_pfmet_type1cor_branch->SetAddress(&evt_pfmet_type1cor_);}
 	}
 	evt_pfsumet_branch = 0;
 	if (tree->GetAlias("evt_pfsumet") != 0) {
 		evt_pfsumet_branch = tree->GetBranch(tree->GetAlias("evt_pfsumet"));
-		evt_pfsumet_branch->SetAddress(&evt_pfsumet_);
+		if (evt_pfsumet_branch) {evt_pfsumet_branch->SetAddress(&evt_pfsumet_);}
 	}
 	evt_pf_tcmet_branch = 0;
 	if (tree->GetAlias("evt_pf_tcmet") != 0) {
 		evt_pf_tcmet_branch = tree->GetBranch(tree->GetAlias("evt_pf_tcmet"));
-		evt_pf_tcmet_branch->SetAddress(&evt_pf_tcmet_);
+		if (evt_pf_tcmet_branch) {evt_pf_tcmet_branch->SetAddress(&evt_pf_tcmet_);}
 	}
 	evt_pf_tcmetPhi_branch = 0;
 	if (tree->GetAlias("evt_pf_tcmetPhi") != 0) {
 		evt_pf_tcmetPhi_branch = tree->GetBranch(tree->GetAlias("evt_pf_tcmetPhi"));
-		evt_pf_tcmetPhi_branch->SetAddress(&evt_pf_tcmetPhi_);
+		if (evt_pf_tcmetPhi_branch) {evt_pf_tcmetPhi_branch->SetAddress(&evt_pf_tcmetPhi_);}
 	}
 	evt_pf_tcmetSig_branch = 0;
 	if (tree->GetAlias("evt_pf_tcmetSig") != 0) {
 		evt_pf_tcmetSig_branch = tree->GetBranch(tree->GetAlias("evt_pf_tcmetSig"));
-		evt_pf_tcmetSig_branch->SetAddress(&evt_pf_tcmetSig_);
+		if (evt_pf_tcmetSig_branch) {evt_pf_tcmetSig_branch->SetAddress(&evt_pf_tcmetSig_);}
 	}
 	evt_pf_tcsumet_branch = 0;
 	if (tree->GetAlias("evt_pf_tcsumet") != 0) {
 		evt_pf_tcsumet_branch = tree->GetBranch(tree->GetAlias("evt_pf_tcsumet"));
-		evt_pf_tcsumet_branch->SetAddress(&evt_pf_tcsumet_);
+		if (evt_pf_tcsumet_branch) {evt_pf_tcsumet_branch->SetAddress(&evt_pf_tcsumet_);}
 	}
 	evt_tcmet_branch = 0;
 	if (tree->GetAlias("evt_tcmet") != 0) {
 		evt_tcmet_branch = tree->GetBranch(tree->GetAlias("evt_tcmet"));
-		evt_tcmet_branch->SetAddress(&evt_tcmet_);
+		if (evt_tcmet_branch) {evt_tcmet_branch->SetAddress(&evt_tcmet_);}
 	}
 	evt_tcmetPhi_branch = 0;
 	if (tree->GetAlias("evt_tcmetPhi") != 0) {
 		evt_tcmetPhi_branch = tree->GetBranch(tree->GetAlias("evt_tcmetPhi"));
-		evt_tcmetPhi_branch->SetAddress(&evt_tcmetPhi_);
+		if (evt_tcmetPhi_branch) {evt_tcmetPhi_branch->SetAddress(&evt_tcmetPhi_);}
 	}
 	evt_tcmetSig_branch = 0;
 	if (tree->GetAlias("evt_tcmetSig") != 0) {
 		evt_tcmetSig_branch = tree->GetBranch(tree->GetAlias("evt_tcmetSig"));
-		evt_tcmetSig_branch->SetAddress(&evt_tcmetSig_);
+		if (evt_tcmetSig_branch) {evt_tcmetSig_branch->SetAddress(&evt_tcmetSig_);}
 	}
 	evt_tcsumet_branch = 0;
 	if (tree->GetAlias("evt_tcsumet") != 0) {
 		evt_tcsumet_branch = tree->GetBranch(tree->GetAlias("evt_tcsumet"));
-		evt_tcsumet_branch->SetAddress(&evt_tcsumet_);
+		if (evt_tcsumet_branch) {evt_tcsumet_branch->SetAddress(&evt_tcsumet_);}
 	}
 	evt_ww_rho_act_branch = 0;
 	if (tree->GetAlias("evt_ww_rho_act") != 0) {
 		evt_ww_rho_act_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho_act"));
-		evt_ww_rho_act_branch->SetAddress(&evt_ww_rho_act_);
+		if (evt_ww_rho_act_branch) {evt_ww_rho_act_branch->SetAddress(&evt_ww_rho_act_);}
 	}
 	evt_ww_rho_branch = 0;
 	if (tree->GetAlias("evt_ww_rho") != 0) {
 		evt_ww_rho_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho"));
-		evt_ww_rho_branch->SetAddress(&evt_ww_rho_);
+		if (evt_ww_rho_branch) {evt_ww_rho_branch->SetAddress(&evt_ww_rho_);}
 	}
 	evt_ww_rho_rnd_branch = 0;
 	if (tree->GetAlias("evt_ww_rho_rnd") != 0) {
 		evt_ww_rho_rnd_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho_rnd"));
-		evt_ww_rho_rnd_branch->SetAddress(&evt_ww_rho_rnd_);
+		if (evt_ww_rho_rnd_branch) {evt_ww_rho_rnd_branch->SetAddress(&evt_ww_rho_rnd_);}
 	}
 	evt_ww_rho_vor_branch = 0;
 	if (tree->GetAlias("evt_ww_rho_vor") != 0) {
 		evt_ww_rho_vor_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho_vor"));
-		evt_ww_rho_vor_branch->SetAddress(&evt_ww_rho_vor_);
+		if (evt_ww_rho_vor_branch) {evt_ww_rho_vor_branch->SetAddress(&evt_ww_rho_vor_);}
 	}
 	els_convs_pos_p4_branch = 0;
 	if (tree->GetAlias("els_convs_pos_p4") != 0) {
 		els_convs_pos_p4_branch = tree->GetBranch(tree->GetAlias("els_convs_pos_p4"));
-		els_convs_pos_p4_branch->SetAddress(&els_convs_pos_p4_);
+		if (els_convs_pos_p4_branch) {els_convs_pos_p4_branch->SetAddress(&els_convs_pos_p4_);}
 	}
 	genps_lepdaughter_p4_branch = 0;
 	if (tree->GetAlias("genps_lepdaughter_p4") != 0) {
 		genps_lepdaughter_p4_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_p4"));
-		genps_lepdaughter_p4_branch->SetAddress(&genps_lepdaughter_p4_);
+		if (genps_lepdaughter_p4_branch) {genps_lepdaughter_p4_branch->SetAddress(&genps_lepdaughter_p4_);}
 	}
 	hlt_trigObjs_p4_branch = 0;
 	if (tree->GetAlias("hlt_trigObjs_p4") != 0) {
 		hlt_trigObjs_p4_branch = tree->GetBranch(tree->GetAlias("hlt_trigObjs_p4"));
-		hlt_trigObjs_p4_branch->SetAddress(&hlt_trigObjs_p4_);
+		if (hlt_trigObjs_p4_branch) {hlt_trigObjs_p4_branch->SetAddress(&hlt_trigObjs_p4_);}
 	}
 	hyp_jets_p4_branch = 0;
 	if (tree->GetAlias("hyp_jets_p4") != 0) {
 		hyp_jets_p4_branch = tree->GetBranch(tree->GetAlias("hyp_jets_p4"));
-		hyp_jets_p4_branch->SetAddress(&hyp_jets_p4_);
+		if (hyp_jets_p4_branch) {hyp_jets_p4_branch->SetAddress(&hyp_jets_p4_);}
 	}
 	hyp_other_jets_p4_branch = 0;
 	if (tree->GetAlias("hyp_other_jets_p4") != 0) {
 		hyp_other_jets_p4_branch = tree->GetBranch(tree->GetAlias("hyp_other_jets_p4"));
-		hyp_other_jets_p4_branch->SetAddress(&hyp_other_jets_p4_);
+		if (hyp_other_jets_p4_branch) {hyp_other_jets_p4_branch->SetAddress(&hyp_other_jets_p4_);}
 	}
 	jpts_combinedSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_combinedSecondaryVertexBJetTag") != 0) {
 		jpts_combinedSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_combinedSecondaryVertexBJetTag"));
-		jpts_combinedSecondaryVertexBJetTag_branch->SetAddress(&jpts_combinedSecondaryVertexBJetTag_);
+		if (jpts_combinedSecondaryVertexBJetTag_branch) {jpts_combinedSecondaryVertexBJetTag_branch->SetAddress(&jpts_combinedSecondaryVertexBJetTag_);}
 	}
 	jpts_combinedSecondaryVertexMVABJetTag_branch = 0;
 	if (tree->GetAlias("jpts_combinedSecondaryVertexMVABJetTag") != 0) {
 		jpts_combinedSecondaryVertexMVABJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_combinedSecondaryVertexMVABJetTag"));
-		jpts_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&jpts_combinedSecondaryVertexMVABJetTag_);
+		if (jpts_combinedSecondaryVertexMVABJetTag_branch) {jpts_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&jpts_combinedSecondaryVertexMVABJetTag_);}
 	}
 	jpts_jetBProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_jetBProbabilityBJetTag") != 0) {
 		jpts_jetBProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_jetBProbabilityBJetTag"));
-		jpts_jetBProbabilityBJetTag_branch->SetAddress(&jpts_jetBProbabilityBJetTag_);
+		if (jpts_jetBProbabilityBJetTag_branch) {jpts_jetBProbabilityBJetTag_branch->SetAddress(&jpts_jetBProbabilityBJetTag_);}
 	}
 	jpts_jetProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_jetProbabilityBJetTag") != 0) {
 		jpts_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_jetProbabilityBJetTag"));
-		jpts_jetProbabilityBJetTag_branch->SetAddress(&jpts_jetProbabilityBJetTag_);
+		if (jpts_jetProbabilityBJetTag_branch) {jpts_jetProbabilityBJetTag_branch->SetAddress(&jpts_jetProbabilityBJetTag_);}
 	}
 	jpts_simpleSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_simpleSecondaryVertexBJetTag") != 0) {
 		jpts_simpleSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_simpleSecondaryVertexBJetTag"));
-		jpts_simpleSecondaryVertexBJetTag_branch->SetAddress(&jpts_simpleSecondaryVertexBJetTag_);
+		if (jpts_simpleSecondaryVertexBJetTag_branch) {jpts_simpleSecondaryVertexBJetTag_branch->SetAddress(&jpts_simpleSecondaryVertexBJetTag_);}
 	}
 	jpts_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		jpts_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_simpleSecondaryVertexHighEffBJetTag"));
-		jpts_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&jpts_simpleSecondaryVertexHighEffBJetTag_);
+		if (jpts_simpleSecondaryVertexHighEffBJetTag_branch) {jpts_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&jpts_simpleSecondaryVertexHighEffBJetTag_);}
 	}
 	jpts_simpleSecondaryVertexHighPurBJetTags_branch = 0;
 	if (tree->GetAlias("jpts_simpleSecondaryVertexHighPurBJetTags") != 0) {
 		jpts_simpleSecondaryVertexHighPurBJetTags_branch = tree->GetBranch(tree->GetAlias("jpts_simpleSecondaryVertexHighPurBJetTags"));
-		jpts_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&jpts_simpleSecondaryVertexHighPurBJetTags_);
+		if (jpts_simpleSecondaryVertexHighPurBJetTags_branch) {jpts_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&jpts_simpleSecondaryVertexHighPurBJetTags_);}
 	}
 	jpts_softElectronByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_softElectronByIP3dBJetTag") != 0) {
 		jpts_softElectronByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_softElectronByIP3dBJetTag"));
-		jpts_softElectronByIP3dBJetTag_branch->SetAddress(&jpts_softElectronByIP3dBJetTag_);
+		if (jpts_softElectronByIP3dBJetTag_branch) {jpts_softElectronByIP3dBJetTag_branch->SetAddress(&jpts_softElectronByIP3dBJetTag_);}
 	}
 	jpts_softElectronByPtBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_softElectronByPtBJetTag") != 0) {
 		jpts_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_softElectronByPtBJetTag"));
-		jpts_softElectronByPtBJetTag_branch->SetAddress(&jpts_softElectronByPtBJetTag_);
+		if (jpts_softElectronByPtBJetTag_branch) {jpts_softElectronByPtBJetTag_branch->SetAddress(&jpts_softElectronByPtBJetTag_);}
 	}
 	jpts_softElectronTag_branch = 0;
 	if (tree->GetAlias("jpts_softElectronTag") != 0) {
 		jpts_softElectronTag_branch = tree->GetBranch(tree->GetAlias("jpts_softElectronTag"));
-		jpts_softElectronTag_branch->SetAddress(&jpts_softElectronTag_);
+		if (jpts_softElectronTag_branch) {jpts_softElectronTag_branch->SetAddress(&jpts_softElectronTag_);}
 	}
 	jpts_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_softMuonBJetTag") != 0) {
 		jpts_softMuonBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_softMuonBJetTag"));
-		jpts_softMuonBJetTag_branch->SetAddress(&jpts_softMuonBJetTag_);
+		if (jpts_softMuonBJetTag_branch) {jpts_softMuonBJetTag_branch->SetAddress(&jpts_softMuonBJetTag_);}
 	}
 	jpts_softMuonByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_softMuonByIP3dBJetTag") != 0) {
 		jpts_softMuonByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_softMuonByIP3dBJetTag"));
-		jpts_softMuonByIP3dBJetTag_branch->SetAddress(&jpts_softMuonByIP3dBJetTag_);
+		if (jpts_softMuonByIP3dBJetTag_branch) {jpts_softMuonByIP3dBJetTag_branch->SetAddress(&jpts_softMuonByIP3dBJetTag_);}
 	}
 	jpts_softMuonByPtBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_softMuonByPtBJetTag") != 0) {
 		jpts_softMuonByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_softMuonByPtBJetTag"));
-		jpts_softMuonByPtBJetTag_branch->SetAddress(&jpts_softMuonByPtBJetTag_);
+		if (jpts_softMuonByPtBJetTag_branch) {jpts_softMuonByPtBJetTag_branch->SetAddress(&jpts_softMuonByPtBJetTag_);}
 	}
 	jpts_trackCountingHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_trackCountingHighEffBJetTag") != 0) {
 		jpts_trackCountingHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_trackCountingHighEffBJetTag"));
-		jpts_trackCountingHighEffBJetTag_branch->SetAddress(&jpts_trackCountingHighEffBJetTag_);
+		if (jpts_trackCountingHighEffBJetTag_branch) {jpts_trackCountingHighEffBJetTag_branch->SetAddress(&jpts_trackCountingHighEffBJetTag_);}
 	}
 	jpts_trackCountingHighPurBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_trackCountingHighPurBJetTag") != 0) {
 		jpts_trackCountingHighPurBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_trackCountingHighPurBJetTag"));
-		jpts_trackCountingHighPurBJetTag_branch->SetAddress(&jpts_trackCountingHighPurBJetTag_);
+		if (jpts_trackCountingHighPurBJetTag_branch) {jpts_trackCountingHighPurBJetTag_branch->SetAddress(&jpts_trackCountingHighPurBJetTag_);}
 	}
 	jets_combinedSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("jets_combinedSecondaryVertexBJetTag") != 0) {
 		jets_combinedSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_combinedSecondaryVertexBJetTag"));
-		jets_combinedSecondaryVertexBJetTag_branch->SetAddress(&jets_combinedSecondaryVertexBJetTag_);
+		if (jets_combinedSecondaryVertexBJetTag_branch) {jets_combinedSecondaryVertexBJetTag_branch->SetAddress(&jets_combinedSecondaryVertexBJetTag_);}
 	}
 	jets_combinedSecondaryVertexMVABJetTag_branch = 0;
 	if (tree->GetAlias("jets_combinedSecondaryVertexMVABJetTag") != 0) {
 		jets_combinedSecondaryVertexMVABJetTag_branch = tree->GetBranch(tree->GetAlias("jets_combinedSecondaryVertexMVABJetTag"));
-		jets_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&jets_combinedSecondaryVertexMVABJetTag_);
+		if (jets_combinedSecondaryVertexMVABJetTag_branch) {jets_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&jets_combinedSecondaryVertexMVABJetTag_);}
 	}
 	jets_jetBProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("jets_jetBProbabilityBJetTag") != 0) {
 		jets_jetBProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_jetBProbabilityBJetTag"));
-		jets_jetBProbabilityBJetTag_branch->SetAddress(&jets_jetBProbabilityBJetTag_);
+		if (jets_jetBProbabilityBJetTag_branch) {jets_jetBProbabilityBJetTag_branch->SetAddress(&jets_jetBProbabilityBJetTag_);}
 	}
 	jets_jetProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("jets_jetProbabilityBJetTag") != 0) {
 		jets_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_jetProbabilityBJetTag"));
-		jets_jetProbabilityBJetTag_branch->SetAddress(&jets_jetProbabilityBJetTag_);
+		if (jets_jetProbabilityBJetTag_branch) {jets_jetProbabilityBJetTag_branch->SetAddress(&jets_jetProbabilityBJetTag_);}
 	}
 	jets_simpleSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("jets_simpleSecondaryVertexBJetTag") != 0) {
 		jets_simpleSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_simpleSecondaryVertexBJetTag"));
-		jets_simpleSecondaryVertexBJetTag_branch->SetAddress(&jets_simpleSecondaryVertexBJetTag_);
+		if (jets_simpleSecondaryVertexBJetTag_branch) {jets_simpleSecondaryVertexBJetTag_branch->SetAddress(&jets_simpleSecondaryVertexBJetTag_);}
 	}
 	jets_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jets_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		jets_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_simpleSecondaryVertexHighEffBJetTag"));
-		jets_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&jets_simpleSecondaryVertexHighEffBJetTag_);
+		if (jets_simpleSecondaryVertexHighEffBJetTag_branch) {jets_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&jets_simpleSecondaryVertexHighEffBJetTag_);}
 	}
 	jets_simpleSecondaryVertexHighPurBJetTags_branch = 0;
 	if (tree->GetAlias("jets_simpleSecondaryVertexHighPurBJetTags") != 0) {
 		jets_simpleSecondaryVertexHighPurBJetTags_branch = tree->GetBranch(tree->GetAlias("jets_simpleSecondaryVertexHighPurBJetTags"));
-		jets_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&jets_simpleSecondaryVertexHighPurBJetTags_);
+		if (jets_simpleSecondaryVertexHighPurBJetTags_branch) {jets_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&jets_simpleSecondaryVertexHighPurBJetTags_);}
 	}
 	jets_softElectronByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softElectronByIP3dBJetTag") != 0) {
 		jets_softElectronByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softElectronByIP3dBJetTag"));
-		jets_softElectronByIP3dBJetTag_branch->SetAddress(&jets_softElectronByIP3dBJetTag_);
+		if (jets_softElectronByIP3dBJetTag_branch) {jets_softElectronByIP3dBJetTag_branch->SetAddress(&jets_softElectronByIP3dBJetTag_);}
 	}
 	jets_softElectronByPtBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softElectronByPtBJetTag") != 0) {
 		jets_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softElectronByPtBJetTag"));
-		jets_softElectronByPtBJetTag_branch->SetAddress(&jets_softElectronByPtBJetTag_);
+		if (jets_softElectronByPtBJetTag_branch) {jets_softElectronByPtBJetTag_branch->SetAddress(&jets_softElectronByPtBJetTag_);}
 	}
 	jets_softElectronTag_branch = 0;
 	if (tree->GetAlias("jets_softElectronTag") != 0) {
 		jets_softElectronTag_branch = tree->GetBranch(tree->GetAlias("jets_softElectronTag"));
-		jets_softElectronTag_branch->SetAddress(&jets_softElectronTag_);
+		if (jets_softElectronTag_branch) {jets_softElectronTag_branch->SetAddress(&jets_softElectronTag_);}
 	}
 	jets_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softMuonBJetTag") != 0) {
 		jets_softMuonBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softMuonBJetTag"));
-		jets_softMuonBJetTag_branch->SetAddress(&jets_softMuonBJetTag_);
+		if (jets_softMuonBJetTag_branch) {jets_softMuonBJetTag_branch->SetAddress(&jets_softMuonBJetTag_);}
 	}
 	jets_softMuonByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softMuonByIP3dBJetTag") != 0) {
 		jets_softMuonByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softMuonByIP3dBJetTag"));
-		jets_softMuonByIP3dBJetTag_branch->SetAddress(&jets_softMuonByIP3dBJetTag_);
+		if (jets_softMuonByIP3dBJetTag_branch) {jets_softMuonByIP3dBJetTag_branch->SetAddress(&jets_softMuonByIP3dBJetTag_);}
 	}
 	jets_softMuonByPtBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softMuonByPtBJetTag") != 0) {
 		jets_softMuonByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softMuonByPtBJetTag"));
-		jets_softMuonByPtBJetTag_branch->SetAddress(&jets_softMuonByPtBJetTag_);
+		if (jets_softMuonByPtBJetTag_branch) {jets_softMuonByPtBJetTag_branch->SetAddress(&jets_softMuonByPtBJetTag_);}
 	}
 	jets_trackCountingHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jets_trackCountingHighEffBJetTag") != 0) {
 		jets_trackCountingHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_trackCountingHighEffBJetTag"));
-		jets_trackCountingHighEffBJetTag_branch->SetAddress(&jets_trackCountingHighEffBJetTag_);
+		if (jets_trackCountingHighEffBJetTag_branch) {jets_trackCountingHighEffBJetTag_branch->SetAddress(&jets_trackCountingHighEffBJetTag_);}
 	}
 	jets_trackCountingHighPurBJetTag_branch = 0;
 	if (tree->GetAlias("jets_trackCountingHighPurBJetTag") != 0) {
 		jets_trackCountingHighPurBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_trackCountingHighPurBJetTag"));
-		jets_trackCountingHighPurBJetTag_branch->SetAddress(&jets_trackCountingHighPurBJetTag_);
+		if (jets_trackCountingHighPurBJetTag_branch) {jets_trackCountingHighPurBJetTag_branch->SetAddress(&jets_trackCountingHighPurBJetTag_);}
 	}
 	pfjets_combinedSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_combinedSecondaryVertexBJetTag") != 0) {
 		pfjets_combinedSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_combinedSecondaryVertexBJetTag"));
-		pfjets_combinedSecondaryVertexBJetTag_branch->SetAddress(&pfjets_combinedSecondaryVertexBJetTag_);
+		if (pfjets_combinedSecondaryVertexBJetTag_branch) {pfjets_combinedSecondaryVertexBJetTag_branch->SetAddress(&pfjets_combinedSecondaryVertexBJetTag_);}
 	}
 	pfjets_combinedSecondaryVertexMVABJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_combinedSecondaryVertexMVABJetTag") != 0) {
 		pfjets_combinedSecondaryVertexMVABJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_combinedSecondaryVertexMVABJetTag"));
-		pfjets_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&pfjets_combinedSecondaryVertexMVABJetTag_);
+		if (pfjets_combinedSecondaryVertexMVABJetTag_branch) {pfjets_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&pfjets_combinedSecondaryVertexMVABJetTag_);}
 	}
 	pfjets_jetBProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_jetBProbabilityBJetTag") != 0) {
 		pfjets_jetBProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_jetBProbabilityBJetTag"));
-		pfjets_jetBProbabilityBJetTag_branch->SetAddress(&pfjets_jetBProbabilityBJetTag_);
+		if (pfjets_jetBProbabilityBJetTag_branch) {pfjets_jetBProbabilityBJetTag_branch->SetAddress(&pfjets_jetBProbabilityBJetTag_);}
 	}
 	pfjets_jetProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_jetProbabilityBJetTag") != 0) {
 		pfjets_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_jetProbabilityBJetTag"));
-		pfjets_jetProbabilityBJetTag_branch->SetAddress(&pfjets_jetProbabilityBJetTag_);
+		if (pfjets_jetProbabilityBJetTag_branch) {pfjets_jetProbabilityBJetTag_branch->SetAddress(&pfjets_jetProbabilityBJetTag_);}
 	}
 	pfjets_simpleSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_simpleSecondaryVertexBJetTag") != 0) {
 		pfjets_simpleSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_simpleSecondaryVertexBJetTag"));
-		pfjets_simpleSecondaryVertexBJetTag_branch->SetAddress(&pfjets_simpleSecondaryVertexBJetTag_);
+		if (pfjets_simpleSecondaryVertexBJetTag_branch) {pfjets_simpleSecondaryVertexBJetTag_branch->SetAddress(&pfjets_simpleSecondaryVertexBJetTag_);}
 	}
 	pfjets_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		pfjets_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_simpleSecondaryVertexHighEffBJetTag"));
-		pfjets_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&pfjets_simpleSecondaryVertexHighEffBJetTag_);
+		if (pfjets_simpleSecondaryVertexHighEffBJetTag_branch) {pfjets_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&pfjets_simpleSecondaryVertexHighEffBJetTag_);}
 	}
 	pfjets_simpleSecondaryVertexHighPurBJetTags_branch = 0;
 	if (tree->GetAlias("pfjets_simpleSecondaryVertexHighPurBJetTags") != 0) {
 		pfjets_simpleSecondaryVertexHighPurBJetTags_branch = tree->GetBranch(tree->GetAlias("pfjets_simpleSecondaryVertexHighPurBJetTags"));
-		pfjets_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&pfjets_simpleSecondaryVertexHighPurBJetTags_);
+		if (pfjets_simpleSecondaryVertexHighPurBJetTags_branch) {pfjets_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&pfjets_simpleSecondaryVertexHighPurBJetTags_);}
 	}
 	pfjets_softElectronByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_softElectronByIP3dBJetTag") != 0) {
 		pfjets_softElectronByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_softElectronByIP3dBJetTag"));
-		pfjets_softElectronByIP3dBJetTag_branch->SetAddress(&pfjets_softElectronByIP3dBJetTag_);
+		if (pfjets_softElectronByIP3dBJetTag_branch) {pfjets_softElectronByIP3dBJetTag_branch->SetAddress(&pfjets_softElectronByIP3dBJetTag_);}
 	}
 	pfjets_softElectronByPtBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_softElectronByPtBJetTag") != 0) {
 		pfjets_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_softElectronByPtBJetTag"));
-		pfjets_softElectronByPtBJetTag_branch->SetAddress(&pfjets_softElectronByPtBJetTag_);
+		if (pfjets_softElectronByPtBJetTag_branch) {pfjets_softElectronByPtBJetTag_branch->SetAddress(&pfjets_softElectronByPtBJetTag_);}
 	}
 	pfjets_softElectronTag_branch = 0;
 	if (tree->GetAlias("pfjets_softElectronTag") != 0) {
 		pfjets_softElectronTag_branch = tree->GetBranch(tree->GetAlias("pfjets_softElectronTag"));
-		pfjets_softElectronTag_branch->SetAddress(&pfjets_softElectronTag_);
+		if (pfjets_softElectronTag_branch) {pfjets_softElectronTag_branch->SetAddress(&pfjets_softElectronTag_);}
 	}
 	pfjets_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_softMuonBJetTag") != 0) {
 		pfjets_softMuonBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_softMuonBJetTag"));
-		pfjets_softMuonBJetTag_branch->SetAddress(&pfjets_softMuonBJetTag_);
+		if (pfjets_softMuonBJetTag_branch) {pfjets_softMuonBJetTag_branch->SetAddress(&pfjets_softMuonBJetTag_);}
 	}
 	pfjets_softMuonByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_softMuonByIP3dBJetTag") != 0) {
 		pfjets_softMuonByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_softMuonByIP3dBJetTag"));
-		pfjets_softMuonByIP3dBJetTag_branch->SetAddress(&pfjets_softMuonByIP3dBJetTag_);
+		if (pfjets_softMuonByIP3dBJetTag_branch) {pfjets_softMuonByIP3dBJetTag_branch->SetAddress(&pfjets_softMuonByIP3dBJetTag_);}
 	}
 	pfjets_softMuonByPtBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_softMuonByPtBJetTag") != 0) {
 		pfjets_softMuonByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_softMuonByPtBJetTag"));
-		pfjets_softMuonByPtBJetTag_branch->SetAddress(&pfjets_softMuonByPtBJetTag_);
+		if (pfjets_softMuonByPtBJetTag_branch) {pfjets_softMuonByPtBJetTag_branch->SetAddress(&pfjets_softMuonByPtBJetTag_);}
 	}
 	pfjets_trackCountingHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_trackCountingHighEffBJetTag") != 0) {
 		pfjets_trackCountingHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_trackCountingHighEffBJetTag"));
-		pfjets_trackCountingHighEffBJetTag_branch->SetAddress(&pfjets_trackCountingHighEffBJetTag_);
+		if (pfjets_trackCountingHighEffBJetTag_branch) {pfjets_trackCountingHighEffBJetTag_branch->SetAddress(&pfjets_trackCountingHighEffBJetTag_);}
 	}
 	pfjets_trackCountingHighPurBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_trackCountingHighPurBJetTag") != 0) {
 		pfjets_trackCountingHighPurBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_trackCountingHighPurBJetTag"));
-		pfjets_trackCountingHighPurBJetTag_branch->SetAddress(&pfjets_trackCountingHighPurBJetTag_);
+		if (pfjets_trackCountingHighPurBJetTag_branch) {pfjets_trackCountingHighPurBJetTag_branch->SetAddress(&pfjets_trackCountingHighPurBJetTag_);}
 	}
 	trkjets_combinedSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_combinedSecondaryVertexBJetTag") != 0) {
 		trkjets_combinedSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_combinedSecondaryVertexBJetTag"));
-		trkjets_combinedSecondaryVertexBJetTag_branch->SetAddress(&trkjets_combinedSecondaryVertexBJetTag_);
+		if (trkjets_combinedSecondaryVertexBJetTag_branch) {trkjets_combinedSecondaryVertexBJetTag_branch->SetAddress(&trkjets_combinedSecondaryVertexBJetTag_);}
 	}
 	trkjets_combinedSecondaryVertexMVABJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_combinedSecondaryVertexMVABJetTag") != 0) {
 		trkjets_combinedSecondaryVertexMVABJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_combinedSecondaryVertexMVABJetTag"));
-		trkjets_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&trkjets_combinedSecondaryVertexMVABJetTag_);
+		if (trkjets_combinedSecondaryVertexMVABJetTag_branch) {trkjets_combinedSecondaryVertexMVABJetTag_branch->SetAddress(&trkjets_combinedSecondaryVertexMVABJetTag_);}
 	}
 	trkjets_jetBProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_jetBProbabilityBJetTag") != 0) {
 		trkjets_jetBProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_jetBProbabilityBJetTag"));
-		trkjets_jetBProbabilityBJetTag_branch->SetAddress(&trkjets_jetBProbabilityBJetTag_);
+		if (trkjets_jetBProbabilityBJetTag_branch) {trkjets_jetBProbabilityBJetTag_branch->SetAddress(&trkjets_jetBProbabilityBJetTag_);}
 	}
 	trkjets_jetProbabilityBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_jetProbabilityBJetTag") != 0) {
 		trkjets_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_jetProbabilityBJetTag"));
-		trkjets_jetProbabilityBJetTag_branch->SetAddress(&trkjets_jetProbabilityBJetTag_);
+		if (trkjets_jetProbabilityBJetTag_branch) {trkjets_jetProbabilityBJetTag_branch->SetAddress(&trkjets_jetProbabilityBJetTag_);}
 	}
 	trkjets_simpleSecondaryVertexBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_simpleSecondaryVertexBJetTag") != 0) {
 		trkjets_simpleSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_simpleSecondaryVertexBJetTag"));
-		trkjets_simpleSecondaryVertexBJetTag_branch->SetAddress(&trkjets_simpleSecondaryVertexBJetTag_);
+		if (trkjets_simpleSecondaryVertexBJetTag_branch) {trkjets_simpleSecondaryVertexBJetTag_branch->SetAddress(&trkjets_simpleSecondaryVertexBJetTag_);}
 	}
 	trkjets_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		trkjets_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_simpleSecondaryVertexHighEffBJetTag"));
-		trkjets_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&trkjets_simpleSecondaryVertexHighEffBJetTag_);
+		if (trkjets_simpleSecondaryVertexHighEffBJetTag_branch) {trkjets_simpleSecondaryVertexHighEffBJetTag_branch->SetAddress(&trkjets_simpleSecondaryVertexHighEffBJetTag_);}
 	}
 	trkjets_simpleSecondaryVertexHighPurBJetTags_branch = 0;
 	if (tree->GetAlias("trkjets_simpleSecondaryVertexHighPurBJetTags") != 0) {
 		trkjets_simpleSecondaryVertexHighPurBJetTags_branch = tree->GetBranch(tree->GetAlias("trkjets_simpleSecondaryVertexHighPurBJetTags"));
-		trkjets_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&trkjets_simpleSecondaryVertexHighPurBJetTags_);
+		if (trkjets_simpleSecondaryVertexHighPurBJetTags_branch) {trkjets_simpleSecondaryVertexHighPurBJetTags_branch->SetAddress(&trkjets_simpleSecondaryVertexHighPurBJetTags_);}
 	}
 	trkjets_softElectronByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softElectronByIP3dBJetTag") != 0) {
 		trkjets_softElectronByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softElectronByIP3dBJetTag"));
-		trkjets_softElectronByIP3dBJetTag_branch->SetAddress(&trkjets_softElectronByIP3dBJetTag_);
+		if (trkjets_softElectronByIP3dBJetTag_branch) {trkjets_softElectronByIP3dBJetTag_branch->SetAddress(&trkjets_softElectronByIP3dBJetTag_);}
 	}
 	trkjets_softElectronByPtBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softElectronByPtBJetTag") != 0) {
 		trkjets_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softElectronByPtBJetTag"));
-		trkjets_softElectronByPtBJetTag_branch->SetAddress(&trkjets_softElectronByPtBJetTag_);
+		if (trkjets_softElectronByPtBJetTag_branch) {trkjets_softElectronByPtBJetTag_branch->SetAddress(&trkjets_softElectronByPtBJetTag_);}
 	}
 	trkjets_softElectronTag_branch = 0;
 	if (tree->GetAlias("trkjets_softElectronTag") != 0) {
 		trkjets_softElectronTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softElectronTag"));
-		trkjets_softElectronTag_branch->SetAddress(&trkjets_softElectronTag_);
+		if (trkjets_softElectronTag_branch) {trkjets_softElectronTag_branch->SetAddress(&trkjets_softElectronTag_);}
 	}
 	trkjets_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softMuonBJetTag") != 0) {
 		trkjets_softMuonBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softMuonBJetTag"));
-		trkjets_softMuonBJetTag_branch->SetAddress(&trkjets_softMuonBJetTag_);
+		if (trkjets_softMuonBJetTag_branch) {trkjets_softMuonBJetTag_branch->SetAddress(&trkjets_softMuonBJetTag_);}
 	}
 	trkjets_softMuonByIP3dBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softMuonByIP3dBJetTag") != 0) {
 		trkjets_softMuonByIP3dBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softMuonByIP3dBJetTag"));
-		trkjets_softMuonByIP3dBJetTag_branch->SetAddress(&trkjets_softMuonByIP3dBJetTag_);
+		if (trkjets_softMuonByIP3dBJetTag_branch) {trkjets_softMuonByIP3dBJetTag_branch->SetAddress(&trkjets_softMuonByIP3dBJetTag_);}
 	}
 	trkjets_softMuonByPtBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softMuonByPtBJetTag") != 0) {
 		trkjets_softMuonByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softMuonByPtBJetTag"));
-		trkjets_softMuonByPtBJetTag_branch->SetAddress(&trkjets_softMuonByPtBJetTag_);
+		if (trkjets_softMuonByPtBJetTag_branch) {trkjets_softMuonByPtBJetTag_branch->SetAddress(&trkjets_softMuonByPtBJetTag_);}
 	}
 	trkjets_trackCountingHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_trackCountingHighEffBJetTag") != 0) {
 		trkjets_trackCountingHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_trackCountingHighEffBJetTag"));
-		trkjets_trackCountingHighEffBJetTag_branch->SetAddress(&trkjets_trackCountingHighEffBJetTag_);
+		if (trkjets_trackCountingHighEffBJetTag_branch) {trkjets_trackCountingHighEffBJetTag_branch->SetAddress(&trkjets_trackCountingHighEffBJetTag_);}
 	}
 	trkjets_trackCountingHighPurBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_trackCountingHighPurBJetTag") != 0) {
 		trkjets_trackCountingHighPurBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_trackCountingHighPurBJetTag"));
-		trkjets_trackCountingHighPurBJetTag_branch->SetAddress(&trkjets_trackCountingHighPurBJetTag_);
+		if (trkjets_trackCountingHighPurBJetTag_branch) {trkjets_trackCountingHighPurBJetTag_branch->SetAddress(&trkjets_trackCountingHighPurBJetTag_);}
 	}
 	evt_bs_covMatrix_branch = 0;
 	if (tree->GetAlias("evt_bs_covMatrix") != 0) {
 		evt_bs_covMatrix_branch = tree->GetBranch(tree->GetAlias("evt_bs_covMatrix"));
-		evt_bs_covMatrix_branch->SetAddress(&evt_bs_covMatrix_);
+		if (evt_bs_covMatrix_branch) {evt_bs_covMatrix_branch->SetAddress(&evt_bs_covMatrix_);}
 	}
 	els_mc3dr_branch = 0;
 	if (tree->GetAlias("els_mc3dr") != 0) {
 		els_mc3dr_branch = tree->GetBranch(tree->GetAlias("els_mc3dr"));
-		els_mc3dr_branch->SetAddress(&els_mc3dr_);
+		if (els_mc3dr_branch) {els_mc3dr_branch->SetAddress(&els_mc3dr_);}
 	}
 	els_mcdr_branch = 0;
 	if (tree->GetAlias("els_mcdr") != 0) {
 		els_mcdr_branch = tree->GetBranch(tree->GetAlias("els_mcdr"));
-		els_mcdr_branch->SetAddress(&els_mcdr_);
+		if (els_mcdr_branch) {els_mcdr_branch->SetAddress(&els_mcdr_);}
 	}
 	jets_mc3dr_branch = 0;
 	if (tree->GetAlias("jets_mc3dr") != 0) {
 		jets_mc3dr_branch = tree->GetBranch(tree->GetAlias("jets_mc3dr"));
-		jets_mc3dr_branch->SetAddress(&jets_mc3dr_);
+		if (jets_mc3dr_branch) {jets_mc3dr_branch->SetAddress(&jets_mc3dr_);}
 	}
 	jets_mcdr_branch = 0;
 	if (tree->GetAlias("jets_mcdr") != 0) {
 		jets_mcdr_branch = tree->GetBranch(tree->GetAlias("jets_mcdr"));
-		jets_mcdr_branch->SetAddress(&jets_mcdr_);
+		if (jets_mcdr_branch) {jets_mcdr_branch->SetAddress(&jets_mcdr_);}
 	}
 	jets_mc_emEnergy_branch = 0;
 	if (tree->GetAlias("jets_mc_emEnergy") != 0) {
 		jets_mc_emEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_emEnergy"));
-		jets_mc_emEnergy_branch->SetAddress(&jets_mc_emEnergy_);
+		if (jets_mc_emEnergy_branch) {jets_mc_emEnergy_branch->SetAddress(&jets_mc_emEnergy_);}
 	}
 	jets_mc_gpdr_branch = 0;
 	if (tree->GetAlias("jets_mc_gpdr") != 0) {
 		jets_mc_gpdr_branch = tree->GetBranch(tree->GetAlias("jets_mc_gpdr"));
-		jets_mc_gpdr_branch->SetAddress(&jets_mc_gpdr_);
+		if (jets_mc_gpdr_branch) {jets_mc_gpdr_branch->SetAddress(&jets_mc_gpdr_);}
 	}
 	jets_mc_hadEnergy_branch = 0;
 	if (tree->GetAlias("jets_mc_hadEnergy") != 0) {
 		jets_mc_hadEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_hadEnergy"));
-		jets_mc_hadEnergy_branch->SetAddress(&jets_mc_hadEnergy_);
+		if (jets_mc_hadEnergy_branch) {jets_mc_hadEnergy_branch->SetAddress(&jets_mc_hadEnergy_);}
 	}
 	jets_mc_invEnergy_branch = 0;
 	if (tree->GetAlias("jets_mc_invEnergy") != 0) {
 		jets_mc_invEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_invEnergy"));
-		jets_mc_invEnergy_branch->SetAddress(&jets_mc_invEnergy_);
+		if (jets_mc_invEnergy_branch) {jets_mc_invEnergy_branch->SetAddress(&jets_mc_invEnergy_);}
 	}
 	jets_mc_otherEnergy_branch = 0;
 	if (tree->GetAlias("jets_mc_otherEnergy") != 0) {
 		jets_mc_otherEnergy_branch = tree->GetBranch(tree->GetAlias("jets_mc_otherEnergy"));
-		jets_mc_otherEnergy_branch->SetAddress(&jets_mc_otherEnergy_);
+		if (jets_mc_otherEnergy_branch) {jets_mc_otherEnergy_branch->SetAddress(&jets_mc_otherEnergy_);}
 	}
 	mus_mc3dr_branch = 0;
 	if (tree->GetAlias("mus_mc3dr") != 0) {
 		mus_mc3dr_branch = tree->GetBranch(tree->GetAlias("mus_mc3dr"));
-		mus_mc3dr_branch->SetAddress(&mus_mc3dr_);
+		if (mus_mc3dr_branch) {mus_mc3dr_branch->SetAddress(&mus_mc3dr_);}
 	}
 	mus_mcdr_branch = 0;
 	if (tree->GetAlias("mus_mcdr") != 0) {
 		mus_mcdr_branch = tree->GetBranch(tree->GetAlias("mus_mcdr"));
-		mus_mcdr_branch->SetAddress(&mus_mcdr_);
+		if (mus_mcdr_branch) {mus_mcdr_branch->SetAddress(&mus_mcdr_);}
 	}
 	pfjets_mc3dr_branch = 0;
 	if (tree->GetAlias("pfjets_mc3dr") != 0) {
 		pfjets_mc3dr_branch = tree->GetBranch(tree->GetAlias("pfjets_mc3dr"));
-		pfjets_mc3dr_branch->SetAddress(&pfjets_mc3dr_);
+		if (pfjets_mc3dr_branch) {pfjets_mc3dr_branch->SetAddress(&pfjets_mc3dr_);}
 	}
 	pfjets_mcdr_branch = 0;
 	if (tree->GetAlias("pfjets_mcdr") != 0) {
 		pfjets_mcdr_branch = tree->GetBranch(tree->GetAlias("pfjets_mcdr"));
-		pfjets_mcdr_branch->SetAddress(&pfjets_mcdr_);
+		if (pfjets_mcdr_branch) {pfjets_mcdr_branch->SetAddress(&pfjets_mcdr_);}
 	}
 	pfjets_mc_emEnergy_branch = 0;
 	if (tree->GetAlias("pfjets_mc_emEnergy") != 0) {
 		pfjets_mc_emEnergy_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_emEnergy"));
-		pfjets_mc_emEnergy_branch->SetAddress(&pfjets_mc_emEnergy_);
+		if (pfjets_mc_emEnergy_branch) {pfjets_mc_emEnergy_branch->SetAddress(&pfjets_mc_emEnergy_);}
 	}
 	pfjets_mc_gpdr_branch = 0;
 	if (tree->GetAlias("pfjets_mc_gpdr") != 0) {
 		pfjets_mc_gpdr_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_gpdr"));
-		pfjets_mc_gpdr_branch->SetAddress(&pfjets_mc_gpdr_);
+		if (pfjets_mc_gpdr_branch) {pfjets_mc_gpdr_branch->SetAddress(&pfjets_mc_gpdr_);}
 	}
 	pfjets_mc_hadEnergy_branch = 0;
 	if (tree->GetAlias("pfjets_mc_hadEnergy") != 0) {
 		pfjets_mc_hadEnergy_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_hadEnergy"));
-		pfjets_mc_hadEnergy_branch->SetAddress(&pfjets_mc_hadEnergy_);
+		if (pfjets_mc_hadEnergy_branch) {pfjets_mc_hadEnergy_branch->SetAddress(&pfjets_mc_hadEnergy_);}
 	}
 	pfjets_mc_invEnergy_branch = 0;
 	if (tree->GetAlias("pfjets_mc_invEnergy") != 0) {
 		pfjets_mc_invEnergy_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_invEnergy"));
-		pfjets_mc_invEnergy_branch->SetAddress(&pfjets_mc_invEnergy_);
+		if (pfjets_mc_invEnergy_branch) {pfjets_mc_invEnergy_branch->SetAddress(&pfjets_mc_invEnergy_);}
 	}
 	pfjets_mc_otherEnergy_branch = 0;
 	if (tree->GetAlias("pfjets_mc_otherEnergy") != 0) {
 		pfjets_mc_otherEnergy_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_otherEnergy"));
-		pfjets_mc_otherEnergy_branch->SetAddress(&pfjets_mc_otherEnergy_);
+		if (pfjets_mc_otherEnergy_branch) {pfjets_mc_otherEnergy_branch->SetAddress(&pfjets_mc_otherEnergy_);}
 	}
 	photons_mc3dr_branch = 0;
 	if (tree->GetAlias("photons_mc3dr") != 0) {
 		photons_mc3dr_branch = tree->GetBranch(tree->GetAlias("photons_mc3dr"));
-		photons_mc3dr_branch->SetAddress(&photons_mc3dr_);
+		if (photons_mc3dr_branch) {photons_mc3dr_branch->SetAddress(&photons_mc3dr_);}
 	}
 	photons_mcdr_branch = 0;
 	if (tree->GetAlias("photons_mcdr") != 0) {
 		photons_mcdr_branch = tree->GetBranch(tree->GetAlias("photons_mcdr"));
-		photons_mcdr_branch->SetAddress(&photons_mcdr_);
+		if (photons_mcdr_branch) {photons_mcdr_branch->SetAddress(&photons_mcdr_);}
 	}
 	trk_mc3dr_branch = 0;
 	if (tree->GetAlias("trk_mc3dr") != 0) {
 		trk_mc3dr_branch = tree->GetBranch(tree->GetAlias("trk_mc3dr"));
-		trk_mc3dr_branch->SetAddress(&trk_mc3dr_);
+		if (trk_mc3dr_branch) {trk_mc3dr_branch->SetAddress(&trk_mc3dr_);}
 	}
 	trk_mcdr_branch = 0;
 	if (tree->GetAlias("trk_mcdr") != 0) {
 		trk_mcdr_branch = tree->GetBranch(tree->GetAlias("trk_mcdr"));
-		trk_mcdr_branch->SetAddress(&trk_mcdr_);
+		if (trk_mcdr_branch) {trk_mcdr_branch->SetAddress(&trk_mcdr_);}
 	}
 	els_ecalJuraIso_branch = 0;
 	if (tree->GetAlias("els_ecalJuraIso") != 0) {
 		els_ecalJuraIso_branch = tree->GetBranch(tree->GetAlias("els_ecalJuraIso"));
-		els_ecalJuraIso_branch->SetAddress(&els_ecalJuraIso_);
+		if (els_ecalJuraIso_branch) {els_ecalJuraIso_branch->SetAddress(&els_ecalJuraIso_);}
 	}
 	els_ecalJuraTowerIso_branch = 0;
 	if (tree->GetAlias("els_ecalJuraTowerIso") != 0) {
 		els_ecalJuraTowerIso_branch = tree->GetBranch(tree->GetAlias("els_ecalJuraTowerIso"));
-		els_ecalJuraTowerIso_branch->SetAddress(&els_ecalJuraTowerIso_);
+		if (els_ecalJuraTowerIso_branch) {els_ecalJuraTowerIso_branch->SetAddress(&els_ecalJuraTowerIso_);}
 	}
 	els_hcalConeIso_branch = 0;
 	if (tree->GetAlias("els_hcalConeIso") != 0) {
 		els_hcalConeIso_branch = tree->GetBranch(tree->GetAlias("els_hcalConeIso"));
-		els_hcalConeIso_branch->SetAddress(&els_hcalConeIso_);
+		if (els_hcalConeIso_branch) {els_hcalConeIso_branch->SetAddress(&els_hcalConeIso_);}
 	}
 	els_tkJuraIso_branch = 0;
 	if (tree->GetAlias("els_tkJuraIso") != 0) {
 		els_tkJuraIso_branch = tree->GetBranch(tree->GetAlias("els_tkJuraIso"));
-		els_tkJuraIso_branch->SetAddress(&els_tkJuraIso_);
+		if (els_tkJuraIso_branch) {els_tkJuraIso_branch->SetAddress(&els_tkJuraIso_);}
 	}
 	els_jetdr_branch = 0;
 	if (tree->GetAlias("els_jetdr") != 0) {
 		els_jetdr_branch = tree->GetBranch(tree->GetAlias("els_jetdr"));
-		els_jetdr_branch->SetAddress(&els_jetdr_);
+		if (els_jetdr_branch) {els_jetdr_branch->SetAddress(&els_jetdr_);}
 	}
 	els_musdr_branch = 0;
 	if (tree->GetAlias("els_musdr") != 0) {
 		els_musdr_branch = tree->GetBranch(tree->GetAlias("els_musdr"));
-		els_musdr_branch->SetAddress(&els_musdr_);
+		if (els_musdr_branch) {els_musdr_branch->SetAddress(&els_musdr_);}
 	}
 	els_isoR03_chpf_radial_branch = 0;
 	if (tree->GetAlias("els_isoR03_chpf_radial") != 0) {
 		els_isoR03_chpf_radial_branch = tree->GetBranch(tree->GetAlias("els_isoR03_chpf_radial"));
-		els_isoR03_chpf_radial_branch->SetAddress(&els_isoR03_chpf_radial_);
+		if (els_isoR03_chpf_radial_branch) {els_isoR03_chpf_radial_branch->SetAddress(&els_isoR03_chpf_radial_);}
 	}
 	els_isoR03_chpf_radialTight_branch = 0;
 	if (tree->GetAlias("els_isoR03_chpf_radialTight") != 0) {
 		els_isoR03_chpf_radialTight_branch = tree->GetBranch(tree->GetAlias("els_isoR03_chpf_radialTight"));
-		els_isoR03_chpf_radialTight_branch->SetAddress(&els_isoR03_chpf_radialTight_);
+		if (els_isoR03_chpf_radialTight_branch) {els_isoR03_chpf_radialTight_branch->SetAddress(&els_isoR03_chpf_radialTight_);}
 	}
 	els_isoR03_chpf_radialTight_bv_branch = 0;
 	if (tree->GetAlias("els_isoR03_chpf_radialTight_bv") != 0) {
 		els_isoR03_chpf_radialTight_bv_branch = tree->GetBranch(tree->GetAlias("els_isoR03_chpf_radialTight_bv"));
-		els_isoR03_chpf_radialTight_bv_branch->SetAddress(&els_isoR03_chpf_radialTight_bv_);
+		if (els_isoR03_chpf_radialTight_bv_branch) {els_isoR03_chpf_radialTight_bv_branch->SetAddress(&els_isoR03_chpf_radialTight_bv_);}
 	}
 	els_isoR03_chpf_radial_bv_branch = 0;
 	if (tree->GetAlias("els_isoR03_chpf_radial_bv") != 0) {
 		els_isoR03_chpf_radial_bv_branch = tree->GetBranch(tree->GetAlias("els_isoR03_chpf_radial_bv"));
-		els_isoR03_chpf_radial_bv_branch->SetAddress(&els_isoR03_chpf_radial_bv_);
+		if (els_isoR03_chpf_radial_bv_branch) {els_isoR03_chpf_radial_bv_branch->SetAddress(&els_isoR03_chpf_radial_bv_);}
 	}
 	els_isoR03_empf_radial_branch = 0;
 	if (tree->GetAlias("els_isoR03_empf_radial") != 0) {
 		els_isoR03_empf_radial_branch = tree->GetBranch(tree->GetAlias("els_isoR03_empf_radial"));
-		els_isoR03_empf_radial_branch->SetAddress(&els_isoR03_empf_radial_);
+		if (els_isoR03_empf_radial_branch) {els_isoR03_empf_radial_branch->SetAddress(&els_isoR03_empf_radial_);}
 	}
 	els_isoR03_empf_radialTight_branch = 0;
 	if (tree->GetAlias("els_isoR03_empf_radialTight") != 0) {
 		els_isoR03_empf_radialTight_branch = tree->GetBranch(tree->GetAlias("els_isoR03_empf_radialTight"));
-		els_isoR03_empf_radialTight_branch->SetAddress(&els_isoR03_empf_radialTight_);
+		if (els_isoR03_empf_radialTight_branch) {els_isoR03_empf_radialTight_branch->SetAddress(&els_isoR03_empf_radialTight_);}
 	}
 	els_isoR03_empf_radialTight_bv_branch = 0;
 	if (tree->GetAlias("els_isoR03_empf_radialTight_bv") != 0) {
 		els_isoR03_empf_radialTight_bv_branch = tree->GetBranch(tree->GetAlias("els_isoR03_empf_radialTight_bv"));
-		els_isoR03_empf_radialTight_bv_branch->SetAddress(&els_isoR03_empf_radialTight_bv_);
+		if (els_isoR03_empf_radialTight_bv_branch) {els_isoR03_empf_radialTight_bv_branch->SetAddress(&els_isoR03_empf_radialTight_bv_);}
 	}
 	els_isoR03_empf_radial_bv_branch = 0;
 	if (tree->GetAlias("els_isoR03_empf_radial_bv") != 0) {
 		els_isoR03_empf_radial_bv_branch = tree->GetBranch(tree->GetAlias("els_isoR03_empf_radial_bv"));
-		els_isoR03_empf_radial_bv_branch->SetAddress(&els_isoR03_empf_radial_bv_);
+		if (els_isoR03_empf_radial_bv_branch) {els_isoR03_empf_radial_bv_branch->SetAddress(&els_isoR03_empf_radial_bv_);}
 	}
 	els_isoR03_nhpf_radial_branch = 0;
 	if (tree->GetAlias("els_isoR03_nhpf_radial") != 0) {
 		els_isoR03_nhpf_radial_branch = tree->GetBranch(tree->GetAlias("els_isoR03_nhpf_radial"));
-		els_isoR03_nhpf_radial_branch->SetAddress(&els_isoR03_nhpf_radial_);
+		if (els_isoR03_nhpf_radial_branch) {els_isoR03_nhpf_radial_branch->SetAddress(&els_isoR03_nhpf_radial_);}
 	}
 	els_isoR03_nhpf_radialTight_branch = 0;
 	if (tree->GetAlias("els_isoR03_nhpf_radialTight") != 0) {
 		els_isoR03_nhpf_radialTight_branch = tree->GetBranch(tree->GetAlias("els_isoR03_nhpf_radialTight"));
-		els_isoR03_nhpf_radialTight_branch->SetAddress(&els_isoR03_nhpf_radialTight_);
+		if (els_isoR03_nhpf_radialTight_branch) {els_isoR03_nhpf_radialTight_branch->SetAddress(&els_isoR03_nhpf_radialTight_);}
 	}
 	els_isoR03_nhpf_radialTight_bv_branch = 0;
 	if (tree->GetAlias("els_isoR03_nhpf_radialTight_bv") != 0) {
 		els_isoR03_nhpf_radialTight_bv_branch = tree->GetBranch(tree->GetAlias("els_isoR03_nhpf_radialTight_bv"));
-		els_isoR03_nhpf_radialTight_bv_branch->SetAddress(&els_isoR03_nhpf_radialTight_bv_);
+		if (els_isoR03_nhpf_radialTight_bv_branch) {els_isoR03_nhpf_radialTight_bv_branch->SetAddress(&els_isoR03_nhpf_radialTight_bv_);}
 	}
 	els_isoR03_nhpf_radial_bv_branch = 0;
 	if (tree->GetAlias("els_isoR03_nhpf_radial_bv") != 0) {
 		els_isoR03_nhpf_radial_bv_branch = tree->GetBranch(tree->GetAlias("els_isoR03_nhpf_radial_bv"));
-		els_isoR03_nhpf_radial_bv_branch->SetAddress(&els_isoR03_nhpf_radial_bv_);
+		if (els_isoR03_nhpf_radial_bv_branch) {els_isoR03_nhpf_radial_bv_branch->SetAddress(&els_isoR03_nhpf_radial_bv_);}
 	}
 	els_isoR03_pf2012n0p5_ch_branch = 0;
 	if (tree->GetAlias("els_isoR03_pf2012n0p5_ch") != 0) {
 		els_isoR03_pf2012n0p5_ch_branch = tree->GetBranch(tree->GetAlias("els_isoR03_pf2012n0p5_ch"));
-		els_isoR03_pf2012n0p5_ch_branch->SetAddress(&els_isoR03_pf2012n0p5_ch_);
+		if (els_isoR03_pf2012n0p5_ch_branch) {els_isoR03_pf2012n0p5_ch_branch->SetAddress(&els_isoR03_pf2012n0p5_ch_);}
 	}
 	els_isoR03_pf2012n0p5_em_branch = 0;
 	if (tree->GetAlias("els_isoR03_pf2012n0p5_em") != 0) {
 		els_isoR03_pf2012n0p5_em_branch = tree->GetBranch(tree->GetAlias("els_isoR03_pf2012n0p5_em"));
-		els_isoR03_pf2012n0p5_em_branch->SetAddress(&els_isoR03_pf2012n0p5_em_);
+		if (els_isoR03_pf2012n0p5_em_branch) {els_isoR03_pf2012n0p5_em_branch->SetAddress(&els_isoR03_pf2012n0p5_em_);}
 	}
 	els_isoR03_pf2012n0p5_nh_branch = 0;
 	if (tree->GetAlias("els_isoR03_pf2012n0p5_nh") != 0) {
 		els_isoR03_pf2012n0p5_nh_branch = tree->GetBranch(tree->GetAlias("els_isoR03_pf2012n0p5_nh"));
-		els_isoR03_pf2012n0p5_nh_branch->SetAddress(&els_isoR03_pf2012n0p5_nh_);
+		if (els_isoR03_pf2012n0p5_nh_branch) {els_isoR03_pf2012n0p5_nh_branch->SetAddress(&els_isoR03_pf2012n0p5_nh_);}
 	}
 	els_isoR03_pf_radial_branch = 0;
 	if (tree->GetAlias("els_isoR03_pf_radial") != 0) {
 		els_isoR03_pf_radial_branch = tree->GetBranch(tree->GetAlias("els_isoR03_pf_radial"));
-		els_isoR03_pf_radial_branch->SetAddress(&els_isoR03_pf_radial_);
+		if (els_isoR03_pf_radial_branch) {els_isoR03_pf_radial_branch->SetAddress(&els_isoR03_pf_radial_);}
 	}
 	els_isoR03_pf_radialTight_branch = 0;
 	if (tree->GetAlias("els_isoR03_pf_radialTight") != 0) {
 		els_isoR03_pf_radialTight_branch = tree->GetBranch(tree->GetAlias("els_isoR03_pf_radialTight"));
-		els_isoR03_pf_radialTight_branch->SetAddress(&els_isoR03_pf_radialTight_);
+		if (els_isoR03_pf_radialTight_branch) {els_isoR03_pf_radialTight_branch->SetAddress(&els_isoR03_pf_radialTight_);}
 	}
 	els_isoR03_pf_radialTight_bv_branch = 0;
 	if (tree->GetAlias("els_isoR03_pf_radialTight_bv") != 0) {
 		els_isoR03_pf_radialTight_bv_branch = tree->GetBranch(tree->GetAlias("els_isoR03_pf_radialTight_bv"));
-		els_isoR03_pf_radialTight_bv_branch->SetAddress(&els_isoR03_pf_radialTight_bv_);
+		if (els_isoR03_pf_radialTight_bv_branch) {els_isoR03_pf_radialTight_bv_branch->SetAddress(&els_isoR03_pf_radialTight_bv_);}
 	}
 	els_isoR03_pf_radial_bv_branch = 0;
 	if (tree->GetAlias("els_isoR03_pf_radial_bv") != 0) {
 		els_isoR03_pf_radial_bv_branch = tree->GetBranch(tree->GetAlias("els_isoR03_pf_radial_bv"));
-		els_isoR03_pf_radial_bv_branch->SetAddress(&els_isoR03_pf_radial_bv_);
+		if (els_isoR03_pf_radial_bv_branch) {els_isoR03_pf_radial_bv_branch->SetAddress(&els_isoR03_pf_radial_bv_);}
 	}
 	els_chi2_branch = 0;
 	if (tree->GetAlias("els_chi2") != 0) {
 		els_chi2_branch = tree->GetBranch(tree->GetAlias("els_chi2"));
-		els_chi2_branch->SetAddress(&els_chi2_);
+		if (els_chi2_branch) {els_chi2_branch->SetAddress(&els_chi2_);}
 	}
 	els_ckf_chi2_branch = 0;
 	if (tree->GetAlias("els_ckf_chi2") != 0) {
 		els_ckf_chi2_branch = tree->GetBranch(tree->GetAlias("els_ckf_chi2"));
-		els_ckf_chi2_branch->SetAddress(&els_ckf_chi2_);
+		if (els_ckf_chi2_branch) {els_ckf_chi2_branch->SetAddress(&els_ckf_chi2_);}
 	}
 	els_ckf_ndof_branch = 0;
 	if (tree->GetAlias("els_ckf_ndof") != 0) {
 		els_ckf_ndof_branch = tree->GetBranch(tree->GetAlias("els_ckf_ndof"));
-		els_ckf_ndof_branch->SetAddress(&els_ckf_ndof_);
+		if (els_ckf_ndof_branch) {els_ckf_ndof_branch->SetAddress(&els_ckf_ndof_);}
 	}
 	els_conv_dcot_branch = 0;
 	if (tree->GetAlias("els_conv_dcot") != 0) {
 		els_conv_dcot_branch = tree->GetBranch(tree->GetAlias("els_conv_dcot"));
-		els_conv_dcot_branch->SetAddress(&els_conv_dcot_);
+		if (els_conv_dcot_branch) {els_conv_dcot_branch->SetAddress(&els_conv_dcot_);}
 	}
 	els_conv_dist_branch = 0;
 	if (tree->GetAlias("els_conv_dist") != 0) {
 		els_conv_dist_branch = tree->GetBranch(tree->GetAlias("els_conv_dist"));
-		els_conv_dist_branch->SetAddress(&els_conv_dist_);
+		if (els_conv_dist_branch) {els_conv_dist_branch->SetAddress(&els_conv_dist_);}
 	}
 	els_conv_old_dcot_branch = 0;
 	if (tree->GetAlias("els_conv_old_dcot") != 0) {
 		els_conv_old_dcot_branch = tree->GetBranch(tree->GetAlias("els_conv_old_dcot"));
-		els_conv_old_dcot_branch->SetAddress(&els_conv_old_dcot_);
+		if (els_conv_old_dcot_branch) {els_conv_old_dcot_branch->SetAddress(&els_conv_old_dcot_);}
 	}
 	els_conv_old_dist_branch = 0;
 	if (tree->GetAlias("els_conv_old_dist") != 0) {
 		els_conv_old_dist_branch = tree->GetBranch(tree->GetAlias("els_conv_old_dist"));
-		els_conv_old_dist_branch->SetAddress(&els_conv_old_dist_);
+		if (els_conv_old_dist_branch) {els_conv_old_dist_branch->SetAddress(&els_conv_old_dist_);}
 	}
 	els_conv_old_radius_branch = 0;
 	if (tree->GetAlias("els_conv_old_radius") != 0) {
 		els_conv_old_radius_branch = tree->GetBranch(tree->GetAlias("els_conv_old_radius"));
-		els_conv_old_radius_branch->SetAddress(&els_conv_old_radius_);
+		if (els_conv_old_radius_branch) {els_conv_old_radius_branch->SetAddress(&els_conv_old_radius_);}
 	}
 	els_conv_radius_branch = 0;
 	if (tree->GetAlias("els_conv_radius") != 0) {
 		els_conv_radius_branch = tree->GetBranch(tree->GetAlias("els_conv_radius"));
-		els_conv_radius_branch->SetAddress(&els_conv_radius_);
+		if (els_conv_radius_branch) {els_conv_radius_branch->SetAddress(&els_conv_radius_);}
 	}
 	els_d0_branch = 0;
 	if (tree->GetAlias("els_d0") != 0) {
 		els_d0_branch = tree->GetBranch(tree->GetAlias("els_d0"));
-		els_d0_branch->SetAddress(&els_d0_);
+		if (els_d0_branch) {els_d0_branch->SetAddress(&els_d0_);}
 	}
 	els_d0Err_branch = 0;
 	if (tree->GetAlias("els_d0Err") != 0) {
 		els_d0Err_branch = tree->GetBranch(tree->GetAlias("els_d0Err"));
-		els_d0Err_branch->SetAddress(&els_d0Err_);
+		if (els_d0Err_branch) {els_d0Err_branch->SetAddress(&els_d0Err_);}
 	}
 	els_d0corr_branch = 0;
 	if (tree->GetAlias("els_d0corr") != 0) {
 		els_d0corr_branch = tree->GetBranch(tree->GetAlias("els_d0corr"));
-		els_d0corr_branch->SetAddress(&els_d0corr_);
+		if (els_d0corr_branch) {els_d0corr_branch->SetAddress(&els_d0corr_);}
 	}
 	els_dEtaIn_branch = 0;
 	if (tree->GetAlias("els_dEtaIn") != 0) {
 		els_dEtaIn_branch = tree->GetBranch(tree->GetAlias("els_dEtaIn"));
-		els_dEtaIn_branch->SetAddress(&els_dEtaIn_);
+		if (els_dEtaIn_branch) {els_dEtaIn_branch->SetAddress(&els_dEtaIn_);}
 	}
 	els_dEtaOut_branch = 0;
 	if (tree->GetAlias("els_dEtaOut") != 0) {
 		els_dEtaOut_branch = tree->GetBranch(tree->GetAlias("els_dEtaOut"));
-		els_dEtaOut_branch->SetAddress(&els_dEtaOut_);
+		if (els_dEtaOut_branch) {els_dEtaOut_branch->SetAddress(&els_dEtaOut_);}
 	}
 	els_dPhiIn_branch = 0;
 	if (tree->GetAlias("els_dPhiIn") != 0) {
 		els_dPhiIn_branch = tree->GetBranch(tree->GetAlias("els_dPhiIn"));
-		els_dPhiIn_branch->SetAddress(&els_dPhiIn_);
+		if (els_dPhiIn_branch) {els_dPhiIn_branch->SetAddress(&els_dPhiIn_);}
 	}
 	els_dPhiInPhiOut_branch = 0;
 	if (tree->GetAlias("els_dPhiInPhiOut") != 0) {
 		els_dPhiInPhiOut_branch = tree->GetBranch(tree->GetAlias("els_dPhiInPhiOut"));
-		els_dPhiInPhiOut_branch->SetAddress(&els_dPhiInPhiOut_);
+		if (els_dPhiInPhiOut_branch) {els_dPhiInPhiOut_branch->SetAddress(&els_dPhiInPhiOut_);}
 	}
 	els_dPhiOut_branch = 0;
 	if (tree->GetAlias("els_dPhiOut") != 0) {
 		els_dPhiOut_branch = tree->GetBranch(tree->GetAlias("els_dPhiOut"));
-		els_dPhiOut_branch->SetAddress(&els_dPhiOut_);
+		if (els_dPhiOut_branch) {els_dPhiOut_branch->SetAddress(&els_dPhiOut_);}
 	}
 	els_deltaEtaEleClusterTrackAtCalo_branch = 0;
 	if (tree->GetAlias("els_deltaEtaEleClusterTrackAtCalo") != 0) {
 		els_deltaEtaEleClusterTrackAtCalo_branch = tree->GetBranch(tree->GetAlias("els_deltaEtaEleClusterTrackAtCalo"));
-		els_deltaEtaEleClusterTrackAtCalo_branch->SetAddress(&els_deltaEtaEleClusterTrackAtCalo_);
+		if (els_deltaEtaEleClusterTrackAtCalo_branch) {els_deltaEtaEleClusterTrackAtCalo_branch->SetAddress(&els_deltaEtaEleClusterTrackAtCalo_);}
 	}
 	els_deltaPhiEleClusterTrackAtCalo_branch = 0;
 	if (tree->GetAlias("els_deltaPhiEleClusterTrackAtCalo") != 0) {
 		els_deltaPhiEleClusterTrackAtCalo_branch = tree->GetBranch(tree->GetAlias("els_deltaPhiEleClusterTrackAtCalo"));
-		els_deltaPhiEleClusterTrackAtCalo_branch->SetAddress(&els_deltaPhiEleClusterTrackAtCalo_);
+		if (els_deltaPhiEleClusterTrackAtCalo_branch) {els_deltaPhiEleClusterTrackAtCalo_branch->SetAddress(&els_deltaPhiEleClusterTrackAtCalo_);}
 	}
 	els_e1x5_branch = 0;
 	if (tree->GetAlias("els_e1x5") != 0) {
 		els_e1x5_branch = tree->GetBranch(tree->GetAlias("els_e1x5"));
-		els_e1x5_branch->SetAddress(&els_e1x5_);
+		if (els_e1x5_branch) {els_e1x5_branch->SetAddress(&els_e1x5_);}
 	}
 	els_e2x5Max_branch = 0;
 	if (tree->GetAlias("els_e2x5Max") != 0) {
 		els_e2x5Max_branch = tree->GetBranch(tree->GetAlias("els_e2x5Max"));
-		els_e2x5Max_branch->SetAddress(&els_e2x5Max_);
+		if (els_e2x5Max_branch) {els_e2x5Max_branch->SetAddress(&els_e2x5Max_);}
 	}
 	els_e3x3_branch = 0;
 	if (tree->GetAlias("els_e3x3") != 0) {
 		els_e3x3_branch = tree->GetBranch(tree->GetAlias("els_e3x3"));
-		els_e3x3_branch->SetAddress(&els_e3x3_);
+		if (els_e3x3_branch) {els_e3x3_branch->SetAddress(&els_e3x3_);}
 	}
 	els_e5x5_branch = 0;
 	if (tree->GetAlias("els_e5x5") != 0) {
 		els_e5x5_branch = tree->GetBranch(tree->GetAlias("els_e5x5"));
-		els_e5x5_branch->SetAddress(&els_e5x5_);
+		if (els_e5x5_branch) {els_e5x5_branch->SetAddress(&els_e5x5_);}
 	}
 	els_eMax_branch = 0;
 	if (tree->GetAlias("els_eMax") != 0) {
 		els_eMax_branch = tree->GetBranch(tree->GetAlias("els_eMax"));
-		els_eMax_branch->SetAddress(&els_eMax_);
+		if (els_eMax_branch) {els_eMax_branch->SetAddress(&els_eMax_);}
 	}
 	els_eOverPIn_branch = 0;
 	if (tree->GetAlias("els_eOverPIn") != 0) {
 		els_eOverPIn_branch = tree->GetBranch(tree->GetAlias("els_eOverPIn"));
-		els_eOverPIn_branch->SetAddress(&els_eOverPIn_);
+		if (els_eOverPIn_branch) {els_eOverPIn_branch->SetAddress(&els_eOverPIn_);}
 	}
 	els_eOverPOut_branch = 0;
 	if (tree->GetAlias("els_eOverPOut") != 0) {
 		els_eOverPOut_branch = tree->GetBranch(tree->GetAlias("els_eOverPOut"));
-		els_eOverPOut_branch->SetAddress(&els_eOverPOut_);
+		if (els_eOverPOut_branch) {els_eOverPOut_branch->SetAddress(&els_eOverPOut_);}
 	}
 	els_eSC_branch = 0;
 	if (tree->GetAlias("els_eSC") != 0) {
 		els_eSC_branch = tree->GetBranch(tree->GetAlias("els_eSC"));
-		els_eSC_branch->SetAddress(&els_eSC_);
+		if (els_eSC_branch) {els_eSC_branch->SetAddress(&els_eSC_);}
 	}
 	els_eSCPresh_branch = 0;
 	if (tree->GetAlias("els_eSCPresh") != 0) {
 		els_eSCPresh_branch = tree->GetBranch(tree->GetAlias("els_eSCPresh"));
-		els_eSCPresh_branch->SetAddress(&els_eSCPresh_);
+		if (els_eSCPresh_branch) {els_eSCPresh_branch->SetAddress(&els_eSCPresh_);}
 	}
 	els_eSCRaw_branch = 0;
 	if (tree->GetAlias("els_eSCRaw") != 0) {
 		els_eSCRaw_branch = tree->GetBranch(tree->GetAlias("els_eSCRaw"));
-		els_eSCRaw_branch->SetAddress(&els_eSCRaw_);
+		if (els_eSCRaw_branch) {els_eSCRaw_branch->SetAddress(&els_eSCRaw_);}
 	}
 	els_eSeed_branch = 0;
 	if (tree->GetAlias("els_eSeed") != 0) {
 		els_eSeed_branch = tree->GetBranch(tree->GetAlias("els_eSeed"));
-		els_eSeed_branch->SetAddress(&els_eSeed_);
+		if (els_eSeed_branch) {els_eSeed_branch->SetAddress(&els_eSeed_);}
 	}
 	els_eSeedOverPIn_branch = 0;
 	if (tree->GetAlias("els_eSeedOverPIn") != 0) {
 		els_eSeedOverPIn_branch = tree->GetBranch(tree->GetAlias("els_eSeedOverPIn"));
-		els_eSeedOverPIn_branch->SetAddress(&els_eSeedOverPIn_);
+		if (els_eSeedOverPIn_branch) {els_eSeedOverPIn_branch->SetAddress(&els_eSeedOverPIn_);}
 	}
 	els_eSeedOverPOut_branch = 0;
 	if (tree->GetAlias("els_eSeedOverPOut") != 0) {
 		els_eSeedOverPOut_branch = tree->GetBranch(tree->GetAlias("els_eSeedOverPOut"));
-		els_eSeedOverPOut_branch->SetAddress(&els_eSeedOverPOut_);
+		if (els_eSeedOverPOut_branch) {els_eSeedOverPOut_branch->SetAddress(&els_eSeedOverPOut_);}
 	}
 	els_ecalEnergy_branch = 0;
 	if (tree->GetAlias("els_ecalEnergy") != 0) {
 		els_ecalEnergy_branch = tree->GetBranch(tree->GetAlias("els_ecalEnergy"));
-		els_ecalEnergy_branch->SetAddress(&els_ecalEnergy_);
+		if (els_ecalEnergy_branch) {els_ecalEnergy_branch->SetAddress(&els_ecalEnergy_);}
 	}
 	els_ecalEnergyError_branch = 0;
 	if (tree->GetAlias("els_ecalEnergyError") != 0) {
 		els_ecalEnergyError_branch = tree->GetBranch(tree->GetAlias("els_ecalEnergyError"));
-		els_ecalEnergyError_branch->SetAddress(&els_ecalEnergyError_);
+		if (els_ecalEnergyError_branch) {els_ecalEnergyError_branch->SetAddress(&els_ecalEnergyError_);}
 	}
 	els_ecalIso_branch = 0;
 	if (tree->GetAlias("els_ecalIso") != 0) {
 		els_ecalIso_branch = tree->GetBranch(tree->GetAlias("els_ecalIso"));
-		els_ecalIso_branch->SetAddress(&els_ecalIso_);
+		if (els_ecalIso_branch) {els_ecalIso_branch->SetAddress(&els_ecalIso_);}
 	}
 	els_ecalIso04_branch = 0;
 	if (tree->GetAlias("els_ecalIso04") != 0) {
 		els_ecalIso04_branch = tree->GetBranch(tree->GetAlias("els_ecalIso04"));
-		els_ecalIso04_branch->SetAddress(&els_ecalIso04_);
+		if (els_ecalIso04_branch) {els_ecalIso04_branch->SetAddress(&els_ecalIso04_);}
 	}
 	els_etaErr_branch = 0;
 	if (tree->GetAlias("els_etaErr") != 0) {
 		els_etaErr_branch = tree->GetBranch(tree->GetAlias("els_etaErr"));
-		els_etaErr_branch->SetAddress(&els_etaErr_);
+		if (els_etaErr_branch) {els_etaErr_branch->SetAddress(&els_etaErr_);}
 	}
 	els_etaSC_branch = 0;
 	if (tree->GetAlias("els_etaSC") != 0) {
 		els_etaSC_branch = tree->GetBranch(tree->GetAlias("els_etaSC"));
-		els_etaSC_branch->SetAddress(&els_etaSC_);
+		if (els_etaSC_branch) {els_etaSC_branch->SetAddress(&els_etaSC_);}
 	}
 	els_etaSCwidth_branch = 0;
 	if (tree->GetAlias("els_etaSCwidth") != 0) {
 		els_etaSCwidth_branch = tree->GetBranch(tree->GetAlias("els_etaSCwidth"));
-		els_etaSCwidth_branch->SetAddress(&els_etaSCwidth_);
+		if (els_etaSCwidth_branch) {els_etaSCwidth_branch->SetAddress(&els_etaSCwidth_);}
 	}
 	els_fbrem_branch = 0;
 	if (tree->GetAlias("els_fbrem") != 0) {
 		els_fbrem_branch = tree->GetBranch(tree->GetAlias("els_fbrem"));
-		els_fbrem_branch->SetAddress(&els_fbrem_);
+		if (els_fbrem_branch) {els_fbrem_branch->SetAddress(&els_fbrem_);}
 	}
 	els_hOverE_branch = 0;
 	if (tree->GetAlias("els_hOverE") != 0) {
 		els_hOverE_branch = tree->GetBranch(tree->GetAlias("els_hOverE"));
-		els_hOverE_branch->SetAddress(&els_hOverE_);
+		if (els_hOverE_branch) {els_hOverE_branch->SetAddress(&els_hOverE_);}
 	}
 	els_hcalDepth1OverEcal_branch = 0;
 	if (tree->GetAlias("els_hcalDepth1OverEcal") != 0) {
 		els_hcalDepth1OverEcal_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth1OverEcal"));
-		els_hcalDepth1OverEcal_branch->SetAddress(&els_hcalDepth1OverEcal_);
+		if (els_hcalDepth1OverEcal_branch) {els_hcalDepth1OverEcal_branch->SetAddress(&els_hcalDepth1OverEcal_);}
 	}
 	els_hcalDepth1TowerSumEt_branch = 0;
 	if (tree->GetAlias("els_hcalDepth1TowerSumEt") != 0) {
 		els_hcalDepth1TowerSumEt_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth1TowerSumEt"));
-		els_hcalDepth1TowerSumEt_branch->SetAddress(&els_hcalDepth1TowerSumEt_);
+		if (els_hcalDepth1TowerSumEt_branch) {els_hcalDepth1TowerSumEt_branch->SetAddress(&els_hcalDepth1TowerSumEt_);}
 	}
 	els_hcalDepth1TowerSumEt04_branch = 0;
 	if (tree->GetAlias("els_hcalDepth1TowerSumEt04") != 0) {
 		els_hcalDepth1TowerSumEt04_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth1TowerSumEt04"));
-		els_hcalDepth1TowerSumEt04_branch->SetAddress(&els_hcalDepth1TowerSumEt04_);
+		if (els_hcalDepth1TowerSumEt04_branch) {els_hcalDepth1TowerSumEt04_branch->SetAddress(&els_hcalDepth1TowerSumEt04_);}
 	}
 	els_hcalDepth2OverEcal_branch = 0;
 	if (tree->GetAlias("els_hcalDepth2OverEcal") != 0) {
 		els_hcalDepth2OverEcal_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth2OverEcal"));
-		els_hcalDepth2OverEcal_branch->SetAddress(&els_hcalDepth2OverEcal_);
+		if (els_hcalDepth2OverEcal_branch) {els_hcalDepth2OverEcal_branch->SetAddress(&els_hcalDepth2OverEcal_);}
 	}
 	els_hcalDepth2TowerSumEt_branch = 0;
 	if (tree->GetAlias("els_hcalDepth2TowerSumEt") != 0) {
 		els_hcalDepth2TowerSumEt_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth2TowerSumEt"));
-		els_hcalDepth2TowerSumEt_branch->SetAddress(&els_hcalDepth2TowerSumEt_);
+		if (els_hcalDepth2TowerSumEt_branch) {els_hcalDepth2TowerSumEt_branch->SetAddress(&els_hcalDepth2TowerSumEt_);}
 	}
 	els_hcalDepth2TowerSumEt04_branch = 0;
 	if (tree->GetAlias("els_hcalDepth2TowerSumEt04") != 0) {
 		els_hcalDepth2TowerSumEt04_branch = tree->GetBranch(tree->GetAlias("els_hcalDepth2TowerSumEt04"));
-		els_hcalDepth2TowerSumEt04_branch->SetAddress(&els_hcalDepth2TowerSumEt04_);
+		if (els_hcalDepth2TowerSumEt04_branch) {els_hcalDepth2TowerSumEt04_branch->SetAddress(&els_hcalDepth2TowerSumEt04_);}
 	}
 	els_hcalIso_branch = 0;
 	if (tree->GetAlias("els_hcalIso") != 0) {
 		els_hcalIso_branch = tree->GetBranch(tree->GetAlias("els_hcalIso"));
-		els_hcalIso_branch->SetAddress(&els_hcalIso_);
+		if (els_hcalIso_branch) {els_hcalIso_branch->SetAddress(&els_hcalIso_);}
 	}
 	els_hcalIso04_branch = 0;
 	if (tree->GetAlias("els_hcalIso04") != 0) {
 		els_hcalIso04_branch = tree->GetBranch(tree->GetAlias("els_hcalIso04"));
-		els_hcalIso04_branch->SetAddress(&els_hcalIso04_);
+		if (els_hcalIso04_branch) {els_hcalIso04_branch->SetAddress(&els_hcalIso04_);}
 	}
 	els_ip3d_branch = 0;
 	if (tree->GetAlias("els_ip3d") != 0) {
 		els_ip3d_branch = tree->GetBranch(tree->GetAlias("els_ip3d"));
-		els_ip3d_branch->SetAddress(&els_ip3d_);
+		if (els_ip3d_branch) {els_ip3d_branch->SetAddress(&els_ip3d_);}
 	}
 	els_ip3derr_branch = 0;
 	if (tree->GetAlias("els_ip3derr") != 0) {
 		els_ip3derr_branch = tree->GetBranch(tree->GetAlias("els_ip3derr"));
-		els_ip3derr_branch->SetAddress(&els_ip3derr_);
+		if (els_ip3derr_branch) {els_ip3derr_branch->SetAddress(&els_ip3derr_);}
 	}
 	els_iso03_pf_branch = 0;
 	if (tree->GetAlias("els_iso03_pf") != 0) {
 		els_iso03_pf_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf"));
-		els_iso03_pf_branch->SetAddress(&els_iso03_pf_);
+		if (els_iso03_pf_branch) {els_iso03_pf_branch->SetAddress(&els_iso03_pf_);}
 	}
 	els_iso03_pf2012_ch_branch = 0;
 	if (tree->GetAlias("els_iso03_pf2012_ch") != 0) {
 		els_iso03_pf2012_ch_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf2012_ch"));
-		els_iso03_pf2012_ch_branch->SetAddress(&els_iso03_pf2012_ch_);
+		if (els_iso03_pf2012_ch_branch) {els_iso03_pf2012_ch_branch->SetAddress(&els_iso03_pf2012_ch_);}
 	}
 	els_iso03_pf2012_em_branch = 0;
 	if (tree->GetAlias("els_iso03_pf2012_em") != 0) {
 		els_iso03_pf2012_em_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf2012_em"));
-		els_iso03_pf2012_em_branch->SetAddress(&els_iso03_pf2012_em_);
+		if (els_iso03_pf2012_em_branch) {els_iso03_pf2012_em_branch->SetAddress(&els_iso03_pf2012_em_);}
 	}
 	els_iso03_pf2012ext_ch_branch = 0;
 	if (tree->GetAlias("els_iso03_pf2012ext_ch") != 0) {
 		els_iso03_pf2012ext_ch_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf2012ext_ch"));
-		els_iso03_pf2012ext_ch_branch->SetAddress(&els_iso03_pf2012ext_ch_);
+		if (els_iso03_pf2012ext_ch_branch) {els_iso03_pf2012ext_ch_branch->SetAddress(&els_iso03_pf2012ext_ch_);}
 	}
 	els_iso03_pf2012ext_em_branch = 0;
 	if (tree->GetAlias("els_iso03_pf2012ext_em") != 0) {
 		els_iso03_pf2012ext_em_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf2012ext_em"));
-		els_iso03_pf2012ext_em_branch->SetAddress(&els_iso03_pf2012ext_em_);
+		if (els_iso03_pf2012ext_em_branch) {els_iso03_pf2012ext_em_branch->SetAddress(&els_iso03_pf2012ext_em_);}
 	}
 	els_iso03_pf2012ext_nh_branch = 0;
 	if (tree->GetAlias("els_iso03_pf2012ext_nh") != 0) {
 		els_iso03_pf2012ext_nh_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf2012ext_nh"));
-		els_iso03_pf2012ext_nh_branch->SetAddress(&els_iso03_pf2012ext_nh_);
+		if (els_iso03_pf2012ext_nh_branch) {els_iso03_pf2012ext_nh_branch->SetAddress(&els_iso03_pf2012ext_nh_);}
 	}
 	els_iso03_pf2012_nh_branch = 0;
 	if (tree->GetAlias("els_iso03_pf2012_nh") != 0) {
 		els_iso03_pf2012_nh_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf2012_nh"));
-		els_iso03_pf2012_nh_branch->SetAddress(&els_iso03_pf2012_nh_);
+		if (els_iso03_pf2012_nh_branch) {els_iso03_pf2012_nh_branch->SetAddress(&els_iso03_pf2012_nh_);}
 	}
 	els_iso03_pf_ch_branch = 0;
 	if (tree->GetAlias("els_iso03_pf_ch") != 0) {
 		els_iso03_pf_ch_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf_ch"));
-		els_iso03_pf_ch_branch->SetAddress(&els_iso03_pf_ch_);
+		if (els_iso03_pf_ch_branch) {els_iso03_pf_ch_branch->SetAddress(&els_iso03_pf_ch_);}
 	}
 	els_iso03_pf_gamma05_branch = 0;
 	if (tree->GetAlias("els_iso03_pf_gamma05") != 0) {
 		els_iso03_pf_gamma05_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf_gamma05"));
-		els_iso03_pf_gamma05_branch->SetAddress(&els_iso03_pf_gamma05_);
+		if (els_iso03_pf_gamma05_branch) {els_iso03_pf_gamma05_branch->SetAddress(&els_iso03_pf_gamma05_);}
 	}
 	els_iso03_pf_nhad05_branch = 0;
 	if (tree->GetAlias("els_iso03_pf_nhad05") != 0) {
 		els_iso03_pf_nhad05_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf_nhad05"));
-		els_iso03_pf_nhad05_branch->SetAddress(&els_iso03_pf_nhad05_);
+		if (els_iso03_pf_nhad05_branch) {els_iso03_pf_nhad05_branch->SetAddress(&els_iso03_pf_nhad05_);}
 	}
 	els_iso04_pf_branch = 0;
 	if (tree->GetAlias("els_iso04_pf") != 0) {
 		els_iso04_pf_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf"));
-		els_iso04_pf_branch->SetAddress(&els_iso04_pf_);
+		if (els_iso04_pf_branch) {els_iso04_pf_branch->SetAddress(&els_iso04_pf_);}
 	}
 	els_iso04_pf2012_ch_branch = 0;
 	if (tree->GetAlias("els_iso04_pf2012_ch") != 0) {
 		els_iso04_pf2012_ch_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf2012_ch"));
-		els_iso04_pf2012_ch_branch->SetAddress(&els_iso04_pf2012_ch_);
+		if (els_iso04_pf2012_ch_branch) {els_iso04_pf2012_ch_branch->SetAddress(&els_iso04_pf2012_ch_);}
 	}
 	els_iso04_pf2012_em_branch = 0;
 	if (tree->GetAlias("els_iso04_pf2012_em") != 0) {
 		els_iso04_pf2012_em_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf2012_em"));
-		els_iso04_pf2012_em_branch->SetAddress(&els_iso04_pf2012_em_);
+		if (els_iso04_pf2012_em_branch) {els_iso04_pf2012_em_branch->SetAddress(&els_iso04_pf2012_em_);}
 	}
 	els_iso04_pf2012ext_ch_branch = 0;
 	if (tree->GetAlias("els_iso04_pf2012ext_ch") != 0) {
 		els_iso04_pf2012ext_ch_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf2012ext_ch"));
-		els_iso04_pf2012ext_ch_branch->SetAddress(&els_iso04_pf2012ext_ch_);
+		if (els_iso04_pf2012ext_ch_branch) {els_iso04_pf2012ext_ch_branch->SetAddress(&els_iso04_pf2012ext_ch_);}
 	}
 	els_iso04_pf2012ext_em_branch = 0;
 	if (tree->GetAlias("els_iso04_pf2012ext_em") != 0) {
 		els_iso04_pf2012ext_em_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf2012ext_em"));
-		els_iso04_pf2012ext_em_branch->SetAddress(&els_iso04_pf2012ext_em_);
+		if (els_iso04_pf2012ext_em_branch) {els_iso04_pf2012ext_em_branch->SetAddress(&els_iso04_pf2012ext_em_);}
 	}
 	els_iso04_pf2012ext_nh_branch = 0;
 	if (tree->GetAlias("els_iso04_pf2012ext_nh") != 0) {
 		els_iso04_pf2012ext_nh_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf2012ext_nh"));
-		els_iso04_pf2012ext_nh_branch->SetAddress(&els_iso04_pf2012ext_nh_);
+		if (els_iso04_pf2012ext_nh_branch) {els_iso04_pf2012ext_nh_branch->SetAddress(&els_iso04_pf2012ext_nh_);}
 	}
 	els_iso04_pf2012_nh_branch = 0;
 	if (tree->GetAlias("els_iso04_pf2012_nh") != 0) {
 		els_iso04_pf2012_nh_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf2012_nh"));
-		els_iso04_pf2012_nh_branch->SetAddress(&els_iso04_pf2012_nh_);
+		if (els_iso04_pf2012_nh_branch) {els_iso04_pf2012_nh_branch->SetAddress(&els_iso04_pf2012_nh_);}
 	}
 	els_iso04_pf_ch_branch = 0;
 	if (tree->GetAlias("els_iso04_pf_ch") != 0) {
 		els_iso04_pf_ch_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf_ch"));
-		els_iso04_pf_ch_branch->SetAddress(&els_iso04_pf_ch_);
+		if (els_iso04_pf_ch_branch) {els_iso04_pf_ch_branch->SetAddress(&els_iso04_pf_ch_);}
 	}
 	els_iso04_pf_gamma05_branch = 0;
 	if (tree->GetAlias("els_iso04_pf_gamma05") != 0) {
 		els_iso04_pf_gamma05_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf_gamma05"));
-		els_iso04_pf_gamma05_branch->SetAddress(&els_iso04_pf_gamma05_);
+		if (els_iso04_pf_gamma05_branch) {els_iso04_pf_gamma05_branch->SetAddress(&els_iso04_pf_gamma05_);}
 	}
 	els_iso04_pf_nhad05_branch = 0;
 	if (tree->GetAlias("els_iso04_pf_nhad05") != 0) {
 		els_iso04_pf_nhad05_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf_nhad05"));
-		els_iso04_pf_nhad05_branch->SetAddress(&els_iso04_pf_nhad05_);
+		if (els_iso04_pf_nhad05_branch) {els_iso04_pf_nhad05_branch->SetAddress(&els_iso04_pf_nhad05_);}
 	}
 	els_layer1_charge_branch = 0;
 	if (tree->GetAlias("els_layer1_charge") != 0) {
 		els_layer1_charge_branch = tree->GetBranch(tree->GetAlias("els_layer1_charge"));
-		els_layer1_charge_branch->SetAddress(&els_layer1_charge_);
+		if (els_layer1_charge_branch) {els_layer1_charge_branch->SetAddress(&els_layer1_charge_);}
 	}
 	els_lh_branch = 0;
 	if (tree->GetAlias("els_lh") != 0) {
 		els_lh_branch = tree->GetBranch(tree->GetAlias("els_lh"));
-		els_lh_branch->SetAddress(&els_lh_);
+		if (els_lh_branch) {els_lh_branch->SetAddress(&els_lh_);}
 	}
 	els_mva_branch = 0;
 	if (tree->GetAlias("els_mva") != 0) {
 		els_mva_branch = tree->GetBranch(tree->GetAlias("els_mva"));
-		els_mva_branch->SetAddress(&els_mva_);
+		if (els_mva_branch) {els_mva_branch->SetAddress(&els_mva_);}
 	}
 	els_ndof_branch = 0;
 	if (tree->GetAlias("els_ndof") != 0) {
 		els_ndof_branch = tree->GetBranch(tree->GetAlias("els_ndof"));
-		els_ndof_branch->SetAddress(&els_ndof_);
+		if (els_ndof_branch) {els_ndof_branch->SetAddress(&els_ndof_);}
 	}
 	els_pfChargedHadronIso_branch = 0;
 	if (tree->GetAlias("els_pfChargedHadronIso") != 0) {
 		els_pfChargedHadronIso_branch = tree->GetBranch(tree->GetAlias("els_pfChargedHadronIso"));
-		els_pfChargedHadronIso_branch->SetAddress(&els_pfChargedHadronIso_);
+		if (els_pfChargedHadronIso_branch) {els_pfChargedHadronIso_branch->SetAddress(&els_pfChargedHadronIso_);}
 	}
 	els_pfNeutralHadronIso_branch = 0;
 	if (tree->GetAlias("els_pfNeutralHadronIso") != 0) {
 		els_pfNeutralHadronIso_branch = tree->GetBranch(tree->GetAlias("els_pfNeutralHadronIso"));
-		els_pfNeutralHadronIso_branch->SetAddress(&els_pfNeutralHadronIso_);
+		if (els_pfNeutralHadronIso_branch) {els_pfNeutralHadronIso_branch->SetAddress(&els_pfNeutralHadronIso_);}
 	}
 	els_pfPhotonIso_branch = 0;
 	if (tree->GetAlias("els_pfPhotonIso") != 0) {
 		els_pfPhotonIso_branch = tree->GetBranch(tree->GetAlias("els_pfPhotonIso"));
-		els_pfPhotonIso_branch->SetAddress(&els_pfPhotonIso_);
+		if (els_pfPhotonIso_branch) {els_pfPhotonIso_branch->SetAddress(&els_pfPhotonIso_);}
 	}
 	els_phiErr_branch = 0;
 	if (tree->GetAlias("els_phiErr") != 0) {
 		els_phiErr_branch = tree->GetBranch(tree->GetAlias("els_phiErr"));
-		els_phiErr_branch->SetAddress(&els_phiErr_);
+		if (els_phiErr_branch) {els_phiErr_branch->SetAddress(&els_phiErr_);}
 	}
 	els_phiSC_branch = 0;
 	if (tree->GetAlias("els_phiSC") != 0) {
 		els_phiSC_branch = tree->GetBranch(tree->GetAlias("els_phiSC"));
-		els_phiSC_branch->SetAddress(&els_phiSC_);
+		if (els_phiSC_branch) {els_phiSC_branch->SetAddress(&els_phiSC_);}
 	}
 	els_phiSCwidth_branch = 0;
 	if (tree->GetAlias("els_phiSCwidth") != 0) {
 		els_phiSCwidth_branch = tree->GetBranch(tree->GetAlias("els_phiSCwidth"));
-		els_phiSCwidth_branch->SetAddress(&els_phiSCwidth_);
+		if (els_phiSCwidth_branch) {els_phiSCwidth_branch->SetAddress(&els_phiSCwidth_);}
 	}
 	els_ptErr_branch = 0;
 	if (tree->GetAlias("els_ptErr") != 0) {
 		els_ptErr_branch = tree->GetBranch(tree->GetAlias("els_ptErr"));
-		els_ptErr_branch->SetAddress(&els_ptErr_);
+		if (els_ptErr_branch) {els_ptErr_branch->SetAddress(&els_ptErr_);}
 	}
 	els_r9_branch = 0;
 	if (tree->GetAlias("els_r9") != 0) {
 		els_r9_branch = tree->GetBranch(tree->GetAlias("els_r9"));
-		els_r9_branch->SetAddress(&els_r9_);
+		if (els_r9_branch) {els_r9_branch->SetAddress(&els_r9_);}
 	}
 	els_sigmaEtaEta_branch = 0;
 	if (tree->GetAlias("els_sigmaEtaEta") != 0) {
 		els_sigmaEtaEta_branch = tree->GetBranch(tree->GetAlias("els_sigmaEtaEta"));
-		els_sigmaEtaEta_branch->SetAddress(&els_sigmaEtaEta_);
+		if (els_sigmaEtaEta_branch) {els_sigmaEtaEta_branch->SetAddress(&els_sigmaEtaEta_);}
 	}
 	els_sigmaIEtaIEta_branch = 0;
 	if (tree->GetAlias("els_sigmaIEtaIEta") != 0) {
 		els_sigmaIEtaIEta_branch = tree->GetBranch(tree->GetAlias("els_sigmaIEtaIEta"));
-		els_sigmaIEtaIEta_branch->SetAddress(&els_sigmaIEtaIEta_);
+		if (els_sigmaIEtaIEta_branch) {els_sigmaIEtaIEta_branch->SetAddress(&els_sigmaIEtaIEta_);}
 	}
 	els_sigmaIEtaIEtaSC_branch = 0;
 	if (tree->GetAlias("els_sigmaIEtaIEtaSC") != 0) {
 		els_sigmaIEtaIEtaSC_branch = tree->GetBranch(tree->GetAlias("els_sigmaIEtaIEtaSC"));
-		els_sigmaIEtaIEtaSC_branch->SetAddress(&els_sigmaIEtaIEtaSC_);
+		if (els_sigmaIEtaIEtaSC_branch) {els_sigmaIEtaIEtaSC_branch->SetAddress(&els_sigmaIEtaIEtaSC_);}
 	}
 	els_sigmaIEtaIPhi_branch = 0;
 	if (tree->GetAlias("els_sigmaIEtaIPhi") != 0) {
 		els_sigmaIEtaIPhi_branch = tree->GetBranch(tree->GetAlias("els_sigmaIEtaIPhi"));
-		els_sigmaIEtaIPhi_branch->SetAddress(&els_sigmaIEtaIPhi_);
+		if (els_sigmaIEtaIPhi_branch) {els_sigmaIEtaIPhi_branch->SetAddress(&els_sigmaIEtaIPhi_);}
 	}
 	els_sigmaIPhiIPhi_branch = 0;
 	if (tree->GetAlias("els_sigmaIPhiIPhi") != 0) {
 		els_sigmaIPhiIPhi_branch = tree->GetBranch(tree->GetAlias("els_sigmaIPhiIPhi"));
-		els_sigmaIPhiIPhi_branch->SetAddress(&els_sigmaIPhiIPhi_);
+		if (els_sigmaIPhiIPhi_branch) {els_sigmaIPhiIPhi_branch->SetAddress(&els_sigmaIPhiIPhi_);}
 	}
 	els_sigmaIPhiIPhiSC_branch = 0;
 	if (tree->GetAlias("els_sigmaIPhiIPhiSC") != 0) {
 		els_sigmaIPhiIPhiSC_branch = tree->GetBranch(tree->GetAlias("els_sigmaIPhiIPhiSC"));
-		els_sigmaIPhiIPhiSC_branch->SetAddress(&els_sigmaIPhiIPhiSC_);
+		if (els_sigmaIPhiIPhiSC_branch) {els_sigmaIPhiIPhiSC_branch->SetAddress(&els_sigmaIPhiIPhiSC_);}
 	}
 	els_sigmaIphiIphi_branch = 0;
 	if (tree->GetAlias("els_sigmaIphiIphi") != 0) {
 		els_sigmaIphiIphi_branch = tree->GetBranch(tree->GetAlias("els_sigmaIphiIphi"));
-		els_sigmaIphiIphi_branch->SetAddress(&els_sigmaIphiIphi_);
+		if (els_sigmaIphiIphi_branch) {els_sigmaIphiIphi_branch->SetAddress(&els_sigmaIphiIphi_);}
 	}
 	els_sigmaPhiPhi_branch = 0;
 	if (tree->GetAlias("els_sigmaPhiPhi") != 0) {
 		els_sigmaPhiPhi_branch = tree->GetBranch(tree->GetAlias("els_sigmaPhiPhi"));
-		els_sigmaPhiPhi_branch->SetAddress(&els_sigmaPhiPhi_);
+		if (els_sigmaPhiPhi_branch) {els_sigmaPhiPhi_branch->SetAddress(&els_sigmaPhiPhi_);}
 	}
 	els_tkIso_branch = 0;
 	if (tree->GetAlias("els_tkIso") != 0) {
 		els_tkIso_branch = tree->GetBranch(tree->GetAlias("els_tkIso"));
-		els_tkIso_branch->SetAddress(&els_tkIso_);
+		if (els_tkIso_branch) {els_tkIso_branch->SetAddress(&els_tkIso_);}
 	}
 	els_tkIso04_branch = 0;
 	if (tree->GetAlias("els_tkIso04") != 0) {
 		els_tkIso04_branch = tree->GetBranch(tree->GetAlias("els_tkIso04"));
-		els_tkIso04_branch->SetAddress(&els_tkIso04_);
+		if (els_tkIso04_branch) {els_tkIso04_branch->SetAddress(&els_tkIso04_);}
 	}
 	els_trackMomentumError_branch = 0;
 	if (tree->GetAlias("els_trackMomentumError") != 0) {
 		els_trackMomentumError_branch = tree->GetBranch(tree->GetAlias("els_trackMomentumError"));
-		els_trackMomentumError_branch->SetAddress(&els_trackMomentumError_);
+		if (els_trackMomentumError_branch) {els_trackMomentumError_branch->SetAddress(&els_trackMomentumError_);}
 	}
 	els_trkdr_branch = 0;
 	if (tree->GetAlias("els_trkdr") != 0) {
 		els_trkdr_branch = tree->GetBranch(tree->GetAlias("els_trkdr"));
-		els_trkdr_branch->SetAddress(&els_trkdr_);
+		if (els_trkdr_branch) {els_trkdr_branch->SetAddress(&els_trkdr_);}
 	}
 	els_trkshFrac_branch = 0;
 	if (tree->GetAlias("els_trkshFrac") != 0) {
 		els_trkshFrac_branch = tree->GetBranch(tree->GetAlias("els_trkshFrac"));
-		els_trkshFrac_branch->SetAddress(&els_trkshFrac_);
+		if (els_trkshFrac_branch) {els_trkshFrac_branch->SetAddress(&els_trkshFrac_);}
 	}
 	els_z0_branch = 0;
 	if (tree->GetAlias("els_z0") != 0) {
 		els_z0_branch = tree->GetBranch(tree->GetAlias("els_z0"));
-		els_z0_branch->SetAddress(&els_z0_);
+		if (els_z0_branch) {els_z0_branch->SetAddress(&els_z0_);}
 	}
 	els_z0Err_branch = 0;
 	if (tree->GetAlias("els_z0Err") != 0) {
 		els_z0Err_branch = tree->GetBranch(tree->GetAlias("els_z0Err"));
-		els_z0Err_branch->SetAddress(&els_z0Err_);
+		if (els_z0Err_branch) {els_z0Err_branch->SetAddress(&els_z0Err_);}
 	}
 	els_z0corr_branch = 0;
 	if (tree->GetAlias("els_z0corr") != 0) {
 		els_z0corr_branch = tree->GetBranch(tree->GetAlias("els_z0corr"));
-		els_z0corr_branch->SetAddress(&els_z0corr_);
+		if (els_z0corr_branch) {els_z0corr_branch->SetAddress(&els_z0corr_);}
 	}
 	gsftrks_chi2_branch = 0;
 	if (tree->GetAlias("gsftrks_chi2") != 0) {
 		gsftrks_chi2_branch = tree->GetBranch(tree->GetAlias("gsftrks_chi2"));
-		gsftrks_chi2_branch->SetAddress(&gsftrks_chi2_);
+		if (gsftrks_chi2_branch) {gsftrks_chi2_branch->SetAddress(&gsftrks_chi2_);}
 	}
 	gsftrks_d0_branch = 0;
 	if (tree->GetAlias("gsftrks_d0") != 0) {
 		gsftrks_d0_branch = tree->GetBranch(tree->GetAlias("gsftrks_d0"));
-		gsftrks_d0_branch->SetAddress(&gsftrks_d0_);
+		if (gsftrks_d0_branch) {gsftrks_d0_branch->SetAddress(&gsftrks_d0_);}
 	}
 	gsftrks_d0Err_branch = 0;
 	if (tree->GetAlias("gsftrks_d0Err") != 0) {
 		gsftrks_d0Err_branch = tree->GetBranch(tree->GetAlias("gsftrks_d0Err"));
-		gsftrks_d0Err_branch->SetAddress(&gsftrks_d0Err_);
+		if (gsftrks_d0Err_branch) {gsftrks_d0Err_branch->SetAddress(&gsftrks_d0Err_);}
 	}
 	gsftrks_d0corr_branch = 0;
 	if (tree->GetAlias("gsftrks_d0corr") != 0) {
 		gsftrks_d0corr_branch = tree->GetBranch(tree->GetAlias("gsftrks_d0corr"));
-		gsftrks_d0corr_branch->SetAddress(&gsftrks_d0corr_);
+		if (gsftrks_d0corr_branch) {gsftrks_d0corr_branch->SetAddress(&gsftrks_d0corr_);}
 	}
 	gsftrks_d0corrPhi_branch = 0;
 	if (tree->GetAlias("gsftrks_d0corrPhi") != 0) {
 		gsftrks_d0corrPhi_branch = tree->GetBranch(tree->GetAlias("gsftrks_d0corrPhi"));
-		gsftrks_d0corrPhi_branch->SetAddress(&gsftrks_d0corrPhi_);
+		if (gsftrks_d0corrPhi_branch) {gsftrks_d0corrPhi_branch->SetAddress(&gsftrks_d0corrPhi_);}
 	}
 	gsftrks_d0phiCov_branch = 0;
 	if (tree->GetAlias("gsftrks_d0phiCov") != 0) {
 		gsftrks_d0phiCov_branch = tree->GetBranch(tree->GetAlias("gsftrks_d0phiCov"));
-		gsftrks_d0phiCov_branch->SetAddress(&gsftrks_d0phiCov_);
+		if (gsftrks_d0phiCov_branch) {gsftrks_d0phiCov_branch->SetAddress(&gsftrks_d0phiCov_);}
 	}
 	gsftrks_etaErr_branch = 0;
 	if (tree->GetAlias("gsftrks_etaErr") != 0) {
 		gsftrks_etaErr_branch = tree->GetBranch(tree->GetAlias("gsftrks_etaErr"));
-		gsftrks_etaErr_branch->SetAddress(&gsftrks_etaErr_);
+		if (gsftrks_etaErr_branch) {gsftrks_etaErr_branch->SetAddress(&gsftrks_etaErr_);}
 	}
 	gsftrks_layer1_charge_branch = 0;
 	if (tree->GetAlias("gsftrks_layer1_charge") != 0) {
 		gsftrks_layer1_charge_branch = tree->GetBranch(tree->GetAlias("gsftrks_layer1_charge"));
-		gsftrks_layer1_charge_branch->SetAddress(&gsftrks_layer1_charge_);
+		if (gsftrks_layer1_charge_branch) {gsftrks_layer1_charge_branch->SetAddress(&gsftrks_layer1_charge_);}
 	}
 	gsftrks_ndof_branch = 0;
 	if (tree->GetAlias("gsftrks_ndof") != 0) {
 		gsftrks_ndof_branch = tree->GetBranch(tree->GetAlias("gsftrks_ndof"));
-		gsftrks_ndof_branch->SetAddress(&gsftrks_ndof_);
+		if (gsftrks_ndof_branch) {gsftrks_ndof_branch->SetAddress(&gsftrks_ndof_);}
 	}
 	gsftrks_phiErr_branch = 0;
 	if (tree->GetAlias("gsftrks_phiErr") != 0) {
 		gsftrks_phiErr_branch = tree->GetBranch(tree->GetAlias("gsftrks_phiErr"));
-		gsftrks_phiErr_branch->SetAddress(&gsftrks_phiErr_);
+		if (gsftrks_phiErr_branch) {gsftrks_phiErr_branch->SetAddress(&gsftrks_phiErr_);}
 	}
 	gsftrks_ptErr_branch = 0;
 	if (tree->GetAlias("gsftrks_ptErr") != 0) {
 		gsftrks_ptErr_branch = tree->GetBranch(tree->GetAlias("gsftrks_ptErr"));
-		gsftrks_ptErr_branch->SetAddress(&gsftrks_ptErr_);
+		if (gsftrks_ptErr_branch) {gsftrks_ptErr_branch->SetAddress(&gsftrks_ptErr_);}
 	}
 	gsftrks_z0_branch = 0;
 	if (tree->GetAlias("gsftrks_z0") != 0) {
 		gsftrks_z0_branch = tree->GetBranch(tree->GetAlias("gsftrks_z0"));
-		gsftrks_z0_branch->SetAddress(&gsftrks_z0_);
+		if (gsftrks_z0_branch) {gsftrks_z0_branch->SetAddress(&gsftrks_z0_);}
 	}
 	gsftrks_z0Err_branch = 0;
 	if (tree->GetAlias("gsftrks_z0Err") != 0) {
 		gsftrks_z0Err_branch = tree->GetBranch(tree->GetAlias("gsftrks_z0Err"));
-		gsftrks_z0Err_branch->SetAddress(&gsftrks_z0Err_);
+		if (gsftrks_z0Err_branch) {gsftrks_z0Err_branch->SetAddress(&gsftrks_z0Err_);}
 	}
 	gsftrks_z0corr_branch = 0;
 	if (tree->GetAlias("gsftrks_z0corr") != 0) {
 		gsftrks_z0corr_branch = tree->GetBranch(tree->GetAlias("gsftrks_z0corr"));
-		gsftrks_z0corr_branch->SetAddress(&gsftrks_z0corr_);
+		if (gsftrks_z0corr_branch) {gsftrks_z0corr_branch->SetAddress(&gsftrks_z0corr_);}
 	}
 	hyp_Ht_branch = 0;
 	if (tree->GetAlias("hyp_Ht") != 0) {
 		hyp_Ht_branch = tree->GetBranch(tree->GetAlias("hyp_Ht"));
-		hyp_Ht_branch->SetAddress(&hyp_Ht_);
+		if (hyp_Ht_branch) {hyp_Ht_branch->SetAddress(&hyp_Ht_);}
 	}
 	hyp_dPhi_nJet_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("hyp_dPhi_nJet_metMuonJESCorr") != 0) {
 		hyp_dPhi_nJet_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("hyp_dPhi_nJet_metMuonJESCorr"));
-		hyp_dPhi_nJet_metMuonJESCorr_branch->SetAddress(&hyp_dPhi_nJet_metMuonJESCorr_);
+		if (hyp_dPhi_nJet_metMuonJESCorr_branch) {hyp_dPhi_nJet_metMuonJESCorr_branch->SetAddress(&hyp_dPhi_nJet_metMuonJESCorr_);}
 	}
 	hyp_dPhi_nJet_muCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_dPhi_nJet_muCorrMet") != 0) {
 		hyp_dPhi_nJet_muCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_dPhi_nJet_muCorrMet"));
-		hyp_dPhi_nJet_muCorrMet_branch->SetAddress(&hyp_dPhi_nJet_muCorrMet_);
+		if (hyp_dPhi_nJet_muCorrMet_branch) {hyp_dPhi_nJet_muCorrMet_branch->SetAddress(&hyp_dPhi_nJet_muCorrMet_);}
 	}
 	hyp_dPhi_nJet_tcMet_branch = 0;
 	if (tree->GetAlias("hyp_dPhi_nJet_tcMet") != 0) {
 		hyp_dPhi_nJet_tcMet_branch = tree->GetBranch(tree->GetAlias("hyp_dPhi_nJet_tcMet"));
-		hyp_dPhi_nJet_tcMet_branch->SetAddress(&hyp_dPhi_nJet_tcMet_);
+		if (hyp_dPhi_nJet_tcMet_branch) {hyp_dPhi_nJet_tcMet_branch->SetAddress(&hyp_dPhi_nJet_tcMet_);}
 	}
 	hyp_dPhi_nJet_unCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_dPhi_nJet_unCorrMet") != 0) {
 		hyp_dPhi_nJet_unCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_dPhi_nJet_unCorrMet"));
-		hyp_dPhi_nJet_unCorrMet_branch->SetAddress(&hyp_dPhi_nJet_unCorrMet_);
+		if (hyp_dPhi_nJet_unCorrMet_branch) {hyp_dPhi_nJet_unCorrMet_branch->SetAddress(&hyp_dPhi_nJet_unCorrMet_);}
 	}
 	hyp_ll_chi2_branch = 0;
 	if (tree->GetAlias("hyp_ll_chi2") != 0) {
 		hyp_ll_chi2_branch = tree->GetBranch(tree->GetAlias("hyp_ll_chi2"));
-		hyp_ll_chi2_branch->SetAddress(&hyp_ll_chi2_);
+		if (hyp_ll_chi2_branch) {hyp_ll_chi2_branch->SetAddress(&hyp_ll_chi2_);}
 	}
 	hyp_ll_d0_branch = 0;
 	if (tree->GetAlias("hyp_ll_d0") != 0) {
 		hyp_ll_d0_branch = tree->GetBranch(tree->GetAlias("hyp_ll_d0"));
-		hyp_ll_d0_branch->SetAddress(&hyp_ll_d0_);
+		if (hyp_ll_d0_branch) {hyp_ll_d0_branch->SetAddress(&hyp_ll_d0_);}
 	}
 	hyp_ll_d0Err_branch = 0;
 	if (tree->GetAlias("hyp_ll_d0Err") != 0) {
 		hyp_ll_d0Err_branch = tree->GetBranch(tree->GetAlias("hyp_ll_d0Err"));
-		hyp_ll_d0Err_branch->SetAddress(&hyp_ll_d0Err_);
+		if (hyp_ll_d0Err_branch) {hyp_ll_d0Err_branch->SetAddress(&hyp_ll_d0Err_);}
 	}
 	hyp_ll_d0corr_branch = 0;
 	if (tree->GetAlias("hyp_ll_d0corr") != 0) {
 		hyp_ll_d0corr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_d0corr"));
-		hyp_ll_d0corr_branch->SetAddress(&hyp_ll_d0corr_);
+		if (hyp_ll_d0corr_branch) {hyp_ll_d0corr_branch->SetAddress(&hyp_ll_d0corr_);}
 	}
 	hyp_ll_dPhi_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("hyp_ll_dPhi_metMuonJESCorr") != 0) {
 		hyp_ll_dPhi_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_dPhi_metMuonJESCorr"));
-		hyp_ll_dPhi_metMuonJESCorr_branch->SetAddress(&hyp_ll_dPhi_metMuonJESCorr_);
+		if (hyp_ll_dPhi_metMuonJESCorr_branch) {hyp_ll_dPhi_metMuonJESCorr_branch->SetAddress(&hyp_ll_dPhi_metMuonJESCorr_);}
 	}
 	hyp_ll_dPhi_muCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_ll_dPhi_muCorrMet") != 0) {
 		hyp_ll_dPhi_muCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_ll_dPhi_muCorrMet"));
-		hyp_ll_dPhi_muCorrMet_branch->SetAddress(&hyp_ll_dPhi_muCorrMet_);
+		if (hyp_ll_dPhi_muCorrMet_branch) {hyp_ll_dPhi_muCorrMet_branch->SetAddress(&hyp_ll_dPhi_muCorrMet_);}
 	}
 	hyp_ll_dPhi_tcMet_branch = 0;
 	if (tree->GetAlias("hyp_ll_dPhi_tcMet") != 0) {
 		hyp_ll_dPhi_tcMet_branch = tree->GetBranch(tree->GetAlias("hyp_ll_dPhi_tcMet"));
-		hyp_ll_dPhi_tcMet_branch->SetAddress(&hyp_ll_dPhi_tcMet_);
+		if (hyp_ll_dPhi_tcMet_branch) {hyp_ll_dPhi_tcMet_branch->SetAddress(&hyp_ll_dPhi_tcMet_);}
 	}
 	hyp_ll_dPhi_unCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_ll_dPhi_unCorrMet") != 0) {
 		hyp_ll_dPhi_unCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_ll_dPhi_unCorrMet"));
-		hyp_ll_dPhi_unCorrMet_branch->SetAddress(&hyp_ll_dPhi_unCorrMet_);
+		if (hyp_ll_dPhi_unCorrMet_branch) {hyp_ll_dPhi_unCorrMet_branch->SetAddress(&hyp_ll_dPhi_unCorrMet_);}
 	}
 	hyp_ll_etaErr_branch = 0;
 	if (tree->GetAlias("hyp_ll_etaErr") != 0) {
 		hyp_ll_etaErr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_etaErr"));
-		hyp_ll_etaErr_branch->SetAddress(&hyp_ll_etaErr_);
+		if (hyp_ll_etaErr_branch) {hyp_ll_etaErr_branch->SetAddress(&hyp_ll_etaErr_);}
 	}
 	hyp_ll_ndof_branch = 0;
 	if (tree->GetAlias("hyp_ll_ndof") != 0) {
 		hyp_ll_ndof_branch = tree->GetBranch(tree->GetAlias("hyp_ll_ndof"));
-		hyp_ll_ndof_branch->SetAddress(&hyp_ll_ndof_);
+		if (hyp_ll_ndof_branch) {hyp_ll_ndof_branch->SetAddress(&hyp_ll_ndof_);}
 	}
 	hyp_ll_phiErr_branch = 0;
 	if (tree->GetAlias("hyp_ll_phiErr") != 0) {
 		hyp_ll_phiErr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_phiErr"));
-		hyp_ll_phiErr_branch->SetAddress(&hyp_ll_phiErr_);
+		if (hyp_ll_phiErr_branch) {hyp_ll_phiErr_branch->SetAddress(&hyp_ll_phiErr_);}
 	}
 	hyp_ll_ptErr_branch = 0;
 	if (tree->GetAlias("hyp_ll_ptErr") != 0) {
 		hyp_ll_ptErr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_ptErr"));
-		hyp_ll_ptErr_branch->SetAddress(&hyp_ll_ptErr_);
+		if (hyp_ll_ptErr_branch) {hyp_ll_ptErr_branch->SetAddress(&hyp_ll_ptErr_);}
 	}
 	hyp_ll_z0_branch = 0;
 	if (tree->GetAlias("hyp_ll_z0") != 0) {
 		hyp_ll_z0_branch = tree->GetBranch(tree->GetAlias("hyp_ll_z0"));
-		hyp_ll_z0_branch->SetAddress(&hyp_ll_z0_);
+		if (hyp_ll_z0_branch) {hyp_ll_z0_branch->SetAddress(&hyp_ll_z0_);}
 	}
 	hyp_ll_z0Err_branch = 0;
 	if (tree->GetAlias("hyp_ll_z0Err") != 0) {
 		hyp_ll_z0Err_branch = tree->GetBranch(tree->GetAlias("hyp_ll_z0Err"));
-		hyp_ll_z0Err_branch->SetAddress(&hyp_ll_z0Err_);
+		if (hyp_ll_z0Err_branch) {hyp_ll_z0Err_branch->SetAddress(&hyp_ll_z0Err_);}
 	}
 	hyp_ll_z0corr_branch = 0;
 	if (tree->GetAlias("hyp_ll_z0corr") != 0) {
 		hyp_ll_z0corr_branch = tree->GetBranch(tree->GetAlias("hyp_ll_z0corr"));
-		hyp_ll_z0corr_branch->SetAddress(&hyp_ll_z0corr_);
+		if (hyp_ll_z0corr_branch) {hyp_ll_z0corr_branch->SetAddress(&hyp_ll_z0corr_);}
 	}
 	hyp_lt_chi2_branch = 0;
 	if (tree->GetAlias("hyp_lt_chi2") != 0) {
 		hyp_lt_chi2_branch = tree->GetBranch(tree->GetAlias("hyp_lt_chi2"));
-		hyp_lt_chi2_branch->SetAddress(&hyp_lt_chi2_);
+		if (hyp_lt_chi2_branch) {hyp_lt_chi2_branch->SetAddress(&hyp_lt_chi2_);}
 	}
 	hyp_lt_d0_branch = 0;
 	if (tree->GetAlias("hyp_lt_d0") != 0) {
 		hyp_lt_d0_branch = tree->GetBranch(tree->GetAlias("hyp_lt_d0"));
-		hyp_lt_d0_branch->SetAddress(&hyp_lt_d0_);
+		if (hyp_lt_d0_branch) {hyp_lt_d0_branch->SetAddress(&hyp_lt_d0_);}
 	}
 	hyp_lt_d0Err_branch = 0;
 	if (tree->GetAlias("hyp_lt_d0Err") != 0) {
 		hyp_lt_d0Err_branch = tree->GetBranch(tree->GetAlias("hyp_lt_d0Err"));
-		hyp_lt_d0Err_branch->SetAddress(&hyp_lt_d0Err_);
+		if (hyp_lt_d0Err_branch) {hyp_lt_d0Err_branch->SetAddress(&hyp_lt_d0Err_);}
 	}
 	hyp_lt_d0corr_branch = 0;
 	if (tree->GetAlias("hyp_lt_d0corr") != 0) {
 		hyp_lt_d0corr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_d0corr"));
-		hyp_lt_d0corr_branch->SetAddress(&hyp_lt_d0corr_);
+		if (hyp_lt_d0corr_branch) {hyp_lt_d0corr_branch->SetAddress(&hyp_lt_d0corr_);}
 	}
 	hyp_lt_dPhi_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("hyp_lt_dPhi_metMuonJESCorr") != 0) {
 		hyp_lt_dPhi_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_dPhi_metMuonJESCorr"));
-		hyp_lt_dPhi_metMuonJESCorr_branch->SetAddress(&hyp_lt_dPhi_metMuonJESCorr_);
+		if (hyp_lt_dPhi_metMuonJESCorr_branch) {hyp_lt_dPhi_metMuonJESCorr_branch->SetAddress(&hyp_lt_dPhi_metMuonJESCorr_);}
 	}
 	hyp_lt_dPhi_muCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_lt_dPhi_muCorrMet") != 0) {
 		hyp_lt_dPhi_muCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_lt_dPhi_muCorrMet"));
-		hyp_lt_dPhi_muCorrMet_branch->SetAddress(&hyp_lt_dPhi_muCorrMet_);
+		if (hyp_lt_dPhi_muCorrMet_branch) {hyp_lt_dPhi_muCorrMet_branch->SetAddress(&hyp_lt_dPhi_muCorrMet_);}
 	}
 	hyp_lt_dPhi_tcMet_branch = 0;
 	if (tree->GetAlias("hyp_lt_dPhi_tcMet") != 0) {
 		hyp_lt_dPhi_tcMet_branch = tree->GetBranch(tree->GetAlias("hyp_lt_dPhi_tcMet"));
-		hyp_lt_dPhi_tcMet_branch->SetAddress(&hyp_lt_dPhi_tcMet_);
+		if (hyp_lt_dPhi_tcMet_branch) {hyp_lt_dPhi_tcMet_branch->SetAddress(&hyp_lt_dPhi_tcMet_);}
 	}
 	hyp_lt_dPhi_unCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_lt_dPhi_unCorrMet") != 0) {
 		hyp_lt_dPhi_unCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_lt_dPhi_unCorrMet"));
-		hyp_lt_dPhi_unCorrMet_branch->SetAddress(&hyp_lt_dPhi_unCorrMet_);
+		if (hyp_lt_dPhi_unCorrMet_branch) {hyp_lt_dPhi_unCorrMet_branch->SetAddress(&hyp_lt_dPhi_unCorrMet_);}
 	}
 	hyp_lt_etaErr_branch = 0;
 	if (tree->GetAlias("hyp_lt_etaErr") != 0) {
 		hyp_lt_etaErr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_etaErr"));
-		hyp_lt_etaErr_branch->SetAddress(&hyp_lt_etaErr_);
+		if (hyp_lt_etaErr_branch) {hyp_lt_etaErr_branch->SetAddress(&hyp_lt_etaErr_);}
 	}
 	hyp_lt_ndof_branch = 0;
 	if (tree->GetAlias("hyp_lt_ndof") != 0) {
 		hyp_lt_ndof_branch = tree->GetBranch(tree->GetAlias("hyp_lt_ndof"));
-		hyp_lt_ndof_branch->SetAddress(&hyp_lt_ndof_);
+		if (hyp_lt_ndof_branch) {hyp_lt_ndof_branch->SetAddress(&hyp_lt_ndof_);}
 	}
 	hyp_lt_phiErr_branch = 0;
 	if (tree->GetAlias("hyp_lt_phiErr") != 0) {
 		hyp_lt_phiErr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_phiErr"));
-		hyp_lt_phiErr_branch->SetAddress(&hyp_lt_phiErr_);
+		if (hyp_lt_phiErr_branch) {hyp_lt_phiErr_branch->SetAddress(&hyp_lt_phiErr_);}
 	}
 	hyp_lt_ptErr_branch = 0;
 	if (tree->GetAlias("hyp_lt_ptErr") != 0) {
 		hyp_lt_ptErr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_ptErr"));
-		hyp_lt_ptErr_branch->SetAddress(&hyp_lt_ptErr_);
+		if (hyp_lt_ptErr_branch) {hyp_lt_ptErr_branch->SetAddress(&hyp_lt_ptErr_);}
 	}
 	hyp_lt_z0_branch = 0;
 	if (tree->GetAlias("hyp_lt_z0") != 0) {
 		hyp_lt_z0_branch = tree->GetBranch(tree->GetAlias("hyp_lt_z0"));
-		hyp_lt_z0_branch->SetAddress(&hyp_lt_z0_);
+		if (hyp_lt_z0_branch) {hyp_lt_z0_branch->SetAddress(&hyp_lt_z0_);}
 	}
 	hyp_lt_z0Err_branch = 0;
 	if (tree->GetAlias("hyp_lt_z0Err") != 0) {
 		hyp_lt_z0Err_branch = tree->GetBranch(tree->GetAlias("hyp_lt_z0Err"));
-		hyp_lt_z0Err_branch->SetAddress(&hyp_lt_z0Err_);
+		if (hyp_lt_z0Err_branch) {hyp_lt_z0Err_branch->SetAddress(&hyp_lt_z0Err_);}
 	}
 	hyp_lt_z0corr_branch = 0;
 	if (tree->GetAlias("hyp_lt_z0corr") != 0) {
 		hyp_lt_z0corr_branch = tree->GetBranch(tree->GetAlias("hyp_lt_z0corr"));
-		hyp_lt_z0corr_branch->SetAddress(&hyp_lt_z0corr_);
+		if (hyp_lt_z0corr_branch) {hyp_lt_z0corr_branch->SetAddress(&hyp_lt_z0corr_);}
 	}
 	hyp_mt2_metMuonJESCorr_branch = 0;
 	if (tree->GetAlias("hyp_mt2_metMuonJESCorr") != 0) {
 		hyp_mt2_metMuonJESCorr_branch = tree->GetBranch(tree->GetAlias("hyp_mt2_metMuonJESCorr"));
-		hyp_mt2_metMuonJESCorr_branch->SetAddress(&hyp_mt2_metMuonJESCorr_);
+		if (hyp_mt2_metMuonJESCorr_branch) {hyp_mt2_metMuonJESCorr_branch->SetAddress(&hyp_mt2_metMuonJESCorr_);}
 	}
 	hyp_mt2_muCorrMet_branch = 0;
 	if (tree->GetAlias("hyp_mt2_muCorrMet") != 0) {
 		hyp_mt2_muCorrMet_branch = tree->GetBranch(tree->GetAlias("hyp_mt2_muCorrMet"));
-		hyp_mt2_muCorrMet_branch->SetAddress(&hyp_mt2_muCorrMet_);
+		if (hyp_mt2_muCorrMet_branch) {hyp_mt2_muCorrMet_branch->SetAddress(&hyp_mt2_muCorrMet_);}
 	}
 	hyp_mt2_tcMet_branch = 0;
 	if (tree->GetAlias("hyp_mt2_tcMet") != 0) {
 		hyp_mt2_tcMet_branch = tree->GetBranch(tree->GetAlias("hyp_mt2_tcMet"));
-		hyp_mt2_tcMet_branch->SetAddress(&hyp_mt2_tcMet_);
+		if (hyp_mt2_tcMet_branch) {hyp_mt2_tcMet_branch->SetAddress(&hyp_mt2_tcMet_);}
 	}
 	hyp_sumJetPt_branch = 0;
 	if (tree->GetAlias("hyp_sumJetPt") != 0) {
 		hyp_sumJetPt_branch = tree->GetBranch(tree->GetAlias("hyp_sumJetPt"));
-		hyp_sumJetPt_branch->SetAddress(&hyp_sumJetPt_);
+		if (hyp_sumJetPt_branch) {hyp_sumJetPt_branch->SetAddress(&hyp_sumJetPt_);}
 	}
 	hyp_FVFit_chi2ndf_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_chi2ndf") != 0) {
 		hyp_FVFit_chi2ndf_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_chi2ndf"));
-		hyp_FVFit_chi2ndf_branch->SetAddress(&hyp_FVFit_chi2ndf_);
+		if (hyp_FVFit_chi2ndf_branch) {hyp_FVFit_chi2ndf_branch->SetAddress(&hyp_FVFit_chi2ndf_);}
 	}
 	hyp_FVFit_prob_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_prob") != 0) {
 		hyp_FVFit_prob_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_prob"));
-		hyp_FVFit_prob_branch->SetAddress(&hyp_FVFit_prob_);
+		if (hyp_FVFit_prob_branch) {hyp_FVFit_prob_branch->SetAddress(&hyp_FVFit_prob_);}
 	}
 	hyp_FVFit_v4cxx_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4cxx") != 0) {
 		hyp_FVFit_v4cxx_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4cxx"));
-		hyp_FVFit_v4cxx_branch->SetAddress(&hyp_FVFit_v4cxx_);
+		if (hyp_FVFit_v4cxx_branch) {hyp_FVFit_v4cxx_branch->SetAddress(&hyp_FVFit_v4cxx_);}
 	}
 	hyp_FVFit_v4cxy_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4cxy") != 0) {
 		hyp_FVFit_v4cxy_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4cxy"));
-		hyp_FVFit_v4cxy_branch->SetAddress(&hyp_FVFit_v4cxy_);
+		if (hyp_FVFit_v4cxy_branch) {hyp_FVFit_v4cxy_branch->SetAddress(&hyp_FVFit_v4cxy_);}
 	}
 	hyp_FVFit_v4cyy_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4cyy") != 0) {
 		hyp_FVFit_v4cyy_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4cyy"));
-		hyp_FVFit_v4cyy_branch->SetAddress(&hyp_FVFit_v4cyy_);
+		if (hyp_FVFit_v4cyy_branch) {hyp_FVFit_v4cyy_branch->SetAddress(&hyp_FVFit_v4cyy_);}
 	}
 	hyp_FVFit_v4czx_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4czx") != 0) {
 		hyp_FVFit_v4czx_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4czx"));
-		hyp_FVFit_v4czx_branch->SetAddress(&hyp_FVFit_v4czx_);
+		if (hyp_FVFit_v4czx_branch) {hyp_FVFit_v4czx_branch->SetAddress(&hyp_FVFit_v4czx_);}
 	}
 	hyp_FVFit_v4czy_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4czy") != 0) {
 		hyp_FVFit_v4czy_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4czy"));
-		hyp_FVFit_v4czy_branch->SetAddress(&hyp_FVFit_v4czy_);
+		if (hyp_FVFit_v4czy_branch) {hyp_FVFit_v4czy_branch->SetAddress(&hyp_FVFit_v4czy_);}
 	}
 	hyp_FVFit_v4czz_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_v4czz") != 0) {
 		hyp_FVFit_v4czz_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_v4czz"));
-		hyp_FVFit_v4czz_branch->SetAddress(&hyp_FVFit_v4czz_);
+		if (hyp_FVFit_v4czz_branch) {hyp_FVFit_v4czz_branch->SetAddress(&hyp_FVFit_v4czz_);}
 	}
 	jets_approximatefHPD_branch = 0;
 	if (tree->GetAlias("jets_approximatefHPD") != 0) {
 		jets_approximatefHPD_branch = tree->GetBranch(tree->GetAlias("jets_approximatefHPD"));
-		jets_approximatefHPD_branch->SetAddress(&jets_approximatefHPD_);
+		if (jets_approximatefHPD_branch) {jets_approximatefHPD_branch->SetAddress(&jets_approximatefHPD_);}
 	}
 	jets_approximatefRBX_branch = 0;
 	if (tree->GetAlias("jets_approximatefRBX") != 0) {
 		jets_approximatefRBX_branch = tree->GetBranch(tree->GetAlias("jets_approximatefRBX"));
-		jets_approximatefRBX_branch->SetAddress(&jets_approximatefRBX_);
+		if (jets_approximatefRBX_branch) {jets_approximatefRBX_branch->SetAddress(&jets_approximatefRBX_);}
 	}
 	jets_cor_branch = 0;
 	if (tree->GetAlias("jets_cor") != 0) {
 		jets_cor_branch = tree->GetBranch(tree->GetAlias("jets_cor"));
-		jets_cor_branch->SetAddress(&jets_cor_);
+		if (jets_cor_branch) {jets_cor_branch->SetAddress(&jets_cor_);}
 	}
 	jets_corL1FastL2L3_branch = 0;
 	if (tree->GetAlias("jets_corL1FastL2L3") != 0) {
 		jets_corL1FastL2L3_branch = tree->GetBranch(tree->GetAlias("jets_corL1FastL2L3"));
-		jets_corL1FastL2L3_branch->SetAddress(&jets_corL1FastL2L3_);
+		if (jets_corL1FastL2L3_branch) {jets_corL1FastL2L3_branch->SetAddress(&jets_corL1FastL2L3_);}
 	}
 	jets_corL1L2L3_branch = 0;
 	if (tree->GetAlias("jets_corL1L2L3") != 0) {
 		jets_corL1L2L3_branch = tree->GetBranch(tree->GetAlias("jets_corL1L2L3"));
-		jets_corL1L2L3_branch->SetAddress(&jets_corL1L2L3_);
+		if (jets_corL1L2L3_branch) {jets_corL1L2L3_branch->SetAddress(&jets_corL1L2L3_);}
 	}
 	jets_emFrac_branch = 0;
 	if (tree->GetAlias("jets_emFrac") != 0) {
 		jets_emFrac_branch = tree->GetBranch(tree->GetAlias("jets_emFrac"));
-		jets_emFrac_branch->SetAddress(&jets_emFrac_);
+		if (jets_emFrac_branch) {jets_emFrac_branch->SetAddress(&jets_emFrac_);}
 	}
 	jets_fHPD_branch = 0;
 	if (tree->GetAlias("jets_fHPD") != 0) {
 		jets_fHPD_branch = tree->GetBranch(tree->GetAlias("jets_fHPD"));
-		jets_fHPD_branch->SetAddress(&jets_fHPD_);
+		if (jets_fHPD_branch) {jets_fHPD_branch->SetAddress(&jets_fHPD_);}
 	}
 	jets_fRBX_branch = 0;
 	if (tree->GetAlias("jets_fRBX") != 0) {
 		jets_fRBX_branch = tree->GetBranch(tree->GetAlias("jets_fRBX"));
-		jets_fRBX_branch->SetAddress(&jets_fRBX_);
+		if (jets_fRBX_branch) {jets_fRBX_branch->SetAddress(&jets_fRBX_);}
 	}
 	jets_fSubDetector1_branch = 0;
 	if (tree->GetAlias("jets_fSubDetector1") != 0) {
 		jets_fSubDetector1_branch = tree->GetBranch(tree->GetAlias("jets_fSubDetector1"));
-		jets_fSubDetector1_branch->SetAddress(&jets_fSubDetector1_);
+		if (jets_fSubDetector1_branch) {jets_fSubDetector1_branch->SetAddress(&jets_fSubDetector1_);}
 	}
 	jets_fSubDetector2_branch = 0;
 	if (tree->GetAlias("jets_fSubDetector2") != 0) {
 		jets_fSubDetector2_branch = tree->GetBranch(tree->GetAlias("jets_fSubDetector2"));
-		jets_fSubDetector2_branch->SetAddress(&jets_fSubDetector2_);
+		if (jets_fSubDetector2_branch) {jets_fSubDetector2_branch->SetAddress(&jets_fSubDetector2_);}
 	}
 	jets_fSubDetector3_branch = 0;
 	if (tree->GetAlias("jets_fSubDetector3") != 0) {
 		jets_fSubDetector3_branch = tree->GetBranch(tree->GetAlias("jets_fSubDetector3"));
-		jets_fSubDetector3_branch->SetAddress(&jets_fSubDetector3_);
+		if (jets_fSubDetector3_branch) {jets_fSubDetector3_branch->SetAddress(&jets_fSubDetector3_);}
 	}
 	jets_fSubDetector4_branch = 0;
 	if (tree->GetAlias("jets_fSubDetector4") != 0) {
 		jets_fSubDetector4_branch = tree->GetBranch(tree->GetAlias("jets_fSubDetector4"));
-		jets_fSubDetector4_branch->SetAddress(&jets_fSubDetector4_);
+		if (jets_fSubDetector4_branch) {jets_fSubDetector4_branch->SetAddress(&jets_fSubDetector4_);}
 	}
 	jets_hitsInN90_branch = 0;
 	if (tree->GetAlias("jets_hitsInN90") != 0) {
 		jets_hitsInN90_branch = tree->GetBranch(tree->GetAlias("jets_hitsInN90"));
-		jets_hitsInN90_branch->SetAddress(&jets_hitsInN90_);
+		if (jets_hitsInN90_branch) {jets_hitsInN90_branch->SetAddress(&jets_hitsInN90_);}
 	}
 	jets_n90Hits_branch = 0;
 	if (tree->GetAlias("jets_n90Hits") != 0) {
 		jets_n90Hits_branch = tree->GetBranch(tree->GetAlias("jets_n90Hits"));
-		jets_n90Hits_branch->SetAddress(&jets_n90Hits_);
+		if (jets_n90Hits_branch) {jets_n90Hits_branch->SetAddress(&jets_n90Hits_);}
 	}
 	jets_nECALTowers_branch = 0;
 	if (tree->GetAlias("jets_nECALTowers") != 0) {
 		jets_nECALTowers_branch = tree->GetBranch(tree->GetAlias("jets_nECALTowers"));
-		jets_nECALTowers_branch->SetAddress(&jets_nECALTowers_);
+		if (jets_nECALTowers_branch) {jets_nECALTowers_branch->SetAddress(&jets_nECALTowers_);}
 	}
 	jets_nHCALTowers_branch = 0;
 	if (tree->GetAlias("jets_nHCALTowers") != 0) {
 		jets_nHCALTowers_branch = tree->GetBranch(tree->GetAlias("jets_nHCALTowers"));
-		jets_nHCALTowers_branch->SetAddress(&jets_nHCALTowers_);
+		if (jets_nHCALTowers_branch) {jets_nHCALTowers_branch->SetAddress(&jets_nHCALTowers_);}
 	}
 	jets_restrictedEMF_branch = 0;
 	if (tree->GetAlias("jets_restrictedEMF") != 0) {
 		jets_restrictedEMF_branch = tree->GetBranch(tree->GetAlias("jets_restrictedEMF"));
-		jets_restrictedEMF_branch->SetAddress(&jets_restrictedEMF_);
+		if (jets_restrictedEMF_branch) {jets_restrictedEMF_branch->SetAddress(&jets_restrictedEMF_);}
 	}
 	mus_met_deltax_branch = 0;
 	if (tree->GetAlias("mus_met_deltax") != 0) {
 		mus_met_deltax_branch = tree->GetBranch(tree->GetAlias("mus_met_deltax"));
-		mus_met_deltax_branch->SetAddress(&mus_met_deltax_);
+		if (mus_met_deltax_branch) {mus_met_deltax_branch->SetAddress(&mus_met_deltax_);}
 	}
 	mus_met_deltay_branch = 0;
 	if (tree->GetAlias("mus_met_deltay") != 0) {
 		mus_met_deltay_branch = tree->GetBranch(tree->GetAlias("mus_met_deltay"));
-		mus_met_deltay_branch->SetAddress(&mus_met_deltay_);
+		if (mus_met_deltay_branch) {mus_met_deltay_branch->SetAddress(&mus_met_deltay_);}
 	}
 	mus_eledr_branch = 0;
 	if (tree->GetAlias("mus_eledr") != 0) {
 		mus_eledr_branch = tree->GetBranch(tree->GetAlias("mus_eledr"));
-		mus_eledr_branch->SetAddress(&mus_eledr_);
+		if (mus_eledr_branch) {mus_eledr_branch->SetAddress(&mus_eledr_);}
 	}
 	mus_jetdr_branch = 0;
 	if (tree->GetAlias("mus_jetdr") != 0) {
 		mus_jetdr_branch = tree->GetBranch(tree->GetAlias("mus_jetdr"));
-		mus_jetdr_branch->SetAddress(&mus_jetdr_);
+		if (mus_jetdr_branch) {mus_jetdr_branch->SetAddress(&mus_jetdr_);}
 	}
 	mus_isoR03_chpf_radial_branch = 0;
 	if (tree->GetAlias("mus_isoR03_chpf_radial") != 0) {
 		mus_isoR03_chpf_radial_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_chpf_radial"));
-		mus_isoR03_chpf_radial_branch->SetAddress(&mus_isoR03_chpf_radial_);
+		if (mus_isoR03_chpf_radial_branch) {mus_isoR03_chpf_radial_branch->SetAddress(&mus_isoR03_chpf_radial_);}
 	}
 	mus_isoR03_chpf_radialTight_branch = 0;
 	if (tree->GetAlias("mus_isoR03_chpf_radialTight") != 0) {
 		mus_isoR03_chpf_radialTight_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_chpf_radialTight"));
-		mus_isoR03_chpf_radialTight_branch->SetAddress(&mus_isoR03_chpf_radialTight_);
+		if (mus_isoR03_chpf_radialTight_branch) {mus_isoR03_chpf_radialTight_branch->SetAddress(&mus_isoR03_chpf_radialTight_);}
 	}
 	mus_isoR03_empf_radial_branch = 0;
 	if (tree->GetAlias("mus_isoR03_empf_radial") != 0) {
 		mus_isoR03_empf_radial_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_empf_radial"));
-		mus_isoR03_empf_radial_branch->SetAddress(&mus_isoR03_empf_radial_);
+		if (mus_isoR03_empf_radial_branch) {mus_isoR03_empf_radial_branch->SetAddress(&mus_isoR03_empf_radial_);}
 	}
 	mus_isoR03_empf_radialTight_branch = 0;
 	if (tree->GetAlias("mus_isoR03_empf_radialTight") != 0) {
 		mus_isoR03_empf_radialTight_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_empf_radialTight"));
-		mus_isoR03_empf_radialTight_branch->SetAddress(&mus_isoR03_empf_radialTight_);
+		if (mus_isoR03_empf_radialTight_branch) {mus_isoR03_empf_radialTight_branch->SetAddress(&mus_isoR03_empf_radialTight_);}
 	}
 	mus_isoR03_nhpf_radial_branch = 0;
 	if (tree->GetAlias("mus_isoR03_nhpf_radial") != 0) {
 		mus_isoR03_nhpf_radial_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_nhpf_radial"));
-		mus_isoR03_nhpf_radial_branch->SetAddress(&mus_isoR03_nhpf_radial_);
+		if (mus_isoR03_nhpf_radial_branch) {mus_isoR03_nhpf_radial_branch->SetAddress(&mus_isoR03_nhpf_radial_);}
 	}
 	mus_isoR03_nhpf_radialTight_branch = 0;
 	if (tree->GetAlias("mus_isoR03_nhpf_radialTight") != 0) {
 		mus_isoR03_nhpf_radialTight_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_nhpf_radialTight"));
-		mus_isoR03_nhpf_radialTight_branch->SetAddress(&mus_isoR03_nhpf_radialTight_);
+		if (mus_isoR03_nhpf_radialTight_branch) {mus_isoR03_nhpf_radialTight_branch->SetAddress(&mus_isoR03_nhpf_radialTight_);}
 	}
 	mus_isoR03_pf_radial_branch = 0;
 	if (tree->GetAlias("mus_isoR03_pf_radial") != 0) {
 		mus_isoR03_pf_radial_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_pf_radial"));
-		mus_isoR03_pf_radial_branch->SetAddress(&mus_isoR03_pf_radial_);
+		if (mus_isoR03_pf_radial_branch) {mus_isoR03_pf_radial_branch->SetAddress(&mus_isoR03_pf_radial_);}
 	}
 	mus_isoR03_pf_radialTight_branch = 0;
 	if (tree->GetAlias("mus_isoR03_pf_radialTight") != 0) {
 		mus_isoR03_pf_radialTight_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_pf_radialTight"));
-		mus_isoR03_pf_radialTight_branch->SetAddress(&mus_isoR03_pf_radialTight_);
+		if (mus_isoR03_pf_radialTight_branch) {mus_isoR03_pf_radialTight_branch->SetAddress(&mus_isoR03_pf_radialTight_);}
 	}
 	mus_backToBackCompat_branch = 0;
 	if (tree->GetAlias("mus_backToBackCompat") != 0) {
 		mus_backToBackCompat_branch = tree->GetBranch(tree->GetAlias("mus_backToBackCompat"));
-		mus_backToBackCompat_branch->SetAddress(&mus_backToBackCompat_);
+		if (mus_backToBackCompat_branch) {mus_backToBackCompat_branch->SetAddress(&mus_backToBackCompat_);}
 	}
 	mus_caloCompatibility_branch = 0;
 	if (tree->GetAlias("mus_caloCompatibility") != 0) {
 		mus_caloCompatibility_branch = tree->GetBranch(tree->GetAlias("mus_caloCompatibility"));
-		mus_caloCompatibility_branch->SetAddress(&mus_caloCompatibility_);
+		if (mus_caloCompatibility_branch) {mus_caloCompatibility_branch->SetAddress(&mus_caloCompatibility_);}
 	}
 	mus_chi2_branch = 0;
 	if (tree->GetAlias("mus_chi2") != 0) {
 		mus_chi2_branch = tree->GetBranch(tree->GetAlias("mus_chi2"));
-		mus_chi2_branch->SetAddress(&mus_chi2_);
+		if (mus_chi2_branch) {mus_chi2_branch->SetAddress(&mus_chi2_);}
 	}
 	mus_chi2LocalMomentum_branch = 0;
 	if (tree->GetAlias("mus_chi2LocalMomentum") != 0) {
 		mus_chi2LocalMomentum_branch = tree->GetBranch(tree->GetAlias("mus_chi2LocalMomentum"));
-		mus_chi2LocalMomentum_branch->SetAddress(&mus_chi2LocalMomentum_);
+		if (mus_chi2LocalMomentum_branch) {mus_chi2LocalMomentum_branch->SetAddress(&mus_chi2LocalMomentum_);}
 	}
 	mus_chi2LocalPosition_branch = 0;
 	if (tree->GetAlias("mus_chi2LocalPosition") != 0) {
 		mus_chi2LocalPosition_branch = tree->GetBranch(tree->GetAlias("mus_chi2LocalPosition"));
-		mus_chi2LocalPosition_branch->SetAddress(&mus_chi2LocalPosition_);
+		if (mus_chi2LocalPosition_branch) {mus_chi2LocalPosition_branch->SetAddress(&mus_chi2LocalPosition_);}
 	}
 	mus_cosmicCompat_branch = 0;
 	if (tree->GetAlias("mus_cosmicCompat") != 0) {
 		mus_cosmicCompat_branch = tree->GetBranch(tree->GetAlias("mus_cosmicCompat"));
-		mus_cosmicCompat_branch->SetAddress(&mus_cosmicCompat_);
+		if (mus_cosmicCompat_branch) {mus_cosmicCompat_branch->SetAddress(&mus_cosmicCompat_);}
 	}
 	mus_d0_branch = 0;
 	if (tree->GetAlias("mus_d0") != 0) {
 		mus_d0_branch = tree->GetBranch(tree->GetAlias("mus_d0"));
-		mus_d0_branch->SetAddress(&mus_d0_);
+		if (mus_d0_branch) {mus_d0_branch->SetAddress(&mus_d0_);}
 	}
 	mus_d0Err_branch = 0;
 	if (tree->GetAlias("mus_d0Err") != 0) {
 		mus_d0Err_branch = tree->GetBranch(tree->GetAlias("mus_d0Err"));
-		mus_d0Err_branch->SetAddress(&mus_d0Err_);
+		if (mus_d0Err_branch) {mus_d0Err_branch->SetAddress(&mus_d0Err_);}
 	}
 	mus_d0corr_branch = 0;
 	if (tree->GetAlias("mus_d0corr") != 0) {
 		mus_d0corr_branch = tree->GetBranch(tree->GetAlias("mus_d0corr"));
-		mus_d0corr_branch->SetAddress(&mus_d0corr_);
+		if (mus_d0corr_branch) {mus_d0corr_branch->SetAddress(&mus_d0corr_);}
 	}
 	mus_e_em_branch = 0;
 	if (tree->GetAlias("mus_e_em") != 0) {
 		mus_e_em_branch = tree->GetBranch(tree->GetAlias("mus_e_em"));
-		mus_e_em_branch->SetAddress(&mus_e_em_);
+		if (mus_e_em_branch) {mus_e_em_branch->SetAddress(&mus_e_em_);}
 	}
 	mus_e_emS9_branch = 0;
 	if (tree->GetAlias("mus_e_emS9") != 0) {
 		mus_e_emS9_branch = tree->GetBranch(tree->GetAlias("mus_e_emS9"));
-		mus_e_emS9_branch->SetAddress(&mus_e_emS9_);
+		if (mus_e_emS9_branch) {mus_e_emS9_branch->SetAddress(&mus_e_emS9_);}
 	}
 	mus_e_had_branch = 0;
 	if (tree->GetAlias("mus_e_had") != 0) {
 		mus_e_had_branch = tree->GetBranch(tree->GetAlias("mus_e_had"));
-		mus_e_had_branch->SetAddress(&mus_e_had_);
+		if (mus_e_had_branch) {mus_e_had_branch->SetAddress(&mus_e_had_);}
 	}
 	mus_e_hadS9_branch = 0;
 	if (tree->GetAlias("mus_e_hadS9") != 0) {
 		mus_e_hadS9_branch = tree->GetBranch(tree->GetAlias("mus_e_hadS9"));
-		mus_e_hadS9_branch->SetAddress(&mus_e_hadS9_);
+		if (mus_e_hadS9_branch) {mus_e_hadS9_branch->SetAddress(&mus_e_hadS9_);}
 	}
 	mus_e_ho_branch = 0;
 	if (tree->GetAlias("mus_e_ho") != 0) {
 		mus_e_ho_branch = tree->GetBranch(tree->GetAlias("mus_e_ho"));
-		mus_e_ho_branch->SetAddress(&mus_e_ho_);
+		if (mus_e_ho_branch) {mus_e_ho_branch->SetAddress(&mus_e_ho_);}
 	}
 	mus_e_hoS9_branch = 0;
 	if (tree->GetAlias("mus_e_hoS9") != 0) {
 		mus_e_hoS9_branch = tree->GetBranch(tree->GetAlias("mus_e_hoS9"));
-		mus_e_hoS9_branch->SetAddress(&mus_e_hoS9_);
+		if (mus_e_hoS9_branch) {mus_e_hoS9_branch->SetAddress(&mus_e_hoS9_);}
 	}
 	mus_etaErr_branch = 0;
 	if (tree->GetAlias("mus_etaErr") != 0) {
 		mus_etaErr_branch = tree->GetBranch(tree->GetAlias("mus_etaErr"));
-		mus_etaErr_branch->SetAddress(&mus_etaErr_);
+		if (mus_etaErr_branch) {mus_etaErr_branch->SetAddress(&mus_etaErr_);}
 	}
 	mus_gfit_chi2_branch = 0;
 	if (tree->GetAlias("mus_gfit_chi2") != 0) {
 		mus_gfit_chi2_branch = tree->GetBranch(tree->GetAlias("mus_gfit_chi2"));
-		mus_gfit_chi2_branch->SetAddress(&mus_gfit_chi2_);
+		if (mus_gfit_chi2_branch) {mus_gfit_chi2_branch->SetAddress(&mus_gfit_chi2_);}
 	}
 	mus_gfit_d0_branch = 0;
 	if (tree->GetAlias("mus_gfit_d0") != 0) {
 		mus_gfit_d0_branch = tree->GetBranch(tree->GetAlias("mus_gfit_d0"));
-		mus_gfit_d0_branch->SetAddress(&mus_gfit_d0_);
+		if (mus_gfit_d0_branch) {mus_gfit_d0_branch->SetAddress(&mus_gfit_d0_);}
 	}
 	mus_gfit_d0Err_branch = 0;
 	if (tree->GetAlias("mus_gfit_d0Err") != 0) {
 		mus_gfit_d0Err_branch = tree->GetBranch(tree->GetAlias("mus_gfit_d0Err"));
-		mus_gfit_d0Err_branch->SetAddress(&mus_gfit_d0Err_);
+		if (mus_gfit_d0Err_branch) {mus_gfit_d0Err_branch->SetAddress(&mus_gfit_d0Err_);}
 	}
 	mus_gfit_d0corr_branch = 0;
 	if (tree->GetAlias("mus_gfit_d0corr") != 0) {
 		mus_gfit_d0corr_branch = tree->GetBranch(tree->GetAlias("mus_gfit_d0corr"));
-		mus_gfit_d0corr_branch->SetAddress(&mus_gfit_d0corr_);
+		if (mus_gfit_d0corr_branch) {mus_gfit_d0corr_branch->SetAddress(&mus_gfit_d0corr_);}
 	}
 	mus_gfit_ndof_branch = 0;
 	if (tree->GetAlias("mus_gfit_ndof") != 0) {
 		mus_gfit_ndof_branch = tree->GetBranch(tree->GetAlias("mus_gfit_ndof"));
-		mus_gfit_ndof_branch->SetAddress(&mus_gfit_ndof_);
+		if (mus_gfit_ndof_branch) {mus_gfit_ndof_branch->SetAddress(&mus_gfit_ndof_);}
 	}
 	mus_gfit_qoverp_branch = 0;
 	if (tree->GetAlias("mus_gfit_qoverp") != 0) {
 		mus_gfit_qoverp_branch = tree->GetBranch(tree->GetAlias("mus_gfit_qoverp"));
-		mus_gfit_qoverp_branch->SetAddress(&mus_gfit_qoverp_);
+		if (mus_gfit_qoverp_branch) {mus_gfit_qoverp_branch->SetAddress(&mus_gfit_qoverp_);}
 	}
 	mus_gfit_qoverpError_branch = 0;
 	if (tree->GetAlias("mus_gfit_qoverpError") != 0) {
 		mus_gfit_qoverpError_branch = tree->GetBranch(tree->GetAlias("mus_gfit_qoverpError"));
-		mus_gfit_qoverpError_branch->SetAddress(&mus_gfit_qoverpError_);
+		if (mus_gfit_qoverpError_branch) {mus_gfit_qoverpError_branch->SetAddress(&mus_gfit_qoverpError_);}
 	}
 	mus_gfit_z0_branch = 0;
 	if (tree->GetAlias("mus_gfit_z0") != 0) {
 		mus_gfit_z0_branch = tree->GetBranch(tree->GetAlias("mus_gfit_z0"));
-		mus_gfit_z0_branch->SetAddress(&mus_gfit_z0_);
+		if (mus_gfit_z0_branch) {mus_gfit_z0_branch->SetAddress(&mus_gfit_z0_);}
 	}
 	mus_gfit_z0Err_branch = 0;
 	if (tree->GetAlias("mus_gfit_z0Err") != 0) {
 		mus_gfit_z0Err_branch = tree->GetBranch(tree->GetAlias("mus_gfit_z0Err"));
-		mus_gfit_z0Err_branch->SetAddress(&mus_gfit_z0Err_);
+		if (mus_gfit_z0Err_branch) {mus_gfit_z0Err_branch->SetAddress(&mus_gfit_z0Err_);}
 	}
 	mus_gfit_z0corr_branch = 0;
 	if (tree->GetAlias("mus_gfit_z0corr") != 0) {
 		mus_gfit_z0corr_branch = tree->GetBranch(tree->GetAlias("mus_gfit_z0corr"));
-		mus_gfit_z0corr_branch->SetAddress(&mus_gfit_z0corr_);
+		if (mus_gfit_z0corr_branch) {mus_gfit_z0corr_branch->SetAddress(&mus_gfit_z0corr_);}
 	}
 	mus_glbKink_branch = 0;
 	if (tree->GetAlias("mus_glbKink") != 0) {
 		mus_glbKink_branch = tree->GetBranch(tree->GetAlias("mus_glbKink"));
-		mus_glbKink_branch->SetAddress(&mus_glbKink_);
+		if (mus_glbKink_branch) {mus_glbKink_branch->SetAddress(&mus_glbKink_);}
 	}
 	mus_glbTrackProbability_branch = 0;
 	if (tree->GetAlias("mus_glbTrackProbability") != 0) {
 		mus_glbTrackProbability_branch = tree->GetBranch(tree->GetAlias("mus_glbTrackProbability"));
-		mus_glbTrackProbability_branch->SetAddress(&mus_glbTrackProbability_);
+		if (mus_glbTrackProbability_branch) {mus_glbTrackProbability_branch->SetAddress(&mus_glbTrackProbability_);}
 	}
 	mus_globalDeltaEtaPhi_branch = 0;
 	if (tree->GetAlias("mus_globalDeltaEtaPhi") != 0) {
 		mus_globalDeltaEtaPhi_branch = tree->GetBranch(tree->GetAlias("mus_globalDeltaEtaPhi"));
-		mus_globalDeltaEtaPhi_branch->SetAddress(&mus_globalDeltaEtaPhi_);
+		if (mus_globalDeltaEtaPhi_branch) {mus_globalDeltaEtaPhi_branch->SetAddress(&mus_globalDeltaEtaPhi_);}
 	}
 	mus_ip3d_branch = 0;
 	if (tree->GetAlias("mus_ip3d") != 0) {
 		mus_ip3d_branch = tree->GetBranch(tree->GetAlias("mus_ip3d"));
-		mus_ip3d_branch->SetAddress(&mus_ip3d_);
+		if (mus_ip3d_branch) {mus_ip3d_branch->SetAddress(&mus_ip3d_);}
 	}
 	mus_ip3derr_branch = 0;
 	if (tree->GetAlias("mus_ip3derr") != 0) {
 		mus_ip3derr_branch = tree->GetBranch(tree->GetAlias("mus_ip3derr"));
-		mus_ip3derr_branch->SetAddress(&mus_ip3derr_);
+		if (mus_ip3derr_branch) {mus_ip3derr_branch->SetAddress(&mus_ip3derr_);}
 	}
 	mus_iso03_emEt_branch = 0;
 	if (tree->GetAlias("mus_iso03_emEt") != 0) {
 		mus_iso03_emEt_branch = tree->GetBranch(tree->GetAlias("mus_iso03_emEt"));
-		mus_iso03_emEt_branch->SetAddress(&mus_iso03_emEt_);
+		if (mus_iso03_emEt_branch) {mus_iso03_emEt_branch->SetAddress(&mus_iso03_emEt_);}
 	}
 	mus_iso03_hadEt_branch = 0;
 	if (tree->GetAlias("mus_iso03_hadEt") != 0) {
 		mus_iso03_hadEt_branch = tree->GetBranch(tree->GetAlias("mus_iso03_hadEt"));
-		mus_iso03_hadEt_branch->SetAddress(&mus_iso03_hadEt_);
+		if (mus_iso03_hadEt_branch) {mus_iso03_hadEt_branch->SetAddress(&mus_iso03_hadEt_);}
 	}
 	mus_iso03_hoEt_branch = 0;
 	if (tree->GetAlias("mus_iso03_hoEt") != 0) {
 		mus_iso03_hoEt_branch = tree->GetBranch(tree->GetAlias("mus_iso03_hoEt"));
-		mus_iso03_hoEt_branch->SetAddress(&mus_iso03_hoEt_);
+		if (mus_iso03_hoEt_branch) {mus_iso03_hoEt_branch->SetAddress(&mus_iso03_hoEt_);}
 	}
 	mus_iso03_pf_branch = 0;
 	if (tree->GetAlias("mus_iso03_pf") != 0) {
 		mus_iso03_pf_branch = tree->GetBranch(tree->GetAlias("mus_iso03_pf"));
-		mus_iso03_pf_branch->SetAddress(&mus_iso03_pf_);
+		if (mus_iso03_pf_branch) {mus_iso03_pf_branch->SetAddress(&mus_iso03_pf_);}
 	}
 	mus_iso03_sumPt_branch = 0;
 	if (tree->GetAlias("mus_iso03_sumPt") != 0) {
 		mus_iso03_sumPt_branch = tree->GetBranch(tree->GetAlias("mus_iso03_sumPt"));
-		mus_iso03_sumPt_branch->SetAddress(&mus_iso03_sumPt_);
+		if (mus_iso03_sumPt_branch) {mus_iso03_sumPt_branch->SetAddress(&mus_iso03_sumPt_);}
 	}
 	mus_iso04_pf_branch = 0;
 	if (tree->GetAlias("mus_iso04_pf") != 0) {
 		mus_iso04_pf_branch = tree->GetBranch(tree->GetAlias("mus_iso04_pf"));
-		mus_iso04_pf_branch->SetAddress(&mus_iso04_pf_);
+		if (mus_iso04_pf_branch) {mus_iso04_pf_branch->SetAddress(&mus_iso04_pf_);}
 	}
 	mus_iso05_emEt_branch = 0;
 	if (tree->GetAlias("mus_iso05_emEt") != 0) {
 		mus_iso05_emEt_branch = tree->GetBranch(tree->GetAlias("mus_iso05_emEt"));
-		mus_iso05_emEt_branch->SetAddress(&mus_iso05_emEt_);
+		if (mus_iso05_emEt_branch) {mus_iso05_emEt_branch->SetAddress(&mus_iso05_emEt_);}
 	}
 	mus_iso05_hadEt_branch = 0;
 	if (tree->GetAlias("mus_iso05_hadEt") != 0) {
 		mus_iso05_hadEt_branch = tree->GetBranch(tree->GetAlias("mus_iso05_hadEt"));
-		mus_iso05_hadEt_branch->SetAddress(&mus_iso05_hadEt_);
+		if (mus_iso05_hadEt_branch) {mus_iso05_hadEt_branch->SetAddress(&mus_iso05_hadEt_);}
 	}
 	mus_iso05_hoEt_branch = 0;
 	if (tree->GetAlias("mus_iso05_hoEt") != 0) {
 		mus_iso05_hoEt_branch = tree->GetBranch(tree->GetAlias("mus_iso05_hoEt"));
-		mus_iso05_hoEt_branch->SetAddress(&mus_iso05_hoEt_);
+		if (mus_iso05_hoEt_branch) {mus_iso05_hoEt_branch->SetAddress(&mus_iso05_hoEt_);}
 	}
 	mus_iso05_sumPt_branch = 0;
 	if (tree->GetAlias("mus_iso05_sumPt") != 0) {
 		mus_iso05_sumPt_branch = tree->GetBranch(tree->GetAlias("mus_iso05_sumPt"));
-		mus_iso05_sumPt_branch->SetAddress(&mus_iso05_sumPt_);
+		if (mus_iso05_sumPt_branch) {mus_iso05_sumPt_branch->SetAddress(&mus_iso05_sumPt_);}
 	}
 	mus_isoR03_pf_ChargedHadronPt_branch = 0;
 	if (tree->GetAlias("mus_isoR03_pf_ChargedHadronPt") != 0) {
 		mus_isoR03_pf_ChargedHadronPt_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_pf_ChargedHadronPt"));
-		mus_isoR03_pf_ChargedHadronPt_branch->SetAddress(&mus_isoR03_pf_ChargedHadronPt_);
+		if (mus_isoR03_pf_ChargedHadronPt_branch) {mus_isoR03_pf_ChargedHadronPt_branch->SetAddress(&mus_isoR03_pf_ChargedHadronPt_);}
 	}
 	mus_isoR03_pf_ChargedParticlePt_branch = 0;
 	if (tree->GetAlias("mus_isoR03_pf_ChargedParticlePt") != 0) {
 		mus_isoR03_pf_ChargedParticlePt_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_pf_ChargedParticlePt"));
-		mus_isoR03_pf_ChargedParticlePt_branch->SetAddress(&mus_isoR03_pf_ChargedParticlePt_);
+		if (mus_isoR03_pf_ChargedParticlePt_branch) {mus_isoR03_pf_ChargedParticlePt_branch->SetAddress(&mus_isoR03_pf_ChargedParticlePt_);}
 	}
 	mus_isoR03_pf_NeutralHadronEt_branch = 0;
 	if (tree->GetAlias("mus_isoR03_pf_NeutralHadronEt") != 0) {
 		mus_isoR03_pf_NeutralHadronEt_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_pf_NeutralHadronEt"));
-		mus_isoR03_pf_NeutralHadronEt_branch->SetAddress(&mus_isoR03_pf_NeutralHadronEt_);
+		if (mus_isoR03_pf_NeutralHadronEt_branch) {mus_isoR03_pf_NeutralHadronEt_branch->SetAddress(&mus_isoR03_pf_NeutralHadronEt_);}
 	}
 	mus_isoR03_pf_NeutralHadronEtHighThreshold_branch = 0;
 	if (tree->GetAlias("mus_isoR03_pf_NeutralHadronEtHighThreshold") != 0) {
 		mus_isoR03_pf_NeutralHadronEtHighThreshold_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_pf_NeutralHadronEtHighThreshold"));
-		mus_isoR03_pf_NeutralHadronEtHighThreshold_branch->SetAddress(&mus_isoR03_pf_NeutralHadronEtHighThreshold_);
+		if (mus_isoR03_pf_NeutralHadronEtHighThreshold_branch) {mus_isoR03_pf_NeutralHadronEtHighThreshold_branch->SetAddress(&mus_isoR03_pf_NeutralHadronEtHighThreshold_);}
 	}
 	mus_isoR03_pf_PUPt_branch = 0;
 	if (tree->GetAlias("mus_isoR03_pf_PUPt") != 0) {
 		mus_isoR03_pf_PUPt_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_pf_PUPt"));
-		mus_isoR03_pf_PUPt_branch->SetAddress(&mus_isoR03_pf_PUPt_);
+		if (mus_isoR03_pf_PUPt_branch) {mus_isoR03_pf_PUPt_branch->SetAddress(&mus_isoR03_pf_PUPt_);}
 	}
 	mus_isoR03_pf_PhotonEt_branch = 0;
 	if (tree->GetAlias("mus_isoR03_pf_PhotonEt") != 0) {
 		mus_isoR03_pf_PhotonEt_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_pf_PhotonEt"));
-		mus_isoR03_pf_PhotonEt_branch->SetAddress(&mus_isoR03_pf_PhotonEt_);
+		if (mus_isoR03_pf_PhotonEt_branch) {mus_isoR03_pf_PhotonEt_branch->SetAddress(&mus_isoR03_pf_PhotonEt_);}
 	}
 	mus_isoR03_pf_PhotonEtHighThreshold_branch = 0;
 	if (tree->GetAlias("mus_isoR03_pf_PhotonEtHighThreshold") != 0) {
 		mus_isoR03_pf_PhotonEtHighThreshold_branch = tree->GetBranch(tree->GetAlias("mus_isoR03_pf_PhotonEtHighThreshold"));
-		mus_isoR03_pf_PhotonEtHighThreshold_branch->SetAddress(&mus_isoR03_pf_PhotonEtHighThreshold_);
+		if (mus_isoR03_pf_PhotonEtHighThreshold_branch) {mus_isoR03_pf_PhotonEtHighThreshold_branch->SetAddress(&mus_isoR03_pf_PhotonEtHighThreshold_);}
 	}
 	mus_isoR04_pf_ChargedHadronPt_branch = 0;
 	if (tree->GetAlias("mus_isoR04_pf_ChargedHadronPt") != 0) {
 		mus_isoR04_pf_ChargedHadronPt_branch = tree->GetBranch(tree->GetAlias("mus_isoR04_pf_ChargedHadronPt"));
-		mus_isoR04_pf_ChargedHadronPt_branch->SetAddress(&mus_isoR04_pf_ChargedHadronPt_);
+		if (mus_isoR04_pf_ChargedHadronPt_branch) {mus_isoR04_pf_ChargedHadronPt_branch->SetAddress(&mus_isoR04_pf_ChargedHadronPt_);}
 	}
 	mus_isoR04_pf_ChargedParticlePt_branch = 0;
 	if (tree->GetAlias("mus_isoR04_pf_ChargedParticlePt") != 0) {
 		mus_isoR04_pf_ChargedParticlePt_branch = tree->GetBranch(tree->GetAlias("mus_isoR04_pf_ChargedParticlePt"));
-		mus_isoR04_pf_ChargedParticlePt_branch->SetAddress(&mus_isoR04_pf_ChargedParticlePt_);
+		if (mus_isoR04_pf_ChargedParticlePt_branch) {mus_isoR04_pf_ChargedParticlePt_branch->SetAddress(&mus_isoR04_pf_ChargedParticlePt_);}
 	}
 	mus_isoR04_pf_NeutralHadronEt_branch = 0;
 	if (tree->GetAlias("mus_isoR04_pf_NeutralHadronEt") != 0) {
 		mus_isoR04_pf_NeutralHadronEt_branch = tree->GetBranch(tree->GetAlias("mus_isoR04_pf_NeutralHadronEt"));
-		mus_isoR04_pf_NeutralHadronEt_branch->SetAddress(&mus_isoR04_pf_NeutralHadronEt_);
+		if (mus_isoR04_pf_NeutralHadronEt_branch) {mus_isoR04_pf_NeutralHadronEt_branch->SetAddress(&mus_isoR04_pf_NeutralHadronEt_);}
 	}
 	mus_isoR04_pf_NeutralHadronEtHighThreshold_branch = 0;
 	if (tree->GetAlias("mus_isoR04_pf_NeutralHadronEtHighThreshold") != 0) {
 		mus_isoR04_pf_NeutralHadronEtHighThreshold_branch = tree->GetBranch(tree->GetAlias("mus_isoR04_pf_NeutralHadronEtHighThreshold"));
-		mus_isoR04_pf_NeutralHadronEtHighThreshold_branch->SetAddress(&mus_isoR04_pf_NeutralHadronEtHighThreshold_);
+		if (mus_isoR04_pf_NeutralHadronEtHighThreshold_branch) {mus_isoR04_pf_NeutralHadronEtHighThreshold_branch->SetAddress(&mus_isoR04_pf_NeutralHadronEtHighThreshold_);}
 	}
 	mus_isoR04_pf_PUPt_branch = 0;
 	if (tree->GetAlias("mus_isoR04_pf_PUPt") != 0) {
 		mus_isoR04_pf_PUPt_branch = tree->GetBranch(tree->GetAlias("mus_isoR04_pf_PUPt"));
-		mus_isoR04_pf_PUPt_branch->SetAddress(&mus_isoR04_pf_PUPt_);
+		if (mus_isoR04_pf_PUPt_branch) {mus_isoR04_pf_PUPt_branch->SetAddress(&mus_isoR04_pf_PUPt_);}
 	}
 	mus_isoR04_pf_PhotonEt_branch = 0;
 	if (tree->GetAlias("mus_isoR04_pf_PhotonEt") != 0) {
 		mus_isoR04_pf_PhotonEt_branch = tree->GetBranch(tree->GetAlias("mus_isoR04_pf_PhotonEt"));
-		mus_isoR04_pf_PhotonEt_branch->SetAddress(&mus_isoR04_pf_PhotonEt_);
+		if (mus_isoR04_pf_PhotonEt_branch) {mus_isoR04_pf_PhotonEt_branch->SetAddress(&mus_isoR04_pf_PhotonEt_);}
 	}
 	mus_isoR04_pf_PhotonEtHighThreshold_branch = 0;
 	if (tree->GetAlias("mus_isoR04_pf_PhotonEtHighThreshold") != 0) {
 		mus_isoR04_pf_PhotonEtHighThreshold_branch = tree->GetBranch(tree->GetAlias("mus_isoR04_pf_PhotonEtHighThreshold"));
-		mus_isoR04_pf_PhotonEtHighThreshold_branch->SetAddress(&mus_isoR04_pf_PhotonEtHighThreshold_);
+		if (mus_isoR04_pf_PhotonEtHighThreshold_branch) {mus_isoR04_pf_PhotonEtHighThreshold_branch->SetAddress(&mus_isoR04_pf_PhotonEtHighThreshold_);}
 	}
 	mus_iso_ecalvetoDep_branch = 0;
 	if (tree->GetAlias("mus_iso_ecalvetoDep") != 0) {
 		mus_iso_ecalvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_iso_ecalvetoDep"));
-		mus_iso_ecalvetoDep_branch->SetAddress(&mus_iso_ecalvetoDep_);
+		if (mus_iso_ecalvetoDep_branch) {mus_iso_ecalvetoDep_branch->SetAddress(&mus_iso_ecalvetoDep_);}
 	}
 	mus_iso_hcalvetoDep_branch = 0;
 	if (tree->GetAlias("mus_iso_hcalvetoDep") != 0) {
 		mus_iso_hcalvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_iso_hcalvetoDep"));
-		mus_iso_hcalvetoDep_branch->SetAddress(&mus_iso_hcalvetoDep_);
+		if (mus_iso_hcalvetoDep_branch) {mus_iso_hcalvetoDep_branch->SetAddress(&mus_iso_hcalvetoDep_);}
 	}
 	mus_iso_hovetoDep_branch = 0;
 	if (tree->GetAlias("mus_iso_hovetoDep") != 0) {
 		mus_iso_hovetoDep_branch = tree->GetBranch(tree->GetAlias("mus_iso_hovetoDep"));
-		mus_iso_hovetoDep_branch->SetAddress(&mus_iso_hovetoDep_);
+		if (mus_iso_hovetoDep_branch) {mus_iso_hovetoDep_branch->SetAddress(&mus_iso_hovetoDep_);}
 	}
 	mus_iso_trckvetoDep_branch = 0;
 	if (tree->GetAlias("mus_iso_trckvetoDep") != 0) {
 		mus_iso_trckvetoDep_branch = tree->GetBranch(tree->GetAlias("mus_iso_trckvetoDep"));
-		mus_iso_trckvetoDep_branch->SetAddress(&mus_iso_trckvetoDep_);
+		if (mus_iso_trckvetoDep_branch) {mus_iso_trckvetoDep_branch->SetAddress(&mus_iso_trckvetoDep_);}
 	}
 	mus_localDistance_branch = 0;
 	if (tree->GetAlias("mus_localDistance") != 0) {
 		mus_localDistance_branch = tree->GetBranch(tree->GetAlias("mus_localDistance"));
-		mus_localDistance_branch->SetAddress(&mus_localDistance_);
+		if (mus_localDistance_branch) {mus_localDistance_branch->SetAddress(&mus_localDistance_);}
 	}
 	mus_ndof_branch = 0;
 	if (tree->GetAlias("mus_ndof") != 0) {
 		mus_ndof_branch = tree->GetBranch(tree->GetAlias("mus_ndof"));
-		mus_ndof_branch->SetAddress(&mus_ndof_);
+		if (mus_ndof_branch) {mus_ndof_branch->SetAddress(&mus_ndof_);}
 	}
 	mus_overlapCompat_branch = 0;
 	if (tree->GetAlias("mus_overlapCompat") != 0) {
 		mus_overlapCompat_branch = tree->GetBranch(tree->GetAlias("mus_overlapCompat"));
-		mus_overlapCompat_branch->SetAddress(&mus_overlapCompat_);
+		if (mus_overlapCompat_branch) {mus_overlapCompat_branch->SetAddress(&mus_overlapCompat_);}
 	}
 	mus_pfdeltaP_branch = 0;
 	if (tree->GetAlias("mus_pfdeltaP") != 0) {
 		mus_pfdeltaP_branch = tree->GetBranch(tree->GetAlias("mus_pfdeltaP"));
-		mus_pfdeltaP_branch->SetAddress(&mus_pfdeltaP_);
+		if (mus_pfdeltaP_branch) {mus_pfdeltaP_branch->SetAddress(&mus_pfdeltaP_);}
 	}
 	mus_pfecalE_branch = 0;
 	if (tree->GetAlias("mus_pfecalE") != 0) {
 		mus_pfecalE_branch = tree->GetBranch(tree->GetAlias("mus_pfecalE"));
-		mus_pfecalE_branch->SetAddress(&mus_pfecalE_);
+		if (mus_pfecalE_branch) {mus_pfecalE_branch->SetAddress(&mus_pfecalE_);}
 	}
 	mus_pfhcalE_branch = 0;
 	if (tree->GetAlias("mus_pfhcalE") != 0) {
 		mus_pfhcalE_branch = tree->GetBranch(tree->GetAlias("mus_pfhcalE"));
-		mus_pfhcalE_branch->SetAddress(&mus_pfhcalE_);
+		if (mus_pfhcalE_branch) {mus_pfhcalE_branch->SetAddress(&mus_pfhcalE_);}
 	}
 	mus_pfmva_emu_branch = 0;
 	if (tree->GetAlias("mus_pfmva_emu") != 0) {
 		mus_pfmva_emu_branch = tree->GetBranch(tree->GetAlias("mus_pfmva_emu"));
-		mus_pfmva_emu_branch->SetAddress(&mus_pfmva_emu_);
+		if (mus_pfmva_emu_branch) {mus_pfmva_emu_branch->SetAddress(&mus_pfmva_emu_);}
 	}
 	mus_pfmva_epi_branch = 0;
 	if (tree->GetAlias("mus_pfmva_epi") != 0) {
 		mus_pfmva_epi_branch = tree->GetBranch(tree->GetAlias("mus_pfmva_epi"));
-		mus_pfmva_epi_branch->SetAddress(&mus_pfmva_epi_);
+		if (mus_pfmva_epi_branch) {mus_pfmva_epi_branch->SetAddress(&mus_pfmva_epi_);}
 	}
 	mus_pfmva_nothing_gamma_branch = 0;
 	if (tree->GetAlias("mus_pfmva_nothing_gamma") != 0) {
 		mus_pfmva_nothing_gamma_branch = tree->GetBranch(tree->GetAlias("mus_pfmva_nothing_gamma"));
-		mus_pfmva_nothing_gamma_branch->SetAddress(&mus_pfmva_nothing_gamma_);
+		if (mus_pfmva_nothing_gamma_branch) {mus_pfmva_nothing_gamma_branch->SetAddress(&mus_pfmva_nothing_gamma_);}
 	}
 	mus_pfmva_nothing_nh_branch = 0;
 	if (tree->GetAlias("mus_pfmva_nothing_nh") != 0) {
 		mus_pfmva_nothing_nh_branch = tree->GetBranch(tree->GetAlias("mus_pfmva_nothing_nh"));
-		mus_pfmva_nothing_nh_branch->SetAddress(&mus_pfmva_nothing_nh_);
+		if (mus_pfmva_nothing_nh_branch) {mus_pfmva_nothing_nh_branch->SetAddress(&mus_pfmva_nothing_nh_);}
 	}
 	mus_pfmva_pimu_branch = 0;
 	if (tree->GetAlias("mus_pfmva_pimu") != 0) {
 		mus_pfmva_pimu_branch = tree->GetBranch(tree->GetAlias("mus_pfmva_pimu"));
-		mus_pfmva_pimu_branch->SetAddress(&mus_pfmva_pimu_);
+		if (mus_pfmva_pimu_branch) {mus_pfmva_pimu_branch->SetAddress(&mus_pfmva_pimu_);}
 	}
 	mus_pfpS1E_branch = 0;
 	if (tree->GetAlias("mus_pfpS1E") != 0) {
 		mus_pfpS1E_branch = tree->GetBranch(tree->GetAlias("mus_pfpS1E"));
-		mus_pfpS1E_branch->SetAddress(&mus_pfpS1E_);
+		if (mus_pfpS1E_branch) {mus_pfpS1E_branch->SetAddress(&mus_pfpS1E_);}
 	}
 	mus_pfpS2E_branch = 0;
 	if (tree->GetAlias("mus_pfpS2E") != 0) {
 		mus_pfpS2E_branch = tree->GetBranch(tree->GetAlias("mus_pfpS2E"));
-		mus_pfpS2E_branch->SetAddress(&mus_pfpS2E_);
+		if (mus_pfpS2E_branch) {mus_pfpS2E_branch->SetAddress(&mus_pfpS2E_);}
 	}
 	mus_pfrawEcalE_branch = 0;
 	if (tree->GetAlias("mus_pfrawEcalE") != 0) {
 		mus_pfrawEcalE_branch = tree->GetBranch(tree->GetAlias("mus_pfrawEcalE"));
-		mus_pfrawEcalE_branch->SetAddress(&mus_pfrawEcalE_);
+		if (mus_pfrawEcalE_branch) {mus_pfrawEcalE_branch->SetAddress(&mus_pfrawEcalE_);}
 	}
 	mus_pfrawHcalE_branch = 0;
 	if (tree->GetAlias("mus_pfrawHcalE") != 0) {
 		mus_pfrawHcalE_branch = tree->GetBranch(tree->GetAlias("mus_pfrawHcalE"));
-		mus_pfrawHcalE_branch->SetAddress(&mus_pfrawHcalE_);
+		if (mus_pfrawHcalE_branch) {mus_pfrawHcalE_branch->SetAddress(&mus_pfrawHcalE_);}
 	}
 	mus_phiErr_branch = 0;
 	if (tree->GetAlias("mus_phiErr") != 0) {
 		mus_phiErr_branch = tree->GetBranch(tree->GetAlias("mus_phiErr"));
-		mus_phiErr_branch->SetAddress(&mus_phiErr_);
+		if (mus_phiErr_branch) {mus_phiErr_branch->SetAddress(&mus_phiErr_);}
 	}
 	mus_ptErr_branch = 0;
 	if (tree->GetAlias("mus_ptErr") != 0) {
 		mus_ptErr_branch = tree->GetBranch(tree->GetAlias("mus_ptErr"));
-		mus_ptErr_branch->SetAddress(&mus_ptErr_);
+		if (mus_ptErr_branch) {mus_ptErr_branch->SetAddress(&mus_ptErr_);}
 	}
 	mus_qoverp_branch = 0;
 	if (tree->GetAlias("mus_qoverp") != 0) {
 		mus_qoverp_branch = tree->GetBranch(tree->GetAlias("mus_qoverp"));
-		mus_qoverp_branch->SetAddress(&mus_qoverp_);
+		if (mus_qoverp_branch) {mus_qoverp_branch->SetAddress(&mus_qoverp_);}
 	}
 	mus_qoverpError_branch = 0;
 	if (tree->GetAlias("mus_qoverpError") != 0) {
 		mus_qoverpError_branch = tree->GetBranch(tree->GetAlias("mus_qoverpError"));
-		mus_qoverpError_branch->SetAddress(&mus_qoverpError_);
+		if (mus_qoverpError_branch) {mus_qoverpError_branch->SetAddress(&mus_qoverpError_);}
 	}
 	mus_segmCompatibility_branch = 0;
 	if (tree->GetAlias("mus_segmCompatibility") != 0) {
 		mus_segmCompatibility_branch = tree->GetBranch(tree->GetAlias("mus_segmCompatibility"));
-		mus_segmCompatibility_branch->SetAddress(&mus_segmCompatibility_);
+		if (mus_segmCompatibility_branch) {mus_segmCompatibility_branch->SetAddress(&mus_segmCompatibility_);}
 	}
 	mus_staRelChi2_branch = 0;
 	if (tree->GetAlias("mus_staRelChi2") != 0) {
 		mus_staRelChi2_branch = tree->GetBranch(tree->GetAlias("mus_staRelChi2"));
-		mus_staRelChi2_branch->SetAddress(&mus_staRelChi2_);
+		if (mus_staRelChi2_branch) {mus_staRelChi2_branch->SetAddress(&mus_staRelChi2_);}
 	}
 	mus_sta_chi2_branch = 0;
 	if (tree->GetAlias("mus_sta_chi2") != 0) {
 		mus_sta_chi2_branch = tree->GetBranch(tree->GetAlias("mus_sta_chi2"));
-		mus_sta_chi2_branch->SetAddress(&mus_sta_chi2_);
+		if (mus_sta_chi2_branch) {mus_sta_chi2_branch->SetAddress(&mus_sta_chi2_);}
 	}
 	mus_sta_d0_branch = 0;
 	if (tree->GetAlias("mus_sta_d0") != 0) {
 		mus_sta_d0_branch = tree->GetBranch(tree->GetAlias("mus_sta_d0"));
-		mus_sta_d0_branch->SetAddress(&mus_sta_d0_);
+		if (mus_sta_d0_branch) {mus_sta_d0_branch->SetAddress(&mus_sta_d0_);}
 	}
 	mus_sta_d0Err_branch = 0;
 	if (tree->GetAlias("mus_sta_d0Err") != 0) {
 		mus_sta_d0Err_branch = tree->GetBranch(tree->GetAlias("mus_sta_d0Err"));
-		mus_sta_d0Err_branch->SetAddress(&mus_sta_d0Err_);
+		if (mus_sta_d0Err_branch) {mus_sta_d0Err_branch->SetAddress(&mus_sta_d0Err_);}
 	}
 	mus_sta_d0corr_branch = 0;
 	if (tree->GetAlias("mus_sta_d0corr") != 0) {
 		mus_sta_d0corr_branch = tree->GetBranch(tree->GetAlias("mus_sta_d0corr"));
-		mus_sta_d0corr_branch->SetAddress(&mus_sta_d0corr_);
+		if (mus_sta_d0corr_branch) {mus_sta_d0corr_branch->SetAddress(&mus_sta_d0corr_);}
 	}
 	mus_sta_ndof_branch = 0;
 	if (tree->GetAlias("mus_sta_ndof") != 0) {
 		mus_sta_ndof_branch = tree->GetBranch(tree->GetAlias("mus_sta_ndof"));
-		mus_sta_ndof_branch->SetAddress(&mus_sta_ndof_);
+		if (mus_sta_ndof_branch) {mus_sta_ndof_branch->SetAddress(&mus_sta_ndof_);}
 	}
 	mus_sta_qoverp_branch = 0;
 	if (tree->GetAlias("mus_sta_qoverp") != 0) {
 		mus_sta_qoverp_branch = tree->GetBranch(tree->GetAlias("mus_sta_qoverp"));
-		mus_sta_qoverp_branch->SetAddress(&mus_sta_qoverp_);
+		if (mus_sta_qoverp_branch) {mus_sta_qoverp_branch->SetAddress(&mus_sta_qoverp_);}
 	}
 	mus_sta_qoverpError_branch = 0;
 	if (tree->GetAlias("mus_sta_qoverpError") != 0) {
 		mus_sta_qoverpError_branch = tree->GetBranch(tree->GetAlias("mus_sta_qoverpError"));
-		mus_sta_qoverpError_branch->SetAddress(&mus_sta_qoverpError_);
+		if (mus_sta_qoverpError_branch) {mus_sta_qoverpError_branch->SetAddress(&mus_sta_qoverpError_);}
 	}
 	mus_sta_z0_branch = 0;
 	if (tree->GetAlias("mus_sta_z0") != 0) {
 		mus_sta_z0_branch = tree->GetBranch(tree->GetAlias("mus_sta_z0"));
-		mus_sta_z0_branch->SetAddress(&mus_sta_z0_);
+		if (mus_sta_z0_branch) {mus_sta_z0_branch->SetAddress(&mus_sta_z0_);}
 	}
 	mus_sta_z0Err_branch = 0;
 	if (tree->GetAlias("mus_sta_z0Err") != 0) {
 		mus_sta_z0Err_branch = tree->GetBranch(tree->GetAlias("mus_sta_z0Err"));
-		mus_sta_z0Err_branch->SetAddress(&mus_sta_z0Err_);
+		if (mus_sta_z0Err_branch) {mus_sta_z0Err_branch->SetAddress(&mus_sta_z0Err_);}
 	}
 	mus_sta_z0corr_branch = 0;
 	if (tree->GetAlias("mus_sta_z0corr") != 0) {
 		mus_sta_z0corr_branch = tree->GetBranch(tree->GetAlias("mus_sta_z0corr"));
-		mus_sta_z0corr_branch->SetAddress(&mus_sta_z0corr_);
+		if (mus_sta_z0corr_branch) {mus_sta_z0corr_branch->SetAddress(&mus_sta_z0corr_);}
 	}
 	mus_timeAtIpInOut_branch = 0;
 	if (tree->GetAlias("mus_timeAtIpInOut") != 0) {
 		mus_timeAtIpInOut_branch = tree->GetBranch(tree->GetAlias("mus_timeAtIpInOut"));
-		mus_timeAtIpInOut_branch->SetAddress(&mus_timeAtIpInOut_);
+		if (mus_timeAtIpInOut_branch) {mus_timeAtIpInOut_branch->SetAddress(&mus_timeAtIpInOut_);}
 	}
 	mus_timeAtIpInOutErr_branch = 0;
 	if (tree->GetAlias("mus_timeAtIpInOutErr") != 0) {
 		mus_timeAtIpInOutErr_branch = tree->GetBranch(tree->GetAlias("mus_timeAtIpInOutErr"));
-		mus_timeAtIpInOutErr_branch->SetAddress(&mus_timeAtIpInOutErr_);
+		if (mus_timeAtIpInOutErr_branch) {mus_timeAtIpInOutErr_branch->SetAddress(&mus_timeAtIpInOutErr_);}
 	}
 	mus_timeAtIpOutIn_branch = 0;
 	if (tree->GetAlias("mus_timeAtIpOutIn") != 0) {
 		mus_timeAtIpOutIn_branch = tree->GetBranch(tree->GetAlias("mus_timeAtIpOutIn"));
-		mus_timeAtIpOutIn_branch->SetAddress(&mus_timeAtIpOutIn_);
+		if (mus_timeAtIpOutIn_branch) {mus_timeAtIpOutIn_branch->SetAddress(&mus_timeAtIpOutIn_);}
 	}
 	mus_timeAtIpOutInErr_branch = 0;
 	if (tree->GetAlias("mus_timeAtIpOutInErr") != 0) {
 		mus_timeAtIpOutInErr_branch = tree->GetBranch(tree->GetAlias("mus_timeAtIpOutInErr"));
-		mus_timeAtIpOutInErr_branch->SetAddress(&mus_timeAtIpOutInErr_);
+		if (mus_timeAtIpOutInErr_branch) {mus_timeAtIpOutInErr_branch->SetAddress(&mus_timeAtIpOutInErr_);}
 	}
 	mus_timeCompat_branch = 0;
 	if (tree->GetAlias("mus_timeCompat") != 0) {
 		mus_timeCompat_branch = tree->GetBranch(tree->GetAlias("mus_timeCompat"));
-		mus_timeCompat_branch->SetAddress(&mus_timeCompat_);
+		if (mus_timeCompat_branch) {mus_timeCompat_branch->SetAddress(&mus_timeCompat_);}
 	}
 	mus_trkKink_branch = 0;
 	if (tree->GetAlias("mus_trkKink") != 0) {
 		mus_trkKink_branch = tree->GetBranch(tree->GetAlias("mus_trkKink"));
-		mus_trkKink_branch->SetAddress(&mus_trkKink_);
+		if (mus_trkKink_branch) {mus_trkKink_branch->SetAddress(&mus_trkKink_);}
 	}
 	mus_trkRelChi2_branch = 0;
 	if (tree->GetAlias("mus_trkRelChi2") != 0) {
 		mus_trkRelChi2_branch = tree->GetBranch(tree->GetAlias("mus_trkRelChi2"));
-		mus_trkRelChi2_branch->SetAddress(&mus_trkRelChi2_);
+		if (mus_trkRelChi2_branch) {mus_trkRelChi2_branch->SetAddress(&mus_trkRelChi2_);}
 	}
 	mus_vertexCompat_branch = 0;
 	if (tree->GetAlias("mus_vertexCompat") != 0) {
 		mus_vertexCompat_branch = tree->GetBranch(tree->GetAlias("mus_vertexCompat"));
-		mus_vertexCompat_branch->SetAddress(&mus_vertexCompat_);
+		if (mus_vertexCompat_branch) {mus_vertexCompat_branch->SetAddress(&mus_vertexCompat_);}
 	}
 	mus_vertexphi_branch = 0;
 	if (tree->GetAlias("mus_vertexphi") != 0) {
 		mus_vertexphi_branch = tree->GetBranch(tree->GetAlias("mus_vertexphi"));
-		mus_vertexphi_branch->SetAddress(&mus_vertexphi_);
+		if (mus_vertexphi_branch) {mus_vertexphi_branch->SetAddress(&mus_vertexphi_);}
 	}
 	mus_z0_branch = 0;
 	if (tree->GetAlias("mus_z0") != 0) {
 		mus_z0_branch = tree->GetBranch(tree->GetAlias("mus_z0"));
-		mus_z0_branch->SetAddress(&mus_z0_);
+		if (mus_z0_branch) {mus_z0_branch->SetAddress(&mus_z0_);}
 	}
 	mus_z0Err_branch = 0;
 	if (tree->GetAlias("mus_z0Err") != 0) {
 		mus_z0Err_branch = tree->GetBranch(tree->GetAlias("mus_z0Err"));
-		mus_z0Err_branch->SetAddress(&mus_z0Err_);
+		if (mus_z0Err_branch) {mus_z0Err_branch->SetAddress(&mus_z0Err_);}
 	}
 	mus_z0corr_branch = 0;
 	if (tree->GetAlias("mus_z0corr") != 0) {
 		mus_z0corr_branch = tree->GetBranch(tree->GetAlias("mus_z0corr"));
-		mus_z0corr_branch->SetAddress(&mus_z0corr_);
+		if (mus_z0corr_branch) {mus_z0corr_branch->SetAddress(&mus_z0corr_);}
 	}
 	pfjets_mvavalue_branch = 0;
 	if (tree->GetAlias("pfjets_mvavalue") != 0) {
 		pfjets_mvavalue_branch = tree->GetBranch(tree->GetAlias("pfjets_mvavalue"));
-		pfjets_mvavalue_branch->SetAddress(&pfjets_mvavalue_);
+		if (pfjets_mvavalue_branch) {pfjets_mvavalue_branch->SetAddress(&pfjets_mvavalue_);}
 	}
 	trkjet_met_branch = 0;
 	if (tree->GetAlias("trkjet_met") != 0) {
 		trkjet_met_branch = tree->GetBranch(tree->GetAlias("trkjet_met"));
-		trkjet_met_branch->SetAddress(&trkjet_met_);
+		if (trkjet_met_branch) {trkjet_met_branch->SetAddress(&trkjet_met_);}
 	}
 	trkjet_metPhi_branch = 0;
 	if (tree->GetAlias("trkjet_metPhi") != 0) {
 		trkjet_metPhi_branch = tree->GetBranch(tree->GetAlias("trkjet_metPhi"));
-		trkjet_metPhi_branch->SetAddress(&trkjet_metPhi_);
+		if (trkjet_metPhi_branch) {trkjet_metPhi_branch->SetAddress(&trkjet_metPhi_);}
 	}
 	trkjet_sumet_branch = 0;
 	if (tree->GetAlias("trkjet_sumet") != 0) {
 		trkjet_sumet_branch = tree->GetBranch(tree->GetAlias("trkjet_sumet"));
-		trkjet_sumet_branch->SetAddress(&trkjet_sumet_);
+		if (trkjet_sumet_branch) {trkjet_sumet_branch->SetAddress(&trkjet_sumet_);}
 	}
 	trk_met_branch = 0;
 	if (tree->GetAlias("trk_met") != 0) {
 		trk_met_branch = tree->GetBranch(tree->GetAlias("trk_met"));
-		trk_met_branch->SetAddress(&trk_met_);
+		if (trk_met_branch) {trk_met_branch->SetAddress(&trk_met_);}
 	}
 	trk_metPhi_branch = 0;
 	if (tree->GetAlias("trk_metPhi") != 0) {
 		trk_metPhi_branch = tree->GetBranch(tree->GetAlias("trk_metPhi"));
-		trk_metPhi_branch->SetAddress(&trk_metPhi_);
+		if (trk_metPhi_branch) {trk_metPhi_branch->SetAddress(&trk_metPhi_);}
 	}
 	trk_sumet_branch = 0;
 	if (tree->GetAlias("trk_sumet") != 0) {
 		trk_sumet_branch = tree->GetBranch(tree->GetAlias("trk_sumet"));
-		trk_sumet_branch->SetAddress(&trk_sumet_);
+		if (trk_sumet_branch) {trk_sumet_branch->SetAddress(&trk_sumet_);}
 	}
 	pfcands_deltaP_branch = 0;
 	if (tree->GetAlias("pfcands_deltaP") != 0) {
 		pfcands_deltaP_branch = tree->GetBranch(tree->GetAlias("pfcands_deltaP"));
-		pfcands_deltaP_branch->SetAddress(&pfcands_deltaP_);
+		if (pfcands_deltaP_branch) {pfcands_deltaP_branch->SetAddress(&pfcands_deltaP_);}
 	}
 	pfcands_ecalE_branch = 0;
 	if (tree->GetAlias("pfcands_ecalE") != 0) {
 		pfcands_ecalE_branch = tree->GetBranch(tree->GetAlias("pfcands_ecalE"));
-		pfcands_ecalE_branch->SetAddress(&pfcands_ecalE_);
+		if (pfcands_ecalE_branch) {pfcands_ecalE_branch->SetAddress(&pfcands_ecalE_);}
 	}
 	pfcands_hcalE_branch = 0;
 	if (tree->GetAlias("pfcands_hcalE") != 0) {
 		pfcands_hcalE_branch = tree->GetBranch(tree->GetAlias("pfcands_hcalE"));
-		pfcands_hcalE_branch->SetAddress(&pfcands_hcalE_);
+		if (pfcands_hcalE_branch) {pfcands_hcalE_branch->SetAddress(&pfcands_hcalE_);}
 	}
 	pfcands_mva_emu_branch = 0;
 	if (tree->GetAlias("pfcands_mva_emu") != 0) {
 		pfcands_mva_emu_branch = tree->GetBranch(tree->GetAlias("pfcands_mva_emu"));
-		pfcands_mva_emu_branch->SetAddress(&pfcands_mva_emu_);
+		if (pfcands_mva_emu_branch) {pfcands_mva_emu_branch->SetAddress(&pfcands_mva_emu_);}
 	}
 	pfcands_mva_epi_branch = 0;
 	if (tree->GetAlias("pfcands_mva_epi") != 0) {
 		pfcands_mva_epi_branch = tree->GetBranch(tree->GetAlias("pfcands_mva_epi"));
-		pfcands_mva_epi_branch->SetAddress(&pfcands_mva_epi_);
+		if (pfcands_mva_epi_branch) {pfcands_mva_epi_branch->SetAddress(&pfcands_mva_epi_);}
 	}
 	pfcands_mva_nothing_gamma_branch = 0;
 	if (tree->GetAlias("pfcands_mva_nothing_gamma") != 0) {
 		pfcands_mva_nothing_gamma_branch = tree->GetBranch(tree->GetAlias("pfcands_mva_nothing_gamma"));
-		pfcands_mva_nothing_gamma_branch->SetAddress(&pfcands_mva_nothing_gamma_);
+		if (pfcands_mva_nothing_gamma_branch) {pfcands_mva_nothing_gamma_branch->SetAddress(&pfcands_mva_nothing_gamma_);}
 	}
 	pfcands_mva_nothing_nh_branch = 0;
 	if (tree->GetAlias("pfcands_mva_nothing_nh") != 0) {
 		pfcands_mva_nothing_nh_branch = tree->GetBranch(tree->GetAlias("pfcands_mva_nothing_nh"));
-		pfcands_mva_nothing_nh_branch->SetAddress(&pfcands_mva_nothing_nh_);
+		if (pfcands_mva_nothing_nh_branch) {pfcands_mva_nothing_nh_branch->SetAddress(&pfcands_mva_nothing_nh_);}
 	}
 	pfcands_mva_pimu_branch = 0;
 	if (tree->GetAlias("pfcands_mva_pimu") != 0) {
 		pfcands_mva_pimu_branch = tree->GetBranch(tree->GetAlias("pfcands_mva_pimu"));
-		pfcands_mva_pimu_branch->SetAddress(&pfcands_mva_pimu_);
+		if (pfcands_mva_pimu_branch) {pfcands_mva_pimu_branch->SetAddress(&pfcands_mva_pimu_);}
 	}
 	pfcands_pS1E_branch = 0;
 	if (tree->GetAlias("pfcands_pS1E") != 0) {
 		pfcands_pS1E_branch = tree->GetBranch(tree->GetAlias("pfcands_pS1E"));
-		pfcands_pS1E_branch->SetAddress(&pfcands_pS1E_);
+		if (pfcands_pS1E_branch) {pfcands_pS1E_branch->SetAddress(&pfcands_pS1E_);}
 	}
 	pfcands_pS2E_branch = 0;
 	if (tree->GetAlias("pfcands_pS2E") != 0) {
 		pfcands_pS2E_branch = tree->GetBranch(tree->GetAlias("pfcands_pS2E"));
-		pfcands_pS2E_branch->SetAddress(&pfcands_pS2E_);
+		if (pfcands_pS2E_branch) {pfcands_pS2E_branch->SetAddress(&pfcands_pS2E_);}
 	}
 	pfcands_rawEcalE_branch = 0;
 	if (tree->GetAlias("pfcands_rawEcalE") != 0) {
 		pfcands_rawEcalE_branch = tree->GetBranch(tree->GetAlias("pfcands_rawEcalE"));
-		pfcands_rawEcalE_branch->SetAddress(&pfcands_rawEcalE_);
+		if (pfcands_rawEcalE_branch) {pfcands_rawEcalE_branch->SetAddress(&pfcands_rawEcalE_);}
 	}
 	pfcands_rawHcalE_branch = 0;
 	if (tree->GetAlias("pfcands_rawHcalE") != 0) {
 		pfcands_rawHcalE_branch = tree->GetBranch(tree->GetAlias("pfcands_rawHcalE"));
-		pfcands_rawHcalE_branch->SetAddress(&pfcands_rawHcalE_);
+		if (pfcands_rawHcalE_branch) {pfcands_rawHcalE_branch->SetAddress(&pfcands_rawHcalE_);}
 	}
 	pfels_deltaP_branch = 0;
 	if (tree->GetAlias("pfels_deltaP") != 0) {
 		pfels_deltaP_branch = tree->GetBranch(tree->GetAlias("pfels_deltaP"));
-		pfels_deltaP_branch->SetAddress(&pfels_deltaP_);
+		if (pfels_deltaP_branch) {pfels_deltaP_branch->SetAddress(&pfels_deltaP_);}
 	}
 	pfels_ecalE_branch = 0;
 	if (tree->GetAlias("pfels_ecalE") != 0) {
 		pfels_ecalE_branch = tree->GetBranch(tree->GetAlias("pfels_ecalE"));
-		pfels_ecalE_branch->SetAddress(&pfels_ecalE_);
+		if (pfels_ecalE_branch) {pfels_ecalE_branch->SetAddress(&pfels_ecalE_);}
 	}
 	pfels_hcalE_branch = 0;
 	if (tree->GetAlias("pfels_hcalE") != 0) {
 		pfels_hcalE_branch = tree->GetBranch(tree->GetAlias("pfels_hcalE"));
-		pfels_hcalE_branch->SetAddress(&pfels_hcalE_);
+		if (pfels_hcalE_branch) {pfels_hcalE_branch->SetAddress(&pfels_hcalE_);}
 	}
 	pfels_iso04ChargedHadrons_branch = 0;
 	if (tree->GetAlias("pfels_iso04ChargedHadrons") != 0) {
 		pfels_iso04ChargedHadrons_branch = tree->GetBranch(tree->GetAlias("pfels_iso04ChargedHadrons"));
-		pfels_iso04ChargedHadrons_branch->SetAddress(&pfels_iso04ChargedHadrons_);
+		if (pfels_iso04ChargedHadrons_branch) {pfels_iso04ChargedHadrons_branch->SetAddress(&pfels_iso04ChargedHadrons_);}
 	}
 	pfels_iso04NeutralHadrons_branch = 0;
 	if (tree->GetAlias("pfels_iso04NeutralHadrons") != 0) {
 		pfels_iso04NeutralHadrons_branch = tree->GetBranch(tree->GetAlias("pfels_iso04NeutralHadrons"));
-		pfels_iso04NeutralHadrons_branch->SetAddress(&pfels_iso04NeutralHadrons_);
+		if (pfels_iso04NeutralHadrons_branch) {pfels_iso04NeutralHadrons_branch->SetAddress(&pfels_iso04NeutralHadrons_);}
 	}
 	pfels_iso04Photons_branch = 0;
 	if (tree->GetAlias("pfels_iso04Photons") != 0) {
 		pfels_iso04Photons_branch = tree->GetBranch(tree->GetAlias("pfels_iso04Photons"));
-		pfels_iso04Photons_branch->SetAddress(&pfels_iso04Photons_);
+		if (pfels_iso04Photons_branch) {pfels_iso04Photons_branch->SetAddress(&pfels_iso04Photons_);}
 	}
 	pfels_isoChargedHadrons_branch = 0;
 	if (tree->GetAlias("pfels_isoChargedHadrons") != 0) {
 		pfels_isoChargedHadrons_branch = tree->GetBranch(tree->GetAlias("pfels_isoChargedHadrons"));
-		pfels_isoChargedHadrons_branch->SetAddress(&pfels_isoChargedHadrons_);
+		if (pfels_isoChargedHadrons_branch) {pfels_isoChargedHadrons_branch->SetAddress(&pfels_isoChargedHadrons_);}
 	}
 	pfels_isoNeutralHadrons_branch = 0;
 	if (tree->GetAlias("pfels_isoNeutralHadrons") != 0) {
 		pfels_isoNeutralHadrons_branch = tree->GetBranch(tree->GetAlias("pfels_isoNeutralHadrons"));
-		pfels_isoNeutralHadrons_branch->SetAddress(&pfels_isoNeutralHadrons_);
+		if (pfels_isoNeutralHadrons_branch) {pfels_isoNeutralHadrons_branch->SetAddress(&pfels_isoNeutralHadrons_);}
 	}
 	pfels_isoPhotons_branch = 0;
 	if (tree->GetAlias("pfels_isoPhotons") != 0) {
 		pfels_isoPhotons_branch = tree->GetBranch(tree->GetAlias("pfels_isoPhotons"));
-		pfels_isoPhotons_branch->SetAddress(&pfels_isoPhotons_);
+		if (pfels_isoPhotons_branch) {pfels_isoPhotons_branch->SetAddress(&pfels_isoPhotons_);}
 	}
 	pfels_mva_emu_branch = 0;
 	if (tree->GetAlias("pfels_mva_emu") != 0) {
 		pfels_mva_emu_branch = tree->GetBranch(tree->GetAlias("pfels_mva_emu"));
-		pfels_mva_emu_branch->SetAddress(&pfels_mva_emu_);
+		if (pfels_mva_emu_branch) {pfels_mva_emu_branch->SetAddress(&pfels_mva_emu_);}
 	}
 	pfels_mva_epi_branch = 0;
 	if (tree->GetAlias("pfels_mva_epi") != 0) {
 		pfels_mva_epi_branch = tree->GetBranch(tree->GetAlias("pfels_mva_epi"));
-		pfels_mva_epi_branch->SetAddress(&pfels_mva_epi_);
+		if (pfels_mva_epi_branch) {pfels_mva_epi_branch->SetAddress(&pfels_mva_epi_);}
 	}
 	pfels_mva_nothing_gamma_branch = 0;
 	if (tree->GetAlias("pfels_mva_nothing_gamma") != 0) {
 		pfels_mva_nothing_gamma_branch = tree->GetBranch(tree->GetAlias("pfels_mva_nothing_gamma"));
-		pfels_mva_nothing_gamma_branch->SetAddress(&pfels_mva_nothing_gamma_);
+		if (pfels_mva_nothing_gamma_branch) {pfels_mva_nothing_gamma_branch->SetAddress(&pfels_mva_nothing_gamma_);}
 	}
 	pfels_mva_nothing_nh_branch = 0;
 	if (tree->GetAlias("pfels_mva_nothing_nh") != 0) {
 		pfels_mva_nothing_nh_branch = tree->GetBranch(tree->GetAlias("pfels_mva_nothing_nh"));
-		pfels_mva_nothing_nh_branch->SetAddress(&pfels_mva_nothing_nh_);
+		if (pfels_mva_nothing_nh_branch) {pfels_mva_nothing_nh_branch->SetAddress(&pfels_mva_nothing_nh_);}
 	}
 	pfels_mva_pimu_branch = 0;
 	if (tree->GetAlias("pfels_mva_pimu") != 0) {
 		pfels_mva_pimu_branch = tree->GetBranch(tree->GetAlias("pfels_mva_pimu"));
-		pfels_mva_pimu_branch->SetAddress(&pfels_mva_pimu_);
+		if (pfels_mva_pimu_branch) {pfels_mva_pimu_branch->SetAddress(&pfels_mva_pimu_);}
 	}
 	pfels_pS1E_branch = 0;
 	if (tree->GetAlias("pfels_pS1E") != 0) {
 		pfels_pS1E_branch = tree->GetBranch(tree->GetAlias("pfels_pS1E"));
-		pfels_pS1E_branch->SetAddress(&pfels_pS1E_);
+		if (pfels_pS1E_branch) {pfels_pS1E_branch->SetAddress(&pfels_pS1E_);}
 	}
 	pfels_pS2E_branch = 0;
 	if (tree->GetAlias("pfels_pS2E") != 0) {
 		pfels_pS2E_branch = tree->GetBranch(tree->GetAlias("pfels_pS2E"));
-		pfels_pS2E_branch->SetAddress(&pfels_pS2E_);
+		if (pfels_pS2E_branch) {pfels_pS2E_branch->SetAddress(&pfels_pS2E_);}
 	}
 	pfels_rawEcalE_branch = 0;
 	if (tree->GetAlias("pfels_rawEcalE") != 0) {
 		pfels_rawEcalE_branch = tree->GetBranch(tree->GetAlias("pfels_rawEcalE"));
-		pfels_rawEcalE_branch->SetAddress(&pfels_rawEcalE_);
+		if (pfels_rawEcalE_branch) {pfels_rawEcalE_branch->SetAddress(&pfels_rawEcalE_);}
 	}
 	pfels_rawHcalE_branch = 0;
 	if (tree->GetAlias("pfels_rawHcalE") != 0) {
 		pfels_rawHcalE_branch = tree->GetBranch(tree->GetAlias("pfels_rawHcalE"));
-		pfels_rawHcalE_branch->SetAddress(&pfels_rawHcalE_);
+		if (pfels_rawHcalE_branch) {pfels_rawHcalE_branch->SetAddress(&pfels_rawHcalE_);}
 	}
 	pfjets_area_branch = 0;
 	if (tree->GetAlias("pfjets_area") != 0) {
 		pfjets_area_branch = tree->GetBranch(tree->GetAlias("pfjets_area"));
-		pfjets_area_branch->SetAddress(&pfjets_area_);
+		if (pfjets_area_branch) {pfjets_area_branch->SetAddress(&pfjets_area_);}
 	}
 	pfjets_chargedEmE_branch = 0;
 	if (tree->GetAlias("pfjets_chargedEmE") != 0) {
 		pfjets_chargedEmE_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedEmE"));
-		pfjets_chargedEmE_branch->SetAddress(&pfjets_chargedEmE_);
+		if (pfjets_chargedEmE_branch) {pfjets_chargedEmE_branch->SetAddress(&pfjets_chargedEmE_);}
 	}
 	pfjets_chargedHadronE_branch = 0;
 	if (tree->GetAlias("pfjets_chargedHadronE") != 0) {
 		pfjets_chargedHadronE_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedHadronE"));
-		pfjets_chargedHadronE_branch->SetAddress(&pfjets_chargedHadronE_);
+		if (pfjets_chargedHadronE_branch) {pfjets_chargedHadronE_branch->SetAddress(&pfjets_chargedHadronE_);}
 	}
 	pfjets_cor_branch = 0;
 	if (tree->GetAlias("pfjets_cor") != 0) {
 		pfjets_cor_branch = tree->GetBranch(tree->GetAlias("pfjets_cor"));
-		pfjets_cor_branch->SetAddress(&pfjets_cor_);
+		if (pfjets_cor_branch) {pfjets_cor_branch->SetAddress(&pfjets_cor_);}
 	}
 	pfjets_corL1Fast_branch = 0;
 	if (tree->GetAlias("pfjets_corL1Fast") != 0) {
 		pfjets_corL1Fast_branch = tree->GetBranch(tree->GetAlias("pfjets_corL1Fast"));
-		pfjets_corL1Fast_branch->SetAddress(&pfjets_corL1Fast_);
+		if (pfjets_corL1Fast_branch) {pfjets_corL1Fast_branch->SetAddress(&pfjets_corL1Fast_);}
 	}
 	pfjets_corL1FastL2L3_branch = 0;
 	if (tree->GetAlias("pfjets_corL1FastL2L3") != 0) {
 		pfjets_corL1FastL2L3_branch = tree->GetBranch(tree->GetAlias("pfjets_corL1FastL2L3"));
-		pfjets_corL1FastL2L3_branch->SetAddress(&pfjets_corL1FastL2L3_);
+		if (pfjets_corL1FastL2L3_branch) {pfjets_corL1FastL2L3_branch->SetAddress(&pfjets_corL1FastL2L3_);}
 	}
 	pfjets_corL1FastL2L3residual_branch = 0;
 	if (tree->GetAlias("pfjets_corL1FastL2L3residual") != 0) {
 		pfjets_corL1FastL2L3residual_branch = tree->GetBranch(tree->GetAlias("pfjets_corL1FastL2L3residual"));
-		pfjets_corL1FastL2L3residual_branch->SetAddress(&pfjets_corL1FastL2L3residual_);
+		if (pfjets_corL1FastL2L3residual_branch) {pfjets_corL1FastL2L3residual_branch->SetAddress(&pfjets_corL1FastL2L3residual_);}
 	}
 	pfjets_corL1L2L3_branch = 0;
 	if (tree->GetAlias("pfjets_corL1L2L3") != 0) {
 		pfjets_corL1L2L3_branch = tree->GetBranch(tree->GetAlias("pfjets_corL1L2L3"));
-		pfjets_corL1L2L3_branch->SetAddress(&pfjets_corL1L2L3_);
+		if (pfjets_corL1L2L3_branch) {pfjets_corL1L2L3_branch->SetAddress(&pfjets_corL1L2L3_);}
 	}
 	pfjets_electronE_branch = 0;
 	if (tree->GetAlias("pfjets_electronE") != 0) {
 		pfjets_electronE_branch = tree->GetBranch(tree->GetAlias("pfjets_electronE"));
-		pfjets_electronE_branch->SetAddress(&pfjets_electronE_);
+		if (pfjets_electronE_branch) {pfjets_electronE_branch->SetAddress(&pfjets_electronE_);}
 	}
 	pfjets_hfEmE_branch = 0;
 	if (tree->GetAlias("pfjets_hfEmE") != 0) {
 		pfjets_hfEmE_branch = tree->GetBranch(tree->GetAlias("pfjets_hfEmE"));
-		pfjets_hfEmE_branch->SetAddress(&pfjets_hfEmE_);
+		if (pfjets_hfEmE_branch) {pfjets_hfEmE_branch->SetAddress(&pfjets_hfEmE_);}
 	}
 	pfjets_hfHadronE_branch = 0;
 	if (tree->GetAlias("pfjets_hfHadronE") != 0) {
 		pfjets_hfHadronE_branch = tree->GetBranch(tree->GetAlias("pfjets_hfHadronE"));
-		pfjets_hfHadronE_branch->SetAddress(&pfjets_hfHadronE_);
+		if (pfjets_hfHadronE_branch) {pfjets_hfHadronE_branch->SetAddress(&pfjets_hfHadronE_);}
 	}
 	pfjets_muonE_branch = 0;
 	if (tree->GetAlias("pfjets_muonE") != 0) {
 		pfjets_muonE_branch = tree->GetBranch(tree->GetAlias("pfjets_muonE"));
-		pfjets_muonE_branch->SetAddress(&pfjets_muonE_);
+		if (pfjets_muonE_branch) {pfjets_muonE_branch->SetAddress(&pfjets_muonE_);}
 	}
 	pfjets_neutralEmE_branch = 0;
 	if (tree->GetAlias("pfjets_neutralEmE") != 0) {
 		pfjets_neutralEmE_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralEmE"));
-		pfjets_neutralEmE_branch->SetAddress(&pfjets_neutralEmE_);
+		if (pfjets_neutralEmE_branch) {pfjets_neutralEmE_branch->SetAddress(&pfjets_neutralEmE_);}
 	}
 	pfjets_neutralHadronE_branch = 0;
 	if (tree->GetAlias("pfjets_neutralHadronE") != 0) {
 		pfjets_neutralHadronE_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralHadronE"));
-		pfjets_neutralHadronE_branch->SetAddress(&pfjets_neutralHadronE_);
+		if (pfjets_neutralHadronE_branch) {pfjets_neutralHadronE_branch->SetAddress(&pfjets_neutralHadronE_);}
 	}
 	pfjets_photonE_branch = 0;
 	if (tree->GetAlias("pfjets_photonE") != 0) {
 		pfjets_photonE_branch = tree->GetBranch(tree->GetAlias("pfjets_photonE"));
-		pfjets_photonE_branch->SetAddress(&pfjets_photonE_);
+		if (pfjets_photonE_branch) {pfjets_photonE_branch->SetAddress(&pfjets_photonE_);}
 	}
 	pfmus_deltaP_branch = 0;
 	if (tree->GetAlias("pfmus_deltaP") != 0) {
 		pfmus_deltaP_branch = tree->GetBranch(tree->GetAlias("pfmus_deltaP"));
-		pfmus_deltaP_branch->SetAddress(&pfmus_deltaP_);
+		if (pfmus_deltaP_branch) {pfmus_deltaP_branch->SetAddress(&pfmus_deltaP_);}
 	}
 	pfmus_ecalE_branch = 0;
 	if (tree->GetAlias("pfmus_ecalE") != 0) {
 		pfmus_ecalE_branch = tree->GetBranch(tree->GetAlias("pfmus_ecalE"));
-		pfmus_ecalE_branch->SetAddress(&pfmus_ecalE_);
+		if (pfmus_ecalE_branch) {pfmus_ecalE_branch->SetAddress(&pfmus_ecalE_);}
 	}
 	pfmus_hcalE_branch = 0;
 	if (tree->GetAlias("pfmus_hcalE") != 0) {
 		pfmus_hcalE_branch = tree->GetBranch(tree->GetAlias("pfmus_hcalE"));
-		pfmus_hcalE_branch->SetAddress(&pfmus_hcalE_);
+		if (pfmus_hcalE_branch) {pfmus_hcalE_branch->SetAddress(&pfmus_hcalE_);}
 	}
 	pfmus_iso04ChargedHadrons_branch = 0;
 	if (tree->GetAlias("pfmus_iso04ChargedHadrons") != 0) {
 		pfmus_iso04ChargedHadrons_branch = tree->GetBranch(tree->GetAlias("pfmus_iso04ChargedHadrons"));
-		pfmus_iso04ChargedHadrons_branch->SetAddress(&pfmus_iso04ChargedHadrons_);
+		if (pfmus_iso04ChargedHadrons_branch) {pfmus_iso04ChargedHadrons_branch->SetAddress(&pfmus_iso04ChargedHadrons_);}
 	}
 	pfmus_iso04NeutralHadrons_branch = 0;
 	if (tree->GetAlias("pfmus_iso04NeutralHadrons") != 0) {
 		pfmus_iso04NeutralHadrons_branch = tree->GetBranch(tree->GetAlias("pfmus_iso04NeutralHadrons"));
-		pfmus_iso04NeutralHadrons_branch->SetAddress(&pfmus_iso04NeutralHadrons_);
+		if (pfmus_iso04NeutralHadrons_branch) {pfmus_iso04NeutralHadrons_branch->SetAddress(&pfmus_iso04NeutralHadrons_);}
 	}
 	pfmus_iso04Photons_branch = 0;
 	if (tree->GetAlias("pfmus_iso04Photons") != 0) {
 		pfmus_iso04Photons_branch = tree->GetBranch(tree->GetAlias("pfmus_iso04Photons"));
-		pfmus_iso04Photons_branch->SetAddress(&pfmus_iso04Photons_);
+		if (pfmus_iso04Photons_branch) {pfmus_iso04Photons_branch->SetAddress(&pfmus_iso04Photons_);}
 	}
 	pfmus_isoChargedHadrons_branch = 0;
 	if (tree->GetAlias("pfmus_isoChargedHadrons") != 0) {
 		pfmus_isoChargedHadrons_branch = tree->GetBranch(tree->GetAlias("pfmus_isoChargedHadrons"));
-		pfmus_isoChargedHadrons_branch->SetAddress(&pfmus_isoChargedHadrons_);
+		if (pfmus_isoChargedHadrons_branch) {pfmus_isoChargedHadrons_branch->SetAddress(&pfmus_isoChargedHadrons_);}
 	}
 	pfmus_isoNeutralHadrons_branch = 0;
 	if (tree->GetAlias("pfmus_isoNeutralHadrons") != 0) {
 		pfmus_isoNeutralHadrons_branch = tree->GetBranch(tree->GetAlias("pfmus_isoNeutralHadrons"));
-		pfmus_isoNeutralHadrons_branch->SetAddress(&pfmus_isoNeutralHadrons_);
+		if (pfmus_isoNeutralHadrons_branch) {pfmus_isoNeutralHadrons_branch->SetAddress(&pfmus_isoNeutralHadrons_);}
 	}
 	pfmus_isoPhotons_branch = 0;
 	if (tree->GetAlias("pfmus_isoPhotons") != 0) {
 		pfmus_isoPhotons_branch = tree->GetBranch(tree->GetAlias("pfmus_isoPhotons"));
-		pfmus_isoPhotons_branch->SetAddress(&pfmus_isoPhotons_);
+		if (pfmus_isoPhotons_branch) {pfmus_isoPhotons_branch->SetAddress(&pfmus_isoPhotons_);}
 	}
 	pfmus_mva_emu_branch = 0;
 	if (tree->GetAlias("pfmus_mva_emu") != 0) {
 		pfmus_mva_emu_branch = tree->GetBranch(tree->GetAlias("pfmus_mva_emu"));
-		pfmus_mva_emu_branch->SetAddress(&pfmus_mva_emu_);
+		if (pfmus_mva_emu_branch) {pfmus_mva_emu_branch->SetAddress(&pfmus_mva_emu_);}
 	}
 	pfmus_mva_epi_branch = 0;
 	if (tree->GetAlias("pfmus_mva_epi") != 0) {
 		pfmus_mva_epi_branch = tree->GetBranch(tree->GetAlias("pfmus_mva_epi"));
-		pfmus_mva_epi_branch->SetAddress(&pfmus_mva_epi_);
+		if (pfmus_mva_epi_branch) {pfmus_mva_epi_branch->SetAddress(&pfmus_mva_epi_);}
 	}
 	pfmus_mva_nothing_gamma_branch = 0;
 	if (tree->GetAlias("pfmus_mva_nothing_gamma") != 0) {
 		pfmus_mva_nothing_gamma_branch = tree->GetBranch(tree->GetAlias("pfmus_mva_nothing_gamma"));
-		pfmus_mva_nothing_gamma_branch->SetAddress(&pfmus_mva_nothing_gamma_);
+		if (pfmus_mva_nothing_gamma_branch) {pfmus_mva_nothing_gamma_branch->SetAddress(&pfmus_mva_nothing_gamma_);}
 	}
 	pfmus_mva_nothing_nh_branch = 0;
 	if (tree->GetAlias("pfmus_mva_nothing_nh") != 0) {
 		pfmus_mva_nothing_nh_branch = tree->GetBranch(tree->GetAlias("pfmus_mva_nothing_nh"));
-		pfmus_mva_nothing_nh_branch->SetAddress(&pfmus_mva_nothing_nh_);
+		if (pfmus_mva_nothing_nh_branch) {pfmus_mva_nothing_nh_branch->SetAddress(&pfmus_mva_nothing_nh_);}
 	}
 	pfmus_mva_pimu_branch = 0;
 	if (tree->GetAlias("pfmus_mva_pimu") != 0) {
 		pfmus_mva_pimu_branch = tree->GetBranch(tree->GetAlias("pfmus_mva_pimu"));
-		pfmus_mva_pimu_branch->SetAddress(&pfmus_mva_pimu_);
+		if (pfmus_mva_pimu_branch) {pfmus_mva_pimu_branch->SetAddress(&pfmus_mva_pimu_);}
 	}
 	pfmus_pS1E_branch = 0;
 	if (tree->GetAlias("pfmus_pS1E") != 0) {
 		pfmus_pS1E_branch = tree->GetBranch(tree->GetAlias("pfmus_pS1E"));
-		pfmus_pS1E_branch->SetAddress(&pfmus_pS1E_);
+		if (pfmus_pS1E_branch) {pfmus_pS1E_branch->SetAddress(&pfmus_pS1E_);}
 	}
 	pfmus_pS2E_branch = 0;
 	if (tree->GetAlias("pfmus_pS2E") != 0) {
 		pfmus_pS2E_branch = tree->GetBranch(tree->GetAlias("pfmus_pS2E"));
-		pfmus_pS2E_branch->SetAddress(&pfmus_pS2E_);
+		if (pfmus_pS2E_branch) {pfmus_pS2E_branch->SetAddress(&pfmus_pS2E_);}
 	}
 	pfmus_rawEcalE_branch = 0;
 	if (tree->GetAlias("pfmus_rawEcalE") != 0) {
 		pfmus_rawEcalE_branch = tree->GetBranch(tree->GetAlias("pfmus_rawEcalE"));
-		pfmus_rawEcalE_branch->SetAddress(&pfmus_rawEcalE_);
+		if (pfmus_rawEcalE_branch) {pfmus_rawEcalE_branch->SetAddress(&pfmus_rawEcalE_);}
 	}
 	pfmus_rawHcalE_branch = 0;
 	if (tree->GetAlias("pfmus_rawHcalE") != 0) {
 		pfmus_rawHcalE_branch = tree->GetBranch(tree->GetAlias("pfmus_rawHcalE"));
-		pfmus_rawHcalE_branch->SetAddress(&pfmus_rawHcalE_);
+		if (pfmus_rawHcalE_branch) {pfmus_rawHcalE_branch->SetAddress(&pfmus_rawHcalE_);}
 	}
 	photons_e1x5_branch = 0;
 	if (tree->GetAlias("photons_e1x5") != 0) {
 		photons_e1x5_branch = tree->GetBranch(tree->GetAlias("photons_e1x5"));
-		photons_e1x5_branch->SetAddress(&photons_e1x5_);
+		if (photons_e1x5_branch) {photons_e1x5_branch->SetAddress(&photons_e1x5_);}
 	}
 	photons_e2x5Max_branch = 0;
 	if (tree->GetAlias("photons_e2x5Max") != 0) {
 		photons_e2x5Max_branch = tree->GetBranch(tree->GetAlias("photons_e2x5Max"));
-		photons_e2x5Max_branch->SetAddress(&photons_e2x5Max_);
+		if (photons_e2x5Max_branch) {photons_e2x5Max_branch->SetAddress(&photons_e2x5Max_);}
 	}
 	photons_e3x3_branch = 0;
 	if (tree->GetAlias("photons_e3x3") != 0) {
 		photons_e3x3_branch = tree->GetBranch(tree->GetAlias("photons_e3x3"));
-		photons_e3x3_branch->SetAddress(&photons_e3x3_);
+		if (photons_e3x3_branch) {photons_e3x3_branch->SetAddress(&photons_e3x3_);}
 	}
 	photons_e5x5_branch = 0;
 	if (tree->GetAlias("photons_e5x5") != 0) {
 		photons_e5x5_branch = tree->GetBranch(tree->GetAlias("photons_e5x5"));
-		photons_e5x5_branch->SetAddress(&photons_e5x5_);
+		if (photons_e5x5_branch) {photons_e5x5_branch->SetAddress(&photons_e5x5_);}
 	}
 	photons_ecalIso03_branch = 0;
 	if (tree->GetAlias("photons_ecalIso03") != 0) {
 		photons_ecalIso03_branch = tree->GetBranch(tree->GetAlias("photons_ecalIso03"));
-		photons_ecalIso03_branch->SetAddress(&photons_ecalIso03_);
+		if (photons_ecalIso03_branch) {photons_ecalIso03_branch->SetAddress(&photons_ecalIso03_);}
 	}
 	photons_ecalIso04_branch = 0;
 	if (tree->GetAlias("photons_ecalIso04") != 0) {
 		photons_ecalIso04_branch = tree->GetBranch(tree->GetAlias("photons_ecalIso04"));
-		photons_ecalIso04_branch->SetAddress(&photons_ecalIso04_);
+		if (photons_ecalIso04_branch) {photons_ecalIso04_branch->SetAddress(&photons_ecalIso04_);}
 	}
 	photons_hOverE_branch = 0;
 	if (tree->GetAlias("photons_hOverE") != 0) {
 		photons_hOverE_branch = tree->GetBranch(tree->GetAlias("photons_hOverE"));
-		photons_hOverE_branch->SetAddress(&photons_hOverE_);
+		if (photons_hOverE_branch) {photons_hOverE_branch->SetAddress(&photons_hOverE_);}
 	}
 	photons_hcalDepth1TowerSumEtBcConeDR03_branch = 0;
 	if (tree->GetAlias("photons_hcalDepth1TowerSumEtBcConeDR03") != 0) {
 		photons_hcalDepth1TowerSumEtBcConeDR03_branch = tree->GetBranch(tree->GetAlias("photons_hcalDepth1TowerSumEtBcConeDR03"));
-		photons_hcalDepth1TowerSumEtBcConeDR03_branch->SetAddress(&photons_hcalDepth1TowerSumEtBcConeDR03_);
+		if (photons_hcalDepth1TowerSumEtBcConeDR03_branch) {photons_hcalDepth1TowerSumEtBcConeDR03_branch->SetAddress(&photons_hcalDepth1TowerSumEtBcConeDR03_);}
 	}
 	photons_hcalDepth1TowerSumEtBcConeDR04_branch = 0;
 	if (tree->GetAlias("photons_hcalDepth1TowerSumEtBcConeDR04") != 0) {
 		photons_hcalDepth1TowerSumEtBcConeDR04_branch = tree->GetBranch(tree->GetAlias("photons_hcalDepth1TowerSumEtBcConeDR04"));
-		photons_hcalDepth1TowerSumEtBcConeDR04_branch->SetAddress(&photons_hcalDepth1TowerSumEtBcConeDR04_);
+		if (photons_hcalDepth1TowerSumEtBcConeDR04_branch) {photons_hcalDepth1TowerSumEtBcConeDR04_branch->SetAddress(&photons_hcalDepth1TowerSumEtBcConeDR04_);}
 	}
 	photons_hcalDepth2TowerSumEtBcConeDR03_branch = 0;
 	if (tree->GetAlias("photons_hcalDepth2TowerSumEtBcConeDR03") != 0) {
 		photons_hcalDepth2TowerSumEtBcConeDR03_branch = tree->GetBranch(tree->GetAlias("photons_hcalDepth2TowerSumEtBcConeDR03"));
-		photons_hcalDepth2TowerSumEtBcConeDR03_branch->SetAddress(&photons_hcalDepth2TowerSumEtBcConeDR03_);
+		if (photons_hcalDepth2TowerSumEtBcConeDR03_branch) {photons_hcalDepth2TowerSumEtBcConeDR03_branch->SetAddress(&photons_hcalDepth2TowerSumEtBcConeDR03_);}
 	}
 	photons_hcalDepth2TowerSumEtBcConeDR04_branch = 0;
 	if (tree->GetAlias("photons_hcalDepth2TowerSumEtBcConeDR04") != 0) {
 		photons_hcalDepth2TowerSumEtBcConeDR04_branch = tree->GetBranch(tree->GetAlias("photons_hcalDepth2TowerSumEtBcConeDR04"));
-		photons_hcalDepth2TowerSumEtBcConeDR04_branch->SetAddress(&photons_hcalDepth2TowerSumEtBcConeDR04_);
+		if (photons_hcalDepth2TowerSumEtBcConeDR04_branch) {photons_hcalDepth2TowerSumEtBcConeDR04_branch->SetAddress(&photons_hcalDepth2TowerSumEtBcConeDR04_);}
 	}
 	photons_hcalIso03_branch = 0;
 	if (tree->GetAlias("photons_hcalIso03") != 0) {
 		photons_hcalIso03_branch = tree->GetBranch(tree->GetAlias("photons_hcalIso03"));
-		photons_hcalIso03_branch->SetAddress(&photons_hcalIso03_);
+		if (photons_hcalIso03_branch) {photons_hcalIso03_branch->SetAddress(&photons_hcalIso03_);}
 	}
 	photons_hcalIso04_branch = 0;
 	if (tree->GetAlias("photons_hcalIso04") != 0) {
 		photons_hcalIso04_branch = tree->GetBranch(tree->GetAlias("photons_hcalIso04"));
-		photons_hcalIso04_branch->SetAddress(&photons_hcalIso04_);
+		if (photons_hcalIso04_branch) {photons_hcalIso04_branch->SetAddress(&photons_hcalIso04_);}
 	}
 	photons_hcalTowerSumEtBcConeDR03_branch = 0;
 	if (tree->GetAlias("photons_hcalTowerSumEtBcConeDR03") != 0) {
 		photons_hcalTowerSumEtBcConeDR03_branch = tree->GetBranch(tree->GetAlias("photons_hcalTowerSumEtBcConeDR03"));
-		photons_hcalTowerSumEtBcConeDR03_branch->SetAddress(&photons_hcalTowerSumEtBcConeDR03_);
+		if (photons_hcalTowerSumEtBcConeDR03_branch) {photons_hcalTowerSumEtBcConeDR03_branch->SetAddress(&photons_hcalTowerSumEtBcConeDR03_);}
 	}
 	photons_hcalTowerSumEtBcConeDR04_branch = 0;
 	if (tree->GetAlias("photons_hcalTowerSumEtBcConeDR04") != 0) {
 		photons_hcalTowerSumEtBcConeDR04_branch = tree->GetBranch(tree->GetAlias("photons_hcalTowerSumEtBcConeDR04"));
-		photons_hcalTowerSumEtBcConeDR04_branch->SetAddress(&photons_hcalTowerSumEtBcConeDR04_);
+		if (photons_hcalTowerSumEtBcConeDR04_branch) {photons_hcalTowerSumEtBcConeDR04_branch->SetAddress(&photons_hcalTowerSumEtBcConeDR04_);}
 	}
 	photons_ntkIsoHollow03_branch = 0;
 	if (tree->GetAlias("photons_ntkIsoHollow03") != 0) {
 		photons_ntkIsoHollow03_branch = tree->GetBranch(tree->GetAlias("photons_ntkIsoHollow03"));
-		photons_ntkIsoHollow03_branch->SetAddress(&photons_ntkIsoHollow03_);
+		if (photons_ntkIsoHollow03_branch) {photons_ntkIsoHollow03_branch->SetAddress(&photons_ntkIsoHollow03_);}
 	}
 	photons_ntkIsoHollow04_branch = 0;
 	if (tree->GetAlias("photons_ntkIsoHollow04") != 0) {
 		photons_ntkIsoHollow04_branch = tree->GetBranch(tree->GetAlias("photons_ntkIsoHollow04"));
-		photons_ntkIsoHollow04_branch->SetAddress(&photons_ntkIsoHollow04_);
+		if (photons_ntkIsoHollow04_branch) {photons_ntkIsoHollow04_branch->SetAddress(&photons_ntkIsoHollow04_);}
 	}
 	photons_ntkIsoSolid03_branch = 0;
 	if (tree->GetAlias("photons_ntkIsoSolid03") != 0) {
 		photons_ntkIsoSolid03_branch = tree->GetBranch(tree->GetAlias("photons_ntkIsoSolid03"));
-		photons_ntkIsoSolid03_branch->SetAddress(&photons_ntkIsoSolid03_);
+		if (photons_ntkIsoSolid03_branch) {photons_ntkIsoSolid03_branch->SetAddress(&photons_ntkIsoSolid03_);}
 	}
 	photons_ntkIsoSolid04_branch = 0;
 	if (tree->GetAlias("photons_ntkIsoSolid04") != 0) {
 		photons_ntkIsoSolid04_branch = tree->GetBranch(tree->GetAlias("photons_ntkIsoSolid04"));
-		photons_ntkIsoSolid04_branch->SetAddress(&photons_ntkIsoSolid04_);
+		if (photons_ntkIsoSolid04_branch) {photons_ntkIsoSolid04_branch->SetAddress(&photons_ntkIsoSolid04_);}
 	}
 	photons_sigmaEtaEta_branch = 0;
 	if (tree->GetAlias("photons_sigmaEtaEta") != 0) {
 		photons_sigmaEtaEta_branch = tree->GetBranch(tree->GetAlias("photons_sigmaEtaEta"));
-		photons_sigmaEtaEta_branch->SetAddress(&photons_sigmaEtaEta_);
+		if (photons_sigmaEtaEta_branch) {photons_sigmaEtaEta_branch->SetAddress(&photons_sigmaEtaEta_);}
 	}
 	photons_sigmaIEtaIEta_branch = 0;
 	if (tree->GetAlias("photons_sigmaIEtaIEta") != 0) {
 		photons_sigmaIEtaIEta_branch = tree->GetBranch(tree->GetAlias("photons_sigmaIEtaIEta"));
-		photons_sigmaIEtaIEta_branch->SetAddress(&photons_sigmaIEtaIEta_);
+		if (photons_sigmaIEtaIEta_branch) {photons_sigmaIEtaIEta_branch->SetAddress(&photons_sigmaIEtaIEta_);}
 	}
 	photons_swissSeed_branch = 0;
 	if (tree->GetAlias("photons_swissSeed") != 0) {
 		photons_swissSeed_branch = tree->GetBranch(tree->GetAlias("photons_swissSeed"));
-		photons_swissSeed_branch->SetAddress(&photons_swissSeed_);
+		if (photons_swissSeed_branch) {photons_swissSeed_branch->SetAddress(&photons_swissSeed_);}
 	}
 	photons_tkIsoHollow03_branch = 0;
 	if (tree->GetAlias("photons_tkIsoHollow03") != 0) {
 		photons_tkIsoHollow03_branch = tree->GetBranch(tree->GetAlias("photons_tkIsoHollow03"));
-		photons_tkIsoHollow03_branch->SetAddress(&photons_tkIsoHollow03_);
+		if (photons_tkIsoHollow03_branch) {photons_tkIsoHollow03_branch->SetAddress(&photons_tkIsoHollow03_);}
 	}
 	photons_tkIsoHollow04_branch = 0;
 	if (tree->GetAlias("photons_tkIsoHollow04") != 0) {
 		photons_tkIsoHollow04_branch = tree->GetBranch(tree->GetAlias("photons_tkIsoHollow04"));
-		photons_tkIsoHollow04_branch->SetAddress(&photons_tkIsoHollow04_);
+		if (photons_tkIsoHollow04_branch) {photons_tkIsoHollow04_branch->SetAddress(&photons_tkIsoHollow04_);}
 	}
 	photons_tkIsoSolid03_branch = 0;
 	if (tree->GetAlias("photons_tkIsoSolid03") != 0) {
 		photons_tkIsoSolid03_branch = tree->GetBranch(tree->GetAlias("photons_tkIsoSolid03"));
-		photons_tkIsoSolid03_branch->SetAddress(&photons_tkIsoSolid03_);
+		if (photons_tkIsoSolid03_branch) {photons_tkIsoSolid03_branch->SetAddress(&photons_tkIsoSolid03_);}
 	}
 	photons_tkIsoSolid04_branch = 0;
 	if (tree->GetAlias("photons_tkIsoSolid04") != 0) {
 		photons_tkIsoSolid04_branch = tree->GetBranch(tree->GetAlias("photons_tkIsoSolid04"));
-		photons_tkIsoSolid04_branch->SetAddress(&photons_tkIsoSolid04_);
+		if (photons_tkIsoSolid04_branch) {photons_tkIsoSolid04_branch->SetAddress(&photons_tkIsoSolid04_);}
 	}
 	puInfo_trueNumInteractions_branch = 0;
 	if (tree->GetAlias("puInfo_trueNumInteractions") != 0) {
 		puInfo_trueNumInteractions_branch = tree->GetBranch(tree->GetAlias("puInfo_trueNumInteractions"));
-		puInfo_trueNumInteractions_branch->SetAddress(&puInfo_trueNumInteractions_);
+		if (puInfo_trueNumInteractions_branch) {puInfo_trueNumInteractions_branch->SetAddress(&puInfo_trueNumInteractions_);}
 	}
 	convs_chi2_branch = 0;
 	if (tree->GetAlias("convs_chi2") != 0) {
 		convs_chi2_branch = tree->GetBranch(tree->GetAlias("convs_chi2"));
-		convs_chi2_branch->SetAddress(&convs_chi2_);
+		if (convs_chi2_branch) {convs_chi2_branch->SetAddress(&convs_chi2_);}
 	}
 	convs_dl_branch = 0;
 	if (tree->GetAlias("convs_dl") != 0) {
 		convs_dl_branch = tree->GetBranch(tree->GetAlias("convs_dl"));
-		convs_dl_branch->SetAddress(&convs_dl_);
+		if (convs_dl_branch) {convs_dl_branch->SetAddress(&convs_dl_);}
 	}
 	convs_ndof_branch = 0;
 	if (tree->GetAlias("convs_ndof") != 0) {
 		convs_ndof_branch = tree->GetBranch(tree->GetAlias("convs_ndof"));
-		convs_ndof_branch->SetAddress(&convs_ndof_);
-	}
-	sparm_values_branch = 0;
-	if (tree->GetAlias("sparm_values") != 0) {
-		sparm_values_branch = tree->GetBranch(tree->GetAlias("sparm_values"));
-		sparm_values_branch->SetAddress(&sparm_values_);
+		if (convs_ndof_branch) {convs_ndof_branch->SetAddress(&convs_ndof_);}
 	}
 	scs_clustersSize_branch = 0;
 	if (tree->GetAlias("scs_clustersSize") != 0) {
 		scs_clustersSize_branch = tree->GetBranch(tree->GetAlias("scs_clustersSize"));
-		scs_clustersSize_branch->SetAddress(&scs_clustersSize_);
+		if (scs_clustersSize_branch) {scs_clustersSize_branch->SetAddress(&scs_clustersSize_);}
 	}
 	scs_crystalsSize_branch = 0;
 	if (tree->GetAlias("scs_crystalsSize") != 0) {
 		scs_crystalsSize_branch = tree->GetBranch(tree->GetAlias("scs_crystalsSize"));
-		scs_crystalsSize_branch->SetAddress(&scs_crystalsSize_);
+		if (scs_crystalsSize_branch) {scs_crystalsSize_branch->SetAddress(&scs_crystalsSize_);}
 	}
 	scs_e1x3_branch = 0;
 	if (tree->GetAlias("scs_e1x3") != 0) {
 		scs_e1x3_branch = tree->GetBranch(tree->GetAlias("scs_e1x3"));
-		scs_e1x3_branch->SetAddress(&scs_e1x3_);
+		if (scs_e1x3_branch) {scs_e1x3_branch->SetAddress(&scs_e1x3_);}
 	}
 	scs_e1x5_branch = 0;
 	if (tree->GetAlias("scs_e1x5") != 0) {
 		scs_e1x5_branch = tree->GetBranch(tree->GetAlias("scs_e1x5"));
-		scs_e1x5_branch->SetAddress(&scs_e1x5_);
+		if (scs_e1x5_branch) {scs_e1x5_branch->SetAddress(&scs_e1x5_);}
 	}
 	scs_e2nd_branch = 0;
 	if (tree->GetAlias("scs_e2nd") != 0) {
 		scs_e2nd_branch = tree->GetBranch(tree->GetAlias("scs_e2nd"));
-		scs_e2nd_branch->SetAddress(&scs_e2nd_);
+		if (scs_e2nd_branch) {scs_e2nd_branch->SetAddress(&scs_e2nd_);}
 	}
 	scs_e2x2_branch = 0;
 	if (tree->GetAlias("scs_e2x2") != 0) {
 		scs_e2x2_branch = tree->GetBranch(tree->GetAlias("scs_e2x2"));
-		scs_e2x2_branch->SetAddress(&scs_e2x2_);
+		if (scs_e2x2_branch) {scs_e2x2_branch->SetAddress(&scs_e2x2_);}
 	}
 	scs_e2x5Max_branch = 0;
 	if (tree->GetAlias("scs_e2x5Max") != 0) {
 		scs_e2x5Max_branch = tree->GetBranch(tree->GetAlias("scs_e2x5Max"));
-		scs_e2x5Max_branch->SetAddress(&scs_e2x5Max_);
+		if (scs_e2x5Max_branch) {scs_e2x5Max_branch->SetAddress(&scs_e2x5Max_);}
 	}
 	scs_e3x1_branch = 0;
 	if (tree->GetAlias("scs_e3x1") != 0) {
 		scs_e3x1_branch = tree->GetBranch(tree->GetAlias("scs_e3x1"));
-		scs_e3x1_branch->SetAddress(&scs_e3x1_);
+		if (scs_e3x1_branch) {scs_e3x1_branch->SetAddress(&scs_e3x1_);}
 	}
 	scs_e3x2_branch = 0;
 	if (tree->GetAlias("scs_e3x2") != 0) {
 		scs_e3x2_branch = tree->GetBranch(tree->GetAlias("scs_e3x2"));
-		scs_e3x2_branch->SetAddress(&scs_e3x2_);
+		if (scs_e3x2_branch) {scs_e3x2_branch->SetAddress(&scs_e3x2_);}
 	}
 	scs_e3x3_branch = 0;
 	if (tree->GetAlias("scs_e3x3") != 0) {
 		scs_e3x3_branch = tree->GetBranch(tree->GetAlias("scs_e3x3"));
-		scs_e3x3_branch->SetAddress(&scs_e3x3_);
+		if (scs_e3x3_branch) {scs_e3x3_branch->SetAddress(&scs_e3x3_);}
 	}
 	scs_e4x4_branch = 0;
 	if (tree->GetAlias("scs_e4x4") != 0) {
 		scs_e4x4_branch = tree->GetBranch(tree->GetAlias("scs_e4x4"));
-		scs_e4x4_branch->SetAddress(&scs_e4x4_);
+		if (scs_e4x4_branch) {scs_e4x4_branch->SetAddress(&scs_e4x4_);}
 	}
 	scs_e5x5_branch = 0;
 	if (tree->GetAlias("scs_e5x5") != 0) {
 		scs_e5x5_branch = tree->GetBranch(tree->GetAlias("scs_e5x5"));
-		scs_e5x5_branch->SetAddress(&scs_e5x5_);
+		if (scs_e5x5_branch) {scs_e5x5_branch->SetAddress(&scs_e5x5_);}
 	}
 	scs_eMax_branch = 0;
 	if (tree->GetAlias("scs_eMax") != 0) {
 		scs_eMax_branch = tree->GetBranch(tree->GetAlias("scs_eMax"));
-		scs_eMax_branch->SetAddress(&scs_eMax_);
+		if (scs_eMax_branch) {scs_eMax_branch->SetAddress(&scs_eMax_);}
 	}
 	scs_eSeed_branch = 0;
 	if (tree->GetAlias("scs_eSeed") != 0) {
 		scs_eSeed_branch = tree->GetBranch(tree->GetAlias("scs_eSeed"));
-		scs_eSeed_branch->SetAddress(&scs_eSeed_);
+		if (scs_eSeed_branch) {scs_eSeed_branch->SetAddress(&scs_eSeed_);}
 	}
 	scs_energy_branch = 0;
 	if (tree->GetAlias("scs_energy") != 0) {
 		scs_energy_branch = tree->GetBranch(tree->GetAlias("scs_energy"));
-		scs_energy_branch->SetAddress(&scs_energy_);
+		if (scs_energy_branch) {scs_energy_branch->SetAddress(&scs_energy_);}
 	}
 	scs_eta_branch = 0;
 	if (tree->GetAlias("scs_eta") != 0) {
 		scs_eta_branch = tree->GetBranch(tree->GetAlias("scs_eta"));
-		scs_eta_branch->SetAddress(&scs_eta_);
+		if (scs_eta_branch) {scs_eta_branch->SetAddress(&scs_eta_);}
 	}
 	scs_hoe_branch = 0;
 	if (tree->GetAlias("scs_hoe") != 0) {
 		scs_hoe_branch = tree->GetBranch(tree->GetAlias("scs_hoe"));
-		scs_hoe_branch->SetAddress(&scs_hoe_);
+		if (scs_hoe_branch) {scs_hoe_branch->SetAddress(&scs_hoe_);}
+	}
+	scs_laserCorMax_branch = 0;
+	if (tree->GetAlias("scs_laserCorMax") != 0) {
+		scs_laserCorMax_branch = tree->GetBranch(tree->GetAlias("scs_laserCorMax"));
+		if (scs_laserCorMax_branch) {scs_laserCorMax_branch->SetAddress(&scs_laserCorMax_);}
+	}
+	scs_laserCorMean_branch = 0;
+	if (tree->GetAlias("scs_laserCorMean") != 0) {
+		scs_laserCorMean_branch = tree->GetBranch(tree->GetAlias("scs_laserCorMean"));
+		if (scs_laserCorMean_branch) {scs_laserCorMean_branch->SetAddress(&scs_laserCorMean_);}
+	}
+	scs_laserCorSeed_branch = 0;
+	if (tree->GetAlias("scs_laserCorSeed") != 0) {
+		scs_laserCorSeed_branch = tree->GetBranch(tree->GetAlias("scs_laserCorSeed"));
+		if (scs_laserCorSeed_branch) {scs_laserCorSeed_branch->SetAddress(&scs_laserCorSeed_);}
 	}
 	scs_phi_branch = 0;
 	if (tree->GetAlias("scs_phi") != 0) {
 		scs_phi_branch = tree->GetBranch(tree->GetAlias("scs_phi"));
-		scs_phi_branch->SetAddress(&scs_phi_);
+		if (scs_phi_branch) {scs_phi_branch->SetAddress(&scs_phi_);}
 	}
 	scs_preshowerEnergy_branch = 0;
 	if (tree->GetAlias("scs_preshowerEnergy") != 0) {
 		scs_preshowerEnergy_branch = tree->GetBranch(tree->GetAlias("scs_preshowerEnergy"));
-		scs_preshowerEnergy_branch->SetAddress(&scs_preshowerEnergy_);
+		if (scs_preshowerEnergy_branch) {scs_preshowerEnergy_branch->SetAddress(&scs_preshowerEnergy_);}
 	}
 	scs_rawEnergy_branch = 0;
 	if (tree->GetAlias("scs_rawEnergy") != 0) {
 		scs_rawEnergy_branch = tree->GetBranch(tree->GetAlias("scs_rawEnergy"));
-		scs_rawEnergy_branch->SetAddress(&scs_rawEnergy_);
+		if (scs_rawEnergy_branch) {scs_rawEnergy_branch->SetAddress(&scs_rawEnergy_);}
 	}
 	scs_sigmaEtaEta_branch = 0;
 	if (tree->GetAlias("scs_sigmaEtaEta") != 0) {
 		scs_sigmaEtaEta_branch = tree->GetBranch(tree->GetAlias("scs_sigmaEtaEta"));
-		scs_sigmaEtaEta_branch->SetAddress(&scs_sigmaEtaEta_);
+		if (scs_sigmaEtaEta_branch) {scs_sigmaEtaEta_branch->SetAddress(&scs_sigmaEtaEta_);}
 	}
 	scs_sigmaEtaPhi_branch = 0;
 	if (tree->GetAlias("scs_sigmaEtaPhi") != 0) {
 		scs_sigmaEtaPhi_branch = tree->GetBranch(tree->GetAlias("scs_sigmaEtaPhi"));
-		scs_sigmaEtaPhi_branch->SetAddress(&scs_sigmaEtaPhi_);
+		if (scs_sigmaEtaPhi_branch) {scs_sigmaEtaPhi_branch->SetAddress(&scs_sigmaEtaPhi_);}
 	}
 	scs_sigmaIEtaIEta_branch = 0;
 	if (tree->GetAlias("scs_sigmaIEtaIEta") != 0) {
 		scs_sigmaIEtaIEta_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIEtaIEta"));
-		scs_sigmaIEtaIEta_branch->SetAddress(&scs_sigmaIEtaIEta_);
+		if (scs_sigmaIEtaIEta_branch) {scs_sigmaIEtaIEta_branch->SetAddress(&scs_sigmaIEtaIEta_);}
 	}
 	scs_sigmaIEtaIEtaSC_branch = 0;
 	if (tree->GetAlias("scs_sigmaIEtaIEtaSC") != 0) {
 		scs_sigmaIEtaIEtaSC_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIEtaIEtaSC"));
-		scs_sigmaIEtaIEtaSC_branch->SetAddress(&scs_sigmaIEtaIEtaSC_);
+		if (scs_sigmaIEtaIEtaSC_branch) {scs_sigmaIEtaIEtaSC_branch->SetAddress(&scs_sigmaIEtaIEtaSC_);}
 	}
 	scs_sigmaIEtaIPhi_branch = 0;
 	if (tree->GetAlias("scs_sigmaIEtaIPhi") != 0) {
 		scs_sigmaIEtaIPhi_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIEtaIPhi"));
-		scs_sigmaIEtaIPhi_branch->SetAddress(&scs_sigmaIEtaIPhi_);
+		if (scs_sigmaIEtaIPhi_branch) {scs_sigmaIEtaIPhi_branch->SetAddress(&scs_sigmaIEtaIPhi_);}
 	}
 	scs_sigmaIEtaIPhiSC_branch = 0;
 	if (tree->GetAlias("scs_sigmaIEtaIPhiSC") != 0) {
 		scs_sigmaIEtaIPhiSC_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIEtaIPhiSC"));
-		scs_sigmaIEtaIPhiSC_branch->SetAddress(&scs_sigmaIEtaIPhiSC_);
+		if (scs_sigmaIEtaIPhiSC_branch) {scs_sigmaIEtaIPhiSC_branch->SetAddress(&scs_sigmaIEtaIPhiSC_);}
 	}
 	scs_sigmaIPhiIPhi_branch = 0;
 	if (tree->GetAlias("scs_sigmaIPhiIPhi") != 0) {
 		scs_sigmaIPhiIPhi_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIPhiIPhi"));
-		scs_sigmaIPhiIPhi_branch->SetAddress(&scs_sigmaIPhiIPhi_);
+		if (scs_sigmaIPhiIPhi_branch) {scs_sigmaIPhiIPhi_branch->SetAddress(&scs_sigmaIPhiIPhi_);}
 	}
 	scs_sigmaIPhiIPhiSC_branch = 0;
 	if (tree->GetAlias("scs_sigmaIPhiIPhiSC") != 0) {
 		scs_sigmaIPhiIPhiSC_branch = tree->GetBranch(tree->GetAlias("scs_sigmaIPhiIPhiSC"));
-		scs_sigmaIPhiIPhiSC_branch->SetAddress(&scs_sigmaIPhiIPhiSC_);
+		if (scs_sigmaIPhiIPhiSC_branch) {scs_sigmaIPhiIPhiSC_branch->SetAddress(&scs_sigmaIPhiIPhiSC_);}
 	}
 	scs_sigmaPhiPhi_branch = 0;
 	if (tree->GetAlias("scs_sigmaPhiPhi") != 0) {
 		scs_sigmaPhiPhi_branch = tree->GetBranch(tree->GetAlias("scs_sigmaPhiPhi"));
-		scs_sigmaPhiPhi_branch->SetAddress(&scs_sigmaPhiPhi_);
+		if (scs_sigmaPhiPhi_branch) {scs_sigmaPhiPhi_branch->SetAddress(&scs_sigmaPhiPhi_);}
 	}
 	scs_timeSeed_branch = 0;
 	if (tree->GetAlias("scs_timeSeed") != 0) {
 		scs_timeSeed_branch = tree->GetBranch(tree->GetAlias("scs_timeSeed"));
-		scs_timeSeed_branch->SetAddress(&scs_timeSeed_);
+		if (scs_timeSeed_branch) {scs_timeSeed_branch->SetAddress(&scs_timeSeed_);}
 	}
 	svs_anglePV_branch = 0;
 	if (tree->GetAlias("svs_anglePV") != 0) {
 		svs_anglePV_branch = tree->GetBranch(tree->GetAlias("svs_anglePV"));
-		svs_anglePV_branch->SetAddress(&svs_anglePV_);
+		if (svs_anglePV_branch) {svs_anglePV_branch->SetAddress(&svs_anglePV_);}
 	}
 	svs_chi2_branch = 0;
 	if (tree->GetAlias("svs_chi2") != 0) {
 		svs_chi2_branch = tree->GetBranch(tree->GetAlias("svs_chi2"));
-		svs_chi2_branch->SetAddress(&svs_chi2_);
+		if (svs_chi2_branch) {svs_chi2_branch->SetAddress(&svs_chi2_);}
 	}
 	svs_dist3Dsig_branch = 0;
 	if (tree->GetAlias("svs_dist3Dsig") != 0) {
 		svs_dist3Dsig_branch = tree->GetBranch(tree->GetAlias("svs_dist3Dsig"));
-		svs_dist3Dsig_branch->SetAddress(&svs_dist3Dsig_);
+		if (svs_dist3Dsig_branch) {svs_dist3Dsig_branch->SetAddress(&svs_dist3Dsig_);}
 	}
 	svs_dist3Dval_branch = 0;
 	if (tree->GetAlias("svs_dist3Dval") != 0) {
 		svs_dist3Dval_branch = tree->GetBranch(tree->GetAlias("svs_dist3Dval"));
-		svs_dist3Dval_branch->SetAddress(&svs_dist3Dval_);
+		if (svs_dist3Dval_branch) {svs_dist3Dval_branch->SetAddress(&svs_dist3Dval_);}
 	}
 	svs_distXYsig_branch = 0;
 	if (tree->GetAlias("svs_distXYsig") != 0) {
 		svs_distXYsig_branch = tree->GetBranch(tree->GetAlias("svs_distXYsig"));
-		svs_distXYsig_branch->SetAddress(&svs_distXYsig_);
+		if (svs_distXYsig_branch) {svs_distXYsig_branch->SetAddress(&svs_distXYsig_);}
 	}
 	svs_distXYval_branch = 0;
 	if (tree->GetAlias("svs_distXYval") != 0) {
 		svs_distXYval_branch = tree->GetBranch(tree->GetAlias("svs_distXYval"));
-		svs_distXYval_branch->SetAddress(&svs_distXYval_);
+		if (svs_distXYval_branch) {svs_distXYval_branch->SetAddress(&svs_distXYval_);}
 	}
 	svs_ndof_branch = 0;
 	if (tree->GetAlias("svs_ndof") != 0) {
 		svs_ndof_branch = tree->GetBranch(tree->GetAlias("svs_ndof"));
-		svs_ndof_branch->SetAddress(&svs_ndof_);
+		if (svs_ndof_branch) {svs_ndof_branch->SetAddress(&svs_ndof_);}
 	}
 	svs_prob_branch = 0;
 	if (tree->GetAlias("svs_prob") != 0) {
 		svs_prob_branch = tree->GetBranch(tree->GetAlias("svs_prob"));
-		svs_prob_branch->SetAddress(&svs_prob_);
+		if (svs_prob_branch) {svs_prob_branch->SetAddress(&svs_prob_);}
 	}
 	svs_xError_branch = 0;
 	if (tree->GetAlias("svs_xError") != 0) {
 		svs_xError_branch = tree->GetBranch(tree->GetAlias("svs_xError"));
-		svs_xError_branch->SetAddress(&svs_xError_);
+		if (svs_xError_branch) {svs_xError_branch->SetAddress(&svs_xError_);}
 	}
 	svs_yError_branch = 0;
 	if (tree->GetAlias("svs_yError") != 0) {
 		svs_yError_branch = tree->GetBranch(tree->GetAlias("svs_yError"));
-		svs_yError_branch->SetAddress(&svs_yError_);
+		if (svs_yError_branch) {svs_yError_branch->SetAddress(&svs_yError_);}
 	}
 	svs_zError_branch = 0;
 	if (tree->GetAlias("svs_zError") != 0) {
 		svs_zError_branch = tree->GetBranch(tree->GetAlias("svs_zError"));
-		svs_zError_branch->SetAddress(&svs_zError_);
+		if (svs_zError_branch) {svs_zError_branch->SetAddress(&svs_zError_);}
 	}
 	mus_tcmet_deltax_branch = 0;
 	if (tree->GetAlias("mus_tcmet_deltax") != 0) {
 		mus_tcmet_deltax_branch = tree->GetBranch(tree->GetAlias("mus_tcmet_deltax"));
-		mus_tcmet_deltax_branch->SetAddress(&mus_tcmet_deltax_);
+		if (mus_tcmet_deltax_branch) {mus_tcmet_deltax_branch->SetAddress(&mus_tcmet_deltax_);}
 	}
 	mus_tcmet_deltay_branch = 0;
 	if (tree->GetAlias("mus_tcmet_deltay") != 0) {
 		mus_tcmet_deltay_branch = tree->GetBranch(tree->GetAlias("mus_tcmet_deltay"));
-		mus_tcmet_deltay_branch->SetAddress(&mus_tcmet_deltay_);
+		if (mus_tcmet_deltay_branch) {mus_tcmet_deltay_branch->SetAddress(&mus_tcmet_deltay_);}
 	}
 	pfcands_dzpv_branch = 0;
 	if (tree->GetAlias("pfcands_dzpv") != 0) {
 		pfcands_dzpv_branch = tree->GetBranch(tree->GetAlias("pfcands_dzpv"));
-		pfcands_dzpv_branch->SetAddress(&pfcands_dzpv_);
+		if (pfcands_dzpv_branch) {pfcands_dzpv_branch->SetAddress(&pfcands_dzpv_);}
 	}
 	pfcands_trkiso_branch = 0;
 	if (tree->GetAlias("pfcands_trkiso") != 0) {
 		pfcands_trkiso_branch = tree->GetBranch(tree->GetAlias("pfcands_trkiso"));
-		pfcands_trkiso_branch->SetAddress(&pfcands_trkiso_);
+		if (pfcands_trkiso_branch) {pfcands_trkiso_branch->SetAddress(&pfcands_trkiso_);}
 	}
 	trks_chi2_branch = 0;
 	if (tree->GetAlias("trks_chi2") != 0) {
 		trks_chi2_branch = tree->GetBranch(tree->GetAlias("trks_chi2"));
-		trks_chi2_branch->SetAddress(&trks_chi2_);
+		if (trks_chi2_branch) {trks_chi2_branch->SetAddress(&trks_chi2_);}
 	}
 	trks_d0_branch = 0;
 	if (tree->GetAlias("trks_d0") != 0) {
 		trks_d0_branch = tree->GetBranch(tree->GetAlias("trks_d0"));
-		trks_d0_branch->SetAddress(&trks_d0_);
+		if (trks_d0_branch) {trks_d0_branch->SetAddress(&trks_d0_);}
 	}
 	trks_d0Err_branch = 0;
 	if (tree->GetAlias("trks_d0Err") != 0) {
 		trks_d0Err_branch = tree->GetBranch(tree->GetAlias("trks_d0Err"));
-		trks_d0Err_branch->SetAddress(&trks_d0Err_);
+		if (trks_d0Err_branch) {trks_d0Err_branch->SetAddress(&trks_d0Err_);}
 	}
 	trks_d0corr_branch = 0;
 	if (tree->GetAlias("trks_d0corr") != 0) {
 		trks_d0corr_branch = tree->GetBranch(tree->GetAlias("trks_d0corr"));
-		trks_d0corr_branch->SetAddress(&trks_d0corr_);
+		if (trks_d0corr_branch) {trks_d0corr_branch->SetAddress(&trks_d0corr_);}
 	}
 	trks_d0corrPhi_branch = 0;
 	if (tree->GetAlias("trks_d0corrPhi") != 0) {
 		trks_d0corrPhi_branch = tree->GetBranch(tree->GetAlias("trks_d0corrPhi"));
-		trks_d0corrPhi_branch->SetAddress(&trks_d0corrPhi_);
+		if (trks_d0corrPhi_branch) {trks_d0corrPhi_branch->SetAddress(&trks_d0corrPhi_);}
 	}
 	trks_d0phiCov_branch = 0;
 	if (tree->GetAlias("trks_d0phiCov") != 0) {
 		trks_d0phiCov_branch = tree->GetBranch(tree->GetAlias("trks_d0phiCov"));
-		trks_d0phiCov_branch->SetAddress(&trks_d0phiCov_);
+		if (trks_d0phiCov_branch) {trks_d0phiCov_branch->SetAddress(&trks_d0phiCov_);}
 	}
 	trks_etaErr_branch = 0;
 	if (tree->GetAlias("trks_etaErr") != 0) {
 		trks_etaErr_branch = tree->GetBranch(tree->GetAlias("trks_etaErr"));
-		trks_etaErr_branch->SetAddress(&trks_etaErr_);
+		if (trks_etaErr_branch) {trks_etaErr_branch->SetAddress(&trks_etaErr_);}
 	}
 	trks_layer1_charge_branch = 0;
 	if (tree->GetAlias("trks_layer1_charge") != 0) {
 		trks_layer1_charge_branch = tree->GetBranch(tree->GetAlias("trks_layer1_charge"));
-		trks_layer1_charge_branch->SetAddress(&trks_layer1_charge_);
+		if (trks_layer1_charge_branch) {trks_layer1_charge_branch->SetAddress(&trks_layer1_charge_);}
 	}
 	trks_ndof_branch = 0;
 	if (tree->GetAlias("trks_ndof") != 0) {
 		trks_ndof_branch = tree->GetBranch(tree->GetAlias("trks_ndof"));
-		trks_ndof_branch->SetAddress(&trks_ndof_);
+		if (trks_ndof_branch) {trks_ndof_branch->SetAddress(&trks_ndof_);}
 	}
 	trks_phiErr_branch = 0;
 	if (tree->GetAlias("trks_phiErr") != 0) {
 		trks_phiErr_branch = tree->GetBranch(tree->GetAlias("trks_phiErr"));
-		trks_phiErr_branch->SetAddress(&trks_phiErr_);
+		if (trks_phiErr_branch) {trks_phiErr_branch->SetAddress(&trks_phiErr_);}
 	}
 	trks_ptErr_branch = 0;
 	if (tree->GetAlias("trks_ptErr") != 0) {
 		trks_ptErr_branch = tree->GetBranch(tree->GetAlias("trks_ptErr"));
-		trks_ptErr_branch->SetAddress(&trks_ptErr_);
+		if (trks_ptErr_branch) {trks_ptErr_branch->SetAddress(&trks_ptErr_);}
 	}
 	trks_validFraction_branch = 0;
 	if (tree->GetAlias("trks_validFraction") != 0) {
 		trks_validFraction_branch = tree->GetBranch(tree->GetAlias("trks_validFraction"));
-		trks_validFraction_branch->SetAddress(&trks_validFraction_);
+		if (trks_validFraction_branch) {trks_validFraction_branch->SetAddress(&trks_validFraction_);}
 	}
 	trks_z0_branch = 0;
 	if (tree->GetAlias("trks_z0") != 0) {
 		trks_z0_branch = tree->GetBranch(tree->GetAlias("trks_z0"));
-		trks_z0_branch->SetAddress(&trks_z0_);
+		if (trks_z0_branch) {trks_z0_branch->SetAddress(&trks_z0_);}
 	}
 	trks_z0Err_branch = 0;
 	if (tree->GetAlias("trks_z0Err") != 0) {
 		trks_z0Err_branch = tree->GetBranch(tree->GetAlias("trks_z0Err"));
-		trks_z0Err_branch->SetAddress(&trks_z0Err_);
+		if (trks_z0Err_branch) {trks_z0Err_branch->SetAddress(&trks_z0Err_);}
 	}
 	trks_z0corr_branch = 0;
 	if (tree->GetAlias("trks_z0corr") != 0) {
 		trks_z0corr_branch = tree->GetBranch(tree->GetAlias("trks_z0corr"));
-		trks_z0corr_branch->SetAddress(&trks_z0corr_);
+		if (trks_z0corr_branch) {trks_z0corr_branch->SetAddress(&trks_z0corr_);}
 	}
 	trkjets_cor_branch = 0;
 	if (tree->GetAlias("trkjets_cor") != 0) {
 		trkjets_cor_branch = tree->GetBranch(tree->GetAlias("trkjets_cor"));
-		trkjets_cor_branch->SetAddress(&trkjets_cor_);
+		if (trkjets_cor_branch) {trkjets_cor_branch->SetAddress(&trkjets_cor_);}
 	}
 	trks_d0Errvtx_branch = 0;
 	if (tree->GetAlias("trks_d0Errvtx") != 0) {
 		trks_d0Errvtx_branch = tree->GetBranch(tree->GetAlias("trks_d0Errvtx"));
-		trks_d0Errvtx_branch->SetAddress(&trks_d0Errvtx_);
+		if (trks_d0Errvtx_branch) {trks_d0Errvtx_branch->SetAddress(&trks_d0Errvtx_);}
 	}
 	trks_d0vtx_branch = 0;
 	if (tree->GetAlias("trks_d0vtx") != 0) {
 		trks_d0vtx_branch = tree->GetBranch(tree->GetAlias("trks_d0vtx"));
-		trks_d0vtx_branch->SetAddress(&trks_d0vtx_);
+		if (trks_d0vtx_branch) {trks_d0vtx_branch->SetAddress(&trks_d0vtx_);}
 	}
 	vtxs_chi2_branch = 0;
 	if (tree->GetAlias("vtxs_chi2") != 0) {
 		vtxs_chi2_branch = tree->GetBranch(tree->GetAlias("vtxs_chi2"));
-		vtxs_chi2_branch->SetAddress(&vtxs_chi2_);
+		if (vtxs_chi2_branch) {vtxs_chi2_branch->SetAddress(&vtxs_chi2_);}
 	}
 	vtxs_ndof_branch = 0;
 	if (tree->GetAlias("vtxs_ndof") != 0) {
 		vtxs_ndof_branch = tree->GetBranch(tree->GetAlias("vtxs_ndof"));
-		vtxs_ndof_branch->SetAddress(&vtxs_ndof_);
+		if (vtxs_ndof_branch) {vtxs_ndof_branch->SetAddress(&vtxs_ndof_);}
 	}
 	vtxs_sumpt_branch = 0;
 	if (tree->GetAlias("vtxs_sumpt") != 0) {
 		vtxs_sumpt_branch = tree->GetBranch(tree->GetAlias("vtxs_sumpt"));
-		vtxs_sumpt_branch->SetAddress(&vtxs_sumpt_);
+		if (vtxs_sumpt_branch) {vtxs_sumpt_branch->SetAddress(&vtxs_sumpt_);}
 	}
 	vtxs_xError_branch = 0;
 	if (tree->GetAlias("vtxs_xError") != 0) {
 		vtxs_xError_branch = tree->GetBranch(tree->GetAlias("vtxs_xError"));
-		vtxs_xError_branch->SetAddress(&vtxs_xError_);
+		if (vtxs_xError_branch) {vtxs_xError_branch->SetAddress(&vtxs_xError_);}
 	}
 	vtxs_yError_branch = 0;
 	if (tree->GetAlias("vtxs_yError") != 0) {
 		vtxs_yError_branch = tree->GetBranch(tree->GetAlias("vtxs_yError"));
-		vtxs_yError_branch->SetAddress(&vtxs_yError_);
+		if (vtxs_yError_branch) {vtxs_yError_branch->SetAddress(&vtxs_yError_);}
 	}
 	vtxs_zError_branch = 0;
 	if (tree->GetAlias("vtxs_zError") != 0) {
 		vtxs_zError_branch = tree->GetBranch(tree->GetAlias("vtxs_zError"));
-		vtxs_zError_branch->SetAddress(&vtxs_zError_);
+		if (vtxs_zError_branch) {vtxs_zError_branch->SetAddress(&vtxs_zError_);}
 	}
 	bsvtxs_chi2_branch = 0;
 	if (tree->GetAlias("bsvtxs_chi2") != 0) {
 		bsvtxs_chi2_branch = tree->GetBranch(tree->GetAlias("bsvtxs_chi2"));
-		bsvtxs_chi2_branch->SetAddress(&bsvtxs_chi2_);
+		if (bsvtxs_chi2_branch) {bsvtxs_chi2_branch->SetAddress(&bsvtxs_chi2_);}
 	}
 	bsvtxs_ndof_branch = 0;
 	if (tree->GetAlias("bsvtxs_ndof") != 0) {
 		bsvtxs_ndof_branch = tree->GetBranch(tree->GetAlias("bsvtxs_ndof"));
-		bsvtxs_ndof_branch->SetAddress(&bsvtxs_ndof_);
+		if (bsvtxs_ndof_branch) {bsvtxs_ndof_branch->SetAddress(&bsvtxs_ndof_);}
 	}
 	bsvtxs_sumpt_branch = 0;
 	if (tree->GetAlias("bsvtxs_sumpt") != 0) {
 		bsvtxs_sumpt_branch = tree->GetBranch(tree->GetAlias("bsvtxs_sumpt"));
-		bsvtxs_sumpt_branch->SetAddress(&bsvtxs_sumpt_);
+		if (bsvtxs_sumpt_branch) {bsvtxs_sumpt_branch->SetAddress(&bsvtxs_sumpt_);}
 	}
 	bsvtxs_xError_branch = 0;
 	if (tree->GetAlias("bsvtxs_xError") != 0) {
 		bsvtxs_xError_branch = tree->GetBranch(tree->GetAlias("bsvtxs_xError"));
-		bsvtxs_xError_branch->SetAddress(&bsvtxs_xError_);
+		if (bsvtxs_xError_branch) {bsvtxs_xError_branch->SetAddress(&bsvtxs_xError_);}
 	}
 	bsvtxs_yError_branch = 0;
 	if (tree->GetAlias("bsvtxs_yError") != 0) {
 		bsvtxs_yError_branch = tree->GetBranch(tree->GetAlias("bsvtxs_yError"));
-		bsvtxs_yError_branch->SetAddress(&bsvtxs_yError_);
+		if (bsvtxs_yError_branch) {bsvtxs_yError_branch->SetAddress(&bsvtxs_yError_);}
 	}
 	bsvtxs_zError_branch = 0;
 	if (tree->GetAlias("bsvtxs_zError") != 0) {
 		bsvtxs_zError_branch = tree->GetBranch(tree->GetAlias("bsvtxs_zError"));
-		bsvtxs_zError_branch->SetAddress(&bsvtxs_zError_);
+		if (bsvtxs_zError_branch) {bsvtxs_zError_branch->SetAddress(&bsvtxs_zError_);}
 	}
 	els_convs_dcot_branch = 0;
 	if (tree->GetAlias("els_convs_dcot") != 0) {
 		els_convs_dcot_branch = tree->GetBranch(tree->GetAlias("els_convs_dcot"));
-		els_convs_dcot_branch->SetAddress(&els_convs_dcot_);
+		if (els_convs_dcot_branch) {els_convs_dcot_branch->SetAddress(&els_convs_dcot_);}
 	}
 	els_convs_dist_branch = 0;
 	if (tree->GetAlias("els_convs_dist") != 0) {
 		els_convs_dist_branch = tree->GetBranch(tree->GetAlias("els_convs_dist"));
-		els_convs_dist_branch->SetAddress(&els_convs_dist_);
+		if (els_convs_dist_branch) {els_convs_dist_branch->SetAddress(&els_convs_dist_);}
 	}
 	els_convs_radius_branch = 0;
 	if (tree->GetAlias("els_convs_radius") != 0) {
 		els_convs_radius_branch = tree->GetBranch(tree->GetAlias("els_convs_radius"));
-		els_convs_radius_branch->SetAddress(&els_convs_radius_);
+		if (els_convs_radius_branch) {els_convs_radius_branch->SetAddress(&els_convs_radius_);}
 	}
 	mus_stationShowerDeltaR_branch = 0;
 	if (tree->GetAlias("mus_stationShowerDeltaR") != 0) {
 		mus_stationShowerDeltaR_branch = tree->GetBranch(tree->GetAlias("mus_stationShowerDeltaR"));
-		mus_stationShowerDeltaR_branch->SetAddress(&mus_stationShowerDeltaR_);
+		if (mus_stationShowerDeltaR_branch) {mus_stationShowerDeltaR_branch->SetAddress(&mus_stationShowerDeltaR_);}
 	}
 	mus_stationShowerSizeT_branch = 0;
 	if (tree->GetAlias("mus_stationShowerSizeT") != 0) {
 		mus_stationShowerSizeT_branch = tree->GetBranch(tree->GetAlias("mus_stationShowerSizeT"));
-		mus_stationShowerSizeT_branch->SetAddress(&mus_stationShowerSizeT_);
+		if (mus_stationShowerSizeT_branch) {mus_stationShowerSizeT_branch->SetAddress(&mus_stationShowerSizeT_);}
 	}
 	puInfo_instLumi_branch = 0;
 	if (tree->GetAlias("puInfo_instLumi") != 0) {
 		puInfo_instLumi_branch = tree->GetBranch(tree->GetAlias("puInfo_instLumi"));
-		puInfo_instLumi_branch->SetAddress(&puInfo_instLumi_);
+		if (puInfo_instLumi_branch) {puInfo_instLumi_branch->SetAddress(&puInfo_instLumi_);}
 	}
 	puInfo_sump_highpt_branch = 0;
 	if (tree->GetAlias("puInfo_sump_highpt") != 0) {
 		puInfo_sump_highpt_branch = tree->GetBranch(tree->GetAlias("puInfo_sump_highpt"));
-		puInfo_sump_highpt_branch->SetAddress(&puInfo_sump_highpt_);
+		if (puInfo_sump_highpt_branch) {puInfo_sump_highpt_branch->SetAddress(&puInfo_sump_highpt_);}
 	}
 	puInfo_sumpt_lowpt_branch = 0;
 	if (tree->GetAlias("puInfo_sumpt_lowpt") != 0) {
 		puInfo_sumpt_lowpt_branch = tree->GetBranch(tree->GetAlias("puInfo_sumpt_lowpt"));
-		puInfo_sumpt_lowpt_branch->SetAddress(&puInfo_sumpt_lowpt_);
+		if (puInfo_sumpt_lowpt_branch) {puInfo_sumpt_lowpt_branch->SetAddress(&puInfo_sumpt_lowpt_);}
 	}
 	puInfo_zpositions_branch = 0;
 	if (tree->GetAlias("puInfo_zpositions") != 0) {
 		puInfo_zpositions_branch = tree->GetBranch(tree->GetAlias("puInfo_zpositions"));
-		puInfo_zpositions_branch->SetAddress(&puInfo_zpositions_);
+		if (puInfo_zpositions_branch) {puInfo_zpositions_branch->SetAddress(&puInfo_zpositions_);}
 	}
 	vtxs_covMatrix_branch = 0;
 	if (tree->GetAlias("vtxs_covMatrix") != 0) {
 		vtxs_covMatrix_branch = tree->GetBranch(tree->GetAlias("vtxs_covMatrix"));
-		vtxs_covMatrix_branch->SetAddress(&vtxs_covMatrix_);
+		if (vtxs_covMatrix_branch) {vtxs_covMatrix_branch->SetAddress(&vtxs_covMatrix_);}
 	}
 	bsvtxs_covMatrix_branch = 0;
 	if (tree->GetAlias("bsvtxs_covMatrix") != 0) {
 		bsvtxs_covMatrix_branch = tree->GetBranch(tree->GetAlias("bsvtxs_covMatrix"));
-		bsvtxs_covMatrix_branch->SetAddress(&bsvtxs_covMatrix_);
+		if (bsvtxs_covMatrix_branch) {bsvtxs_covMatrix_branch->SetAddress(&bsvtxs_covMatrix_);}
 	}
 	evt_cscLooseHaloId_branch = 0;
 	if (tree->GetAlias("evt_cscLooseHaloId") != 0) {
 		evt_cscLooseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_cscLooseHaloId"));
-		evt_cscLooseHaloId_branch->SetAddress(&evt_cscLooseHaloId_);
+		if (evt_cscLooseHaloId_branch) {evt_cscLooseHaloId_branch->SetAddress(&evt_cscLooseHaloId_);}
 	}
 	evt_cscTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_cscTightHaloId") != 0) {
 		evt_cscTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_cscTightHaloId"));
-		evt_cscTightHaloId_branch->SetAddress(&evt_cscTightHaloId_);
+		if (evt_cscTightHaloId_branch) {evt_cscTightHaloId_branch->SetAddress(&evt_cscTightHaloId_);}
 	}
 	evt_ecalLooseHaloId_branch = 0;
 	if (tree->GetAlias("evt_ecalLooseHaloId") != 0) {
 		evt_ecalLooseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_ecalLooseHaloId"));
-		evt_ecalLooseHaloId_branch->SetAddress(&evt_ecalLooseHaloId_);
+		if (evt_ecalLooseHaloId_branch) {evt_ecalLooseHaloId_branch->SetAddress(&evt_ecalLooseHaloId_);}
 	}
 	evt_ecalTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_ecalTightHaloId") != 0) {
 		evt_ecalTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_ecalTightHaloId"));
-		evt_ecalTightHaloId_branch->SetAddress(&evt_ecalTightHaloId_);
+		if (evt_ecalTightHaloId_branch) {evt_ecalTightHaloId_branch->SetAddress(&evt_ecalTightHaloId_);}
 	}
 	evt_extremeTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_extremeTightHaloId") != 0) {
 		evt_extremeTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_extremeTightHaloId"));
-		evt_extremeTightHaloId_branch->SetAddress(&evt_extremeTightHaloId_);
+		if (evt_extremeTightHaloId_branch) {evt_extremeTightHaloId_branch->SetAddress(&evt_extremeTightHaloId_);}
 	}
 	evt_globalLooseHaloId_branch = 0;
 	if (tree->GetAlias("evt_globalLooseHaloId") != 0) {
 		evt_globalLooseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_globalLooseHaloId"));
-		evt_globalLooseHaloId_branch->SetAddress(&evt_globalLooseHaloId_);
+		if (evt_globalLooseHaloId_branch) {evt_globalLooseHaloId_branch->SetAddress(&evt_globalLooseHaloId_);}
 	}
 	evt_globalTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_globalTightHaloId") != 0) {
 		evt_globalTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_globalTightHaloId"));
-		evt_globalTightHaloId_branch->SetAddress(&evt_globalTightHaloId_);
+		if (evt_globalTightHaloId_branch) {evt_globalTightHaloId_branch->SetAddress(&evt_globalTightHaloId_);}
 	}
 	evt_hcalLooseHaloId_branch = 0;
 	if (tree->GetAlias("evt_hcalLooseHaloId") != 0) {
 		evt_hcalLooseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_hcalLooseHaloId"));
-		evt_hcalLooseHaloId_branch->SetAddress(&evt_hcalLooseHaloId_);
+		if (evt_hcalLooseHaloId_branch) {evt_hcalLooseHaloId_branch->SetAddress(&evt_hcalLooseHaloId_);}
 	}
 	evt_hcalTightHaloId_branch = 0;
 	if (tree->GetAlias("evt_hcalTightHaloId") != 0) {
 		evt_hcalTightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_hcalTightHaloId"));
-		evt_hcalTightHaloId_branch->SetAddress(&evt_hcalTightHaloId_);
+		if (evt_hcalTightHaloId_branch) {evt_hcalTightHaloId_branch->SetAddress(&evt_hcalTightHaloId_);}
 	}
 	evt_looseHaloId_branch = 0;
 	if (tree->GetAlias("evt_looseHaloId") != 0) {
 		evt_looseHaloId_branch = tree->GetBranch(tree->GetAlias("evt_looseHaloId"));
-		evt_looseHaloId_branch->SetAddress(&evt_looseHaloId_);
+		if (evt_looseHaloId_branch) {evt_looseHaloId_branch->SetAddress(&evt_looseHaloId_);}
 	}
 	evt_nHaloLikeTracks_branch = 0;
 	if (tree->GetAlias("evt_nHaloLikeTracks") != 0) {
 		evt_nHaloLikeTracks_branch = tree->GetBranch(tree->GetAlias("evt_nHaloLikeTracks"));
-		evt_nHaloLikeTracks_branch->SetAddress(&evt_nHaloLikeTracks_);
+		if (evt_nHaloLikeTracks_branch) {evt_nHaloLikeTracks_branch->SetAddress(&evt_nHaloLikeTracks_);}
 	}
 	evt_nHaloTriggerCandidates_branch = 0;
 	if (tree->GetAlias("evt_nHaloTriggerCandidates") != 0) {
 		evt_nHaloTriggerCandidates_branch = tree->GetBranch(tree->GetAlias("evt_nHaloTriggerCandidates"));
-		evt_nHaloTriggerCandidates_branch->SetAddress(&evt_nHaloTriggerCandidates_);
+		if (evt_nHaloTriggerCandidates_branch) {evt_nHaloTriggerCandidates_branch->SetAddress(&evt_nHaloTriggerCandidates_);}
 	}
 	evt_tightHaloId_branch = 0;
 	if (tree->GetAlias("evt_tightHaloId") != 0) {
 		evt_tightHaloId_branch = tree->GetBranch(tree->GetAlias("evt_tightHaloId"));
-		evt_tightHaloId_branch->SetAddress(&evt_tightHaloId_);
+		if (evt_tightHaloId_branch) {evt_tightHaloId_branch->SetAddress(&evt_tightHaloId_);}
 	}
 	evt_bsType_branch = 0;
 	if (tree->GetAlias("evt_bsType") != 0) {
 		evt_bsType_branch = tree->GetBranch(tree->GetAlias("evt_bsType"));
-		evt_bsType_branch->SetAddress(&evt_bsType_);
+		if (evt_bsType_branch) {evt_bsType_branch->SetAddress(&evt_bsType_);}
 	}
 	evt_bunchCrossing_branch = 0;
 	if (tree->GetAlias("evt_bunchCrossing") != 0) {
 		evt_bunchCrossing_branch = tree->GetBranch(tree->GetAlias("evt_bunchCrossing"));
-		evt_bunchCrossing_branch->SetAddress(&evt_bunchCrossing_);
+		if (evt_bunchCrossing_branch) {evt_bunchCrossing_branch->SetAddress(&evt_bunchCrossing_);}
 	}
 	evt_experimentType_branch = 0;
 	if (tree->GetAlias("evt_experimentType") != 0) {
 		evt_experimentType_branch = tree->GetBranch(tree->GetAlias("evt_experimentType"));
-		evt_experimentType_branch->SetAddress(&evt_experimentType_);
+		if (evt_experimentType_branch) {evt_experimentType_branch->SetAddress(&evt_experimentType_);}
 	}
 	evt_isRealData_branch = 0;
 	if (tree->GetAlias("evt_isRealData") != 0) {
 		evt_isRealData_branch = tree->GetBranch(tree->GetAlias("evt_isRealData"));
-		evt_isRealData_branch->SetAddress(&evt_isRealData_);
+		if (evt_isRealData_branch) {evt_isRealData_branch->SetAddress(&evt_isRealData_);}
 	}
 	evt_orbitNumber_branch = 0;
 	if (tree->GetAlias("evt_orbitNumber") != 0) {
 		evt_orbitNumber_branch = tree->GetBranch(tree->GetAlias("evt_orbitNumber"));
-		evt_orbitNumber_branch->SetAddress(&evt_orbitNumber_);
+		if (evt_orbitNumber_branch) {evt_orbitNumber_branch->SetAddress(&evt_orbitNumber_);}
 	}
 	evt_storeNumber_branch = 0;
 	if (tree->GetAlias("evt_storeNumber") != 0) {
 		evt_storeNumber_branch = tree->GetBranch(tree->GetAlias("evt_storeNumber"));
-		evt_storeNumber_branch->SetAddress(&evt_storeNumber_);
+		if (evt_storeNumber_branch) {evt_storeNumber_branch->SetAddress(&evt_storeNumber_);}
 	}
 	hcalnoise_GetRecHitCount_branch = 0;
 	if (tree->GetAlias("hcalnoise_GetRecHitCount") != 0) {
 		hcalnoise_GetRecHitCount_branch = tree->GetBranch(tree->GetAlias("hcalnoise_GetRecHitCount"));
-		hcalnoise_GetRecHitCount_branch->SetAddress(&hcalnoise_GetRecHitCount_);
+		if (hcalnoise_GetRecHitCount_branch) {hcalnoise_GetRecHitCount_branch->SetAddress(&hcalnoise_GetRecHitCount_);}
 	}
 	hcalnoise_GetRecHitCount15_branch = 0;
 	if (tree->GetAlias("hcalnoise_GetRecHitCount15") != 0) {
 		hcalnoise_GetRecHitCount15_branch = tree->GetBranch(tree->GetAlias("hcalnoise_GetRecHitCount15"));
-		hcalnoise_GetRecHitCount15_branch->SetAddress(&hcalnoise_GetRecHitCount15_);
+		if (hcalnoise_GetRecHitCount15_branch) {hcalnoise_GetRecHitCount15_branch->SetAddress(&hcalnoise_GetRecHitCount15_);}
 	}
 	hcalnoise_maxHPDHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxHPDHits") != 0) {
 		hcalnoise_maxHPDHits_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxHPDHits"));
-		hcalnoise_maxHPDHits_branch->SetAddress(&hcalnoise_maxHPDHits_);
+		if (hcalnoise_maxHPDHits_branch) {hcalnoise_maxHPDHits_branch->SetAddress(&hcalnoise_maxHPDHits_);}
 	}
 	hcalnoise_maxHPDNoOtherHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxHPDNoOtherHits") != 0) {
 		hcalnoise_maxHPDNoOtherHits_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxHPDNoOtherHits"));
-		hcalnoise_maxHPDNoOtherHits_branch->SetAddress(&hcalnoise_maxHPDNoOtherHits_);
+		if (hcalnoise_maxHPDNoOtherHits_branch) {hcalnoise_maxHPDNoOtherHits_branch->SetAddress(&hcalnoise_maxHPDNoOtherHits_);}
 	}
 	hcalnoise_maxRBXHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxRBXHits") != 0) {
 		hcalnoise_maxRBXHits_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxRBXHits"));
-		hcalnoise_maxRBXHits_branch->SetAddress(&hcalnoise_maxRBXHits_);
+		if (hcalnoise_maxRBXHits_branch) {hcalnoise_maxRBXHits_branch->SetAddress(&hcalnoise_maxRBXHits_);}
 	}
 	hcalnoise_maxZeros_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxZeros") != 0) {
 		hcalnoise_maxZeros_branch = tree->GetBranch(tree->GetAlias("hcalnoise_maxZeros"));
-		hcalnoise_maxZeros_branch->SetAddress(&hcalnoise_maxZeros_);
+		if (hcalnoise_maxZeros_branch) {hcalnoise_maxZeros_branch->SetAddress(&hcalnoise_maxZeros_);}
 	}
 	hcalnoise_noiseFilterStatus_branch = 0;
 	if (tree->GetAlias("hcalnoise_noiseFilterStatus") != 0) {
 		hcalnoise_noiseFilterStatus_branch = tree->GetBranch(tree->GetAlias("hcalnoise_noiseFilterStatus"));
-		hcalnoise_noiseFilterStatus_branch->SetAddress(&hcalnoise_noiseFilterStatus_);
+		if (hcalnoise_noiseFilterStatus_branch) {hcalnoise_noiseFilterStatus_branch->SetAddress(&hcalnoise_noiseFilterStatus_);}
 	}
 	hcalnoise_noiseType_branch = 0;
 	if (tree->GetAlias("hcalnoise_noiseType") != 0) {
 		hcalnoise_noiseType_branch = tree->GetBranch(tree->GetAlias("hcalnoise_noiseType"));
-		hcalnoise_noiseType_branch->SetAddress(&hcalnoise_noiseType_);
+		if (hcalnoise_noiseType_branch) {hcalnoise_noiseType_branch->SetAddress(&hcalnoise_noiseType_);}
 	}
 	hcalnoise_num10GeVHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_num10GeVHits") != 0) {
 		hcalnoise_num10GeVHits_branch = tree->GetBranch(tree->GetAlias("hcalnoise_num10GeVHits"));
-		hcalnoise_num10GeVHits_branch->SetAddress(&hcalnoise_num10GeVHits_);
+		if (hcalnoise_num10GeVHits_branch) {hcalnoise_num10GeVHits_branch->SetAddress(&hcalnoise_num10GeVHits_);}
 	}
 	hcalnoise_num25GeVHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_num25GeVHits") != 0) {
 		hcalnoise_num25GeVHits_branch = tree->GetBranch(tree->GetAlias("hcalnoise_num25GeVHits"));
-		hcalnoise_num25GeVHits_branch->SetAddress(&hcalnoise_num25GeVHits_);
+		if (hcalnoise_num25GeVHits_branch) {hcalnoise_num25GeVHits_branch->SetAddress(&hcalnoise_num25GeVHits_);}
 	}
 	hcalnoise_numFlatNoiseChannels_branch = 0;
 	if (tree->GetAlias("hcalnoise_numFlatNoiseChannels") != 0) {
 		hcalnoise_numFlatNoiseChannels_branch = tree->GetBranch(tree->GetAlias("hcalnoise_numFlatNoiseChannels"));
-		hcalnoise_numFlatNoiseChannels_branch->SetAddress(&hcalnoise_numFlatNoiseChannels_);
+		if (hcalnoise_numFlatNoiseChannels_branch) {hcalnoise_numFlatNoiseChannels_branch->SetAddress(&hcalnoise_numFlatNoiseChannels_);}
 	}
 	hcalnoise_numIsolatedNoiseChannels_branch = 0;
 	if (tree->GetAlias("hcalnoise_numIsolatedNoiseChannels") != 0) {
 		hcalnoise_numIsolatedNoiseChannels_branch = tree->GetBranch(tree->GetAlias("hcalnoise_numIsolatedNoiseChannels"));
-		hcalnoise_numIsolatedNoiseChannels_branch->SetAddress(&hcalnoise_numIsolatedNoiseChannels_);
+		if (hcalnoise_numIsolatedNoiseChannels_branch) {hcalnoise_numIsolatedNoiseChannels_branch->SetAddress(&hcalnoise_numIsolatedNoiseChannels_);}
 	}
 	hcalnoise_numProblematicRBXs_branch = 0;
 	if (tree->GetAlias("hcalnoise_numProblematicRBXs") != 0) {
 		hcalnoise_numProblematicRBXs_branch = tree->GetBranch(tree->GetAlias("hcalnoise_numProblematicRBXs"));
-		hcalnoise_numProblematicRBXs_branch->SetAddress(&hcalnoise_numProblematicRBXs_);
+		if (hcalnoise_numProblematicRBXs_branch) {hcalnoise_numProblematicRBXs_branch->SetAddress(&hcalnoise_numProblematicRBXs_);}
 	}
 	hcalnoise_numSpikeNoiseChannels_branch = 0;
 	if (tree->GetAlias("hcalnoise_numSpikeNoiseChannels") != 0) {
 		hcalnoise_numSpikeNoiseChannels_branch = tree->GetBranch(tree->GetAlias("hcalnoise_numSpikeNoiseChannels"));
-		hcalnoise_numSpikeNoiseChannels_branch->SetAddress(&hcalnoise_numSpikeNoiseChannels_);
+		if (hcalnoise_numSpikeNoiseChannels_branch) {hcalnoise_numSpikeNoiseChannels_branch->SetAddress(&hcalnoise_numSpikeNoiseChannels_);}
 	}
 	hcalnoise_numTS4TS5NoiseChannels_branch = 0;
 	if (tree->GetAlias("hcalnoise_numTS4TS5NoiseChannels") != 0) {
 		hcalnoise_numTS4TS5NoiseChannels_branch = tree->GetBranch(tree->GetAlias("hcalnoise_numTS4TS5NoiseChannels"));
-		hcalnoise_numTS4TS5NoiseChannels_branch->SetAddress(&hcalnoise_numTS4TS5NoiseChannels_);
+		if (hcalnoise_numTS4TS5NoiseChannels_branch) {hcalnoise_numTS4TS5NoiseChannels_branch->SetAddress(&hcalnoise_numTS4TS5NoiseChannels_);}
 	}
 	hcalnoise_numTriangleNoiseChannels_branch = 0;
 	if (tree->GetAlias("hcalnoise_numTriangleNoiseChannels") != 0) {
 		hcalnoise_numTriangleNoiseChannels_branch = tree->GetBranch(tree->GetAlias("hcalnoise_numTriangleNoiseChannels"));
-		hcalnoise_numTriangleNoiseChannels_branch->SetAddress(&hcalnoise_numTriangleNoiseChannels_);
+		if (hcalnoise_numTriangleNoiseChannels_branch) {hcalnoise_numTriangleNoiseChannels_branch->SetAddress(&hcalnoise_numTriangleNoiseChannels_);}
 	}
 	hcalnoise_passHighLevelNoiseFilter_branch = 0;
 	if (tree->GetAlias("hcalnoise_passHighLevelNoiseFilter") != 0) {
 		hcalnoise_passHighLevelNoiseFilter_branch = tree->GetBranch(tree->GetAlias("hcalnoise_passHighLevelNoiseFilter"));
-		hcalnoise_passHighLevelNoiseFilter_branch->SetAddress(&hcalnoise_passHighLevelNoiseFilter_);
+		if (hcalnoise_passHighLevelNoiseFilter_branch) {hcalnoise_passHighLevelNoiseFilter_branch->SetAddress(&hcalnoise_passHighLevelNoiseFilter_);}
 	}
 	hcalnoise_passLooseNoiseFilter_branch = 0;
 	if (tree->GetAlias("hcalnoise_passLooseNoiseFilter") != 0) {
 		hcalnoise_passLooseNoiseFilter_branch = tree->GetBranch(tree->GetAlias("hcalnoise_passLooseNoiseFilter"));
-		hcalnoise_passLooseNoiseFilter_branch->SetAddress(&hcalnoise_passLooseNoiseFilter_);
+		if (hcalnoise_passLooseNoiseFilter_branch) {hcalnoise_passLooseNoiseFilter_branch->SetAddress(&hcalnoise_passLooseNoiseFilter_);}
 	}
 	hcalnoise_passTightNoiseFilter_branch = 0;
 	if (tree->GetAlias("hcalnoise_passTightNoiseFilter") != 0) {
 		hcalnoise_passTightNoiseFilter_branch = tree->GetBranch(tree->GetAlias("hcalnoise_passTightNoiseFilter"));
-		hcalnoise_passTightNoiseFilter_branch->SetAddress(&hcalnoise_passTightNoiseFilter_);
+		if (hcalnoise_passTightNoiseFilter_branch) {hcalnoise_passTightNoiseFilter_branch->SetAddress(&hcalnoise_passTightNoiseFilter_);}
 	}
 	l1_nemiso_branch = 0;
 	if (tree->GetAlias("l1_nemiso") != 0) {
 		l1_nemiso_branch = tree->GetBranch(tree->GetAlias("l1_nemiso"));
-		l1_nemiso_branch->SetAddress(&l1_nemiso_);
+		if (l1_nemiso_branch) {l1_nemiso_branch->SetAddress(&l1_nemiso_);}
 	}
 	l1_nemnoiso_branch = 0;
 	if (tree->GetAlias("l1_nemnoiso") != 0) {
 		l1_nemnoiso_branch = tree->GetBranch(tree->GetAlias("l1_nemnoiso"));
-		l1_nemnoiso_branch->SetAddress(&l1_nemnoiso_);
+		if (l1_nemnoiso_branch) {l1_nemnoiso_branch->SetAddress(&l1_nemnoiso_);}
 	}
 	l1_njetsc_branch = 0;
 	if (tree->GetAlias("l1_njetsc") != 0) {
 		l1_njetsc_branch = tree->GetBranch(tree->GetAlias("l1_njetsc"));
-		l1_njetsc_branch->SetAddress(&l1_njetsc_);
+		if (l1_njetsc_branch) {l1_njetsc_branch->SetAddress(&l1_njetsc_);}
 	}
 	l1_njetsf_branch = 0;
 	if (tree->GetAlias("l1_njetsf") != 0) {
 		l1_njetsf_branch = tree->GetBranch(tree->GetAlias("l1_njetsf"));
-		l1_njetsf_branch->SetAddress(&l1_njetsf_);
+		if (l1_njetsf_branch) {l1_njetsf_branch->SetAddress(&l1_njetsf_);}
 	}
 	l1_njetst_branch = 0;
 	if (tree->GetAlias("l1_njetst") != 0) {
 		l1_njetst_branch = tree->GetBranch(tree->GetAlias("l1_njetst"));
-		l1_njetst_branch->SetAddress(&l1_njetst_);
+		if (l1_njetst_branch) {l1_njetst_branch->SetAddress(&l1_njetst_);}
 	}
 	l1_nmus_branch = 0;
 	if (tree->GetAlias("l1_nmus") != 0) {
 		l1_nmus_branch = tree->GetBranch(tree->GetAlias("l1_nmus"));
-		l1_nmus_branch->SetAddress(&l1_nmus_);
+		if (l1_nmus_branch) {l1_nmus_branch->SetAddress(&l1_nmus_);}
 	}
 	ls_lumiSecQual_branch = 0;
 	if (tree->GetAlias("ls_lumiSecQual") != 0) {
 		ls_lumiSecQual_branch = tree->GetBranch(tree->GetAlias("ls_lumiSecQual"));
-		ls_lumiSecQual_branch->SetAddress(&ls_lumiSecQual_);
+		if (ls_lumiSecQual_branch) {ls_lumiSecQual_branch->SetAddress(&ls_lumiSecQual_);}
 	}
 	pdfinfo_id1_branch = 0;
 	if (tree->GetAlias("pdfinfo_id1") != 0) {
 		pdfinfo_id1_branch = tree->GetBranch(tree->GetAlias("pdfinfo_id1"));
-		pdfinfo_id1_branch->SetAddress(&pdfinfo_id1_);
+		if (pdfinfo_id1_branch) {pdfinfo_id1_branch->SetAddress(&pdfinfo_id1_);}
 	}
 	pdfinfo_id2_branch = 0;
 	if (tree->GetAlias("pdfinfo_id2") != 0) {
 		pdfinfo_id2_branch = tree->GetBranch(tree->GetAlias("pdfinfo_id2"));
-		pdfinfo_id2_branch->SetAddress(&pdfinfo_id2_);
+		if (pdfinfo_id2_branch) {pdfinfo_id2_branch->SetAddress(&pdfinfo_id2_);}
 	}
 	evt_ecaliPhiSuspects_branch = 0;
 	if (tree->GetAlias("evt_ecaliPhiSuspects") != 0) {
 		evt_ecaliPhiSuspects_branch = tree->GetBranch(tree->GetAlias("evt_ecaliPhiSuspects"));
-		evt_ecaliPhiSuspects_branch->SetAddress(&evt_ecaliPhiSuspects_);
+		if (evt_ecaliPhiSuspects_branch) {evt_ecaliPhiSuspects_branch->SetAddress(&evt_ecaliPhiSuspects_);}
 	}
 	evt_globaliPhiSuspects_branch = 0;
 	if (tree->GetAlias("evt_globaliPhiSuspects") != 0) {
 		evt_globaliPhiSuspects_branch = tree->GetBranch(tree->GetAlias("evt_globaliPhiSuspects"));
-		evt_globaliPhiSuspects_branch->SetAddress(&evt_globaliPhiSuspects_);
+		if (evt_globaliPhiSuspects_branch) {evt_globaliPhiSuspects_branch->SetAddress(&evt_globaliPhiSuspects_);}
 	}
 	evt_hcaliPhiSuspects_branch = 0;
 	if (tree->GetAlias("evt_hcaliPhiSuspects") != 0) {
 		evt_hcaliPhiSuspects_branch = tree->GetBranch(tree->GetAlias("evt_hcaliPhiSuspects"));
-		evt_hcaliPhiSuspects_branch->SetAddress(&evt_hcaliPhiSuspects_);
+		if (evt_hcaliPhiSuspects_branch) {evt_hcaliPhiSuspects_branch->SetAddress(&evt_hcaliPhiSuspects_);}
 	}
 	els_mc3_id_branch = 0;
 	if (tree->GetAlias("els_mc3_id") != 0) {
 		els_mc3_id_branch = tree->GetBranch(tree->GetAlias("els_mc3_id"));
-		els_mc3_id_branch->SetAddress(&els_mc3_id_);
+		if (els_mc3_id_branch) {els_mc3_id_branch->SetAddress(&els_mc3_id_);}
 	}
 	els_mc3idx_branch = 0;
 	if (tree->GetAlias("els_mc3idx") != 0) {
 		els_mc3idx_branch = tree->GetBranch(tree->GetAlias("els_mc3idx"));
-		els_mc3idx_branch->SetAddress(&els_mc3idx_);
+		if (els_mc3idx_branch) {els_mc3idx_branch->SetAddress(&els_mc3idx_);}
 	}
 	els_mc3_motherid_branch = 0;
 	if (tree->GetAlias("els_mc3_motherid") != 0) {
 		els_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("els_mc3_motherid"));
-		els_mc3_motherid_branch->SetAddress(&els_mc3_motherid_);
+		if (els_mc3_motherid_branch) {els_mc3_motherid_branch->SetAddress(&els_mc3_motherid_);}
 	}
 	els_mc3_motheridx_branch = 0;
 	if (tree->GetAlias("els_mc3_motheridx") != 0) {
 		els_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("els_mc3_motheridx"));
-		els_mc3_motheridx_branch->SetAddress(&els_mc3_motheridx_);
+		if (els_mc3_motheridx_branch) {els_mc3_motheridx_branch->SetAddress(&els_mc3_motheridx_);}
 	}
 	els_mc_id_branch = 0;
 	if (tree->GetAlias("els_mc_id") != 0) {
 		els_mc_id_branch = tree->GetBranch(tree->GetAlias("els_mc_id"));
-		els_mc_id_branch->SetAddress(&els_mc_id_);
+		if (els_mc_id_branch) {els_mc_id_branch->SetAddress(&els_mc_id_);}
 	}
 	els_mcidx_branch = 0;
 	if (tree->GetAlias("els_mcidx") != 0) {
 		els_mcidx_branch = tree->GetBranch(tree->GetAlias("els_mcidx"));
-		els_mcidx_branch->SetAddress(&els_mcidx_);
+		if (els_mcidx_branch) {els_mcidx_branch->SetAddress(&els_mcidx_);}
 	}
 	els_mc_motherid_branch = 0;
 	if (tree->GetAlias("els_mc_motherid") != 0) {
 		els_mc_motherid_branch = tree->GetBranch(tree->GetAlias("els_mc_motherid"));
-		els_mc_motherid_branch->SetAddress(&els_mc_motherid_);
+		if (els_mc_motherid_branch) {els_mc_motherid_branch->SetAddress(&els_mc_motherid_);}
 	}
 	jets_mc3_id_branch = 0;
 	if (tree->GetAlias("jets_mc3_id") != 0) {
 		jets_mc3_id_branch = tree->GetBranch(tree->GetAlias("jets_mc3_id"));
-		jets_mc3_id_branch->SetAddress(&jets_mc3_id_);
+		if (jets_mc3_id_branch) {jets_mc3_id_branch->SetAddress(&jets_mc3_id_);}
 	}
 	jets_mc3idx_branch = 0;
 	if (tree->GetAlias("jets_mc3idx") != 0) {
 		jets_mc3idx_branch = tree->GetBranch(tree->GetAlias("jets_mc3idx"));
-		jets_mc3idx_branch->SetAddress(&jets_mc3idx_);
+		if (jets_mc3idx_branch) {jets_mc3idx_branch->SetAddress(&jets_mc3idx_);}
 	}
 	jets_mc_gpidx_branch = 0;
 	if (tree->GetAlias("jets_mc_gpidx") != 0) {
 		jets_mc_gpidx_branch = tree->GetBranch(tree->GetAlias("jets_mc_gpidx"));
-		jets_mc_gpidx_branch->SetAddress(&jets_mc_gpidx_);
+		if (jets_mc_gpidx_branch) {jets_mc_gpidx_branch->SetAddress(&jets_mc_gpidx_);}
 	}
 	jets_mc_id_branch = 0;
 	if (tree->GetAlias("jets_mc_id") != 0) {
 		jets_mc_id_branch = tree->GetBranch(tree->GetAlias("jets_mc_id"));
-		jets_mc_id_branch->SetAddress(&jets_mc_id_);
+		if (jets_mc_id_branch) {jets_mc_id_branch->SetAddress(&jets_mc_id_);}
 	}
 	jets_mcidx_branch = 0;
 	if (tree->GetAlias("jets_mcidx") != 0) {
 		jets_mcidx_branch = tree->GetBranch(tree->GetAlias("jets_mcidx"));
-		jets_mcidx_branch->SetAddress(&jets_mcidx_);
+		if (jets_mcidx_branch) {jets_mcidx_branch->SetAddress(&jets_mcidx_);}
 	}
 	jets_mc_motherid_branch = 0;
 	if (tree->GetAlias("jets_mc_motherid") != 0) {
 		jets_mc_motherid_branch = tree->GetBranch(tree->GetAlias("jets_mc_motherid"));
-		jets_mc_motherid_branch->SetAddress(&jets_mc_motherid_);
+		if (jets_mc_motherid_branch) {jets_mc_motherid_branch->SetAddress(&jets_mc_motherid_);}
 	}
 	mus_mc3_id_branch = 0;
 	if (tree->GetAlias("mus_mc3_id") != 0) {
 		mus_mc3_id_branch = tree->GetBranch(tree->GetAlias("mus_mc3_id"));
-		mus_mc3_id_branch->SetAddress(&mus_mc3_id_);
+		if (mus_mc3_id_branch) {mus_mc3_id_branch->SetAddress(&mus_mc3_id_);}
 	}
 	mus_mc3idx_branch = 0;
 	if (tree->GetAlias("mus_mc3idx") != 0) {
 		mus_mc3idx_branch = tree->GetBranch(tree->GetAlias("mus_mc3idx"));
-		mus_mc3idx_branch->SetAddress(&mus_mc3idx_);
+		if (mus_mc3idx_branch) {mus_mc3idx_branch->SetAddress(&mus_mc3idx_);}
 	}
 	mus_mc3_motherid_branch = 0;
 	if (tree->GetAlias("mus_mc3_motherid") != 0) {
 		mus_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("mus_mc3_motherid"));
-		mus_mc3_motherid_branch->SetAddress(&mus_mc3_motherid_);
+		if (mus_mc3_motherid_branch) {mus_mc3_motherid_branch->SetAddress(&mus_mc3_motherid_);}
 	}
 	mus_mc3_motheridx_branch = 0;
 	if (tree->GetAlias("mus_mc3_motheridx") != 0) {
 		mus_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("mus_mc3_motheridx"));
-		mus_mc3_motheridx_branch->SetAddress(&mus_mc3_motheridx_);
+		if (mus_mc3_motheridx_branch) {mus_mc3_motheridx_branch->SetAddress(&mus_mc3_motheridx_);}
 	}
 	mus_mc_id_branch = 0;
 	if (tree->GetAlias("mus_mc_id") != 0) {
 		mus_mc_id_branch = tree->GetBranch(tree->GetAlias("mus_mc_id"));
-		mus_mc_id_branch->SetAddress(&mus_mc_id_);
+		if (mus_mc_id_branch) {mus_mc_id_branch->SetAddress(&mus_mc_id_);}
 	}
 	mus_mcidx_branch = 0;
 	if (tree->GetAlias("mus_mcidx") != 0) {
 		mus_mcidx_branch = tree->GetBranch(tree->GetAlias("mus_mcidx"));
-		mus_mcidx_branch->SetAddress(&mus_mcidx_);
+		if (mus_mcidx_branch) {mus_mcidx_branch->SetAddress(&mus_mcidx_);}
 	}
 	mus_mc_motherid_branch = 0;
 	if (tree->GetAlias("mus_mc_motherid") != 0) {
 		mus_mc_motherid_branch = tree->GetBranch(tree->GetAlias("mus_mc_motherid"));
-		mus_mc_motherid_branch->SetAddress(&mus_mc_motherid_);
+		if (mus_mc_motherid_branch) {mus_mc_motherid_branch->SetAddress(&mus_mc_motherid_);}
 	}
 	pfjets_mc3_id_branch = 0;
 	if (tree->GetAlias("pfjets_mc3_id") != 0) {
 		pfjets_mc3_id_branch = tree->GetBranch(tree->GetAlias("pfjets_mc3_id"));
-		pfjets_mc3_id_branch->SetAddress(&pfjets_mc3_id_);
+		if (pfjets_mc3_id_branch) {pfjets_mc3_id_branch->SetAddress(&pfjets_mc3_id_);}
 	}
 	pfjets_mc3idx_branch = 0;
 	if (tree->GetAlias("pfjets_mc3idx") != 0) {
 		pfjets_mc3idx_branch = tree->GetBranch(tree->GetAlias("pfjets_mc3idx"));
-		pfjets_mc3idx_branch->SetAddress(&pfjets_mc3idx_);
+		if (pfjets_mc3idx_branch) {pfjets_mc3idx_branch->SetAddress(&pfjets_mc3idx_);}
 	}
 	pfjets_mc_gpidx_branch = 0;
 	if (tree->GetAlias("pfjets_mc_gpidx") != 0) {
 		pfjets_mc_gpidx_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_gpidx"));
-		pfjets_mc_gpidx_branch->SetAddress(&pfjets_mc_gpidx_);
+		if (pfjets_mc_gpidx_branch) {pfjets_mc_gpidx_branch->SetAddress(&pfjets_mc_gpidx_);}
 	}
 	pfjets_mc_id_branch = 0;
 	if (tree->GetAlias("pfjets_mc_id") != 0) {
 		pfjets_mc_id_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_id"));
-		pfjets_mc_id_branch->SetAddress(&pfjets_mc_id_);
+		if (pfjets_mc_id_branch) {pfjets_mc_id_branch->SetAddress(&pfjets_mc_id_);}
 	}
 	pfjets_mcidx_branch = 0;
 	if (tree->GetAlias("pfjets_mcidx") != 0) {
 		pfjets_mcidx_branch = tree->GetBranch(tree->GetAlias("pfjets_mcidx"));
-		pfjets_mcidx_branch->SetAddress(&pfjets_mcidx_);
+		if (pfjets_mcidx_branch) {pfjets_mcidx_branch->SetAddress(&pfjets_mcidx_);}
 	}
 	pfjets_mc_motherid_branch = 0;
 	if (tree->GetAlias("pfjets_mc_motherid") != 0) {
 		pfjets_mc_motherid_branch = tree->GetBranch(tree->GetAlias("pfjets_mc_motherid"));
-		pfjets_mc_motherid_branch->SetAddress(&pfjets_mc_motherid_);
+		if (pfjets_mc_motherid_branch) {pfjets_mc_motherid_branch->SetAddress(&pfjets_mc_motherid_);}
 	}
 	photons_mc3_id_branch = 0;
 	if (tree->GetAlias("photons_mc3_id") != 0) {
 		photons_mc3_id_branch = tree->GetBranch(tree->GetAlias("photons_mc3_id"));
-		photons_mc3_id_branch->SetAddress(&photons_mc3_id_);
+		if (photons_mc3_id_branch) {photons_mc3_id_branch->SetAddress(&photons_mc3_id_);}
 	}
 	photons_mc3idx_branch = 0;
 	if (tree->GetAlias("photons_mc3idx") != 0) {
 		photons_mc3idx_branch = tree->GetBranch(tree->GetAlias("photons_mc3idx"));
-		photons_mc3idx_branch->SetAddress(&photons_mc3idx_);
+		if (photons_mc3idx_branch) {photons_mc3idx_branch->SetAddress(&photons_mc3idx_);}
 	}
 	photons_mc3_motherid_branch = 0;
 	if (tree->GetAlias("photons_mc3_motherid") != 0) {
 		photons_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("photons_mc3_motherid"));
-		photons_mc3_motherid_branch->SetAddress(&photons_mc3_motherid_);
+		if (photons_mc3_motherid_branch) {photons_mc3_motherid_branch->SetAddress(&photons_mc3_motherid_);}
 	}
 	photons_mc3_motheridx_branch = 0;
 	if (tree->GetAlias("photons_mc3_motheridx") != 0) {
 		photons_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("photons_mc3_motheridx"));
-		photons_mc3_motheridx_branch->SetAddress(&photons_mc3_motheridx_);
+		if (photons_mc3_motheridx_branch) {photons_mc3_motheridx_branch->SetAddress(&photons_mc3_motheridx_);}
 	}
 	photons_mc_id_branch = 0;
 	if (tree->GetAlias("photons_mc_id") != 0) {
 		photons_mc_id_branch = tree->GetBranch(tree->GetAlias("photons_mc_id"));
-		photons_mc_id_branch->SetAddress(&photons_mc_id_);
+		if (photons_mc_id_branch) {photons_mc_id_branch->SetAddress(&photons_mc_id_);}
 	}
 	photons_mcidx_branch = 0;
 	if (tree->GetAlias("photons_mcidx") != 0) {
 		photons_mcidx_branch = tree->GetBranch(tree->GetAlias("photons_mcidx"));
-		photons_mcidx_branch->SetAddress(&photons_mcidx_);
+		if (photons_mcidx_branch) {photons_mcidx_branch->SetAddress(&photons_mcidx_);}
 	}
 	photons_mc_motherid_branch = 0;
 	if (tree->GetAlias("photons_mc_motherid") != 0) {
 		photons_mc_motherid_branch = tree->GetBranch(tree->GetAlias("photons_mc_motherid"));
-		photons_mc_motherid_branch->SetAddress(&photons_mc_motherid_);
+		if (photons_mc_motherid_branch) {photons_mc_motherid_branch->SetAddress(&photons_mc_motherid_);}
 	}
 	trk_mc3_id_branch = 0;
 	if (tree->GetAlias("trk_mc3_id") != 0) {
 		trk_mc3_id_branch = tree->GetBranch(tree->GetAlias("trk_mc3_id"));
-		trk_mc3_id_branch->SetAddress(&trk_mc3_id_);
+		if (trk_mc3_id_branch) {trk_mc3_id_branch->SetAddress(&trk_mc3_id_);}
 	}
 	trk_mc3idx_branch = 0;
 	if (tree->GetAlias("trk_mc3idx") != 0) {
 		trk_mc3idx_branch = tree->GetBranch(tree->GetAlias("trk_mc3idx"));
-		trk_mc3idx_branch->SetAddress(&trk_mc3idx_);
+		if (trk_mc3idx_branch) {trk_mc3idx_branch->SetAddress(&trk_mc3idx_);}
 	}
 	trk_mc3_motherid_branch = 0;
 	if (tree->GetAlias("trk_mc3_motherid") != 0) {
 		trk_mc3_motherid_branch = tree->GetBranch(tree->GetAlias("trk_mc3_motherid"));
-		trk_mc3_motherid_branch->SetAddress(&trk_mc3_motherid_);
+		if (trk_mc3_motherid_branch) {trk_mc3_motherid_branch->SetAddress(&trk_mc3_motherid_);}
 	}
 	trk_mc3_motheridx_branch = 0;
 	if (tree->GetAlias("trk_mc3_motheridx") != 0) {
 		trk_mc3_motheridx_branch = tree->GetBranch(tree->GetAlias("trk_mc3_motheridx"));
-		trk_mc3_motheridx_branch->SetAddress(&trk_mc3_motheridx_);
+		if (trk_mc3_motheridx_branch) {trk_mc3_motheridx_branch->SetAddress(&trk_mc3_motheridx_);}
 	}
 	trk_mc_id_branch = 0;
 	if (tree->GetAlias("trk_mc_id") != 0) {
 		trk_mc_id_branch = tree->GetBranch(tree->GetAlias("trk_mc_id"));
-		trk_mc_id_branch->SetAddress(&trk_mc_id_);
+		if (trk_mc_id_branch) {trk_mc_id_branch->SetAddress(&trk_mc_id_);}
 	}
 	trk_mcidx_branch = 0;
 	if (tree->GetAlias("trk_mcidx") != 0) {
 		trk_mcidx_branch = tree->GetBranch(tree->GetAlias("trk_mcidx"));
-		trk_mcidx_branch->SetAddress(&trk_mcidx_);
+		if (trk_mcidx_branch) {trk_mcidx_branch->SetAddress(&trk_mcidx_);}
 	}
 	trk_mc_motherid_branch = 0;
 	if (tree->GetAlias("trk_mc_motherid") != 0) {
 		trk_mc_motherid_branch = tree->GetBranch(tree->GetAlias("trk_mc_motherid"));
-		trk_mc_motherid_branch->SetAddress(&trk_mc_motherid_);
+		if (trk_mc_motherid_branch) {trk_mc_motherid_branch->SetAddress(&trk_mc_motherid_);}
 	}
 	els_closestJet_branch = 0;
 	if (tree->GetAlias("els_closestJet") != 0) {
 		els_closestJet_branch = tree->GetBranch(tree->GetAlias("els_closestJet"));
-		els_closestJet_branch->SetAddress(&els_closestJet_);
+		if (els_closestJet_branch) {els_closestJet_branch->SetAddress(&els_closestJet_);}
 	}
 	els_closestMuon_branch = 0;
 	if (tree->GetAlias("els_closestMuon") != 0) {
 		els_closestMuon_branch = tree->GetBranch(tree->GetAlias("els_closestMuon"));
-		els_closestMuon_branch->SetAddress(&els_closestMuon_);
+		if (els_closestMuon_branch) {els_closestMuon_branch->SetAddress(&els_closestMuon_);}
 	}
 	els_pfelsidx_branch = 0;
 	if (tree->GetAlias("els_pfelsidx") != 0) {
 		els_pfelsidx_branch = tree->GetBranch(tree->GetAlias("els_pfelsidx"));
-		els_pfelsidx_branch->SetAddress(&els_pfelsidx_);
+		if (els_pfelsidx_branch) {els_pfelsidx_branch->SetAddress(&els_pfelsidx_);}
 	}
 	els_category_branch = 0;
 	if (tree->GetAlias("els_category") != 0) {
 		els_category_branch = tree->GetBranch(tree->GetAlias("els_category"));
-		els_category_branch->SetAddress(&els_category_);
+		if (els_category_branch) {els_category_branch->SetAddress(&els_category_);}
 	}
 	els_charge_branch = 0;
 	if (tree->GetAlias("els_charge") != 0) {
 		els_charge_branch = tree->GetBranch(tree->GetAlias("els_charge"));
-		els_charge_branch->SetAddress(&els_charge_);
+		if (els_charge_branch) {els_charge_branch->SetAddress(&els_charge_);}
 	}
 	els_ckf_laywithmeas_branch = 0;
 	if (tree->GetAlias("els_ckf_laywithmeas") != 0) {
 		els_ckf_laywithmeas_branch = tree->GetBranch(tree->GetAlias("els_ckf_laywithmeas"));
-		els_ckf_laywithmeas_branch->SetAddress(&els_ckf_laywithmeas_);
+		if (els_ckf_laywithmeas_branch) {els_ckf_laywithmeas_branch->SetAddress(&els_ckf_laywithmeas_);}
 	}
 	els_class_branch = 0;
 	if (tree->GetAlias("els_class") != 0) {
 		els_class_branch = tree->GetBranch(tree->GetAlias("els_class"));
-		els_class_branch->SetAddress(&els_class_);
+		if (els_class_branch) {els_class_branch->SetAddress(&els_class_);}
 	}
 	els_conv_delMissHits_branch = 0;
 	if (tree->GetAlias("els_conv_delMissHits") != 0) {
 		els_conv_delMissHits_branch = tree->GetBranch(tree->GetAlias("els_conv_delMissHits"));
-		els_conv_delMissHits_branch->SetAddress(&els_conv_delMissHits_);
+		if (els_conv_delMissHits_branch) {els_conv_delMissHits_branch->SetAddress(&els_conv_delMissHits_);}
 	}
 	els_conv_flag_branch = 0;
 	if (tree->GetAlias("els_conv_flag") != 0) {
 		els_conv_flag_branch = tree->GetBranch(tree->GetAlias("els_conv_flag"));
-		els_conv_flag_branch->SetAddress(&els_conv_flag_);
+		if (els_conv_flag_branch) {els_conv_flag_branch->SetAddress(&els_conv_flag_);}
 	}
 	els_conv_gsftkidx_branch = 0;
 	if (tree->GetAlias("els_conv_gsftkidx") != 0) {
 		els_conv_gsftkidx_branch = tree->GetBranch(tree->GetAlias("els_conv_gsftkidx"));
-		els_conv_gsftkidx_branch->SetAddress(&els_conv_gsftkidx_);
+		if (els_conv_gsftkidx_branch) {els_conv_gsftkidx_branch->SetAddress(&els_conv_gsftkidx_);}
 	}
 	els_conv_old_delMissHits_branch = 0;
 	if (tree->GetAlias("els_conv_old_delMissHits") != 0) {
 		els_conv_old_delMissHits_branch = tree->GetBranch(tree->GetAlias("els_conv_old_delMissHits"));
-		els_conv_old_delMissHits_branch->SetAddress(&els_conv_old_delMissHits_);
+		if (els_conv_old_delMissHits_branch) {els_conv_old_delMissHits_branch->SetAddress(&els_conv_old_delMissHits_);}
 	}
 	els_conv_old_flag_branch = 0;
 	if (tree->GetAlias("els_conv_old_flag") != 0) {
 		els_conv_old_flag_branch = tree->GetBranch(tree->GetAlias("els_conv_old_flag"));
-		els_conv_old_flag_branch->SetAddress(&els_conv_old_flag_);
+		if (els_conv_old_flag_branch) {els_conv_old_flag_branch->SetAddress(&els_conv_old_flag_);}
 	}
 	els_conv_old_gsftkidx_branch = 0;
 	if (tree->GetAlias("els_conv_old_gsftkidx") != 0) {
 		els_conv_old_gsftkidx_branch = tree->GetBranch(tree->GetAlias("els_conv_old_gsftkidx"));
-		els_conv_old_gsftkidx_branch->SetAddress(&els_conv_old_gsftkidx_);
+		if (els_conv_old_gsftkidx_branch) {els_conv_old_gsftkidx_branch->SetAddress(&els_conv_old_gsftkidx_);}
 	}
 	els_conv_old_tkidx_branch = 0;
 	if (tree->GetAlias("els_conv_old_tkidx") != 0) {
 		els_conv_old_tkidx_branch = tree->GetBranch(tree->GetAlias("els_conv_old_tkidx"));
-		els_conv_old_tkidx_branch->SetAddress(&els_conv_old_tkidx_);
+		if (els_conv_old_tkidx_branch) {els_conv_old_tkidx_branch->SetAddress(&els_conv_old_tkidx_);}
 	}
 	els_conv_tkidx_branch = 0;
 	if (tree->GetAlias("els_conv_tkidx") != 0) {
 		els_conv_tkidx_branch = tree->GetBranch(tree->GetAlias("els_conv_tkidx"));
-		els_conv_tkidx_branch->SetAddress(&els_conv_tkidx_);
+		if (els_conv_tkidx_branch) {els_conv_tkidx_branch->SetAddress(&els_conv_tkidx_);}
 	}
 	els_exp_innerlayers_branch = 0;
 	if (tree->GetAlias("els_exp_innerlayers") != 0) {
 		els_exp_innerlayers_branch = tree->GetBranch(tree->GetAlias("els_exp_innerlayers"));
-		els_exp_innerlayers_branch->SetAddress(&els_exp_innerlayers_);
+		if (els_exp_innerlayers_branch) {els_exp_innerlayers_branch->SetAddress(&els_exp_innerlayers_);}
 	}
 	els_exp_outerlayers_branch = 0;
 	if (tree->GetAlias("els_exp_outerlayers") != 0) {
 		els_exp_outerlayers_branch = tree->GetBranch(tree->GetAlias("els_exp_outerlayers"));
-		els_exp_outerlayers_branch->SetAddress(&els_exp_outerlayers_);
+		if (els_exp_outerlayers_branch) {els_exp_outerlayers_branch->SetAddress(&els_exp_outerlayers_);}
 	}
 	els_fiduciality_branch = 0;
 	if (tree->GetAlias("els_fiduciality") != 0) {
 		els_fiduciality_branch = tree->GetBranch(tree->GetAlias("els_fiduciality"));
-		els_fiduciality_branch->SetAddress(&els_fiduciality_);
+		if (els_fiduciality_branch) {els_fiduciality_branch->SetAddress(&els_fiduciality_);}
 	}
 	els_gsftrkidx_branch = 0;
 	if (tree->GetAlias("els_gsftrkidx") != 0) {
 		els_gsftrkidx_branch = tree->GetBranch(tree->GetAlias("els_gsftrkidx"));
-		els_gsftrkidx_branch->SetAddress(&els_gsftrkidx_);
+		if (els_gsftrkidx_branch) {els_gsftrkidx_branch->SetAddress(&els_gsftrkidx_);}
 	}
 	els_layer1_det_branch = 0;
 	if (tree->GetAlias("els_layer1_det") != 0) {
 		els_layer1_det_branch = tree->GetBranch(tree->GetAlias("els_layer1_det"));
-		els_layer1_det_branch->SetAddress(&els_layer1_det_);
+		if (els_layer1_det_branch) {els_layer1_det_branch->SetAddress(&els_layer1_det_);}
 	}
 	els_layer1_layer_branch = 0;
 	if (tree->GetAlias("els_layer1_layer") != 0) {
 		els_layer1_layer_branch = tree->GetBranch(tree->GetAlias("els_layer1_layer"));
-		els_layer1_layer_branch->SetAddress(&els_layer1_layer_);
+		if (els_layer1_layer_branch) {els_layer1_layer_branch->SetAddress(&els_layer1_layer_);}
 	}
 	els_layer1_sizerphi_branch = 0;
 	if (tree->GetAlias("els_layer1_sizerphi") != 0) {
 		els_layer1_sizerphi_branch = tree->GetBranch(tree->GetAlias("els_layer1_sizerphi"));
-		els_layer1_sizerphi_branch->SetAddress(&els_layer1_sizerphi_);
+		if (els_layer1_sizerphi_branch) {els_layer1_sizerphi_branch->SetAddress(&els_layer1_sizerphi_);}
 	}
 	els_layer1_sizerz_branch = 0;
 	if (tree->GetAlias("els_layer1_sizerz") != 0) {
 		els_layer1_sizerz_branch = tree->GetBranch(tree->GetAlias("els_layer1_sizerz"));
-		els_layer1_sizerz_branch->SetAddress(&els_layer1_sizerz_);
+		if (els_layer1_sizerz_branch) {els_layer1_sizerz_branch->SetAddress(&els_layer1_sizerz_);}
 	}
 	els_lostHits_branch = 0;
 	if (tree->GetAlias("els_lostHits") != 0) {
 		els_lostHits_branch = tree->GetBranch(tree->GetAlias("els_lostHits"));
-		els_lostHits_branch->SetAddress(&els_lostHits_);
+		if (els_lostHits_branch) {els_lostHits_branch->SetAddress(&els_lostHits_);}
 	}
 	els_lost_pixelhits_branch = 0;
 	if (tree->GetAlias("els_lost_pixelhits") != 0) {
 		els_lost_pixelhits_branch = tree->GetBranch(tree->GetAlias("els_lost_pixelhits"));
-		els_lost_pixelhits_branch->SetAddress(&els_lost_pixelhits_);
+		if (els_lost_pixelhits_branch) {els_lost_pixelhits_branch->SetAddress(&els_lost_pixelhits_);}
 	}
 	els_nSeed_branch = 0;
 	if (tree->GetAlias("els_nSeed") != 0) {
 		els_nSeed_branch = tree->GetBranch(tree->GetAlias("els_nSeed"));
-		els_nSeed_branch->SetAddress(&els_nSeed_);
+		if (els_nSeed_branch) {els_nSeed_branch->SetAddress(&els_nSeed_);}
 	}
 	els_sccharge_branch = 0;
 	if (tree->GetAlias("els_sccharge") != 0) {
 		els_sccharge_branch = tree->GetBranch(tree->GetAlias("els_sccharge"));
-		els_sccharge_branch->SetAddress(&els_sccharge_);
+		if (els_sccharge_branch) {els_sccharge_branch->SetAddress(&els_sccharge_);}
 	}
 	els_scindex_branch = 0;
 	if (tree->GetAlias("els_scindex") != 0) {
 		els_scindex_branch = tree->GetBranch(tree->GetAlias("els_scindex"));
-		els_scindex_branch->SetAddress(&els_scindex_);
+		if (els_scindex_branch) {els_scindex_branch->SetAddress(&els_scindex_);}
 	}
 	els_trk_charge_branch = 0;
 	if (tree->GetAlias("els_trk_charge") != 0) {
 		els_trk_charge_branch = tree->GetBranch(tree->GetAlias("els_trk_charge"));
-		els_trk_charge_branch->SetAddress(&els_trk_charge_);
+		if (els_trk_charge_branch) {els_trk_charge_branch->SetAddress(&els_trk_charge_);}
 	}
 	els_trkidx_branch = 0;
 	if (tree->GetAlias("els_trkidx") != 0) {
 		els_trkidx_branch = tree->GetBranch(tree->GetAlias("els_trkidx"));
-		els_trkidx_branch->SetAddress(&els_trkidx_);
+		if (els_trkidx_branch) {els_trkidx_branch->SetAddress(&els_trkidx_);}
 	}
 	els_type_branch = 0;
 	if (tree->GetAlias("els_type") != 0) {
 		els_type_branch = tree->GetBranch(tree->GetAlias("els_type"));
-		els_type_branch->SetAddress(&els_type_);
+		if (els_type_branch) {els_type_branch->SetAddress(&els_type_);}
 	}
 	els_validHits_branch = 0;
 	if (tree->GetAlias("els_validHits") != 0) {
 		els_validHits_branch = tree->GetBranch(tree->GetAlias("els_validHits"));
-		els_validHits_branch->SetAddress(&els_validHits_);
+		if (els_validHits_branch) {els_validHits_branch->SetAddress(&els_validHits_);}
 	}
 	els_valid_pixelhits_branch = 0;
 	if (tree->GetAlias("els_valid_pixelhits") != 0) {
 		els_valid_pixelhits_branch = tree->GetBranch(tree->GetAlias("els_valid_pixelhits"));
-		els_valid_pixelhits_branch->SetAddress(&els_valid_pixelhits_);
+		if (els_valid_pixelhits_branch) {els_valid_pixelhits_branch->SetAddress(&els_valid_pixelhits_);}
 	}
 	genps_id_branch = 0;
 	if (tree->GetAlias("genps_id") != 0) {
 		genps_id_branch = tree->GetBranch(tree->GetAlias("genps_id"));
-		genps_id_branch->SetAddress(&genps_id_);
+		if (genps_id_branch) {genps_id_branch->SetAddress(&genps_id_);}
 	}
 	genps_id_mother_branch = 0;
 	if (tree->GetAlias("genps_id_mother") != 0) {
 		genps_id_mother_branch = tree->GetBranch(tree->GetAlias("genps_id_mother"));
-		genps_id_mother_branch->SetAddress(&genps_id_mother_);
+		if (genps_id_mother_branch) {genps_id_mother_branch->SetAddress(&genps_id_mother_);}
 	}
 	genps_status_branch = 0;
 	if (tree->GetAlias("genps_status") != 0) {
 		genps_status_branch = tree->GetBranch(tree->GetAlias("genps_status"));
-		genps_status_branch->SetAddress(&genps_status_);
+		if (genps_status_branch) {genps_status_branch->SetAddress(&genps_status_);}
 	}
 	gsftrks_charge_branch = 0;
 	if (tree->GetAlias("gsftrks_charge") != 0) {
 		gsftrks_charge_branch = tree->GetBranch(tree->GetAlias("gsftrks_charge"));
-		gsftrks_charge_branch->SetAddress(&gsftrks_charge_);
+		if (gsftrks_charge_branch) {gsftrks_charge_branch->SetAddress(&gsftrks_charge_);}
 	}
 	gsftrks_exp_innerlayers_branch = 0;
 	if (tree->GetAlias("gsftrks_exp_innerlayers") != 0) {
 		gsftrks_exp_innerlayers_branch = tree->GetBranch(tree->GetAlias("gsftrks_exp_innerlayers"));
-		gsftrks_exp_innerlayers_branch->SetAddress(&gsftrks_exp_innerlayers_);
+		if (gsftrks_exp_innerlayers_branch) {gsftrks_exp_innerlayers_branch->SetAddress(&gsftrks_exp_innerlayers_);}
 	}
 	gsftrks_exp_outerlayers_branch = 0;
 	if (tree->GetAlias("gsftrks_exp_outerlayers") != 0) {
 		gsftrks_exp_outerlayers_branch = tree->GetBranch(tree->GetAlias("gsftrks_exp_outerlayers"));
-		gsftrks_exp_outerlayers_branch->SetAddress(&gsftrks_exp_outerlayers_);
+		if (gsftrks_exp_outerlayers_branch) {gsftrks_exp_outerlayers_branch->SetAddress(&gsftrks_exp_outerlayers_);}
 	}
 	gsftrks_layer1_det_branch = 0;
 	if (tree->GetAlias("gsftrks_layer1_det") != 0) {
 		gsftrks_layer1_det_branch = tree->GetBranch(tree->GetAlias("gsftrks_layer1_det"));
-		gsftrks_layer1_det_branch->SetAddress(&gsftrks_layer1_det_);
+		if (gsftrks_layer1_det_branch) {gsftrks_layer1_det_branch->SetAddress(&gsftrks_layer1_det_);}
 	}
 	gsftrks_layer1_layer_branch = 0;
 	if (tree->GetAlias("gsftrks_layer1_layer") != 0) {
 		gsftrks_layer1_layer_branch = tree->GetBranch(tree->GetAlias("gsftrks_layer1_layer"));
-		gsftrks_layer1_layer_branch->SetAddress(&gsftrks_layer1_layer_);
+		if (gsftrks_layer1_layer_branch) {gsftrks_layer1_layer_branch->SetAddress(&gsftrks_layer1_layer_);}
 	}
 	gsftrks_layer1_sizerphi_branch = 0;
 	if (tree->GetAlias("gsftrks_layer1_sizerphi") != 0) {
 		gsftrks_layer1_sizerphi_branch = tree->GetBranch(tree->GetAlias("gsftrks_layer1_sizerphi"));
-		gsftrks_layer1_sizerphi_branch->SetAddress(&gsftrks_layer1_sizerphi_);
+		if (gsftrks_layer1_sizerphi_branch) {gsftrks_layer1_sizerphi_branch->SetAddress(&gsftrks_layer1_sizerphi_);}
 	}
 	gsftrks_layer1_sizerz_branch = 0;
 	if (tree->GetAlias("gsftrks_layer1_sizerz") != 0) {
 		gsftrks_layer1_sizerz_branch = tree->GetBranch(tree->GetAlias("gsftrks_layer1_sizerz"));
-		gsftrks_layer1_sizerz_branch->SetAddress(&gsftrks_layer1_sizerz_);
+		if (gsftrks_layer1_sizerz_branch) {gsftrks_layer1_sizerz_branch->SetAddress(&gsftrks_layer1_sizerz_);}
 	}
 	gsftrks_lostHits_branch = 0;
 	if (tree->GetAlias("gsftrks_lostHits") != 0) {
 		gsftrks_lostHits_branch = tree->GetBranch(tree->GetAlias("gsftrks_lostHits"));
-		gsftrks_lostHits_branch->SetAddress(&gsftrks_lostHits_);
+		if (gsftrks_lostHits_branch) {gsftrks_lostHits_branch->SetAddress(&gsftrks_lostHits_);}
 	}
 	gsftrks_lost_pixelhits_branch = 0;
 	if (tree->GetAlias("gsftrks_lost_pixelhits") != 0) {
 		gsftrks_lost_pixelhits_branch = tree->GetBranch(tree->GetAlias("gsftrks_lost_pixelhits"));
-		gsftrks_lost_pixelhits_branch->SetAddress(&gsftrks_lost_pixelhits_);
+		if (gsftrks_lost_pixelhits_branch) {gsftrks_lost_pixelhits_branch->SetAddress(&gsftrks_lost_pixelhits_);}
 	}
 	gsftrks_nlayers_branch = 0;
 	if (tree->GetAlias("gsftrks_nlayers") != 0) {
 		gsftrks_nlayers_branch = tree->GetBranch(tree->GetAlias("gsftrks_nlayers"));
-		gsftrks_nlayers_branch->SetAddress(&gsftrks_nlayers_);
+		if (gsftrks_nlayers_branch) {gsftrks_nlayers_branch->SetAddress(&gsftrks_nlayers_);}
 	}
 	gsftrks_nlayers3D_branch = 0;
 	if (tree->GetAlias("gsftrks_nlayers3D") != 0) {
 		gsftrks_nlayers3D_branch = tree->GetBranch(tree->GetAlias("gsftrks_nlayers3D"));
-		gsftrks_nlayers3D_branch->SetAddress(&gsftrks_nlayers3D_);
+		if (gsftrks_nlayers3D_branch) {gsftrks_nlayers3D_branch->SetAddress(&gsftrks_nlayers3D_);}
 	}
 	gsftrks_nlayersLost_branch = 0;
 	if (tree->GetAlias("gsftrks_nlayersLost") != 0) {
 		gsftrks_nlayersLost_branch = tree->GetBranch(tree->GetAlias("gsftrks_nlayersLost"));
-		gsftrks_nlayersLost_branch->SetAddress(&gsftrks_nlayersLost_);
+		if (gsftrks_nlayersLost_branch) {gsftrks_nlayersLost_branch->SetAddress(&gsftrks_nlayersLost_);}
 	}
 	gsftrks_validHits_branch = 0;
 	if (tree->GetAlias("gsftrks_validHits") != 0) {
 		gsftrks_validHits_branch = tree->GetBranch(tree->GetAlias("gsftrks_validHits"));
-		gsftrks_validHits_branch->SetAddress(&gsftrks_validHits_);
+		if (gsftrks_validHits_branch) {gsftrks_validHits_branch->SetAddress(&gsftrks_validHits_);}
 	}
 	gsftrks_valid_pixelhits_branch = 0;
 	if (tree->GetAlias("gsftrks_valid_pixelhits") != 0) {
 		gsftrks_valid_pixelhits_branch = tree->GetBranch(tree->GetAlias("gsftrks_valid_pixelhits"));
-		gsftrks_valid_pixelhits_branch->SetAddress(&gsftrks_valid_pixelhits_);
+		if (gsftrks_valid_pixelhits_branch) {gsftrks_valid_pixelhits_branch->SetAddress(&gsftrks_valid_pixelhits_);}
 	}
 	hyp_ll_charge_branch = 0;
 	if (tree->GetAlias("hyp_ll_charge") != 0) {
 		hyp_ll_charge_branch = tree->GetBranch(tree->GetAlias("hyp_ll_charge"));
-		hyp_ll_charge_branch->SetAddress(&hyp_ll_charge_);
+		if (hyp_ll_charge_branch) {hyp_ll_charge_branch->SetAddress(&hyp_ll_charge_);}
 	}
 	hyp_ll_id_branch = 0;
 	if (tree->GetAlias("hyp_ll_id") != 0) {
 		hyp_ll_id_branch = tree->GetBranch(tree->GetAlias("hyp_ll_id"));
-		hyp_ll_id_branch->SetAddress(&hyp_ll_id_);
+		if (hyp_ll_id_branch) {hyp_ll_id_branch->SetAddress(&hyp_ll_id_);}
 	}
 	hyp_ll_index_branch = 0;
 	if (tree->GetAlias("hyp_ll_index") != 0) {
 		hyp_ll_index_branch = tree->GetBranch(tree->GetAlias("hyp_ll_index"));
-		hyp_ll_index_branch->SetAddress(&hyp_ll_index_);
+		if (hyp_ll_index_branch) {hyp_ll_index_branch->SetAddress(&hyp_ll_index_);}
 	}
 	hyp_ll_lostHits_branch = 0;
 	if (tree->GetAlias("hyp_ll_lostHits") != 0) {
 		hyp_ll_lostHits_branch = tree->GetBranch(tree->GetAlias("hyp_ll_lostHits"));
-		hyp_ll_lostHits_branch->SetAddress(&hyp_ll_lostHits_);
+		if (hyp_ll_lostHits_branch) {hyp_ll_lostHits_branch->SetAddress(&hyp_ll_lostHits_);}
 	}
 	hyp_ll_validHits_branch = 0;
 	if (tree->GetAlias("hyp_ll_validHits") != 0) {
 		hyp_ll_validHits_branch = tree->GetBranch(tree->GetAlias("hyp_ll_validHits"));
-		hyp_ll_validHits_branch->SetAddress(&hyp_ll_validHits_);
+		if (hyp_ll_validHits_branch) {hyp_ll_validHits_branch->SetAddress(&hyp_ll_validHits_);}
 	}
 	hyp_lt_charge_branch = 0;
 	if (tree->GetAlias("hyp_lt_charge") != 0) {
 		hyp_lt_charge_branch = tree->GetBranch(tree->GetAlias("hyp_lt_charge"));
-		hyp_lt_charge_branch->SetAddress(&hyp_lt_charge_);
+		if (hyp_lt_charge_branch) {hyp_lt_charge_branch->SetAddress(&hyp_lt_charge_);}
 	}
 	hyp_lt_id_branch = 0;
 	if (tree->GetAlias("hyp_lt_id") != 0) {
 		hyp_lt_id_branch = tree->GetBranch(tree->GetAlias("hyp_lt_id"));
-		hyp_lt_id_branch->SetAddress(&hyp_lt_id_);
+		if (hyp_lt_id_branch) {hyp_lt_id_branch->SetAddress(&hyp_lt_id_);}
 	}
 	hyp_lt_index_branch = 0;
 	if (tree->GetAlias("hyp_lt_index") != 0) {
 		hyp_lt_index_branch = tree->GetBranch(tree->GetAlias("hyp_lt_index"));
-		hyp_lt_index_branch->SetAddress(&hyp_lt_index_);
+		if (hyp_lt_index_branch) {hyp_lt_index_branch->SetAddress(&hyp_lt_index_);}
 	}
 	hyp_lt_lostHits_branch = 0;
 	if (tree->GetAlias("hyp_lt_lostHits") != 0) {
 		hyp_lt_lostHits_branch = tree->GetBranch(tree->GetAlias("hyp_lt_lostHits"));
-		hyp_lt_lostHits_branch->SetAddress(&hyp_lt_lostHits_);
+		if (hyp_lt_lostHits_branch) {hyp_lt_lostHits_branch->SetAddress(&hyp_lt_lostHits_);}
 	}
 	hyp_lt_validHits_branch = 0;
 	if (tree->GetAlias("hyp_lt_validHits") != 0) {
 		hyp_lt_validHits_branch = tree->GetBranch(tree->GetAlias("hyp_lt_validHits"));
-		hyp_lt_validHits_branch->SetAddress(&hyp_lt_validHits_);
+		if (hyp_lt_validHits_branch) {hyp_lt_validHits_branch->SetAddress(&hyp_lt_validHits_);}
 	}
 	hyp_njets_branch = 0;
 	if (tree->GetAlias("hyp_njets") != 0) {
 		hyp_njets_branch = tree->GetBranch(tree->GetAlias("hyp_njets"));
-		hyp_njets_branch->SetAddress(&hyp_njets_);
+		if (hyp_njets_branch) {hyp_njets_branch->SetAddress(&hyp_njets_);}
 	}
 	hyp_nojets_branch = 0;
 	if (tree->GetAlias("hyp_nojets") != 0) {
 		hyp_nojets_branch = tree->GetBranch(tree->GetAlias("hyp_nojets"));
-		hyp_nojets_branch->SetAddress(&hyp_nojets_);
+		if (hyp_nojets_branch) {hyp_nojets_branch->SetAddress(&hyp_nojets_);}
 	}
 	hyp_type_branch = 0;
 	if (tree->GetAlias("hyp_type") != 0) {
 		hyp_type_branch = tree->GetBranch(tree->GetAlias("hyp_type"));
-		hyp_type_branch->SetAddress(&hyp_type_);
+		if (hyp_type_branch) {hyp_type_branch->SetAddress(&hyp_type_);}
 	}
 	hyp_FVFit_ndf_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_ndf") != 0) {
 		hyp_FVFit_ndf_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_ndf"));
-		hyp_FVFit_ndf_branch->SetAddress(&hyp_FVFit_ndf_);
+		if (hyp_FVFit_ndf_branch) {hyp_FVFit_ndf_branch->SetAddress(&hyp_FVFit_ndf_);}
 	}
 	hyp_FVFit_status_branch = 0;
 	if (tree->GetAlias("hyp_FVFit_status") != 0) {
 		hyp_FVFit_status_branch = tree->GetBranch(tree->GetAlias("hyp_FVFit_status"));
-		hyp_FVFit_status_branch->SetAddress(&hyp_FVFit_status_);
+		if (hyp_FVFit_status_branch) {hyp_FVFit_status_branch->SetAddress(&hyp_FVFit_status_);}
 	}
 	hyp_ll_mc_id_branch = 0;
 	if (tree->GetAlias("hyp_ll_mc_id") != 0) {
 		hyp_ll_mc_id_branch = tree->GetBranch(tree->GetAlias("hyp_ll_mc_id"));
-		hyp_ll_mc_id_branch->SetAddress(&hyp_ll_mc_id_);
+		if (hyp_ll_mc_id_branch) {hyp_ll_mc_id_branch->SetAddress(&hyp_ll_mc_id_);}
 	}
 	hyp_ll_mc_motherid_branch = 0;
 	if (tree->GetAlias("hyp_ll_mc_motherid") != 0) {
 		hyp_ll_mc_motherid_branch = tree->GetBranch(tree->GetAlias("hyp_ll_mc_motherid"));
-		hyp_ll_mc_motherid_branch->SetAddress(&hyp_ll_mc_motherid_);
+		if (hyp_ll_mc_motherid_branch) {hyp_ll_mc_motherid_branch->SetAddress(&hyp_ll_mc_motherid_);}
 	}
 	hyp_lt_mc_id_branch = 0;
 	if (tree->GetAlias("hyp_lt_mc_id") != 0) {
 		hyp_lt_mc_id_branch = tree->GetBranch(tree->GetAlias("hyp_lt_mc_id"));
-		hyp_lt_mc_id_branch->SetAddress(&hyp_lt_mc_id_);
+		if (hyp_lt_mc_id_branch) {hyp_lt_mc_id_branch->SetAddress(&hyp_lt_mc_id_);}
 	}
 	hyp_lt_mc_motherid_branch = 0;
 	if (tree->GetAlias("hyp_lt_mc_motherid") != 0) {
 		hyp_lt_mc_motherid_branch = tree->GetBranch(tree->GetAlias("hyp_lt_mc_motherid"));
-		hyp_lt_mc_motherid_branch->SetAddress(&hyp_lt_mc_motherid_);
+		if (hyp_lt_mc_motherid_branch) {hyp_lt_mc_motherid_branch->SetAddress(&hyp_lt_mc_motherid_);}
 	}
 	jets_mcflavorAlgo_branch = 0;
 	if (tree->GetAlias("jets_mcflavorAlgo") != 0) {
 		jets_mcflavorAlgo_branch = tree->GetBranch(tree->GetAlias("jets_mcflavorAlgo"));
-		jets_mcflavorAlgo_branch->SetAddress(&jets_mcflavorAlgo_);
+		if (jets_mcflavorAlgo_branch) {jets_mcflavorAlgo_branch->SetAddress(&jets_mcflavorAlgo_);}
 	}
 	jets_mcflavorPhys_branch = 0;
 	if (tree->GetAlias("jets_mcflavorPhys") != 0) {
 		jets_mcflavorPhys_branch = tree->GetBranch(tree->GetAlias("jets_mcflavorPhys"));
-		jets_mcflavorPhys_branch->SetAddress(&jets_mcflavorPhys_);
+		if (jets_mcflavorPhys_branch) {jets_mcflavorPhys_branch->SetAddress(&jets_mcflavorPhys_);}
 	}
 	jets_closestElectron_branch = 0;
 	if (tree->GetAlias("jets_closestElectron") != 0) {
 		jets_closestElectron_branch = tree->GetBranch(tree->GetAlias("jets_closestElectron"));
-		jets_closestElectron_branch->SetAddress(&jets_closestElectron_);
+		if (jets_closestElectron_branch) {jets_closestElectron_branch->SetAddress(&jets_closestElectron_);}
 	}
 	jets_closestMuon_branch = 0;
 	if (tree->GetAlias("jets_closestMuon") != 0) {
 		jets_closestMuon_branch = tree->GetBranch(tree->GetAlias("jets_closestMuon"));
-		jets_closestMuon_branch->SetAddress(&jets_closestMuon_);
+		if (jets_closestMuon_branch) {jets_closestMuon_branch->SetAddress(&jets_closestMuon_);}
 	}
 	l1_emiso_ieta_branch = 0;
 	if (tree->GetAlias("l1_emiso_ieta") != 0) {
 		l1_emiso_ieta_branch = tree->GetBranch(tree->GetAlias("l1_emiso_ieta"));
-		l1_emiso_ieta_branch->SetAddress(&l1_emiso_ieta_);
+		if (l1_emiso_ieta_branch) {l1_emiso_ieta_branch->SetAddress(&l1_emiso_ieta_);}
 	}
 	l1_emiso_iphi_branch = 0;
 	if (tree->GetAlias("l1_emiso_iphi") != 0) {
 		l1_emiso_iphi_branch = tree->GetBranch(tree->GetAlias("l1_emiso_iphi"));
-		l1_emiso_iphi_branch->SetAddress(&l1_emiso_iphi_);
+		if (l1_emiso_iphi_branch) {l1_emiso_iphi_branch->SetAddress(&l1_emiso_iphi_);}
 	}
 	l1_emiso_rawId_branch = 0;
 	if (tree->GetAlias("l1_emiso_rawId") != 0) {
 		l1_emiso_rawId_branch = tree->GetBranch(tree->GetAlias("l1_emiso_rawId"));
-		l1_emiso_rawId_branch->SetAddress(&l1_emiso_rawId_);
+		if (l1_emiso_rawId_branch) {l1_emiso_rawId_branch->SetAddress(&l1_emiso_rawId_);}
 	}
 	l1_emiso_type_branch = 0;
 	if (tree->GetAlias("l1_emiso_type") != 0) {
 		l1_emiso_type_branch = tree->GetBranch(tree->GetAlias("l1_emiso_type"));
-		l1_emiso_type_branch->SetAddress(&l1_emiso_type_);
+		if (l1_emiso_type_branch) {l1_emiso_type_branch->SetAddress(&l1_emiso_type_);}
 	}
 	l1_emnoiso_ieta_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_ieta") != 0) {
 		l1_emnoiso_ieta_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_ieta"));
-		l1_emnoiso_ieta_branch->SetAddress(&l1_emnoiso_ieta_);
+		if (l1_emnoiso_ieta_branch) {l1_emnoiso_ieta_branch->SetAddress(&l1_emnoiso_ieta_);}
 	}
 	l1_emnoiso_iphi_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_iphi") != 0) {
 		l1_emnoiso_iphi_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_iphi"));
-		l1_emnoiso_iphi_branch->SetAddress(&l1_emnoiso_iphi_);
+		if (l1_emnoiso_iphi_branch) {l1_emnoiso_iphi_branch->SetAddress(&l1_emnoiso_iphi_);}
 	}
 	l1_emnoiso_rawId_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_rawId") != 0) {
 		l1_emnoiso_rawId_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_rawId"));
-		l1_emnoiso_rawId_branch->SetAddress(&l1_emnoiso_rawId_);
+		if (l1_emnoiso_rawId_branch) {l1_emnoiso_rawId_branch->SetAddress(&l1_emnoiso_rawId_);}
 	}
 	l1_emnoiso_type_branch = 0;
 	if (tree->GetAlias("l1_emnoiso_type") != 0) {
 		l1_emnoiso_type_branch = tree->GetBranch(tree->GetAlias("l1_emnoiso_type"));
-		l1_emnoiso_type_branch->SetAddress(&l1_emnoiso_type_);
+		if (l1_emnoiso_type_branch) {l1_emnoiso_type_branch->SetAddress(&l1_emnoiso_type_);}
 	}
 	l1_jetsc_ieta_branch = 0;
 	if (tree->GetAlias("l1_jetsc_ieta") != 0) {
 		l1_jetsc_ieta_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_ieta"));
-		l1_jetsc_ieta_branch->SetAddress(&l1_jetsc_ieta_);
+		if (l1_jetsc_ieta_branch) {l1_jetsc_ieta_branch->SetAddress(&l1_jetsc_ieta_);}
 	}
 	l1_jetsc_iphi_branch = 0;
 	if (tree->GetAlias("l1_jetsc_iphi") != 0) {
 		l1_jetsc_iphi_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_iphi"));
-		l1_jetsc_iphi_branch->SetAddress(&l1_jetsc_iphi_);
+		if (l1_jetsc_iphi_branch) {l1_jetsc_iphi_branch->SetAddress(&l1_jetsc_iphi_);}
 	}
 	l1_jetsc_rawId_branch = 0;
 	if (tree->GetAlias("l1_jetsc_rawId") != 0) {
 		l1_jetsc_rawId_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_rawId"));
-		l1_jetsc_rawId_branch->SetAddress(&l1_jetsc_rawId_);
+		if (l1_jetsc_rawId_branch) {l1_jetsc_rawId_branch->SetAddress(&l1_jetsc_rawId_);}
 	}
 	l1_jetsc_type_branch = 0;
 	if (tree->GetAlias("l1_jetsc_type") != 0) {
 		l1_jetsc_type_branch = tree->GetBranch(tree->GetAlias("l1_jetsc_type"));
-		l1_jetsc_type_branch->SetAddress(&l1_jetsc_type_);
+		if (l1_jetsc_type_branch) {l1_jetsc_type_branch->SetAddress(&l1_jetsc_type_);}
 	}
 	l1_jetsf_ieta_branch = 0;
 	if (tree->GetAlias("l1_jetsf_ieta") != 0) {
 		l1_jetsf_ieta_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_ieta"));
-		l1_jetsf_ieta_branch->SetAddress(&l1_jetsf_ieta_);
+		if (l1_jetsf_ieta_branch) {l1_jetsf_ieta_branch->SetAddress(&l1_jetsf_ieta_);}
 	}
 	l1_jetsf_iphi_branch = 0;
 	if (tree->GetAlias("l1_jetsf_iphi") != 0) {
 		l1_jetsf_iphi_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_iphi"));
-		l1_jetsf_iphi_branch->SetAddress(&l1_jetsf_iphi_);
+		if (l1_jetsf_iphi_branch) {l1_jetsf_iphi_branch->SetAddress(&l1_jetsf_iphi_);}
 	}
 	l1_jetsf_rawId_branch = 0;
 	if (tree->GetAlias("l1_jetsf_rawId") != 0) {
 		l1_jetsf_rawId_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_rawId"));
-		l1_jetsf_rawId_branch->SetAddress(&l1_jetsf_rawId_);
+		if (l1_jetsf_rawId_branch) {l1_jetsf_rawId_branch->SetAddress(&l1_jetsf_rawId_);}
 	}
 	l1_jetsf_type_branch = 0;
 	if (tree->GetAlias("l1_jetsf_type") != 0) {
 		l1_jetsf_type_branch = tree->GetBranch(tree->GetAlias("l1_jetsf_type"));
-		l1_jetsf_type_branch->SetAddress(&l1_jetsf_type_);
+		if (l1_jetsf_type_branch) {l1_jetsf_type_branch->SetAddress(&l1_jetsf_type_);}
 	}
 	l1_jetst_ieta_branch = 0;
 	if (tree->GetAlias("l1_jetst_ieta") != 0) {
 		l1_jetst_ieta_branch = tree->GetBranch(tree->GetAlias("l1_jetst_ieta"));
-		l1_jetst_ieta_branch->SetAddress(&l1_jetst_ieta_);
+		if (l1_jetst_ieta_branch) {l1_jetst_ieta_branch->SetAddress(&l1_jetst_ieta_);}
 	}
 	l1_jetst_iphi_branch = 0;
 	if (tree->GetAlias("l1_jetst_iphi") != 0) {
 		l1_jetst_iphi_branch = tree->GetBranch(tree->GetAlias("l1_jetst_iphi"));
-		l1_jetst_iphi_branch->SetAddress(&l1_jetst_iphi_);
+		if (l1_jetst_iphi_branch) {l1_jetst_iphi_branch->SetAddress(&l1_jetst_iphi_);}
 	}
 	l1_jetst_rawId_branch = 0;
 	if (tree->GetAlias("l1_jetst_rawId") != 0) {
 		l1_jetst_rawId_branch = tree->GetBranch(tree->GetAlias("l1_jetst_rawId"));
-		l1_jetst_rawId_branch->SetAddress(&l1_jetst_rawId_);
+		if (l1_jetst_rawId_branch) {l1_jetst_rawId_branch->SetAddress(&l1_jetst_rawId_);}
 	}
 	l1_jetst_type_branch = 0;
 	if (tree->GetAlias("l1_jetst_type") != 0) {
 		l1_jetst_type_branch = tree->GetBranch(tree->GetAlias("l1_jetst_type"));
-		l1_jetst_type_branch->SetAddress(&l1_jetst_type_);
+		if (l1_jetst_type_branch) {l1_jetst_type_branch->SetAddress(&l1_jetst_type_);}
 	}
 	l1_mus_flags_branch = 0;
 	if (tree->GetAlias("l1_mus_flags") != 0) {
 		l1_mus_flags_branch = tree->GetBranch(tree->GetAlias("l1_mus_flags"));
-		l1_mus_flags_branch->SetAddress(&l1_mus_flags_);
+		if (l1_mus_flags_branch) {l1_mus_flags_branch->SetAddress(&l1_mus_flags_);}
 	}
 	l1_mus_q_branch = 0;
 	if (tree->GetAlias("l1_mus_q") != 0) {
 		l1_mus_q_branch = tree->GetBranch(tree->GetAlias("l1_mus_q"));
-		l1_mus_q_branch->SetAddress(&l1_mus_q_);
+		if (l1_mus_q_branch) {l1_mus_q_branch->SetAddress(&l1_mus_q_);}
 	}
 	l1_mus_qual_branch = 0;
 	if (tree->GetAlias("l1_mus_qual") != 0) {
 		l1_mus_qual_branch = tree->GetBranch(tree->GetAlias("l1_mus_qual"));
-		l1_mus_qual_branch->SetAddress(&l1_mus_qual_);
+		if (l1_mus_qual_branch) {l1_mus_qual_branch->SetAddress(&l1_mus_qual_);}
 	}
 	l1_mus_qualFlags_branch = 0;
 	if (tree->GetAlias("l1_mus_qualFlags") != 0) {
 		l1_mus_qualFlags_branch = tree->GetBranch(tree->GetAlias("l1_mus_qualFlags"));
-		l1_mus_qualFlags_branch->SetAddress(&l1_mus_qualFlags_);
+		if (l1_mus_qualFlags_branch) {l1_mus_qualFlags_branch->SetAddress(&l1_mus_qualFlags_);}
 	}
 	mus_met_flag_branch = 0;
 	if (tree->GetAlias("mus_met_flag") != 0) {
 		mus_met_flag_branch = tree->GetBranch(tree->GetAlias("mus_met_flag"));
-		mus_met_flag_branch->SetAddress(&mus_met_flag_);
+		if (mus_met_flag_branch) {mus_met_flag_branch->SetAddress(&mus_met_flag_);}
 	}
 	mus_closestEle_branch = 0;
 	if (tree->GetAlias("mus_closestEle") != 0) {
 		mus_closestEle_branch = tree->GetBranch(tree->GetAlias("mus_closestEle"));
-		mus_closestEle_branch->SetAddress(&mus_closestEle_);
+		if (mus_closestEle_branch) {mus_closestEle_branch->SetAddress(&mus_closestEle_);}
 	}
 	mus_closestJet_branch = 0;
 	if (tree->GetAlias("mus_closestJet") != 0) {
 		mus_closestJet_branch = tree->GetBranch(tree->GetAlias("mus_closestJet"));
-		mus_closestJet_branch->SetAddress(&mus_closestJet_);
+		if (mus_closestJet_branch) {mus_closestJet_branch->SetAddress(&mus_closestJet_);}
 	}
 	mus_pfmusidx_branch = 0;
 	if (tree->GetAlias("mus_pfmusidx") != 0) {
 		mus_pfmusidx_branch = tree->GetBranch(tree->GetAlias("mus_pfmusidx"));
-		mus_pfmusidx_branch->SetAddress(&mus_pfmusidx_);
+		if (mus_pfmusidx_branch) {mus_pfmusidx_branch->SetAddress(&mus_pfmusidx_);}
 	}
 	mus_charge_branch = 0;
 	if (tree->GetAlias("mus_charge") != 0) {
 		mus_charge_branch = tree->GetBranch(tree->GetAlias("mus_charge"));
-		mus_charge_branch->SetAddress(&mus_charge_);
+		if (mus_charge_branch) {mus_charge_branch->SetAddress(&mus_charge_);}
 	}
 	mus_gfit_validHits_branch = 0;
 	if (tree->GetAlias("mus_gfit_validHits") != 0) {
 		mus_gfit_validHits_branch = tree->GetBranch(tree->GetAlias("mus_gfit_validHits"));
-		mus_gfit_validHits_branch->SetAddress(&mus_gfit_validHits_);
+		if (mus_gfit_validHits_branch) {mus_gfit_validHits_branch->SetAddress(&mus_gfit_validHits_);}
 	}
 	mus_gfit_validSTAHits_branch = 0;
 	if (tree->GetAlias("mus_gfit_validSTAHits") != 0) {
 		mus_gfit_validSTAHits_branch = tree->GetBranch(tree->GetAlias("mus_gfit_validSTAHits"));
-		mus_gfit_validSTAHits_branch->SetAddress(&mus_gfit_validSTAHits_);
+		if (mus_gfit_validSTAHits_branch) {mus_gfit_validSTAHits_branch->SetAddress(&mus_gfit_validSTAHits_);}
 	}
 	mus_gfit_validSiHits_branch = 0;
 	if (tree->GetAlias("mus_gfit_validSiHits") != 0) {
 		mus_gfit_validSiHits_branch = tree->GetBranch(tree->GetAlias("mus_gfit_validSiHits"));
-		mus_gfit_validSiHits_branch->SetAddress(&mus_gfit_validSiHits_);
+		if (mus_gfit_validSiHits_branch) {mus_gfit_validSiHits_branch->SetAddress(&mus_gfit_validSiHits_);}
 	}
 	mus_goodmask_branch = 0;
 	if (tree->GetAlias("mus_goodmask") != 0) {
 		mus_goodmask_branch = tree->GetBranch(tree->GetAlias("mus_goodmask"));
-		mus_goodmask_branch->SetAddress(&mus_goodmask_);
+		if (mus_goodmask_branch) {mus_goodmask_branch->SetAddress(&mus_goodmask_);}
 	}
 	mus_iso03_ntrk_branch = 0;
 	if (tree->GetAlias("mus_iso03_ntrk") != 0) {
 		mus_iso03_ntrk_branch = tree->GetBranch(tree->GetAlias("mus_iso03_ntrk"));
-		mus_iso03_ntrk_branch->SetAddress(&mus_iso03_ntrk_);
+		if (mus_iso03_ntrk_branch) {mus_iso03_ntrk_branch->SetAddress(&mus_iso03_ntrk_);}
 	}
 	mus_iso05_ntrk_branch = 0;
 	if (tree->GetAlias("mus_iso05_ntrk") != 0) {
 		mus_iso05_ntrk_branch = tree->GetBranch(tree->GetAlias("mus_iso05_ntrk"));
-		mus_iso05_ntrk_branch->SetAddress(&mus_iso05_ntrk_);
+		if (mus_iso05_ntrk_branch) {mus_iso05_ntrk_branch->SetAddress(&mus_iso05_ntrk_);}
 	}
 	mus_lostHits_branch = 0;
 	if (tree->GetAlias("mus_lostHits") != 0) {
 		mus_lostHits_branch = tree->GetBranch(tree->GetAlias("mus_lostHits"));
-		mus_lostHits_branch->SetAddress(&mus_lostHits_);
+		if (mus_lostHits_branch) {mus_lostHits_branch->SetAddress(&mus_lostHits_);}
 	}
 	mus_muonBestTrackType_branch = 0;
 	if (tree->GetAlias("mus_muonBestTrackType") != 0) {
 		mus_muonBestTrackType_branch = tree->GetBranch(tree->GetAlias("mus_muonBestTrackType"));
-		mus_muonBestTrackType_branch->SetAddress(&mus_muonBestTrackType_);
+		if (mus_muonBestTrackType_branch) {mus_muonBestTrackType_branch->SetAddress(&mus_muonBestTrackType_);}
 	}
 	mus_nOverlaps_branch = 0;
 	if (tree->GetAlias("mus_nOverlaps") != 0) {
 		mus_nOverlaps_branch = tree->GetBranch(tree->GetAlias("mus_nOverlaps"));
-		mus_nOverlaps_branch->SetAddress(&mus_nOverlaps_);
+		if (mus_nOverlaps_branch) {mus_nOverlaps_branch->SetAddress(&mus_nOverlaps_);}
 	}
 	mus_nmatches_branch = 0;
 	if (tree->GetAlias("mus_nmatches") != 0) {
 		mus_nmatches_branch = tree->GetBranch(tree->GetAlias("mus_nmatches"));
-		mus_nmatches_branch->SetAddress(&mus_nmatches_);
+		if (mus_nmatches_branch) {mus_nmatches_branch->SetAddress(&mus_nmatches_);}
 	}
 	mus_numberOfMatchedStations_branch = 0;
 	if (tree->GetAlias("mus_numberOfMatchedStations") != 0) {
 		mus_numberOfMatchedStations_branch = tree->GetBranch(tree->GetAlias("mus_numberOfMatchedStations"));
-		mus_numberOfMatchedStations_branch->SetAddress(&mus_numberOfMatchedStations_);
+		if (mus_numberOfMatchedStations_branch) {mus_numberOfMatchedStations_branch->SetAddress(&mus_numberOfMatchedStations_);}
 	}
 	mus_overlap0_branch = 0;
 	if (tree->GetAlias("mus_overlap0") != 0) {
 		mus_overlap0_branch = tree->GetBranch(tree->GetAlias("mus_overlap0"));
-		mus_overlap0_branch->SetAddress(&mus_overlap0_);
+		if (mus_overlap0_branch) {mus_overlap0_branch->SetAddress(&mus_overlap0_);}
 	}
 	mus_overlap1_branch = 0;
 	if (tree->GetAlias("mus_overlap1") != 0) {
 		mus_overlap1_branch = tree->GetBranch(tree->GetAlias("mus_overlap1"));
-		mus_overlap1_branch->SetAddress(&mus_overlap1_);
+		if (mus_overlap1_branch) {mus_overlap1_branch->SetAddress(&mus_overlap1_);}
 	}
 	mus_pfcharge_branch = 0;
 	if (tree->GetAlias("mus_pfcharge") != 0) {
 		mus_pfcharge_branch = tree->GetBranch(tree->GetAlias("mus_pfcharge"));
-		mus_pfcharge_branch->SetAddress(&mus_pfcharge_);
+		if (mus_pfcharge_branch) {mus_pfcharge_branch->SetAddress(&mus_pfcharge_);}
 	}
 	mus_pfflag_branch = 0;
 	if (tree->GetAlias("mus_pfflag") != 0) {
 		mus_pfflag_branch = tree->GetBranch(tree->GetAlias("mus_pfflag"));
-		mus_pfflag_branch->SetAddress(&mus_pfflag_);
+		if (mus_pfflag_branch) {mus_pfflag_branch->SetAddress(&mus_pfflag_);}
 	}
 	mus_pfparticleId_branch = 0;
 	if (tree->GetAlias("mus_pfparticleId") != 0) {
 		mus_pfparticleId_branch = tree->GetBranch(tree->GetAlias("mus_pfparticleId"));
-		mus_pfparticleId_branch->SetAddress(&mus_pfparticleId_);
+		if (mus_pfparticleId_branch) {mus_pfparticleId_branch->SetAddress(&mus_pfparticleId_);}
 	}
 	mus_pid_PFMuon_branch = 0;
 	if (tree->GetAlias("mus_pid_PFMuon") != 0) {
 		mus_pid_PFMuon_branch = tree->GetBranch(tree->GetAlias("mus_pid_PFMuon"));
-		mus_pid_PFMuon_branch->SetAddress(&mus_pid_PFMuon_);
+		if (mus_pid_PFMuon_branch) {mus_pid_PFMuon_branch->SetAddress(&mus_pid_PFMuon_);}
 	}
 	mus_pid_TM2DCompatibilityLoose_branch = 0;
 	if (tree->GetAlias("mus_pid_TM2DCompatibilityLoose") != 0) {
 		mus_pid_TM2DCompatibilityLoose_branch = tree->GetBranch(tree->GetAlias("mus_pid_TM2DCompatibilityLoose"));
-		mus_pid_TM2DCompatibilityLoose_branch->SetAddress(&mus_pid_TM2DCompatibilityLoose_);
+		if (mus_pid_TM2DCompatibilityLoose_branch) {mus_pid_TM2DCompatibilityLoose_branch->SetAddress(&mus_pid_TM2DCompatibilityLoose_);}
 	}
 	mus_pid_TM2DCompatibilityTight_branch = 0;
 	if (tree->GetAlias("mus_pid_TM2DCompatibilityTight") != 0) {
 		mus_pid_TM2DCompatibilityTight_branch = tree->GetBranch(tree->GetAlias("mus_pid_TM2DCompatibilityTight"));
-		mus_pid_TM2DCompatibilityTight_branch->SetAddress(&mus_pid_TM2DCompatibilityTight_);
+		if (mus_pid_TM2DCompatibilityTight_branch) {mus_pid_TM2DCompatibilityTight_branch->SetAddress(&mus_pid_TM2DCompatibilityTight_);}
 	}
 	mus_pid_TMLastStationLoose_branch = 0;
 	if (tree->GetAlias("mus_pid_TMLastStationLoose") != 0) {
 		mus_pid_TMLastStationLoose_branch = tree->GetBranch(tree->GetAlias("mus_pid_TMLastStationLoose"));
-		mus_pid_TMLastStationLoose_branch->SetAddress(&mus_pid_TMLastStationLoose_);
+		if (mus_pid_TMLastStationLoose_branch) {mus_pid_TMLastStationLoose_branch->SetAddress(&mus_pid_TMLastStationLoose_);}
 	}
 	mus_pid_TMLastStationTight_branch = 0;
 	if (tree->GetAlias("mus_pid_TMLastStationTight") != 0) {
 		mus_pid_TMLastStationTight_branch = tree->GetBranch(tree->GetAlias("mus_pid_TMLastStationTight"));
-		mus_pid_TMLastStationTight_branch->SetAddress(&mus_pid_TMLastStationTight_);
+		if (mus_pid_TMLastStationTight_branch) {mus_pid_TMLastStationTight_branch->SetAddress(&mus_pid_TMLastStationTight_);}
 	}
 	mus_sta_validHits_branch = 0;
 	if (tree->GetAlias("mus_sta_validHits") != 0) {
 		mus_sta_validHits_branch = tree->GetBranch(tree->GetAlias("mus_sta_validHits"));
-		mus_sta_validHits_branch->SetAddress(&mus_sta_validHits_);
+		if (mus_sta_validHits_branch) {mus_sta_validHits_branch->SetAddress(&mus_sta_validHits_);}
 	}
 	mus_timeDirection_branch = 0;
 	if (tree->GetAlias("mus_timeDirection") != 0) {
 		mus_timeDirection_branch = tree->GetBranch(tree->GetAlias("mus_timeDirection"));
-		mus_timeDirection_branch->SetAddress(&mus_timeDirection_);
+		if (mus_timeDirection_branch) {mus_timeDirection_branch->SetAddress(&mus_timeDirection_);}
 	}
 	mus_timeNumStationsUsed_branch = 0;
 	if (tree->GetAlias("mus_timeNumStationsUsed") != 0) {
 		mus_timeNumStationsUsed_branch = tree->GetBranch(tree->GetAlias("mus_timeNumStationsUsed"));
-		mus_timeNumStationsUsed_branch->SetAddress(&mus_timeNumStationsUsed_);
+		if (mus_timeNumStationsUsed_branch) {mus_timeNumStationsUsed_branch->SetAddress(&mus_timeNumStationsUsed_);}
 	}
 	mus_trk_charge_branch = 0;
 	if (tree->GetAlias("mus_trk_charge") != 0) {
 		mus_trk_charge_branch = tree->GetBranch(tree->GetAlias("mus_trk_charge"));
-		mus_trk_charge_branch->SetAddress(&mus_trk_charge_);
+		if (mus_trk_charge_branch) {mus_trk_charge_branch->SetAddress(&mus_trk_charge_);}
 	}
 	mus_trkidx_branch = 0;
 	if (tree->GetAlias("mus_trkidx") != 0) {
 		mus_trkidx_branch = tree->GetBranch(tree->GetAlias("mus_trkidx"));
-		mus_trkidx_branch->SetAddress(&mus_trkidx_);
+		if (mus_trkidx_branch) {mus_trkidx_branch->SetAddress(&mus_trkidx_);}
 	}
 	mus_type_branch = 0;
 	if (tree->GetAlias("mus_type") != 0) {
 		mus_type_branch = tree->GetBranch(tree->GetAlias("mus_type"));
-		mus_type_branch->SetAddress(&mus_type_);
+		if (mus_type_branch) {mus_type_branch->SetAddress(&mus_type_);}
 	}
 	mus_validHits_branch = 0;
 	if (tree->GetAlias("mus_validHits") != 0) {
 		mus_validHits_branch = tree->GetBranch(tree->GetAlias("mus_validHits"));
-		mus_validHits_branch->SetAddress(&mus_validHits_);
+		if (mus_validHits_branch) {mus_validHits_branch->SetAddress(&mus_validHits_);}
 	}
 	pfcands_charge_branch = 0;
 	if (tree->GetAlias("pfcands_charge") != 0) {
 		pfcands_charge_branch = tree->GetBranch(tree->GetAlias("pfcands_charge"));
-		pfcands_charge_branch->SetAddress(&pfcands_charge_);
+		if (pfcands_charge_branch) {pfcands_charge_branch->SetAddress(&pfcands_charge_);}
 	}
 	pfcands_flag_branch = 0;
 	if (tree->GetAlias("pfcands_flag") != 0) {
 		pfcands_flag_branch = tree->GetBranch(tree->GetAlias("pfcands_flag"));
-		pfcands_flag_branch->SetAddress(&pfcands_flag_);
+		if (pfcands_flag_branch) {pfcands_flag_branch->SetAddress(&pfcands_flag_);}
 	}
 	pfcands_particleId_branch = 0;
 	if (tree->GetAlias("pfcands_particleId") != 0) {
 		pfcands_particleId_branch = tree->GetBranch(tree->GetAlias("pfcands_particleId"));
-		pfcands_particleId_branch->SetAddress(&pfcands_particleId_);
+		if (pfcands_particleId_branch) {pfcands_particleId_branch->SetAddress(&pfcands_particleId_);}
 	}
 	pfcands_pfelsidx_branch = 0;
 	if (tree->GetAlias("pfcands_pfelsidx") != 0) {
 		pfcands_pfelsidx_branch = tree->GetBranch(tree->GetAlias("pfcands_pfelsidx"));
-		pfcands_pfelsidx_branch->SetAddress(&pfcands_pfelsidx_);
+		if (pfcands_pfelsidx_branch) {pfcands_pfelsidx_branch->SetAddress(&pfcands_pfelsidx_);}
 	}
 	pfcands_pfmusidx_branch = 0;
 	if (tree->GetAlias("pfcands_pfmusidx") != 0) {
 		pfcands_pfmusidx_branch = tree->GetBranch(tree->GetAlias("pfcands_pfmusidx"));
-		pfcands_pfmusidx_branch->SetAddress(&pfcands_pfmusidx_);
+		if (pfcands_pfmusidx_branch) {pfcands_pfmusidx_branch->SetAddress(&pfcands_pfmusidx_);}
 	}
 	pfcands_trkidx_branch = 0;
 	if (tree->GetAlias("pfcands_trkidx") != 0) {
 		pfcands_trkidx_branch = tree->GetBranch(tree->GetAlias("pfcands_trkidx"));
-		pfcands_trkidx_branch->SetAddress(&pfcands_trkidx_);
+		if (pfcands_trkidx_branch) {pfcands_trkidx_branch->SetAddress(&pfcands_trkidx_);}
 	}
 	pfcands_vtxidx_branch = 0;
 	if (tree->GetAlias("pfcands_vtxidx") != 0) {
 		pfcands_vtxidx_branch = tree->GetBranch(tree->GetAlias("pfcands_vtxidx"));
-		pfcands_vtxidx_branch->SetAddress(&pfcands_vtxidx_);
+		if (pfcands_vtxidx_branch) {pfcands_vtxidx_branch->SetAddress(&pfcands_vtxidx_);}
 	}
 	pfels_elsidx_branch = 0;
 	if (tree->GetAlias("pfels_elsidx") != 0) {
 		pfels_elsidx_branch = tree->GetBranch(tree->GetAlias("pfels_elsidx"));
-		pfels_elsidx_branch->SetAddress(&pfels_elsidx_);
+		if (pfels_elsidx_branch) {pfels_elsidx_branch->SetAddress(&pfels_elsidx_);}
 	}
 	pfels_charge_branch = 0;
 	if (tree->GetAlias("pfels_charge") != 0) {
 		pfels_charge_branch = tree->GetBranch(tree->GetAlias("pfels_charge"));
-		pfels_charge_branch->SetAddress(&pfels_charge_);
+		if (pfels_charge_branch) {pfels_charge_branch->SetAddress(&pfels_charge_);}
 	}
 	pfels_flag_branch = 0;
 	if (tree->GetAlias("pfels_flag") != 0) {
 		pfels_flag_branch = tree->GetBranch(tree->GetAlias("pfels_flag"));
-		pfels_flag_branch->SetAddress(&pfels_flag_);
+		if (pfels_flag_branch) {pfels_flag_branch->SetAddress(&pfels_flag_);}
 	}
 	pfels_particleId_branch = 0;
 	if (tree->GetAlias("pfels_particleId") != 0) {
 		pfels_particleId_branch = tree->GetBranch(tree->GetAlias("pfels_particleId"));
-		pfels_particleId_branch->SetAddress(&pfels_particleId_);
+		if (pfels_particleId_branch) {pfels_particleId_branch->SetAddress(&pfels_particleId_);}
 	}
 	pfjets_chargedHadronMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_chargedHadronMultiplicity") != 0) {
 		pfjets_chargedHadronMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedHadronMultiplicity"));
-		pfjets_chargedHadronMultiplicity_branch->SetAddress(&pfjets_chargedHadronMultiplicity_);
+		if (pfjets_chargedHadronMultiplicity_branch) {pfjets_chargedHadronMultiplicity_branch->SetAddress(&pfjets_chargedHadronMultiplicity_);}
 	}
 	pfjets_chargedMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_chargedMultiplicity") != 0) {
 		pfjets_chargedMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedMultiplicity"));
-		pfjets_chargedMultiplicity_branch->SetAddress(&pfjets_chargedMultiplicity_);
+		if (pfjets_chargedMultiplicity_branch) {pfjets_chargedMultiplicity_branch->SetAddress(&pfjets_chargedMultiplicity_);}
 	}
 	pfjets_electronMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_electronMultiplicity") != 0) {
 		pfjets_electronMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_electronMultiplicity"));
-		pfjets_electronMultiplicity_branch->SetAddress(&pfjets_electronMultiplicity_);
+		if (pfjets_electronMultiplicity_branch) {pfjets_electronMultiplicity_branch->SetAddress(&pfjets_electronMultiplicity_);}
 	}
 	pfjets_hfEmMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_hfEmMultiplicity") != 0) {
 		pfjets_hfEmMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_hfEmMultiplicity"));
-		pfjets_hfEmMultiplicity_branch->SetAddress(&pfjets_hfEmMultiplicity_);
+		if (pfjets_hfEmMultiplicity_branch) {pfjets_hfEmMultiplicity_branch->SetAddress(&pfjets_hfEmMultiplicity_);}
 	}
 	pfjets_hfHadronMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_hfHadronMultiplicity") != 0) {
 		pfjets_hfHadronMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_hfHadronMultiplicity"));
-		pfjets_hfHadronMultiplicity_branch->SetAddress(&pfjets_hfHadronMultiplicity_);
+		if (pfjets_hfHadronMultiplicity_branch) {pfjets_hfHadronMultiplicity_branch->SetAddress(&pfjets_hfHadronMultiplicity_);}
 	}
 	pfjets_muonMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_muonMultiplicity") != 0) {
 		pfjets_muonMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_muonMultiplicity"));
-		pfjets_muonMultiplicity_branch->SetAddress(&pfjets_muonMultiplicity_);
+		if (pfjets_muonMultiplicity_branch) {pfjets_muonMultiplicity_branch->SetAddress(&pfjets_muonMultiplicity_);}
 	}
 	pfjets_neutralHadronMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_neutralHadronMultiplicity") != 0) {
 		pfjets_neutralHadronMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralHadronMultiplicity"));
-		pfjets_neutralHadronMultiplicity_branch->SetAddress(&pfjets_neutralHadronMultiplicity_);
+		if (pfjets_neutralHadronMultiplicity_branch) {pfjets_neutralHadronMultiplicity_branch->SetAddress(&pfjets_neutralHadronMultiplicity_);}
 	}
 	pfjets_neutralMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_neutralMultiplicity") != 0) {
 		pfjets_neutralMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralMultiplicity"));
-		pfjets_neutralMultiplicity_branch->SetAddress(&pfjets_neutralMultiplicity_);
+		if (pfjets_neutralMultiplicity_branch) {pfjets_neutralMultiplicity_branch->SetAddress(&pfjets_neutralMultiplicity_);}
 	}
 	pfjets_photonMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_photonMultiplicity") != 0) {
 		pfjets_photonMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_photonMultiplicity"));
-		pfjets_photonMultiplicity_branch->SetAddress(&pfjets_photonMultiplicity_);
+		if (pfjets_photonMultiplicity_branch) {pfjets_photonMultiplicity_branch->SetAddress(&pfjets_photonMultiplicity_);}
 	}
 	pfmus_musidx_branch = 0;
 	if (tree->GetAlias("pfmus_musidx") != 0) {
 		pfmus_musidx_branch = tree->GetBranch(tree->GetAlias("pfmus_musidx"));
-		pfmus_musidx_branch->SetAddress(&pfmus_musidx_);
+		if (pfmus_musidx_branch) {pfmus_musidx_branch->SetAddress(&pfmus_musidx_);}
 	}
 	pfmus_charge_branch = 0;
 	if (tree->GetAlias("pfmus_charge") != 0) {
 		pfmus_charge_branch = tree->GetBranch(tree->GetAlias("pfmus_charge"));
-		pfmus_charge_branch->SetAddress(&pfmus_charge_);
+		if (pfmus_charge_branch) {pfmus_charge_branch->SetAddress(&pfmus_charge_);}
 	}
 	pfmus_flag_branch = 0;
 	if (tree->GetAlias("pfmus_flag") != 0) {
 		pfmus_flag_branch = tree->GetBranch(tree->GetAlias("pfmus_flag"));
-		pfmus_flag_branch->SetAddress(&pfmus_flag_);
+		if (pfmus_flag_branch) {pfmus_flag_branch->SetAddress(&pfmus_flag_);}
 	}
 	pfmus_particleId_branch = 0;
 	if (tree->GetAlias("pfmus_particleId") != 0) {
 		pfmus_particleId_branch = tree->GetBranch(tree->GetAlias("pfmus_particleId"));
-		pfmus_particleId_branch->SetAddress(&pfmus_particleId_);
+		if (pfmus_particleId_branch) {pfmus_particleId_branch->SetAddress(&pfmus_particleId_);}
 	}
 	photons_fiduciality_branch = 0;
 	if (tree->GetAlias("photons_fiduciality") != 0) {
 		photons_fiduciality_branch = tree->GetBranch(tree->GetAlias("photons_fiduciality"));
-		photons_fiduciality_branch->SetAddress(&photons_fiduciality_);
+		if (photons_fiduciality_branch) {photons_fiduciality_branch->SetAddress(&photons_fiduciality_);}
 	}
 	photons_scindex_branch = 0;
 	if (tree->GetAlias("photons_scindex") != 0) {
 		photons_scindex_branch = tree->GetBranch(tree->GetAlias("photons_scindex"));
-		photons_scindex_branch->SetAddress(&photons_scindex_);
+		if (photons_scindex_branch) {photons_scindex_branch->SetAddress(&photons_scindex_);}
 	}
 	puInfo_bunchCrossing_branch = 0;
 	if (tree->GetAlias("puInfo_bunchCrossing") != 0) {
 		puInfo_bunchCrossing_branch = tree->GetBranch(tree->GetAlias("puInfo_bunchCrossing"));
-		puInfo_bunchCrossing_branch->SetAddress(&puInfo_bunchCrossing_);
+		if (puInfo_bunchCrossing_branch) {puInfo_bunchCrossing_branch->SetAddress(&puInfo_bunchCrossing_);}
 	}
 	puInfo_nPUvertices_branch = 0;
 	if (tree->GetAlias("puInfo_nPUvertices") != 0) {
 		puInfo_nPUvertices_branch = tree->GetBranch(tree->GetAlias("puInfo_nPUvertices"));
-		puInfo_nPUvertices_branch->SetAddress(&puInfo_nPUvertices_);
+		if (puInfo_nPUvertices_branch) {puInfo_nPUvertices_branch->SetAddress(&puInfo_nPUvertices_);}
 	}
 	convs_algo_branch = 0;
 	if (tree->GetAlias("convs_algo") != 0) {
 		convs_algo_branch = tree->GetBranch(tree->GetAlias("convs_algo"));
-		convs_algo_branch->SetAddress(&convs_algo_);
+		if (convs_algo_branch) {convs_algo_branch->SetAddress(&convs_algo_);}
 	}
 	convs_isConverted_branch = 0;
 	if (tree->GetAlias("convs_isConverted") != 0) {
 		convs_isConverted_branch = tree->GetBranch(tree->GetAlias("convs_isConverted"));
-		convs_isConverted_branch->SetAddress(&convs_isConverted_);
+		if (convs_isConverted_branch) {convs_isConverted_branch->SetAddress(&convs_isConverted_);}
 	}
 	convs_quality_branch = 0;
 	if (tree->GetAlias("convs_quality") != 0) {
 		convs_quality_branch = tree->GetBranch(tree->GetAlias("convs_quality"));
-		convs_quality_branch->SetAddress(&convs_quality_);
+		if (convs_quality_branch) {convs_quality_branch->SetAddress(&convs_quality_);}
 	}
 	scs_detIdSeed_branch = 0;
 	if (tree->GetAlias("scs_detIdSeed") != 0) {
 		scs_detIdSeed_branch = tree->GetBranch(tree->GetAlias("scs_detIdSeed"));
-		scs_detIdSeed_branch->SetAddress(&scs_detIdSeed_);
+		if (scs_detIdSeed_branch) {scs_detIdSeed_branch->SetAddress(&scs_detIdSeed_);}
 	}
 	scs_elsidx_branch = 0;
 	if (tree->GetAlias("scs_elsidx") != 0) {
 		scs_elsidx_branch = tree->GetBranch(tree->GetAlias("scs_elsidx"));
-		scs_elsidx_branch->SetAddress(&scs_elsidx_);
+		if (scs_elsidx_branch) {scs_elsidx_branch->SetAddress(&scs_elsidx_);}
 	}
 	scs_severitySeed_branch = 0;
 	if (tree->GetAlias("scs_severitySeed") != 0) {
 		scs_severitySeed_branch = tree->GetBranch(tree->GetAlias("scs_severitySeed"));
-		scs_severitySeed_branch->SetAddress(&scs_severitySeed_);
+		if (scs_severitySeed_branch) {scs_severitySeed_branch->SetAddress(&scs_severitySeed_);}
 	}
 	svs_isKs_branch = 0;
 	if (tree->GetAlias("svs_isKs") != 0) {
 		svs_isKs_branch = tree->GetBranch(tree->GetAlias("svs_isKs"));
-		svs_isKs_branch->SetAddress(&svs_isKs_);
+		if (svs_isKs_branch) {svs_isKs_branch->SetAddress(&svs_isKs_);}
 	}
 	svs_isLambda_branch = 0;
 	if (tree->GetAlias("svs_isLambda") != 0) {
 		svs_isLambda_branch = tree->GetBranch(tree->GetAlias("svs_isLambda"));
-		svs_isLambda_branch->SetAddress(&svs_isLambda_);
+		if (svs_isLambda_branch) {svs_isLambda_branch->SetAddress(&svs_isLambda_);}
 	}
 	svs_mc3_id_branch = 0;
 	if (tree->GetAlias("svs_mc3_id") != 0) {
 		svs_mc3_id_branch = tree->GetBranch(tree->GetAlias("svs_mc3_id"));
-		svs_mc3_id_branch->SetAddress(&svs_mc3_id_);
+		if (svs_mc3_id_branch) {svs_mc3_id_branch->SetAddress(&svs_mc3_id_);}
 	}
 	svs_nTrks_branch = 0;
 	if (tree->GetAlias("svs_nTrks") != 0) {
 		svs_nTrks_branch = tree->GetBranch(tree->GetAlias("svs_nTrks"));
-		svs_nTrks_branch->SetAddress(&svs_nTrks_);
+		if (svs_nTrks_branch) {svs_nTrks_branch->SetAddress(&svs_nTrks_);}
 	}
 	mus_tcmet_flag_branch = 0;
 	if (tree->GetAlias("mus_tcmet_flag") != 0) {
 		mus_tcmet_flag_branch = tree->GetBranch(tree->GetAlias("mus_tcmet_flag"));
-		mus_tcmet_flag_branch->SetAddress(&mus_tcmet_flag_);
+		if (mus_tcmet_flag_branch) {mus_tcmet_flag_branch->SetAddress(&mus_tcmet_flag_);}
 	}
 	trks_algo_branch = 0;
 	if (tree->GetAlias("trks_algo") != 0) {
 		trks_algo_branch = tree->GetBranch(tree->GetAlias("trks_algo"));
-		trks_algo_branch->SetAddress(&trks_algo_);
+		if (trks_algo_branch) {trks_algo_branch->SetAddress(&trks_algo_);}
 	}
 	trks_charge_branch = 0;
 	if (tree->GetAlias("trks_charge") != 0) {
 		trks_charge_branch = tree->GetBranch(tree->GetAlias("trks_charge"));
-		trks_charge_branch->SetAddress(&trks_charge_);
+		if (trks_charge_branch) {trks_charge_branch->SetAddress(&trks_charge_);}
 	}
 	trks_exp_innerlayers_branch = 0;
 	if (tree->GetAlias("trks_exp_innerlayers") != 0) {
 		trks_exp_innerlayers_branch = tree->GetBranch(tree->GetAlias("trks_exp_innerlayers"));
-		trks_exp_innerlayers_branch->SetAddress(&trks_exp_innerlayers_);
+		if (trks_exp_innerlayers_branch) {trks_exp_innerlayers_branch->SetAddress(&trks_exp_innerlayers_);}
 	}
 	trks_exp_outerlayers_branch = 0;
 	if (tree->GetAlias("trks_exp_outerlayers") != 0) {
 		trks_exp_outerlayers_branch = tree->GetBranch(tree->GetAlias("trks_exp_outerlayers"));
-		trks_exp_outerlayers_branch->SetAddress(&trks_exp_outerlayers_);
+		if (trks_exp_outerlayers_branch) {trks_exp_outerlayers_branch->SetAddress(&trks_exp_outerlayers_);}
 	}
 	trks_layer1_det_branch = 0;
 	if (tree->GetAlias("trks_layer1_det") != 0) {
 		trks_layer1_det_branch = tree->GetBranch(tree->GetAlias("trks_layer1_det"));
-		trks_layer1_det_branch->SetAddress(&trks_layer1_det_);
+		if (trks_layer1_det_branch) {trks_layer1_det_branch->SetAddress(&trks_layer1_det_);}
 	}
 	trks_layer1_layer_branch = 0;
 	if (tree->GetAlias("trks_layer1_layer") != 0) {
 		trks_layer1_layer_branch = tree->GetBranch(tree->GetAlias("trks_layer1_layer"));
-		trks_layer1_layer_branch->SetAddress(&trks_layer1_layer_);
+		if (trks_layer1_layer_branch) {trks_layer1_layer_branch->SetAddress(&trks_layer1_layer_);}
 	}
 	trks_layer1_sizerphi_branch = 0;
 	if (tree->GetAlias("trks_layer1_sizerphi") != 0) {
 		trks_layer1_sizerphi_branch = tree->GetBranch(tree->GetAlias("trks_layer1_sizerphi"));
-		trks_layer1_sizerphi_branch->SetAddress(&trks_layer1_sizerphi_);
+		if (trks_layer1_sizerphi_branch) {trks_layer1_sizerphi_branch->SetAddress(&trks_layer1_sizerphi_);}
 	}
 	trks_layer1_sizerz_branch = 0;
 	if (tree->GetAlias("trks_layer1_sizerz") != 0) {
 		trks_layer1_sizerz_branch = tree->GetBranch(tree->GetAlias("trks_layer1_sizerz"));
-		trks_layer1_sizerz_branch->SetAddress(&trks_layer1_sizerz_);
+		if (trks_layer1_sizerz_branch) {trks_layer1_sizerz_branch->SetAddress(&trks_layer1_sizerz_);}
 	}
 	trks_lostHits_branch = 0;
 	if (tree->GetAlias("trks_lostHits") != 0) {
 		trks_lostHits_branch = tree->GetBranch(tree->GetAlias("trks_lostHits"));
-		trks_lostHits_branch->SetAddress(&trks_lostHits_);
+		if (trks_lostHits_branch) {trks_lostHits_branch->SetAddress(&trks_lostHits_);}
 	}
 	trks_lost_pixelhits_branch = 0;
 	if (tree->GetAlias("trks_lost_pixelhits") != 0) {
 		trks_lost_pixelhits_branch = tree->GetBranch(tree->GetAlias("trks_lost_pixelhits"));
-		trks_lost_pixelhits_branch->SetAddress(&trks_lost_pixelhits_);
+		if (trks_lost_pixelhits_branch) {trks_lost_pixelhits_branch->SetAddress(&trks_lost_pixelhits_);}
 	}
 	trks_nLoops_branch = 0;
 	if (tree->GetAlias("trks_nLoops") != 0) {
 		trks_nLoops_branch = tree->GetBranch(tree->GetAlias("trks_nLoops"));
-		trks_nLoops_branch->SetAddress(&trks_nLoops_);
+		if (trks_nLoops_branch) {trks_nLoops_branch->SetAddress(&trks_nLoops_);}
 	}
 	trks_nlayers_branch = 0;
 	if (tree->GetAlias("trks_nlayers") != 0) {
 		trks_nlayers_branch = tree->GetBranch(tree->GetAlias("trks_nlayers"));
-		trks_nlayers_branch->SetAddress(&trks_nlayers_);
+		if (trks_nlayers_branch) {trks_nlayers_branch->SetAddress(&trks_nlayers_);}
 	}
 	trks_nlayers3D_branch = 0;
 	if (tree->GetAlias("trks_nlayers3D") != 0) {
 		trks_nlayers3D_branch = tree->GetBranch(tree->GetAlias("trks_nlayers3D"));
-		trks_nlayers3D_branch->SetAddress(&trks_nlayers3D_);
+		if (trks_nlayers3D_branch) {trks_nlayers3D_branch->SetAddress(&trks_nlayers3D_);}
 	}
 	trks_nlayersLost_branch = 0;
 	if (tree->GetAlias("trks_nlayersLost") != 0) {
 		trks_nlayersLost_branch = tree->GetBranch(tree->GetAlias("trks_nlayersLost"));
-		trks_nlayersLost_branch->SetAddress(&trks_nlayersLost_);
+		if (trks_nlayersLost_branch) {trks_nlayersLost_branch->SetAddress(&trks_nlayersLost_);}
 	}
 	trks_pvidx0_branch = 0;
 	if (tree->GetAlias("trks_pvidx0") != 0) {
 		trks_pvidx0_branch = tree->GetBranch(tree->GetAlias("trks_pvidx0"));
-		trks_pvidx0_branch->SetAddress(&trks_pvidx0_);
+		if (trks_pvidx0_branch) {trks_pvidx0_branch->SetAddress(&trks_pvidx0_);}
 	}
 	trks_pvidx1_branch = 0;
 	if (tree->GetAlias("trks_pvidx1") != 0) {
 		trks_pvidx1_branch = tree->GetBranch(tree->GetAlias("trks_pvidx1"));
-		trks_pvidx1_branch->SetAddress(&trks_pvidx1_);
+		if (trks_pvidx1_branch) {trks_pvidx1_branch->SetAddress(&trks_pvidx1_);}
 	}
 	trks_qualityMask_branch = 0;
 	if (tree->GetAlias("trks_qualityMask") != 0) {
 		trks_qualityMask_branch = tree->GetBranch(tree->GetAlias("trks_qualityMask"));
-		trks_qualityMask_branch->SetAddress(&trks_qualityMask_);
+		if (trks_qualityMask_branch) {trks_qualityMask_branch->SetAddress(&trks_qualityMask_);}
 	}
 	trks_validHits_branch = 0;
 	if (tree->GetAlias("trks_validHits") != 0) {
 		trks_validHits_branch = tree->GetBranch(tree->GetAlias("trks_validHits"));
-		trks_validHits_branch->SetAddress(&trks_validHits_);
+		if (trks_validHits_branch) {trks_validHits_branch->SetAddress(&trks_validHits_);}
 	}
 	trks_valid_pixelhits_branch = 0;
 	if (tree->GetAlias("trks_valid_pixelhits") != 0) {
 		trks_valid_pixelhits_branch = tree->GetBranch(tree->GetAlias("trks_valid_pixelhits"));
-		trks_valid_pixelhits_branch->SetAddress(&trks_valid_pixelhits_);
+		if (trks_valid_pixelhits_branch) {trks_valid_pixelhits_branch->SetAddress(&trks_valid_pixelhits_);}
 	}
 	trks_elsidx_branch = 0;
 	if (tree->GetAlias("trks_elsidx") != 0) {
 		trks_elsidx_branch = tree->GetBranch(tree->GetAlias("trks_elsidx"));
-		trks_elsidx_branch->SetAddress(&trks_elsidx_);
+		if (trks_elsidx_branch) {trks_elsidx_branch->SetAddress(&trks_elsidx_);}
 	}
 	trk_musidx_branch = 0;
 	if (tree->GetAlias("trk_musidx") != 0) {
 		trk_musidx_branch = tree->GetBranch(tree->GetAlias("trk_musidx"));
-		trk_musidx_branch->SetAddress(&trk_musidx_);
+		if (trk_musidx_branch) {trk_musidx_branch->SetAddress(&trk_musidx_);}
 	}
 	trkjets_ntrks_branch = 0;
 	if (tree->GetAlias("trkjets_ntrks") != 0) {
 		trkjets_ntrks_branch = tree->GetBranch(tree->GetAlias("trkjets_ntrks"));
-		trkjets_ntrks_branch->SetAddress(&trkjets_ntrks_);
+		if (trkjets_ntrks_branch) {trkjets_ntrks_branch->SetAddress(&trkjets_ntrks_);}
 	}
 	trkjets_vtxs_idx_branch = 0;
 	if (tree->GetAlias("trkjets_vtxs_idx") != 0) {
 		trkjets_vtxs_idx_branch = tree->GetBranch(tree->GetAlias("trkjets_vtxs_idx"));
-		trkjets_vtxs_idx_branch->SetAddress(&trkjets_vtxs_idx_);
+		if (trkjets_vtxs_idx_branch) {trkjets_vtxs_idx_branch->SetAddress(&trkjets_vtxs_idx_);}
 	}
 	vtxs_isFake_branch = 0;
 	if (tree->GetAlias("vtxs_isFake") != 0) {
 		vtxs_isFake_branch = tree->GetBranch(tree->GetAlias("vtxs_isFake"));
-		vtxs_isFake_branch->SetAddress(&vtxs_isFake_);
+		if (vtxs_isFake_branch) {vtxs_isFake_branch->SetAddress(&vtxs_isFake_);}
 	}
 	vtxs_isValid_branch = 0;
 	if (tree->GetAlias("vtxs_isValid") != 0) {
 		vtxs_isValid_branch = tree->GetBranch(tree->GetAlias("vtxs_isValid"));
-		vtxs_isValid_branch->SetAddress(&vtxs_isValid_);
+		if (vtxs_isValid_branch) {vtxs_isValid_branch->SetAddress(&vtxs_isValid_);}
 	}
 	vtxs_tracksSize_branch = 0;
 	if (tree->GetAlias("vtxs_tracksSize") != 0) {
 		vtxs_tracksSize_branch = tree->GetBranch(tree->GetAlias("vtxs_tracksSize"));
-		vtxs_tracksSize_branch->SetAddress(&vtxs_tracksSize_);
+		if (vtxs_tracksSize_branch) {vtxs_tracksSize_branch->SetAddress(&vtxs_tracksSize_);}
 	}
 	bsvtxs_isFake_branch = 0;
 	if (tree->GetAlias("bsvtxs_isFake") != 0) {
 		bsvtxs_isFake_branch = tree->GetBranch(tree->GetAlias("bsvtxs_isFake"));
-		bsvtxs_isFake_branch->SetAddress(&bsvtxs_isFake_);
+		if (bsvtxs_isFake_branch) {bsvtxs_isFake_branch->SetAddress(&bsvtxs_isFake_);}
 	}
 	bsvtxs_isValid_branch = 0;
 	if (tree->GetAlias("bsvtxs_isValid") != 0) {
 		bsvtxs_isValid_branch = tree->GetBranch(tree->GetAlias("bsvtxs_isValid"));
-		bsvtxs_isValid_branch->SetAddress(&bsvtxs_isValid_);
+		if (bsvtxs_isValid_branch) {bsvtxs_isValid_branch->SetAddress(&bsvtxs_isValid_);}
 	}
 	bsvtxs_tracksSize_branch = 0;
 	if (tree->GetAlias("bsvtxs_tracksSize") != 0) {
 		bsvtxs_tracksSize_branch = tree->GetBranch(tree->GetAlias("bsvtxs_tracksSize"));
-		bsvtxs_tracksSize_branch->SetAddress(&bsvtxs_tracksSize_);
+		if (bsvtxs_tracksSize_branch) {bsvtxs_tracksSize_branch->SetAddress(&bsvtxs_tracksSize_);}
 	}
 	els_convs_delMissHits_branch = 0;
 	if (tree->GetAlias("els_convs_delMissHits") != 0) {
 		els_convs_delMissHits_branch = tree->GetBranch(tree->GetAlias("els_convs_delMissHits"));
-		els_convs_delMissHits_branch->SetAddress(&els_convs_delMissHits_);
+		if (els_convs_delMissHits_branch) {els_convs_delMissHits_branch->SetAddress(&els_convs_delMissHits_);}
 	}
 	els_convs_flag_branch = 0;
 	if (tree->GetAlias("els_convs_flag") != 0) {
 		els_convs_flag_branch = tree->GetBranch(tree->GetAlias("els_convs_flag"));
-		els_convs_flag_branch->SetAddress(&els_convs_flag_);
+		if (els_convs_flag_branch) {els_convs_flag_branch->SetAddress(&els_convs_flag_);}
 	}
 	els_convs_gsftkidx_branch = 0;
 	if (tree->GetAlias("els_convs_gsftkidx") != 0) {
 		els_convs_gsftkidx_branch = tree->GetBranch(tree->GetAlias("els_convs_gsftkidx"));
-		els_convs_gsftkidx_branch->SetAddress(&els_convs_gsftkidx_);
+		if (els_convs_gsftkidx_branch) {els_convs_gsftkidx_branch->SetAddress(&els_convs_gsftkidx_);}
 	}
 	els_convs_tkidx_branch = 0;
 	if (tree->GetAlias("els_convs_tkidx") != 0) {
 		els_convs_tkidx_branch = tree->GetBranch(tree->GetAlias("els_convs_tkidx"));
-		els_convs_tkidx_branch->SetAddress(&els_convs_tkidx_);
+		if (els_convs_tkidx_branch) {els_convs_tkidx_branch->SetAddress(&els_convs_tkidx_);}
 	}
 	genps_lepdaughter_id_branch = 0;
 	if (tree->GetAlias("genps_lepdaughter_id") != 0) {
 		genps_lepdaughter_id_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_id"));
-		genps_lepdaughter_id_branch->SetAddress(&genps_lepdaughter_id_);
+		if (genps_lepdaughter_id_branch) {genps_lepdaughter_id_branch->SetAddress(&genps_lepdaughter_id_);}
 	}
 	genps_lepdaughter_idx_branch = 0;
 	if (tree->GetAlias("genps_lepdaughter_idx") != 0) {
 		genps_lepdaughter_idx_branch = tree->GetBranch(tree->GetAlias("genps_lepdaughter_idx"));
-		genps_lepdaughter_idx_branch->SetAddress(&genps_lepdaughter_idx_);
+		if (genps_lepdaughter_idx_branch) {genps_lepdaughter_idx_branch->SetAddress(&genps_lepdaughter_idx_);}
 	}
 	hlt_trigObjs_id_branch = 0;
 	if (tree->GetAlias("hlt_trigObjs_id") != 0) {
 		hlt_trigObjs_id_branch = tree->GetBranch(tree->GetAlias("hlt_trigObjs_id"));
-		hlt_trigObjs_id_branch->SetAddress(&hlt_trigObjs_id_);
+		if (hlt_trigObjs_id_branch) {hlt_trigObjs_id_branch->SetAddress(&hlt_trigObjs_id_);}
 	}
 	hyp_jets_idx_branch = 0;
 	if (tree->GetAlias("hyp_jets_idx") != 0) {
 		hyp_jets_idx_branch = tree->GetBranch(tree->GetAlias("hyp_jets_idx"));
-		hyp_jets_idx_branch->SetAddress(&hyp_jets_idx_);
+		if (hyp_jets_idx_branch) {hyp_jets_idx_branch->SetAddress(&hyp_jets_idx_);}
 	}
 	hyp_other_jets_idx_branch = 0;
 	if (tree->GetAlias("hyp_other_jets_idx") != 0) {
 		hyp_other_jets_idx_branch = tree->GetBranch(tree->GetAlias("hyp_other_jets_idx"));
-		hyp_other_jets_idx_branch->SetAddress(&hyp_other_jets_idx_);
+		if (hyp_other_jets_idx_branch) {hyp_other_jets_idx_branch->SetAddress(&hyp_other_jets_idx_);}
 	}
 	mus_nStationCorrelatedHits_branch = 0;
 	if (tree->GetAlias("mus_nStationCorrelatedHits") != 0) {
 		mus_nStationCorrelatedHits_branch = tree->GetBranch(tree->GetAlias("mus_nStationCorrelatedHits"));
-		mus_nStationCorrelatedHits_branch->SetAddress(&mus_nStationCorrelatedHits_);
+		if (mus_nStationCorrelatedHits_branch) {mus_nStationCorrelatedHits_branch->SetAddress(&mus_nStationCorrelatedHits_);}
 	}
 	mus_nStationHits_branch = 0;
 	if (tree->GetAlias("mus_nStationHits") != 0) {
 		mus_nStationHits_branch = tree->GetBranch(tree->GetAlias("mus_nStationHits"));
-		mus_nStationHits_branch->SetAddress(&mus_nStationHits_);
+		if (mus_nStationHits_branch) {mus_nStationHits_branch->SetAddress(&mus_nStationHits_);}
 	}
 	pfjets_pfcandIndicies_branch = 0;
 	if (tree->GetAlias("pfjets_pfcandIndicies") != 0) {
 		pfjets_pfcandIndicies_branch = tree->GetBranch(tree->GetAlias("pfjets_pfcandIndicies"));
-		pfjets_pfcandIndicies_branch->SetAddress(&pfjets_pfcandIndicies_);
+		if (pfjets_pfcandIndicies_branch) {pfjets_pfcandIndicies_branch->SetAddress(&pfjets_pfcandIndicies_);}
 	}
 	puInfo_ntrks_highpt_branch = 0;
 	if (tree->GetAlias("puInfo_ntrks_highpt") != 0) {
 		puInfo_ntrks_highpt_branch = tree->GetBranch(tree->GetAlias("puInfo_ntrks_highpt"));
-		puInfo_ntrks_highpt_branch->SetAddress(&puInfo_ntrks_highpt_);
+		if (puInfo_ntrks_highpt_branch) {puInfo_ntrks_highpt_branch->SetAddress(&puInfo_ntrks_highpt_);}
 	}
 	puInfo_ntrks_lowpt_branch = 0;
 	if (tree->GetAlias("puInfo_ntrks_lowpt") != 0) {
 		puInfo_ntrks_lowpt_branch = tree->GetBranch(tree->GetAlias("puInfo_ntrks_lowpt"));
-		puInfo_ntrks_lowpt_branch->SetAddress(&puInfo_ntrks_lowpt_);
+		if (puInfo_ntrks_lowpt_branch) {puInfo_ntrks_lowpt_branch->SetAddress(&puInfo_ntrks_lowpt_);}
 	}
 	convs_nHitsBeforeVtx_branch = 0;
 	if (tree->GetAlias("convs_nHitsBeforeVtx") != 0) {
 		convs_nHitsBeforeVtx_branch = tree->GetBranch(tree->GetAlias("convs_nHitsBeforeVtx"));
-		convs_nHitsBeforeVtx_branch->SetAddress(&convs_nHitsBeforeVtx_);
+		if (convs_nHitsBeforeVtx_branch) {convs_nHitsBeforeVtx_branch->SetAddress(&convs_nHitsBeforeVtx_);}
 	}
 	convs_tkalgo_branch = 0;
 	if (tree->GetAlias("convs_tkalgo") != 0) {
 		convs_tkalgo_branch = tree->GetBranch(tree->GetAlias("convs_tkalgo"));
-		convs_tkalgo_branch->SetAddress(&convs_tkalgo_);
+		if (convs_tkalgo_branch) {convs_tkalgo_branch->SetAddress(&convs_tkalgo_);}
 	}
 	convs_tkidx_branch = 0;
 	if (tree->GetAlias("convs_tkidx") != 0) {
 		convs_tkidx_branch = tree->GetBranch(tree->GetAlias("convs_tkidx"));
-		convs_tkidx_branch->SetAddress(&convs_tkidx_);
+		if (convs_tkidx_branch) {convs_tkidx_branch->SetAddress(&convs_tkidx_);}
 	}
 	els_HLT_Ele17_Ele8_L1sL1DoubleEG137_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_L1sL1DoubleEG137_version") != 0) {
 		els_HLT_Ele17_Ele8_L1sL1DoubleEG137_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_L1sL1DoubleEG137_version"));
-		els_HLT_Ele17_Ele8_L1sL1DoubleEG137_version_branch->SetAddress(&els_HLT_Ele17_Ele8_L1sL1DoubleEG137_version_);
+		if (els_HLT_Ele17_Ele8_L1sL1DoubleEG137_version_branch) {els_HLT_Ele17_Ele8_L1sL1DoubleEG137_version_branch->SetAddress(&els_HLT_Ele17_Ele8_L1sL1DoubleEG137_version_);}
 	}
 	els_HLT_Ele17_Ele8_LeadingLeg_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_LeadingLeg_version") != 0) {
 		els_HLT_Ele17_Ele8_LeadingLeg_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_LeadingLeg_version"));
-		els_HLT_Ele17_Ele8_LeadingLeg_version_branch->SetAddress(&els_HLT_Ele17_Ele8_LeadingLeg_version_);
+		if (els_HLT_Ele17_Ele8_LeadingLeg_version_branch) {els_HLT_Ele17_Ele8_LeadingLeg_version_branch->SetAddress(&els_HLT_Ele17_Ele8_LeadingLeg_version_);}
 	}
 	els_HLT_Ele17_Ele8_Mass50_LeadingLeg_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_Mass50_LeadingLeg_version") != 0) {
 		els_HLT_Ele17_Ele8_Mass50_LeadingLeg_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_Mass50_LeadingLeg_version"));
-		els_HLT_Ele17_Ele8_Mass50_LeadingLeg_version_branch->SetAddress(&els_HLT_Ele17_Ele8_Mass50_LeadingLeg_version_);
+		if (els_HLT_Ele17_Ele8_Mass50_LeadingLeg_version_branch) {els_HLT_Ele17_Ele8_Mass50_LeadingLeg_version_branch->SetAddress(&els_HLT_Ele17_Ele8_Mass50_LeadingLeg_version_);}
 	}
 	els_HLT_Ele17_Ele8_Mass50_TrailingLeg_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_Mass50_TrailingLeg_version") != 0) {
 		els_HLT_Ele17_Ele8_Mass50_TrailingLeg_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_Mass50_TrailingLeg_version"));
-		els_HLT_Ele17_Ele8_Mass50_TrailingLeg_version_branch->SetAddress(&els_HLT_Ele17_Ele8_Mass50_TrailingLeg_version_);
+		if (els_HLT_Ele17_Ele8_Mass50_TrailingLeg_version_branch) {els_HLT_Ele17_Ele8_Mass50_TrailingLeg_version_branch->SetAddress(&els_HLT_Ele17_Ele8_Mass50_TrailingLeg_version_);}
 	}
 	els_HLT_Ele17_Ele8_TrailingLeg_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_TrailingLeg_version") != 0) {
 		els_HLT_Ele17_Ele8_TrailingLeg_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_TrailingLeg_version"));
-		els_HLT_Ele17_Ele8_TrailingLeg_version_branch->SetAddress(&els_HLT_Ele17_Ele8_TrailingLeg_version_);
+		if (els_HLT_Ele17_Ele8_TrailingLeg_version_branch) {els_HLT_Ele17_Ele8_TrailingLeg_version_branch->SetAddress(&els_HLT_Ele17_Ele8_TrailingLeg_version_);}
 	}
 	els_HLT_Ele17_Ele8_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_version") != 0) {
 		els_HLT_Ele17_Ele8_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_version"));
-		els_HLT_Ele17_Ele8_version_branch->SetAddress(&els_HLT_Ele17_Ele8_version_);
+		if (els_HLT_Ele17_Ele8_version_branch) {els_HLT_Ele17_Ele8_version_branch->SetAddress(&els_HLT_Ele17_Ele8_version_);}
 	}
 	els_HLT_Ele20_SC4_Mass50_LeadingLeg_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele20_SC4_Mass50_LeadingLeg_version") != 0) {
 		els_HLT_Ele20_SC4_Mass50_LeadingLeg_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele20_SC4_Mass50_LeadingLeg_version"));
-		els_HLT_Ele20_SC4_Mass50_LeadingLeg_version_branch->SetAddress(&els_HLT_Ele20_SC4_Mass50_LeadingLeg_version_);
+		if (els_HLT_Ele20_SC4_Mass50_LeadingLeg_version_branch) {els_HLT_Ele20_SC4_Mass50_LeadingLeg_version_branch->SetAddress(&els_HLT_Ele20_SC4_Mass50_LeadingLeg_version_);}
 	}
 	els_HLT_Ele20_SC4_Mass50_TrailingLeg_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele20_SC4_Mass50_TrailingLeg_version") != 0) {
 		els_HLT_Ele20_SC4_Mass50_TrailingLeg_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele20_SC4_Mass50_TrailingLeg_version"));
-		els_HLT_Ele20_SC4_Mass50_TrailingLeg_version_branch->SetAddress(&els_HLT_Ele20_SC4_Mass50_TrailingLeg_version_);
+		if (els_HLT_Ele20_SC4_Mass50_TrailingLeg_version_branch) {els_HLT_Ele20_SC4_Mass50_TrailingLeg_version_branch->SetAddress(&els_HLT_Ele20_SC4_Mass50_TrailingLeg_version_);}
 	}
 	els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_version") != 0) {
 		els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_version"));
-		els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_version_branch->SetAddress(&els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_version_);
+		if (els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_version_branch) {els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_version_branch->SetAddress(&els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_version_);}
 	}
 	els_HLT_Ele27_WP80_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele27_WP80_version") != 0) {
 		els_HLT_Ele27_WP80_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele27_WP80_version"));
-		els_HLT_Ele27_WP80_version_branch->SetAddress(&els_HLT_Ele27_WP80_version_);
+		if (els_HLT_Ele27_WP80_version_branch) {els_HLT_Ele27_WP80_version_branch->SetAddress(&els_HLT_Ele27_WP80_version_);}
 	}
 	els_HLT_Ele32_SC17_Mass50_LeadingLeg_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele32_SC17_Mass50_LeadingLeg_version") != 0) {
 		els_HLT_Ele32_SC17_Mass50_LeadingLeg_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele32_SC17_Mass50_LeadingLeg_version"));
-		els_HLT_Ele32_SC17_Mass50_LeadingLeg_version_branch->SetAddress(&els_HLT_Ele32_SC17_Mass50_LeadingLeg_version_);
+		if (els_HLT_Ele32_SC17_Mass50_LeadingLeg_version_branch) {els_HLT_Ele32_SC17_Mass50_LeadingLeg_version_branch->SetAddress(&els_HLT_Ele32_SC17_Mass50_LeadingLeg_version_);}
 	}
 	els_HLT_Ele32_SC17_Mass50_TrailingLeg_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele32_SC17_Mass50_TrailingLeg_version") != 0) {
 		els_HLT_Ele32_SC17_Mass50_TrailingLeg_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele32_SC17_Mass50_TrailingLeg_version"));
-		els_HLT_Ele32_SC17_Mass50_TrailingLeg_version_branch->SetAddress(&els_HLT_Ele32_SC17_Mass50_TrailingLeg_version_);
+		if (els_HLT_Ele32_SC17_Mass50_TrailingLeg_version_branch) {els_HLT_Ele32_SC17_Mass50_TrailingLeg_version_branch->SetAddress(&els_HLT_Ele32_SC17_Mass50_TrailingLeg_version_);}
 	}
 	els_HLT_Mu17_Ele8_TrailingLeg_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Mu17_Ele8_TrailingLeg_version") != 0) {
 		els_HLT_Mu17_Ele8_TrailingLeg_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Mu17_Ele8_TrailingLeg_version"));
-		els_HLT_Mu17_Ele8_TrailingLeg_version_branch->SetAddress(&els_HLT_Mu17_Ele8_TrailingLeg_version_);
+		if (els_HLT_Mu17_Ele8_TrailingLeg_version_branch) {els_HLT_Mu17_Ele8_TrailingLeg_version_branch->SetAddress(&els_HLT_Mu17_Ele8_TrailingLeg_version_);}
 	}
 	els_HLT_Mu17_Ele8_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Mu17_Ele8_version") != 0) {
 		els_HLT_Mu17_Ele8_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Mu17_Ele8_version"));
-		els_HLT_Mu17_Ele8_version_branch->SetAddress(&els_HLT_Mu17_Ele8_version_);
+		if (els_HLT_Mu17_Ele8_version_branch) {els_HLT_Mu17_Ele8_version_branch->SetAddress(&els_HLT_Mu17_Ele8_version_);}
 	}
 	els_HLT_Mu8_Ele17_version_branch = 0;
 	if (tree->GetAlias("els_HLT_Mu8_Ele17_version") != 0) {
 		els_HLT_Mu8_Ele17_version_branch = tree->GetBranch(tree->GetAlias("els_HLT_Mu8_Ele17_version"));
-		els_HLT_Mu8_Ele17_version_branch->SetAddress(&els_HLT_Mu8_Ele17_version_);
+		if (els_HLT_Mu8_Ele17_version_branch) {els_HLT_Mu8_Ele17_version_branch->SetAddress(&els_HLT_Mu8_Ele17_version_);}
 	}
 	evt_nels_branch = 0;
 	if (tree->GetAlias("evt_nels") != 0) {
 		evt_nels_branch = tree->GetBranch(tree->GetAlias("evt_nels"));
-		evt_nels_branch->SetAddress(&evt_nels_);
+		if (evt_nels_branch) {evt_nels_branch->SetAddress(&evt_nels_);}
 	}
 	evt_detectorStatus_branch = 0;
 	if (tree->GetAlias("evt_detectorStatus") != 0) {
 		evt_detectorStatus_branch = tree->GetBranch(tree->GetAlias("evt_detectorStatus"));
-		evt_detectorStatus_branch->SetAddress(&evt_detectorStatus_);
+		if (evt_detectorStatus_branch) {evt_detectorStatus_branch->SetAddress(&evt_detectorStatus_);}
 	}
 	evt_event_branch = 0;
 	if (tree->GetAlias("evt_event") != 0) {
 		evt_event_branch = tree->GetBranch(tree->GetAlias("evt_event"));
-		evt_event_branch->SetAddress(&evt_event_);
+		if (evt_event_branch) {evt_event_branch->SetAddress(&evt_event_);}
 	}
 	evt_lumiBlock_branch = 0;
 	if (tree->GetAlias("evt_lumiBlock") != 0) {
 		evt_lumiBlock_branch = tree->GetBranch(tree->GetAlias("evt_lumiBlock"));
-		evt_lumiBlock_branch->SetAddress(&evt_lumiBlock_);
+		if (evt_lumiBlock_branch) {evt_lumiBlock_branch->SetAddress(&evt_lumiBlock_);}
 	}
 	evt_run_branch = 0;
 	if (tree->GetAlias("evt_run") != 0) {
 		evt_run_branch = tree->GetBranch(tree->GetAlias("evt_run"));
-		evt_run_branch->SetAddress(&evt_run_);
+		if (evt_run_branch) {evt_run_branch->SetAddress(&evt_run_);}
 	}
 	genps_flavorHistoryFilterResult_branch = 0;
 	if (tree->GetAlias("genps_flavorHistoryFilterResult") != 0) {
 		genps_flavorHistoryFilterResult_branch = tree->GetBranch(tree->GetAlias("genps_flavorHistoryFilterResult"));
-		genps_flavorHistoryFilterResult_branch->SetAddress(&genps_flavorHistoryFilterResult_);
+		if (genps_flavorHistoryFilterResult_branch) {genps_flavorHistoryFilterResult_branch->SetAddress(&genps_flavorHistoryFilterResult_);}
 	}
 	evt_ngenjets_branch = 0;
 	if (tree->GetAlias("evt_ngenjets") != 0) {
 		evt_ngenjets_branch = tree->GetBranch(tree->GetAlias("evt_ngenjets"));
-		evt_ngenjets_branch->SetAddress(&evt_ngenjets_);
+		if (evt_ngenjets_branch) {evt_ngenjets_branch->SetAddress(&evt_ngenjets_);}
 	}
 	genps_signalProcessID_branch = 0;
 	if (tree->GetAlias("genps_signalProcessID") != 0) {
 		genps_signalProcessID_branch = tree->GetBranch(tree->GetAlias("genps_signalProcessID"));
-		genps_signalProcessID_branch->SetAddress(&genps_signalProcessID_);
+		if (genps_signalProcessID_branch) {genps_signalProcessID_branch->SetAddress(&genps_signalProcessID_);}
 	}
 	evt_njets_branch = 0;
 	if (tree->GetAlias("evt_njets") != 0) {
 		evt_njets_branch = tree->GetBranch(tree->GetAlias("evt_njets"));
-		evt_njets_branch->SetAddress(&evt_njets_);
+		if (evt_njets_branch) {evt_njets_branch->SetAddress(&evt_njets_);}
 	}
 	l1_bits1_branch = 0;
 	if (tree->GetAlias("l1_bits1") != 0) {
 		l1_bits1_branch = tree->GetBranch(tree->GetAlias("l1_bits1"));
-		l1_bits1_branch->SetAddress(&l1_bits1_);
+		if (l1_bits1_branch) {l1_bits1_branch->SetAddress(&l1_bits1_);}
 	}
 	l1_bits2_branch = 0;
 	if (tree->GetAlias("l1_bits2") != 0) {
 		l1_bits2_branch = tree->GetBranch(tree->GetAlias("l1_bits2"));
-		l1_bits2_branch->SetAddress(&l1_bits2_);
+		if (l1_bits2_branch) {l1_bits2_branch->SetAddress(&l1_bits2_);}
 	}
 	l1_bits3_branch = 0;
 	if (tree->GetAlias("l1_bits3") != 0) {
 		l1_bits3_branch = tree->GetBranch(tree->GetAlias("l1_bits3"));
-		l1_bits3_branch->SetAddress(&l1_bits3_);
+		if (l1_bits3_branch) {l1_bits3_branch->SetAddress(&l1_bits3_);}
 	}
 	l1_bits4_branch = 0;
 	if (tree->GetAlias("l1_bits4") != 0) {
 		l1_bits4_branch = tree->GetBranch(tree->GetAlias("l1_bits4"));
-		l1_bits4_branch->SetAddress(&l1_bits4_);
+		if (l1_bits4_branch) {l1_bits4_branch->SetAddress(&l1_bits4_);}
 	}
 	l1_techbits1_branch = 0;
 	if (tree->GetAlias("l1_techbits1") != 0) {
 		l1_techbits1_branch = tree->GetBranch(tree->GetAlias("l1_techbits1"));
-		l1_techbits1_branch->SetAddress(&l1_techbits1_);
+		if (l1_techbits1_branch) {l1_techbits1_branch->SetAddress(&l1_techbits1_);}
 	}
 	l1_techbits2_branch = 0;
 	if (tree->GetAlias("l1_techbits2") != 0) {
 		l1_techbits2_branch = tree->GetBranch(tree->GetAlias("l1_techbits2"));
-		l1_techbits2_branch->SetAddress(&l1_techbits2_);
+		if (l1_techbits2_branch) {l1_techbits2_branch->SetAddress(&l1_techbits2_);}
 	}
 	ls_lsNumber_branch = 0;
 	if (tree->GetAlias("ls_lsNumber") != 0) {
 		ls_lsNumber_branch = tree->GetBranch(tree->GetAlias("ls_lsNumber"));
-		ls_lsNumber_branch->SetAddress(&ls_lsNumber_);
+		if (ls_lsNumber_branch) {ls_lsNumber_branch->SetAddress(&ls_lsNumber_);}
 	}
 	ls_numOrbit_branch = 0;
 	if (tree->GetAlias("ls_numOrbit") != 0) {
 		ls_numOrbit_branch = tree->GetBranch(tree->GetAlias("ls_numOrbit"));
-		ls_numOrbit_branch->SetAddress(&ls_numOrbit_);
+		if (ls_numOrbit_branch) {ls_numOrbit_branch->SetAddress(&ls_numOrbit_);}
 	}
 	ls_startOrbit_branch = 0;
 	if (tree->GetAlias("ls_startOrbit") != 0) {
 		ls_startOrbit_branch = tree->GetBranch(tree->GetAlias("ls_startOrbit"));
-		ls_startOrbit_branch->SetAddress(&ls_startOrbit_);
+		if (ls_startOrbit_branch) {ls_startOrbit_branch->SetAddress(&ls_startOrbit_);}
 	}
 	mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_version") != 0) {
 		mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_version"));
-		mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_version_branch->SetAddress(&mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_version_);
+		if (mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_version_branch) {mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_version_branch->SetAddress(&mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_version_);}
 	}
 	mus_HLT_IsoMu24_eta2p1_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_IsoMu24_eta2p1_version") != 0) {
 		mus_HLT_IsoMu24_eta2p1_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_IsoMu24_eta2p1_version"));
-		mus_HLT_IsoMu24_eta2p1_version_branch->SetAddress(&mus_HLT_IsoMu24_eta2p1_version_);
+		if (mus_HLT_IsoMu24_eta2p1_version_branch) {mus_HLT_IsoMu24_eta2p1_version_branch->SetAddress(&mus_HLT_IsoMu24_eta2p1_version_);}
 	}
 	mus_HLT_Mu17_Ele8_LeadingLeg_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Ele8_LeadingLeg_version") != 0) {
 		mus_HLT_Mu17_Ele8_LeadingLeg_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Ele8_LeadingLeg_version"));
-		mus_HLT_Mu17_Ele8_LeadingLeg_version_branch->SetAddress(&mus_HLT_Mu17_Ele8_LeadingLeg_version_);
+		if (mus_HLT_Mu17_Ele8_LeadingLeg_version_branch) {mus_HLT_Mu17_Ele8_LeadingLeg_version_branch->SetAddress(&mus_HLT_Mu17_Ele8_LeadingLeg_version_);}
 	}
 	mus_HLT_Mu17_Ele8_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Ele8_version") != 0) {
 		mus_HLT_Mu17_Ele8_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Ele8_version"));
-		mus_HLT_Mu17_Ele8_version_branch->SetAddress(&mus_HLT_Mu17_Ele8_version_);
+		if (mus_HLT_Mu17_Ele8_version_branch) {mus_HLT_Mu17_Ele8_version_branch->SetAddress(&mus_HLT_Mu17_Ele8_version_);}
 	}
 	mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_version") != 0) {
 		mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_version"));
-		mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_version_branch->SetAddress(&mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_version_);
+		if (mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_version_branch) {mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_version_branch->SetAddress(&mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_version_);}
 	}
 	mus_HLT_Mu17_Mu8_LeadingLeg_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Mu8_LeadingLeg_version") != 0) {
 		mus_HLT_Mu17_Mu8_LeadingLeg_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Mu8_LeadingLeg_version"));
-		mus_HLT_Mu17_Mu8_LeadingLeg_version_branch->SetAddress(&mus_HLT_Mu17_Mu8_LeadingLeg_version_);
+		if (mus_HLT_Mu17_Mu8_LeadingLeg_version_branch) {mus_HLT_Mu17_Mu8_LeadingLeg_version_branch->SetAddress(&mus_HLT_Mu17_Mu8_LeadingLeg_version_);}
 	}
 	mus_HLT_Mu17_Mu8_TrailingLeg_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Mu8_TrailingLeg_version") != 0) {
 		mus_HLT_Mu17_Mu8_TrailingLeg_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Mu8_TrailingLeg_version"));
-		mus_HLT_Mu17_Mu8_TrailingLeg_version_branch->SetAddress(&mus_HLT_Mu17_Mu8_TrailingLeg_version_);
+		if (mus_HLT_Mu17_Mu8_TrailingLeg_version_branch) {mus_HLT_Mu17_Mu8_TrailingLeg_version_branch->SetAddress(&mus_HLT_Mu17_Mu8_TrailingLeg_version_);}
 	}
 	mus_HLT_Mu17_Mu8_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Mu8_version") != 0) {
 		mus_HLT_Mu17_Mu8_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Mu8_version"));
-		mus_HLT_Mu17_Mu8_version_branch->SetAddress(&mus_HLT_Mu17_Mu8_version_);
+		if (mus_HLT_Mu17_Mu8_version_branch) {mus_HLT_Mu17_Mu8_version_branch->SetAddress(&mus_HLT_Mu17_Mu8_version_);}
 	}
 	mus_HLT_Mu17_TkMu8_LeadingLeg_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_TkMu8_LeadingLeg_version") != 0) {
 		mus_HLT_Mu17_TkMu8_LeadingLeg_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_TkMu8_LeadingLeg_version"));
-		mus_HLT_Mu17_TkMu8_LeadingLeg_version_branch->SetAddress(&mus_HLT_Mu17_TkMu8_LeadingLeg_version_);
+		if (mus_HLT_Mu17_TkMu8_LeadingLeg_version_branch) {mus_HLT_Mu17_TkMu8_LeadingLeg_version_branch->SetAddress(&mus_HLT_Mu17_TkMu8_LeadingLeg_version_);}
 	}
 	mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_version") != 0) {
 		mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_version"));
-		mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_version_branch->SetAddress(&mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_version_);
+		if (mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_version_branch) {mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_version_branch->SetAddress(&mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_version_);}
 	}
 	mus_HLT_Mu17_TkMu8_TrailingLeg_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_TkMu8_TrailingLeg_version") != 0) {
 		mus_HLT_Mu17_TkMu8_TrailingLeg_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_TkMu8_TrailingLeg_version"));
-		mus_HLT_Mu17_TkMu8_TrailingLeg_version_branch->SetAddress(&mus_HLT_Mu17_TkMu8_TrailingLeg_version_);
+		if (mus_HLT_Mu17_TkMu8_TrailingLeg_version_branch) {mus_HLT_Mu17_TkMu8_TrailingLeg_version_branch->SetAddress(&mus_HLT_Mu17_TkMu8_TrailingLeg_version_);}
 	}
 	mus_HLT_Mu17_TkMu8_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_TkMu8_version") != 0) {
 		mus_HLT_Mu17_TkMu8_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_TkMu8_version"));
-		mus_HLT_Mu17_TkMu8_version_branch->SetAddress(&mus_HLT_Mu17_TkMu8_version_);
+		if (mus_HLT_Mu17_TkMu8_version_branch) {mus_HLT_Mu17_TkMu8_version_branch->SetAddress(&mus_HLT_Mu17_TkMu8_version_);}
 	}
 	mus_HLT_Mu8_Ele17_TrailingLeg_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu8_Ele17_TrailingLeg_version") != 0) {
 		mus_HLT_Mu8_Ele17_TrailingLeg_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu8_Ele17_TrailingLeg_version"));
-		mus_HLT_Mu8_Ele17_TrailingLeg_version_branch->SetAddress(&mus_HLT_Mu8_Ele17_TrailingLeg_version_);
+		if (mus_HLT_Mu8_Ele17_TrailingLeg_version_branch) {mus_HLT_Mu8_Ele17_TrailingLeg_version_branch->SetAddress(&mus_HLT_Mu8_Ele17_TrailingLeg_version_);}
 	}
 	mus_HLT_Mu8_Ele17_version_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu8_Ele17_version") != 0) {
 		mus_HLT_Mu8_Ele17_version_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu8_Ele17_version"));
-		mus_HLT_Mu8_Ele17_version_branch->SetAddress(&mus_HLT_Mu8_Ele17_version_);
+		if (mus_HLT_Mu8_Ele17_version_branch) {mus_HLT_Mu8_Ele17_version_branch->SetAddress(&mus_HLT_Mu8_Ele17_version_);}
 	}
 	evt_nphotons_branch = 0;
 	if (tree->GetAlias("evt_nphotons") != 0) {
 		evt_nphotons_branch = tree->GetBranch(tree->GetAlias("evt_nphotons"));
-		evt_nphotons_branch->SetAddress(&evt_nphotons_);
+		if (evt_nphotons_branch) {evt_nphotons_branch->SetAddress(&evt_nphotons_);}
 	}
 	evt_ecalRecoStatus_branch = 0;
 	if (tree->GetAlias("evt_ecalRecoStatus") != 0) {
 		evt_ecalRecoStatus_branch = tree->GetBranch(tree->GetAlias("evt_ecalRecoStatus"));
-		evt_ecalRecoStatus_branch->SetAddress(&evt_ecalRecoStatus_);
+		if (evt_ecalRecoStatus_branch) {evt_ecalRecoStatus_branch->SetAddress(&evt_ecalRecoStatus_);}
 	}
 	evt_nscs_branch = 0;
 	if (tree->GetAlias("evt_nscs") != 0) {
 		evt_nscs_branch = tree->GetBranch(tree->GetAlias("evt_nscs"));
-		evt_nscs_branch->SetAddress(&evt_nscs_);
+		if (evt_nscs_branch) {evt_nscs_branch->SetAddress(&evt_nscs_);}
 	}
 	evt_ntrkjets_branch = 0;
 	if (tree->GetAlias("evt_ntrkjets") != 0) {
 		evt_ntrkjets_branch = tree->GetBranch(tree->GetAlias("evt_ntrkjets"));
-		evt_ntrkjets_branch->SetAddress(&evt_ntrkjets_);
+		if (evt_ntrkjets_branch) {evt_ntrkjets_branch->SetAddress(&evt_ntrkjets_);}
 	}
 	evt_nvtxs_branch = 0;
 	if (tree->GetAlias("evt_nvtxs") != 0) {
 		evt_nvtxs_branch = tree->GetBranch(tree->GetAlias("evt_nvtxs"));
-		evt_nvtxs_branch->SetAddress(&evt_nvtxs_);
+		if (evt_nvtxs_branch) {evt_nvtxs_branch->SetAddress(&evt_nvtxs_);}
 	}
 	evt_nbsvtxs_branch = 0;
 	if (tree->GetAlias("evt_nbsvtxs") != 0) {
 		evt_nbsvtxs_branch = tree->GetBranch(tree->GetAlias("evt_nbsvtxs"));
-		evt_nbsvtxs_branch->SetAddress(&evt_nbsvtxs_);
+		if (evt_nbsvtxs_branch) {evt_nbsvtxs_branch->SetAddress(&evt_nbsvtxs_);}
 	}
 	els_HLT_Ele17_Ele8_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8") != 0) {
 		els_HLT_Ele17_Ele8_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8"));
-		els_HLT_Ele17_Ele8_branch->SetAddress(&els_HLT_Ele17_Ele8_);
+		if (els_HLT_Ele17_Ele8_branch) {els_HLT_Ele17_Ele8_branch->SetAddress(&els_HLT_Ele17_Ele8_);}
 	}
 	els_HLT_Ele17_Ele8_L1sL1DoubleEG137_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_L1sL1DoubleEG137") != 0) {
 		els_HLT_Ele17_Ele8_L1sL1DoubleEG137_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_L1sL1DoubleEG137"));
-		els_HLT_Ele17_Ele8_L1sL1DoubleEG137_branch->SetAddress(&els_HLT_Ele17_Ele8_L1sL1DoubleEG137_);
+		if (els_HLT_Ele17_Ele8_L1sL1DoubleEG137_branch) {els_HLT_Ele17_Ele8_L1sL1DoubleEG137_branch->SetAddress(&els_HLT_Ele17_Ele8_L1sL1DoubleEG137_);}
 	}
 	els_HLT_Ele17_Ele8_LeadingLeg_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_LeadingLeg") != 0) {
 		els_HLT_Ele17_Ele8_LeadingLeg_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_LeadingLeg"));
-		els_HLT_Ele17_Ele8_LeadingLeg_branch->SetAddress(&els_HLT_Ele17_Ele8_LeadingLeg_);
+		if (els_HLT_Ele17_Ele8_LeadingLeg_branch) {els_HLT_Ele17_Ele8_LeadingLeg_branch->SetAddress(&els_HLT_Ele17_Ele8_LeadingLeg_);}
 	}
 	els_HLT_Ele17_Ele8_Mass50_LeadingLeg_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_Mass50_LeadingLeg") != 0) {
 		els_HLT_Ele17_Ele8_Mass50_LeadingLeg_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_Mass50_LeadingLeg"));
-		els_HLT_Ele17_Ele8_Mass50_LeadingLeg_branch->SetAddress(&els_HLT_Ele17_Ele8_Mass50_LeadingLeg_);
+		if (els_HLT_Ele17_Ele8_Mass50_LeadingLeg_branch) {els_HLT_Ele17_Ele8_Mass50_LeadingLeg_branch->SetAddress(&els_HLT_Ele17_Ele8_Mass50_LeadingLeg_);}
 	}
 	els_HLT_Ele17_Ele8_Mass50_TrailingLeg_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_Mass50_TrailingLeg") != 0) {
 		els_HLT_Ele17_Ele8_Mass50_TrailingLeg_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_Mass50_TrailingLeg"));
-		els_HLT_Ele17_Ele8_Mass50_TrailingLeg_branch->SetAddress(&els_HLT_Ele17_Ele8_Mass50_TrailingLeg_);
+		if (els_HLT_Ele17_Ele8_Mass50_TrailingLeg_branch) {els_HLT_Ele17_Ele8_Mass50_TrailingLeg_branch->SetAddress(&els_HLT_Ele17_Ele8_Mass50_TrailingLeg_);}
 	}
 	els_HLT_Ele17_Ele8_TrailingLeg_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele17_Ele8_TrailingLeg") != 0) {
 		els_HLT_Ele17_Ele8_TrailingLeg_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele17_Ele8_TrailingLeg"));
-		els_HLT_Ele17_Ele8_TrailingLeg_branch->SetAddress(&els_HLT_Ele17_Ele8_TrailingLeg_);
+		if (els_HLT_Ele17_Ele8_TrailingLeg_branch) {els_HLT_Ele17_Ele8_TrailingLeg_branch->SetAddress(&els_HLT_Ele17_Ele8_TrailingLeg_);}
 	}
 	els_HLT_Ele20_SC4_Mass50_LeadingLeg_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele20_SC4_Mass50_LeadingLeg") != 0) {
 		els_HLT_Ele20_SC4_Mass50_LeadingLeg_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele20_SC4_Mass50_LeadingLeg"));
-		els_HLT_Ele20_SC4_Mass50_LeadingLeg_branch->SetAddress(&els_HLT_Ele20_SC4_Mass50_LeadingLeg_);
+		if (els_HLT_Ele20_SC4_Mass50_LeadingLeg_branch) {els_HLT_Ele20_SC4_Mass50_LeadingLeg_branch->SetAddress(&els_HLT_Ele20_SC4_Mass50_LeadingLeg_);}
 	}
 	els_HLT_Ele20_SC4_Mass50_TrailingLeg_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele20_SC4_Mass50_TrailingLeg") != 0) {
 		els_HLT_Ele20_SC4_Mass50_TrailingLeg_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele20_SC4_Mass50_TrailingLeg"));
-		els_HLT_Ele20_SC4_Mass50_TrailingLeg_branch->SetAddress(&els_HLT_Ele20_SC4_Mass50_TrailingLeg_);
+		if (els_HLT_Ele20_SC4_Mass50_TrailingLeg_branch) {els_HLT_Ele20_SC4_Mass50_TrailingLeg_branch->SetAddress(&els_HLT_Ele20_SC4_Mass50_TrailingLeg_);}
 	}
 	els_HLT_Ele27_WP80_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele27_WP80") != 0) {
 		els_HLT_Ele27_WP80_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele27_WP80"));
-		els_HLT_Ele27_WP80_branch->SetAddress(&els_HLT_Ele27_WP80_);
+		if (els_HLT_Ele27_WP80_branch) {els_HLT_Ele27_WP80_branch->SetAddress(&els_HLT_Ele27_WP80_);}
 	}
 	els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22") != 0) {
 		els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22"));
-		els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_branch->SetAddress(&els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_);
+		if (els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_branch) {els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_branch->SetAddress(&els_HLT_Ele27_WP80_L1sL1SingleEG20ORL1SingleEG22_);}
 	}
 	els_HLT_Ele32_SC17_Mass50_LeadingLeg_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele32_SC17_Mass50_LeadingLeg") != 0) {
 		els_HLT_Ele32_SC17_Mass50_LeadingLeg_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele32_SC17_Mass50_LeadingLeg"));
-		els_HLT_Ele32_SC17_Mass50_LeadingLeg_branch->SetAddress(&els_HLT_Ele32_SC17_Mass50_LeadingLeg_);
+		if (els_HLT_Ele32_SC17_Mass50_LeadingLeg_branch) {els_HLT_Ele32_SC17_Mass50_LeadingLeg_branch->SetAddress(&els_HLT_Ele32_SC17_Mass50_LeadingLeg_);}
 	}
 	els_HLT_Ele32_SC17_Mass50_TrailingLeg_branch = 0;
 	if (tree->GetAlias("els_HLT_Ele32_SC17_Mass50_TrailingLeg") != 0) {
 		els_HLT_Ele32_SC17_Mass50_TrailingLeg_branch = tree->GetBranch(tree->GetAlias("els_HLT_Ele32_SC17_Mass50_TrailingLeg"));
-		els_HLT_Ele32_SC17_Mass50_TrailingLeg_branch->SetAddress(&els_HLT_Ele32_SC17_Mass50_TrailingLeg_);
+		if (els_HLT_Ele32_SC17_Mass50_TrailingLeg_branch) {els_HLT_Ele32_SC17_Mass50_TrailingLeg_branch->SetAddress(&els_HLT_Ele32_SC17_Mass50_TrailingLeg_);}
 	}
 	els_HLT_Mu17_Ele8_branch = 0;
 	if (tree->GetAlias("els_HLT_Mu17_Ele8") != 0) {
 		els_HLT_Mu17_Ele8_branch = tree->GetBranch(tree->GetAlias("els_HLT_Mu17_Ele8"));
-		els_HLT_Mu17_Ele8_branch->SetAddress(&els_HLT_Mu17_Ele8_);
+		if (els_HLT_Mu17_Ele8_branch) {els_HLT_Mu17_Ele8_branch->SetAddress(&els_HLT_Mu17_Ele8_);}
 	}
 	els_HLT_Mu17_Ele8_TrailingLeg_branch = 0;
 	if (tree->GetAlias("els_HLT_Mu17_Ele8_TrailingLeg") != 0) {
 		els_HLT_Mu17_Ele8_TrailingLeg_branch = tree->GetBranch(tree->GetAlias("els_HLT_Mu17_Ele8_TrailingLeg"));
-		els_HLT_Mu17_Ele8_TrailingLeg_branch->SetAddress(&els_HLT_Mu17_Ele8_TrailingLeg_);
+		if (els_HLT_Mu17_Ele8_TrailingLeg_branch) {els_HLT_Mu17_Ele8_TrailingLeg_branch->SetAddress(&els_HLT_Mu17_Ele8_TrailingLeg_);}
 	}
 	els_HLT_Mu8_Ele17_branch = 0;
 	if (tree->GetAlias("els_HLT_Mu8_Ele17") != 0) {
 		els_HLT_Mu8_Ele17_branch = tree->GetBranch(tree->GetAlias("els_HLT_Mu8_Ele17"));
-		els_HLT_Mu8_Ele17_branch->SetAddress(&els_HLT_Mu8_Ele17_);
+		if (els_HLT_Mu8_Ele17_branch) {els_HLT_Mu8_Ele17_branch->SetAddress(&els_HLT_Mu8_Ele17_);}
 	}
 	els_id2012ext_loose_branch = 0;
 	if (tree->GetAlias("els_id2012ext_loose") != 0) {
 		els_id2012ext_loose_branch = tree->GetBranch(tree->GetAlias("els_id2012ext_loose"));
-		els_id2012ext_loose_branch->SetAddress(&els_id2012ext_loose_);
+		if (els_id2012ext_loose_branch) {els_id2012ext_loose_branch->SetAddress(&els_id2012ext_loose_);}
 	}
 	els_id2012ext_medium_branch = 0;
 	if (tree->GetAlias("els_id2012ext_medium") != 0) {
 		els_id2012ext_medium_branch = tree->GetBranch(tree->GetAlias("els_id2012ext_medium"));
-		els_id2012ext_medium_branch->SetAddress(&els_id2012ext_medium_);
+		if (els_id2012ext_medium_branch) {els_id2012ext_medium_branch->SetAddress(&els_id2012ext_medium_);}
 	}
 	els_id2012ext_tight_branch = 0;
 	if (tree->GetAlias("els_id2012ext_tight") != 0) {
 		els_id2012ext_tight_branch = tree->GetBranch(tree->GetAlias("els_id2012ext_tight"));
-		els_id2012ext_tight_branch->SetAddress(&els_id2012ext_tight_);
+		if (els_id2012ext_tight_branch) {els_id2012ext_tight_branch->SetAddress(&els_id2012ext_tight_);}
 	}
 	els_id2012ext_veto_branch = 0;
 	if (tree->GetAlias("els_id2012ext_veto") != 0) {
 		els_id2012ext_veto_branch = tree->GetBranch(tree->GetAlias("els_id2012ext_veto"));
-		els_id2012ext_veto_branch->SetAddress(&els_id2012ext_veto_);
+		if (els_id2012ext_veto_branch) {els_id2012ext_veto_branch->SetAddress(&els_id2012ext_veto_);}
 	}
 	els_id2012_loose_branch = 0;
 	if (tree->GetAlias("els_id2012_loose") != 0) {
 		els_id2012_loose_branch = tree->GetBranch(tree->GetAlias("els_id2012_loose"));
-		els_id2012_loose_branch->SetAddress(&els_id2012_loose_);
+		if (els_id2012_loose_branch) {els_id2012_loose_branch->SetAddress(&els_id2012_loose_);}
 	}
 	els_id2012_medium_branch = 0;
 	if (tree->GetAlias("els_id2012_medium") != 0) {
 		els_id2012_medium_branch = tree->GetBranch(tree->GetAlias("els_id2012_medium"));
-		els_id2012_medium_branch->SetAddress(&els_id2012_medium_);
+		if (els_id2012_medium_branch) {els_id2012_medium_branch->SetAddress(&els_id2012_medium_);}
 	}
 	els_id2012_tight_branch = 0;
 	if (tree->GetAlias("els_id2012_tight") != 0) {
 		els_id2012_tight_branch = tree->GetBranch(tree->GetAlias("els_id2012_tight"));
-		els_id2012_tight_branch->SetAddress(&els_id2012_tight_);
+		if (els_id2012_tight_branch) {els_id2012_tight_branch->SetAddress(&els_id2012_tight_);}
 	}
 	els_id2012_veto_branch = 0;
 	if (tree->GetAlias("els_id2012_veto") != 0) {
 		els_id2012_veto_branch = tree->GetBranch(tree->GetAlias("els_id2012_veto"));
-		els_id2012_veto_branch->SetAddress(&els_id2012_veto_);
+		if (els_id2012_veto_branch) {els_id2012_veto_branch->SetAddress(&els_id2012_veto_);}
 	}
 	hlt_prescales_branch = 0;
 	if (tree->GetAlias("hlt_prescales") != 0) {
 		hlt_prescales_branch = tree->GetBranch(tree->GetAlias("hlt_prescales"));
-		hlt_prescales_branch->SetAddress(&hlt_prescales_);
+		if (hlt_prescales_branch) {hlt_prescales_branch->SetAddress(&hlt_prescales_);}
 	}
 	l1_prescales_branch = 0;
 	if (tree->GetAlias("l1_prescales") != 0) {
 		l1_prescales_branch = tree->GetBranch(tree->GetAlias("l1_prescales"));
-		l1_prescales_branch->SetAddress(&l1_prescales_);
+		if (l1_prescales_branch) {l1_prescales_branch->SetAddress(&l1_prescales_);}
 	}
 	l1_techtrigprescales_branch = 0;
 	if (tree->GetAlias("l1_techtrigprescales") != 0) {
 		l1_techtrigprescales_branch = tree->GetBranch(tree->GetAlias("l1_techtrigprescales"));
-		l1_techtrigprescales_branch->SetAddress(&l1_techtrigprescales_);
+		if (l1_techtrigprescales_branch) {l1_techtrigprescales_branch->SetAddress(&l1_techtrigprescales_);}
 	}
 	mus_HLT_IsoMu24_eta2p1_branch = 0;
 	if (tree->GetAlias("mus_HLT_IsoMu24_eta2p1") != 0) {
 		mus_HLT_IsoMu24_eta2p1_branch = tree->GetBranch(tree->GetAlias("mus_HLT_IsoMu24_eta2p1"));
-		mus_HLT_IsoMu24_eta2p1_branch->SetAddress(&mus_HLT_IsoMu24_eta2p1_);
+		if (mus_HLT_IsoMu24_eta2p1_branch) {mus_HLT_IsoMu24_eta2p1_branch->SetAddress(&mus_HLT_IsoMu24_eta2p1_);}
 	}
 	mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_branch = 0;
 	if (tree->GetAlias("mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1") != 0) {
 		mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_branch = tree->GetBranch(tree->GetAlias("mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1"));
-		mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_branch->SetAddress(&mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_);
+		if (mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_branch) {mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_branch->SetAddress(&mus_HLT_IsoMu24_eta2p1_L1sMu16Eta2p1_);}
 	}
 	mus_HLT_Mu17_Ele8_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Ele8") != 0) {
 		mus_HLT_Mu17_Ele8_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Ele8"));
-		mus_HLT_Mu17_Ele8_branch->SetAddress(&mus_HLT_Mu17_Ele8_);
+		if (mus_HLT_Mu17_Ele8_branch) {mus_HLT_Mu17_Ele8_branch->SetAddress(&mus_HLT_Mu17_Ele8_);}
 	}
 	mus_HLT_Mu17_Ele8_LeadingLeg_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Ele8_LeadingLeg") != 0) {
 		mus_HLT_Mu17_Ele8_LeadingLeg_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Ele8_LeadingLeg"));
-		mus_HLT_Mu17_Ele8_LeadingLeg_branch->SetAddress(&mus_HLT_Mu17_Ele8_LeadingLeg_);
+		if (mus_HLT_Mu17_Ele8_LeadingLeg_branch) {mus_HLT_Mu17_Ele8_LeadingLeg_branch->SetAddress(&mus_HLT_Mu17_Ele8_LeadingLeg_);}
 	}
 	mus_HLT_Mu17_Mu8_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Mu8") != 0) {
 		mus_HLT_Mu17_Mu8_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Mu8"));
-		mus_HLT_Mu17_Mu8_branch->SetAddress(&mus_HLT_Mu17_Mu8_);
+		if (mus_HLT_Mu17_Mu8_branch) {mus_HLT_Mu17_Mu8_branch->SetAddress(&mus_HLT_Mu17_Mu8_);}
 	}
 	mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen") != 0) {
 		mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen"));
-		mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_branch->SetAddress(&mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_);
+		if (mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_branch) {mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_branch->SetAddress(&mus_HLT_Mu17_Mu8_L1sL1DoubleMu10MuOpen_);}
 	}
 	mus_HLT_Mu17_Mu8_LeadingLeg_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Mu8_LeadingLeg") != 0) {
 		mus_HLT_Mu17_Mu8_LeadingLeg_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Mu8_LeadingLeg"));
-		mus_HLT_Mu17_Mu8_LeadingLeg_branch->SetAddress(&mus_HLT_Mu17_Mu8_LeadingLeg_);
+		if (mus_HLT_Mu17_Mu8_LeadingLeg_branch) {mus_HLT_Mu17_Mu8_LeadingLeg_branch->SetAddress(&mus_HLT_Mu17_Mu8_LeadingLeg_);}
 	}
 	mus_HLT_Mu17_Mu8_TrailingLeg_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_Mu8_TrailingLeg") != 0) {
 		mus_HLT_Mu17_Mu8_TrailingLeg_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_Mu8_TrailingLeg"));
-		mus_HLT_Mu17_Mu8_TrailingLeg_branch->SetAddress(&mus_HLT_Mu17_Mu8_TrailingLeg_);
+		if (mus_HLT_Mu17_Mu8_TrailingLeg_branch) {mus_HLT_Mu17_Mu8_TrailingLeg_branch->SetAddress(&mus_HLT_Mu17_Mu8_TrailingLeg_);}
 	}
 	mus_HLT_Mu17_TkMu8_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_TkMu8") != 0) {
 		mus_HLT_Mu17_TkMu8_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_TkMu8"));
-		mus_HLT_Mu17_TkMu8_branch->SetAddress(&mus_HLT_Mu17_TkMu8_);
+		if (mus_HLT_Mu17_TkMu8_branch) {mus_HLT_Mu17_TkMu8_branch->SetAddress(&mus_HLT_Mu17_TkMu8_);}
 	}
 	mus_HLT_Mu17_TkMu8_LeadingLeg_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_TkMu8_LeadingLeg") != 0) {
 		mus_HLT_Mu17_TkMu8_LeadingLeg_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_TkMu8_LeadingLeg"));
-		mus_HLT_Mu17_TkMu8_LeadingLeg_branch->SetAddress(&mus_HLT_Mu17_TkMu8_LeadingLeg_);
+		if (mus_HLT_Mu17_TkMu8_LeadingLeg_branch) {mus_HLT_Mu17_TkMu8_LeadingLeg_branch->SetAddress(&mus_HLT_Mu17_TkMu8_LeadingLeg_);}
 	}
 	mus_HLT_Mu17_TkMu8_TrailingLeg_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_TkMu8_TrailingLeg") != 0) {
 		mus_HLT_Mu17_TkMu8_TrailingLeg_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_TkMu8_TrailingLeg"));
-		mus_HLT_Mu17_TkMu8_TrailingLeg_branch->SetAddress(&mus_HLT_Mu17_TkMu8_TrailingLeg_);
+		if (mus_HLT_Mu17_TkMu8_TrailingLeg_branch) {mus_HLT_Mu17_TkMu8_TrailingLeg_branch->SetAddress(&mus_HLT_Mu17_TkMu8_TrailingLeg_);}
 	}
 	mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered") != 0) {
 		mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered"));
-		mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_branch->SetAddress(&mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_);
+		if (mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_branch) {mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_branch->SetAddress(&mus_HLT_Mu17_TkMu8_TrailingLegTrkFiltered_);}
 	}
 	mus_HLT_Mu8_Ele17_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu8_Ele17") != 0) {
 		mus_HLT_Mu8_Ele17_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu8_Ele17"));
-		mus_HLT_Mu8_Ele17_branch->SetAddress(&mus_HLT_Mu8_Ele17_);
+		if (mus_HLT_Mu8_Ele17_branch) {mus_HLT_Mu8_Ele17_branch->SetAddress(&mus_HLT_Mu8_Ele17_);}
 	}
 	mus_HLT_Mu8_Ele17_TrailingLeg_branch = 0;
 	if (tree->GetAlias("mus_HLT_Mu8_Ele17_TrailingLeg") != 0) {
 		mus_HLT_Mu8_Ele17_TrailingLeg_branch = tree->GetBranch(tree->GetAlias("mus_HLT_Mu8_Ele17_TrailingLeg"));
-		mus_HLT_Mu8_Ele17_TrailingLeg_branch->SetAddress(&mus_HLT_Mu8_Ele17_TrailingLeg_);
+		if (mus_HLT_Mu8_Ele17_TrailingLeg_branch) {mus_HLT_Mu8_Ele17_TrailingLeg_branch->SetAddress(&mus_HLT_Mu8_Ele17_TrailingLeg_);}
 	}
 	evt_nEvts_branch = 0;
 	if (tree->GetAlias("evt_nEvts") != 0) {
 		evt_nEvts_branch = tree->GetBranch(tree->GetAlias("evt_nEvts"));
-		evt_nEvts_branch->SetAddress(&evt_nEvts_);
+		if (evt_nEvts_branch) {evt_nEvts_branch->SetAddress(&evt_nEvts_);}
 	}
 	evt_filt_eff_branch = 0;
 	if (tree->GetAlias("evt_filt_eff") != 0) {
 		evt_filt_eff_branch = tree->GetBranch(tree->GetAlias("evt_filt_eff"));
-		evt_filt_eff_branch->SetAddress(&evt_filt_eff_);
+		if (evt_filt_eff_branch) {evt_filt_eff_branch->SetAddress(&evt_filt_eff_);}
 	}
   tree->SetMakeClass(0);
 }
@@ -10274,6 +10298,7 @@ void GetEntry(unsigned int idx)
 		ls_isValid_isLoaded = false;
 		filt_ecalBE_isLoaded = false;
 		filt_ecalDR_isLoaded = false;
+		filt_ecalLaser_isLoaded = false;
 		filt_ecalTP_isLoaded = false;
 		filt_eeBadSc_isLoaded = false;
 		filt_greedyMuon_isLoaded = false;
@@ -11052,7 +11077,6 @@ void GetEntry(unsigned int idx)
 		convs_chi2_isLoaded = false;
 		convs_dl_isLoaded = false;
 		convs_ndof_isLoaded = false;
-		sparm_values_isLoaded = false;
 		scs_clustersSize_isLoaded = false;
 		scs_crystalsSize_isLoaded = false;
 		scs_e1x3_isLoaded = false;
@@ -11070,6 +11094,9 @@ void GetEntry(unsigned int idx)
 		scs_energy_isLoaded = false;
 		scs_eta_isLoaded = false;
 		scs_hoe_isLoaded = false;
+		scs_laserCorMax_isLoaded = false;
+		scs_laserCorMean_isLoaded = false;
+		scs_laserCorSeed_isLoaded = false;
 		scs_phi_isLoaded = false;
 		scs_preshowerEnergy_isLoaded = false;
 		scs_rawEnergy_isLoaded = false;
@@ -11558,6 +11585,7 @@ void LoadAllBranches()
 	if (ls_isValid_branch != 0) ls_isValid();
 	if (filt_ecalBE_branch != 0) filt_ecalBE();
 	if (filt_ecalDR_branch != 0) filt_ecalDR();
+	if (filt_ecalLaser_branch != 0) filt_ecalLaser();
 	if (filt_ecalTP_branch != 0) filt_ecalTP();
 	if (filt_eeBadSc_branch != 0) filt_eeBadSc();
 	if (filt_greedyMuon_branch != 0) filt_greedyMuon();
@@ -12336,7 +12364,6 @@ void LoadAllBranches()
 	if (convs_chi2_branch != 0) convs_chi2();
 	if (convs_dl_branch != 0) convs_dl();
 	if (convs_ndof_branch != 0) convs_ndof();
-	if (sparm_values_branch != 0) sparm_values();
 	if (scs_clustersSize_branch != 0) scs_clustersSize();
 	if (scs_crystalsSize_branch != 0) scs_crystalsSize();
 	if (scs_e1x3_branch != 0) scs_e1x3();
@@ -12354,6 +12381,9 @@ void LoadAllBranches()
 	if (scs_energy_branch != 0) scs_energy();
 	if (scs_eta_branch != 0) scs_eta();
 	if (scs_hoe_branch != 0) scs_hoe();
+	if (scs_laserCorMax_branch != 0) scs_laserCorMax();
+	if (scs_laserCorMean_branch != 0) scs_laserCorMean();
+	if (scs_laserCorSeed_branch != 0) scs_laserCorSeed();
 	if (scs_phi_branch != 0) scs_phi();
 	if (scs_preshowerEnergy_branch != 0) scs_preshowerEnergy();
 	if (scs_rawEnergy_branch != 0) scs_rawEnergy();
@@ -13034,6 +13064,21 @@ void LoadAllBranches()
 			filt_ecalDR_isLoaded = true;
 		}
 		return filt_ecalDR_;
+	}
+	bool &filt_ecalLaser()
+	{
+		if (not filt_ecalLaser_isLoaded) {
+			if (filt_ecalLaser_branch != 0) {
+				filt_ecalLaser_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch filt_ecalLaser_branch does not exist!\n");
+				exit(1);
+			}
+			filt_ecalLaser_isLoaded = true;
+		}
+		return filt_ecalLaser_;
 	}
 	bool &filt_ecalTP()
 	{
@@ -29103,27 +29148,6 @@ void LoadAllBranches()
 		}
 		return convs_ndof_;
 	}
-	vector<float> &sparm_values()
-	{
-		if (not sparm_values_isLoaded) {
-			if (sparm_values_branch != 0) {
-				sparm_values_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = sparm_values_.begin(); i != sparm_values_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch sparm_values_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch sparm_values_branch does not exist!\n");
-				exit(1);
-			}
-			sparm_values_isLoaded = true;
-		}
-		return sparm_values_;
-	}
 	vector<float> &scs_clustersSize()
 	{
 		if (not scs_clustersSize_isLoaded) {
@@ -29480,6 +29504,69 @@ void LoadAllBranches()
 			scs_hoe_isLoaded = true;
 		}
 		return scs_hoe_;
+	}
+	vector<float> &scs_laserCorMax()
+	{
+		if (not scs_laserCorMax_isLoaded) {
+			if (scs_laserCorMax_branch != 0) {
+				scs_laserCorMax_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = scs_laserCorMax_.begin(); i != scs_laserCorMax_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch scs_laserCorMax_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch scs_laserCorMax_branch does not exist!\n");
+				exit(1);
+			}
+			scs_laserCorMax_isLoaded = true;
+		}
+		return scs_laserCorMax_;
+	}
+	vector<float> &scs_laserCorMean()
+	{
+		if (not scs_laserCorMean_isLoaded) {
+			if (scs_laserCorMean_branch != 0) {
+				scs_laserCorMean_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = scs_laserCorMean_.begin(); i != scs_laserCorMean_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch scs_laserCorMean_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch scs_laserCorMean_branch does not exist!\n");
+				exit(1);
+			}
+			scs_laserCorMean_isLoaded = true;
+		}
+		return scs_laserCorMean_;
+	}
+	vector<float> &scs_laserCorSeed()
+	{
+		if (not scs_laserCorSeed_isLoaded) {
+			if (scs_laserCorSeed_branch != 0) {
+				scs_laserCorSeed_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = scs_laserCorSeed_.begin(); i != scs_laserCorSeed_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch scs_laserCorSeed_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch scs_laserCorSeed_branch does not exist!\n");
+				exit(1);
+			}
+			scs_laserCorSeed_isLoaded = true;
+		}
+		return scs_laserCorSeed_;
 	}
 	vector<float> &scs_phi()
 	{
@@ -37042,6 +37129,7 @@ namespace tas {
 	bool &ls_isValid();
 	bool &filt_ecalBE();
 	bool &filt_ecalDR();
+	bool &filt_ecalLaser();
 	bool &filt_ecalTP();
 	bool &filt_eeBadSc();
 	bool &filt_greedyMuon();
@@ -37820,7 +37908,6 @@ namespace tas {
 	vector<float> &convs_chi2();
 	vector<float> &convs_dl();
 	vector<float> &convs_ndof();
-	vector<float> &sparm_values();
 	vector<float> &scs_clustersSize();
 	vector<float> &scs_crystalsSize();
 	vector<float> &scs_e1x3();
@@ -37838,6 +37925,9 @@ namespace tas {
 	vector<float> &scs_energy();
 	vector<float> &scs_eta();
 	vector<float> &scs_hoe();
+	vector<float> &scs_laserCorMax();
+	vector<float> &scs_laserCorMean();
+	vector<float> &scs_laserCorSeed();
 	vector<float> &scs_phi();
 	vector<float> &scs_preshowerEnergy();
 	vector<float> &scs_rawEnergy();
