@@ -3024,6 +3024,8 @@ float Z_looper::PassGenSelection( bool isData ){
   
   if( isData ) return -999.;
 
+  return -9999.;
+
   //---------------------------------------------
   // does this event pass the analysis selection?
   //---------------------------------------------
