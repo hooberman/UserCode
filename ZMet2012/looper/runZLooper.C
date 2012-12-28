@@ -70,6 +70,12 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
+  else if( strcmp( prefix , "zjets_53X_slim" ) == 0 ){    
+    pickSkimIfExists(ch,"Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-18_slim/merged_ntuple*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
   else if( strcmp( prefix , "zjets_small_53X_slim" ) == 0 ){    
     pickSkimIfExists(ch,"Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-18_slim/merged_ntuple*2.root");
   }

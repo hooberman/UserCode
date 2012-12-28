@@ -22,6 +22,7 @@
   runZLooper("vvv_53X_slim"               , false );  
   runZLooper("t_53X_slim"                 , false );  
   runZLooper("ww_53X_slim"                , false );  
+  // runZLooper("zjets_53X_slim"             , false );  
 
   // runZLooper("zz2l2q_53X"              , true  );  
   // runZLooper("data_53X"                , true  );  
