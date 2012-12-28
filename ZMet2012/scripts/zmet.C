@@ -78,10 +78,15 @@ void initialize(char* path){
 
   cout << endl;
   cout << "Loading babies at       : " << path << endl;
-
   /*
-  data->  Add(Form("%s/data_53X_baby.root"         , path));
-  data->  Add(Form("%s/data_2012C_53X_baby.root"   , path));
+  // data->  Add(Form("%s/data_53X_baby.root"         , path));
+  // data->  Add(Form("%s/data_2012C_53X_baby.root"   , path));
+
+  data->  Add(Form("%s/data_53X_2012A_baby.root"   , path));
+  data->  Add(Form("%s/data_53X_2012B_baby.root"   , path));
+  data->  Add(Form("%s/data_53X_2012C_baby.root"   , path));
+  data->  Add(Form("%s/data_53X_2012D_baby.root"   , path));
+
   tt->    Add(Form("%s/ttbar_53X_baby.root"        , path));
   zjets-> Add(Form("%s/zjets_full_53X_baby.root"   , path));
   //zjets-> Add(Form("%s/zjets_10to50_baby.root"   , path));
@@ -102,8 +107,12 @@ void initialize(char* path){
   cout << "USING SKIMMED SAMPLES WITH NJETS >= 2" << endl;
   cout << "-------------------------------------" << endl << endl;
 
-  data->  Add(Form("%s/data_53X_baby_2jets.root"         , path));
-  data->  Add(Form("%s/data_2012C_53X_baby_2jets.root"   , path));
+  //data->  Add(Form("%s/data_53X_baby_2jets.root"         , path));
+  //data->  Add(Form("%s/data_2012C_53X_baby_2jets.root"   , path));
+  data->  Add(Form("%s/data_53X_2012A_baby_2jets.root"   , path));
+  data->  Add(Form("%s/data_53X_2012B_baby_2jets.root"   , path));
+  data->  Add(Form("%s/data_53X_2012C_baby_2jets.root"   , path));
+  data->  Add(Form("%s/data_53X_2012D_baby_2jets.root"   , path));
   tt->    Add(Form("%s/ttbar_53X_baby_2jets.root"        , path));
   zjets-> Add(Form("%s/zjets_full_53X_baby_2jets.root"   , path));
   //zjets-> Add(Form("%s/zjets_10to50_baby_2jets.root"   , path));
@@ -119,12 +128,22 @@ void initialize(char* path){
   vvv->   Add(Form("%s/VVV_53X_baby_2jets.root"          , path));
 
 
+
+  // mc.push_back(zjets);   mclabels.push_back("zjets");
+  // mc.push_back(wz);      mclabels.push_back("WZ");
+  // mc.push_back(zz);      mclabels.push_back("ZZ");
+  // mc.push_back(tt);      mclabels.push_back("ttbar");
+  // mc.push_back(t);       mclabels.push_back("single top");
+  // mc.push_back(ww);      mclabels.push_back("WW");
+  // mc.push_back(ttV);     mclabels.push_back("ttV");
+  // mc.push_back(vvv);     mclabels.push_back("VVV");
+
   mc.push_back(zjets);   mclabels.push_back("zjets");
+  mc.push_back(tt);      mclabels.push_back("ttbar");
   mc.push_back(wz);      mclabels.push_back("WZ");
   mc.push_back(zz);      mclabels.push_back("ZZ");
-  mc.push_back(tt);      mclabels.push_back("ttbar");
-  mc.push_back(t);       mclabels.push_back("single top");
   mc.push_back(ww);      mclabels.push_back("WW");
+  mc.push_back(t);       mclabels.push_back("single top");
   mc.push_back(ttV);     mclabels.push_back("ttV");
   mc.push_back(vvv);     mclabels.push_back("VVV");
 
@@ -262,7 +281,7 @@ TCut selection_TCut(){
   sel += presel;
   sel += eta24;
   sel += (eetype||mmtype||emtype);
-  sel += runrange;
+  //sel += runrange;
 
   // sel += mll_76_106;
   // sel += Zmass||emtype;
@@ -279,44 +298,44 @@ TCut selection_TCut(){
   //------------------------------
   // inclusive Z selection
   //------------------------------
-  /*
+
   TCut sel;
-  sel += runrange;
+  //sel += runrange;
   sel += (eetype||mmtype||emtype);
   sel += filters;
   sel += pt2020;
   sel += mll15;
   sel += njets2;
-  sel += nbm0;
+  //sel += nbm0;
   //sel += nbl0;
   //sel += mjj;
-  sel += nlep2;
+  //sel += nlep2;
   //sel += mll_76_106;
   sel += Zmass;
-  */  
+
   //------------------------------
   // WZ control region
   //------------------------------
-
+  /*
   TCut sel;
-  sel += runrange;
+  //sel += runrange;
   sel += (eetype||mmtype||emtype);
   sel += filters;
   sel += pt2020;
   sel += "nlep==3 && lep3.pt()>20.0";
   sel += met50;
   sel += Zmass;
-  sel += njets2;
+  //sel += njets2;
   //sel += nb0;
-  sel += sf;
+  //sel += sf;
   //sel += mt100;
-
+  */
   //------------------------------
   // ZZ control region
   //------------------------------
   /*
   TCut sel;
-  sel += runrange;
+  //sel += runrange;
   sel += (eetype||mmtype||emtype);
   sel += filters;
   sel += pt2020;
@@ -324,7 +343,7 @@ TCut selection_TCut(){
   sel += Zmass;
   sel += njets2;
   //sel += nb0;
-  */  
+  */
   cout << "Using selection         : " << sel.GetTitle() << endl;
 
   return sel;
@@ -333,7 +352,9 @@ TCut weight_TCut(){
 
   //TCut weight("1");
   //TCut weight("weight * 5.10 * vtxweight * trgeff");
-  TCut weight("weight * 9.2 * trgeff * vtxweight * 1.66");
+  //TCut weight("weight * 9.2 * trgeff * vtxweight");
+  TCut weight("weight * 19.3 * trgeff * vtxweight");
+  //TCut weight("weight * 19.3 * trgeff * vtxweight * (200/130.4)"); // normalize to data for WZ+>=2 jets
   //TCut weight("weight * 5.10");
   //TCut weight("weight * 2.5 * vtxweight");
   //TCut weight("weight * 5.10");
@@ -387,7 +408,7 @@ void printYieldTable( char* path , bool latex = false ){
 void makePlots( char* path , bool printgif = false ){
 
   bool combine     = true;
-  int  nplots      = 1;
+  int  nplots      = 3;
   bool residual    = true;
   bool log         = false;
   bool overlayData = true;
@@ -477,13 +498,13 @@ void makePlots( char* path , bool printgif = false ){
 
   // vars.push_back("dilmass"); 
   // xt.push_back("M(ee) (GeV)");
-  // n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
+  // n.push_back(15);  xi.push_back(50.);  xf.push_back(200.); 
   // flavor.push_back("ee"); 
   // cuts.push_back(TCut("leptype==0"));
 
   // vars.push_back("dilmass"); 
   // xt.push_back("M(#mu#mu) (GeV)");
-  // n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
+  // n.push_back(15);  xi.push_back(50.);  xf.push_back(200.); 
   // flavor.push_back("mm"); 
   // cuts.push_back(TCut("leptype==1"));
 
@@ -601,9 +622,13 @@ void makePlots( char* path , bool printgif = false ){
   //vars.push_back("w.pt()");        xt.push_back("W p_{T} (GeV)");      n.push_back(10);  xi.push_back(0);    xf.push_back(400);
 
   // WZ/ZZ control plots
-  // vars.push_back("njets");         xt.push_back("njets");          n.push_back(5);   xi.push_back(0);    xf.push_back(5);       flavor.push_back("sf"); cuts.push_back(TCut(""));
-  // vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");    n.push_back(6);   xi.push_back(0.);   xf.push_back(300.0);   flavor.push_back("sf"); cuts.push_back(TCut(""));
-  // vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");  n.push_back(6);   xi.push_back(0);    xf.push_back(300.0);   flavor.push_back("sf"); cuts.push_back(TCut(""));
+  vars.push_back("njets");         xt.push_back("njets");          n.push_back(5);   xi.push_back(0);    xf.push_back(5);       flavor.push_back("sf"); cuts.push_back(TCut(""));
+  vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");    n.push_back(6);   xi.push_back(0.);   xf.push_back(60.0);    flavor.push_back("sf"); cuts.push_back(TCut(""));
+  vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");  n.push_back(6);   xi.push_back(0);    xf.push_back(300.0);   flavor.push_back("sf"); cuts.push_back(TCut(""));
+
+  // vars.push_back("jet1.eta()");            xt.push_back("1st jet #eta");       n.push_back(12);   xi.push_back(-3);    xf.push_back(3);       flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("jet2.eta()");            xt.push_back("2nd jet #eta");       n.push_back(12);   xi.push_back(-3);    xf.push_back(3);       flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("jet1.eta()-jet2.eta()"); xt.push_back("1st - 2nd jet #eta"); n.push_back(12);   xi.push_back(-6);    xf.push_back(6);       flavor.push_back("sf"); cuts.push_back(TCut(""));
 
   // vars.push_back("lep1.pt()");   xt.push_back("1st lepton p_{T} [GeV]"); n.push_back(10);   xi.push_back(0); xf.push_back(200); flavor.push_back("sf"); cuts.push_back(TCut(""));
   // vars.push_back("lep2.pt()");   xt.push_back("2nd lepton p_{T} [GeV]"); n.push_back(10);   xi.push_back(0); xf.push_back(200); flavor.push_back("sf"); cuts.push_back(TCut(""));
@@ -626,7 +651,7 @@ void makePlots( char* path , bool printgif = false ){
 
   //vars.push_back("pfmet");         xt.push_back("E_{T}^{miss} [GeV]");  n.push_back(8);   xi.push_back(0);    xf.push_back(400);    flavor.push_back("sf"); cuts.push_back(TCut(""));
 
-  vars.push_back("mjj");         xt.push_back("dijet mass [GeV]");  n.push_back(20);   xi.push_back(0);    xf.push_back(500);    flavor.push_back("sf"); cuts.push_back(TCut(""));
+  //vars.push_back("mjj");         xt.push_back("dijet mass [GeV]");  n.push_back(20);   xi.push_back(0);    xf.push_back(500);    flavor.push_back("sf"); cuts.push_back(TCut(""));
 
   const unsigned int nvars = vars.size();
   
