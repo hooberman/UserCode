@@ -54,7 +54,7 @@ void printHeader(){
        << delim      << setw(width1) << ee          << setw(width2)
        << delim      << setw(width1) << mm          << setw(width2)
        << delim      << setw(width1) << em          << setw(width2)
-       << delim      << setw(width1) << "tot"       << setw(width2) 
+       << delim      << setw(width1) << "total"     << setw(width2) 
        << delimend   << endl;
 
 }
@@ -133,9 +133,9 @@ void initSymbols( bool latex ){
     delim      = "&";
     delimstart = "";
     delimend   = "\\\\";
-    ee         = "$ee$";
+    ee         = "ee";
     mm         = "$\\mu\\mu$";
-    em         = "$e\\mu$";
+    em         = "e$\\mu$";
   }else{
     pm         = " +/- ";
     delim      = "|";
@@ -337,7 +337,7 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
   // print sum of SM MC samples
   //-------------------------------
 
-  print( hmctot , "tot SM MC" );
+  print( hmctot , "total SM MC" );
 
   printLine(latex);
  
@@ -633,7 +633,7 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
   text->SetTextSize(0.04);
   text->DrawLatex(0.2,0.88,"CMS Preliminary");
   //text->DrawLatex(0.2,0.83,"0.98 fb^{-1} at #sqrt{s} = 7 TeV");
-  text->DrawLatex(0.2,0.83,"#sqrt{s} = 8 TeV, #scale[0.6]{#int}Ldt = 9.2 fb^{-1}");
+  text->DrawLatex(0.2,0.83,"#sqrt{s} = 8 TeV, #scale[0.6]{#int}Ldt = 19.3 fb^{-1}");
 
   if     ( TString(flavor).Contains("ee")  ) text->DrawLatex(0.2,0.78,"Events with ee");
   else if( TString(flavor).Contains("mm")  ) text->DrawLatex(0.2,0.78,"Events with #mu#mu");
