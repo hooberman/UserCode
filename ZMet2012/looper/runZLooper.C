@@ -112,28 +112,46 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   //----------------------------------------------------------------------------------------
 
-  else if( strcmp( prefix , "data" ) == 0 ){    
-
-    // 2012A
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/merged*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012A-PromptReco-v1_AOD/merged/merged*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/MuEG_Run2012A-PromptReco-v1_AOD/merged/merged*root");
-
-    // 2012 B
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleMu_Run2012B-PromptReco-v1_AOD/merged/merged*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/DoubleElectron_Run2012B-PromptReco-v1_AOD/merged/merged*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch4_V05-02-27/MuEG_Run2012B-PromptReco-v1_AOD/merged/merged*root");
+  else if( strcmp( prefix , "ttw_53X_slim" ) == 0 ){    
+    pickSkimIfExists(ch,"Summer12_53X_MC/TTWJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13_slim/merged_ntuple*root");
   }
 
   //----------------------------------------------------------------------------------------
 
-  else if( strcmp( prefix , "data_53X_edgeSync" ) == 0 ){    
-
-    pickSkimIfExists(ch,"/home/users/benhoob/ZMet2012/scripts/edgeSync/Pablo_NOT_Ben.root");
-
+  else if( strcmp( prefix , "ttz_53X_slim" ) == 0 ){    
+    pickSkimIfExists(ch,"Summer12_53X_MC/TTZJets_8TeV-madgraph_v2_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13_slim/merged_ntuple*root");
   }
 
   //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "tbz_53X_slim" ) == 0 ){    
+    pickSkimIfExists(ch,"Summer12_53X_MC/TBZToLL_4F_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7C-v1/V05-03-20/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "ww_53X_slim" ) == 0 ){    
+    pickSkimIfExists(ch,"Summer12_53X_MC/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13_slim/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "t_53X_slim" ) == 0 ){    
+    pickSkimIfExists(ch,"Summer12_53X_MC/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged*root");
+    pickSkimIfExists(ch,"Summer12_53X_MC/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
+  else if( strcmp( prefix , "vvv_53X_slim" ) == 0 ){    
+    pickSkimIfExists(ch,"Summer12_53X_MC/ZZZNoGstarJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13_slim/merged*root");
+    pickSkimIfExists(ch,"Summer12_53X_MC/WWWJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13_slim/merged*root");
+    pickSkimIfExists(ch,"Summer12_53X_MC/WZZNoGstarJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13_slim/merged*root");
+    pickSkimIfExists(ch,"Summer12_53X_MC/WWZNoGstarJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13_slim/merged*root");
+  }
+
+  //----------------------------------------------------------------------------------------
+
 
   else if( strcmp( prefix , "data_2012A_53X" ) == 0 ){    
 
