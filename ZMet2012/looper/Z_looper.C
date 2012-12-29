@@ -363,6 +363,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
     cout << "DYJets: scale cross section by 478/48" << endl;
   }
 
+  else if( TString(prefix).Contains("zjets_53X_slim") ){
+    MCscalefactor = 478.0 / 461.0;
+    cout << "DYJets: scale cross section by 478/461" << endl;
+  }
+
   isdata_ = isData ? 1 : 0;
 
   cout << "version : " << iter         << endl;
