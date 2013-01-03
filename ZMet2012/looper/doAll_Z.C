@@ -16,13 +16,13 @@
   // runZLooper("wz2l2q_53X_slim"            , false );  
   // runZLooper("wz3lnu_53X_slim"            , false );  
   // runZLooper("zjets_small_53X_slim"       , false );  
-  runZLooper("ttw_53X_slim"               , false );  
-  runZLooper("ttz_53X_slim"               , false );  
-  runZLooper("tbz_53X_slim"               , false );  
-  runZLooper("vvv_53X_slim"               , false );  
-  runZLooper("t_53X_slim"                 , false );  
-  runZLooper("ww_53X_slim"                , false );  
-  // runZLooper("zjets_53X_slim"             , false );  
+  // runZLooper("ttw_53X_slim"               , false );  
+  // runZLooper("ttz_53X_slim"               , false );  
+  // runZLooper("tbz_53X_slim"               , false );  
+  // runZLooper("vvv_53X_slim"               , false );  
+  // runZLooper("t_53X_slim"                 , false );  
+  // runZLooper("ww_53X_slim"                , false );  
+  runZLooper("zjets_53X_slim"             , false );  
 
   // runZLooper("zz2l2q_53X"              , true  );  
   // runZLooper("data_53X"                , true  );  
