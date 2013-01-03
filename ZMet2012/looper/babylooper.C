@@ -32,18 +32,18 @@ enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt
 //------------------------------------------------
 bool           debug              = false;                  // debug printout statements
 bool           doVtxReweight      = true;                   // reweight templates for nVertices
-bool           pt40               = true;                   // pt>40 and HT > 100 GeV
-char*          signalRegion       = "lowMet";               // lowMet or HighMet
-bool           bveto              = false;                  // b-veto
-bool           mjjcut             = false;                  // dijet mass requirement
-bool           nlep2              = false;                  // 3rd lepton veto
+bool           pt40               = false;                  // pt>40 and HT > 100 GeV
+bool           bveto              = true;                   // b-veto
+bool           mjjcut             = true;                   // dijet mass requirement
+bool           mjjTemplates       = true;                   // dijet mass requirement in TEMPLATES
+bool           nlep2              = true;                   // 3rd lepton veto
 bool           setTemplateErrors  = true;                   // calculate template errors
 metType        myMetType          = e_pfmet;                // MET type
 templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templates
 templateType   myTemplateType     = e_njets_ht;             // bin templates in njets and HT
 bool           reweight           = false;                  // reweight for photon vs. Z pt
 char*          iter               = "_pfmet";               // label for output file
-float          lumi               = 9.2;                    // luminosity
+float          lumi               = 19.3;                   // luminosity
 //------------------------------------------------
 
 using namespace std;
@@ -62,24 +62,17 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   if ( bveto ) cout << "Doing b-veto" << endl;
   else         cout << "NO b-veto"    << endl;
 
+  if ( mjjTemplates ) cout << "Requiring mjj mass cut in templates" << endl;
+  else                cout << "NO mjj mas cut in templates"         << endl;
+
   if ( mjjcut )cout << "Requiring mjj mass cut" << endl;
   else         cout << "NO mjj mas cut"         << endl;
 
   if ( nlep2 ) cout << "Third lepton veto"      << endl;
   else         cout << "NO third lepton veto"   << endl;
 
-  if( pt40 ){
-    cout << "Require >=2 40 GeV jets with HT > 100 GeV"        << endl;
-    if     ( TString(signalRegion).Contains("lowMet") )  cout << "Using low-MET signal region" << endl;
-    else if( TString(signalRegion).Contains("highMet") ) cout << "Using high-MET signal region" << endl;
-    else { 
-      cout << "Unrecognized signal region " << signalRegion << ", quitting" << endl; 
-      exit(0);
-    }
-  }
-  else{
-    cout << "DO NOT require >=2 40 GeV jets with HT > 100 GeV" << endl;
-  }
+  if( pt40 )   cout << "Require >=2 40 GeV jets with HT > 100 GeV"        << endl;
+  else         cout << "DO NOT require >=2 40 GeV jets with HT > 100 GeV" << endl;
 
   // if( !isData && myTemplateSource == e_PhotonJetStitched ){
   //   myTemplateSource = e_PhotonJet;
@@ -105,18 +98,18 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   if( doVtxReweight ) vtxchar = "_vtxreweight";
   
   char* bvetochar = "";
-  if( bveto ) bvetochar = "_bvetoLoose";
+  if( bveto ) bvetochar = "_bveto";
   
   char* pt40char = "";
-  if( pt40 ){
-    pt40char = "_pt40";
-    //pt40char = "_pt40_2012AB";
-    //pt40char = "_pt40_2012C";
-  }
+  if( pt40 ) pt40char = "_pt40";
 
+  char* mjjTemplatesChar = "";
+  if( mjjTemplates ) mjjTemplatesChar = "_mjjcut";
+  
   if( myTemplateSource == e_PhotonJetStitched ){
 
-    templateFileName =  Form("../photon_output/%s/DoubleElectron_templates%s%s%s.root",template_version,vtxchar,bvetochar,pt40char);
+    //templateFileName =  Form("../photon_output/%s/DoubleElectron_templates%s%s%s.root",template_version,vtxchar,bvetochar,pt40char);
+    templateFileName =  Form("../photon_output/%s/data_53X_2012ALL_templates%s%s%s%s.root",template_version,vtxchar,bvetochar,mjjTemplatesChar,pt40char);
 
     //templateFileName =  Form("../photon_output/%s/Photon_templates%s%s.root",template_version,vtxchar,bvetochar);
     //if( doVtxReweight ) templateFileName = Form("../photon_output/%s/DoubleElectron_templates_vtxreweight.root",template_version);
@@ -290,41 +283,33 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         // event selection
         //------------------------------------------------------------
 
-	//if( run_ > 196531 ) continue; // 2012A+B
-	//if( run_ <= 196531 )  continue; // 2012C
-	if( run_ >= 197556 && run_ <= 198913 )          continue; // veto 2012C-PromptReco-v1
+	//if( run_ >= 197556 && run_ <= 198913 )          continue; // veto 2012C-PromptReco-v1
 	if( !(csc_==0 && hbhe_==1 && hcallaser_==1 && ecaltp_==1 && trkfail_==1 && eebadsc_==1 && hbhenew_==1) ) continue; // MET filters
 
-	if( pt40 && TString(signalRegion).Contains("highMet") ){
-	  if( lep1_->pt()   < 20 )                        continue; // lepton 1 pt > 20 GeV
-	  if( lep2_->pt()   < 10 )                        continue; // lepton 2 pt > 20 GeV
-	}
-
-	else{
-	  if( lep1_->pt()   < 20 )                        continue; // lepton 1 pt > 20 GeV
-	  if( lep2_->pt()   < 20 )                        continue; // lepton 2 pt > 20 GeV
-	}
-
-	if( bveto && nbcsvm_ > 0 )                      continue; // do b-veto
-	if( mjjcut && ( mjj_ < 70.0 || mjj_ > 110.0 ) ) continue; // mjj requirement
-	if( nlep2 && nlep_ > 2 )                        continue; // 3rd lepton veto
-	// if( bveto && nbm_ > 0 )                         continue; // do b-veto
-	// if( bveto && nbcsvl_ > 0 )                      continue; // do b-veto
-
-
+	// if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
+	// if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
+	if( lep1_->pt()   < 20 )                        continue; // lepton 1 pt > 20 GeV
+	if( lep2_->pt()   < 20 )                        continue; // lepton 2 pt > 20 GeV
 
 	// if( lep1_->pt() < 20 )                          continue; // PF lepton 1 pt > 20 GeV
 	// if( lep2_->pt() < 10 )                          continue; // PF lepton 2 pt > 20 GeV
+
 	// if( fabs( lep1_->pt() - pflep1_->pt() ) > 5.0 ) continue;
 	// if( fabs( lep2_->pt() - pflep2_->pt() ) > 5.0 ) continue;
-	// if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
-	// if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
-	// if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
-	// if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
-	// if( leptype_ == 0 ){
-	// if( jetpt_ll_ - ptll_ < -5  ) continue;       // PF overcleaning 
-	// if( jetpt_lt_ - ptlt_ < -5  ) continue;       // PF overcleaning
 
+	// if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
+	// if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
+
+	//if( bveto && nbm_ > 0 )                         continue; // do b-veto
+	//if( bveto && nbcsvl_ > 0 )                      continue; // do b-veto
+	if( bveto && nbcsvm_ > 0 )                      continue; // do b-veto
+	if( mjjcut && ( mjj_ < 70.0 || mjj_ > 110.0 ) ) continue; // mjj requirement
+	if( nlep2 && nlep_ > 2 )                        continue; // 3rd lepton veto
+
+	//if( leptype_ == 0 ){
+	//if( jetpt_ll_ - ptll_ < -5  ) continue;       // PF overcleaning 
+	//if( jetpt_lt_ - ptlt_ < -5  ) continue;       // PF overcleaning
+	//}
 
         //------------------------------------------------------------
         // trigger selection
@@ -415,16 +400,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	}
 
 	if( pt40 ){
-
-	  if  ( TString(signalRegion).Contains("lowMet") ){
-	    if( nJets40_ < 3     ) continue;
-	  }
-
-	  else if( TString(signalRegion).Contains("highMet") ){
-	    if( nJets40_ < 2     ) continue;
-	    if( ht40_    < 100.0 ) continue;
-	  }
-
+	  if( nJets40_ < 2     ) continue;
+	  if( ht40_    < 100.0 ) continue;
 	}
 	else{
 	  if( nJets_ < 2 )                 continue; // >=2 jets
@@ -515,6 +492,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
           
         }
       }
+      
       
       //fill histos and ntuple----------------------------------------------------------- 
       npass++;
@@ -734,6 +712,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   cout << "R   " << Form("%.2f +/- %.3f",R2,R2err) << endl;
   
 
+
   // make histos rootfile
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
@@ -741,16 +720,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   // if( bveto ) saveHist( Form("../output/%s/babylooper_%s%s%s_bveto%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
   // else        saveHist( Form("../output/%s/babylooper_%s%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
 
-  if( TString(signalRegion).Contains("lowMet") )  pt40char = "_pt40_lowMet";
-  if( TString(signalRegion).Contains("highMet") ) pt40char = "_pt40_highMet";
-
-  // if( TString(signalRegion).Contains("lowMet") )  pt40char = "_pt40_2012AB_lowMet";
-  // if( TString(signalRegion).Contains("highMet") ) pt40char = "_pt40_2012AB_highMet";
-
-  // if( TString(signalRegion).Contains("lowMet") )  pt40char = "_pt40_2012C_lowMet";
-  // if( TString(signalRegion).Contains("highMet") ) pt40char = "_pt40_2012C_highMet";
-
-  saveHist( Form("../output/%s/babylooper_%s%s%s%s%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , bvetochar , pt40char ) );
+  saveHist( Form("../output/%s/babylooper_%s%s%s%s%s%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , bvetochar , mjjTemplatesChar , pt40char ) );
 
   deleteHistos();
   
