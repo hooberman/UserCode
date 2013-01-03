@@ -129,6 +129,10 @@ void initialize(char* path){
   vvv->   Add(Form("%s/VVV_53X_baby_2jets.root"          , path));
   */
 
+  //------------------------------------------------------------------------------------------------
+  // ABOVE FILES ARE DEPRECATED!!!! USE THESE FILES
+  // FIRST BLOCK USES UNSKIMMED SAMPLES, SECOND BLOCK USES NJETS >= 2 SKIMMED SAMPLES (MUCH FASTER)
+  //------------------------------------------------------------------------------------------------
 
   data->  Add(Form("%s/data_53X_2012ALL_baby.root"       , path));
   tt->    Add(Form("%s/ttbar_53X_slim_baby.root"         , path));
@@ -339,21 +343,21 @@ TCut selection_TCut(){
   //------------------------------
   // inclusive Z selection
   //------------------------------
-  /*
+
   TCut sel;
   //sel += runrange;
   sel += (eetype||mmtype||emtype);
   sel += filters;
   sel += pt2020;
   sel += mll15;
-  sel += njets2;
-  sel += nbm0;
+  //sel += njets2;
+  //sel += nbm0;
   //sel += nbl0;
-  sel += mjj;
-  sel += nlep2;
+  //sel += mjj;
+  //sel += nlep2;
   //sel += mll_76_106;
-  sel += Zmass;
-  */
+  //sel += Zmass;
+
   //------------------------------
   // WZ control region
   //------------------------------
@@ -374,7 +378,7 @@ TCut selection_TCut(){
   //------------------------------
   // ZZ control region
   //------------------------------
-
+  /*
   TCut sel;
   //sel += runrange;
   sel += (eetype||mmtype||emtype);
@@ -384,7 +388,7 @@ TCut selection_TCut(){
   sel += Zmass;
   //sel += njets2;
   //sel += nb0;
-
+  */
   cout << "Using selection         : " << sel.GetTitle() << endl;
 
   return sel;
@@ -449,9 +453,9 @@ void printYieldTable( char* path , bool latex = false ){
 void makePlots( char* path , bool printgif = false ){
 
   bool combine     = true;
-  int  nplots      = 3;
+  int  nplots      = 2;
   bool residual    = true;
-  bool log         = false;
+  bool log         = true;
   bool overlayData = true;
   bool normalize   = false;
   bool fit         = false;
@@ -537,17 +541,17 @@ void makePlots( char* path , bool printgif = false ){
   // flavor.push_back("all"); 
   // cuts.push_back(TCut("leptype<2"));
 
-  // vars.push_back("dilmass"); 
-  // xt.push_back("M(ee) (GeV)");
-  // n.push_back(15);  xi.push_back(50.);  xf.push_back(200.); 
-  // flavor.push_back("ee"); 
-  // cuts.push_back(TCut("leptype==0"));
+  vars.push_back("dilmass"); 
+  xt.push_back("M(ee) (GeV)");
+  n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
+  flavor.push_back("ee"); 
+  cuts.push_back(TCut("leptype==0"));
 
-  // vars.push_back("dilmass"); 
-  // xt.push_back("M(#mu#mu) (GeV)");
-  // n.push_back(15);  xi.push_back(50.);  xf.push_back(200.); 
-  // flavor.push_back("mm"); 
-  // cuts.push_back(TCut("leptype==1"));
+  vars.push_back("dilmass"); 
+  xt.push_back("M(#mu#mu) (GeV)");
+  n.push_back(30);  xi.push_back(50.);  xf.push_back(200.); 
+  flavor.push_back("mm"); 
+  cuts.push_back(TCut("leptype==1"));
 
   // vars.push_back("dilmass"); 
   // xt.push_back("M(e#mu) (GeV)");
@@ -663,9 +667,9 @@ void makePlots( char* path , bool printgif = false ){
   //vars.push_back("w.pt()");        xt.push_back("W p_{T} (GeV)");      n.push_back(10);  xi.push_back(0);    xf.push_back(400);
 
   // WZ/ZZ control plots
-  vars.push_back("njets");         xt.push_back("njets");          n.push_back(5);   xi.push_back(0);    xf.push_back(5);       flavor.push_back("sf"); cuts.push_back(TCut(""));
-  vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");    n.push_back(6);   xi.push_back(0.);   xf.push_back(60.0);    flavor.push_back("sf"); cuts.push_back(TCut(""));
-  vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");  n.push_back(6);   xi.push_back(0);    xf.push_back(300.0);   flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("njets");         xt.push_back("njets");          n.push_back(5);   xi.push_back(0);    xf.push_back(5);       flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("pfmet");         xt.push_back("pfmet (GeV)");    n.push_back(6);   xi.push_back(0.);   xf.push_back(60.0);    flavor.push_back("sf"); cuts.push_back(TCut(""));
+  // vars.push_back("dilep.pt()");    xt.push_back("Z p_{T} (GeV)");  n.push_back(6);   xi.push_back(0);    xf.push_back(300.0);   flavor.push_back("sf"); cuts.push_back(TCut(""));
 
   // vars.push_back("jet1.eta()");            xt.push_back("1st jet #eta");       n.push_back(12);   xi.push_back(-3);    xf.push_back(3);       flavor.push_back("sf"); cuts.push_back(TCut(""));
   // vars.push_back("jet2.eta()");            xt.push_back("2nd jet #eta");       n.push_back(12);   xi.push_back(-3);    xf.push_back(3);       flavor.push_back("sf"); cuts.push_back(TCut(""));
