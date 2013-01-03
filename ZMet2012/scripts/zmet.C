@@ -54,6 +54,7 @@ void initialize(char* path){
     zz->Reset();
     t->Reset();
     ttV->Reset();
+    tbz->Reset();
     vvv->Reset();
 
     mc.clear();
@@ -73,11 +74,13 @@ void initialize(char* path){
     zz  	= new TChain("T1");
     t   	= new TChain("T1");
     ttV   	= new TChain("T1");
+    tbz   	= new TChain("T1");
     vvv   	= new TChain("T1");
   }
 
   cout << endl;
   cout << "Loading babies at       : " << path << endl;
+
   /*
   // data->  Add(Form("%s/data_53X_baby.root"         , path));
   // data->  Add(Form("%s/data_2012C_53X_baby.root"   , path));
@@ -100,8 +103,6 @@ void initialize(char* path){
   ttV->   Add(Form("%s/ttW_53X_baby.root"          , path));
   ttV->   Add(Form("%s/ttZ_53X_baby.root"          , path));
   vvv->   Add(Form("%s/VVV_53X_baby.root"          , path));
-  */
-
 
   cout << "-------------------------------------" << endl;
   cout << "USING SKIMMED SAMPLES WITH NJETS >= 2" << endl;
@@ -126,6 +127,45 @@ void initialize(char* path){
   ttV->   Add(Form("%s/ttW_53X_baby_2jets.root"          , path));
   ttV->   Add(Form("%s/ttZ_53X_baby_2jets.root"          , path));
   vvv->   Add(Form("%s/VVV_53X_baby_2jets.root"          , path));
+  */
+
+
+  data->  Add(Form("%s/data_53X_2012ALL_baby.root"       , path));
+  tt->    Add(Form("%s/ttbar_53X_slim_baby.root"         , path));
+  zjets-> Add(Form("%s/zjets_small_53X_slim_baby.root"   , path));
+  ww->    Add(Form("%s/ww_53X_slim_baby.root"            , path));
+  wz->    Add(Form("%s/wz3lnu_53X_slim_baby.root"        , path));
+  wz->    Add(Form("%s/wz2l2q_53X_slim_baby.root"        , path));
+  zz->    Add(Form("%s/zz2l2nu_53X_slim_baby.root"       , path));
+  zz->    Add(Form("%s/zz4l_53X_slim_baby.root"          , path));
+  zz->    Add(Form("%s/zz2l2q_53X_slim_baby.root"        , path));
+  t->     Add(Form("%s/t_53X_slim_baby.root"             , path));
+  ttV->   Add(Form("%s/ttw_53X_slim_baby.root"           , path));
+  ttV->   Add(Form("%s/ttz_53X_slim_baby.root"           , path));
+  tbz->   Add(Form("%s/tbz_53X_slim_baby.root"           , path));
+  vvv->   Add(Form("%s/vvv_53X_slim_baby.root"           , path));
+
+
+  /*
+  cout << "-------------------------------------" << endl;
+  cout << "USING SKIMMED SAMPLES WITH NJETS >= 2" << endl;
+  cout << "-------------------------------------" << endl << endl;
+
+  data->  Add(Form("%s/data_53X_2012ALL_baby_2jets.root"       , path));
+  tt->    Add(Form("%s/ttbar_53X_slim_baby_2jets.root"         , path));
+  zjets-> Add(Form("%s/zjets_small_53X_slim_baby_2jets.root"   , path));
+  ww->    Add(Form("%s/ww_53X_slim_baby_2jets.root"            , path));
+  wz->    Add(Form("%s/wz3lnu_53X_slim_baby_2jets.root"        , path));
+  wz->    Add(Form("%s/wz2l2q_53X_slim_baby_2jets.root"        , path));
+  zz->    Add(Form("%s/zz2l2nu_53X_slim_baby_2jets.root"       , path));
+  zz->    Add(Form("%s/zz4l_53X_slim_baby_2jets.root"          , path));
+  zz->    Add(Form("%s/zz2l2q_53X_slim_baby_2jets.root"        , path));
+  t->     Add(Form("%s/t_53X_slim_baby_2jets.root"             , path));
+  ttV->   Add(Form("%s/ttw_53X_slim_baby_2jets.root"           , path));
+  ttV->   Add(Form("%s/ttz_53X_slim_baby_2jets.root"           , path));
+  tbz->   Add(Form("%s/tbz_53X_slim_baby_2jets.root"           , path));
+  vvv->   Add(Form("%s/vvv_53X_slim_baby_2jets.root"           , path));
+  */  
 
 
 
@@ -145,6 +185,7 @@ void initialize(char* path){
   mc.push_back(ww);      mclabels.push_back("WW");
   mc.push_back(t);       mclabels.push_back("single top");
   mc.push_back(ttV);     mclabels.push_back("ttV");
+  mc.push_back(tbz);     mclabels.push_back("tbz");
   mc.push_back(vvv);     mclabels.push_back("VVV");
 
   //mc.push_back(zjetsee); mclabels.push_back("zjetsee");
@@ -298,7 +339,7 @@ TCut selection_TCut(){
   //------------------------------
   // inclusive Z selection
   //------------------------------
-
+  /*
   TCut sel;
   //sel += runrange;
   sel += (eetype||mmtype||emtype);
@@ -306,13 +347,13 @@ TCut selection_TCut(){
   sel += pt2020;
   sel += mll15;
   sel += njets2;
-  //sel += nbm0;
+  sel += nbm0;
   //sel += nbl0;
-  //sel += mjj;
-  //sel += nlep2;
+  sel += mjj;
+  sel += nlep2;
   //sel += mll_76_106;
   sel += Zmass;
-
+  */
   //------------------------------
   // WZ control region
   //------------------------------
@@ -325,7 +366,7 @@ TCut selection_TCut(){
   sel += "nlep==3 && lep3.pt()>20.0";
   sel += met50;
   sel += Zmass;
-  //sel += njets2;
+  sel += njets2;
   //sel += nb0;
   //sel += sf;
   //sel += mt100;
@@ -333,7 +374,7 @@ TCut selection_TCut(){
   //------------------------------
   // ZZ control region
   //------------------------------
-  /*
+
   TCut sel;
   //sel += runrange;
   sel += (eetype||mmtype||emtype);
@@ -341,9 +382,9 @@ TCut selection_TCut(){
   sel += pt2020;
   sel += "nlep==4 && lep3.pt()>20.0 && lep4.pt()>20.0";
   sel += Zmass;
-  sel += njets2;
+  //sel += njets2;
   //sel += nb0;
-  */
+
   cout << "Using selection         : " << sel.GetTitle() << endl;
 
   return sel;
