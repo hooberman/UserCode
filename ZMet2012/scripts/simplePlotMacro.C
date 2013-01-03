@@ -37,7 +37,8 @@ bool     doKscaling   =    true;
 float    K            =    0.14;
 int      rebin        =      10;
 bool     bveto        =    true;
-char*    mybvetochar  = "_bvetoMedium";
+bool     mjjTemplates =    true;
+char*    mybvetochar  = "_bveto";
 bool     pt40         =   false;
 char*    signalRegion = "highMet";
 float    xmin         =      -1;
@@ -92,6 +93,15 @@ void simplePlotMacro( bool printplots = false ){
     K = 0.13;
   }
 
+  char* mjjTemplatesChar = "";
+  if( mjjTemplates ){
+    mjjTemplatesChar = "_mjjcut";
+    cout << "Apply mjj cut in templates" << endl;
+  }
+  else{
+    cout << "DON'T Apply mjj cut in templates" << endl;
+  }
+
   char* pt40char = "";
   if( pt40 ){
     if( TString(signalRegion).Contains("lowMet") ){
@@ -114,7 +124,7 @@ void simplePlotMacro( bool printplots = false ){
   // data/MC files
   //-----------------------------------
   
-  char* iter = "V00-01-04";
+  char* iter = "V00-02-00";
 
   TFile *f   = new TFile();
   //TFile *fwz = new TFile();
@@ -195,7 +205,7 @@ void simplePlotMacro( bool printplots = false ){
   cout << "WZ/ZZ weight    : " << weight.GetTitle() << endl;
 
   //char* datafilename = (char*) Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s%s%s_HT100.root",iter,metvar,bvetochar,pt40char);
-  char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s.root",iter,metvar,bvetochar,pt40char);
+  char* datafilename = (char*) Form("../output/%s/babylooper_data_53X_2012ALL_PhotonStitchedTemplate_%s%s%s.root",iter,metvar,bvetochar,mjjTemplatesChar,pt40char);
 
   cout << "Opening " << datafilename << endl;
   f   = TFile::Open(datafilename);
@@ -259,8 +269,8 @@ void simplePlotMacro( bool printplots = false ){
   vector<char*> predictedHisto;
 
   observedHisto.push_back((char*)"metObserved");        predictedHisto.push_back((char*)"metPredicted");
-  //observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
-  //observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
+  observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
+  observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
 
 
   //-----------------------------------
@@ -983,7 +993,7 @@ void simplePlotMacro( bool printplots = false ){
     leg->SetBorderSize(0);
     leg->Draw();
 
-    t->SetTextSize(0.037);
+    t->SetTextSize(0.035);
     t->DrawLatex(0.35,0.88,"CMS Preliminary");
     //t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
     t->DrawLatex(0.35,0.83,Form("#sqrt{s} = 8 TeV, L_{int} = %.1f fb^{-1}",lumi));
