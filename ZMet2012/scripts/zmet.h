@@ -21,6 +21,7 @@ TChain *wz;
 TChain *zz;
 TChain *t;
 TChain *ttV;
+TChain *tbz;
 TChain *vvv;
 
 vector<TChain*> mc;
