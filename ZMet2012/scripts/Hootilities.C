@@ -297,10 +297,10 @@ void printYields( vector<TChain*> chmc , vector<char*> labels , TChain* chdata ,
     else{
       chmc[imc]->Draw("leptype>>hyield",sel*weight);
 
-      if(TString(labels[imc]).Contains("zjets") ){
-	cout << "SCALING ZJETS BY 111/946" << endl;
-	hyield->Scale( 111.0 / 946.0 );
-      }
+      // if(TString(labels[imc]).Contains("zjets") ){
+      // 	cout << "SCALING ZJETS BY 111/946" << endl;
+      // 	hyield->Scale( 111.0 / 946.0 );
+      // }
       // if(TString(labels[imc]).Contains("ZZ") ){
       // 	cout << "SCALING ZZ BY 1.92" << endl;
       // 	hyield->Scale( 1.92 );
@@ -557,10 +557,10 @@ void compareDataMC( vector<TChain*> chmc , vector<char*> labels , TChain* chdata
 
     chmc.at(imc)->Draw(Form("TMath::Min(%s,%f)>>%s_mc_%i_%s",var,xmax-0.01,myvar,imc,flavor),sel*weight*trigweight);
 
-    if(TString(labels[imc]).Contains("zjets") ){
-      cout << "SCALING ZJETS BY 111/946" << endl;
-      mchist[imc]->Scale( 111.0 / 946.0 );
-    }
+    // if(TString(labels[imc]).Contains("zjets") ){
+    //   cout << "SCALING ZJETS BY 111/946" << endl;
+    //   mchist[imc]->Scale( 111.0 / 946.0 );
+    // }
 
     // if(TString(labels[imc]).Contains("ZZ") ){
     //   cout << "SCALING ZJETS BY 1.92" << endl;
