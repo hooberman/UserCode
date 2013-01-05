@@ -64,7 +64,7 @@ const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
       bool  useOldIsolation      = true;
 const bool  pt2020               = false;
-
+const bool  useJson              = false;
 const float lumi                 = 1.0; 
 
 const char* iter                 = "V00-02-02";
@@ -486,10 +486,13 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   char* isosuffix = "";
   if( useOldIsolation ) isosuffix = "_oldIso";
 
-  cout << "Writing baby ntuple " << Form("../output/%s/%s_baby%s%s%s.root"      , iter , prefix , tpsuffix , ptsuffix , isosuffix ) << endl;
+  char* jsonsuffix = "";
+  if( isData && !useJson ) jsonsuffix = "_nojson";
+
+  cout << "Writing baby ntuple " << Form("../output/%s/%s_baby%s%s%s%s.root" , iter , prefix , tpsuffix , ptsuffix , isosuffix , jsonsuffix ) << endl;
 
   if( doGenSelection ) MakeBabyNtuple( Form("../output/%s/%s_gen_baby%s%s%s.root"  , iter , prefix , tpsuffix , ptsuffix , isosuffix ) );
-  else                 MakeBabyNtuple( Form("../output/%s/%s_baby%s%s%s.root"      , iter , prefix , tpsuffix , ptsuffix , isosuffix ) );
+  else MakeBabyNtuple( Form("../output/%s/%s_baby%s%s%s%s.root" , iter , prefix , tpsuffix , ptsuffix , isosuffix , jsonsuffix) );
 
   TObjArray *listOfFiles = chain->GetListOfFiles();
 
@@ -675,8 +678,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // good run+event selection
       //-----------------------------
 
-      if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      if( !cleaning_goodVertexApril2011() )                          continue;
+      if( isData && useJson && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+      if( !cleaning_goodVertexApril2011() )                                     continue;
 
       if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[1]++;
       
