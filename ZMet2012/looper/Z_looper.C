@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 const bool  useJson              = false;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-02";
+const char* iter                 = "V00-02-03";
 const char* jsonfilename         = "../jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
 
 // https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1968.html   19.3 fb-1
