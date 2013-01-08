@@ -129,6 +129,14 @@ class Z_looper
   Float_t st30_;
   Float_t st40_;
 
+  Float_t m1_;
+  Float_t m2_;
+  Float_t m3_;
+  Int_t   zveto_;
+  Int_t   nmuss_;
+  Int_t   nextramu_;
+  Int_t   nhyp_;
+
   Float_t pfmett1new_;
   Float_t pfmett1newphi_;
 
@@ -136,6 +144,17 @@ class Z_looper
   Int_t   el2nomu_;
   Int_t   el1nomuss_;
   Int_t   el2nomuss_;
+
+  Int_t   id3_;
+  Int_t   id4_;
+  Int_t   id5_;
+  Int_t   id6_;
+
+  Float_t m13_;
+  Float_t m23_;
+  Float_t m14_;
+  Float_t m24_;
+  Float_t m34_;
 
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;

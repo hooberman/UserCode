@@ -36,14 +36,15 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   if( strcmp( prefix , "data_53X_2012A" ) == 0 ){    
     //pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged_ntuple_999999_1_skim.root");
+    //pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged_ntuple_999999_2_5_skim.root");
 
-    pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+    // pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
-    pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+    // pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
 
-    pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+    // pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
-    pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+    // pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
   }
 
   else if( strcmp( prefix , "data_53X_2012B" ) == 0 ){    

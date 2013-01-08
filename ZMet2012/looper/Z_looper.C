@@ -63,14 +63,12 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
       bool  useOldIsolation      = true;
-const bool  pt2020               = false;
-const bool  useJson              = false;
+const bool  pt2020               = true;
+const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-03";
-const char* jsonfilename         = "../jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
-
-// https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1968.html   19.3 fb-1
+const char* iter                 = "V00-02-04_SS";
+const char* jsonfilename         = "../jsons/final_19p47fb_cms2.txt"; // 19.5 merged json from Ryan
 
 //--------------------------------------------------------------------
 
@@ -99,6 +97,31 @@ int getJetIndex( LorentzVector thisJet , FactorizedJetCorrector *jet_corrector_p
   cout << __FILE__ << " " << __LINE__ << " WARNING! should never get here!" << endl;
   cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
   cout << thisJet.pt() << " " << thisJet.eta() << " " << thisJet.phi() << endl;
+
+  return 0;
+}
+
+int getLeptonID( LorentzVector thisLepton ){
+
+  for (unsigned int imu = 0 ; imu < mus_p4().size() ; imu++) {
+    
+    LorentzVector vmu   = mus_p4().at(imu);
+    if( vmu.pt() < 20.0 ) continue;
+
+    if( fabs( vmu.pt() - thisLepton.pt() ) < 0.001 && fabs( vmu.eta() - thisLepton.eta() ) < 0.001 && fabs( vmu.phi() - thisLepton.phi() ) < 0.001 ) return -13 * mus_charge().at(imu);
+  }
+
+  for (unsigned int iel = 0 ; iel < els_p4().size() ; iel++) {
+    
+    LorentzVector vel   = els_p4().at(iel);
+    if( vel.pt() < 20.0 ) continue;
+
+    if( fabs( vel.pt() - thisLepton.pt() ) < 0.001 && fabs( vel.eta() - thisLepton.eta() ) < 0.001 && fabs( vel.phi() - thisLepton.phi() ) < 0.001 ) return -11 * els_charge().at(iel);
+  }
+
+  cout << __FILE__ << " " << __LINE__ << " WARNING! should never get here! couldn't find matching lepton" << endl;
+  cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+  cout << thisLepton.pt() << " " << thisLepton.eta() << " " << thisLepton.phi() << endl;
 
   return 0;
 }
@@ -573,6 +596,9 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       cms2.GetEntry(event);
       ++nEventsTotal;
 
+      // if( cms2.evt_event() == 922332127 ) cout << "FOUND EVENT" << endl;
+      // else continue;
+
       //dumpDocLines();
       //cout << endl << endl;
 
@@ -920,10 +946,11 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  }
 	  if( foundDuplicate ) continue;
 
-          if( els_p4().at(iel).pt() < 10 )                                                             continue;
+          //if( els_p4().at(iel).pt() < 10 )                                                             continue;
+          if( els_p4().at(iel).pt() < 20 )                                                             continue; // SAMESIGN: pT > 20 GeV
 	  if( ! passElectronSelection_ZMet2012_v3(iel,vetoTransition,vetoTransition,useOldIsolation) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
-	  goodLeptonIDs.push_back( els_charge().at(iel) * 11 );
+	  goodLeptonIDs.push_back( els_charge().at(iel) * -11 );
 	  nlep_++;
 	  nel_++;
 	  killedJet.push_back( false );
@@ -937,10 +964,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  // 	 muonIdNotIsolated( imu , ZMet2012_v1 ) , muonIsoValuePF2012_deltaBeta(imu) );
 	  //}
 
-          if( mus_p4().at(imu).pt() < 10 )           continue;
-          if( !muonId( imu , ZMet2012_v1 ))          continue;
+          //if( mus_p4().at(imu).pt() < 10 )           continue;
+          if( mus_p4().at(imu).pt() < 20 )           continue; // SAMESIGN: pT > 20 GeV
+          //if( !muonId( imu , ZMet2012_v1 ))          continue;
+          if( !muonId( imu , NominalSSv5 ))          continue; // SAMESIGN: NominalSSv5
           goodLeptons.push_back( mus_p4().at(imu) );
-	  goodLeptonIDs.push_back( mus_charge().at(imu) * 13 );
+	  goodLeptonIDs.push_back( mus_charge().at(imu) * -13 );
 	  nlep_++;
 	  nmu_++;
           killedJet.push_back( false );
@@ -971,15 +1000,23 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( !passSUSYTrigger2012_v2( isData ) ) continue;
 
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
-        if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue;
+        //if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue; 
+        if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] < 0 )                             continue; // SAMESIGN: require SS leptons
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 10. )   continue;
 	if( pt2020 && TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         //if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
       
         //muon ID
-        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 )))   continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
+        //if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 )))   continue;
+        //if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
+
+	// SAMESIGN: require dimuon
+	if (hyp_type()[hypIdx] != 0) continue;
+
+	// SAMESIGN: require NominalSSv5 selection
+        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , NominalSSv5 )))   continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , NominalSSv5 )))   continue;
               
         //electron ID
         if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v3(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation)) ) continue;
@@ -992,6 +1029,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
 
       if( v_goodHyps.size() == 0 ) continue;
+
+      nhyp_ = nHypPass;
 
       if(debug) cout << "Found good hyp" << endl;
 
@@ -1273,6 +1312,71 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
 
       //-------------------------
+      // SAMESIGN: Z-veto
+      //-------------------------
+
+      nmuss_ = 0;
+
+      int index3 = -1;
+
+      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+
+	if(  mus_p4().at(imu).pt() < 20.0     )       continue; // pT > 20 GeV
+	if( !muonId( imu , NominalSSv5 )      )       continue; // NominalSSv5
+	if(  id1_ * mus_charge().at(imu) > 0  )       continue; // require SS
+
+	nmuss_++;
+
+	if(  abs(id1_)==13 && imu==index1     )       continue; // skip 1st lepton if its a muon
+	if(  abs(id2_)==13 && imu==index2     )       continue; // skip 2nd lepton if its a muon
+
+	index3 = imu;
+      }
+
+      m1_       = 999.0;
+      m2_       = 999.0;
+      m3_       = 999.0;
+      zveto_    = 0;
+      nextramu_ = 0;
+
+      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+
+	if(  abs(id1_)==13 && imu==index1     )       continue; // skip 1st lepton if its a muon
+	if(  abs(id2_)==13 && imu==index2     )       continue; // skip 2nd lepton if its a muon
+	if(  id1_ * mus_charge().at(imu) < 0  )       continue; // require OS
+	if(  mus_p4().at(imu).pt() < 20.0     )       continue; // pT > 20 GeV
+	if( !muonId( imu , ZMet2012_v1 )      )       continue; // looser ZMet2012_v1 selection
+
+	nextramu_++;
+
+	float mass1 = ( mus_p4().at(index1) + mus_p4().at(imu) ).mass();
+	float mass2 = ( mus_p4().at(index2) + mus_p4().at(imu) ).mass();
+
+	if( mass1 < 1e-4 ) cout << "ERROR! mass1 " << mass1 << endl;
+	if( mass2 < 1e-4 ) cout << "ERROR! mass2 " << mass2 << endl;
+
+	if( mass1 < 12.0                  ) zveto_ = 1;
+	if( mass2 < 12.0                  ) zveto_ = 1;
+
+	if( mass1 > 76.0 && mass1 < 106.0 ) zveto_ = 1;
+	if( mass2 > 76.0 && mass2 < 106.0 ) zveto_ = 1;
+
+	if( index3 > -1 ){
+	  float mass3 = ( mus_p4().at(index3) + mus_p4().at(imu) ).mass();
+	  if( mass3 < 1e-4 ) cout << "ERROR! mass3 " << mass2 << endl;
+	  
+	  if( mass3 < 12.0                  ) zveto_ = 1;
+	  if( mass3 > 76.0 && mass3 < 106.0 ) zveto_ = 1;
+	  
+	  m3_ = mass3;
+	}
+
+	m1_ = mass1;
+	m2_ = mass2;
+
+      }
+
+      //-------------------------
       // 3-lepton stuff
       //-------------------------
       
@@ -1342,10 +1446,33 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	sort(goodExtraLeptons.begin()  , goodExtraLeptons.end()  , sortByPt);
 
-	if( goodExtraLeptons.size() > 0 ) lep3_ = &(goodExtraLeptons.at(0)); 
-	if( goodExtraLeptons.size() > 1 ) lep4_ = &(goodExtraLeptons.at(1)); 
-	if( goodExtraLeptons.size() > 2 ) lep5_ = &(goodExtraLeptons.at(2)); 
-	if( goodExtraLeptons.size() > 3 ) lep6_ = &(goodExtraLeptons.at(3)); 
+	m13_ = -999;
+	m23_ = -999;
+	m14_ = -999;
+	m24_ = -999;
+	m34_ = -999;
+
+	if( goodExtraLeptons.size() > 0 ){
+	  lep3_ = &(goodExtraLeptons.at(0)); 
+	  id3_  = getLeptonID(goodExtraLeptons.at(0));
+	  m13_  = (*lep1_ + *lep3_).mass();
+	  m23_  = (*lep2_ + *lep3_).mass();
+	}
+	if( goodExtraLeptons.size() > 1 ){
+	  lep4_ = &(goodExtraLeptons.at(1)); 
+	  id4_  = getLeptonID(goodExtraLeptons.at(1));
+	  m14_  = (*lep1_ + *lep4_).mass();
+	  m24_  = (*lep2_ + *lep4_).mass();
+	  m34_  = (*lep3_ + *lep4_).mass();
+	}
+	if( goodExtraLeptons.size() > 2 ){
+	  lep5_ = &(goodExtraLeptons.at(2)); 
+	  id5_  = getLeptonID(goodExtraLeptons.at(2));
+	}
+	if( goodExtraLeptons.size() > 3 ){	  
+	  lep6_ = &(goodExtraLeptons.at(3)); 
+	  id6_  = getLeptonID(goodExtraLeptons.at(3));
+	}
 
 	if( goodExtraLeptons.size() > 0 ){
 	  LorentzVector* pfmet_p4 = new LorentzVector( pfmet_ * cos(pfmetphi_) , pfmet_ * sin(pfmetphi_) ,      0      , pfmet_     );
@@ -2456,6 +2583,10 @@ void Z_looper::InitBabyNtuple (){
   maxemf_          = -999999.;
   id1_             = -99;
   id2_             = -99;
+  id3_             = -99;
+  id4_             = -99;
+  id5_             = -99;
+  id6_             = -99;
 
   bptx_        =  -999999;
   bsc_         =  -999999;
@@ -2733,6 +2864,12 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("mu21"     ,    &mu21_     ,    "mu21/I"        );
   babyTree_->Branch("ee"       ,    &ee_       ,    "ee/I"          );
 
+  babyTree_->Branch("m13"      ,    &m13_      ,    "m13/F"         );
+  babyTree_->Branch("m23"      ,    &m23_      ,    "m23/F"         );
+  babyTree_->Branch("m14"      ,    &m14_      ,    "m14/F"         );
+  babyTree_->Branch("m24"      ,    &m24_      ,    "m24/F"         );
+  babyTree_->Branch("m34"      ,    &m34_      ,    "m34/F"         );
+
   //electron-matched jet stuff
   babyTree_->Branch("drjetll",      &drjet_ll_,     "drjetll/F"     );
   babyTree_->Branch("jetptll",      &jetpt_ll_,     "jetptll/F"     );
@@ -2743,6 +2880,10 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   babyTree_->Branch("id1",          &id1_,          "id1/I"         );
   babyTree_->Branch("id2",          &id2_,          "id2/I"         );
+  babyTree_->Branch("id3",          &id3_,          "id3/I"         );
+  babyTree_->Branch("id4",          &id4_,          "id4/I"         );
+  babyTree_->Branch("id5",          &id5_,          "id5/I"         );
+  babyTree_->Branch("id6",          &id6_,          "id6/I"         );
   babyTree_->Branch("el1tv",        &el1tv_,        "el1tv/I"       );
   babyTree_->Branch("el2tv",        &el2tv_,        "el2tv/I"       );
 
@@ -2916,6 +3057,14 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("drblmin"   ,  &drblmin_   ,  "drblmin/F" );  
   babyTree_->Branch("st30"      ,  &st30_      ,  "st30/F"    );  
   babyTree_->Branch("st40"      ,  &st40_      ,  "st40/F"    );  
+
+  babyTree_->Branch("m1"        ,  &m1_        ,  "m1/F"        );  
+  babyTree_->Branch("m2"        ,  &m2_        ,  "m2/F"        );  
+  babyTree_->Branch("m3"        ,  &m3_        ,  "m3/F"        );  
+  babyTree_->Branch("zveto"     ,  &zveto_     ,  "zveto/I"     );  
+  babyTree_->Branch("nextramu"  ,  &nextramu_  ,  "nextramu/I"  );  
+  babyTree_->Branch("nhyp"      ,  &nhyp_      ,  "nhyp/I"      );  
+  babyTree_->Branch("nmuss"     ,  &nmuss_     ,  "nmuss/I"     );  
 
 }
 
