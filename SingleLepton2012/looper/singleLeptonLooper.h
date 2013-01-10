@@ -15,7 +15,6 @@
 
 #include "../CORE/SimpleFakeRate.h" // will .h be ok? lets see.. 101007
 #include "../CORE/QuarkGluonTagger/QuarkGluonTagger.h"
-#include "../CORE/metSelections.h"
 
 //#include "../CORE/topmass/ttdilepsolve.h" REPLACETOPMASS
 
@@ -189,19 +188,15 @@ class singleLeptonLooper
         Int_t pfcandid5_;     
         Int_t pfcandid10_;     
         Int_t pfcanddirid10_;     
-        Int_t pfcandvetoid10_;     
         Float_t pfcandiso5_;     
         Float_t pfcandiso10_;     
         Float_t pfcanddiriso10_;     
-        Float_t pfcandvetoiso10_;     
         Float_t pfcandpt5_;
         Float_t pfcandpt10_;
         Float_t pfcanddirpt10_;
-        Float_t pfcandvetopt10_;
         Float_t pfcandmindrj5_;
         Float_t pfcandmindrj10_;
         Float_t pfcanddirmindrj10_;
-        Float_t pfcandvetomindrj10_;
 
 	Float_t pfcandpt10pt0p1_;
 	Float_t pfcandiso10pt0p1_;
@@ -323,14 +318,6 @@ class singleLeptonLooper
 	Float_t t1metphicorrmtup_;
 	Float_t t1metphicorrmtdn_;
 
-	//official prescription
-	Float_t t1met_off_;
-	Float_t t1metphi_off_;
-	Float_t t1metmt_off_;
-	Float_t t1metphicorr_off_;
-	Float_t t1metphicorrphi_off_;
-	Float_t t1metphicorrmt_off_;
-
 	// assorted p4's
 	LorentzVector*  t_;   
 	LorentzVector*  tbar_;   
@@ -351,7 +338,6 @@ class singleLeptonLooper
         LorentzVector*  pfcand5_;
         LorentzVector*  pfcand10_;
         LorentzVector*  pfcanddir10_;
-        LorentzVector*  pfcandveto10_;
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
         LorentzVector*  trklep1_;
@@ -493,7 +479,6 @@ class singleLeptonLooper
         Int_t   npuMinusOne_;
         Int_t   npuPlusOne_;
         Int_t   nvtx_;
-        Int_t	indexfirstGoodVertex_;
         Float_t dilmass_;
         Float_t topmass_;
         Float_t tcmet_;

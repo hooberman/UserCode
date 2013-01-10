@@ -130,13 +130,6 @@ void singleLeptonLooper::InitBaby(){
   t1met10sphi_	=-999.;
   t1met10smt_	=-999.;
 
-  t1met_off_		= -999.;
-  t1metphi_off_		= -999.;
-  t1metmt_off_		= -999.;
-  t1metphicorr_off_	= -999.;
-  t1metphicorrphi_off_	= -999.;
-  t1metphicorrmt_off_	= -999.;
-
   //trkmet
   trkmet_              =-999.;
   trkmetphi_           =-999.;
@@ -256,23 +249,18 @@ void singleLeptonLooper::InitBaby(){
   pfcand5_        = 0;
   pfcand10_       = 0;
   pfcanddir10_       = 0;
-  pfcandveto10_       = 0;
   pfcandid5_       =-1; 
   pfcandid10_      =-1;
   pfcanddirid10_      =-1;
-  pfcandvetoid10_      =-1;
   pfcandiso5_     = 9999.;     
   pfcandiso10_    = 9999.;     
   pfcanddiriso10_    = 9999.;     
-  pfcandvetoiso10_    = 9999.;     
   pfcandpt5_      = 9999.;
   pfcandpt10_     = 9999.;
   pfcanddirpt10_     = 9999.;
-  pfcandvetopt10_     = 9999.;
   pfcandmindrj5_  = 9999.;
   pfcandmindrj10_ = 9999.;
   pfcanddirmindrj10_ = 9999.;
-  pfcandvetomindrj10_ = 9999.;
 
   trkpt10pt0p1_	    = 9999.;
   trkreliso10pt0p1_ = 9999.;
@@ -606,17 +594,19 @@ void minuitFunction(int&, double* , double &result, double par[], int){
 
 
 
-list<Candidate> recoHadronicTop(std::vector<float> sigma_jets, bool isData,
+list<Candidate> recoHadronicTop(JetSmearer* jetSmearer, bool isData,
                                  LorentzVector* lep, double met, double metphi,
                                  VofP4 jets, std::vector<float> btag){
 
   assert( jets.size() == btag.size() );
-  assert( jets.size() == sigma_jets.size() );
 
   float metx = met * cos( metphi );
   float mety = met * sin( metphi );
 
   int n_jets = jets.size();
+  double sigma_jets[n_jets];
+  for (int i=0; i<n_jets; ++i)
+    sigma_jets[i] = getJetResolution(jets[i], jetSmearer);
 
   if ( isData )
     for (int i=0; i<n_jets; ++i)
@@ -648,14 +638,15 @@ list<Candidate> recoHadronicTop(std::vector<float> sigma_jets, bool isData,
           for (int jw2=jw1+1; jw2<n_jets; ++jw2 )
             if ( (mc.at(jw2)==2 && mc.at(jw1)==2 && mc.at(jb)==1 && mc.at(jbl)==-1) ||
                  (mc.at(jw2)==-2 && mc.at(jw1)==-2 && mc.at(jb)==-1 && mc.at(jbl)==1) ) {
-	      if ( match == 5 ) break;
-	      ibl[match] = jbl;
-	      iw1[match] = jw1;
-	      iw2[match] = jw2;
-	      ib[match] = jb;
-	      match++;
+                    ibl[match] = jbl;
+                    iw1[match] = jw1;
+                    iw2[match] = jw2;
+                    ib[match] = jb;
+                    match++;
             }
   }
+
+
   
 ////////    * Combinatorics. j_1 Pt must be > PTMIN_W1 and so on.
   
@@ -697,20 +688,6 @@ list<Candidate> recoHadronicTop(std::vector<float> sigma_jets, bool isData,
       minimizer->ExecuteCommand("MIGRAD", 0, 0);
 
       double c1 = minimizer->GetParameter(0);
-      if (c1!=c1) {
-	cout<<"[recoHadronicTop] ERROR: c1 parameter is NAN! Skipping this parton combination: "
-	    <<"run: "<<evt_run()
-	    <<" lumi: "<<evt_lumiBlock()
-	    <<" event: "<<evt_event();  
-	for (int i=0; i<(int)jets.size(); ++i) 
-	  if (jets[i].mass2()<0.001) 
-	    cout<<". Found jet "<<i
-		<<" with mass2 "<<jets[i].mass2()
-		<<"!!!"
-		<<endl;
-	continue;
-      }
-
       double c2 = fc2(c1, jets[i].mass2(), jets[j].mass2(), hadW.mass2());
                 
       delete minimizer;
@@ -890,7 +867,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     set_goodrun_file( g_json );
 
     //    if( TString(prefix).Contains("ttall_massivebin") ) 
-    set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer12MC_PUS10_19fb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer12_DR53X-PU_S10_9p7ifb_Zselection.root",true);
 
     //   weight3D_init( "vtxreweight/Weight3D.root" );
 
@@ -932,8 +909,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   jet_corrector_pfL1FastJetL2L3  = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
 
   JetCorrectionUncertainty *pfUncertainty   = new JetCorrectionUncertainty( pfUncertaintyFile   );
-
-  MetCorrector *met_corrector_pfL1FastJetL2L3 = new MetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
 
   /*
    *  Jet Smearer Object to obtain the jet pt uncertainty.
@@ -1016,19 +991,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   TIter fileIter(listOfFiles);
   TChainElement* currentFile = 0;
 
-  // test chain
-  if (!chain)
-    {
-      throw std::invalid_argument("at::ScanChain: chain is NULL!");
-    }
-  if (chain->GetListOfFiles()->GetEntries()<1)
-    {
-      throw std::invalid_argument("at::ScanChain: chain has no files!");
-    }
-  if (not chain->GetFile())
-    {
-      throw std::invalid_argument("at::ScanChain: chain has no files or file path is invalid!");
-    }
   int nSkip_els_conv_dist = 0;
 
   float netot  = 0.;
@@ -1043,16 +1005,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
     cout << currentFile->GetTitle() << endl;
 
-    if (!f || f->IsZombie()) {
-      throw std::runtime_error(Form("ERROR::File from TChain is invalid or corrupt: %s", currentFile->GetTitle()));
+    if( !f || f->IsZombie() ) {
+      cout << "Skipping bad input file: " << currentFile->GetTitle() << endl;
+      continue; //exit(1);                                                                                             
     }
-    
-    // get the trees in each file
-    // TTree *tree = (TTree*)f->Get("Events");
-    TTree *tree = dynamic_cast<TTree*>(f->Get("Events"));
-    if (!tree || tree->IsZombie()) {
-      throw std::runtime_error(Form("ERROR::File from TChain has an invalid TTree or is corrupt: %s", currentFile->GetTitle()));
-    }
+
+    TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
     TTreeCache::SetLearnEntries(100);
@@ -1109,6 +1067,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       }
 
       TString datasetname(evt_dataset().at(0));
+      bool isperiodA = datasetname.Contains("2011A") ? true : false;
       //      cout<<"dataset: "<<datasetname.Data()<<" isperiodA: "<<isperiodA<<endl;
 
       // skip stop-pair events with m(stop) > 850 GeV
@@ -1912,11 +1871,9 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  
 	}
 
-	/*
 	else if( nleps_ < 0 || nleps_ > 2 ){
 	  cout << "ERROR nleptons = " << nleps_ << endl;
 	}
-*/
 
       }
 
@@ -2125,19 +2082,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
 	}
 
-	// with veto cone
-	iso = myTrackIso.iso_dr00503_dz005_pt00 / pfcands_p4().at(ipf).pt();
-
-	if( pfcands_p4().at(ipf).pt()>=10 && iso < pfcandvetoiso10_ && !isLeadLepton ){
-
-	  pfcandvetoiso10_ = iso;
-          pfcandvetopt10_ = pfcands_p4().at(ipf).pt();
-          pfcandveto10_ = &pfcands_p4().at(ipf);
-          pfcandvetoid10_ =  pfcands_particleId().at(ipf);
-
-	}
-
-
 	//recalculated definition of the isolation with the default values
 	iso = myTrackIso.iso_dr03_dz005_pt00 / pfcands_p4().at(ipf).pt();
 
@@ -2291,8 +2235,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	if(isGoodVertex(v)) ++nvtx_;
       }
 
-      indexfirstGoodVertex_=firstGoodVertex();
-
       npu_ = 0;
       npuMinusOne_ = 0;
       npuPlusOne_ = 0;
@@ -2337,7 +2279,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       vipfjets_p4.clear();
       
       vector<float> vpfjets_csv;
-      vector<float> vpfjets_sigma;
       vector<float> fullcors;
       vector<float> l2l3cors;
       vector<float> rescors;
@@ -2347,7 +2288,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       rescors.clear();
       l1cors.clear();
       vpfjets_csv.clear();
-      vpfjets_sigma.clear();
 
       rhovor_ = evt_ww_rho_vor();
 
@@ -2471,8 +2411,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 	  // the following 2 vectors are passed to the recoHadronicTop function
 	  vpfjets_p4.push_back(vjet); 
 	  vpfjets_csv.push_back(pfjets_combinedSecondaryVertexBJetTag().at(ijet));
-	  vpfjets_sigma.push_back(getJetResolution(pfjets_p4().at(ijet), jetSmearer ));
-
 	}
 
 	// njets JEC up
@@ -2634,30 +2572,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       t1met30phi_     = p_t1met30.second;	  
 
       //phi-corrected type1 met
-      pair<float, float> p_t1metphicorr = 
-	getPhiCorrMET( t1met10_, t1met10phi_, nvtx_, !isData);
+      pair<float, float> p_t1metphicorr = getPhiCorrMET( t1met10_, t1met10phi_, nvtx_, !isData);
       t1metphicorr_    = p_t1metphicorr.first;
       t1metphicorrphi_ = p_t1metphicorr.second;
 
-      //official prescription
-      std::pair<float, float> p_t1met_off = 
-	met_corrector_pfL1FastJetL2L3->getCorrectedMET();
-      t1met_off_	= p_t1met_off.first;
-      t1metphi_off_	= p_t1met_off.second;
-      t1metmt_off_ =
-	getMT( lep1_->pt() , lep1_->phi() , t1met_off_ , t1metphi_off_ );
-
-      std::pair<float, float> p_t1metphicorr_off = 
-	getPhiCorrMET( t1met_off_, t1metphi_off_, nvtx_, !isData);	
-      
-      t1metphicorr_off_		= p_t1metphicorr_off.first;
-      t1metphicorrphi_off_     	= p_t1metphicorr_off.second;
-      t1metphicorrmt_off_ = 
-	getMT( lep1_->pt() , lep1_->phi() , t1metphicorr_off_ , t1metphicorrphi_off_ );
-
       // MET after Jet PT smearing.
-      pair<float, float> p_t1met10Smear = 
-	Type1PFMETSmear(jetSmearer, isData, vpfrawjets_p4 , t1met10_, t1met10phi_);
+      pair<float, float> p_t1met10Smear = Type1PFMETSmear(jetSmearer, isData, vpfrawjets_p4 , t1met10_, t1met10phi_);
       t1met10s_ = p_t1met10Smear.first;
       t1met10sphi_ = p_t1met10Smear.second;
 
@@ -2722,7 +2642,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //      sort(vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
       sort(vipfjets_p4.begin(), vipfjets_p4.end(), sortIP4ByPt);
 
-      for( int i = 0 ; i < (int)vipfjets_p4.size() ; ++i ){
+      for( int i = 0 ; i < vipfjets_p4.size() ; ++i ){
 	pfjets_.push_back(vipfjets_p4.at(i).p4obj);
 	pfjets_csv_.push_back(pfjets_combinedSecondaryVertexBJetTag().at(vipfjets_p4.at(i).p4ind));
 	pfjets_qgtag_.push_back(QGtagger(vipfjets_p4.at(i).p4obj,vipfjets_p4.at(i).p4ind,qglikeli_));
@@ -2942,21 +2862,10 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
         mL_ = -999; //sparm_mL();
         x_  = -999; //sparm_mf();
 
-	if( TString(prefix).Contains("T2tt") ){
-	  for (int i=0; i<(int)sparm_values().size(); ++i) {
-	    if (sparm_names().at(i).Contains("mstop")) mG_ = sparm_values().at(i);
-	    if (sparm_names().at(i).Contains("mlsp")) mL_ = sparm_values().at(i);
-	  }
+        for (int i=0; i<(int)sparm_values().size(); ++i) {
+	  if (sparm_names().at(i).Contains("mstop")) mG_ = sparm_values().at(i);
+	  if (sparm_names().at(i).Contains("mlsp")) mL_ = sparm_values().at(i);
 	}
-	
-	if( TString(prefix).Contains("T2bw") ){
-	  for (int i=0; i<(int)sparm_values().size(); ++i) {
-	    if (sparm_names().at(i).Contains("x")) x_ = sparm_values().at(i);
-	    if (sparm_names().at(i).Contains("mstop")) mG_ = sparm_values().at(i);
-	    if (sparm_names().at(i).Contains("mlsp")) mL_ = sparm_values().at(i);
-	  }
-        }
-	
         xsecsusy_  = mG_ > 0. ? stopPairCrossSection(mG_) : -999;
         weight_ = xsecsusy_ > 0. ? lumi * xsecsusy_ * (1000./50000.) : -999.;
 
@@ -3269,7 +3178,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //                   vpfrawjets_p4, pfjets_combinedSecondaryVertexBJetTag());
 
       // NEW: use corrected jets and corresponding CSV values
-      list<Candidate> candidates = recoHadronicTop(vpfjets_sigma, isData, lep1_,
+      list<Candidate> candidates = recoHadronicTop(jetSmearer, isData, lep1_,
                         t1metphicorr_, t1metphicorrphi_,
                         vpfjets_p4, vpfjets_csv);
 
@@ -3371,7 +3280,7 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   outFile   = new TFile(Form("output/%s_smallTree%s%s.root",prefix,frsuffix,tpsuffix), "RECREATE");
   //  outFile   = new TFile(Form("output/%s/%s_smallTree%s%s.root",g_version,prefix,frsuffix,tpsuffix), "RECREATE");
-  //  outFile   = new TFile("baby.root","RECREATE");
+  //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
 
@@ -3540,14 +3449,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("t1metphicorrmtdn"   , &t1metphicorrmtdn_   , "t1metphicorrmtdn/F");
   outTree->Branch("t1metphicorrlepmt"  , &t1metphicorrlepmt_  , "t1metphicorrlepmt/F");
 
-  //official prescription
-  outTree->Branch("t1met_off"           , &t1met_off_           , "t1met_off/F");
-  outTree->Branch("t1metphi_off"        , &t1metphi_off_        , "t1metphi_off/F");
-  outTree->Branch("t1metmt_off"         , &t1metmt_off_         , "t1metmt_off/F");
-  outTree->Branch("t1metphicorr_off"    , &t1metphicorr_off_    , "t1metphicorr_off/F");
-  outTree->Branch("t1metphicorrphi_off" , &t1metphicorrphi_off_ , "t1metphicorrphi_off/F");
-  outTree->Branch("t1metphicorrmt_off"  , &t1metphicorrmt_off_  , "t1metphicorrmt_off/F");
-
   // btag variables		      
   outTree->Branch("nbtagsssv",        &nbtagsssv_,        "nbtagsssv/I");
   outTree->Branch("nbtagstcl",        &nbtagstcl_,        "nbtagstcl/I");
@@ -3569,7 +3470,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("npuMinusOne",      &npuMinusOne_,      "npuMinusOne/I");
   outTree->Branch("npuPlusOne",       &npuPlusOne_,       "npuPlusOne/I");
   outTree->Branch("nvtx",             &nvtx_,             "nvtx/I");
-  outTree->Branch("indexfirstGoodVertex_",             &indexfirstGoodVertex_,             "indexfirstGoodVertex/I");
   outTree->Branch("nvtxweight",       &nvtxweight_,       "nvtxweight/F");
   outTree->Branch("n3dvtxweight",     &n3dvtxweight_,     "n3dvtxweight/F");
   outTree->Branch("pdfid1",           &pdfid1_,           "pdfid1/I");
@@ -3717,11 +3617,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pfcanddirpt10",       &pfcanddirpt10_,       "pfcanddirpt10/F");  
   outTree->Branch("pfcanddirmindrj10",   &pfcanddirmindrj10_,   "pfcanddirmindrj10/F");  
 
-  outTree->Branch("pfcandvetoid10",       &pfcandvetoid10_,       "pfcandvetoid10/I");
-  outTree->Branch("pfcandvetoiso10",      &pfcandvetoiso10_,      "pfcandvetoiso10/F");  
-  outTree->Branch("pfcandvetopt10",       &pfcandvetopt10_,       "pfcandvetopt10/F");  
-  outTree->Branch("pfcandvetomindrj10",   &pfcandvetomindrj10_,   "pfcandvetomindrj10/F");  
-
   outTree->Branch("emjet10",          &emjet10_,          "emjet10/F");  
   outTree->Branch("mjj",              &mjj_,              "mjj/F");  
   outTree->Branch("emjet20",          &emjet20_,          "emjet20/F");  
@@ -3811,7 +3706,6 @@ void singleLeptonLooper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("pfcand5"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcand5_	);
   outTree->Branch("pfcand10"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcand10_	);
   outTree->Branch("pfcanddir10"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcanddir10_	);
-  outTree->Branch("pfcandveto10"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pfcandveto10_	);
   outTree->Branch("jet"	      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet_	);
 
   outTree->Branch("nonisoel"  , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &nonisoel_	);
