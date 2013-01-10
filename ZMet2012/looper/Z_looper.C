@@ -945,8 +945,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  }
 	  if( foundDuplicate ) continue;
 
-          //if( els_p4().at(iel).pt() < 10 )                                                             continue;
-          if( els_p4().at(iel).pt() < 20 )                                                             continue; // SAMESIGN: pT > 20 GeV
+          if( els_p4().at(iel).pt() < 10 )                                                             continue;
+          //if( els_p4().at(iel).pt() < 20 )                                                             continue; // SAMESIGN: pT > 20 GeV
 	  if( ! passElectronSelection_ZMet2012_v3(iel,vetoTransition,vetoTransition,useOldIsolation) ) continue;
           goodLeptons.push_back( els_p4().at(iel) );
 	  goodLeptonIDs.push_back( els_charge().at(iel) * -11 );
@@ -963,10 +963,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	  // 	 muonIdNotIsolated( imu , ZMet2012_v1 ) , muonIsoValuePF2012_deltaBeta(imu) );
 	  //}
 
-          //if( mus_p4().at(imu).pt() < 10 )           continue;
-          if( mus_p4().at(imu).pt() < 20 )           continue; // SAMESIGN: pT > 20 GeV
-          //if( !muonId( imu , ZMet2012_v1 ))          continue;
-          if( !muonId( imu , NominalSSv5 ))          continue; // SAMESIGN: NominalSSv5
+          if( mus_p4().at(imu).pt() < 10 )           continue;
+          if( !muonId( imu , ZMet2012_v1 ))          continue;
+
+          // if( mus_p4().at(imu).pt() < 20 )           continue; // SAMESIGN: pT > 20 GeV
+          // if( !muonId( imu , NominalSSv5 ))          continue; // SAMESIGN: NominalSSv5
+
           goodLeptons.push_back( mus_p4().at(imu) );
 	  goodLeptonIDs.push_back( mus_charge().at(imu) * -13 );
 	  nlep_++;
@@ -999,23 +1001,23 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
         if( !passSUSYTrigger2012_v2( isData ) ) continue;
 
         //OS, pt > (20,20) GeV, dilmass > 10 GeV
-        //if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue; 
-        if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] < 0 )                             continue; // SAMESIGN: require SS leptons
+        if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] > 0 )                             continue; 
+        //if( hyp_lt_id()[hypIdx] * hyp_ll_id()[hypIdx] < 0 )                             continue; // SAMESIGN: require SS leptons
         if( TMath::Max( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         if( TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 10. )   continue;
 	if( pt2020 && TMath::Min( hyp_ll_p4()[hypIdx].pt() , hyp_lt_p4()[hypIdx].pt() ) < 20. )   continue;
         //if( hyp_p4()[hypIdx].mass() < 10 )                                              continue;
       
         //muon ID
-        //if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 )))   continue;
-        //if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
+        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , ZMet2012_v1 )))   continue;
+        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
 
 	// SAMESIGN: require dimuon
-	if (hyp_type()[hypIdx] != 0) continue;
+	//if (hyp_type()[hypIdx] != 0) continue;
 
 	// SAMESIGN: require NominalSSv5 selection
-        if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , NominalSSv5 )))   continue;
-        if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , NominalSSv5 )))   continue;
+        //if (abs(hyp_ll_id()[hypIdx]) == 13  && !( muonId( hyp_ll_index()[hypIdx] , NominalSSv5 )))   continue;
+        //if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , NominalSSv5 )))   continue;
               
         //electron ID
         if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v3(hyp_ll_index()[hypIdx],vetoTransition,vetoTransition,useOldIsolation)) ) continue;
