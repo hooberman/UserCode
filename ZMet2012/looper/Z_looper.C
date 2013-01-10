@@ -68,7 +68,7 @@ const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
 const char* iter                 = "V00-02-06";
-const char* jsonfilename         = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt" 
+const char* jsonfilename         = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt";
 
 // 19.5 merged json from Dunser
 // https://hypernews.cern.ch/HyperNews/CMS/get/susy-multilepton/277/1/2/1/1/1.html
@@ -109,7 +109,7 @@ int getLeptonID( LorentzVector thisLepton ){
   for (unsigned int imu = 0 ; imu < mus_p4().size() ; imu++) {
     
     LorentzVector vmu   = mus_p4().at(imu);
-    if( vmu.pt() < 20.0 ) continue;
+    if( vmu.pt() < 10.0 ) continue;
 
     if( fabs( vmu.pt() - thisLepton.pt() ) < 0.001 && fabs( vmu.eta() - thisLepton.eta() ) < 0.001 && fabs( vmu.phi() - thisLepton.phi() ) < 0.001 ) return -13 * mus_charge().at(imu);
   }
@@ -117,7 +117,7 @@ int getLeptonID( LorentzVector thisLepton ){
   for (unsigned int iel = 0 ; iel < els_p4().size() ; iel++) {
     
     LorentzVector vel   = els_p4().at(iel);
-    if( vel.pt() < 20.0 ) continue;
+    if( vel.pt() < 10.0 ) continue;
 
     if( fabs( vel.pt() - thisLepton.pt() ) < 0.001 && fabs( vel.eta() - thisLepton.eta() ) < 0.001 && fabs( vel.phi() - thisLepton.phi() ) < 0.001 ) return -11 * els_charge().at(iel);
   }
@@ -1321,7 +1321,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //-------------------------
       // SAMESIGN: Z-veto
       //-------------------------
-
+      /*
       nmuss_ = 0;
 
       int index3 = -1;
@@ -1329,7 +1329,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 
 	if(  mus_p4().at(imu).pt() < 20.0     )       continue; // pT > 20 GeV
-	if( !muonId( imu , NominalSSv5 )      )       continue; // NominalSSv5
+	//if( !muonId( imu , NominalSSv5 )      )       continue; // NominalSSv5
+	if( !muonId( imu , ZMet2012_v1 )      )       continue; // ZMet2012_v1
 	if(  id1_ * mus_charge().at(imu) > 0  )       continue; // require SS
 
 	nmuss_++;
@@ -1382,6 +1383,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	m2_ = mass2;
 
       }
+      */
 
       //-------------------------
       // 3-lepton stuff
