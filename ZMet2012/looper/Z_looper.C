@@ -25,7 +25,7 @@
 #include "../CORE/CMS2.cc"
 #ifndef __CINT__
 #include "../CORE/utilities.cc"
-//#include "../CORE/ssSelections.cc"
+#include "../CORE/ssSelections.cc"
 #include "../CORE/electronSelections.cc"
 #include "../CORE/electronSelectionsParameters.cc"
 #include "../CORE/MITConversionUtilities.cc"
@@ -67,7 +67,7 @@ const bool  pt2020               = true;
 const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-04_SS";
+const char* iter                 = "V00-02-05_SS";
 const char* jsonfilename         = "../jsons/final_19p47fb_cms2.txt"; // 19.5 merged json from Ryan
 
 //--------------------------------------------------------------------
@@ -1056,6 +1056,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[2]++;
 
+      // check extra Z veto
+      extraz_ = ( samesign::makesExtraZ(hypIdx) ) ? 1 : 0;
+	
+      // check extra Gamma* veto
+      extrag_ = ( samesign::makesExtraGammaStar(hypIdx) ) ? 1 : 0;
+	  
       leptype_ = 99;
       if (hyp_type()[hypIdx] == 3) leptype_ = 0;                           // ee
       if (hyp_type()[hypIdx] == 0) leptype_ = 1;                           // mm
@@ -3065,6 +3071,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("nextramu"  ,  &nextramu_  ,  "nextramu/I"  );  
   babyTree_->Branch("nhyp"      ,  &nhyp_      ,  "nhyp/I"      );  
   babyTree_->Branch("nmuss"     ,  &nmuss_     ,  "nmuss/I"     );  
+  babyTree_->Branch("extraz"    ,  &extraz_    ,  "extraz/I"    );  
+  babyTree_->Branch("extrag"    ,  &extrag_    ,  "extrag/I"    );  
 
 }
 

@@ -129,6 +129,9 @@ class Z_looper
   Float_t st30_;
   Float_t st40_;
 
+  Int_t   extraz_;
+  Int_t   extrag_;
+
   Float_t m1_;
   Float_t m2_;
   Float_t m3_;
