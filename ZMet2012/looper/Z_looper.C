@@ -63,12 +63,15 @@ const bool  debug                = false;
 const bool  doGenSelection       = false;
       bool  doTenPercent         = false;
       bool  useOldIsolation      = true;
-const bool  pt2020               = true;
+const bool  pt2020               = false;
 const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-05_SS";
-const char* jsonfilename         = "../jsons/final_19p47fb_cms2.txt"; // 19.5 merged json from Ryan
+const char* iter                 = "V00-02-06";
+const char* jsonfilename         = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt" 
+
+// 19.5 merged json from Dunser
+// https://hypernews.cern.ch/HyperNews/CMS/get/susy-multilepton/277/1/2/1/1/1.html
 
 //--------------------------------------------------------------------
 
