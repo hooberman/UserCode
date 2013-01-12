@@ -480,7 +480,9 @@ void StopTreeLooper::makeTree(const char *prefix){
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
-  outFile_   = new TFile(Form("output/%s_mini_$Revision$.root",prefix), "RECREATE");
+  string revision = "$Revision: 23.1 $";
+  string revision_no = revision.substr(11, revision.length() - 13);
+  outFile_   = new TFile(Form("output/%s_mini_%s.root",prefix,revision_no.c_str()), "RECREATE");
   outFile_->cd();
 
   outTree_ = new TTree("t","Tree");
