@@ -1057,12 +1057,18 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
       if( PassGenSelection( isData ) > 60. )   nRecoPass_cut[2]++;
 
-      // check extra Z veto
-      extraz_ = ( samesign::makesExtraZ(hypIdx) ) ? 1 : 0;
+      if( !useOldIsolation ){
+	// check extra Z veto
+	extraz_ = ( samesign::makesExtraZ(hypIdx) ) ? 1 : 0;
 	
-      // check extra Gamma* veto
-      extrag_ = ( samesign::makesExtraGammaStar(hypIdx) ) ? 1 : 0;
-	  
+	// check extra Gamma* veto
+	extrag_ = ( samesign::makesExtraGammaStar(hypIdx) ) ? 1 : 0;
+      }
+      else{
+	extraz_ = -999;
+	extrag_ = -999;
+      }
+
       leptype_ = 99;
       if (hyp_type()[hypIdx] == 3) leptype_ = 0;                           // ee
       if (hyp_type()[hypIdx] == 0) leptype_ = 1;                           // mm
