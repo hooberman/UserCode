@@ -794,6 +794,7 @@ namespace tas {
 	vector<float> &convs_chi2() { return cms2.convs_chi2(); }
 	vector<float> &convs_dl() { return cms2.convs_dl(); }
 	vector<float> &convs_ndof() { return cms2.convs_ndof(); }
+	vector<float> &sparm_values() { return cms2.sparm_values(); }
 	vector<float> &scs_clustersSize() { return cms2.scs_clustersSize(); }
 	vector<float> &scs_crystalsSize() { return cms2.scs_crystalsSize(); }
 	vector<float> &scs_e1x3() { return cms2.scs_e1x3(); }
