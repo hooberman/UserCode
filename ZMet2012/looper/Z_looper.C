@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-06";
+const char* iter                 = "V00-02-07";
 const char* jsonfilename         = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt";
 
 // 19.5 merged json from Dunser
@@ -787,8 +787,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
 	else if(TString(prefix).Contains("wzsms") ){
-	  mg_ = -1;//sparm_values().at(0);
-	  ml_ = -1;//sparm_values().at(1);
+	  mg_ = cms2.sparm_values().at(0);
+	  ml_ = cms2.sparm_values().at(1);
 	  x_  = -999;
 
 	  int   mgbin = xsec_C1N2->FindBin(mg_);
@@ -828,7 +828,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 
 	else if(TString(prefix).Contains("gmsb") ){
 
-	  mg_     = -1;//sparm_values().at(0);
+	  mg_     = cms2.sparm_values().at(0);
 	  weight_ = lumi * getGMSBCrossSection( mg_ ) * (1000.0 / 300000.0);
 
 	  ml_ = -999;
