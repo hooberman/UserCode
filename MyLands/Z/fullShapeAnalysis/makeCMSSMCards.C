@@ -27,7 +27,7 @@
 
 using namespace std;
 
-void printCard( char* name , float sigtot , char* version , bool do3jets ){
+void printCard( char* name , float sigtot , char* version ){
 
   ofstream* ofile = new ofstream();
 
@@ -36,21 +36,13 @@ void printCard( char* name , float sigtot , char* version , bool do3jets ){
   *ofile <<      "imax 1 number of channels"                                                            << endl;
   *ofile <<      "jmax 1 number of background"                                                          << endl;
   *ofile <<      "kmax * number of nuisance parameters"                                                 << endl;
-  if( !do3jets ){
-    *ofile <<      "Observation 16483                                                         "           << endl;
-  }else{
-    *ofile <<      "Observation 4501                                                          "           << endl;
-  }
+  *ofile <<      "Observation 16483                                                         "           << endl;
   *ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
   *ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                               << endl;
   *ofile <<      "bin                                  1       1"                                       << endl;
   *ofile << Form("process                      %s     bkg" , name )                                     << endl;
   *ofile <<      "process                              0       1"                                       << endl;
-  if( !do3jets ){
-    *ofile << Form("rate                              %.1f   16438" , sigtot)                             << endl;
-  }else{
-    *ofile << Form("rate                              %.1f    4481" , sigtot)                             << endl;
-  }
+  *ofile << Form("rate                              %.1f   16438" , sigtot)                             << endl;
   *ofile <<      "lumi                       lnN   1.060       -"                                       << endl;
   *ofile <<      "eff_leptons                lnN   1.050       -"                                       << endl;
   *ofile <<      "JES_shape                shape     1.0       -"                                       << endl;
@@ -69,9 +61,7 @@ void makeCMSSMCards(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-02-04/T5zz_baby.root");
-  char* version = "V00-00-02";
-
-  bool do3jets = true;
+  char* version = "V00-00-00";
 
   //---------------------------------------
   // selection
@@ -81,13 +71,7 @@ void makeCMSSMCards(){
 
   TCut presel   ("dilmass>81 && dilmass<101 && njets>=2     && leptype<2");
   TCut preseljup("dilmass>81 && dilmass<101 && njetsup>=2   && leptype<2");
-  TCut preseljdn("dilmass>81 && dilmass<101 && njetsdn>=2   && leptype<2");
-
-  if( do3jets ){
-    presel    = TCut("dilmass>81 && dilmass<101 && njets>=3     && leptype<2");
-    preseljup = TCut("dilmass>81 && dilmass<101 && njetsup>=3   && leptype<2");
-    preseljdn = TCut("dilmass>81 && dilmass<101 && njetsdn>=3   && leptype<2");
-  }
+  TCut preseljdn("dilmass>81 && dilmass<101 && njetsdn>=2 && leptype<2");
 
   TCut met30_60  ("pfmet>30  && pfmet<60");
   TCut met60_100 ("pfmet>60  && pfmet<100");
@@ -242,7 +226,7 @@ void makeCMSSMCards(){
 
       *filelist << Form("cards/%s/SMS_%i_%i.txt_Bayesian_bysObsLimit.root",version,mgbin,mlbin)        << endl;
 
-      *filelist_CLs << Form("cards/%s/SMS_%i_%i_m2lnQ2.root",version,mgbin,mlbin)        << endl;
+      *filelist_CLs << Form("cards/%s/SMS_%i_%i_m2lnQ2.root.root",version,mgbin,mlbin)        << endl;
 
       if( counter%4 == 0 ) *doScript_CLs1 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
 
@@ -252,35 +236,12 @@ void makeCMSSMCards(){
 
       if( counter%4 == 3 ) *doScript_CLs4 << Form("../../../../test/lands.exe -d SMS_%i_%i.txt  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100",mgbin,mlbin,mgbin,mlbin) << endl;
 
-      printCard( Form("SMS_%i_%i",mgbin,mlbin) , sigtot , version , do3jets);
+      printCard( Form("SMS_%i_%i",mgbin,mlbin) , sigtot , version );
       
-      //signal regions                         met30      met60    met100    met200    met300
-
-      int     data_yield[nbins]           = {  15314   ,   879   ,   276   ,    14   ,    0 };
-      float   bkg_yield[nbins]            = {  15195   ,   948   ,   276   ,  15.7   , 3.09 };
-      float   bkg_err[nbins]              = {   4671   ,   153   ,    27   ,  2.60   , 0.89 };
-
-      if( do3jets ){
-
-	data_yield[0]   = 4022;
-	data_yield[1]   =  342;
-	data_yield[2]   =  129;
-	data_yield[3]   =    8;
-	data_yield[4]   =    0;
-
-	bkg_yield[0]    = 3983.;
-	bkg_yield[1]    =  369.;
-	bkg_yield[2]    =  119.;
-	bkg_yield[3]    =   8.7;
-	bkg_yield[4]    =   1.8;
-
-	bkg_err[0]      =  978.;
-	bkg_err[1]      =   57.;
-	bkg_err[2]      =   12.;
-	bkg_err[3]      =   1.7;
-	bkg_err[4]      =   0.6;
-
-      }
+      //signal regions                         met30              met60          met100            met200      met300
+      int     data_yield[nbins]           = {  16483-1169     ,   1169 - 290    ,   290 - 14    ,  14 - 0    , 0       }; 
+      float   bkg_yield[nbins]            = {  16438.0-1243.0 ,   1243.0-295.0  ,   295.0-18.8  ,  18.8-3.1  , 3.1     };    
+      float   bkg_err[nbins]              = {  4827.0-162.0   ,   162.0-21.0    ,   21.0-3.0    ,  3.0-0.9   , 0.9     };
 
       TH1F* histo_Data = new TH1F("histo_Data","histo_Data",nbins,0,nbins);
 

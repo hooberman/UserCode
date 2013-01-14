@@ -62,9 +62,6 @@ class makePhotonBabies
   Int_t hgg90_;
 
   Float_t rho_;
-  Float_t ht30_;
-  Float_t ht40_;
-  Float_t jzb_;
 
   // event stuff
   char    dataset_[200];
@@ -73,6 +70,7 @@ class makePhotonBabies
   UInt_t  event_;
   Int_t   leptype_;
   Int_t   nGoodVertex_;
+  Int_t   nGoodDAVertex_;
   Float_t weight_;
   Float_t pthat_;
   Int_t   failjetid_;
@@ -87,9 +85,7 @@ class makePhotonBabies
   Float_t pfmet_;
   Float_t pfmetphi_;
   Float_t pfmett1_;
-  Float_t pfmett1phi_;
-  Float_t pfmett1new_;
-  Float_t pfmett1newphi_;
+  Float_t pfmetphit1_;
   Float_t pfsumet_;
   Float_t pfmet_type1_pt30_;
   Float_t pfmet_type1_pt15_;
@@ -202,14 +198,6 @@ class makePhotonBabies
   Float_t jet_dphimet_;       
   Float_t jet_dpt_;           
   Float_t jet_drgen_;  
-
-  Int_t   csc_;      
-  Int_t   hbhe_;   
-  Int_t   hbhenew_;   
-  Int_t   hcallaser_;
-  Int_t   ecaltp_;
-  Int_t   trkfail_;
-  Int_t   eebadsc_;
   
   TH1F* tcmetTemplate[3][7][4];
   TH1F* pfmetTemplate[3][7][4];
@@ -233,7 +221,8 @@ class makePhotonBabies
   TH1F*   hphotonpt;
   
   ofstream ofile_tcmet;
-  ofstream ofile_events;  
+  ofstream ofile_events;
+  
 };
 
 

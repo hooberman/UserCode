@@ -35,8 +35,6 @@ MuonIDMVA* muonIdMVA_leptree = 0;
 EGammaMvaEleEstimator* egammaMvaEleEstimator_leptree = 0;
 MuonMVAEstimator* muonMVAEstimator_leptree = 0;
 
-bool verbose = true;
-
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 //
 // constructor and destructor
@@ -60,16 +58,9 @@ float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx ){
   
 }
 
-float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut = false , float minpt = 0.0 , float dRveto = 0.0 , float detaveto = 0.0 ){
+float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut = false , float minpt = 0.0 ){
 
   float iso = 0.0;
-
-  // cout << "candidate: pt eta phi ID  " 
-  //      << Form("%.1f",cms2.pfcands_p4().at(thisPf).pt())  << " " 
-  //      << Form("%.2f",cms2.pfcands_p4().at(thisPf).eta()) << " " 
-  //      << Form("%.2f",cms2.pfcands_p4().at(thisPf).phi()) << " "
-  //      << cms2.pfcands_particleId().at(thisPf)            << " " 
-  //      << endl;
 
   for (int ipf = 0; ipf < (int)cms2.pfcands_p4().size(); ipf++) {
 
@@ -77,9 +68,7 @@ float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool d
     if( cms2.pfcands_charge().at(ipf) == 0     ) continue; // skip neutrals
     if( cms2.pfcands_p4().at(ipf).pt() < minpt ) continue; // minimum pt for tracks in trk iso
 
-    if( dRbetweenVectors( cms2.pfcands_p4().at(ipf) , cms2.pfcands_p4().at(thisPf) ) > coneR    ) continue; // only consider tracks within dR < coneR
-    if( dRbetweenVectors( cms2.pfcands_p4().at(ipf) , cms2.pfcands_p4().at(thisPf) ) < dRveto   ) continue; // veto tracks inside dRveto cone
-    if( fabs( cms2.pfcands_p4().at(ipf).eta() - cms2.pfcands_p4().at(thisPf).eta() ) < detaveto ) continue; // veto tracks in phi strip
+    if( dRbetweenVectors( cms2.pfcands_p4().at(ipf) , cms2.pfcands_p4().at(thisPf) ) > coneR ) continue;
 
     int itrk = cms2.pfcands_trkidx().at(ipf);
     
@@ -125,19 +114,10 @@ float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool d
     // passes cuts, add up isolation value
     //---------------------------------------
 
-    // cout << "track: pt eta phi ID dR    " 
-    // 	 << Form("%.1f",cms2.pfcands_p4().at(ipf).pt())  << " " 
-    // 	 << Form("%.2f",cms2.pfcands_p4().at(ipf).eta()) << " " 
-    // 	 << Form("%.2f",cms2.pfcands_p4().at(ipf).phi()) << " "
-    // 	 << cms2.pfcands_particleId().at(ipf)            << " " 
-    // 	 << Form("%.3f",dRbetweenVectors( cms2.pfcands_p4().at(ipf) , cms2.pfcands_p4().at(thisPf))) << " "
-    // 	 << endl;
-
     iso += cms2.pfcands_p4().at(ipf).pt();
 
   }
 
-  //cout << "trackiso " << iso << endl;
   return iso;
 }
 
@@ -193,7 +173,7 @@ int objectPassTrigger(const LorentzVector &obj, char* trigname, float ptmin = 0,
   for (unsigned int i = 0; i < trigp4.size(); ++i){
     if ( trigp4[i].Pt() < ptmin ) continue;
     float dr = dRbetweenVectors(trigp4[i], obj);
-    if (dr < drmax) return cms2.hlt_prescales().at(findTriggerIndex(exact_trigname));
+    if (dr < drmax) return 1;
   }
 
   return 0;
@@ -275,7 +255,7 @@ LeptonTreeMaker::LeptonTreeMaker(bool lockToCoreSelectors, bool useLHeleId, bool
 LeptonTreeMaker::~LeptonTreeMaker() {
   std::cout << "LeptonTreeMaker::~LeptonTreeMaker" << std::endl;
   //if (electronIdMVA_ != 0) delete electronIdMVA_;
-  //if (jet_corrector_pfL1FastJetL2L3_ != 0) delete jet_corrector_pfL1FastJetL2L3_;
+  if (jet_corrector_pfL1FastJetL2L3_ != 0) delete jet_corrector_pfL1FastJetL2L3_;
 }
 
 void LeptonTreeMaker::ScanChain(TString outfileid,
@@ -303,7 +283,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   // make smurf ntuples
   gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-07/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
+  TFile* fSmurf = TFile::Open(Form("smurf/V00-00-00/%s_%s.root",prefix.c_str(), outfileid.Data()),"RECREATE");
   assert(fSmurf);
   LeptonTree leptonTree;
   leptonTree.CreateTree();
@@ -314,7 +294,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   HLT_Ele17_Ele8_probe_=0;
   HLT_Ele27_WP80_tag_=0;
   HLT_Ele27_WP80_probe_=0;
-
+		
   HLT_IsoMu30_eta2p1_tag_=0;
   HLT_IsoMu30_eta2p1_probe_=0;
   HLT_IsoMu24_eta2p1_tag_=0;
@@ -324,31 +304,12 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   HLT_Mu17_Mu8_tag_=0;
   HLT_Mu17_Mu8_probe_=0;
 
-  HLT_TNP_tag_=0;
-  HLT_TNP_probe_=0;
-  HLT_TNPel_tag_=0;
-  HLT_TNPel_probe_=0;
-
   vtxweight_ = 0.0;
-
-  nbl_ = 0;
-  nbm_ = 0;
-
-  // leptype_ = 0;
-  // elid_    = 0;
-  // eliso_   = 0;
-  // muid_    = 0;
-  // muiso_   = 0;
-
-  // leptonTree.tree_->Branch("HLT_Ele17_Ele8_tag"			, &HLT_Ele17_Ele8_tag_				,"HLT_Ele17_Ele8_tag/i");
+  // leptonTree.tree_->Branch("HLT_Ele17_Ele8_tag"			      	, &HLT_Ele17_Ele8_tag_				,"HLT_Ele17_Ele8_tag/i");
   // leptonTree.tree_->Branch("HLT_Ele17_Ele8_probe"		       	, &HLT_Ele17_Ele8_probe_			,"HLT_Ele17_Ele8_probe/i");
-  // leptonTree.tree_->Branch("HLT_Ele27_WP80_tag"	       		, &HLT_Ele27_WP80_tag_		        	,"HLT_Ele27_WP80_tag/i");
-  // leptonTree.tree_->Branch("HLT_Ele27_WP80_probe"    		, &HLT_Ele27_WP80_probe_		        ,"HLT_Ele27_WP80_probe/i");
+  // leptonTree.tree_->Branch("HLT_Ele27_WP80_tag"	       			, &HLT_Ele27_WP80_tag_				,"HLT_Ele27_WP80_tag/i");
+  // leptonTree.tree_->Branch("HLT_Ele27_WP80_probe"    		      	, &HLT_Ele27_WP80_probe_			,"HLT_Ele27_WP80_probe/i");
 
-  leptonTree.tree_->Branch("HLT_TNP_tag"	       			, &HLT_TNP_tag_			         	,"HLT_TNP_tag/i");
-  leptonTree.tree_->Branch("HLT_TNP_probe"    		        	, &HLT_TNP_probe_	             		,"HLT_TNP_probe/i");
-  leptonTree.tree_->Branch("HLT_TNPel_tag"	       			, &HLT_TNPel_tag_			        ,"HLT_TNPel_tag/i");
-  leptonTree.tree_->Branch("HLT_TNPel_probe"    		        , &HLT_TNPel_probe_	             		,"HLT_TNPel_probe/i");
   leptonTree.tree_->Branch("HLT_IsoMu30_eta2p1_tag"	       		, &HLT_IsoMu30_eta2p1_tag_			,"HLT_IsoMu30_eta2p1_tag/i");
   leptonTree.tree_->Branch("HLT_IsoMu30_eta2p1_probe"  			, &HLT_IsoMu30_eta2p1_probe_		        ,"HLT_IsoMu30_eta2p1_probe/i");
   leptonTree.tree_->Branch("HLT_IsoMu24_eta2p1_tag"	       		, &HLT_IsoMu24_eta2p1_tag_			,"HLT_IsoMu24_eta2p1_tag/i");
@@ -358,22 +319,11 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   leptonTree.tree_->Branch("drprobe"                 			, &drprobe_	                 	        ,"drprobe/F");
   leptonTree.tree_->Branch("tkisoold"                 			, &tkiso_old_	                 	        ,"tkisoold/F");
   leptonTree.tree_->Branch("tkisonew"                 			, &tkiso_new_	                 	        ,"tkisonew/F");
-  leptonTree.tree_->Branch("tkisonewnoveto"                 		, &tkiso_new_noveto_	          	        ,"tkisonewnoveto/F");
   leptonTree.tree_->Branch("tkisonewpt1"                 		, &tkiso_new_pt1_	            	        ,"tkisonewpt1/F");
   leptonTree.tree_->Branch("tkisonewpt2"                 		, &tkiso_new_pt2_	            	        ,"tkisonewpt2/F");
   leptonTree.tree_->Branch("tkisonewpt3"                 		, &tkiso_new_pt3_	            	        ,"tkisonewpt3/F");
   leptonTree.tree_->Branch("tkisonewpt4"                 		, &tkiso_new_pt4_	            	        ,"tkisonewpt4/F");
   leptonTree.tree_->Branch("tkisonewpt5"                 		, &tkiso_new_pt5_	            	        ,"tkisonewpt5/F");
-  leptonTree.tree_->Branch("isoch"                          		, &isoch_	                	        ,"isoch/F");
-
-  leptonTree.tree_->Branch("nbl"                          		, &nbl_	            	                        ,"nbl/I");
-  leptonTree.tree_->Branch("nbm"                          		, &nbm_	            	                        ,"nbm/I");
-
-  // leptonTree.tree_->Branch("leptype"                          		, &leptype_	            	                ,"leptype/I");
-  // leptonTree.tree_->Branch("elid"                          		, &elid_	            	                ,"elid/I");
-  // leptonTree.tree_->Branch("eliso"                          		, &eliso_	            	                ,"eliso/I");
-  // leptonTree.tree_->Branch("muid"                          		, &muid_	            	                ,"muid/I");
-  // leptonTree.tree_->Branch("muiso"                          		, &muiso_	            	                ,"muiso/I");
 
   // leptonTree.tree_->Branch("HLT_Mu17_TkMu8_tag"			       	, &HLT_Mu17_TkMu8_tag_				,"HLT_Mu17_TkMu8_tag/i");
   // leptonTree.tree_->Branch("HLT_Mu17_TkMu8_probe"      	       		, &HLT_Mu17_TkMu8_probe_			,"HLT_Mu17_TkMu8_probe/i");
@@ -426,13 +376,13 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
     //        printf("current file: %s (%s), %s\n", currentFile->GetName(), 
     // 	      currentFile->GetTitle(), currentFile->IsA()->GetName());
 
-    if( verbose ) cout << currentFile->GetTitle() << endl;
+    cout << currentFile->GetTitle() << endl;
     if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011A-05Aug2011-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_999999_8_skim.root")  ) continue;
     if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011A-PromptReco-v6_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_172949_0_skim.root") ) continue;
     if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_176201_0_skim.root") ) continue;
     if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_176304_0_skim.root") ) continue;
     if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_176548_0_skim.root") ) continue;
-
+    if( TString(currentFile->GetTitle()).Contains("SingleMu_Run2011B-PromptReco-v1_AOD/V04-02-33/SingleLeptonAndTwoJets/merged_ntuple_177074_0_skim.root") ) continue;
 
     TFile *f = TFile::Open(currentFile->GetTitle()); 
     assert(f);
@@ -451,25 +401,6 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
       if (cms2.evt_event() % prescale_ !=0) continue;
 
-      // bool passevent = false;
-
-      // if( cms2.evt_run() == 166438 && cms2.evt_lumiBlock() == 738 && cms2.evt_event() == 831532430 ) passevent = true;
-      // if( cms2.evt_run() == 166380 && cms2.evt_lumiBlock() == 751 && cms2.evt_event() == 834785485 ) passevent = true;
-      // if( cms2.evt_run() == 166374 && cms2.evt_lumiBlock() == 161 && cms2.evt_event() == 189502020 ) passevent = true;
-      // if( cms2.evt_run() == 166049 && cms2.evt_lumiBlock() == 275 && cms2.evt_event() == 364206425 ) passevent = true;
-      // if( cms2.evt_run() == 166033 && cms2.evt_lumiBlock() == 307 && cms2.evt_event() == 430095108 ) passevent = true;
-      // if( cms2.evt_run() == 165993 && cms2.evt_lumiBlock() ==  99 && cms2.evt_event() ==  86007064 ) passevent = true;
-      // if( cms2.evt_run() == 165993 && cms2.evt_lumiBlock() == 657 && cms2.evt_event() == 742344232 ) passevent = true;
-      // if( cms2.evt_run() == 165617 && cms2.evt_lumiBlock() == 205 && cms2.evt_event() == 284604551 ) passevent = true;
-      // if( cms2.evt_run() == 165570 && cms2.evt_lumiBlock() == 642 && cms2.evt_event() == 840922683 ) passevent = true;
-      // if( cms2.evt_run() == 166486 && cms2.evt_lumiBlock() == 130 && cms2.evt_event() == 105086288 ) passevent = true;
-      // if( cms2.evt_run() == 166486 && cms2.evt_lumiBlock() == 127 && cms2.evt_event() == 101074594 ) passevent = true;
-
-      // if (!passevent) continue;
-
-      // cout << endl << endl;
-      // cout << cms2.evt_event() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
-
       // Select the good runs from the json file
       if(realData && cms2_json_file!="") {
 	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
@@ -483,6 +414,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 	  (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
       }       
       ++nEventsTotal;
+
       //
       // basic event preselection
       //
@@ -494,13 +426,14 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
       // duplicate removal
       //
 
-      EventIdentifier id(cms2,realData); // <<<<--------CRASH HERE
+      EventIdentifier id(cms2,realData);
       if (is_duplicate(id)) {
 	duplicates_total_n++;
 	if(!realData) duplicates_total_weight += cms2.evt_scale1fb();
 	//cout << "Duplicate event found. Run: " << cms2.evt_run() << ", Event:" << cms2.evt_event() << ", Lumi: " << cms2.evt_lumiBlock() << endl;
 	continue;
       }
+
       //
       // counter
       //
@@ -567,15 +500,16 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
       if (eventSelection & muonFRMask)               	MakeMuonFakeRateTree(leptonTree, weight, sample, eventSelection);
       */
 
-      //-------------------------------
+      //
       // electron tag and probe
-      //-------------------------------
+      //
 
-      if (cms2.els_p4().size() > 1)    MakeElectronTagAndProbeTree(leptonTree, weight, sample);
+      // COMMENT OUT FOR NOW
+      //if (cms2.els_p4().size() > 1)    MakeElectronTagAndProbeTree(leptonTree, weight, sample);
 
-      //-------------------------------
+      //
       // muon tag and probe tree
-      //-------------------------------
+      //
 
       if (cms2.mus_p4().size() > 1)    MakeMuonTagAndProbeTree(leptonTree, weight, sample);
 
@@ -586,16 +520,13 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
     //
 
     t.Stop();
-
-    if( verbose ){
-      printf("Finished processing file: %s\n",currentFile->GetTitle());
-      printf("Real time: %u events / %f s = %e event/s\n", nEvents, 
-	     t.RealTime(), nEvents / t.RealTime());
-      printf("CPU time: %u events / %f s = %e event/s\n", nEvents, 
-	     t.CpuTime(), nEvents / t.CpuTime());
-      printf("Total duplicate count: %d.  Total weight %f\n",   
-	     duplicates_total_n, duplicates_total_weight);
-    }
+    printf("Finished processing file: %s\n",currentFile->GetTitle());
+    printf("Real time: %u events / %f s = %e event/s\n", nEvents, 
+	   t.RealTime(), nEvents / t.RealTime());
+    printf("CPU time: %u events / %f s = %e event/s\n", nEvents, 
+	   t.CpuTime(), nEvents / t.CpuTime());
+    printf("Total duplicate count: %d.  Total weight %f\n",   
+	   duplicates_total_n, duplicates_total_weight);
 
     //
     // tidy up
@@ -681,46 +612,17 @@ void LeptonTreeMaker::MakeElectronRecoTagAndProbeTree(LeptonTree &leptonTree, co
   */
 }
 
-
+/*
 void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const double &weight, SmurfTree::DataType sample)
 {
-
-  bool isData = ( sample == SmurfTree::data );
-
-  //----------------------------------------------------
-  // store all good leptons for jet-lepton cleaning
-  //----------------------------------------------------
-
-  VofP4 goodLeptons;
-            
-  for( unsigned int iel = 0 ; iel < cms2.els_p4().size(); ++iel ){
-    if( cms2.els_p4().at(iel).pt() < 10 )                                         continue;
-    if( !pass_electronSelection( iel , electronSelection_ssV5 , false , false ) ) continue;
-    goodLeptons.push_back( cms2.els_p4().at(iel) );
-  }
-
-  for( unsigned int imu = 0 ; imu < cms2.mus_p4().size(); ++imu ){
-    if( cms2.mus_p4().at(imu).pt() < 10 )      continue;
-    if( !muonId( imu , OSGeneric_v3 ))         continue;
-    goodLeptons.push_back( cms2.mus_p4().at(imu) );
-  }  
-
-  VofP4 jets;
-
-
-  sort(jets.begin(), jets.end(), sortByPt);
 
   // loop on tags
   for (unsigned int tag = 0; tag < cms2.els_p4().size(); ++tag) {
 
     // check ID criteria on tag
     //if (!goodElectronIsolated(tag, useLHeleId_, useMVAeleId_, electronIdMVA_, lockToCoreSelectors_)) continue;
-    //if (! goodElectronIsolated(tag, useLHeleId_, useMVAeleId_, egammaMvaEleEstimator_leptree, lockToCoreSelectors_)) continue;
+    if (! goodElectronIsolated(tag, useLHeleId_, useMVAeleId_, egammaMvaEleEstimator_leptree, lockToCoreSelectors_)) continue;
 
-    if( !pass_electronSelection( tag , electronSelection_ssV5 , false , false ) ) continue;
-    if (cms2.els_p4()[tag].Pt() < 20.)                                            continue;
-    if (fabs(cms2.els_etaSC()[tag]) > 2.5)                                        continue;
-    
     // loop on probes
     for (unsigned int probe = 0; probe < cms2.els_p4().size(); ++probe) {
 
@@ -734,7 +636,6 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       // fill the tree - event general variables
       SetCommonTreeVariables(leptonTree, weight, sample);
       leptonTree.eventSelection_ = LeptonTree::ZeeTagAndProbe;
-      //leptype_ = 0;
 
       // fill the tree - probe specific variables
       leptonTree.probe_       = cms2.els_p4()[probe];
@@ -744,156 +645,29 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
 
       leptonTree.tagAndProbeMass_ = (cms2.els_p4()[probe] + cms2.els_p4()[tag]).M();
            
-      // HLT_Ele17_Ele8_tag_        = cms2.els_HLT_Ele17_Ele8()[tag];
-      // HLT_Ele17_Ele8_probe_      = cms2.els_HLT_Ele17_Ele8()[probe];
-      // HLT_Ele27_WP80_tag_	    = cms2.els_HLT_Ele27_WP80()[tag];
-      // HLT_Ele27_WP80_probe_      = cms2.els_HLT_Ele27_WP80()[probe];
+      HLT_Ele17_Ele8_tag_        = cms2.els_HLT_Ele17_Ele8()[tag];
+      HLT_Ele17_Ele8_probe_      = cms2.els_HLT_Ele17_Ele8()[probe];
+      HLT_Ele27_WP80_tag_	 = cms2.els_HLT_Ele27_WP80()[tag];
+      HLT_Ele27_WP80_probe_      = cms2.els_HLT_Ele27_WP80()[probe];
 			
-      if( isData ){
-	HLT_TNP_tag_     = objectPassTrigger( cms2.els_p4()[tag]   ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v");
-	HLT_TNP_probe_   = objectPassTrigger( cms2.els_p4()[probe] ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_SC8_Mass30_v");
-
-	if( cms2.evt_run() >= 165088 ){
-	  HLT_TNPel_tag_   = objectPassTrigger( cms2.els_p4()[tag]   ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30");
-	  HLT_TNPel_probe_ = objectPassTrigger( cms2.els_p4()[probe] ,  (char*) "HLT_Ele17_CaloIdVT_CaloIsoVT_TrkIdT_TrkIsoVT_Ele8_Mass30");
-	}
-	else{
-	  HLT_TNPel_tag_   = 0;
-	  HLT_TNPel_probe_ = 0;
-	}
-      }
-
-
-      else{
-	HLT_TNP_tag_     = 1;
-	HLT_TNP_probe_   = 1;
-	HLT_TNPel_tag_   = 1;
-	HLT_TNPel_probe_ = 1;
-      }
-
       // fill the tree - criteria the probe passed 
-      // const std::vector<JetPair> &jets = getJets(jetType(), cms2.els_p4()[tag], cms2.els_p4()[probe], 0, 4.7, true, jet_corrector_pfL1FastJetL2L3_);
-      // if (jets.size()>0)	leptonTree.jet1_ = jets.at(0).first;
-      // if (jets.size()>1)	leptonTree.jet2_ = jets.at(1).first;
-      // if (jets.size()>2)	leptonTree.jet3_ = jets.at(2).first;
-
-      //----------------------------------------------------
-      // count jets
-      //----------------------------------------------------
-
-      jets.clear();
-      if( jets.size() > 0 ) cout << "ERROR! jets.size() " << jets.size() << endl;
-
-      nbl_ = 0;
-      nbm_ = 0;
-
-      for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
-    
-	// get L1FastL2L3Residual total correction
-	jet_corrector_pfL1FastJetL2L3_->setRho   ( cms2.evt_ww_rho_vor()           );
-	jet_corrector_pfL1FastJetL2L3_->setJetA  ( cms2.pfjets_area().at(ijet)     );
-	jet_corrector_pfL1FastJetL2L3_->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
-	jet_corrector_pfL1FastJetL2L3_->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
-	double corr = jet_corrector_pfL1FastJetL2L3_->getCorrection();
-
-	LorentzVector vjet = corr * cms2.pfjets_p4().at(ijet);
-
-	if(       vjet.pt()    < 30. )           continue;
-	if( fabs( vjet.eta() ) > 2.5 )           continue;
-
-	if( dRbetweenVectors( vjet , cms2.els_p4()[probe] ) < 0.4 ) continue;
-	if( dRbetweenVectors( vjet , cms2.els_p4()[tag]   ) < 0.4 ) continue;
-
-	// lepton-jet overlap removal
-	bool rejectJet = false;
-	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	}
-	if( rejectJet ) continue;
-	          
-	// PFJetID
-	if( !passesPFJetID(ijet) ) continue;
-    
-	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ) nbl_++;
-	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ) nbm_++;
-
-	jets.push_back(vjet);
-      }
-
-      // store jets quantities
-      if( jets.size() > 0 ) leptonTree.jet1_ = jets.at(0);
-      if( jets.size() > 1 ) leptonTree.jet2_ = jets.at(1);
-      if( jets.size() > 2 ) leptonTree.jet3_ = jets.at(2);
-      if( jets.size() > 3 ) leptonTree.jet4_ = jets.at(3);
-
-      leptonTree.njets_ = jets.size();
+      const std::vector<JetPair> &jets = getJets(jetType(), cms2.els_p4()[tag], cms2.els_p4()[probe], 0, 4.7, true, jet_corrector_pfL1FastJetL2L3_);
+      if (jets.size()>0)	leptonTree.jet1_ = jets.at(0).first;
+      if (jets.size()>1)	leptonTree.jet2_ = jets.at(1).first;
+      if (jets.size()>2)	leptonTree.jet3_ = jets.at(2).first;
 			
       // FO
-      // if (ElectronFOV4(probe))
-      // 	leptonTree.leptonSelection_     |= LeptonTree::PassEleFO;
+      if (ElectronFOV4(probe))
+	leptonTree.leptonSelection_     |= LeptonTree::PassEleFO;
 			
       // ID
-      //if (goodElectronWithoutIsolation(probe, useLHeleId_, useMVAeleId_, egammaMvaEleEstimator_leptree))
-      if( pass_electronSelection( probe , electronSelection_ssV5_noIso , false , false ) ) 
+      if (goodElectronWithoutIsolation(probe, useLHeleId_, useMVAeleId_, egammaMvaEleEstimator_leptree))
 	leptonTree.leptonSelection_     |= LeptonTree::PassEleID;
 
       // ISO
-      //if (ww_elIso(probe))
-      if( pass_electronSelection( probe , electronSelection_ssV5_iso , false , false ) ) 
+      if (ww_elIso(probe))
 	leptonTree.leptonSelection_     |= LeptonTree::PassEleIso;
 
-      vtxweight_ = vtxweight(isData);
-
-      float mindr   = 100;
-      int   pfindex = -1;
-
-      // find pfcandidate index matching probe muon
-      for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
-
-	if( cms2.pfcands_p4().at(ipf).pt() < 10.0        ) continue;
-	if( cms2.pfcands_charge().at(ipf) == 0           ) continue;
-	
-	float dr = dRbetweenVectors( cms2.pfcands_p4().at(ipf) , cms2.els_p4()[probe] );
-
-	if( dr < mindr ){
-	  mindr   = dr;
-	  pfindex = ipf;
-	}
-      }
-
-      drprobe_         = mindr;
-
-      //cout << endl << endl;
-      //cout << "pT(probe)  dR " << cms2.els_p4()[probe].pt() << " " << mindr << endl;
-
-      if( pfindex > -1 ){
-	tkiso_old_       = trackIso(pfindex, 0.3, 0.20, true  , 0.0 , 0.07 , 0.025 );
-	tkiso_new_       = trackIso(pfindex, 0.3, 0.05, false , 0.0 , 0.07 , 0.025 );
-	tkiso_new_noveto_= trackIso(pfindex, 0.3, 0.05, false , 0.0 , 0.0  , 0.0   );
-	tkiso_new_pt1_   = trackIso(pfindex, 0.3, 0.05, false , 0.1 , 0.07 , 0.025 );
-	tkiso_new_pt2_   = trackIso(pfindex, 0.3, 0.05, false , 0.2 , 0.07 , 0.025 );
-	tkiso_new_pt3_   = trackIso(pfindex, 0.3, 0.05, false , 0.3 , 0.07 , 0.025 );
-	tkiso_new_pt4_   = trackIso(pfindex, 0.3, 0.05, false , 0.4 , 0.07 , 0.025 );
-	tkiso_new_pt5_   = trackIso(pfindex, 0.3, 0.05, false , 0.5 , 0.07 , 0.025 );
-      }
-      else{
-	tkiso_old_       =  -1;
-	tkiso_new_       =  -1;
-	tkiso_new_noveto_=  -1;
-	tkiso_new_pt1_   =  -1;
-	tkiso_new_pt2_   =  -1;
-	tkiso_new_pt3_   =  -1;
-	tkiso_new_pt4_   =  -1;
-	tkiso_new_pt5_   =  -1;
-      }
-
-      isoch_           = electronIsoValuePF( probe , 0 , 0.3, 99999. , 0.1 , 0.07 , 0.025 , 0.025 , 0 );
-
-      //float isoch2 = cms2.els_iso03_pf_ch().at(probe);
-      //cout << "charged pfiso " << isoch_ << endl;
-
-      leptonTree.mt_   = sqrt( 2 * cms2.els_p4().at(tag).pt() * cms2.evt_pfmet() * ( 1 - cos( cms2.els_p4().at(tag).phi() - cms2.evt_pfmetPhi() ) ) );
-      
       // fill it
       leptonTree.tree_->Fill();
 
@@ -901,7 +675,7 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
 
   }
 }
-
+*/
 
 void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const double &weight, SmurfTree::DataType sample) {
 
@@ -930,6 +704,35 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
   //----------------------------------------------------
 
   VofP4 jets;
+
+  for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
+    
+    // get L1FastL2L3Residual total correction
+    jet_corrector_pfL1FastJetL2L3_->setRho   ( cms2.evt_ww_rho_vor()           );
+    jet_corrector_pfL1FastJetL2L3_->setJetA  ( cms2.pfjets_area().at(ijet)     );
+    jet_corrector_pfL1FastJetL2L3_->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+    jet_corrector_pfL1FastJetL2L3_->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+    double corr = jet_corrector_pfL1FastJetL2L3_->getCorrection();
+
+    LorentzVector vjet = corr * cms2.pfjets_p4().at(ijet);
+
+    if(       vjet.pt()    < 30. )           continue;
+    if( fabs( vjet.eta() ) > 2.5 )           continue;
+
+    // lepton-jet overlap removal
+    bool rejectJet = false;
+    for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
+      if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
+    }
+    if( rejectJet ) continue;
+	          
+    // PFJetID
+    if( !passesPFJetID(ijet) ) continue;
+    
+    jets.push_back(vjet);
+  }
+
+  sort(jets.begin(), jets.end(), sortByPt);
 	
   std::vector<Int_t> nullMu;  // null identified muons // FIXME
   std::vector<Int_t> nullEle; // null identified electrons  // FIXME
@@ -962,7 +765,6 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       // fill the tree - event general variables
       SetCommonTreeVariables(leptonTree, weight, sample);
       leptonTree.eventSelection_ = LeptonTree::ZmmTagAndProbe;
-      //leptype_ = 1;
 
       // fill the tree - probe specific variables
       leptonTree.probe_       = cms2.mus_p4()[probe];
@@ -998,49 +800,6 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       // if (jets.size()>1)	leptonTree.jet2_ = jets.at(1).first;
       // if (jets.size()>2)	leptonTree.jet3_ = jets.at(2).first;
 
-      //----------------------------------------------------
-      // count jets
-      //----------------------------------------------------
-
-      jets.clear();
-      if( jets.size() > 0 ) cout << "ERROR! jets.size() " << jets.size() << endl;
-
-      nbl_ = 0;
-      nbm_ = 0;
-
-      for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
-    
-	// get L1FastL2L3Residual total correction
-	jet_corrector_pfL1FastJetL2L3_->setRho   ( cms2.evt_ww_rho_vor()           );
-	jet_corrector_pfL1FastJetL2L3_->setJetA  ( cms2.pfjets_area().at(ijet)     );
-	jet_corrector_pfL1FastJetL2L3_->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
-	jet_corrector_pfL1FastJetL2L3_->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
-	double corr = jet_corrector_pfL1FastJetL2L3_->getCorrection();
-
-	LorentzVector vjet = corr * cms2.pfjets_p4().at(ijet);
-
-	if(       vjet.pt()    < 30. )           continue;
-	if( fabs( vjet.eta() ) > 2.5 )           continue;
-
-	if( dRbetweenVectors( vjet , cms2.mus_p4()[probe] ) < 0.4 ) continue;
-	if( dRbetweenVectors( vjet , cms2.mus_p4()[tag]   ) < 0.4 ) continue;
-
-	// lepton-jet overlap removal
-	bool rejectJet = false;
-	for( int ilep = 0 ; ilep < (int)goodLeptons.size() ; ilep++ ){
-	  if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.4 ) rejectJet = true;  
-	}
-	if( rejectJet ) continue;
-	          
-	// PFJetID
-	if( !passesPFJetID(ijet) ) continue;
-
-	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ) nbl_++;
-	if( cms2.pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ) nbm_++;
-
-	jets.push_back(vjet);
-      }
-
       // store jets quantities
       if( jets.size() > 0 ) leptonTree.jet1_ = jets.at(0);
       if( jets.size() > 1 ) leptonTree.jet2_ = jets.at(1);
@@ -1069,9 +828,6 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 
       // find pfcandidate index matching probe muon
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
-	if( cms2.pfcands_p4().at(ipf).pt() < 10.0        ) continue;
-	if( cms2.pfcands_charge().at(ipf) == 0           ) continue;
-
 	float dr = dRbetweenVectors( cms2.pfcands_p4().at(ipf) , cms2.mus_p4()[probe] );
 
 	if( dr < mindr ){
@@ -1081,31 +837,13 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       }
 
       drprobe_         = mindr;
-
-      if( pfindex > -1 ){
-	tkiso_old_       = trackIso(pfindex, 0.3, 0.20, true       );
-	tkiso_new_       = trackIso(pfindex, 0.3, 0.05, false      );
-	tkiso_new_noveto_= trackIso(pfindex, 0.3, 0.05, false      );
-	tkiso_new_pt1_   = trackIso(pfindex, 0.3, 0.05, false , 0.1);
-	tkiso_new_pt2_   = trackIso(pfindex, 0.3, 0.05, false , 0.2);
-	tkiso_new_pt3_   = trackIso(pfindex, 0.3, 0.05, false , 0.3);
-	tkiso_new_pt4_   = trackIso(pfindex, 0.3, 0.05, false , 0.4);
-	tkiso_new_pt5_   = trackIso(pfindex, 0.3, 0.05, false , 0.5);
-      }
-      else{
-	tkiso_old_       =  -1;
-	tkiso_new_       =  -1;
-	tkiso_new_noveto_=  -1;
-	tkiso_new_pt1_   =  -1;
-	tkiso_new_pt2_   =  -1;
-	tkiso_new_pt3_   =  -1;
-	tkiso_new_pt4_   =  -1;
-	tkiso_new_pt5_   =  -1;
-      }
-
-      isoch_           = muonIsoValuePF( probe , 0 , 0.3, 1.0, 0.1, 0);
-
-      leptonTree.mt_   = sqrt( 2 * cms2.mus_p4().at(tag).pt() * cms2.evt_pfmet() * ( 1 - cos( cms2.mus_p4().at(tag).phi() - cms2.evt_pfmetPhi() ) ) );
+      tkiso_old_       = trackIso(pfindex, 0.3, 0.20, true       );
+      tkiso_new_       = trackIso(pfindex, 0.3, 0.05, false      );
+      tkiso_new_pt1_   = trackIso(pfindex, 0.3, 0.05, false , 0.1);
+      tkiso_new_pt2_   = trackIso(pfindex, 0.3, 0.05, false , 0.2);
+      tkiso_new_pt3_   = trackIso(pfindex, 0.3, 0.05, false , 0.3);
+      tkiso_new_pt4_   = trackIso(pfindex, 0.3, 0.05, false , 0.4);
+      tkiso_new_pt5_   = trackIso(pfindex, 0.3, 0.05, false , 0.5);
 
       // fill it
       leptonTree.tree_->Fill();
@@ -1266,8 +1004,6 @@ void LeptonTreeMaker::SetCommonTreeVariables(LeptonTree &leptonTree, const doubl
   leptonTree.lumi_        = cms2.evt_lumiBlock();
   leptonTree.nvtx_        = nGoodVertex();
   leptonTree.scale1fb_    = weight;
-  leptonTree.met_         = cms2.evt_pfmet();
-
   //leptonTree.rho_         = cms2.evt_ww_rho_vor();
 
 }

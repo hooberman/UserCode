@@ -108,32 +108,17 @@ class LeptonTreeMaker {
 	Float_t drprobe_;
 	Float_t tkiso_old_;
 	Float_t tkiso_new_;
-	Float_t tkiso_new_noveto_;
 	Float_t tkiso_new_pt1_;
 	Float_t tkiso_new_pt2_;
 	Float_t tkiso_new_pt3_;
 	Float_t tkiso_new_pt4_;
 	Float_t tkiso_new_pt5_;
 	Float_t vtxweight_;
-	Float_t isoch_;
-
-	unsigned int nbl_;
-	unsigned int nbm_;
-	
-	/* unsigned int leptype_; */
-	/* unsigned int elpassid_;    */
-	/* unsigned int elpassiso_;   */
-	/* unsigned int mupassid_;    */
-	/* unsigned int mupassiso_; */
 
 	unsigned int HLT_Ele17_Ele8_tag_;
 	unsigned int HLT_Ele17_Ele8_probe_;
 	unsigned int HLT_Ele27_WP80_tag_;
 	unsigned int HLT_Ele27_WP80_probe_;
-	unsigned int HLT_TNP_tag_;
-	unsigned int HLT_TNP_probe_;
-	unsigned int HLT_TNPel_tag_;
-	unsigned int HLT_TNPel_probe_;
 		
 	unsigned int HLT_IsoMu30_eta2p1_tag_;
 	unsigned int HLT_IsoMu30_eta2p1_probe_;
