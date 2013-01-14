@@ -257,7 +257,7 @@ void makePhotonTemplates::bookHistos(){
   hphotonPt50  = new TH1F("hphotonPt50", "",500,0,500);
   hphotonPt70  = new TH1F("hphotonPt70", "",500,0,500);
 
-  int maxmet = 250;
+  int maxmet = 200;
 
   for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
     for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){

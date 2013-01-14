@@ -18,23 +18,31 @@
 #include "histtools.h"
 #include "looper.h"
 #include "TTreeCache.h"
-
-#include "../CORE/CMS2.cc"
-#ifndef __CINT__
-#include "../CORE/trackSelections.cc"
-#include "../CORE/eventSelections.cc"
-#include "../CORE/muonSelections.cc"
+#include "../CORE/CMS2.h"
+#include "../CORE/metSelections.h"
+#include "../CORE/trackSelections.h"
+#include "../CORE/eventSelections.h"
+#include "../CORE/electronSelections.h"
+#include "../CORE/electronSelectionsParameters.h"
+#include "../CORE/mcSelections.h"
+#include "../CORE/muonSelections.h"
 #include "../Tools/goodrun.cc"
-#include "../CORE/triggerUtils.cc"
-#include "../CORE/jetSelections.cc"
+#include "../CORE/utilities.cc"
+#include "../CORE/ttbarSelections.h"
+#include "../CORE/susySelections.h"
+#include "../CORE/mcSUSYkfactor.h"
+#include "../CORE/triggerSuperModel.h"
+#include "../CORE/triggerUtils.h"
+//#include "../CORE/jetSelections.h"
 #include "../Tools/vtxreweight.cc"
-#include "../CORE/electronSelections.cc"
-#include "../CORE/electronSelectionsParameters.cc"
-#include "../CORE/MITConversionUtilities.cc"
-#endif
+#include "../Tools/msugraCrossSection.cc"
+
 
 bool verbose      = false;
 bool doTenPercent = false;
+
+//#include "../CORE/topmass/getTopMassEstimate.icc" // REPLACETOPMASS
+//#include "../CORE/triggerUtils.cc"
 
 using namespace std;
 using namespace tas;
@@ -85,292 +93,34 @@ double dRbetweenVectors(const LorentzVector &vec1,
 
 //--------------------------------------------------------------------
 
-int findCaloJetIndex( int ipfjet ){
+bool passesPFJetID(unsigned int pfJetIdx) {
 
-  LorentzVector pfjet = pfjets_p4().at(ipfjet);
+  float pfjet_chf_  = cms2.pfjets_chargedHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nhf_  = cms2.pfjets_neutralHadronE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
+  int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
+  int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
 
-  float drmin   = 100;
-  int   ijetmin = -1;
-
-  for( unsigned int icjet = 0 ; icjet < jets_p4().size() ; icjet++ ){
-    
-    float dr = dRbetweenVectors( pfjet , jets_p4().at(icjet) );
-
-    if( dr < drmin ){
-      drmin   = dr;
-      ijetmin = icjet;
-    }
-  }
-    
-  if( drmin < 0.1 ) return ijetmin;
-
-  return -1;
-}
-
-//--------------------------------------------------------------------
-
-bool mumujjID( int index ){
-  if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                  return false; // eta cut
-  if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                    return false; // global muon
-  if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                    return false; // tracker muon
-  if (cms2.mus_validHits().at(index) < 11)                            return false; // # of tracker hits  
-  if (cms2.mus_gfit_validSTAHits().at(index)==0 )                     return false; // Glb fit must have hits in mu chambers
-  if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false; // >=1 pixel hits
-  if (cms2.mus_nmatches().at(index)<2)                                return false; // >=2 muon chamber matches
-  if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2)                  return false; // d0 from beamspot
-  return true;
-}
-
-//-------------------------------------------------------
-// get exact trigger name corresponding to given pattern
-//-------------------------------------------------------
-TString triggerName(TString triggerPattern){
-
-  bool    foundTrigger  = false;
-  TString exact_hltname = "";
-
-  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
-    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
-      foundTrigger  = true;
-      exact_hltname = hlt_trigNames().at(itrig);
-      break;
-    }
-  }
-
-  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
-
-  return exact_hltname;
-
-}
-
-
-
-//---------------------------------------------
-// Check if trigger is unprescaled and passes
-//---------------------------------------------
-bool passUnprescaledHLTTriggerPattern(const char* arg){
-
-  //cout << "Checking for pattern " << arg << endl;
-
-  TString HLTTriggerPattern(arg);
-
-  TString HLTTrigger = triggerName( HLTTriggerPattern );
-
-  //cout << "Found trigger " << HLTTrigger << endl;
-
-  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND")){
-    //cout << "Didn't find trigger!" << endl;
+  if (pfjet_nef_ >= 0.99)
     return false;
-  }
-  return passUnprescaledHLTTrigger( HLTTrigger );
+  if (pfjet_nhf_ >= 0.99)
+    return false;
+  if (pfjet_mult_ < 2)
+    return false;
 
-}
-
-//---------------------------------------------
-// single muon triggers for lljj bump search
-//---------------------------------------------
-
-bool passMuMuJJTrigger_v1( bool isData ) {
-
-  if( isData ){
-    
-    //-----------------------------------------------------------------------------
-    if (evt_run() >= 160329 && evt_run() <= 163261){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v5") )          return true;
+  if (fabs(cms2.pfjets_p4()[pfJetIdx].eta()) < 2.4)
+    {
+      if (pfjet_chf_ < 1e-6)
+	return false;
+      if (pfjet_cm_ < 1)
+	return false;
+      if (pfjet_cef_ >= 0.99)
+	return false;
     }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 163269 && evt_run() <= 164236){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v2") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 165088 && evt_run() <= 165887){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v4") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() == 166346 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v6") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 165922 && evt_run() <= 167043){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v5") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 167078 && evt_run() <= 170053){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v7") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 170071 && evt_run() <= 173198){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v8") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 173212 && evt_run() <= 178380){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v3") )   return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 178420 && evt_run() <= 179889){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v6") )   return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 179959 && evt_run() <= 180291){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v7") )   return true;
-    }
-    //-----------------------------------------------------------------------------
-  }
 
-  else{
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )  return true;
-  }
-
-  return false;
-}
-
-/*****************************************************************************************/
-//passes the OS SUSY trigger selection 2011
-/*****************************************************************************************/
-
-bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
-  
-  //----------------------------------------
-  // no trigger requirements applied to MC
-  //----------------------------------------
-  
-  if( !isData ) return true; 
-  
-  //---------------------------------
-  // triggers for lepton-HT datasets
-  //---------------------------------
-  
-  if( !highpt ) {
-  
-    //mm
-    if( hypType == 0 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT150_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT160_v") )   return true;
-    }
-    
-    //em
-    else if( hypType == 1 || hypType == 2 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT150_v") )     return true; 
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT150_v") )     return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v") )     return true; 
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v") )     return true;
-    }
-    
-    //ee
-    else if( hypType == 3 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v") )   return true;
-    }
-  }
-  
-  //---------------------------------
-  // triggers for dilepton datasets
-  //---------------------------------
-  
-  else{
-  
-    //mm
-    if( hypType == 0 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu7_v" ) )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu8_v" ) )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
-    }
-    
-    //em
-    else if( hypType == 1 || hypType == 2 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdL_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdL_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v") )   return true;
-
-    }
-    
-    //ee
-    else if( hypType == 3 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )                                   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v") ) return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
-    }                                     
-  }        
-  
-  return false;
-    
-}
-
-/*****************************************************************************************/
-// pass dimuon trigger
-/*****************************************************************************************/
-
-bool passMMTrigger( bool isData ){
-  
-  //----------------------------------------
-  // no trigger requirements applied to MC
-  //----------------------------------------
-  
-  if( !isData ) return true; 
-  
-  //---------------------------------
-  // triggers for dilepton datasets
-  //---------------------------------
-
-  if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu7_v" ) )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu8_v" ) )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
-  
-  return false;    
-}
-
-/*****************************************************************************************/
-// pass dielectron trigger
-/*****************************************************************************************/
-
-bool passEETrigger( bool isData ){
-  
-  //----------------------------------------
-  // no trigger requirements applied to MC
-  //----------------------------------------
-  
-  if( !isData ) return true; 
-  
-  //---------------------------------
-  // triggers for dilepton datasets
-  //---------------------------------
-    
-  //ee
-  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )                                   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v") ) return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
-  
-  return false;    
-}
-
-/*****************************************************************************************/
-// pass e-mu trigger
-/*****************************************************************************************/
-
-bool passEMTrigger( bool isData ){
-  
-  //----------------------------------------
-  // no trigger requirements applied to MC
-  //----------------------------------------
-  
-  if( !isData ) return true; 
-  
-  //---------------------------------
-  // triggers for dilepton datasets
-  //---------------------------------
-
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdL_v")           )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdL_v")           )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v") )   return true;
-  if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v") )   return true;  
-  
-  return false;    
-}
+  return true;
+}  
 
 //--------------------------------------------------------------------
 
@@ -545,32 +295,22 @@ bool looper::objectPassTrigger(const LorentzVector &obj, const std::vector<Loren
 
 //--------------------------------------------------------------------
 
-float getPingMass( int thisrun , int thislumi , unsigned int thisevent ){
+TString triggerName(TString triggerPattern){
 
-  ifstream ifile("ping.txt");
+  bool    foundTrigger  = false;
+  TString exact_hltname = "";
 
-  int run;
-  int lumi;
-  long event;
-  float mass;
-  string dummy;
-
-  float pingmass = -1.;
-
-  while( ifile.good() ){
-
-    ifile >> run >> lumi >> event >> mass;
-
-    if( run==thisrun && lumi==thislumi && event==thisevent ){
-      //cout << "Found! " << run << " " << lumi << " " << event << " mass " << mass << endl;
-      pingmass = mass;
+  for( unsigned int itrig = 0 ; itrig < hlt_trigNames().size() ; ++itrig ){
+    if( TString( hlt_trigNames().at(itrig) ).Contains( triggerPattern ) ){
+      foundTrigger  = true;
+      exact_hltname = hlt_trigNames().at(itrig);
+      break;
     }
-
   }
 
-  //if( pingmass < 0 ) cout << "ERROR! didn't find Ping mass! " << thisrun << " " << thislumi << " " << thisevent << " <<<-----------------------------------" << endl;
-  ifile.close();
-  return pingmass;
+  if( !foundTrigger) return "TRIGGER_NOT_FOUND";
+
+  return exact_hltname;
 
 }
 
@@ -581,31 +321,18 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
 {
 
-
-  // Jet Corrections
-  std::vector<std::string> jetcorr_pf_L2L3_filenames;
-  jetcorr_pf_L2L3_filenames.clear();
-
-  FactorizedJetCorrector *jet_pf_L2L3corrector;
-
   if( !initialized ){
-
-    jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START42_V13_AK5PF_L2L3Residual.txt");
-    jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
 
     //set json
     cout << "setting json " << g_json << endl;
     set_goodrun_file( g_json );
 
     //set vtx reweighting hist
-    set_vtxreweight_rootfile("vtxreweight_Summer11MC_PUS4_4p7fb_Zselection.root");
+    set_vtxreweight_rootfile("vtxreweight_Spring11MC_336pb_Zselection.root",true);
 
     initialized = true;
   }
-
-
-
-
+  
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
     cout << "DATA!!!" << endl;
@@ -637,9 +364,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
   int   nSkip_els_conv_dist = 0;
   float nevents             = 0.0;
-
-  int ntot  = 0;
-  int npass = 0;
 
   if(g_createTree) makeTree(prefix, doFakeApp, frmode);
 
@@ -692,17 +416,7 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
       cms2.GetEntry(z);
 
-      // if( evt_event() == 546359772 || evt_event() == 549884803 || evt_event() == 569300619 || evt_event() == 571559717 || evt_event() == 587668707 ){
-      // 	cout << endl << "FOUND! " << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
-      // }
-      // else{
-      // 	continue;
-      // }
-
       InitBaby();
-
-      pingmass_ = -1;
-      if( TString(prefix).Contains("ping") ) pingmass_ = getPingMass(evt_run(),evt_lumiBlock(),evt_event());
 
       //------------------------------------------------------------------------
       // idiot check: make sure that HLT_IsoMu24 is present for all MC events
@@ -728,23 +442,18 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	cout << "-------------------------------------------------------"   << endl;
       }
       
+      //--------------------------------
+      // require trigger
+      //--------------------------------
+
+      if( !passMuMuJJTrigger_v1( isData ) ) continue;
+
       //---------------------------------------------
       // event cleaning and good run list
       //---------------------------------------------
 
       if( !cleaning_goodDAVertexApril2011() )                        continue;
       if( isData && !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-
-      //--------------------------------
-      // require trigger
-      //--------------------------------
-
-      if( !( passMuMuJJTrigger_v1(isData) || passMMTrigger(isData) || passEETrigger(isData) || passEETrigger(isData) ) ) continue;
-
-      mtrg_  = passMuMuJJTrigger_v1( isData ) ? 1 : 0;
-      eetrg_ = passEETrigger(isData)          ? 1 : 0;
-      mmtrg_ = passMMTrigger(isData)          ? 1 : 0;
-      emtrg_ = passEMTrigger(isData)          ? 1 : 0;
 
       //---------------------
       // skip duplicates
@@ -791,10 +500,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       ngoodel_  = 0;
       ngoodmu_  = 0;
 
-      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 20 )                                                 continue;
-	if( !pass_electronSelection( iel , electronSelection_el_ping , false , false ) ) continue;
-
+      /*
+	for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
+	if( els_p4().at(iel).pt() < 10 )                                                 continue;
+	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepId.push_back( els_charge().at(iel) * 11 );
 	lepIndex.push_back(iel);
@@ -802,12 +511,12 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	ngoodlep_++;
 	
 	//cout << "Found electron " << ngoodlep_ << " pt " << els_p4().at(iel).pt() << endl;
-      }
-      
+	}
+      */
 
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 20 )            continue;
-	if( !mumujjID( imu ))                       continue;
+	if( mus_p4().at(imu).pt() < 20 )                         continue;
+	if( !muonIdNotIsolated( imu , muonSelection_mumujj ))    continue;
 
 	goodLeptons.push_back( mus_p4().at(imu) );
 	lepId.push_back( mus_charge().at(imu) * 13 );
@@ -817,17 +526,11 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 
 	//cout << "Found muon " << ngoodlep_ << " pt " << mus_p4().at(imu).pt() << endl;
       }  
-
-      ntot++;
-
-      // REQUIRE AT LEAST 2 GOOD LEPTONS!!!
-      if( goodLeptons.size() < 2 )  continue;
       
-      npass++;
+      // REQUIRE AT LEAST 1 GOOD LEPTON!!!
+      if( goodLeptons.size() < 1 ) continue;
 
       std::vector<LorentzVector> trigObjs;
-
-      diltrig_ = passSUSYTrigger2011_v1( isData , 0 , true ) ? 1 : 0;
 
       if( isData ){
 
@@ -860,21 +563,13 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu24_v8")];
 	}
 	//-----------------------------------------------------------------------------
-	else if (evt_run() >= 173212 && evt_run() <= 178380){
+	else if (evt_run() >= 173212 && evt_run() <= 177878){
 	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu30_eta2p1_v3")];
 	}
 	//-----------------------------------------------------------------------------
-	else if (evt_run() >= 178420 && evt_run() <= 179889){
-	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu30_eta2p1_v6")];
-	}
-	//-----------------------------------------------------------------------------
-	else if (evt_run() >= 179959 && evt_run() <= 180291){
-	  trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex("HLT_IsoMu30_eta2p1_v7")];
-	}
-	//-----------------------------------------------------------------------------
 	if( trigObjs.size() == 0 ){
-	  //cout << "ERROR! didn't find matching trigger objects" << endl;
-	  //continue;
+	  cout << __LINE__ << " ERROR! didn't find matching trigger objects" << endl;
+	  continue;
 	}
 	//-----------------------------------------------------------------------------
       }
@@ -885,123 +580,97 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	trigObjs = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
 
 	if( trigObjs.size() == 0 ){
-	  //cout << "ERROR! didn't find matching trigger objects" << endl;
-	  //continue;
+	  cout << __LINE__ << " ERROR! didn't find matching trigger objects" << endl;
+	  continue;
 	}
       }
 
-      //-----------------------------------------------------------
-      // find 2 leading leptons
-      //-----------------------------------------------------------
+      //-----------------------------------------------------------------------
+      // find leading lepton, require pt > 25 GeV and match to trigger object
+      //-----------------------------------------------------------------------
 
       float maxpt   = -1;
-      int   ilep1   = -1;
-      int   ilep2   = -1;
+      int   imaxpt  = -1;
+      int   imaxpt2 = -1;
       
-      // if( goodLeptons.size()>2 ){
-      // 	cout << endl << endl;
-      // }
-
       for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
 
-	// if( goodLeptons.size()>2 ){
-	//   cout << "Lepton " << ilep << " " << goodLeptons.at(ilep).pt() << endl;
-	// }
+	if( goodLeptons.at(ilep).pt() < 25 )                             continue;
+	if( !objectPassTrigger( goodLeptons.at(ilep) , trigObjs ,25 ) )  continue;
 
 	if( goodLeptons.at(ilep).pt() > maxpt ){
 	  maxpt  = goodLeptons.at(ilep).pt();
-	  ilep1  = ilep;
+	  imaxpt = ilep;
 	}
       }
 
-      maxpt = -1;
+      //---------------------------------------------------------
+      // require pt > 25 GeV lepton matched to trigger object
+      //---------------------------------------------------------
 
-      for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
-
-	if( ilep == ilep1 ) continue;
-
-	if( goodLeptons.at(ilep).pt() > maxpt ){
-	  maxpt   = goodLeptons.at(ilep).pt();
-	  ilep2   = ilep;
-	}
-      }
-
-      if( ilep1 < 0 || ilep2 < 0 ){
-	cout << "ERROR! ilep1 ilep2 " << ilep1 << " " << ilep2 << endl;
-	exit(0);
-      }
-
-      // if( goodLeptons.size()>2 ){
-      // 	cout << "1st lepton   " << goodLeptons.at(ilep1).pt() << endl;
-      // 	cout << "2nd lepton   " << goodLeptons.at(ilep2).pt() << endl;
-      // }
-
+      if( imaxpt < 0 )  continue;
       
-      //---------------------------------------------------------
-      // muon branches
-      //---------------------------------------------------------
+      id1_       = lepId.at(imaxpt);
+      lep1_      = &goodLeptons.at(imaxpt);
+      int index1 = lepIndex.at(imaxpt);
+      iso1_      = muonIsoValue(index1,false);
+      passid1_   = muonIdNotIsolated( index1 , OSGeneric_v3 ) ? 1 : 0;
 
-      int index1 = lepIndex.at(ilep1);
-      int index2 = lepIndex.at(ilep2);
+      lep1trk_   = &(mus_trk_p4().at(imaxpt));
+      lep1glb_   = &(mus_gfit_p4().at(imaxpt));
+      lep1sta_   = &(mus_sta_p4().at(imaxpt));
 
-      id1_       = lepId.at(ilep1);
-      lep1_      = &goodLeptons.at(ilep1);
-      if( abs(id1_) == 13 ){
-	iso1_      = muonIsoValue(index1,false);
-	passid1_   = muonIdNotIsolated( index1 , OSGeneric_v3 ) ? 1 : 0;
-	lep1trk_   = &(mus_trk_p4().at(index1));
-	lep1glb_   = &(mus_gfit_p4().at(index1));
-	lep1sta_   = &(mus_sta_p4().at(index1));
-      }
-      else{
-	iso1_      = electronIsolation_rel_v1(index1,true);
-	passid1_   = pass_electronSelection( index1 , electronSelection_el_OSV3_noiso ) ? 1 : 0 ;
-	lep1trk_   = &goodLeptons.at(ilep1);
-	lep1glb_   = &goodLeptons.at(ilep1);
-	lep1sta_   = &goodLeptons.at(ilep1);
-      }
+      //cout << "Leading lepton: pt " << lep1_->pt() << " id " << id1_ << endl;
 
-      id2_       = lepId.at(ilep2);
-      lep2_      = &goodLeptons.at(ilep2);
-      if( abs(id2_) == 13 ){
+      //---------------------------------------------
+      // find 2nd leading lepton (if >=2 leptons)
+      //---------------------------------------------
+
+      id2_       = -999;
+      lep2_      = 0;
+      int index2 = -1;
+      dilmass_   = -999;
+      iso2_      = -1.;
+      passid2_   = -1;
+      
+      lep2trk_   = 0;
+      lep2glb_   = 0;
+      lep2sta_   = 0;
+
+      if( ngoodlep_ > 1 ){
+
+	maxpt = -1;
+	
+	for( unsigned int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	  
+	  if( ilep == imaxpt ) continue;
+	  
+	  if( goodLeptons.at(ilep).pt() > maxpt ){
+	    maxpt   = goodLeptons.at(ilep).pt();
+	    imaxpt2 = ilep;
+	  }
+	}
+	
+	if( imaxpt2 < 0 ){
+	  cout << "ERROR! QUITTING imaxpt2 " << imaxpt2 << endl;
+	  exit(3);
+	}
+	
+	id2_       = lepId.at(imaxpt2);
+	lep2_      = &goodLeptons.at(imaxpt2);
+	index2     = lepIndex.at(imaxpt2);
+	dilmass_   = (goodLeptons.at(imaxpt) + goodLeptons.at(imaxpt2)).mass();
 	iso2_      = muonIsoValue(index2,false);
-	passid2_   = muonIdNotIsolated( index2 , OSGeneric_v3 ) ? 1 : 0;
-	lep2trk_   = &(mus_trk_p4().at(index2));
-	lep2glb_   = &(mus_gfit_p4().at(index2));
-	lep2sta_   = &(mus_sta_p4().at(index2));
-      }
-      else{
-	iso2_      = electronIsolation_rel_v1(index2,true);
-	passid2_   = pass_electronSelection( index2 , electronSelection_el_OSV3_noiso ) ? 1 : 0 ;
-	lep2trk_   = &goodLeptons.at(ilep2);
-	lep2glb_   = &goodLeptons.at(ilep2);
-	lep2sta_   = &goodLeptons.at(ilep2);
+	passid2_   = muonIdNotIsolated( index2, OSGeneric_v3 ) ? 1 : 0;
+
+	lep2trk_   = &(mus_trk_p4().at(imaxpt2));
+	lep2glb_   = &(mus_gfit_p4().at(imaxpt2));
+	lep2sta_   = &(mus_sta_p4().at(imaxpt2));
+
       }
 
-      dilmass_   = ( goodLeptons.at(ilep1) + goodLeptons.at(ilep2) ).mass();
-
-      leptype_ = -1;
-      if( abs(id1_) == 11 && abs(id2_) == 11 ) leptype_ = 0;
-      if( abs(id1_) == 13 && abs(id2_) == 13 ) leptype_ = 1;
-      if( abs(id1_) == 11 && abs(id2_) == 13 ) leptype_ = 2;
-      if( abs(id1_) == 13 && abs(id2_) == 11 ) leptype_ = 2;
-
-      //-----------------------------------------------------------------------
-      // are either muon matched to trigger object?
-      //-----------------------------------------------------------------------
-
-      hlt1_ = -1;
-      hlt2_ = -1;
-
-      if( abs(id1_) == 13 ){
-	if( objectPassTrigger( goodLeptons.at(ilep1) , trigObjs ,20 ) ) hlt1_ = 1;      
-	else                                                            hlt1_ = 0;
-      }
-      if( abs(id2_) == 13 ){
-	if( objectPassTrigger( goodLeptons.at(ilep2) , trigObjs ,20 ) ) hlt2_ = 1;      
-	else                                                            hlt2_ = 0;
-      }
-
+      //cout << "2nd deading lepton: pt " << lep2_->pt() << " id " << id2_ << " mass " << dilmass_ << endl;
+	  
       //--------------------------------
       // get MC quantities
       //--------------------------------
@@ -1011,11 +680,10 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       int ntaus      =  0;
       int nleps      =  0;
       float dilptgen = -1;
-      /*
+      
       if( !isData ){
 
-	w1_ = -999;
-	//w1_     = leptonOrTauIsFromW( index1 , id1_ , true );
+	w1_     = leptonOrTauIsFromW( index1 , id1_ , true );
 	pthat_  = genps_pthat();
 	qscale_ = genps_qScale();
 	
@@ -1068,42 +736,30 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	  if(nz != 1 ) cout << "ERROR NZ " << nz << endl;
 	}
       }
-      */
-
+    
       //pfjets
       VofP4 vpfjets_p4;
-      vector<int> jetIndex;
 
       njets_     = 0;
       ht_        = 0.;
+      nbtags17_  = 0;
+      nbtags20_  = 0;
+      nbtags33_  = 0;
 
-      //---------------------
-      // apply residual JEC
-      //---------------------
+      vector<int> goodjets;
+      goodjets.clear();
 
-      // cout << "|" << setw(12) << "Index"         << setw(4) 
-      //  	   << "|" << setw(12) << "pT [GeV]"      << setw(4) 
-      //  	   << "|" << setw(12) << "eta"           << setw(4) 
-      // 	   << "|" << setw(12) << "phi"           << setw(4) 
-      //  	   << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
-      
       for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-	
-	float         jet_cor = 1;
-	if( isData )  jet_cor = jetCorrection(cms2.pfjets_p4().at(ijet), jet_pf_L2L3corrector);
-	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * jet_cor * pfjets_p4().at(ijet);
+          
+	LorentzVector vjet = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
 
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
-
-	// if( vjet.pt() > 10 ){
-	//   cout << "|" << setw(12) << ijet                    << setw(4) 
-	//        << "|" << setw(12) << Form("%.1f",vjet.pt())                    << setw(4) 
-	//        << "|" << setw(12) << Form("%.2f",vjet.eta())                    << setw(4) 
-	//        << "|" << setw(12) << Form("%.2f",vjet.phi())                    << setw(4) 
-	//        << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(ijet))
-	//        << setw(4) << "|" << endl;
-	// }
+	if( generalLeptonVeto ){
+	  bool rejectJet = false;
+	  for( int ilep = 0 ; ilep < goodLeptons.size() ; ilep++ ){
+	    if( dRbetweenVectors( vjet , goodLeptons.at(ilep) ) < 0.5 ) rejectJet = true;  
+	  }
+	  if( rejectJet ) continue;
+	}
 
 	if( vjet.pt() < 25         ) continue;
 	if( fabs(vjet.eta()) > 3.0 ) continue;
@@ -1112,360 +768,51 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
 	ht_ += vjet.pt();
 
 	vpfjets_p4.push_back( vjet );
-	jetIndex.push_back(ijet);
-      }
+	goodjets.push_back(ijet);
 
-      //-----------------------------------------
-      /*
-      cout << endl << endl;
-      cout << "CALO" << endl;
-      cout << "|" << setw(12) << "Index"         << setw(4) 
-	   << "|" << setw(12) << "pT [GeV]"      << setw(4) 
-	   << "|" << setw(12) << "eta"           << setw(4) 
-	   << "|" << setw(12) << "phi"           << setw(4) 
-	   << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
-      
-      for (unsigned int ijet = 0 ; ijet < jets_p4().size() ; ijet++) {
-	
-	LorentzVector vjet    = jets_corL1FastL2L3().at(ijet) * jets_p4().at(ijet);
-
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
-
-	if( vjet.pt() > 10 ){
-	  cout << "|" << setw(12) << ijet                    << setw(4) 
-	       << "|" << setw(12) << Form("%.1f",vjet.pt())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",vjet.eta())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",vjet.phi())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(ijet))
-	       << setw(4) << "|" << endl;
-	}
-      }
-      */
-      //-----------------------------------------
-
-      maxpt   = -1;
-      int   ijet1   = -1;
-      int   ijet2   = -1;
-      
-      // if( vpfjets_p4.size()>2 ){
-      // 	cout << endl << endl;
-      // }
-
-      for( unsigned int ijet = 0 ; ijet < vpfjets_p4.size() ; ijet++ ){
-
-	// if( vpfjets_p4.size()>2 ){
-	//   cout << "Jet " << ijet << " " << vpfjets_p4.at(ijet).pt() << endl;
-	// }
-
-	if( vpfjets_p4.at(ijet).pt() > maxpt ){
-	  maxpt  = vpfjets_p4.at(ijet).pt();
-	  ijet1  = ijet;
-	}
-      }
-
-      maxpt = -1;
-
-      for( unsigned int ijet = 0 ; ijet < vpfjets_p4.size() ; ijet++ ){
-
-	if( ijet == ijet1 ) continue;
-
-	if( vpfjets_p4.at(ijet).pt() > maxpt ){
-	  maxpt   = vpfjets_p4.at(ijet).pt();
-	  ijet2   = ijet;
-	}
-      }
-
-      // if( vpfjets_p4.size()>2 ){
-      // 	cout << "Jet1 " << vpfjets_p4.at(ijet1).pt() << endl;
-      // 	cout << "Jet2 " << vpfjets_p4.at(ijet2).pt() << endl;
-      // }
-
-      //-----------------------------
-      // count b-tags
-      //-----------------------------
-
-      nbtags17_    = 0;
-      nbtags20_    = 0;
-      nbtags33_    = 0;
-      nbtags20_24_ = 0;
-
-      nbtags20c_    = 0;
-      nbtags20_24c_ = 0;
-
-      /*
-      if( njets_ >= 2 ){
-
-	int jetidx1 = jetIndex.at(ijet1);
-	int jetidx2 = jetIndex.at(ijet2);
-
-	cout << endl;
-	cout << "First selected pfjet" << endl;
-	cout << "|" << setw(12) << "Index"         << setw(4) 
-	     << "|" << setw(12) << "pT [GeV]"      << setw(4) 
-	     << "|" << setw(12) << "eta"           << setw(4) 
-	     << "|" << setw(12) << "phi"           << setw(4) 
-	     << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
-	
-	cout << "|" << setw(12) << jetidx1                                                    << setw(4) 
-	     << "|" << setw(12) << Form("%.1f",vpfjets_p4.at(ijet1).pt())                     << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",vpfjets_p4.at(ijet1).eta())                    << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",vpfjets_p4.at(ijet1).phi())                    << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(jetidx1))
-             << setw(4) << "|" << endl;
-
-	int cjetidx1 = findCaloJetIndex(jetidx1);
-
-	if( cjetidx1 >- 1 ){
-	  cout << "pfjet is matched to calojet index " << cjetidx1 << endl;
-
-	  cout << "|" << setw(12) << cjetidx1                                                    << setw(4) 
-	       << "|" << setw(12) << Form("%.1f",jets_p4().at(cjetidx1).pt())                     << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_p4().at(cjetidx1).eta())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_p4().at(cjetidx1).phi())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_trackCountingHighEffBJetTag().at(cjetidx1))
-	       << setw(4) << "|" << endl;
-	}else{
-	  cout << "no calojet is matched to pfjet within dR < 0.1" << endl;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 1.7 ){
+	  nbtags17_++;
 	}
 
-	cout << endl;
-	cout << "Second selected pfjet" << endl;
-	cout << "|" << setw(12) << "Index"         << setw(4) 
-	     << "|" << setw(12) << "pT [GeV]"      << setw(4) 
-	     << "|" << setw(12) << "eta"           << setw(4) 
-	     << "|" << setw(12) << "phi"           << setw(4) 
-	     << "|" << setw(12) << "TCHE"          << setw(4) << "|" << endl;
-	
-	cout << "|" << setw(12) << jetidx2                                                    << setw(4) 
-	     << "|" << setw(12) << Form("%.1f",vpfjets_p4.at(ijet2).pt())                     << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",vpfjets_p4.at(ijet2).eta())                    << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",vpfjets_p4.at(ijet2).phi())                    << setw(4) 
-	     << "|" << setw(12) << Form("%.2f",pfjets_trackCountingHighEffBJetTag().at(jetidx2))
-             << setw(4) << "|" << endl;
-
-	int cjetidx2 = findCaloJetIndex(jetidx2);
-
-	if( cjetidx2 >- 1 ){
-	  cout << "pfjet is matched to calojet index " << cjetidx2 << endl;
-
-	  cout << "|" << setw(12) << cjetidx2                                                    << setw(4) 
-	       << "|" << setw(12) << Form("%.1f",jets_p4().at(cjetidx2).pt())                     << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_p4().at(cjetidx2).eta())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_p4().at(cjetidx2).phi())                    << setw(4) 
-	       << "|" << setw(12) << Form("%.2f",jets_trackCountingHighEffBJetTag().at(cjetidx2))
-	       << setw(4) << "|" << endl;
-	}else{
-	  cout << "no calojet is matched to pfjet within dR < 0.1" << endl;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 2.0 ){
+	  nbtags20_++;
 	}
 
-      }
-      */
-
-      if( njets_ > 0 ){
-
-	int jetidx1 = jetIndex.at(ijet1);
-
-	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 1.7 )   nbtags17_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 2.0 )   nbtags20_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 2.0 && fabs( vpfjets_p4.at(ijet1).eta() ) < 2.4 )  nbtags20_24_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(jetidx1) > 3.3 )   nbtags33_++;
-
-	int cjetidx1 = findCaloJetIndex(jetidx1);
-
-	if( cjetidx1 > -1 ){
-	  if( jets_trackCountingHighEffBJetTag().at(cjetidx1) > 2.0 )   nbtags20c_++;
-	  if( jets_trackCountingHighEffBJetTag().at(cjetidx1) > 2.0 && fabs( jets_p4().at(cjetidx1).eta() ) < 2.4 )  nbtags20_24c_++;
+	if( pfjets_trackCountingHighEffBJetTag().at(ijet) > 3.3 ){
+	  nbtags33_++;
 	}
-
-      }
-
-      if( njets_ > 1 ){
-
-	int jetidx2 = jetIndex.at(ijet2);
-
-	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 1.7 )   nbtags17_++;	  
-	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 2.0 )   nbtags20_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 2.0 && fabs( vpfjets_p4.at(ijet2).eta() ) < 2.4 )  nbtags20_24_++;
-	if( pfjets_trackCountingHighEffBJetTag().at(jetidx2) > 3.3 )   nbtags33_++;
-
-	int cjetidx2 = findCaloJetIndex(jetidx2);
-
-	if( cjetidx2 > -1 ){
-	  if( jets_trackCountingHighEffBJetTag().at(cjetidx2) > 2.0 )   nbtags20c_++;
-	  if( jets_trackCountingHighEffBJetTag().at(cjetidx2) > 2.0 && fabs( jets_p4().at(cjetidx2).eta() ) < 2.4 )  nbtags20_24c_++;
-	}
-
-      }
-
-      //-----------------------------
-      // DON'T apply residual JEC
-      //-----------------------------
-
-      njetsuncor_ = 0;
-      VofP4 vpfjets_uncor_p4;
-
-      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
-	LorentzVector vjet    = pfjets_corL1FastL2L3().at(ijet) * pfjets_p4().at(ijet);
-
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
-
-	if( vjet.pt() < 25         ) continue;
-	if( fabs(vjet.eta()) > 3.0 ) continue;
-
-	njetsuncor_++;
-	vpfjets_uncor_p4.push_back( vjet );
-
-      }
-	  
-      //--------------------------------------
-      // DON'T apply any jet corrections
-      //--------------------------------------
-
-      njetsplain_ = 0;
-      VofP4 vpfjets_plain_p4;
-
-      for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
-          
-	LorentzVector vjet    = pfjets_p4().at(ijet);
-
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep1) ) < 0.5 ) continue;
-	if( dRbetweenVectors( vjet , goodLeptons.at(ilep2) ) < 0.5 ) continue;
-
-	if( vjet.pt() < 25         ) continue;
-	if( fabs(vjet.eta()) > 3.0 ) continue;
-
-	njetsplain_++;
-	vpfjets_plain_p4.push_back( vjet );
-
       }
 	  
       //------------------------------------
       // require >=2 jets!!!!!!
       //------------------------------------
 
+      if( njets_ < 2 ) continue;
+      
+      vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_p4_sorted(vpfjets_p4);
+      sort(vpfjets_p4_sorted.begin(), vpfjets_p4_sorted.end(), sortByPt);
+
       jet1_  = 0;
       jet2_  = 0;
       jet3_  = 0;
       jet4_  = 0;
 
-      mmjj_      = -1;
-      mmjjtrk_   = -1;
-      mmjjglb_   = -1;
-      mmjjsta_   = -1;
-      mjjj_      = -1;
-      mmjjuncor_ = -1;
-      mmjjtrkuncor_ = -1;
-      mmjjtrkdef_   = -1;
-
-      //--------------------------------------
-      // corrected jets
-      //--------------------------------------
-
-      vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_p4_sorted(vpfjets_p4);
-      sort(vpfjets_p4_sorted.begin(), vpfjets_p4_sorted.end(), sortByPt);
-
-      if( njets_ > 0 ) jet1_  = &vpfjets_p4_sorted.at(0);
-      if( njets_ > 1 ) jet2_  = &vpfjets_p4_sorted.at(1);
+      jet1_  = &vpfjets_p4_sorted.at(0);
+      jet2_  = &vpfjets_p4_sorted.at(1);
       if( njets_ > 2 ) jet3_  = &vpfjets_p4_sorted.at(2);
       if( njets_ > 3 ) jet4_  = &vpfjets_p4_sorted.at(3);
 
-      if( njets_ >= 2 ){
-
-	jetcor1_ = jetCorrection( vpfjets_p4_sorted.at(0), jet_pf_L2L3corrector);
-	jetcor2_ = jetCorrection( vpfjets_p4_sorted.at(1), jet_pf_L2L3corrector);
-	
-	if( ngoodlep_ > 1 ){
-	  mmjj_    = (*lep1_    + *lep2_    + *jet1_ + *jet2_).mass();
-	  mmjjtrk_ = (*lep1trk_ + *lep2trk_ + *jet1_ + *jet2_).mass();
-	  mmjjglb_ = (*lep1glb_ + *lep2glb_ + *jet1_ + *jet2_).mass();
-	  mmjjsta_ = (*lep1sta_ + *lep2sta_ + *jet1_ + *jet2_).mass();
-	}
-	
-	if( njets_ > 2    ) mjjj_ = (*lep1_+*jet1_+*jet2_+*jet3_).mass();
+      mmjj_ = -1;
+      if( ngoodlep_ > 1 ){
+	mmjj_    = (*lep1_    + *lep2_    + *jet1_ + *jet2_).mass();
+	mmjjtrk_ = (*lep1trk_ + *lep2trk_ + *jet1_ + *jet2_).mass();
+	mmjjglb_ = (*lep1glb_ + *lep2glb_ + *jet1_ + *jet2_).mass();
+	mmjjsta_ = (*lep1sta_ + *lep2sta_ + *jet1_ + *jet2_).mass();
       }
 
-      //cout << "mmjj BEN " << mmjj_ << endl;
-
-      //--------------------------------------
-      // UN-corrected jets
-      //--------------------------------------
-
-      vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_uncor_p4_sorted(vpfjets_uncor_p4);
-      sort(vpfjets_uncor_p4_sorted.begin(), vpfjets_uncor_p4_sorted.end(), sortByPt);
-
-      if( njetsuncor_ >= 2 && ngoodlep_ > 1 ){
-	mmjjuncor_    = (*lep1_    + *lep2_    + vpfjets_uncor_p4_sorted.at(0) + vpfjets_uncor_p4_sorted.at(1)).mass();
-	mmjjtrkuncor_ = (*lep1trk_ + *lep2trk_ + vpfjets_uncor_p4_sorted.at(0) + vpfjets_uncor_p4_sorted.at(1)).mass();
-      }
-
-      if( isData ){
-	mmjjdef_     = mmjj_;
-	mmjjtrkdef_  = mmjjtrk_;
-	njetsdef_    = njets_;
-      }
-      else{
-	mmjjdef_     = mmjjuncor_;
-	mmjjtrkdef_  = mmjjtrkuncor_;
-	njetsdef_    = njetsuncor_;
-      }
-      
-      //--------------------------------------
-      // plain jets
-      //--------------------------------------
-
-      vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vpfjets_plain_p4_sorted(vpfjets_plain_p4);
-      sort(vpfjets_plain_p4_sorted.begin(), vpfjets_plain_p4_sorted.end(), sortByPt);
-
-      mmjjc_  = -1;
-      cor1_   = -1;
-      cor2_   = -1;
-      metnew_ = -1;
-
-      if( njetsplain_ >= 2 && ngoodlep_ > 1 ){
-
-	float a = vpfjets_plain_p4_sorted.at(0).x();
-	float b = vpfjets_plain_p4_sorted.at(1).x();
-	float c = vpfjets_plain_p4_sorted.at(0).y();
-	float d = vpfjets_plain_p4_sorted.at(1).y();
-	
-	float det = a * d - b * c;
-
-	if( fabs(det) > 1e-10 ){
-	  
-	  float ap = d / det;
-	  float bp = -1 * b / det;
-	  float cp = -1 * c / det;
-	  float dp = a / det;
-
-	  float metx = evt_pfmet() * cos( evt_pfmetPhi() );
-	  float mety = evt_pfmet() * sin( evt_pfmetPhi() );
-
-	  cor1_ = 1 + ap * metx + bp * mety;
-	  cor2_ = 1 + cp * metx + dp * mety;
-
-	  if( cor1_ > 0 && cor2_ > 0 ){
-	   
-	    mmjjc_ = (*lep1_    + *lep2_    + cor1_ * vpfjets_plain_p4_sorted.at(0) + cor2_ * vpfjets_plain_p4_sorted.at(1)).mass();
-
-	    float metxnew = metx - (cor1_-1) * vpfjets_plain_p4_sorted.at(0).x() - (cor2_-1) * vpfjets_plain_p4_sorted.at(1).x();
-	    float metynew = mety - (cor1_-1) * vpfjets_plain_p4_sorted.at(0).y() - (cor2_-1) * vpfjets_plain_p4_sorted.at(1).y();
-	    metnew_  = sqrt( metxnew * metxnew + metynew * metynew );
-	    //cout << "new met " << metnew << endl;
-
-	  }
-	  else{
-	    mmjjc_ = -3;
-	  }
-	}
-
-	else{
-	  mmjjc_ = -2;
-	}
-      }
-
+      mjjj_ = -1;
+      if( njets_ > 2    ) mjjj_ = (*lep1_+*jet1_+*jet2_+*jet3_).mass();
+     
       pfmet_    = evt_pfmet();
       pfmetphi_ = evt_pfmetPhi();
       pfsumet_  = evt_pfsumet();
@@ -1477,6 +824,23 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
       else{
 
 	weight_ = kFactor * evt_scale1fb() * lumi;
+
+	if( TString(prefix).Contains("LM") ){
+	  if( strcmp( prefix , "LM0" )  == 0 ) weight_ *= kfactorSUSY( "lm0" );
+	  if( strcmp( prefix , "LM1" )  == 0 ) weight_ *= kfactorSUSY( "lm1" );
+	  if( strcmp( prefix , "LM2" )  == 0 ) weight_ *= kfactorSUSY( "lm2" );
+	  if( strcmp( prefix , "LM3" )  == 0 ) weight_ *= kfactorSUSY( "lm3" );
+	  if( strcmp( prefix , "LM4" )  == 0 ) weight_ *= kfactorSUSY( "lm4" );
+	  if( strcmp( prefix , "LM5" )  == 0 ) weight_ *= kfactorSUSY( "lm5" );
+	  if( strcmp( prefix , "LM6" )  == 0 ) weight_ *= kfactorSUSY( "lm6" );
+	  if( strcmp( prefix , "LM7" )  == 0 ) weight_ *= kfactorSUSY( "lm7" );
+	  if( strcmp( prefix , "LM8" )  == 0 ) weight_ *= kfactorSUSY( "lm8" );
+	  if( strcmp( prefix , "LM9" )  == 0 ) weight_ *= kfactorSUSY( "lm9" );
+	  if( strcmp( prefix , "LM10" ) == 0 ) weight_ *= kfactorSUSY( "lm10");
+	  if( strcmp( prefix , "LM11" ) == 0 ) weight_ *= kfactorSUSY( "lm11");
+	  if( strcmp( prefix , "LM12" ) == 0 ) weight_ *= kfactorSUSY( "lm12");
+	  if( strcmp( prefix , "LM13" ) == 0 ) weight_ *= kfactorSUSY( "lm13");
+	}
 
 	if( doTenPercent )	  weight_ *= 10;
       }
@@ -1520,7 +884,6 @@ int looper::ScanChain(TChain* chain, char *prefix, float kFactor, int prescale, 
   cout << "Sample: " << prefix << endl;
   cout << "nevents " << nevents << endl;
   cout << endl;
-  cout << ntot << " total events, " << npass << " pass events" << endl;
 
   if(g_createTree) closeTree();
   
@@ -1548,7 +911,6 @@ void looper::BookHistos(char *prefix)
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
-  hping = new TH1F("hping","hping",2000,0,2000);
 
   cout << "End book histos..." << endl;
 }// CMS2::BookHistos()
@@ -1682,26 +1044,6 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   //Set branch addresses
   //variables must be declared in looper.h
-  outTree->Branch("leptype",         &leptype_,          "leptype/I");
-  outTree->Branch("mtrg",            &mtrg_,             "mtrg/I");
-  outTree->Branch("eetrg",           &eetrg_,            "eetrg/I");
-  outTree->Branch("mmtrg",           &mmtrg_,            "mmtrg/I");
-  outTree->Branch("emtrg",           &emtrg_,            "emtrg/I");
-  outTree->Branch("diltrig",         &diltrig_,          "diltrig/I");
-  outTree->Branch("hlt1",            &hlt1_,             "hlt1/I");
-  outTree->Branch("hlt2",            &hlt2_,             "hlt2/I");
-  outTree->Branch("pingmass",        &pingmass_,         "pingmass/F");
-  outTree->Branch("metnew",          &metnew_,           "metnew/F");
-  outTree->Branch("mmjjdef",         &mmjjdef_,          "mmjjdef/F");
-  outTree->Branch("mmjjtrkuncor",    &mmjjtrkuncor_,     "mmjjtrkuncor/F");
-  outTree->Branch("mmjjtrkdef",      &mmjjtrkdef_,       "mmjjtrkdef/F");
-  outTree->Branch("mmjjc",           &mmjjc_,            "mmjjc/F");
-  outTree->Branch("cor1",            &cor1_,             "cor1/F");
-  outTree->Branch("cor2",            &cor2_,             "cor2/F");
-  outTree->Branch("njetsuncor",      &njetsuncor_,       "njetsuncor/I");
-  outTree->Branch("njetsplain",      &njetsplain_,       "njetsplain/I");
-  outTree->Branch("jetcor1",         &jetcor1_,          "jetcor1/F");
-  outTree->Branch("jetcor2",         &jetcor2_,          "jetcor2/F");
   outTree->Branch("hbhe",            &hbhe_,             "hbhe/I");
   outTree->Branch("json",            &json_,             "json/I");
   outTree->Branch("weight",          &weight_,           "weight/F");
@@ -1738,7 +1080,6 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("dilpt",           &dilpt_,            "dilpt/F");
   outTree->Branch("dildphi",         &dildphi_,          "dildphi/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
-  outTree->Branch("njetsdef",        &njetsdef_,         "njetsdef/I");
   outTree->Branch("ngenjets",        &ngenjets_,         "ngenjets/I");
   outTree->Branch("njpt",            &njpt_,             "njpt/I");
   outTree->Branch("npfjets25",       &npfjets25_,        "npfjets25/I");
@@ -1751,9 +1092,6 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("ndavtxweight",    &ndavtxweight_,     "ndavtxweight/F");
   outTree->Branch("nbtags17",        &nbtags17_,         "nbtags17/I");
   outTree->Branch("nbtags20",        &nbtags20_,         "nbtags20/I");
-  outTree->Branch("nbtags2024",      &nbtags20_24_,      "nbtags2024/I");
-  outTree->Branch("nbtags20c",       &nbtags20c_,        "nbtags20c/I");
-  outTree->Branch("nbtags2024c",     &nbtags20_24c_,     "nbtags2024c/I");
   outTree->Branch("nbtags33",        &nbtags33_,         "nbtags33/I");
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
@@ -1782,7 +1120,6 @@ void looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("dphijm",          &dphijm_,           "dphijm/F");  
   outTree->Branch("ptjetraw",        &ptjetraw_,         "ptjetraw/F");  
   outTree->Branch("mmjj",            &mmjj_,             "mmjj/F");  
-  outTree->Branch("mmjjuncor",       &mmjjuncor_,        "mmjjuncor/F");  
   outTree->Branch("mmjjtrk",         &mmjjtrk_,          "mmjjtrk/F");  
   outTree->Branch("mmjjglb",         &mmjjglb_,          "mmjjglb/F");  
   outTree->Branch("mmjjsta",         &mmjjsta_,          "mmjjsta/F");  
