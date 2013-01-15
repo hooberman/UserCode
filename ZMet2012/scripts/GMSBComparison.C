@@ -40,18 +40,26 @@
   TChain *gmsb_526 = new TChain("T1");
   gmsb_526->Add("../output/V00-01-09/gmsb_526_baby_oldIso.root");
   
-  const unsigned int npoints = 1;
+  const unsigned int npoints = 15;
   
-  int mu[npoints] = {"170"};
+  int muvalues[npoints] = {130,150,170,190,210,230,250,270,290,310,330,350,370,390,410};
 
   TH1F*    h524[npoints];
   TH1F*    h526[npoints];;
   TCanvas* can[npoints];
+  TLegend* leg[npoints];
+  TCut     mucut[npoints];
 
   float ptbins[]  = {0., 30., 60., 80., 100., 120., 150., 200., 300.};
   int   nptbin  = 8;
 
+  TLatex *t = new TLatex();
+  t->SetNDC();
+
   for( int i = 0 ; i < npoints ; ++i ){
+
+    mucut[i] = TCut(Form("mg==%i",muvalues[i]));
+    cout << "mu " << muvalues[i] << " " << mucut[i].GetTitle() << endl;
 
     can[i] = new TCanvas(Form("can_%i",i),Form("can_%i",i),600,600);
     can[i]->cd();
@@ -62,8 +70,8 @@
     h524[i]->Sumw2();
     h526[i]->Sumw2();
 
-    gmsb_524->Draw(Form("min(pfmet,299)>>h524_%i",i),sel*weight);
-    gmsb_526->Draw(Form("min(pfmet,299)>>h526_%i",i),sel*weight);
+    gmsb_524->Draw(Form("min(pfmet,299)>>h524_%i",i),(sel+mucut[i])*weight);
+    gmsb_526->Draw(Form("min(pfmet,299)>>h526_%i",i),(sel+mucut[i])*weight);
 
     h524[i]->SetLineColor(2);
     h526[i]->SetLineColor(4);
@@ -76,11 +84,23 @@
 
     float max = h524[i]->GetMaximum();
     if( h526[i]->GetMaximum() > max ) max = h526[i]->GetMaximum();
-    h524->SetMaximum(1.1*max);
+    h524[i]->SetMaximum(1.1*max);
+
+    h524[i]->GetXaxis()->SetTitle("E_{T}^{miss} [GeV]");
 
     h524[i]->Draw();
     h526[i]->Draw("same");
     
+    leg[i] = new TLegend(0.7,0.7,0.9,0.9);
+    leg[i]->AddEntry(h524[i],"524");
+    leg[i]->AddEntry(h526[i],"526");
+    leg[i]->SetBorderSize(0);
+    leg[i]->SetFillColor(0);
+    leg[i]->Draw();
+
+    t->DrawLatex(0.6,0.5,Form("#mu = %i GeV",muvalues[i]));
+
+    can[i]->Print(Form("../plots/GMSB_%i.pdf",muvalues[i]));
   }
 
 

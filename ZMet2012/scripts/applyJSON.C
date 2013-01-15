@@ -51,7 +51,8 @@ void skimTree(char* runlist, char* inputFile, char* outputFile)
 
 void applyJSON(){
 
-  char* runlist    = "../jsons/final_19p47fb_cms2.txt";
+  //char* runlist    = "../jsons/final_19p47fb_cms2.txt";
+  char* runlist    = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt";
 
   char* inputFile  = "../output/V00-02-02/data_53X_2012A_baby_nojson.root";
   char* outputFile = "../output/V00-02-02/data_53X_2012A_baby.root";

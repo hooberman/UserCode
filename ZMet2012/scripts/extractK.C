@@ -27,7 +27,7 @@
 
 using namespace std;
 
-bool pt40 = true;
+bool pt40 = false;
 
 void extractK( bool exclusive = false , bool printplot = false , bool bveto = false );
 
@@ -42,13 +42,21 @@ void doPlots( bool printplot = false ){
 
 void extractK( bool exclusive , bool printplot , bool bveto ){
 
-  char* iter = (char*) "V00-01-04";
+  //char* iter = (char*) "V00-01-04";
+  char* iter = (char*) "V00-02-00";
 
   //char* suffix = "";
   char* suffix = "_2jets";
 
   TChain *data = new TChain("T1");
-  data->Add(Form("../output/%s/data_ALL_53X_baby%s.root",iter,suffix));
+  //data->Add(Form("../output/%s/data_ALL_53X_baby%s.root",iter,suffix));
+  //data->Add(Form("../output/%s/data_53X_baby%s.root",iter,suffix));
+  //data->Add(Form("../output/%s/data_2012C_53X_baby%s.root",iter,suffix));
+
+  data->Add(Form("../output/%s/data_53X_2012A_baby%s.root",iter,suffix));
+  data->Add(Form("../output/%s/data_53X_2012B_baby%s.root",iter,suffix));
+  data->Add(Form("../output/%s/data_53X_2012C_baby%s.root",iter,suffix));
+  data->Add(Form("../output/%s/data_53X_2012D_baby%s.root",iter,suffix));
 
   TChain *mc = new TChain("T1");
   mc->Add(Form("../output/%s/ttbar_53X_baby%s.root"       ,iter,suffix));
@@ -72,7 +80,7 @@ void extractK( bool exclusive , bool printplot , bool bveto ){
   TCut Zmass("dilmasspf>81 && dilmasspf<101");
   TCut njets2("njets>=2");
   TCut em("leptype==2");
-  TCut nb0("nbm==0");
+  TCut nb0("nbcsvm==0");
   TCut mjj("mjj>70.0 && mjj<110.0");
   TCut nlep2("nlep==2");
   TCut pt40cuts("njets40>=2");
@@ -101,8 +109,8 @@ void extractK( bool exclusive , bool printplot , bool bveto ){
 
   if( bveto ){
     sel += nb0;
-    sel += mjj;
-    sel += nlep2;
+    //sel += mjj;
+    //sel += nlep2;
   }
 
   TCut weight("vtxweight * weight");
