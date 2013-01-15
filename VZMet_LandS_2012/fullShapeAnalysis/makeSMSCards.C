@@ -68,13 +68,13 @@ void makeSMSCards(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-01-09/wzsms_baby_oldIso.root ");
-  char* version = (char*) "V00-00-04";
+  char* version = (char*) "V00-00-05";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("9200 * trgeff * vtxweight * (1./100000.)");
+  TCut weight   ("19300.0 * trgeff * vtxweight * (1./100000.)");
   //TCut weight   ("9.2 * trgeff * vtxweight * weight");
 
   // MEDIUM WP
@@ -193,7 +193,7 @@ void makeSMSCards(){
   // make and fill data and bkg histos
   //---------------------------------------
 
-
+  /*
   // MEDIUM WP
   //signal regions             80-100 100-120 120-150 150-200    >200
   float Zbkg_yield[nbins]    = { 40.9 ,  7.0 ,  3.1 ,  1.6 ,     0.8  };
@@ -207,7 +207,7 @@ void makeSMSCards(){
   float rarebkg_yield[nbins] = {  0.3 ,  0.2 ,  0.3 ,  0.2 ,     0.2  };
   float rarebkg_err[nbins]   = {  0.2 ,  0.1 ,  0.1 ,  0.1 ,     0.2  };
   int   data_yield[nbins]    = {   56 ,   24 ,   16 ,    3 ,       1  };
-
+  */
 
   /*
   // LOOSE WP
@@ -224,6 +224,19 @@ void makeSMSCards(){
   float rarebkg_err[nbins]   = {  0.1 ,  0.1 ,  0.1 ,  0.1 ,     0.1  };
   int   data_yield[nbins]    = {   40 ,   10 ,   10 ,    2 ,       1  };
   */
+  
+  // MEDIUM WP, 19.3/fb RESULTS
+  float Zbkg_yield[nbins]    = { 106.0 , 10.8 ,  6.2 ,  4.5 ,     0.5  };
+  float Zbkg_err[nbins]      = {  32.6 ,  3.4 ,  2.1 ,  2.6 ,     0.2  };
+  float OFbkg_yield[nbins]   = {  38.0 , 23.4 , 14.0 ,  6.1 ,     0.8  };
+  float OFbkg_err[nbins]     = {   6.6 ,  4.2 ,  2.7 ,  2.5 ,     0.4  };
+  float WZbkg_yield[nbins]   = {   8.7 ,  4.7 ,  3.7 ,  2.2 ,     1.0  };
+  float WZbkg_err[nbins]     = {   6.1 ,  3.3 ,  2.6 ,  1.6 ,     1.0  };
+  float ZZbkg_yield[nbins]   = {   4.1 ,  2.4 ,  2.6 ,  1.8 ,     1.6  };
+  float ZZbkg_err[nbins]     = {   2.1 ,  1.2 ,  1.3 ,  0.9 ,     1.6  };
+  float rarebkg_yield[nbins] = {   1.1 ,  0.6 ,  1.1 ,  0.7 ,     0.5  };
+  float rarebkg_err[nbins]   = {   0.6 ,  0.3 ,  0.6 ,  0.4 ,     0.5  };
+  int   data_yield[nbins]    = {   178 ,   47 ,   24 ,   12 ,       3  };
 
   int   data_tot  = 0;
   float Zbkg_tot  = 0;
