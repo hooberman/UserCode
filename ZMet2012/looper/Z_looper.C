@@ -2654,14 +2654,14 @@ void Z_looper::InitBabyNtuple (){
   tche7_   = -1;
   tche8_   = -1;
 
-  csv1_   = -1;
-  csv2_   = -1;
-  csv3_   = -1;
-  csv4_   = -1;
-  csv5_   = -1;
-  csv6_   = -1;
-  csv7_   = -1;
-  csv8_   = -1;
+  csv1_   = -99;
+  csv2_   = -99;
+  csv3_   = -99;
+  csv4_   = -99;
+  csv5_   = -99;
+  csv6_   = -99;
+  csv7_   = -99;
+  csv8_   = -99;
 
   mllgen_  = -999.;
   qscale_  = -999.;
