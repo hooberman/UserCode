@@ -34,7 +34,11 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
   return;
 }
 
-void processBaby( TString outfileid = "tt_test", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged_ntuple_157.root" )
+
+void processBaby( TString outfileid = "ttwjets_merged_ntuple_1_smallTree", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/TTWJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged_ntuple_1.root" )
+ //void processBaby( TString outfileid = "tt_test", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged_ntuple_157.root" )
+//void processBaby( TString outfileid = "dy4j_test", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DY4JetsToLL_M-50_TuneZ2Star_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged_ntuple_150.root" )
+//void processBaby( TString outfileid = "dyj_test", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged_ntuple_951.root" )
 {
 
   //---------------------------------------------------------------
@@ -42,7 +46,7 @@ void processBaby( TString outfileid = "tt_test", TString infile = "/hadoop/cms/s
   //---------------------------------------------------------------
   
   const char* version    = "V00-00-02";
-  const char* jsonfile   = "jsons/Cert_198050-207279_8TeV_19p47ifb_Collisions12_JSON_goodruns.txt";
+  const char* jsonfile   = "jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
   cout << "Version : " << version     << endl;
@@ -81,50 +85,48 @@ void processBaby( TString outfileid = "tt_test", TString infile = "/hadoop/cms/s
   //-------------------------------------
   char* sample;
   //MC
-  if (infile.Contains("TTJets_MassiveBinDECAY_TuneZ2star_8TeV"))     sample = Form("ttall_%s",  	 outfileid.Data());
-  else if (infile.Contains("TTJets_FullLeptMGDecays_8TeV-madgraph")) sample = Form("ttdl_lmg_%s",  	 outfileid.Data());
-  else if (infile.Contains("TTJets_SemiLeptMGDecays_8TeV-madgraph")) sample = Form("ttsl_lmg_%s",  	 outfileid.Data());
-  else if (infile.Contains("WJetsToLNu"))                            sample = Form("wjets_%s",           outfileid.Data());
-  else if (infile.Contains("W1JetsToLNu"))                           sample = Form("w1jets_%s",          outfileid.Data());
-  else if (infile.Contains("W2JetsToLNu"))                           sample = Form("w2jets_%s",          outfileid.Data());
-  else if (infile.Contains("W3JetsToLNu"))                           sample = Form("w3jets_%s",          outfileid.Data());
-  else if (infile.Contains("W4JetsToLNu"))                           sample = Form("w4jets_%s",          outfileid.Data());
-  else if (infile.Contains("DY4JetsToLL"))                           sample = Form("DY4Jtot_%s",         outfileid.Data());
-  else if (infile.Contains("DYJetsToLL"))                            sample = Form("DYtot_%s",           outfileid.Data());
-  else if (infile.Contains("T_s-channel"))                           sample = Form("tschan_%s",          outfileid.Data());
-  else if (infile.Contains("Tbar_s-channel"))                        sample = Form("tbarschan_%s",       outfileid.Data());
-  else if (infile.Contains("T_t-channel"))                           sample = Form("ttchan_%s",          outfileid.Data());
-  else if (infile.Contains("Tbar_t-channel"))                        sample = Form("tbartchan_%s",       outfileid.Data());
-  else if (infile.Contains("T_tW-channel"))                          sample = Form("ttWchan_%s",         outfileid.Data());
-  else if (infile.Contains("Tbar_tW-channel"))                       sample = Form("tbartWchan_%s",      outfileid.Data());
-  else if (infile.Contains("WWJetsTo2L2Nu"))                         sample = Form("ww2l2nujets_%s",     outfileid.Data());
-  else if (infile.Contains("ZZJetsTo4L"))                            sample = Form("zz4ljets_%s",        outfileid.Data());
-  else if (infile.Contains("ZZJetsTo2L2Nu"))                         sample = Form("zz2l2nujets_%s",     outfileid.Data());
-  else if (infile.Contains("ZZJetsTo2L2Q"))                          sample = Form("zz2l2qjets_%s",      outfileid.Data());
-  else if (infile.Contains("WZJetsTo3LNu"))                          sample = Form("wz3lnujets_%s",      outfileid.Data());
-  else if (infile.Contains("WZJetsTo2L2Q"))                          sample = Form("wz2l2qjets_%s",      outfileid.Data());
-  else if (infile.Contains("WGstarToLNu2E"))                         sample = Form("wglnu2ejets_%s",     outfileid.Data());
-  else if (infile.Contains("WGstarToLNu2Mu"))                        sample = Form("wglnu2mujets_%s",    outfileid.Data());
-  else if (infile.Contains("WGstarToLNu2Tau"))                       sample = Form("wglnu2taujets_%s",   outfileid.Data());
-  else if (infile.Contains("ZZZNoGstarJets"))                        sample = Form("zzzjets_%s",         outfileid.Data());
-  else if (infile.Contains("WZZNoGstarJets"))                        sample = Form("wzzjets_%s",         outfileid.Data());
-  else if (infile.Contains("WWZNoGstarJets"))                        sample = Form("wwzjets_%s",         outfileid.Data());
-  else if (infile.Contains("WWWJets"))                               sample = Form("wwwjets_%s",         outfileid.Data());
-  else if (infile.Contains("TTZJets"))                               sample = Form("ttzjets_%s",         outfileid.Data());
-  else if (infile.Contains("TTWJets"))                               sample = Form("ttwjets_%s",         outfileid.Data());
-  else if (infile.Contains("TTGJets"))                               sample = Form("ttgjets_%s",         outfileid.Data());
-  else if (infile.Contains("TTWWJets"))                              sample = Form("ttwwjets_%s",        outfileid.Data());
-  else if (infile.Contains("TTJets_scaleup_TuneZ2star_8TeV"))        sample = Form("tt_scaleup_%s",      outfileid.Data());
-  else if (infile.Contains("TTJets_scaledown_TuneZ2star_8TeV"))      sample = Form("tt_scaledw_%s",      outfileid.Data());
-  else if (infile.Contains("TTJets_matchingup_TuneZ2star_8TeV"))     sample = Form("tt_matchup_%s",      outfileid.Data());
-  else if (infile.Contains("TTJets_matchingdown_TuneZ2star_8TeV"))   sample = Form("tt_matchdw_%s",      outfileid.Data());
-  else if (infile.Contains("TTJets_mass178_5_TuneZ2star_8TeV"))      sample = Form("tt_massup_%s",       outfileid.Data());
-  else if (infile.Contains("TTJets_mass166_5_TuneZ2star_8TeV"))      sample = Form("tt_massdw_%s",       outfileid.Data());
-  else if (infile.Contains("TT_CT10_TuneZ2star_8TeV-powheg"))        sample = Form("tt_powheg_%s",       outfileid.Data());
-  else if (infile.Contains("TT_8TeV-mcatnlo"))          	     sample = Form("tt_mcatnlo_%s",      outfileid.Data());
-  else if (infile.Contains("TTJets_CT10_8TeV-sherpa"))   	     sample = Form("tt_sherpa_%s",       outfileid.Data());
-  else if (infile.Contains("SMS-T2tt"))                              sample = Form("T2tt_%s",            outfileid.Data());
-  else if (infile.Contains("SMS-T2bw"))                              sample = Form("T2bw_%s",            outfileid.Data());
+  if (infile.Contains("TTJets_MassiveBinDECAY_TuneZ2star_8TeV"))   sample = Form("ttall_%s",  	       outfileid.Data());
+  else if (infile.Contains("WJetsToLNu"))                          sample = Form("wjets_%s",           outfileid.Data());
+  else if (infile.Contains("W1JetsToLNu"))                         sample = Form("w1jets_%s",          outfileid.Data());
+  else if (infile.Contains("W2JetsToLNu"))                         sample = Form("w2jets_%s",          outfileid.Data());
+  else if (infile.Contains("W3JetsToLNu"))                         sample = Form("w3jets_%s",          outfileid.Data());
+  else if (infile.Contains("W4JetsToLNu"))                         sample = Form("w4jets_%s",          outfileid.Data());
+  else if (infile.Contains("DY4JetsToLL"))                         sample = Form("DY4Jtot_%s",         outfileid.Data());
+  else if (infile.Contains("DYJetsToLL"))                          sample = Form("DYtot_%s",           outfileid.Data());
+  else if (infile.Contains("T_s-channel"))                         sample = Form("tschan_%s",          outfileid.Data());
+  else if (infile.Contains("Tbar_s-channel"))                      sample = Form("tbarschan_%s",       outfileid.Data());
+  else if (infile.Contains("T_t-channel"))                         sample = Form("ttchan_%s",          outfileid.Data());
+  else if (infile.Contains("Tbar_t-channel"))                      sample = Form("tbartchan_%s",       outfileid.Data());
+  else if (infile.Contains("T_tW-channel"))                        sample = Form("ttWchan_%s",         outfileid.Data());
+  else if (infile.Contains("Tbar_tW-channel"))                     sample = Form("tbartWchan_%s",      outfileid.Data());
+  else if (infile.Contains("WWJetsTo2L2Nu"))                       sample = Form("ww2l2nujets_%s",     outfileid.Data());
+  else if (infile.Contains("ZZJetsTo4L"))                          sample = Form("zz4ljets_%s",        outfileid.Data());
+  else if (infile.Contains("ZZJetsTo2L2Nu"))                       sample = Form("zz2l2nujets_%s",     outfileid.Data());
+  else if (infile.Contains("ZZJetsTo2L2Q"))                        sample = Form("zz2l2qjets_%s",      outfileid.Data());
+  else if (infile.Contains("WZJetsTo3LNu"))                        sample = Form("wz3lnujets_%s",      outfileid.Data());
+  else if (infile.Contains("WZJetsTo2L2Q"))                        sample = Form("wz2l2qjets_%s",      outfileid.Data());
+  else if (infile.Contains("WGstarToLNu2E"))                       sample = Form("wglnu2ejets_%s",     outfileid.Data());
+  else if (infile.Contains("WGstarToLNu2Mu"))                      sample = Form("wglnu2mujets_%s",    outfileid.Data());
+  else if (infile.Contains("WGstarToLNu2Tau"))                     sample = Form("wglnu2taujets_%s",   outfileid.Data());
+  else if (infile.Contains("ZZZNoGstarJets"))                      sample = Form("zzzjets_%s",         outfileid.Data());
+  else if (infile.Contains("WZZNoGstarJets"))                      sample = Form("wzzjets_%s",         outfileid.Data());
+  else if (infile.Contains("WWZNoGstarJets"))                      sample = Form("wwzjets_%s",         outfileid.Data());
+  else if (infile.Contains("WWWJets"))                             sample = Form("wwwjets_%s",         outfileid.Data());
+  else if (infile.Contains("TTZJets"))                             sample = Form("ttzjets_%s",         outfileid.Data());
+  else if (infile.Contains("TTWJets"))                             sample = Form("ttwjets_%s",         outfileid.Data());
+  else if (infile.Contains("TTGJets"))                             sample = Form("ttgjets_%s",         outfileid.Data());
+  else if (infile.Contains("TTWWJets"))                            sample = Form("ttwwjets_%s",        outfileid.Data());
+  else if (infile.Contains("TTJets_scaleup_TuneZ2star_8TeV"))      sample = Form("tt_scaleup_%s",      outfileid.Data());
+  else if (infile.Contains("TTJets_scaledown_TuneZ2star_8TeV"))    sample = Form("tt_scaledw_%s",      outfileid.Data());
+  else if (infile.Contains("TTJets_matchingup_TuneZ2star_8TeV"))   sample = Form("tt_matchup_%s",      outfileid.Data());
+  else if (infile.Contains("TTJets_matchingdown_TuneZ2star_8TeV")) sample = Form("tt_matchdw_%s",      outfileid.Data());
+  else if (infile.Contains("TTJets_mass178_5_TuneZ2star_8TeV"))    sample = Form("tt_massup_%s",       outfileid.Data());
+  else if (infile.Contains("TTJets_mass166_5_TuneZ2star_8TeV"))    sample = Form("tt_massdw_%s",       outfileid.Data());
+  else if (infile.Contains("TT_CT10_TuneZ2star_8TeV-powheg"))      sample = Form("tt_powheg_%s",       outfileid.Data());
+  else if (infile.Contains("TT_8TeV-mcatnlo"))          	   sample = Form("tt_mcatnlo_%s",      outfileid.Data());
+  else if (infile.Contains("TTJets_CT10_8TeV-sherpa"))   	   sample = Form("tt_sherpa_%s",       outfileid.Data());
+  else if (infile.Contains("SMS-T2tt"))                            sample = Form("T2tt_%s",            outfileid.Data());
+  else if (infile.Contains("SMS-T2bw"))                            sample = Form("T2bw_%s",            outfileid.Data());
   //Data
   //single muon
   else if (infile.Contains("SingleMu_Run2012A-recover-06Aug2012-v1_AOD"))       sample =  Form("SingleMu2012A_recover06Aug2012v1V532_%s",     outfileid.Data());
