@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-07";
+const char* iter                 = "V00-02-08";
 const char* jsonfilename         = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt";
 
 // 19.5 merged json from Dunser
@@ -385,14 +385,16 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
   // }
 
   if( TString(prefix).Contains("zjets_small_53X_slim") ){
-    MCscalefactor = 478.0 / 48.0;
-    cout << "DYJets: scale cross section by 478/48" << endl;
+    //MCscalefactor = 478.0 / 48.0;
+    //cout << "DYJets: scale cross section by 478/48" << endl;
+    MCscalefactor = 763.0 / 111.0;
+    cout << "DYJets: scale cross section by 763/111" << endl;
   }
 
-  else if( TString(prefix).Contains("zjets_53X_slim") ){
-    MCscalefactor = 478.0 / 457.0;
-    cout << "DYJets: scale cross section by 478/457" << endl;
-  }
+  // else if( TString(prefix).Contains("zjets_53X_slim") ){
+  //   MCscalefactor = 478.0 / 457.0;
+  //   cout << "DYJets: scale cross section by 478/457" << endl;
+  // }
 
   isdata_ = isData ? 1 : 0;
 
