@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-08";
+const char* iter                 = "V00-02-10";
 const char* jsonfilename         = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt";
 
 // 19.5 merged json from Dunser
