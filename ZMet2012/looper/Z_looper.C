@@ -104,7 +104,7 @@ int getJetIndex( LorentzVector thisJet , FactorizedJetCorrector *jet_corrector_p
   return 0;
 }
 
-D//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 
 float getJetUnc( const float jetcorpt, const float jeteta , JetCorrectionUncertainty *pfUncertainty ){
 
