@@ -34,7 +34,11 @@ void pickSkimIfExists( TChain *ch, const std::string& base, const std::string& s
   return;
 }
 
-void processBaby( TString outfileid = "tt_test", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged_ntuple_157.root" )
+
+void processBaby( TString outfileid = "ttwjets_merged_ntuple_1_smallTree", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/TTWJets_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged_ntuple_1.root" )
+ //void processBaby( TString outfileid = "tt_test", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged_ntuple_157.root" )
+//void processBaby( TString outfileid = "dy4j_test", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DY4JetsToLL_M-50_TuneZ2Star_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/merged_ntuple_150.root" )
+//void processBaby( TString outfileid = "dyj_test", TString infile = "/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged_ntuple_951.root" )
 {
 
   //---------------------------------------------------------------
@@ -42,7 +46,7 @@ void processBaby( TString outfileid = "tt_test", TString infile = "/hadoop/cms/s
   //---------------------------------------------------------------
   
   const char* version    = "V00-00-02";
-  const char* jsonfile   = "jsons/Cert_198050-207279_8TeV_19p47ifb_Collisions12_JSON_goodruns.txt";
+  const char* jsonfile   = "jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
   const bool  useMCSkims = true;
 
   cout << "Version : " << version     << endl;
@@ -82,8 +86,8 @@ void processBaby( TString outfileid = "tt_test", TString infile = "/hadoop/cms/s
   char* sample;
   //MC
   if (infile.Contains("TTJets_MassiveBinDECAY_TuneZ2star_8TeV"))     sample = Form("ttall_%s",  	 outfileid.Data());
-  else if (infile.Contains("TTJets_FullLeptMGDecays_8TeV-madgraph")) sample = Form("ttdl_lmg_%s",  	 outfileid.Data());
-  else if (infile.Contains("TTJets_SemiLeptMGDecays_8TeV-madgraph")) sample = Form("ttsl_lmg_%s",  	 outfileid.Data());
+  else if (infile.Contains("TTJets_FullLeptMGDecays_8TeV-madgraph")) sample = Form("ttall_mgdl_%s",  	 outfileid.Data());
+  else if (infile.Contains("TTJets_SemiLeptMGDecays_8TeV-madgraph")) sample = Form("ttall_mgsl_%s",  	 outfileid.Data());
   else if (infile.Contains("WJetsToLNu"))                            sample = Form("wjets_%s",           outfileid.Data());
   else if (infile.Contains("W1JetsToLNu"))                           sample = Form("w1jets_%s",          outfileid.Data());
   else if (infile.Contains("W2JetsToLNu"))                           sample = Form("w2jets_%s",          outfileid.Data());
@@ -110,8 +114,6 @@ void processBaby( TString outfileid = "tt_test", TString infile = "/hadoop/cms/s
   else if (infile.Contains("WZZNoGstarJets"))                        sample = Form("wzzjets_%s",         outfileid.Data());
   else if (infile.Contains("WWZNoGstarJets"))                        sample = Form("wwzjets_%s",         outfileid.Data());
   else if (infile.Contains("WWWJets"))                               sample = Form("wwwjets_%s",         outfileid.Data());
-  else if (infile.Contains("WWGJets"))                               sample = Form("wwgjets_%s",         outfileid.Data());
-  else if (infile.Contains("TBZ"))                                   sample = Form("tbz_%s",             outfileid.Data());
   else if (infile.Contains("TTZJets"))                               sample = Form("ttzjets_%s",         outfileid.Data());
   else if (infile.Contains("TTWJets"))                               sample = Form("ttwjets_%s",         outfileid.Data());
   else if (infile.Contains("TTGJets"))                               sample = Form("ttgjets_%s",         outfileid.Data());

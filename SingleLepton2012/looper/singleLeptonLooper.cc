@@ -697,20 +697,6 @@ list<Candidate> recoHadronicTop(std::vector<float> sigma_jets, bool isData,
       minimizer->ExecuteCommand("MIGRAD", 0, 0);
 
       double c1 = minimizer->GetParameter(0);
-      if (c1!=c1) {
-	cout<<"[recoHadronicTop] ERROR: c1 parameter is NAN! Skipping this parton combination: "
-	    <<"run: "<<evt_run()
-	    <<" lumi: "<<evt_lumiBlock()
-	    <<" event: "<<evt_event();  
-	for (int i=0; i<(int)jets.size(); ++i) 
-	  if (jets[i].mass2()<0.001) 
-	    cout<<". Found jet "<<i
-		<<" with mass2 "<<jets[i].mass2()
-		<<"!!!"
-		<<endl;
-	continue;
-      }
-
       double c2 = fc2(c1, jets[i].mass2(), jets[j].mass2(), hadW.mass2());
                 
       delete minimizer;
@@ -890,7 +876,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
     set_goodrun_file( g_json );
 
     //    if( TString(prefix).Contains("ttall_massivebin") ) 
-    set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer12MC_PUS10_19fb_Zselection.root",true);
+    set_vtxreweight_rootfile("vtxreweight/vtxreweight_Summer12_DR53X-PU_S10_9p7ifb_Zselection.root",true);
 
     //   weight3D_init( "vtxreweight/Weight3D.root" );
 
@@ -1016,19 +1002,6 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
   TIter fileIter(listOfFiles);
   TChainElement* currentFile = 0;
 
-  // test chain
-  if (!chain)
-    {
-      throw std::invalid_argument("at::ScanChain: chain is NULL!");
-    }
-  if (chain->GetListOfFiles()->GetEntries()<1)
-    {
-      throw std::invalid_argument("at::ScanChain: chain has no files!");
-    }
-  if (not chain->GetFile())
-    {
-      throw std::invalid_argument("at::ScanChain: chain has no files or file path is invalid!");
-    }
   int nSkip_els_conv_dist = 0;
 
   float netot  = 0.;
@@ -1043,16 +1016,12 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
 
     cout << currentFile->GetTitle() << endl;
 
-    if (!f || f->IsZombie()) {
-      throw std::runtime_error(Form("ERROR::File from TChain is invalid or corrupt: %s", currentFile->GetTitle()));
+    if( !f || f->IsZombie() ) {
+      cout << "Skipping bad input file: " << currentFile->GetTitle() << endl;
+      continue; //exit(1);                                                                                             
     }
-    
-    // get the trees in each file
-    // TTree *tree = (TTree*)f->Get("Events");
-    TTree *tree = dynamic_cast<TTree*>(f->Get("Events"));
-    if (!tree || tree->IsZombie()) {
-      throw std::runtime_error(Form("ERROR::File from TChain has an invalid TTree or is corrupt: %s", currentFile->GetTitle()));
-    }
+
+    TTree *tree = (TTree*)f->Get("Events");
 
     //Matevz
     TTreeCache::SetLearnEntries(100);
@@ -1109,6 +1078,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       }
 
       TString datasetname(evt_dataset().at(0));
+      bool isperiodA = datasetname.Contains("2011A") ? true : false;
       //      cout<<"dataset: "<<datasetname.Data()<<" isperiodA: "<<isperiodA<<endl;
 
       // skip stop-pair events with m(stop) > 850 GeV
@@ -2722,7 +2692,7 @@ int singleLeptonLooper::ScanChain(TChain* chain, char *prefix, float kFactor, in
       //      sort(vpfjets_p4.begin(), vpfjets_p4.end(), sortByPt);
       sort(vipfjets_p4.begin(), vipfjets_p4.end(), sortIP4ByPt);
 
-      for( int i = 0 ; i < (int)vipfjets_p4.size() ; ++i ){
+      for( int i = 0 ; i < vipfjets_p4.size() ; ++i ){
 	pfjets_.push_back(vipfjets_p4.at(i).p4obj);
 	pfjets_csv_.push_back(pfjets_combinedSecondaryVertexBJetTag().at(vipfjets_p4.at(i).p4ind));
 	pfjets_qgtag_.push_back(QGtagger(vipfjets_p4.at(i).p4obj,vipfjets_p4.at(i).p4ind,qglikeli_));
