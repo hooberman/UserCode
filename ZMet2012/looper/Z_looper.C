@@ -104,6 +104,15 @@ int getJetIndex( LorentzVector thisJet , FactorizedJetCorrector *jet_corrector_p
   return 0;
 }
 
+D//--------------------------------------------------------------------
+
+float getJetUnc( const float jetcorpt, const float jeteta , JetCorrectionUncertainty *pfUncertainty ){
+
+  pfUncertainty->setJetEta(jeteta);
+  pfUncertainty->setJetPt(jetcorpt);   // here you must use the CORRECTED jet pt
+  return pfUncertainty->getUncertainty(true);
+}
+
 int getLeptonID( LorentzVector thisLepton ){
 
   for (unsigned int imu = 0 ; imu < mus_p4().size() ; imu++) {
@@ -247,6 +256,17 @@ double dRbetweenVectors(const LorentzVector &vec1,
   double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
   double deta = vec1.Eta() - vec2.Eta();
   return sqrt(dphi*dphi + deta*deta);
+}
+
+//--------------------------------------------------------------------
+
+bool isOverlap( const LorentzVector& thisp4, const vector<LorentzVector>& p4vec, float dRthresh ){
+
+  for (unsigned int i=0; i<p4vec.size(); ++i) {
+    if (dRbetweenVectors(thisp4,p4vec.at(i)) < dRthresh) return true;
+  }
+
+  return false;
 }
 
 //--------------------------------------------------------------------
@@ -2167,6 +2187,15 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       vecJetPt_ = jetSystem.pt();
 
       //-------------------------------------------------------------
+      // loop over gen particles to find b quarks
+      //-------------------------------------------------------------
+
+      vector<LorentzVector> genbquarks;
+      for (unsigned int igen = 0; igen < cms2.genps_id().size(); ++igen) {
+	if (abs(cms2.genps_id().at(igen))==5) genbquarks.push_back(cms2.genps_p4().at(igen));
+      }
+
+      //-------------------------------------------------------------
       // variables for lljj mass bump
       //-------------------------------------------------------------
 
@@ -2180,48 +2209,64 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	int jetidx1 = getJetIndex( goodJets.at(0) , jet_corrector_pfL1FastJetL2L3 );
 	tche1_      = pfjets_trackCountingHighEffBJetTag().at(jetidx1);
 	csv1_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx1);
-      }
+	jetunc1_    = getJetUnc( jet1_->pt(), jet1_->eta(), pfUncertainty );
+	jetgenb1_   = isOverlap( *jet1_, genbquarks, 0.4 );
+       }
       if( goodJets.size()  > 1 ){
 	jet2_       = &(goodJets.at(1));
 	int jetidx2 = getJetIndex( goodJets.at(1) , jet_corrector_pfL1FastJetL2L3 );
 	tche2_      = pfjets_trackCountingHighEffBJetTag().at(jetidx2);
 	csv2_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx2);
+	jetunc2_    = getJetUnc( jet2_->pt(), jet2_->eta(), pfUncertainty );
+	jetgenb2_   = isOverlap( *jet2_, genbquarks, 0.4 );
       }
       if( goodJets.size()  > 2 ){
 	jet3_       = &(goodJets.at(2));
 	int jetidx3 = getJetIndex( goodJets.at(2) , jet_corrector_pfL1FastJetL2L3 );
 	tche3_      = pfjets_trackCountingHighEffBJetTag().at(jetidx3);
 	csv3_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx3);
+	jetunc3_    = getJetUnc( jet3_->pt(), jet3_->eta(), pfUncertainty );
+	jetgenb3_   = isOverlap( *jet3_, genbquarks, 0.4 );
       }
       if( goodJets.size()  > 3 ){
 	jet4_       = &(goodJets.at(3));
 	int jetidx4 = getJetIndex( goodJets.at(3) , jet_corrector_pfL1FastJetL2L3 );
 	tche4_      = pfjets_trackCountingHighEffBJetTag().at(jetidx4);
 	csv4_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx4);
+	jetunc4_    = getJetUnc( jet4_->pt(), jet4_->eta(), pfUncertainty );
+	jetgenb4_   = isOverlap( *jet4_, genbquarks, 0.4 );
       }
       if( goodJets.size()  > 4 ){
 	jet5_       = &(goodJets.at(4));
 	int jetidx5 = getJetIndex( goodJets.at(4) , jet_corrector_pfL1FastJetL2L3 );
 	tche5_      = pfjets_trackCountingHighEffBJetTag().at(jetidx5);
 	csv5_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx5);
+	jetunc5_    = getJetUnc( jet5_->pt(), jet5_->eta(), pfUncertainty );
+	jetgenb5_   = isOverlap( *jet5_, genbquarks, 0.4 );
       }
       if( goodJets.size()  > 5 ){
 	jet6_       = &(goodJets.at(5));
 	int jetidx6 = getJetIndex( goodJets.at(5) , jet_corrector_pfL1FastJetL2L3 );
 	tche6_      = pfjets_trackCountingHighEffBJetTag().at(jetidx6);
 	csv6_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx6);
+	jetunc6_    = getJetUnc( jet6_->pt(), jet6_->eta(), pfUncertainty );
+	jetgenb6_   = isOverlap( *jet6_, genbquarks, 0.4 );
       }
       if( goodJets.size()  > 6 ){
 	jet7_       = &(goodJets.at(6));
 	int jetidx7 = getJetIndex( goodJets.at(6) , jet_corrector_pfL1FastJetL2L3 );
 	tche7_      = pfjets_trackCountingHighEffBJetTag().at(jetidx7);
 	csv7_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx7);
+	jetunc7_    = getJetUnc( jet7_->pt(), jet7_->eta(), pfUncertainty );
+	jetgenb7_   = isOverlap( *jet7_, genbquarks, 0.4 );
       }
       if( goodJets.size()  > 7 ){
 	jet8_       = &(goodJets.at(7));
 	int jetidx8 = getJetIndex( goodJets.at(7) , jet_corrector_pfL1FastJetL2L3 );
 	tche8_      = pfjets_trackCountingHighEffBJetTag().at(jetidx8);
 	csv8_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx8);
+	jetunc8_    = getJetUnc( jet8_->pt(), jet8_->eta(), pfUncertainty );
+	jetgenb8_   = isOverlap( *jet8_, genbquarks, 0.4 );
       }
 
       // if( goodJets.size()  > 0 ) jet1_   = &(goodJets.at(0));
@@ -2232,6 +2277,21 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // if( goodJets.size()  > 5 ) jet6_   = &(goodJets.at(5));
       // if( goodJets.size()  > 6 ) jet7_   = &(goodJets.at(6));
       // if( goodJets.size()  > 7 ) jet8_   = &(goodJets.at(7));
+
+      // check for subtreshold jets that pass pt cut with JEC variation
+      // -- save up to 2
+      int nsubthresh = int(goodJetsUp.size() - goodJets.size());
+      if (nsubthresh > 0) {
+	// loop over goodJetsUp to find the highest pt jets NOT in goodJets
+	int nfoundsubthresh = 0;
+	for (unsigned int iup=0; iup<goodJetsUp.size(); ++iup) {
+	  if (isOverlap(goodJetsUp.at(iup), goodJets, 0.1)) continue;
+	  if (nfoundsubthresh == 0) subthreshjetup1_ = &(goodJetsUp.at(iup));
+	  else if (nfoundsubthresh == 1) subthreshjetup2_ = &(goodJetsUp.at(iup));
+	  ++nfoundsubthresh;
+	  if ( (nfoundsubthresh == nsubthresh) || (nfoundsubthresh > 1) ) break;
+	}
+      }
 
       if( goodBJets.size() > 0 ) bjet1_  = &(goodBJets.at(0));
       if( goodBJets.size() > 1 ) bjet2_  = &(goodBJets.at(1));
@@ -2351,6 +2411,37 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       if( nJets_ > 1)
 	mt2j_ = MT2J( evt_pfmet() , evt_pfmetPhi() , hyp_ll_p4()[hypIdx] , hyp_lt_p4()[hypIdx], goodJets );
       
+      //---------------------------------------------
+      // Look for gen Z, ttbar in relevant samples
+      //---------------------------------------------
+
+      if ( TString(prefix).Contains("zjets") || TString(prefix).Contains("ttbar") ) {
+	int ntops = 0;
+	for (unsigned int igen = 0; igen < cms2.genps_id().size(); ++igen) {
+	  int id = cms2.genps_id().at(igen);
+	  if ( (id == 23) && TString(prefix).Contains("zjets") ) {
+	    genz_ = &(cms2.genps_p4().at(igen));
+	    break;
+	  } else if ( (id == 6) && TString(prefix).Contains("ttbar") ) {
+	    gent_ = &(cms2.genps_p4().at(igen));
+	    ++ntops;
+	  } else if ( (id == -6) && TString(prefix).Contains("ttbar") ) {
+	    gentbar_ = &(cms2.genps_p4().at(igen));
+	    ++ntops;
+	  }
+	} // loop over genps
+
+	if (TString(prefix).Contains("ttbar")) {
+	  // make sure we only found 2 tops
+	  if (ntops == 2 && gent_ && gentbar_) {
+	    LorentzVector ttpair = *gent_ + *gentbar_;
+	    genttbar_ = &ttpair;
+	  } else {
+	    cout << __FILE__ << " " << __LINE__ << " ERROR! found " << ntops << " tops instead of 2!" << endl;
+	  }
+	}
+      } // if zjets or ttbar
+
       csc_       = cms2.evt_cscTightHaloId();
       hbhe_      = cms2.evt_hbheFilter();
       hcallaser_ = cms2.filt_hcalLaser();
@@ -2631,6 +2722,8 @@ void Z_looper::InitBabyNtuple (){
   jet6_		= 0;
   jet7_		= 0;
   jet8_		= 0;
+  subthreshjetup1_ = 0;
+  subthreshjetup2_ = 0;
   bjet1_	= 0;
   bjet2_	= 0;
   bjet3_       	= 0;
@@ -2644,6 +2737,10 @@ void Z_looper::InitBabyNtuple (){
   lep5_         = 0;
   lep6_         = 0;
   w_            = 0;
+  genz_         = 0;
+  gent_         = 0;
+  gentbar_      = 0;
+  genttbar_     = 0;
 
   tche1_   = -1;
   tche2_   = -1;
@@ -2662,6 +2759,24 @@ void Z_looper::InitBabyNtuple (){
   csv6_   = -99;
   csv7_   = -99;
   csv8_   = -99;
+
+  jetunc1_   = -1;
+  jetunc2_   = -1;
+  jetunc3_   = -1;
+  jetunc4_   = -1;
+  jetunc5_   = -1;
+  jetunc6_   = -1;
+  jetunc7_   = -1;
+  jetunc8_   = -1;
+
+  jetgenb1_   = -1;
+  jetgenb2_   = -1;
+  jetgenb3_   = -1;
+  jetgenb4_   = -1;
+  jetgenb5_   = -1;
+  jetgenb6_   = -1;
+  jetgenb7_   = -1;
+  jetgenb8_   = -1;
 
   mllgen_  = -999.;
   qscale_  = -999.;
@@ -2927,6 +3042,24 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("csv7",         &csv7_,         "csv7/F"       );
   babyTree_->Branch("csv8",         &csv8_,         "csv8/F"       );
 
+  babyTree_->Branch("jetunc1",     &jetunc1_,     "jetunc1/F"   );
+  babyTree_->Branch("jetunc2",     &jetunc2_,     "jetunc2/F"   );
+  babyTree_->Branch("jetunc3",     &jetunc3_,     "jetunc3/F"   );
+  babyTree_->Branch("jetunc4",     &jetunc4_,     "jetunc4/F"   );
+  babyTree_->Branch("jetunc5",     &jetunc5_,     "jetunc5/F"   );
+  babyTree_->Branch("jetunc6",     &jetunc6_,     "jetunc6/F"   );
+  babyTree_->Branch("jetunc7",     &jetunc7_,     "jetunc7/F"   );
+  babyTree_->Branch("jetunc8",     &jetunc8_,     "jetunc8/F"   );
+
+  babyTree_->Branch("jetgenb1",     &jetgenb1_,     "jetgenb1/I"   );
+  babyTree_->Branch("jetgenb2",     &jetgenb2_,     "jetgenb2/I"   );
+  babyTree_->Branch("jetgenb3",     &jetgenb3_,     "jetgenb3/I"   );
+  babyTree_->Branch("jetgenb4",     &jetgenb4_,     "jetgenb4/I"   );
+  babyTree_->Branch("jetgenb5",     &jetgenb5_,     "jetgenb5/I"   );
+  babyTree_->Branch("jetgenb6",     &jetgenb6_,     "jetgenb6/I"   );
+  babyTree_->Branch("jetgenb7",     &jetgenb7_,     "jetgenb7/I"   );
+  babyTree_->Branch("jetgenb8",     &jetgenb8_,     "jetgenb8/I"   );
+
   //met stuff
   babyTree_->Branch("pfmett1new",      &pfmett1new_,      "pfmett1new/F"    );
   babyTree_->Branch("pfmett1newphi",   &pfmett1newphi_,   "pfmett1newphi/F" );
@@ -3055,11 +3188,17 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("jet6"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet6_	);
   babyTree_->Branch("jet7"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet7_	);
   babyTree_->Branch("jet8"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet8_	);
+  babyTree_->Branch("subthreshjetup1", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &subthreshjetup1_ );
+  babyTree_->Branch("subthreshjetup2", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &subthreshjetup2_ );
 
   babyTree_->Branch("bjet1"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet1_	);
   babyTree_->Branch("bjet2"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet2_	);
   babyTree_->Branch("bjet3"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet3_	);
   babyTree_->Branch("bjet4"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &bjet4_	);
+  babyTree_->Branch("genz"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &genz_	);
+  babyTree_->Branch("gent"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &gent_	);
+  babyTree_->Branch("gentbar" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &gentbar_	);
+  babyTree_->Branch("genttbar", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &genttbar_  );
 
   babyTree_->Branch("csc"       ,  &csc_       ,  "csc/I");  
   babyTree_->Branch("hbhe"      ,  &hbhe_      ,  "hbhe/I");  
