@@ -37,10 +37,8 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
   *ofile <<      "jmax 3 number of background"                                                                << endl;
   *ofile <<      "kmax * number of nuisance parameters"                                                       << endl;
   *ofile << Form("Observation %i                                                           ",datatot)         << endl;
-  //*ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
-  //*ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                << endl;
-  *ofile << Form("shapes      *   * %s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" ,  name) << endl;
-  *ofile << Form("shapes data_obs * %s.root  histo_Data" ,  name )                << endl;
+  *ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
+  *ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                << endl;
   *ofile <<      "bin                                  1        1      1      1"                              << endl;
   *ofile << Form("process                        %s     Zbkg  OFbkg  VZbkg" , name )                          << endl;
   *ofile <<      "process                              0        1      2      3"                              << endl;
@@ -51,8 +49,7 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float VZt
   *ofile <<      "JES_shape                shape     1.0       -       -      -"                              << endl;
   *ofile <<      "errZ                     shape       -     1.0       -      -"                              << endl;
   *ofile <<      "errOF                    shape       -       -     1.0      -"                              << endl;
-//*ofile <<      "errVZ                    shape       -       -       -    1.0"                              << endl;
-  *ofile <<      "wz                       shape       -       -       -    1.0"                              << endl;
+  *ofile <<      "errVZ                    shape       -       -       -    1.0"                              << endl;
   
   ofile->close();
 
@@ -67,13 +64,13 @@ void makeSMSCards(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-02-14/wzsms_baby.root");
-  char* version = (char*) "V00-02-11";
+  char* version = (char*) "V00-02-09";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("4.980 * trgeff * btagweight * davtxweight * (1./100000.)");
+  TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./100000.)");
   //TCut weight   ("4980 * trgeff * btagweight * davtxweight * (1./52600.)");
   //TCut weight   ("4.98 * trgeff * btagweight * davtxweight * (1000./52600.)");
 
@@ -230,10 +227,8 @@ void makeSMSCards(){
   TH1F* histo_OFbkg_errDown      = new TH1F("histo_OFbkg_errOFDown","histo_OFbkg_errOFDown",nbins,0,nbins);
 
   TH1F* histo_VZbkg              = new TH1F("histo_VZbkg"          ,"histo_VZbkg"          ,nbins,0,nbins);
-  //TH1F* histo_VZbkg_errUp        = new TH1F("histo_VZbkg_errVZUp"  ,"histo_VZbkg_errVZUp"  ,nbins,0,nbins);
-  //TH1F* histo_VZbkg_errDown      = new TH1F("histo_VZbkg_errVZDown","histo_VZbkg_errVZDown",nbins,0,nbins);
-  TH1F* histo_VZbkg_errUp        = new TH1F("histo_VZbkg_wzUp"     ,"histo_VZbkg_wzUp"  ,nbins,0,nbins);
-  TH1F* histo_VZbkg_errDown      = new TH1F("histo_VZbkg_wzDown"   ,"histo_VZbkg_wzDown",nbins,0,nbins);
+  TH1F* histo_VZbkg_errUp        = new TH1F("histo_VZbkg_errVZUp"  ,"histo_VZbkg_errVZUp"  ,nbins,0,nbins);
+  TH1F* histo_VZbkg_errDown      = new TH1F("histo_VZbkg_errVZDown","histo_VZbkg_errVZDown",nbins,0,nbins);
       
   for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
 
