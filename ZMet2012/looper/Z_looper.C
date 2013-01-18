@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-10";
+const char* iter                 = "V00-02-11";
 const char* jsonfilename         = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt";
 
 // 19.5 merged json from Dunser
@@ -2191,8 +2191,10 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       //-------------------------------------------------------------
 
       vector<LorentzVector> genbquarks;
-      for (unsigned int igen = 0; igen < cms2.genps_id().size(); ++igen) {
-	if (abs(cms2.genps_id().at(igen))==5) genbquarks.push_back(cms2.genps_p4().at(igen));
+      if (!isData) {
+	for (unsigned int igen = 0; igen < cms2.genps_id().size(); ++igen) {
+	  if (abs(cms2.genps_id().at(igen))==5) genbquarks.push_back(cms2.genps_p4().at(igen));
+	}
       }
 
       //-------------------------------------------------------------
@@ -2415,7 +2417,7 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       // Look for gen Z, ttbar in relevant samples
       //---------------------------------------------
 
-      if ( TString(prefix).Contains("zjets") || TString(prefix).Contains("ttbar") ) {
+      if ( !isData && TString(prefix).Contains("zjets") || TString(prefix).Contains("ttbar") ) {
 	int ntops = 0;
 	for (unsigned int igen = 0; igen < cms2.genps_id().size(); ++igen) {
 	  int id = cms2.genps_id().at(igen);
