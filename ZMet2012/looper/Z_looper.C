@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-11";
+const char* iter                 = "V00-02-12";
 const char* jsonfilename         = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt";
 
 // 19.5 merged json from Dunser
@@ -873,6 +873,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       pfmetphi_ = cms2.evt_pfmetPhi();
       pfsumet_  = cms2.evt_pfsumet();
       
+      vtxidx_   = firstGoodVertex();
+
       pfmett1_     = cms2.evt_pfmet_type1cor();
       pfmett1phi_  = cms2.evt_pfmetPhi_type1cor();
 
@@ -2213,6 +2215,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	csv1_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx1);
 	jetunc1_    = getJetUnc( jet1_->pt(), jet1_->eta(), pfUncertainty );
 	jetgenb1_   = isOverlap( *jet1_, genbquarks, 0.4 );
+	jet1beta1_01_  = pfjet_beta(jetidx1,1,0.1);
+	jet1beta2_01_  = pfjet_beta(jetidx1,2,0.1);
+	jet1beta1_05_  = pfjet_beta(jetidx1,1,0.5);
+	jet1beta2_05_  = pfjet_beta(jetidx1,2,0.5);
+	jet1beta1_10_  = pfjet_beta(jetidx1,1,1.0);
+	jet1beta2_10_  = pfjet_beta(jetidx1,2,1.0);
        }
       if( goodJets.size()  > 1 ){
 	jet2_       = &(goodJets.at(1));
@@ -2221,6 +2229,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	csv2_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx2);
 	jetunc2_    = getJetUnc( jet2_->pt(), jet2_->eta(), pfUncertainty );
 	jetgenb2_   = isOverlap( *jet2_, genbquarks, 0.4 );
+	jet2beta1_01_  = pfjet_beta(jetidx2,1,0.1);
+	jet2beta2_01_  = pfjet_beta(jetidx2,2,0.1);
+	jet2beta1_05_  = pfjet_beta(jetidx2,1,0.5);
+	jet2beta2_05_  = pfjet_beta(jetidx2,2,0.5);
+	jet2beta1_10_  = pfjet_beta(jetidx2,1,1.0);
+	jet2beta2_10_  = pfjet_beta(jetidx2,2,1.0);
       }
       if( goodJets.size()  > 2 ){
 	jet3_       = &(goodJets.at(2));
@@ -2229,6 +2243,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	csv3_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx3);
 	jetunc3_    = getJetUnc( jet3_->pt(), jet3_->eta(), pfUncertainty );
 	jetgenb3_   = isOverlap( *jet3_, genbquarks, 0.4 );
+	jet3beta1_01_  = pfjet_beta(jetidx3,1,0.1);
+	jet3beta2_01_  = pfjet_beta(jetidx3,2,0.1);
+	jet3beta1_05_  = pfjet_beta(jetidx3,1,0.5);
+	jet3beta2_05_  = pfjet_beta(jetidx3,2,0.5);
+	jet3beta1_10_  = pfjet_beta(jetidx3,1,1.0);
+	jet3beta2_10_  = pfjet_beta(jetidx3,2,1.0);
       }
       if( goodJets.size()  > 3 ){
 	jet4_       = &(goodJets.at(3));
@@ -2237,6 +2257,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	csv4_       = pfjets_combinedSecondaryVertexBJetTag().at(jetidx4);
 	jetunc4_    = getJetUnc( jet4_->pt(), jet4_->eta(), pfUncertainty );
 	jetgenb4_   = isOverlap( *jet4_, genbquarks, 0.4 );
+	jet4beta1_01_  = pfjet_beta(jetidx4,1,0.1);
+	jet4beta2_01_  = pfjet_beta(jetidx4,2,0.1);
+	jet4beta1_05_  = pfjet_beta(jetidx4,1,0.5);
+	jet4beta2_05_  = pfjet_beta(jetidx4,2,0.5);
+	jet4beta1_10_  = pfjet_beta(jetidx4,1,1.0);
+	jet4beta2_10_  = pfjet_beta(jetidx4,2,1.0);
       }
       if( goodJets.size()  > 4 ){
 	jet5_       = &(goodJets.at(4));
@@ -2570,6 +2596,38 @@ void Z_looper::fillUnderOverFlow(TH1F *h1, float value, float weight){
 //--------------------------------------------------------------------
 
 void Z_looper::InitBabyNtuple (){
+
+  jet1beta1_01_ = -1;
+  jet2beta1_01_ = -1;
+  jet3beta1_01_ = -1;
+  jet4beta1_01_ = -1;
+
+  jet1beta2_01_ = -1;
+  jet2beta2_01_ = -1;
+  jet3beta2_01_ = -1;
+  jet4beta2_01_ = -1;
+
+  jet1beta1_05_ = -1;
+  jet2beta1_05_ = -1;
+  jet3beta1_05_ = -1;
+  jet4beta1_05_ = -1;
+
+  jet1beta2_05_ = -1;
+  jet2beta2_05_ = -1;
+  jet3beta2_05_ = -1;
+  jet4beta2_05_ = -1;
+
+  jet1beta1_10_ = -1;
+  jet2beta1_10_ = -1;
+  jet3beta1_10_ = -1;
+  jet4beta1_10_ = -1;
+
+  jet1beta2_10_ = -1;
+  jet2beta2_10_ = -1;
+  jet3beta2_10_ = -1;
+  jet4beta2_10_ = -1;
+
+  vtxidx_    = -1;
 
   //electron-matched jet stuff
   drjet_ll_       = -999999.;
@@ -2912,6 +2970,7 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
 
   //event stuff
   babyTree_->Branch("rho",          &rho_,          "rho/F"          );
+  babyTree_->Branch("vtxidx",       &vtxidx_,       "vtxidx/I"       );
   babyTree_->Branch("zdilep",       &zdilep_,       "zdilep/I"       );
   babyTree_->Branch("dataset",      &dataset_,      "dataset[500]/C" );
   babyTree_->Branch("run",          &run_,          "run/I"          );
@@ -2972,6 +3031,36 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ngenmus",      &ngenmus_,      "ngenmus/I"      );
   babyTree_->Branch("ngentaus",     &ngentaus_,     "ngentaus/I"     );
   babyTree_->Branch("ngenleps",     &ngenleps_,     "ngenleps/I"     );
+
+  babyTree_->Branch("jet1beta1_01",    &jet1beta1_01_,    "jet1beta1_01/F"    );
+  babyTree_->Branch("jet2beta1_01",    &jet2beta1_01_,    "jet2beta1_01/F"    );
+  babyTree_->Branch("jet3beta1_01",    &jet3beta1_01_,    "jet3beta1_01/F"    );
+  babyTree_->Branch("jet4beta1_01",    &jet4beta1_01_,    "jet4beta1_01/F"    );
+
+  babyTree_->Branch("jet1beta2_01",    &jet1beta2_01_,    "jet1beta2_01/F"    );
+  babyTree_->Branch("jet2beta2_01",    &jet2beta2_01_,    "jet2beta2_01/F"    );
+  babyTree_->Branch("jet3beta2_01",    &jet3beta2_01_,    "jet3beta2_01/F"    );
+  babyTree_->Branch("jet4beta2_01",    &jet4beta2_01_,    "jet4beta2_01/F"    );
+
+  babyTree_->Branch("jet1beta1_05",    &jet1beta1_05_,    "jet1beta1_05/F"    );
+  babyTree_->Branch("jet2beta1_05",    &jet2beta1_05_,    "jet2beta1_05/F"    );
+  babyTree_->Branch("jet3beta1_05",    &jet3beta1_05_,    "jet3beta1_05/F"    );
+  babyTree_->Branch("jet4beta1_05",    &jet4beta1_05_,    "jet4beta1_05/F"    );
+
+  babyTree_->Branch("jet1beta2_05",    &jet1beta2_05_,    "jet1beta2_05/F"    );
+  babyTree_->Branch("jet2beta2_05",    &jet2beta2_05_,    "jet2beta2_05/F"    );
+  babyTree_->Branch("jet3beta2_05",    &jet3beta2_05_,    "jet3beta2_05/F"    );
+  babyTree_->Branch("jet4beta2_05",    &jet4beta2_05_,    "jet4beta2_05/F"    );
+
+  babyTree_->Branch("jet1beta1_10",    &jet1beta1_10_,    "jet1beta1_10/F"    );
+  babyTree_->Branch("jet2beta1_10",    &jet2beta1_10_,    "jet2beta1_10/F"    );
+  babyTree_->Branch("jet3beta1_10",    &jet3beta1_10_,    "jet3beta1_10/F"    );
+  babyTree_->Branch("jet4beta1_10",    &jet4beta1_10_,    "jet4beta1_10/F"    );
+
+  babyTree_->Branch("jet1beta2_10",    &jet1beta2_10_,    "jet1beta2_10/F"    );
+  babyTree_->Branch("jet2beta2_10",    &jet2beta2_10_,    "jet2beta2_10/F"    );
+  babyTree_->Branch("jet3beta2_10",    &jet3beta2_10_,    "jet3beta2_10/F"    );
+  babyTree_->Branch("jet4beta2_10",    &jet4beta2_10_,    "jet4beta2_10/F"    );
 
   babyTree_->Branch("ngennue",      &ngennue_,      "ngennue/I"      );
   babyTree_->Branch("ngennum",      &ngennum_,      "ngennum/I"      );

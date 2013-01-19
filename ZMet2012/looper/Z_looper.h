@@ -392,6 +392,38 @@ class Z_looper
   Int_t   trkfail_;
   Int_t   eebadsc_;
 
+  Float_t jet1beta1_01_;
+  Float_t jet2beta1_01_;
+  Float_t jet3beta1_01_;
+  Float_t jet4beta1_01_;
+
+  Float_t jet1beta2_01_;
+  Float_t jet2beta2_01_;
+  Float_t jet3beta2_01_;
+  Float_t jet4beta2_01_;
+
+  Float_t jet1beta1_05_;
+  Float_t jet2beta1_05_;
+  Float_t jet3beta1_05_;
+  Float_t jet4beta1_05_;
+
+  Float_t jet1beta2_05_;
+  Float_t jet2beta2_05_;
+  Float_t jet3beta2_05_;
+  Float_t jet4beta2_05_;
+
+  Float_t jet1beta1_10_;
+  Float_t jet2beta1_10_;
+  Float_t jet3beta1_10_;
+  Float_t jet4beta1_10_;
+
+  Float_t jet1beta2_10_;
+  Float_t jet2beta2_10_;
+  Float_t jet3beta2_10_;
+  Float_t jet4beta2_10_;
+
+  Int_t   vtxidx_;
+
   TH2F* hunc_eta1;
   TH2F* hunc_eta2;
   TH2F* hunc_eta3;
