@@ -11,6 +11,7 @@
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 class TChain;
+class FactorizedJetCorrector;
 
 class makePhotonBabies
 {
@@ -25,6 +26,9 @@ class makePhotonBabies
   void InitBabyNtuple ();
   void FillBabyNtuple ();
   void CloseBabyNtuple ();
+  float dRGenJet ( LorentzVector p4, bool isData, float ptcut = 20.0 );
+  int isGenQGLMatched ( LorentzVector p4, bool isData, float dR = 0.4 );
+  int getJetIndex( LorentzVector thisJet , FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3 );
   void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false,
                   int nEvents = -1, float kFactor = 1.);
   void  bookHistos();
@@ -211,6 +215,48 @@ class makePhotonBabies
   Int_t   trkfail_;
   Int_t   eebadsc_;
   
+  Float_t jet1beta1_01_;
+  Float_t jet2beta1_01_;
+  Float_t jet3beta1_01_;
+  Float_t jet4beta1_01_;
+
+  Float_t jet1beta2_01_;
+  Float_t jet2beta2_01_;
+  Float_t jet3beta2_01_;
+  Float_t jet4beta2_01_;
+
+  Float_t jet1beta1_05_;
+  Float_t jet2beta1_05_;
+  Float_t jet3beta1_05_;
+  Float_t jet4beta1_05_;
+
+  Float_t jet1beta2_05_;
+  Float_t jet2beta2_05_;
+  Float_t jet3beta2_05_;
+  Float_t jet4beta2_05_;
+
+  Float_t jet1beta1_10_;
+  Float_t jet2beta1_10_;
+  Float_t jet3beta1_10_;
+  Float_t jet4beta1_10_;
+
+  Float_t jet1beta2_10_;
+  Float_t jet2beta2_10_;
+  Float_t jet3beta2_10_;
+  Float_t jet4beta2_10_;
+
+  Int_t   vtxidx_;
+
+  Int_t   jet1flav_;
+  Int_t   jet2flav_;
+  Int_t   jet3flav_;
+  Int_t   jet4flav_;
+
+  Float_t jet1drgen_;
+  Float_t jet2drgen_;
+  Float_t jet3drgen_;
+  Float_t jet4drgen_;
+
   TH1F* tcmetTemplate[3][7][4];
   TH1F* pfmetTemplate[3][7][4];
   TH1F* tcmetNewTemplate[3][7][4];

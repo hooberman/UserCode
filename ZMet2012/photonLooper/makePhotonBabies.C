@@ -48,12 +48,13 @@
 #include "TLorentzVector.h"
 
 using namespace tas;
+class FactorizedJetCorrector;
 
 //--------------------------------------------------------------------
 
 const bool debug                = false;
 const float lumi                = 1.0;
-const char* iter                = "V00-02-00";
+const char* iter                = "V00-02-01";
 const char* jsonfilename        = "../jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
 
 // https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1968.html   19.3 fb-1
@@ -98,6 +99,103 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
   std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
     already_seen.insert(id);
   return !ret.second;
+}
+
+//--------------------------------------------------------------------
+
+float makePhotonBabies::dRGenJet ( LorentzVector p4, bool isData, float ptcut ) {
+
+  if( isData ) return -99;
+
+  float mindr = 999;
+
+  for( int i = 0 ; i < genjets_p4().size() ; i++){
+
+    // require genjet pt > ptcut
+    if( genjets_p4().at(i).pt() < ptcut ) continue;
+
+    // dR(jet,genjet)
+    float dr = ROOT::Math::VectorUtil::DeltaR( p4 , genjets_p4().at(i) );
+
+    // store minimum dR
+    if( dr < mindr ) mindr = dr;
+  }
+
+  return mindr;
+}
+
+
+int makePhotonBabies::isGenQGLMatched ( LorentzVector p4, bool isData, float dR ) {
+
+  if( isData ) return -99;
+
+  //Start from the end that seems to have the decay products of the W first
+        
+  for (int igen = (genps_p4().size()-1); igen >-1; igen--) {
+
+    float deltaR = ROOT::Math::VectorUtil::DeltaR( p4 , genps_p4().at(igen) );
+    if ( deltaR > dR ) continue;
+
+    int id     = genps_id().at(igen);
+    int mothid = genps_id_mother().at(igen);
+    // cout<<"status 3 particle ID "<<id<<" mother "<<mothid                                                                         
+    //  <<" dR to jet "<<deltaR<<endl;
+
+    // light quark from W
+    if (abs(id)<6 && abs(mothid)==24)
+      return (mothid>0) ? 2 : -2;
+
+    // b quark from top
+    if (abs(id)==5 && abs(mothid)==6)
+      return (mothid>0) ? 1 : -1;
+
+    // lepton: e, mu, or tau
+    if (abs(id)==11 && abs(mothid)==24)
+      return (mothid>0) ? 11 : -11;
+    if (abs(id)==13 && abs(mothid)==24)
+      return (mothid>0) ? 13 : -13;
+    if (abs(id)==15 && abs(mothid)==24)
+      return (mothid>0) ? 15 : -15;
+
+    // gluon
+    if (abs(id)==21) return 3;
+
+    // light not from W
+    if (abs(id)<6) return 4;
+
+  }
+  
+  // no match
+  return -9;
+}
+
+int makePhotonBabies::getJetIndex( LorentzVector thisJet , FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3 ){
+
+  for (unsigned int ijet = 0 ; ijet < pfjets_p4().size() ; ijet++) {
+
+    if( fabs( pfjets_p4().at(ijet).eta() ) > 5.0 ) continue;
+
+    //---------------------------------------------------------------------------
+    // get total correction: L1FastL2L3 for MC, L1FastL2L3Residual for data
+    //---------------------------------------------------------------------------
+    
+    jet_corrector_pfL1FastJetL2L3->setRho   ( cms2.evt_ww_rho_vor()           );
+    jet_corrector_pfL1FastJetL2L3->setJetA  ( cms2.pfjets_area().at(ijet)     );
+    jet_corrector_pfL1FastJetL2L3->setJetPt ( cms2.pfjets_p4().at(ijet).pt()  );
+    jet_corrector_pfL1FastJetL2L3->setJetEta( cms2.pfjets_p4().at(ijet).eta() );
+    double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
+    
+    LorentzVector vjet   = corr * pfjets_p4().at(ijet);
+
+    if( fabs( vjet.pt() - thisJet.pt() ) < 0.1 && fabs( vjet.eta() - thisJet.eta() ) < 0.1 && fabs( vjet.phi() - thisJet.phi() ) < 0.1 ) return ijet;
+
+  }
+
+  cout << __FILE__ << " " << __LINE__ << " WARNING! should never get here!" << endl;
+  cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
+  cout << thisJet.pt() << " " << thisJet.eta() << " " << thisJet.phi() << endl;
+
+  return 0;
 }
 
 //--------------------------------------------------------------------
@@ -398,6 +496,8 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       pfmetphi_   = cms2.evt_pfmetPhi();
       pfsumet_    = cms2.evt_pfsumet();
 
+	  vtxidx_   = firstGoodVertex();
+
       pfmett1_     = cms2.evt_pfmet_type1cor();
       pfmett1phi_  = cms2.evt_pfmetPhi_type1cor();
 
@@ -668,17 +768,72 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.679 ) nbm_ ++;
 	if( pfjets_combinedSecondaryVertexBJetTag().at(ijet) > 0.898 ) nbt_ ++;
 
-      }
+	  }
 
       vecJetPt_ = jetSystem.pt();
 
       sort(goodJets.begin()    , goodJets.end()    , sortByPt);
 
-      if( goodJets.size()  > 0 ) jet1_   = &(goodJets.at(0));
-      if( goodJets.size()  > 1 ) jet2_   = &(goodJets.at(1));
-      if( goodJets.size()  > 2 ) jet3_   = &(goodJets.at(2));
-      if( goodJets.size()  > 3 ) jet4_   = &(goodJets.at(3));
-      
+      if( goodJets.size()  > 0 ) {
+		jet1flav_      = isGenQGLMatched ( goodJets.at(0) , isData );
+        jet1drgen_     = dRGenJet ( goodJets.at(0) , isData );
+		jet1_   = &(goodJets.at(0));
+
+		int jetidx1 = getJetIndex( goodJets.at(0) , jet_corrector_pfL1FastJetL2L3 );
+		jet1beta1_01_  = pfjet_beta(jetidx1,1,0.1);
+		jet1beta2_01_  = pfjet_beta(jetidx1,2,0.1);
+		jet1beta1_05_  = pfjet_beta(jetidx1,1,0.5);
+		jet1beta2_05_  = pfjet_beta(jetidx1,2,0.5);
+		jet1beta1_10_  = pfjet_beta(jetidx1,1,1.0);
+		jet1beta2_10_  = pfjet_beta(jetidx1,2,1.0);
+
+	  }
+
+      if( goodJets.size()  > 1 ) {
+		jet2flav_      = isGenQGLMatched ( goodJets.at(1) , isData );
+        jet2drgen_     = dRGenJet ( goodJets.at(1) , isData );
+		jet2_   = &(goodJets.at(1));
+
+		int jetidx2 = getJetIndex( goodJets.at(1) , jet_corrector_pfL1FastJetL2L3 );
+		jet2beta1_01_  = pfjet_beta(jetidx2,1,0.1);
+		jet2beta2_01_  = pfjet_beta(jetidx2,2,0.1);
+		jet2beta1_05_  = pfjet_beta(jetidx2,1,0.5);
+		jet2beta2_05_  = pfjet_beta(jetidx2,2,0.5);
+		jet2beta1_10_  = pfjet_beta(jetidx2,1,1.0);
+		jet2beta2_10_  = pfjet_beta(jetidx2,2,1.0);
+
+	  }
+
+      if( goodJets.size()  > 2 ) {
+		jet3flav_      = isGenQGLMatched ( goodJets.at(2) , isData );
+        jet3drgen_     = dRGenJet ( goodJets.at(2) , isData );
+		jet3_   = &(goodJets.at(2));
+
+		int jetidx3 = getJetIndex( goodJets.at(2) , jet_corrector_pfL1FastJetL2L3 );
+		jet3beta1_01_  = pfjet_beta(jetidx3,1,0.1);
+		jet3beta2_01_  = pfjet_beta(jetidx3,2,0.1);
+		jet3beta1_05_  = pfjet_beta(jetidx3,1,0.5);
+		jet3beta2_05_  = pfjet_beta(jetidx3,2,0.5);
+		jet3beta1_10_  = pfjet_beta(jetidx3,1,1.0);
+		jet3beta2_10_  = pfjet_beta(jetidx3,2,1.0);
+
+	  }
+
+      if( goodJets.size()  > 3 ) {
+		jet4flav_      = isGenQGLMatched ( goodJets.at(3) , isData );
+		jet4drgen_     = dRGenJet ( goodJets.at(3) , isData );
+		jet4_   = &(goodJets.at(3));
+
+		int jetidx4 = getJetIndex( goodJets.at(3) , jet_corrector_pfL1FastJetL2L3 );
+		jet4beta1_01_  = pfjet_beta(jetidx4,1,0.1);
+		jet4beta2_01_  = pfjet_beta(jetidx4,2,0.1);
+		jet4beta1_05_  = pfjet_beta(jetidx4,1,0.5);
+		jet4beta2_05_  = pfjet_beta(jetidx4,2,0.5);
+		jet4beta1_10_  = pfjet_beta(jetidx4,1,1.0);
+		jet4beta2_10_  = pfjet_beta(jetidx4,2,1.0);
+
+	  }      
+
       csc_       = cms2.evt_cscTightHaloId();
       hbhe_      = cms2.evt_hbheFilter();
       hcallaser_ = cms2.filt_hcalLaser();
@@ -743,6 +898,38 @@ void makePhotonBabies::InitBabyNtuple (){
   jet2_                         = 0;
   jet3_                         = 0;
   jet4_                         = 0;
+
+  jet1beta1_01_ = -1;
+  jet2beta1_01_ = -1;
+  jet3beta1_01_ = -1;
+  jet4beta1_01_ = -1;
+
+  jet1beta2_01_ = -1;
+  jet2beta2_01_ = -1;
+  jet3beta2_01_ = -1;
+  jet4beta2_01_ = -1;
+
+  jet1beta1_05_ = -1;
+  jet2beta1_05_ = -1;
+  jet3beta1_05_ = -1;
+  jet4beta1_05_ = -1;
+
+  jet1beta2_05_ = -1;
+  jet2beta2_05_ = -1;
+  jet3beta2_05_ = -1;
+  jet4beta2_05_ = -1;
+
+  jet1beta1_10_ = -1;
+  jet2beta1_10_ = -1;
+  jet3beta1_10_ = -1;
+  jet4beta1_10_ = -1;
+
+  jet1beta2_10_ = -1;
+  jet2beta2_10_ = -1;
+  jet3beta2_10_ = -1;
+  jet4beta2_10_ = -1;
+
+  vtxidx_ = -1;
 
   // trigger stuff
   hlt20_			= -9999;
@@ -883,6 +1070,16 @@ void makePhotonBabies::InitBabyNtuple (){
   jet_dphimet_			= -999999.;  
   jet_pfjetid_			= -999999;  
   jet_dpt_			= -999999.;  
+
+  jet1drgen_    = -9999.0;
+  jet2drgen_    = -9999.0;
+  jet3drgen_    = -9999.0;
+  jet4drgen_    = -9999.0;
+
+  jet1flav_     = -9999;
+  jet2flav_     = -9999;
+  jet3flav_     = -9999;
+  jet4flav_     = -9999;
 
 }
 
@@ -1028,7 +1225,7 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("hgg90"			,	&hgg90_  ,  "hgg90/I"    );  
 
   babyTree_->Branch("rho"			,	&rho_    ,  "rho/F"      );  
-
+  babyTree_->Branch("vtxidx",       &vtxidx_,       "vtxidx/I"       );
   //photon stuff
   babyTree_->Branch("ng"			,	&nPhotons_, "ng/I"); 
   babyTree_->Branch("etg"			,	&etg_,      "etg/F");	   
@@ -1087,6 +1284,46 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("jet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet2_	);
   babyTree_->Branch("jet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet3_	);
   babyTree_->Branch("jet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &jet4_	);
+
+  babyTree_->Branch("jet1flav",        &jet1flav_,        "jet1flav/I"        );
+  babyTree_->Branch("jet2flav",        &jet2flav_,        "jet2flav/I"        );
+  babyTree_->Branch("jet3flav",        &jet3flav_,        "jet3flav/I"        );
+  babyTree_->Branch("jet4flav",        &jet4flav_,        "jet4flav/I"        );
+
+  babyTree_->Branch("jet1drgen",       &jet1drgen_,       "jet1drgen/F"       );
+  babyTree_->Branch("jet2drgen",       &jet2drgen_,       "jet2drgen/F"       );
+  babyTree_->Branch("jet3drgen",       &jet3drgen_,       "jet3drgen/F"       );
+  babyTree_->Branch("jet4drgen",       &jet4drgen_,       "jet4drgen/F"       );
+
+  babyTree_->Branch("jet1beta1_01",    &jet1beta1_01_,    "jet1beta1_01/F"    );
+  babyTree_->Branch("jet2beta1_01",    &jet2beta1_01_,    "jet2beta1_01/F"    );
+  babyTree_->Branch("jet3beta1_01",    &jet3beta1_01_,    "jet3beta1_01/F"    );
+  babyTree_->Branch("jet4beta1_01",    &jet4beta1_01_,    "jet4beta1_01/F"    );
+
+  babyTree_->Branch("jet1beta2_01",    &jet1beta2_01_,    "jet1beta2_01/F"    );
+  babyTree_->Branch("jet2beta2_01",    &jet2beta2_01_,    "jet2beta2_01/F"    );
+  babyTree_->Branch("jet3beta2_01",    &jet3beta2_01_,    "jet3beta2_01/F"    );
+  babyTree_->Branch("jet4beta2_01",    &jet4beta2_01_,    "jet4beta2_01/F"    );
+
+  babyTree_->Branch("jet1beta1_05",    &jet1beta1_05_,    "jet1beta1_05/F"    );
+  babyTree_->Branch("jet2beta1_05",    &jet2beta1_05_,    "jet2beta1_05/F"    );
+  babyTree_->Branch("jet3beta1_05",    &jet3beta1_05_,    "jet3beta1_05/F"    );
+  babyTree_->Branch("jet4beta1_05",    &jet4beta1_05_,    "jet4beta1_05/F"    );
+
+  babyTree_->Branch("jet1beta2_05",    &jet1beta2_05_,    "jet1beta2_05/F"    );
+  babyTree_->Branch("jet2beta2_05",    &jet2beta2_05_,    "jet2beta2_05/F"    );
+  babyTree_->Branch("jet3beta2_05",    &jet3beta2_05_,    "jet3beta2_05/F"    );
+  babyTree_->Branch("jet4beta2_05",    &jet4beta2_05_,    "jet4beta2_05/F"    );
+
+  babyTree_->Branch("jet1beta1_10",    &jet1beta1_10_,    "jet1beta1_10/F"    );
+  babyTree_->Branch("jet2beta1_10",    &jet2beta1_10_,    "jet2beta1_10/F"    );
+  babyTree_->Branch("jet3beta1_10",    &jet3beta1_10_,    "jet3beta1_10/F"    );
+  babyTree_->Branch("jet4beta1_10",    &jet4beta1_10_,    "jet4beta1_10/F"    );
+
+  babyTree_->Branch("jet1beta2_10",    &jet1beta2_10_,    "jet1beta2_10/F"    );
+  babyTree_->Branch("jet2beta2_10",    &jet2beta2_10_,    "jet2beta2_10/F"    );
+  babyTree_->Branch("jet3beta2_10",    &jet3beta2_10_,    "jet3beta2_10/F"    );
+  babyTree_->Branch("jet4beta2_10",    &jet4beta2_10_,    "jet4beta2_10/F"    );
 
   babyTree_->Branch("csc"       ,  &csc_       ,  "csc/I");  
   babyTree_->Branch("hbhe"      ,  &hbhe_      ,  "hbhe/I");  
