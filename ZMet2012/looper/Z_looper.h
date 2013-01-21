@@ -424,6 +424,16 @@ class Z_looper
 
   Int_t   vtxidx_;
 
+  Int_t   jet1flav_;
+  Int_t   jet2flav_;
+  Int_t   jet3flav_;
+  Int_t   jet4flav_;
+
+  Float_t jet1drgen_;
+  Float_t jet2drgen_;
+  Float_t jet3drgen_;
+  Float_t jet4drgen_;
+
   TH2F* hunc_eta1;
   TH2F* hunc_eta2;
   TH2F* hunc_eta3;
