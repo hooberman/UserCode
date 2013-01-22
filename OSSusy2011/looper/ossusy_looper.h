@@ -82,15 +82,6 @@ class ossusy_looper
         void makeTree (char *prefix,bool doFakeApp, FREnum frmode );
         void closeTree ();
 	int PassGenSelectionOS( bool isData , float metcut , float htcut , float ycut );
-	float GenWeight( bool isData , int metcut, int htcut );
-	void lepEfficiencies( bool isData );
-
-	float stopPairCrossSection( float stopmass );
-	float gluinoPairCrossSection( float gluinomass );
-	TH1D*   stop_xsec_hist;
-	TFile*  stop_xsec_file;
-	TH1D*   gg_xsec_hist;
-	TFile*  gg_xsec_file;
 
 	bool initialized;
 
@@ -107,29 +98,12 @@ class ossusy_looper
 
         LorentzVector*  lep1_;
         LorentzVector*  lep2_;
-        LorentzVector*  genlep1_;
-        LorentzVector*  genlep2_;
         LorentzVector*  dilep_;
         LorentzVector*  jet_; 
-        LorentzVector*  jet2_; 
  
         // Baby ntuple variables
-	Int_t   subp_;
-	Int_t   foundPair_;
-	Int_t   reco1_;
-	Int_t   reco2_;
-	Int_t   genid1_;
-	Int_t   genid2_;
-	Float_t geff_;
-	Float_t geffmet_;
-	Float_t geffht_;
-	Float_t gefftight_;
-	Float_t fileff_;
-	Float_t lepscale_;
 	Float_t mG_;
-	Float_t mlljj_;
 	Float_t mL_;
-	Float_t mF_;
 	Float_t ecalveto1_;
 	Float_t ecalveto2_;
 	Float_t hcalveto1_;
@@ -254,9 +228,9 @@ class ossusy_looper
         Float_t meff_;
         Float_t mt_;
         char    dataset_[200];
-        UInt_t  run_;
-        UInt_t  lumi_;
-        UInt_t  event_;
+        Int_t   run_;
+        Int_t   lumi_;
+        Int_t   event_;
 	Float_t y_;
 	Float_t ht_;
 	Float_t htoffset_;
@@ -264,7 +238,6 @@ class ossusy_looper
 	Int_t   njetsuncor_;
 	Int_t   njetsoffset_;
 	Float_t htgen_;
-	Float_t htgen2_;
 	Float_t htpf_;
 	Float_t htpf40_;
 	Float_t htpf25_;
@@ -282,9 +255,7 @@ class ossusy_looper
 	Float_t ndavtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
-	Float_t ptt_;
-	Float_t pttbar_;
-	Float_t ptttbar_;
+
 	Float_t ksusy_;
 	Float_t ksusyup_;
 	Float_t ksusydn_;
@@ -295,11 +266,6 @@ class ossusy_looper
         double getFRWeight(const int hypIdx, SimpleFakeRate *mufr, SimpleFakeRate *elfr, FREnum frmode, bool isData);
 
         // Lots and lots of histograms
-
-	TH1F* hel;
-	TH1F* hmu;
-	TH1F* helpass;
-	TH1F* hmupass;
 
         //Z histos
         TH1F* hdilMass_Z[4][4];

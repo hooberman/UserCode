@@ -29,8 +29,7 @@ using namespace std;
 
 TH2F* shiftHist(TH2F* hin){
 
-  //TH2F* hout = new TH2F("hout","hout", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
-  TH2F* hout = new TH2F(Form("%s_out",hin->GetName()),Form("%s_out",hin->GetName()), 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
+  TH2F* hout = new TH2F("hout","hout", 48,0-12.5,1200-12.5,48,0-12.5,1200-12.5);
 
   for(int ibin = 1 ; ibin <= 48 ; ibin++ ){
     for(int jbin = 1 ; jbin <= 48 ; jbin++ ){
@@ -44,40 +43,35 @@ TH2F* shiftHist(TH2F* hin){
 
 TGraph* getGraph(bool do3jets,string type){
 
-  float x[10];
-  float y[10];
+  float x[5];
+  float y[5];
   int npoints = -1;
 
   if( !do3jets && type == "nom" ){
     x[0] =  700;  y[0] = 100;
     x[1] =  850;  y[1] = 300;
     x[2] =  925;  y[2] = 500;
-    x[3] =  1000; y[3] = 875;
-    x[4] =  975;  y[4] = 900;
-    x[5] =  900;  y[5] = 900;
+    x[3] =  975;  y[3] = 850;
+    x[4] =  925;  y[4] = 925;
     //x[6] =  100;  y[6] = 100;
-    npoints = 6;
+    npoints = 5;
   }
   else if( !do3jets && type == "down" ){
     x[0] = 500;   y[0] = 100;
-    x[1] = 675;   y[1] = 225;
-    x[2] = 725;   y[2] = 300;
-    x[3] = 825;   y[3] = 550;
-    x[4] = 850;   y[4] = 750;
-    x[5] = 825;   y[5] = 800;
-    x[6] = 800;   y[6] = 800;
+    x[1] = 720;   y[1] = 300;
+    x[2] = 825;   y[2] = 550;
+    x[3] = 825;   y[3] = 825;
     //x[4] = 100;   y[4] = 100;
-    npoints = 7;
+    npoints = 4;
   }
   else if( !do3jets && type == "up" ){
     x[0] = 800;   y[0] =  100;
     x[1] = 950;   y[1] =  200;
     x[2] = 1025;  y[2] =  400;
-    x[3] = 1100;  y[3] =  925;
-    x[4] = 1075;  y[4] = 1000;
-    x[5] = 1000;  y[5] = 1000;
+    x[3] = 1100;  y[3] = 1000;
+    x[4] = 1000;  y[4] = 1000;
     //x[5] =  100;  y[5] =  100;
-    npoints = 6;
+    npoints = 5;
   }
   else if( do3jets && type == "nom" ){
     x[0] = 700;   y[0] = 100;
@@ -111,8 +105,8 @@ TGraph* getGraph_T5zzh(string type){
   int npoints = -1;
 
   if( type == "nom" ){
-    x[0] =  850;  y[0] =  50;
-    x[1] =  825;  y[1] = 325;
+    x[0] =  837;  y[0] =  50;
+    x[1] =  837;  y[1] = 300;
     x[2] =  800;  y[2] = 350;
     x[3] =  625;  y[3] = 350;
     x[4] =  625;  y[4] = 550;
@@ -122,14 +116,14 @@ TGraph* getGraph_T5zzh(string type){
     x[0] = 600;   y[0] =  50;
     x[1] = 600;   y[1] = 150;
     x[2] = 525;   y[2] = 200;
-    x[3] = 500;   y[3] = 300;
+    x[3] = 475;   y[3] = 300;
     x[4] = 525;   y[4] = 450;
     npoints = 5;
   }
   else if( type == "up" ){
     x[0] = 1000;  y[0] =   50;
-    x[1] = 975;   y[1] =  425;
-    x[2] =  925;  y[2] =  475;
+    x[1] = 1000;  y[1] =  300;
+    x[2] =  950;  y[2] =  475;
     x[3] = 712.5; y[3] =  475;
     x[4] = 712.5; y[4] =  637.5;
     npoints = 5;
@@ -157,10 +151,9 @@ TGraph* getGraph_T5zz(string type){
     x[2] =  850;  y[2] = 400;
     x[3] =  825;  y[3] = 425;
     x[4] =  775;  y[4] = 425;
-    //x[5] =  625;  y[5] = 412.5;
-    //x[6] =  625;  y[6] = 537.5;
-    x[5] =  600;  y[5] = 400;
-    npoints = 6;
+    x[5] =  625;  y[5] = 412.5;
+    x[6] =  625;  y[6] = 537.5;
+    npoints = 7;
   }
   else if( type == "up" ){
     x[0] =  1050;  y[0] =  50;
@@ -168,20 +161,18 @@ TGraph* getGraph_T5zz(string type){
     x[2] =  1000;  y[2] = 475;
     x[3] =   950;  y[3] = 525;
     x[4] =   900;  y[4] = 550;
-    //x[5] =   725;  y[5] = 525;
-    //x[6] =   725;  y[6] = 637.5;
     x[5] =   725;  y[5] = 525;
-    npoints = 6;
+    x[6] =   725;  y[6] = 637.5;
+    npoints = 7;
   }
   else if( type == "down" ){
-    x[0] =  775;    y[0] =  50;
-    x[1] =  775;    y[1] = 150;
-    x[2] =  725;    y[2] = 300;
-    x[3] =  662.5;  y[3] = 312.5;
-    //x[4] =  525;    y[4] = 300;
-    //x[5] =  525;    y[5] = 437.5;
-    x[4] =  500;    y[4] = 300;
-    npoints = 5;
+    x[0] =  775;  y[0] =  50;
+    x[1] =  775;  y[1] = 150;
+    x[2] =  725;  y[2] = 300;
+    x[3] =  700;  y[3] = 325;
+    x[4] =  525;  y[4] = 300;
+    x[5] =  525;  y[5] = 437.5;
+    npoints = 6;
   }
 
   for( int i = 0 ; i < npoints ; ++i ){
@@ -201,34 +192,31 @@ TGraph* getGraph_T5zzl(string type){
   int npoints = -1;
 
   if( type == "nom" ){
-    x[0] =  962.5;  y[0] =  50;
-    x[1] =  962.5;  y[1] = 325;
-    x[1] =  950;    y[1] = 425;
-    x[2] =  900;    y[2] = 500;
-    x[3] =  875;    y[3] = 525;
-    x[4] =  825;    y[4] = 525;
-    x[5] =  600;    y[5] = 475;
-    //x[6] =  625;    y[6] = 537.5;
-    npoints = 6;
+    x[0] =  975;  y[0] =  50;
+    x[1] =  975;  y[1] = 325;
+    x[2] =  900;  y[2] = 500;
+    x[3] =  875;  y[3] = 525;
+    x[4] =  825;  y[4] = 525;
+    x[5] =  625;  y[5] = 487.5;
+    x[6] =  625;  y[6] = 537.5;
+    npoints = 7;
   }
   else if( type == "up" ){
-    x[0] =  1100;  y[0] =  50;
-    x[1] =  1087.5;y[1] = 400;
-    x[2] =  1075;  y[2] = 525;
-    x[3] =   975;  y[3] = 650;
-    x[4] =   950;  y[4] = 650;
-    x[5] =   700;  y[5] = 575;
-    //x[6] =   750;  y[6] = 662.5;
+    x[0] =  1112.5;  y[0] =  50;
+    x[1] =  1112.5;  y[1] = 400;
+    x[2] =  1000;  y[2] = 650;
+    x[3] =   950;  y[3] = 650;
+    x[4] =   750;  y[4] = 575;
+    x[5] =   750;  y[5] = 662.5;
     npoints = 6;
   }
   else if( type == "down" ){
-    x[0] =  837.5;  y[0] =  50;
-    x[1] =  837.5;  y[1] = 300;
-    x[2] =  810;    y[2] = 370;
-    x[3] =  750;    y[3] = 425;
-    x[4] =  687.5;  y[4] = 425;
-    x[5] =  500;    y[5] = 375;
-    //x[6] =  525;    y[6] = 437.5;
+    x[0] =  825;  y[0] =  50;
+    x[1] =  825;  y[1] = 300;
+    x[2] =  750;  y[2] = 425;
+    x[3] =  675;  y[3] = 425;
+    x[4] =  525;  y[4] = 387.5;
+    x[5] =  525;  y[5] = 437.5;
     npoints = 6;
   }
 
@@ -283,35 +271,13 @@ void smoothHist( TH2F* h ){
   }  
 }
 
-void removeDiagonal( TH2F* h , float deltaM ){
-
-  for( int ibin = 1 ; ibin <= h->GetXaxis()->GetNbins() ; ibin++ ){
-    for( int jbin = 1 ; jbin <= h->GetYaxis()->GetNbins() ; jbin++ ){
-
-      float mg = h->GetXaxis()->GetBinCenter(ibin);
-      float ml = h->GetYaxis()->GetBinCenter(jbin);
-
-      cout << "mg ml " << mg << " " << ml << endl;
-
-      if( mg - ml < deltaM ) h->SetBinContent(ibin,jbin,0);
-      
-    }
-  }
-
-
-
-}
-
 void combinePlots(bool print = false){
   
-  bool drawLine = false;
-  bool smooth   = false;
-
-  // char* version        = "V00-01-00";
-  // char* sample         = "T5zz";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  // float dm             = 182.0;
+  char* version        = "V00-01-00";
+  char* sample         = "T5zz";
+  bool  do3jets        = false;
+  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
+  float dm             = 182.0;
 
   // char* version        = "V00-01-01";
   // char* sample         = "T5zz";
@@ -351,31 +317,6 @@ void combinePlots(bool print = false){
   // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
   // float dm             = 4*91.0;
 
-  // char* version        = "V00-03-01";
-  // char* sample         = "T5zz";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.5";
-  // float dm             = 182.0;
-  
-  char* version        = "V00-03-02";
-  char* sample         = "T5zzl";
-  bool  do3jets        = false;
-  char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.75";
-  float dm             = (4./3.)*91;
-
-  // char* version        = "V00-03-03";
-  // char* sample         = "T5zzgmsb";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g})";
-  // float dm             = 0.0;
-  // smooth               = true;
-
-  // char* version        = "V00-03-07";
-  // char* sample         = "T5zzh";
-  // bool  do3jets        = false;
-  // char* title          = "m(#tilde{q}) >> m(#tilde{g}), x = 0.25";
-  // float dm             = 4 * 91;
-
   char* njets          = "n_{jets} #geq 2";
   if( do3jets )  njets = "n_{jets} #geq 3";
 
@@ -388,8 +329,6 @@ void combinePlots(bool print = false){
   TH2F* hexcl_temp = (TH2F*) file->Get("hexcl");
 
   TH2F* hexcl = shiftHist(hexcl_temp);
-
-  hexcl->Scale(1.05);
 
   //TH2F* hexcl = (TH2F*) file->Get("hexp");
   //cout << "USING EXPECTED LIMIT!!!!!!!!!!!!" << endl;
@@ -425,19 +364,10 @@ void combinePlots(bool print = false){
   TCanvas *ctemp = new TCanvas();
   ch->Draw("ml:mg>>heff",sel);
   delete ctemp;
-  heff->Scale(0.95/20000.);
+  heff->Scale(1./20000.);
 
   int bin = heff->FindBin(600,200);
   cout << "Efficiency for 600,200 " << heff->GetBinContent(bin) << endl;
-
-  bin = heff->FindBin(400,200);
-  cout << "Efficiency for 400,200 " << heff->GetBinContent(bin) << endl;
-
-  bin = heff->FindBin(800,300);
-  cout << "Efficiency for 800,300 " << heff->GetBinContent(bin) << endl;
-
-  removeDiagonal(heff,dm);
-  removeDiagonal(hexcl,dm);
 
   //-------------------------------
   // find excluded points
@@ -464,8 +394,6 @@ void combinePlots(bool print = false){
       int   bin = refxsec->FindBin(mg);
       float xsec = refxsec->GetBinContent(bin);
 
-      //cout << ibin << " " << jbin << " " << mg << " " << ml << " " << xsecul << " " << xsec << " " << (xsec > xsecul) << endl;
-
       hexcluded->SetBinContent(ibin,jbin,0);
       if( xsec > xsecul )   hexcluded->SetBinContent(ibin,jbin,1);
 
@@ -487,24 +415,20 @@ void combinePlots(bool print = false){
   // draw efficiency
   //-------------------------------
 
-  // TCanvas *can = new TCanvas("can","",1200,600);
-  // can->cd();
-  // can->Divide(2,1);
-  // can->cd(1);
+  TCanvas *can = new TCanvas("can","",1200,600);
+  can->cd();
+  can->Divide(2,1);
 
-  TCanvas *can1 = new TCanvas("can1","",600,600);
-  can1->cd();
-
+  can->cd(1);
   gPad->SetTopMargin(0.1);
   gPad->SetRightMargin(0.2);
 
-  if( TString(sample).Contains("gmsb") && smooth ) smoothHist( heff );
+  if( TString(sample).Contains("gmsb") ) smoothHist( heff );
 
   heff->GetYaxis()->SetRangeUser(ymin,1200);
   heff->GetXaxis()->SetLabelSize(0.035);
   heff->GetYaxis()->SetLabelSize(0.035);
   heff->GetZaxis()->SetLabelSize(0.035);
-  heff->SetMaximum(0.35);
   heff->GetYaxis()->SetTitle("#chi^{0}_{1} mass [GeV]");
   heff->GetXaxis()->SetTitle("gluino mass [GeV]");
   heff->GetZaxis()->SetTitle("A #times #varepsilon (#geq1 Z(ll))");
@@ -520,27 +444,21 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.71,"E_{T}^{miss} > 100 GeV");
   t->DrawLatex(0.2,0.65,njets);
   t->DrawLatex(0.2,0.55,"E_{T}^{miss} templates");
-  t->SetTextSize(0.04);
-  t->DrawLatex(0.18,0.93,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
+  t->SetTextSize(0.035);
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
 
-  if( drawLine ){
-    if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
-    else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
-  }
+  if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
+  else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
 
   //-------------------------------
   // cross section limit
   //-------------------------------
 
-  TCanvas *can2 = new TCanvas("can2","",600,600);
-  can2->cd();
-
-  //can->cd(2);
-
+  can->cd(2);
   gPad->SetTopMargin(0.1);
   gPad->SetRightMargin(0.2);
 
-  if( TString(sample).Contains("gmsb") && smooth ) smoothHist( hexcl );
+  if( TString(sample).Contains("gmsb") ) smoothHist( hexcl );
 
   hexcl->GetYaxis()->SetRangeUser(ymin,1200);
   //hexcl->GetXaxis()->SetRangeUser(0,950);
@@ -586,26 +504,17 @@ void combinePlots(bool print = false){
     gr_excl_up   = getRefXsecGraph(hexcl, "T5zz", 3.);
   }
 
-  gr_excl->SetLineWidth(3);
-  gr_excl_up->SetLineWidth(3);
-  gr_excl_down->SetLineWidth(3);
+  gr_excl->SetLineWidth(2.5);
+  gr_excl_up->SetLineWidth(2.5);
+  gr_excl_down->SetLineWidth(2.5);
   gr_excl_up->SetLineStyle(2);
   gr_excl_down->SetLineStyle(3);
   gr_excl->Draw("same");
   gr_excl_up->Draw("same");
   gr_excl_down->Draw("same");
 
-  gr_excl->SetName("gr_excl");
-  gr_excl->SetTitle("gr_excl");
-  gr_excl_up->SetName("gr_excl_up");
-  gr_excl_up->SetTitle("gr_excl_up");
-  gr_excl_down->SetName("gr_excl_down");
-  gr_excl_down->SetTitle("gr_excl_down");
-
-  if( drawLine ){
-    if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
-    else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
-  }
+  if(TString(sample).Contains("gmsb") )   line.DrawLine(100-12.5,100-12.5,1200-12.5,1200-12.5);
+  else                                    line.DrawLine(50-12.5+dm,50-12.5,1200-12.5,1200-12.5-dm);
 
   // if(TString(sample).Contains("gmsb") )   line.DrawLine(100,100,1200,1200);
   // else                                    line.DrawLine(50+dm,50,1200,1200-dm);
@@ -625,39 +534,27 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.2,0.77,title);
   t->DrawLatex(0.2,0.71,njets);
   t->DrawLatex(0.2,0.47,"E_{T}^{miss} templates");
-  //t->SetTextSize(0.035);
+  t->SetTextSize(0.035);
   //t->DrawLatex(0.18,0.92,"CMS                     #sqrt{s} = 7 TeV, #scale[0.6]{#int}Ldt = 4.7 fb^{-1}");
-  //t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.98 fb^{-1}");
-  //t->DrawLatex(0.18,0.92,"       CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
-  t->SetTextSize(0.04);
-  t->DrawLatex(0.18,0.93,"     CMS,  #sqrt{s} = 7 TeV,  L_{int} = 4.98 fb^{-1}");
+  t->DrawLatex(0.18,0.92,"CMS Preliminary       #sqrt{s} = 7 TeV, L_{int} = 4.7 fb^{-1}");
 
   if( print ){
-    // can->Print(Form("cards/%s/plots/SMS.eps",version));
-    // can->Print(Form("cards/%s/plots/SMS.pdf",version));
-    // can->Print(Form("cards/%s/plots/SMS.png",version));
-    // can->Print(Form("cards/%s/plots/SMS.C",version));
-    // gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
+    can->Print(Form("cards/%s/plots/SMS.eps",version));
+    can->Print(Form("cards/%s/plots/SMS.pdf",version));
+    can->Print(Form("cards/%s/plots/SMS.png",version));
+    can->Print(Form("cards/%s/plots/SMS.C",version));
 
-    can1->Print(Form("cards/%s/plots/%s_eff.pdf" ,version,sample));
-    can2->Print(Form("cards/%s/plots/%s_xsec.pdf",version,sample));
+    gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS.eps cards/%s/plots/SMS_ppt.pdf",version,version));
   }
 
   TH2F* hexcluded_shifted   = shiftHist( hexcluded   );
   TH2F* hexcluded13_shifted = shiftHist( hexcluded13 );
   TH2F* hexcluded3_shifted  = shiftHist( hexcluded3  );
 
-  // TH2F* hexcluded_shifted   = (TH2F*) hexcluded->Clone("hexcluded_shifted");
-  // TH2F* hexcluded13_shifted = (TH2F*) hexcluded13->Clone("hexcluded13_shifted");
-  // TH2F* hexcluded3_shifted  = (TH2F*) hexcluded3->Clone("hexcluded3_shifted");
-
-  TFile* fout = TFile::Open(Form("cards/%s/%s_limit.root",version,sample),"RECREATE");
+  TFile* fout = TFile::Open(Form("cards/%s/limit.root",version),"RECREATE");
   fout->cd();
   hexcl->Write();
   gr_excl->Write();
-  gr_excl_up->Write();
-  gr_excl_down->Write();
-  heff->Write();
   fout->Close();
 
   TCanvas *c2 = new TCanvas("c2","c2",1500,500);
@@ -696,12 +593,12 @@ void combinePlots(bool print = false){
   t->DrawLatex(0.3,0.8,"3 #times #sigma^{NLO-QCD}");
 
   if( print ){
-    // c2->Print(Form("cards/%s/plots/SMS_points.eps",version));
+    c2->Print(Form("cards/%s/plots/SMS_points.eps",version));
     c2->Print(Form("cards/%s/plots/SMS_points.pdf",version));
-    // c2->Print(Form("cards/%s/plots/SMS_points.png",version));
-    // c2->Print(Form("cards/%s/plots/SMS_points.C",version));
+    c2->Print(Form("cards/%s/plots/SMS_points.png",version));
+    c2->Print(Form("cards/%s/plots/SMS_points.C",version));
 
-    // gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS_points.eps cards/%s/plots/SMS_points_ppt.pdf",version,version));
+    gROOT->ProcessLine(Form(".! ps2pdf cards/%s/plots/SMS_points.eps cards/%s/plots/SMS_points_ppt.pdf",version,version));
   }
 
 

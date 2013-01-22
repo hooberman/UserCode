@@ -51,7 +51,7 @@ void printCard( char* name , float sigtot , char* version , bool do3jets ){
   }else{
     *ofile << Form("rate                              %.1f   129" , sigtot)                             << endl;
   }
-  *ofile <<      "lumi                       lnN   1.022       -"                                       << endl;
+  *ofile <<      "lumi                       lnN   1.060       -"                                       << endl;
   *ofile <<      "eff_leptons                lnN   1.050       -"                                       << endl;
   *ofile <<      "JES_shape                shape     1.0       -"                                       << endl;
   *ofile <<      "err                      shape       -     1.0"                                       << endl;
@@ -68,8 +68,8 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-05/T5zzh_baby.root");
-  char* version = "temp";
+  ch->Add("output/V00-02-04/T5zz_baby.root");
+  char* version = "V00-02-01";
 
   bool do3jets = false;
 
@@ -77,8 +77,7 @@ void makeCMSSMCards(){
   // selection
   //---------------------------------------
 
-  //TCut weight   ("4.98 * davtxweight * 0.95 * (1000./105000.)");
-  TCut weight   ("4.98 * 0.95 * (1000./105000.)");
+  TCut weight   ("4.7 * davtxweight * 0.95 * (1000./105000.)");
 
   TCut presel   ("dilmass>81 && dilmass<101 && njets>=2     && leptype<2");
   TCut preseljup("dilmass>81 && dilmass<101 && njetsup>=2   && leptype<2");
@@ -216,10 +215,8 @@ void makeCMSSMCards(){
 	sigtotjdn += yieldjdn;
 
 	histo_SMS->SetBinContent              ( ibin + 1 , yieldnom );
-	//histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , yieldjup );
-	//histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , yieldjdn );
-	histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , 1.3 * yieldnom );
-	histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , 0.7 * yieldnom );
+	histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , yieldjup );
+	histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , yieldjdn );
       }
 
       if( sigtotjdn < 1e-10 ) continue;
