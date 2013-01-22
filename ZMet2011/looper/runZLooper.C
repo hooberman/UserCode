@@ -100,9 +100,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
   
   else if( strcmp( prefix , "ttbar" ) == 0 ){
-    //pickSkimIfExists(ch,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple_1*root");
-    //pickSkimIfExists(ch,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
@@ -112,56 +110,11 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
     pickSkimIfExists(ch,"/nfs-6/userdata/cms2/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/VB04-02-29_FastSim_Rutgers/preprocessing/*root");
   }
 
-  else if( strcmp( prefix , "ggmsb_150" ) == 0 ){
-
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_115_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_116_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_117_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_118_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_119_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_120_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_121_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_122_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_123_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_124_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_125_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_126_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_127_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_128_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_129_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_130_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_131_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_165_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_166_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_167_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_168_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_169_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_170_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_171_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_172_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_173_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_174_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_175_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_176_*.root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_V04-02-29_FastSim_Rutgers/PhysicsProcess_higgsino_mu_SLHA_new_v1_macneill-PhysicsProcess_higgsino_mu_SLHA_new_v1-73833d9410398befa066c3c6e1fda77f/ntuple_177_*.root");
-  }
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "wzsms" ) == 0 ){
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_7_1_TNp.root"); //'official'
-
-    // 200/0 points
-    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_13_1_E7O.root"); //'official'
-    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_38_1_MvY.root"); //'official'
-    
-    // // 500/0 points
-    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_50*root"); //'official'
-    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_51*root"); //'official'
-    // pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/ntuple_73*root"); //'official'
-
-    // all events
     pickSkimIfExists(ch,"/hadoop/cms/store/user/macneill/CMS2_VB04-02-29_FastSim_TChizz/SMS-TChiwz_mNeutralino-100to500_mLSP-0to400_7TeV-Pythia6Z_Summer11-START42_V11-v1/*.root"); //'official'
-
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/fgolf/CMS2_VB04-02-29_Fastsim/TChiwz/*.root");
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/fgolf/CMS2_VB04-02-29_Fastsim/TChiwz/TChiwz_400_50To425_200.lhe_50000.root");
   }
@@ -213,7 +166,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "T5zzl" ) == 0 ){
-    pickSkimIfExists(ch,"/nfs-6/userdata/cms2/SMS-T5zzl_Mgluino-150to1200_mLSP-50to1100_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v1/VB04-02-29_Fastsim/merged*root");
+    pickSkimIfExists(ch,"/nfs-7a/userdata/cms2/SMS-T5zzl_Mgluino-150to1200_mLSP-50to1100_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v1/VB04-02-29_Fastsim/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
@@ -237,18 +190,8 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "wz_summer11_madgraph" ) == 0 ){
-
-    //pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
-
-    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-
-    //pickSkimIfExists(ch,"/home/users/benhoob/ZMet2011/cms2_ntuples/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    //pickSkimIfExists(ch,"/home/users/benhoob/ZMet2011/cms2_ntuples/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
-    //pickSkimIfExists(ch,"/home/users/benhoob/ZMet2011/cms2_ntuples/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
-    //pickSkimIfExists(ch,"/nfs-7/userdata/cms2/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    //pickSkimIfExists(ch,"/nfs-7/userdata/cms2/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
-    //pickSkimIfExists(ch,"/nfs-7/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/WZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
@@ -266,13 +209,9 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   //----------------------------------------------------------------------------------------
 
   else if( strcmp( prefix , "zz_summer11_madgraph" ) == 0 ){
-    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/ZZJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/ZZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    pickSkimIfExists(ch,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/ZZJetsTo4L_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-
-    // pickSkimIfExists(ch,"/nfs-7/userdata/cms2/ZZJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root"); 
-    // pickSkimIfExists(ch,"/nfs-7/userdata/cms2/ZZJetsTo4L_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
-    // pickSkimIfExists(ch,"/nfs-7/userdata/cms2/ZZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/ZZJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root"); 
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/ZZJetsTo4L_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
+    pickSkimIfExists(ch,"/nfs-7/userdata/cms2/ZZJetsTo2L2Q_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged*root");
   }
 
   //----------------------------------------------------------------------------------------
