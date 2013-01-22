@@ -28,6 +28,7 @@
 const bool debug          =  true;
 const bool vtxreweight    =  true;
 const bool bveto          =  true;
+const bool mjjcut         =  true;
 const bool pt40           = false;
 
 using namespace std;
@@ -50,6 +51,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
   if( bveto )       cout << "Doing b-veto" << endl;
   else              cout << "NO b-veto"    << endl;
+
+  if( mjjcut )      cout << "Doing mjj cut" << endl;
+  else              cout << "NO mjj cut"    << endl;
 
   if( pt40 )        cout << "Require >=2 40 GeV jets with HT > 100 GeV"        << endl;
   else              cout << "DO NOT require >=2 40 GeV jets with HT > 100 GeV" << endl;
@@ -104,7 +108,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
     nEvents = tree->GetEntries();
 
     for (unsigned int event = 0 ; event < nEvents; ++event){
-   
+
       tree->GetEntry(event);
       ++nEventsTotal;
 
@@ -142,6 +146,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 	h75 = hgg75_;
 	h90 = hgg90_;
       }
+
+      //float mjj = ( *jet1_ + *jet2_ ).mass();
+      //if( mjjcut && ( mjj < 70.0 || mjj > 110.0 ) )         continue; // apply dijet mass cut
 
       // event selection 
       if( nJets_ < 2 )                                      continue; // >=2 jets
@@ -378,13 +385,16 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
     char* bvetochar = "";
     if( bveto ) bvetochar = "_bveto";
 
+    char* mjjchar = "";
+    if( mjjcut ) mjjchar = "_mjjcut";
+
     char* pt40char = "";
     //if( pt40 ) pt40char = "_pt40";
     //if( pt40 ) pt40char = "_pt40_2012AB";
     if( pt40 ) pt40char = "_pt40_2012C";
 
-    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s%s%s.root",iter,sample,vtxchar,bvetochar,pt40char) << endl;
-    saveHist(Form("../photon_output/%s/%s_templates%s%s%s.root",iter,sample,vtxchar,bvetochar,pt40char));
+    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s%s%s%s.root",iter,sample,vtxchar,bvetochar,mjjchar,pt40char) << endl;
+    saveHist(Form("../photon_output/%s/%s_templates%s%s%s%s.root",iter,sample,vtxchar,bvetochar,mjjchar,pt40char));
 
     //deleteHistos();
 
@@ -587,6 +597,9 @@ void makePhotonTemplates::setBranches (TTree* tree){
   tree->SetBranchAddress("trkfail"             ,        &trkfail_               );
   tree->SetBranchAddress("eebadsc"             ,        &eebadsc_               );
   tree->SetBranchAddress("hbhenew"             ,        &hbhenew_               );
-
+  //tree->SetBranchAddress("jet1"                ,        &jet1Ptr_               );
+  //tree->SetBranchAddress("jet2"                ,        &jet2Ptr_               );
+  //tree->SetBranchAddress("jet1"                ,        &jet1_                  );
+  //tree->SetBranchAddress("jet2"                ,        &jet2_                  );
 
 }
