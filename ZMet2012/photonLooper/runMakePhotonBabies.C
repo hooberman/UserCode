@@ -34,10 +34,9 @@ void runMakePhotonBabies(char* prefix , bool isData = true, float kFactor = 1.){
   //-----------------------------------------------------------------------------------
 
   if( strcmp( prefix , "data_53X_2012A" ) == 0 ){    
-    pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged_ntuple_999999_9_1_skim.root");
-
-    // pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
-    // pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
+    //pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged_ntuple_999999_9_1_skim.root");
+    pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
+    pickSkimIfExists(ch,"PhotonTriggerSkim_slim/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD/V05-03-18_slim/merged*root");
   }
 
   //-----------------------------------------------------------------------------------
