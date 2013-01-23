@@ -67,7 +67,7 @@ const bool  pt2020               = false;
 const bool  useJson              = true;
 const float lumi                 = 1.0; 
 
-const char* iter                 = "V00-02-12";
+const char* iter                 = "V00-02-13";
 const char* jsonfilename         = "../jsons/Merged_190456-208686_8TeV_PromptReReco_Collisions12_goodruns.txt";
 
 // 19.5 merged json from Dunser
@@ -1171,9 +1171,14 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       }
 
       trgeff_ = -1;
-      if     ( leptype_ == 0 ) trgeff_ = 0.95;
-      else if( leptype_ == 1 ) trgeff_ = 0.88;
-      else if( leptype_ == 2 ) trgeff_ = 0.92;
+      if     ( leptype_ == 0 ) trgeff_ = 0.95; // ee
+      else if( leptype_ == 1 ){
+	float eta1 = fabs( hyp_ll_p4().at(hypIdx).eta() );
+	float eta2 = fabs( hyp_lt_p4().at(hypIdx).eta() );
+	if( eta1 < 1.0 && eta2 < 1.0 ) trgeff_ = 0.90; // mm central
+	else                           trgeff_ = 0.81; // mm forward
+      }
+      else if( leptype_ == 2 ) trgeff_ = 0.93; // em
 
       dilmass_ = hyp_p4()[hypIdx].mass();
 
