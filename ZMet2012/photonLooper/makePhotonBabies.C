@@ -54,7 +54,7 @@ class FactorizedJetCorrector;
 
 const bool debug                = false;
 const float lumi                = 1.0;
-const char* iter                = "V00-02-01";
+const char* iter                = "V00-02-03";
 const char* jsonfilename        = "../jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
 
 // https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1968.html   19.3 fb-1
@@ -683,7 +683,8 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 
       failjetid_ =  0;
       maxemf_    = -1;
-      
+      npujets_   =  0;
+
       //-----------------------------------------
       // loop over pfjets pt > 30 GeV |eta| < 3.0
       //-----------------------------------------
@@ -728,6 +729,16 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
 	}
 
 	if( fabs(vjet.eta()) > 2.5 ) continue;
+
+	float beta = pfjet_beta(ijet,2,0.5);
+
+	if( beta < 0.2 ){
+	  if( vjet.pt() > 30.0 ){
+	    npujets_++;
+	    pujets_.push_back(vjet);
+	  }
+	  continue;
+	}
 
 	//---------------------------------------------------------------------------
         // HT variables
@@ -892,6 +903,8 @@ void makePhotonBabies::fillUnderOverFlow(TH1F *h1, float value, float weight){
 //--------------------------------------------------------------------
 
 void makePhotonBabies::InitBabyNtuple (){
+
+  pujets_.clear();
 
   // pfjets
   jet1_                         = 0;
@@ -1332,6 +1345,9 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ecaltp"    ,  &ecaltp_    ,  "ecaltp/I");  
   babyTree_->Branch("trkfail"   ,  &trkfail_   ,  "trkfail/I");  
   babyTree_->Branch("eebadsc"   ,  &eebadsc_   ,  "eebadsc/I");  
+
+  babyTree_->Branch("pujets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >", &pujets_ );
+  babyTree_->Branch("npujets"   ,  &npujets_   ,  "npujets/I"   );
 
 }
 

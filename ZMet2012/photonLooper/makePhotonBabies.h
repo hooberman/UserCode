@@ -9,6 +9,7 @@
 #include "Math/LorentzVector.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 class TChain;
 class FactorizedJetCorrector;
@@ -44,6 +45,9 @@ class makePhotonBabies
   //ntuple, file
   TFile *babyFile_;
   TTree *babyTree_;
+
+  VofP4 pujets_;
+  Int_t npujets_;
     
   //histos
   Float_t maxleppt_;
