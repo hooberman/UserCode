@@ -1967,7 +1967,8 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       nbvz_            = 0;
       btagweight_      = 1;    
       btagweightup_    = 1;
-      
+      npujets_         = 0;
+
       rho_ = cms2.evt_ww_rho_vor();
 
       float dmetx  = 0.0;
@@ -2082,6 +2083,16 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
 	}
 
         if( fabs( vjet.eta() ) > 2.5 ) continue;
+
+	float beta = pfjet_beta(ijet,2,0.5);
+
+	if( beta < 0.2 ){
+	  if( vjet.pt() > 30.0 ){
+	    npujets_++;
+	    pujets_.push_back(vjet);
+	  }
+	  continue;
+	}
 
 	//---------------------------------------------------------------------------
 	// jet passes: now store various quantities
@@ -2677,6 +2688,8 @@ void Z_looper::fillUnderOverFlow(TH1F *h1, float value, float weight){
 //--------------------------------------------------------------------
 
 void Z_looper::InitBabyNtuple (){
+
+  pujets_.clear();
 
   jet1flav_     = -9999;
   jet2flav_     = -9999;
@@ -3416,6 +3429,8 @@ void Z_looper::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("extraz"    ,  &extraz_    ,  "extraz/I"    );  
   babyTree_->Branch("extrag"    ,  &extrag_    ,  "extrag/I"    );  
 
+  babyTree_->Branch("pujets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >", &pujets_ );
+  babyTree_->Branch("npujets"   ,  &npujets_   ,  "npujets/I"   );
 }
 
 //--------------------------------------------------------------------
