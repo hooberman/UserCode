@@ -43,7 +43,7 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // choose version, output will be written to output/[version]
   //---------------------------------------------------------------
   
-  const char* version   = "V00-02-27";
+  const char* version   = "V00-02-15";
   const char* jsonfile  = "jsons/Cert_160404-180252_7TeV_mergePromptMay10Aug5_JSON_goodruns.txt";
 
   cout << "Version : " << version     << endl;
@@ -289,14 +289,14 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runVQQ      = 0;
   bool runLM0      = 0;
   bool runLM1      = 0;
-  bool runLM1v2    = 0;
+  bool runLM1v2    = 1;
   bool runLM2      = 0;
   bool runLM3      = 0;
-  bool runLM3v2    = 0;
+  bool runLM3v2    = 1;
   bool runLM4      = 0;
   bool runLM5      = 0;
   bool runLM6      = 0;
-  bool runLM6v2    = 0;
+  bool runLM6v2    = 1;
   bool runLM7      = 0;
   bool runLM8      = 0;
   bool runLM9      = 0;
@@ -304,7 +304,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runLM11     = 0;
   bool runLM12     = 0;
   bool runLM13     = 0;
-  bool runLM13_v2  = 0;
   bool runML1      = 0;
   bool runML2      = 0;
   bool runML3      = 0;
@@ -314,24 +313,12 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   bool runML7      = 0;
   bool runML8      = 0;
   bool runLMscan   = 0; 
-  bool runLMscanFall11      = 0; 
-  bool runLMscanFall11dil   = 0; 
-  bool runLMscanFall11dil1  = 0; 
-  bool runLMscanFall11dil2  = 0; 
-  bool runLMscanFall11dil3  = 0; 
-  bool runLMscanFall11dil4  = 0; 
-  bool runLMscanFall11dil5  = 0; 
-  bool runLMscanFall11dil6  = 0; 
-  bool runLMscanFall11dil7  = 0; 
-  bool runLMscanFall11dil8  = 0; 
-  bool runLMscanFall11dil9  = 0; 
-  bool runLMscanFall11dil10 = 0; 
+  bool runLMscanFall11    = 0; 
+  bool runLMscanFall11dil = 0; 
   bool runT2tt     = 0;
-  bool runT2blnu   = 0;
-  bool runT1lh     = 1;
+  bool runT1lh     = 0;
   bool runZZZ      = 0;
-  bool runT1tttt   = 0;
-
+  
   char* dir = "";
 
   bool useMCSkims = true;
@@ -707,7 +694,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   // LM6v2
   TChain *chLM6v2 = new TChain("Events");
   if (runLM6v2) {
-    //pickSkimIfExists(chLM6v2,"/nfs-7/userdata/cms2/LM6_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged_ntuple.root");
     pickSkimIfExists(chLM6v2,"/nfs-7/userdata/cms2/LM6_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root");
   }
 
@@ -763,16 +749,8 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLM13 = new TChain("Events");
   if (runLM13) {
     pickSkimIfExists(chLM13, 
-		     "/nfs-7/userdata/cms2/LM13_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root",
+                     "cms2/LM13_SUSY_sftsht_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged*root",
                      "SUSY_LM13");
-  }
-  
-  // LM13
-  TChain *chLM13_v2 = new TChain("Events");
-  if (runLM13_v2) {
-    pickSkimIfExists(chLM13_v2, 
-		     "/nfs-7/userdata/cms2/LM13_SUSY_sftsht_7TeV-pythia6_Summer11-PU_S4_START42_V11-v2/V04-02-29/merged*root",
-                     "SUSY_LM13v2");
   }
   
   // ML1
@@ -842,79 +820,10 @@ void doAll_ossusy_looper(bool skipFWLite = true)
   TChain *chLMscanFall11dil = new TChain("Events");
   if (runLMscanFall11dil) {
 
-    //pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple*root");
+    pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple*root");
 
-    pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_147_1_sap.root");
+    //pickSkimIfExists(chLMscanFall11dil,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_147_1_sap.root");
 
-  }
-
-  TChain *chLMscanFall11dil1 = new TChain("Events");
-  if (runLMscanFall11dil1) {
-    pickSkimIfExists(chLMscanFall11dil1,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_11*root"); //111
-    pickSkimIfExists(chLMscanFall11dil1,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_12*root"); //111
-    pickSkimIfExists(chLMscanFall11dil1,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_13*root"); //111
-  }
-
-  TChain *chLMscanFall11dil2 = new TChain("Events");
-  if (runLMscanFall11dil2) {
-    pickSkimIfExists(chLMscanFall11dil2,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_14*root"); //111
-    pickSkimIfExists(chLMscanFall11dil2,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_15*root"); //111
-    pickSkimIfExists(chLMscanFall11dil2,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_16*root"); //111
-  }
-
-  TChain *chLMscanFall11dil3 = new TChain("Events");
-  if (runLMscanFall11dil3) {
-    pickSkimIfExists(chLMscanFall11dil3,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_17*root"); //111
-    pickSkimIfExists(chLMscanFall11dil3,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_18*root"); //111
-    pickSkimIfExists(chLMscanFall11dil3,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_19*root"); //111
-  }
-
-  TChain *chLMscanFall11dil4 = new TChain("Events");
-  if (runLMscanFall11dil4) {
-    pickSkimIfExists(chLMscanFall11dil4,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_20*root"); //111
-    pickSkimIfExists(chLMscanFall11dil4,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_21*root"); //111
-    pickSkimIfExists(chLMscanFall11dil4,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_22*root"); //111
-  }
-
-  TChain *chLMscanFall11dil5 = new TChain("Events");
-  if (runLMscanFall11dil5) {
-    pickSkimIfExists(chLMscanFall11dil5,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_23*root"); //111
-    pickSkimIfExists(chLMscanFall11dil5,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_24*root"); //111
-    pickSkimIfExists(chLMscanFall11dil5,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_25*root"); //111
-  }
-
-  TChain *chLMscanFall11dil6 = new TChain("Events");
-  if (runLMscanFall11dil6) {
-    pickSkimIfExists(chLMscanFall11dil6,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_26*root"); //111
-    pickSkimIfExists(chLMscanFall11dil6,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_27*root"); //111
-    pickSkimIfExists(chLMscanFall11dil6,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_28*root"); //111
-  }
-
-  TChain *chLMscanFall11dil7 = new TChain("Events");
-  if (runLMscanFall11dil7) {
-    pickSkimIfExists(chLMscanFall11dil7,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_3*root"); //295
-  }
-
-  TChain *chLMscanFall11dil8 = new TChain("Events");
-  if (runLMscanFall11dil8) {
-    pickSkimIfExists(chLMscanFall11dil8,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_29*root"); //111
-    pickSkimIfExists(chLMscanFall11dil8,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_4*root"); //111
-    pickSkimIfExists(chLMscanFall11dil8,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_5*root"); //111
-  }
-
-  TChain *chLMscanFall11dil9 = new TChain("Events");
-  if (runLMscanFall11dil9) {
-    pickSkimIfExists(chLMscanFall11dil9,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_6*root"); //111
-    pickSkimIfExists(chLMscanFall11dil9,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_7*root"); //111
-    pickSkimIfExists(chLMscanFall11dil9,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_8*root"); //111
-  }
-
-  TChain *chLMscanFall11dil10 = new TChain("Events");
-  if (runLMscanFall11dil10) {
-    pickSkimIfExists(chLMscanFall11dil10,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_9*root"); //111
-    pickSkimIfExists(chLMscanFall11dil10,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_10*root"); //111
-    pickSkimIfExists(chLMscanFall11dil10,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_1_*root"); //1
-    pickSkimIfExists(chLMscanFall11dil10,"/nfs-7/userdata/cms2/mSUGRA_dilepton_m0-220to3000_m12-100to1000_tanb-10andA0-0_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v6/VB04-02-29_Fastsim_mSUGRA_Dilep/preprocessing/ntuple_2_*root"); //1
   }
 
   TChain *chLMscanFall11 = new TChain("Events");
@@ -976,59 +885,38 @@ void doAll_ossusy_looper(bool skipFWLite = true)
     
   }
 
-  TChain *chT2blnu = new TChain("Events");
-  if (runT2blnu) {
-    
-    pickSkimIfExists(chT2blnu,
-     		     "/nfs-7/userdata/cms2/SMS-T2blnu_x-0p25to0p75_mStop-50to850_mLSP-50to800_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v2/VB04-02-29_Fastsim/merged*root");
-    // pickSkimIfExists(chT2blnu,
-    // 		     "/nfs-7/userdata/cms2/SMS-T2blnu_x-0p25to0p75_mStop-50to850_mLSP-50to800_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v2/VB04-02-29_Fastsim/merged_ntuple.root");
-    
-  }
-
   // LMscan
   TChain *chT1lh = new TChain("Events");
   if (runT1lh) {
     
+    pickSkimIfExists(chT1lh,
+		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged*root",
+                     "T1lh");  
+    /*
+    pickSkimIfExists(chT1lh,
+		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_3.root",
+                     "T1lh");  
 
-    pickSkimIfExists(chT1lh,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple.root");
+    pickSkimIfExists(chT1lh,
+		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_4.root",
+                     "T1lh");  
 
-    // pickSkimIfExists(chT1lh,
-    //   		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged*root",
-    //  		     "T1lh");  
+    pickSkimIfExists(chT1lh,
+		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_5.root",
+                     "T1lh");  
 
-    // pickSkimIfExists(chT1lh,
-    //  		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_3.root",
-    // 		     "T1lh");  
+    pickSkimIfExists(chT1lh,
+		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_7.root",
+                     "T1lh");  
 
-    // pickSkimIfExists(chT1lh,
-    // 		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_4.root",
-    //                  "T1lh");  
+    pickSkimIfExists(chT1lh,
+		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_9.root",
+                     "T1lh");  
 
-    // pickSkimIfExists(chT1lh,
-    // 		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_5.root",
-    //                  "T1lh");  
-
-    // pickSkimIfExists(chT1lh,
-    // 		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_7.root",
-    //                  "T1lh");  
-
-    // pickSkimIfExists(chT1lh,
-    // 		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_9.root",
-    //                  "T1lh");  
-
-    // pickSkimIfExists(chT1lh,
-    // 		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_10.root",
-    //                  "T1lh");  
-
-
-  }
-
-  // LMscan
-  TChain *chT1tttt = new TChain("Events");
-  if (runT1tttt) {
-
-    pickSkimIfExists(chT1tttt,"/hadoop/cms/store/group/snt/papers2011/Summer11MC/SMS-T1tttt_Mgluino-450to1200_mLSP-50to800_7TeV-Pythia6Z_Summer11-PU_START42_V11_FSIM-v2/VB04-02-29_Fastsim/merged_ntuple_55.root");
+    pickSkimIfExists(chT1lh,
+		     "/nfs-7/userdata/warren/SMS-T1Lh_Mgluino-100to1200_mLSP-50to1150_7TeV-Pythia6Z_Summer11-PU_START42_V11_FastSim-v2/merged_ntuple_10.root",
+                     "T1lh");  
+    */
 
   }
 
@@ -1477,12 +1365,6 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      cout << "Done processing LM13" << endl;
 		      hist::color("LM13", kOrange-7);
 		    }
-		    if (runLM13_v2) {
-		      cout << "Processing LM13v2" << endl;
-		      looper->ScanChain(chLM13_v2, "LM13v2", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LM13v2" << endl;
-		      hist::color("LM13v2", kOrange-7);
-		    }
 		    if (runML1) {
 		      cout << "Processing ML1" << endl;
 		      looper->ScanChain(chML1, "ML1", kML1, preML1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
@@ -1539,76 +1421,16 @@ void doAll_ossusy_looper(bool skipFWLite = true)
 		      looper->ScanChain(chLMscanFall11dil, "LMscanFall11dil", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing LMscanFall11dil" << endl;
 		    }
-		    if (runLMscanFall11dil1) {
-		      cout << "Processing LMscanFall111 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil1, "LMscanFall11dil1", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil1" << endl;
-		    }
-		    if (runLMscanFall11dil2) {
-		      cout << "Processing LMscanFall112 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil2, "LMscanFall11dil2", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil2" << endl;
-		    }
-		    if (runLMscanFall11dil3) {
-		      cout << "Processing LMscanFall113 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil3, "LMscanFall11dil3", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil3" << endl;
-		    }
-		    if (runLMscanFall11dil4) {
-		      cout << "Processing LMscanFall114 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil4, "LMscanFall11dil4", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil4" << endl;
-		    }
-		    if (runLMscanFall11dil5) {
-		      cout << "Processing LMscanFall115 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil5, "LMscanFall11dil5", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil5" << endl;
-		    }
-		    if (runLMscanFall11dil6) {
-		      cout << "Processing LMscanFall116 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil6, "LMscanFall11dil6", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil6" << endl;
-		    }
-		    if (runLMscanFall11dil7) {
-		      cout << "Processing LMscanFall117 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil7, "LMscanFall11dil7", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil7" << endl;
-		    }
-		    if (runLMscanFall11dil8) {
-		      cout << "Processing LMscanFall118 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil8, "LMscanFall11dil8", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil8" << endl;
-		    }
-		    if (runLMscanFall11dil9) {
-		      cout << "Processing LMscanFall119 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil9, "LMscanFall11dil9", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil9" << endl;
-		    }
-		    if (runLMscanFall11dil10) {
-		      cout << "Processing LMscanFall1110 dilepton filter" << endl;
-		      looper->ScanChain(chLMscanFall11dil10, "LMscanFall11dil10", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing LMscanFall11dil10" << endl;
-		    }
 		    if (runT1lh) {
 		      cout << "Processing T1lh" << endl;
 		      looper->ScanChain(chT1lh, "T1lh", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing T1lh" << endl;
 		      hist::color("LMscan", kOrange-7);
 		    }
-		    if (runT1tttt) {
-		      cout << "Processing T1tttt" << endl;
-		      looper->ScanChain(chT1tttt, "T1ttttt", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing T1tttt" << endl;
-		    }
 		    if (runT2tt) {
 		      cout << "Processing T2tt" << endl;
 		      looper->ScanChain(chT2tt, "T2tt", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
 		      cout << "Done processing T2tt" << endl;
-		    }
-		    if (runT2blnu) {
-		      cout << "Processing T2blnu" << endl;
-		      looper->ScanChain(chT2blnu, "T2blnu", 1, 1, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-		      cout << "Done processing T2blnu" << endl;
 		    }
 
 		    char* dir = "";
