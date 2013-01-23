@@ -64,7 +64,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   }
 
   else if( strcmp( prefix , "data_53X_2012D" ) == 0 ){    
-    //pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged_ntuple_205718_0_skim.root");
+    // pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged_ntuple_205718_0_skim.root");
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
     pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
@@ -74,6 +74,7 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   else if( strcmp( prefix , "zjets_53X_slim" ) == 0 ){    
     pickSkimIfExists(ch,"Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-18_slim/merged_ntuple*root");
+    //pickSkimIfExists(ch,"Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-18_slim/merged_ntuple_1.root");
   }
 
   //----------------------------------------------------------------------------------------
