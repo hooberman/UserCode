@@ -2398,9 +2398,6 @@ protected:
 	vector<float> convs_ndof_;
 	TBranch *convs_ndof_branch;
 	bool convs_ndof_isLoaded;
-	vector<float> sparm_values_;
-	TBranch *sparm_values_branch;
-	bool sparm_values_isLoaded;
 	vector<float> scs_clustersSize_;
 	TBranch *scs_clustersSize_branch;
 	bool scs_clustersSize_isLoaded;
@@ -7836,11 +7833,6 @@ void Init(TTree *tree) {
 		convs_ndof_branch = tree->GetBranch(tree->GetAlias("convs_ndof"));
 		if (convs_ndof_branch) {convs_ndof_branch->SetAddress(&convs_ndof_);}
 	}
-	sparm_values_branch = 0;
-	if (tree->GetAlias("sparm_values") != 0) {
-		sparm_values_branch = tree->GetBranch(tree->GetAlias("sparm_values"));
-		sparm_values_branch->SetAddress(&sparm_values_);
-	}
 	scs_clustersSize_branch = 0;
 	if (tree->GetAlias("scs_clustersSize") != 0) {
 		scs_clustersSize_branch = tree->GetBranch(tree->GetAlias("scs_clustersSize"));
@@ -11085,7 +11077,6 @@ void GetEntry(unsigned int idx)
 		convs_chi2_isLoaded = false;
 		convs_dl_isLoaded = false;
 		convs_ndof_isLoaded = false;
-		sparm_values_isLoaded = false;
 		scs_clustersSize_isLoaded = false;
 		scs_crystalsSize_isLoaded = false;
 		scs_e1x3_isLoaded = false;
@@ -12373,7 +12364,6 @@ void LoadAllBranches()
 	if (convs_chi2_branch != 0) convs_chi2();
 	if (convs_dl_branch != 0) convs_dl();
 	if (convs_ndof_branch != 0) convs_ndof();
-	if (sparm_values_branch != 0) sparm_values();
 	if (scs_clustersSize_branch != 0) scs_clustersSize();
 	if (scs_crystalsSize_branch != 0) scs_crystalsSize();
 	if (scs_e1x3_branch != 0) scs_e1x3();
@@ -29158,27 +29148,6 @@ void LoadAllBranches()
 		}
 		return convs_ndof_;
 	}
-	vector<float> &sparm_values()
-	{
-		if (not sparm_values_isLoaded) {
-			if (sparm_values_branch != 0) {
-				sparm_values_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = sparm_values_.begin(); i != sparm_values_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch sparm_values_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch sparm_values_branch does not exist!\n");
-				exit(1);
-			}
-			sparm_values_isLoaded = true;
-		}
-		return sparm_values_;
-	}
 	vector<float> &scs_clustersSize()
 	{
 		if (not scs_clustersSize_isLoaded) {
@@ -37939,7 +37908,6 @@ namespace tas {
 	vector<float> &convs_chi2();
 	vector<float> &convs_dl();
 	vector<float> &convs_ndof();
-	vector<float> &sparm_values();
 	vector<float> &scs_clustersSize();
 	vector<float> &scs_crystalsSize();
 	vector<float> &scs_e1x3();

@@ -21,11 +21,9 @@
 #include "TRandom3.h"
 #include "Math/LorentzVector.h"
 
-/*
 #include "../CORE/MT2/MT2Utility.h"
 #include "mt2w_bisect.h"
 #include "mt2bl_bisect.h"
-*/
 #include "../CORE/CMS2.h"
 #include "../CORE/utilities.h"
 #include "../CORE/ssSelections.h"
@@ -56,7 +54,6 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > P4;
 //typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 typedef map<unsigned int, unsigned int> m_uiui;
 
-
 struct indP4{
   LorentzVector p4obj;
   int p4ind;
@@ -67,6 +64,8 @@ typedef vector< indP4 > VofiP4;
 inline bool sortIP4ByPt(indP4 iP41, indP4 iP42) {
   return iP41.p4obj.pt() > iP42.p4obj.pt();
 }
+
+float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx );
 
 //--------------------------------------------------------------------                                                                                                                                                   
 pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, double rescale = 1.0);
@@ -86,50 +85,14 @@ pair<float,float> Type1PFMETSmear(JetSmearer* jetSmearer, bool isData,
 
 float getMT( float leppt , float lepphi , float met , float metphi );
 
-struct myTrackIso {
-
-  //defaultValue 
-  float iso_dr03_dz005_pt00;
-
-  // iso sum options
-  float isoDir_dr03_dz005_pt00;
-
-  // r04 cone option
-  float iso_dr04_dz005_pt00;
-  // veto cone
-  float iso_dr00503_dz005_pt00;
-
-  // dz variation
-  float iso_dr03_dz000_pt00;
-  float iso_dr03_dz020_pt00;
-
-  //pt Variation
-  float iso_dr03_dz005_pt01;
-  float iso_dr03_dz005_pt02;
-  float iso_dr03_dz005_pt03;
-  float iso_dr03_dz005_pt04;
-  float iso_dr03_dz005_pt05;
-  float iso_dr03_dz005_pt06;
-  float iso_dr03_dz005_pt07;
-  float iso_dr03_dz005_pt08;
-  float iso_dr03_dz005_pt09;
-  float iso_dr03_dz005_pt10;
-
-};
-
-
-struct myTrackIso trackIso( int thisPf , float coneR , float dz_thresh , bool dovtxcut , float pt_thresh );
-struct myTrackIso trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut=false, float pt_thresh = 0.0); 
+float trackIso( int thisPf , float coneR , float dz_thresh , bool dovtxcut , float pt_thresh );
+float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut = false , float pt_thresh = 0.0); 
 
 //--------------------------------------------------------------------   
                               
 bool isGenBMatched ( LorentzVector p4, float dR );
 
 int isGenQGMatched ( LorentzVector p4, float dR );
-
-int isGenQGLMatched ( LorentzVector p4, float dR );
-
-unsigned int indexGenJet ( LorentzVector p4, float genminpt=20.) ;
 
 float dRGenJet ( LorentzVector p4, float genminpt=20. );
 

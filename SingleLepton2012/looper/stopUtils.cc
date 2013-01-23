@@ -110,9 +110,19 @@ pair<float, float> ScaleMET( pair<float, float> p_met, LorentzVector p4_dilep, d
 
 pair<float,float> getPhiCorrMET( float met, float metphi, int nvtx, bool ismc ) {                                                 
 
-  //using met phi corrections from C. Veelken (revision 1.6)
-  //functions are available here:                                                                                                            
+  //using met phi corrections from C. Veelken (emails from Oct. 4th)                                                                                 
+  //previous versions are available here:                                                                                                            
   //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/Type1MET/python/pfMETsysShiftCorrections_cfi.py                               
+
+  // Data                                                                                                                                            
+  // ------                                                                                                                                          
+  // x :  "+2.87340e-01 + 3.29813e-01*Nvtx"                                                                                                          
+  // y : "-2.27938e-01 - 1.71272e-01*Nvtx"                                                                                                           
+  // MC                                                                                                                                              
+  // ------                                                                                                                                          
+  // x : "+8.72683e-02 - 1.66671e-02*Nvtx"                                                                                                           
+  // y :  "+1.86650e-01 - 1.21946e-01*Nvtx"                                                                                                                                                
+
 
   float metx = met * cos( metphi );
   float mety = met * sin( metphi );
@@ -121,10 +131,10 @@ pair<float,float> getPhiCorrMET( float met, float metphi, int nvtx, bool ismc ) 
   float shifty = 0.;
 
   //use correction for data vs. mc                                                                                                                  
-  shiftx = ismc ? (0.1166 + 0.0200*nvtx)
-    : (0.2661 + 0.3217*nvtx);
-  shifty = ismc ? (0.2764 - 0.1280*nvtx)
-    : (-0.2251 - 0.1747*nvtx);
+  shiftx = ismc ? (+8.72683e-02 - 1.66671e-02*nvtx)
+    : (+2.87340e-01 + 3.29813e-01*nvtx);
+  shifty = ismc ? (+1.86650e-01 - 1.21946e-01*nvtx)
+    : (-2.27938e-01 - 1.71272e-01*nvtx);
 
   metx -= shiftx;
   mety -= shifty;
@@ -242,67 +252,35 @@ float getMT( float leppt , float lepphi , float met , float metphi ) {
   return sqrt( 2 * ( leppt * met * (1 - cos( dphi ) ) ) );
 }
 
+float trackIso( int thisPf , float coneR , float dz_thresh , bool dovtxcut , float pt_thresh ){
 
-struct myTrackIso  trackIso( int thisPf , float coneR , float dz_thresh , bool dovtxcut , float pt_thresh ){
+  float iso = 0.0;
 
-  dovtxcut=false;
+  for (int ipf = 0; ipf < (int)cms2.pfcands_p4().size(); ipf++) {
 
-  struct myTrackIso iso;
+    if( ipf == thisPf                 ) continue; // skip this PFCandidate                                                                                                                       
+    if( cms2.pfcands_charge().at(ipf) == 0 ) continue; // skip neutrals                                                                                                                          
+    if( cms2.pfcands_p4().at(ipf).pt() < pt_thresh ) continue; // skip pfcands below pt threshold                                                                                                
 
-  // no cuts  
-  iso.iso_dr03_dz005_pt00=0.; // this one will be the default
-  
-  // dz variation                                                                                                                         
-  iso.iso_dr03_dz020_pt00=0.;
-  iso.iso_dr03_dz000_pt00=0.;
-  
-  // isolation sum option
-  iso.isoDir_dr03_dz005_pt00=0.;
+    if( ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) ) > coneR ) continue;
 
-  // cone04
-  iso.iso_dr04_dz005_pt00=0.;
+    int itrk = cms2.pfcands_trkidx().at(ipf);
 
-  // veto cone
-  iso.iso_dr00503_dz005_pt00=0.; 
+    if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ){
+      //note: this should only happen for electrons which do not have a matched track                                                                                                            
+      //currently we are just ignoring these guys                                                                                                                                                
+      continue;
+    }
 
-  //pt Variation                                                                                                                      
-  iso.iso_dr03_dz005_pt01=0.;
-  iso.iso_dr03_dz005_pt02=0.;
-  iso.iso_dr03_dz005_pt03=0.;
-  iso.iso_dr03_dz005_pt04=0.;
-  iso.iso_dr03_dz005_pt05=0.;
-  iso.iso_dr03_dz005_pt06=0.;
-  iso.iso_dr03_dz005_pt07=0.;
-  iso.iso_dr03_dz005_pt08=0.;
-  iso.iso_dr03_dz005_pt09=0.;
-  iso.iso_dr03_dz005_pt10=0.;
-  
-
-  for (int ipf = 0; ipf < (int)pfcands_p4().size(); ipf++) {
-
-    if( ipf == thisPf                 ) continue; // skip this PFCandidate
-                                                                                                               
-    if(pfcands_charge().at(ipf) == 0 ) continue; // skip neutrals                                                                                                                          
     //----------------------------------------                                                                                                                                                   
     // find closest PV and dz w.r.t. that PV                                                                                                                                                     
-   //----------------------------------------                                                                                                                                                   
+    //----------------------------------------                                                                                                                                                   
 
     float mindz = 999.;
     int vtxi    = -1;
 
     if (dovtxcut) {
       for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
-
-
-	int itrk = pfcands_trkidx().at(ipf);
-
-	if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ){
-	  //note: this should only happen for electrons which do not have a matched track                                                                                                            
-	  //currently we are just ignoring these guys                                                                                                                                                
-	  continue;
-	}
-
-	////////
 
         if(!isGoodVertex(ivtx)) continue;
 
@@ -322,59 +300,17 @@ struct myTrackIso  trackIso( int thisPf , float coneR , float dz_thresh , bool d
 
       if ( vtxi != 0 )     continue;
     } else {
-      //      mindz = trks_dz_pv(itrk,0).first;
-
-      int itrk = -1;
-
-      if (abs(pfcands_particleId().at(ipf))!=11) {
-        itrk = pfcands_trkidx().at(ipf);
-        if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ) continue;
-        mindz=trks_dz_pv(itrk,0).first;
-      }
-
-      if (abs(pfcands_particleId().at(ipf))==11 && pfcands_pfelsidx().at(ipf)>=0) {
-        itrk = els_gsftrkidx().at(pfcands_pfelsidx().at(ipf));
-        if( itrk >= (int)gsftrks_p4().size() || itrk < 0 ) continue;
-        mindz=gsftrks_dz_pv(itrk,0).first;
-      }
-
-
+      mindz = trks_dz_pv(itrk,0).first;
     }
+    if ( fabs(mindz) > dz_thresh )     continue;
 
-    //---------------------------------------                                                                                                                                     // passes cuts, add up isolation value                                                                                                                                        //---------------------------------------                                                                                                                                                    
-    coneR=0.3;    
-    double dr=ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf) , pfcands_p4().at(thisPf) );
-    if( dr > coneR ) continue; // skip pfcands outside the cone                                     
+    //---------------------------------------                                                                                                                                                    
+    // passes cuts, add up isolation value                                                                                                                                                       
+    //---------------------------------------                                                                                                                                                    
 
-    // this is the default
-    if( pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt00+= pfcands_p4().at(ipf).pt();
+    iso += cms2.pfcands_p4().at(ipf).pt();
 
-    // cone 04
-    //    if( pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt00+= pfcands_p4().at(ipf).pt();
-
-    // veto Cone 0.05
-    if(pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.05 && dr >= 0.005) iso.iso_dr00503_dz005_pt00 += pfcands_p4().at(ipf).pt();
-
-    // this is the iso-sum option
-    if( pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.05) iso.isoDir_dr03_dz005_pt00 +=pfcands_p4().at(ipf).pt()*(1-3*dr);
-
-    // some dz variation
-    if( pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.00) iso.iso_dr03_dz000_pt00+= pfcands_p4().at(ipf).pt();      
-    if( pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.20) iso.iso_dr03_dz020_pt00+= pfcands_p4().at(ipf).pt();
-    
-    // some pt variation
-    if(pfcands_p4().at(ipf).pt() >= 0.1 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt01+= pfcands_p4().at(ipf).pt();
-    if(pfcands_p4().at(ipf).pt() >= 0.2 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt02+= pfcands_p4().at(ipf).pt();
-    if(pfcands_p4().at(ipf).pt() >= 0.3 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt03+= pfcands_p4().at(ipf).pt();
-    if(pfcands_p4().at(ipf).pt() >= 0.4 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt04+= pfcands_p4().at(ipf).pt();
-    if(pfcands_p4().at(ipf).pt() >= 0.5 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt05+= pfcands_p4().at(ipf).pt();
-    if(pfcands_p4().at(ipf).pt() >= 0.6 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt06+= pfcands_p4().at(ipf).pt();
-    if(pfcands_p4().at(ipf).pt() >= 0.7 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt07+= pfcands_p4().at(ipf).pt();
-    if(pfcands_p4().at(ipf).pt() >= 0.8 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt08+= pfcands_p4().at(ipf).pt();
-    if(pfcands_p4().at(ipf).pt() >= 0.9 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt09+= pfcands_p4().at(ipf).pt();
-    if(pfcands_p4().at(ipf).pt() >= 1.0 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt10+= pfcands_p4().at(ipf).pt();    
-      
-  } // end loop of the cand 
+  }
 
   return iso;
 }
@@ -418,56 +354,6 @@ int isGenQGMatched ( LorentzVector p4, float dR ) {
 
 //--------------------------------------------------------------------                                                                                                                                               
 
-int isGenQGLMatched ( LorentzVector p4, float dR ) {
-  //Start from the end that seems to have the decay products of the W first                                                                                                                                          
-  for (int igen = (genps_p4().size()-1); igen >-1; igen--) {
-    float deltaR = ROOT::Math::VectorUtil::DeltaR( p4 , genps_p4().at(igen) );
-    if ( deltaR > dR ) continue;
-    int id = genps_id().at(igen);
-    int mothid = genps_id_mother().at(igen);
-    // cout<<"status 3 particle ID "<<id<<" mother "<<mothid                                                                                                                                                         
-    //  <<" dR to jet "<<deltaR<<endl;                                                                                                                                                                               
-    if (abs(id)<6 && abs(mothid)==24)
-      return (mothid>0) ? 2 : -2;
-    if (abs(id)==5 && abs(mothid)==6)
-      return (mothid>0) ? 1 : -1;
-
-    if (abs(id)==11 && abs(mothid)==24)
-      return (mothid>0) ? 11 : -11;
-    if (abs(id)==13 && abs(mothid)==24)
-      return (mothid>0) ? 13 : -13;
-    if (abs(id)==15 && abs(mothid)==24)
-      return (mothid>0) ? 15 : -15;
-
-    if (abs(id)==21) return 3;
-    if (abs(id)<6) return 4;
-
-  }
-  return -9;
-}
-
-//--------------------------------------------------------------------                                                                                                                                               
-unsigned int indexGenJet ( LorentzVector p4, float genminpt) {
-
-  //return dR to closest gen-jet with pT > genminpt                                                                                                                                                                  
-  float mindeltaR = 9999.;
-  unsigned int min_igen = 9999.;
-
-  for (unsigned int igen = 0; igen < genjets_p4().size(); igen++) {
-    LorentzVector vgenj = genjets_p4().at(igen);
-    if ( vgenj.Pt() < genminpt ) continue;
-    float deltaR = ROOT::Math::VectorUtil::DeltaR( p4 , vgenj );
-    if ( deltaR< mindeltaR ) {
-      mindeltaR = deltaR;
-      min_igen = igen;
-    }
-  }
-
-  return min_igen;
-
-}
-
-//--------------------------------------------------------------------                                                                                                                                               
 float dRGenJet ( LorentzVector p4, float genminpt) {
 
   //return dR to closest gen-jet with pT > genminpt                                                                                                                                                                  

@@ -16,7 +16,6 @@
 using namespace std;
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
-typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 class TChain;
 
@@ -58,9 +57,6 @@ class Z_looper
   TTree *babyTree_;
     
   //histos
-
-  VofP4 pujets_;
-  Int_t npujets_;
 
   // event stuff
   char    dataset_[500];
@@ -133,17 +129,6 @@ class Z_looper
   Float_t st30_;
   Float_t st40_;
 
-  Int_t   extraz_;
-  Int_t   extrag_;
-
-  Float_t m1_;
-  Float_t m2_;
-  Float_t m3_;
-  Int_t   zveto_;
-  Int_t   nmuss_;
-  Int_t   nextramu_;
-  Int_t   nhyp_;
-
   Float_t pfmett1new_;
   Float_t pfmett1newphi_;
 
@@ -151,17 +136,6 @@ class Z_looper
   Int_t   el2nomu_;
   Int_t   el1nomuss_;
   Int_t   el2nomuss_;
-
-  Int_t   id3_;
-  Int_t   id4_;
-  Int_t   id5_;
-  Int_t   id6_;
-
-  Float_t m13_;
-  Float_t m23_;
-  Float_t m14_;
-  Float_t m24_;
-  Float_t m34_;
 
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
@@ -182,16 +156,10 @@ class Z_looper
   LorentzVector*  jet6_; 
   LorentzVector*  jet7_; 
   LorentzVector*  jet8_; 
-  LorentzVector*  subthreshjetup1_; 
-  LorentzVector*  subthreshjetup2_; 
   LorentzVector*  bjet1_; 
   LorentzVector*  bjet2_; 
   LorentzVector*  bjet3_; 
   LorentzVector*  bjet4_; 
-  LorentzVector*  genz_; 
-  LorentzVector*  gent_; 
-  LorentzVector*  gentbar_; 
-  LorentzVector*  genttbar_; 
 
   Float_t tche1_;
   Float_t tche2_;
@@ -210,24 +178,6 @@ class Z_looper
   Float_t csv6_;
   Float_t csv7_;
   Float_t csv8_;
-
-  Float_t jetunc1_;
-  Float_t jetunc2_;
-  Float_t jetunc3_;
-  Float_t jetunc4_;
-  Float_t jetunc5_;
-  Float_t jetunc6_;
-  Float_t jetunc7_;
-  Float_t jetunc8_;
-
-  Int_t jetgenb1_;
-  Int_t jetgenb2_;
-  Int_t jetgenb3_;
-  Int_t jetgenb4_;
-  Int_t jetgenb5_;
-  Int_t jetgenb6_;
-  Int_t jetgenb7_;
-  Int_t jetgenb8_;
 
   Int_t   isdata_;
   Int_t   el1tv_;
@@ -395,48 +345,6 @@ class Z_looper
   Int_t   ecaltp_;
   Int_t   trkfail_;
   Int_t   eebadsc_;
-
-  Float_t jet1beta1_01_;
-  Float_t jet2beta1_01_;
-  Float_t jet3beta1_01_;
-  Float_t jet4beta1_01_;
-
-  Float_t jet1beta2_01_;
-  Float_t jet2beta2_01_;
-  Float_t jet3beta2_01_;
-  Float_t jet4beta2_01_;
-
-  Float_t jet1beta1_05_;
-  Float_t jet2beta1_05_;
-  Float_t jet3beta1_05_;
-  Float_t jet4beta1_05_;
-
-  Float_t jet1beta2_05_;
-  Float_t jet2beta2_05_;
-  Float_t jet3beta2_05_;
-  Float_t jet4beta2_05_;
-
-  Float_t jet1beta1_10_;
-  Float_t jet2beta1_10_;
-  Float_t jet3beta1_10_;
-  Float_t jet4beta1_10_;
-
-  Float_t jet1beta2_10_;
-  Float_t jet2beta2_10_;
-  Float_t jet3beta2_10_;
-  Float_t jet4beta2_10_;
-
-  Int_t   vtxidx_;
-
-  Int_t   jet1flav_;
-  Int_t   jet2flav_;
-  Int_t   jet3flav_;
-  Int_t   jet4flav_;
-
-  Float_t jet1drgen_;
-  Float_t jet2drgen_;
-  Float_t jet3drgen_;
-  Float_t jet4drgen_;
 
   TH2F* hunc_eta1;
   TH2F* hunc_eta2;

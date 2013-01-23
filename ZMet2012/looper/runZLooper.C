@@ -36,7 +36,6 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   if( strcmp( prefix , "data_53X_2012A" ) == 0 ){    
     //pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged_ntuple_999999_1_skim.root");
-    //pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged_ntuple_999999_2_5_skim.root");
 
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012A-13Jul2012-v1_AOD/V05-03-18_slim/merged*root");
@@ -64,7 +63,6 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   }
 
   else if( strcmp( prefix , "data_53X_2012D" ) == 0 ){    
-    // pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged_ntuple_205718_0_skim.root");
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleElectron_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
     pickSkimIfExists(ch,"ZMet2012_slim/DoubleMu_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
     pickSkimIfExists(ch,"ZMet2012_slim/MuEG_Run2012D-PromptReco-v1_AOD/V05-03-18_slim/merged*root");
@@ -74,7 +72,6 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
 
   else if( strcmp( prefix , "zjets_53X_slim" ) == 0 ){    
     pickSkimIfExists(ch,"Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-18_slim/merged_ntuple*root");
-    //pickSkimIfExists(ch,"Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-18_slim/merged_ntuple_1.root");
   }
 
   //----------------------------------------------------------------------------------------
@@ -469,12 +466,6 @@ void runZLooper(char* prefix , bool isData = true, float kFactor = 1.){
   else if( strcmp( prefix , "gmsb_526" ) == 0 ){
     //pickSkimIfExists(ch,"/hadoop/cms/store/user/algeorge/CMS2_V05-03-13/Higgsino_mu110-410_8TeV_v1_algeorge-Higgsino_mu110-410_8TeV_v1-800d6ac945c15e195cbd98c0883f9d09/ntuple_8_7_8k5.root");
     pickSkimIfExists(ch,"/hadoop/cms/store/user/algeorge/CMS2_V05-03-13/Higgsino_mu110-410_8TeV_v1_algeorge-Higgsino_mu110-410_8TeV_v1-800d6ac945c15e195cbd98c0883f9d09/ntuple*root");
-  }
-
-  //----------------------------------------------------------------------------------------
-
-  else if( strcmp( prefix , "gmsb_526_v2" ) == 0 ){
-    pickSkimIfExists(ch,"/hadoop/cms/store/user/algeorge/CMS2_V05-03-13/Higgsino_mu110-410_8TeV_v1_algeorge-Higgsino_mu110-410_8TeV_v1-800d6ac945c15e195cbd98c0883f9d09_v2/ntuple_*root");
   }
 
   //----------------------------------------------------------------------------------------
