@@ -16,6 +16,7 @@
 using namespace std;
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 class TChain;
 
@@ -57,6 +58,9 @@ class Z_looper
   TTree *babyTree_;
     
   //histos
+
+  VofP4 pujets_;
+  Int_t npujets_;
 
   // event stuff
   char    dataset_[500];
@@ -423,6 +427,16 @@ class Z_looper
   Float_t jet4beta2_10_;
 
   Int_t   vtxidx_;
+
+  Int_t   jet1flav_;
+  Int_t   jet2flav_;
+  Int_t   jet3flav_;
+  Int_t   jet4flav_;
+
+  Float_t jet1drgen_;
+  Float_t jet2drgen_;
+  Float_t jet3drgen_;
+  Float_t jet4drgen_;
 
   TH2F* hunc_eta1;
   TH2F* hunc_eta2;
