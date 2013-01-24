@@ -689,10 +689,12 @@ void Z_looper::ScanChain (TChain* chain, const char* prefix, bool isData,
       cms2.GetEntry(event);
       ++nEventsTotal;
 
-      if( cms2.evt_event() == 296071331 ){
-	cout << "FOUND EVENT" << endl;
-      }
-      else continue;
+      // if( cms2.evt_event() == 296071331 ){
+      // 	cout << "FOUND EVENT" << endl;
+      // 	cout << "numCharge     " << pfcands_charge().size() << endl;
+      // 	cout << "nump4         " << pfcands_p4().size()     << endl;
+      // }
+      // else continue;
 
       if( pfcands_charge().size() != pfcands_p4().size() ){
 	cout << "ERROR! pfcands_charge().size() " << pfcands_charge().size() << " pfcands_p4().size() " << pfcands_p4().size() << endl;
