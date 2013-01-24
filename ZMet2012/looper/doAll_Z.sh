@@ -23,8 +23,11 @@
 # root -b -q "doSample_Z.C (\"vvv_53X_slim\")"           > vvv_53X_slim.log 2>&1 &  
 # root -b -q "doSample_Z.C (\"t_53X_slim\")"             > t_53X_slim.log 2>&1 &  
 # root -b -q "doSample_Z.C (\"ww_53X_slim\")"            > ww_53X_slim.log 2>&1 &  
-# root -b -q "doSample_Z.C (\"zjets_small_53X_slim\")"   > zjets_small_53X_slim.log 2>&1 &  
-root -b -q "doSample_Z.C (\"zjets_53X_slim\")"         > zjets_53X_slim.log 2>&1 &  
+root -b -q "doSample_Z.C (\"zjets_small_53X_slim\")"   > zjets_small_53X_slim.log 2>&1 &  
+# root -b -q "doSample_Z.C (\"zjets_part1_53X_slim\")"   > zjets_part1_53X_slim.log 2>&1 &  
+# root -b -q "doSample_Z.C (\"zjets_part2_53X_slim\")"   > zjets_part2_53X_slim.log 2>&1 &  
+# root -b -q "doSample_Z.C (\"zjets_part3_53X_slim\")"   > zjets_part3_53X_slim.log 2>&1 &  
+# root -b -q "doSample_Z.C (\"zjets_53X_slim\")"         > zjets_53X_slim.log 2>&1 &  
 
 #------------------
 # !!! syntax needs to be fixed for these
