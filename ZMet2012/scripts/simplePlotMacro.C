@@ -47,7 +47,7 @@ metType  myMetType    = e_pfmet;
 bool     normToLowMet =    true;
 bool     exclusive    =    true;
 bool     blind        =    false;
-float    lumi         =    19.3;
+float    lumi         =    19.5;
 bool     printCards   =    false;
 
 //metType  myMetType  = e_t1newpfmet; 
@@ -124,7 +124,7 @@ void simplePlotMacro( bool printplots = false ){
   // data/MC files
   //-----------------------------------
   
-  char* iter = "V00-02-00";
+  char* iter = "V00-02-13";
 
   TFile *f   = new TFile();
   //TFile *fwz = new TFile();
@@ -134,10 +134,12 @@ void simplePlotMacro( bool printplots = false ){
   TChain *chzz   = new TChain("T1");
   TChain *chrare = new TChain("T1");
 
-  chwz->Add(Form("../output/%s/wz_53X_baby.root",iter));
-  chzz->Add(Form("../output/%s/zz_53X_baby.root",iter));
-  chrare->Add(Form("../output/V00-01-05/ttZ_53X_baby.root",iter));
-  chrare->Add(Form("../output/V00-01-05/VVV_53X_baby.root",iter));
+  chwz->Add(Form("../output/%s/wz3lnu_53X_slim_baby.root",iter));
+  chzz->Add(Form("../output/%s/zz2l2nu_53X_slim_baby.root",iter));
+  // chrare->Add(Form("../output/V00-01-05/ttZ_53X_baby.root",iter));
+  // chrare->Add(Form("../output/V00-01-05/VVV_53X_baby.root",iter));
+  chrare->Add(Form("../output/%s/ttz_53X_slim_baby.root",iter));
+  chrare->Add(Form("../output/%s/vvv_53X_slim_baby.root",iter));
 
   //-----------------------------------
   // selection
@@ -636,7 +638,8 @@ void simplePlotMacro( bool printplots = false ){
 	// nominal analysis with b-veto
 	if( bveto ){
 	  Ksyst = 0.02/0.13;
-	  if( bins[ibin] >= 150 ) Ksyst = 0.05/0.13;
+	  if( bins[ibin] >= 150 ) Ksyst = 0.03/0.13;
+	  if( bins[ibin] >= 200 ) Ksyst = 0.05/0.13;
 	  if( !doKscaling) Ksyst = 0.0;
 
 	  Rsyst = 0.06;
@@ -696,7 +699,7 @@ void simplePlotMacro( bool printplots = false ){
       // syst uncertainties
       nof_syst[ibin]    = ofsyst * h_ofpred[i]->Integral(bin,binhigh);   
       ngjets_syst[ibin] = 0.3 * h_gjets[i]->Integral(bin,binhigh);       // 30% uncertainty on Z+jets
-      nwz_syst[ibin]    = 0.7 * h_wz[i]->Integral(bin,binhigh);          // 80% uncertainty on WZ
+      nwz_syst[ibin]    = 0.5 * h_wz[i]->Integral(bin,binhigh);          // 80% uncertainty on WZ
       nzz_syst[ibin]    = 0.5 * h_zz[i]->Integral(bin,binhigh);          // 50% uncertainty on ZZ
       nrare_syst[ibin]  = 0.5 * h_rare[i]->Integral(bin,binhigh);        // 50% uncertainty on rare
       ntot_syst[ibin]   = sqrt( pow(ngjets_syst[ibin],2) + pow(nof_syst[ibin],2) + pow(nwz_syst[ibin],2) + pow(nzz_syst[ibin],2) + pow(nrare_syst[ibin],2));
