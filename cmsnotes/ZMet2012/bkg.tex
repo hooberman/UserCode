@@ -78,7 +78,7 @@ Thus we calculate the quantity:
 
 \begin{equation}
 R_{\mu e} = \sqrt{\frac{N_{\mu\mu}^{\rm{offline}}}{N_{ee}^{\rm{offline}}}} = \sqrt{\frac{N_{\mu\mu}^{\rm{trig}}/\epsilon_{\mu\mu}^{\rm{trig}}}{N_{ee}^{\rm{trig}}/\epsilon_{ee}^{\rm{trig}}}} 
-= \sqrt{\frac{304953/0.88}{239661/0.95}} = 1.17\pm0.07.
+= \sqrt{\frac{234132/0.86}{185555/0.95}} = 1.18\pm0.07.
 \end{equation}
 
 Here we have used the Z$\to\mu\mu$ and Z$\to$ee yields from Table~\ref{table:zyields_2j} and the trigger efficiencies quoted in Sec.~\ref{sec:datasets}.
@@ -87,15 +87,15 @@ The predicted yields in the ee and $\mu\mu$ final states are calculated from the
 
 \begin{itemize}
 \item $N_{ee}^{\rm{predicted}}    = \frac {N_{e\mu}^{\rm{trig}}} {\epsilon_{e\mu}^{\rm{trig}}} \frac {\epsilon_{ee}^{\rm{trig}}} {2 R_{\mu e}} 
-= \frac{N_{e\mu}^{\rm{trig}}}{0.92}\frac{0.95}{2\times1.17} = (0.44\pm0.05) \times N_{e\mu}^{\rm{trig}}$ ,
+= \frac{N_{e\mu}^{\rm{trig}}}{0.93}\frac{0.95}{2\times1.18} = (0.43\pm0.05) \times N_{e\mu}^{\rm{trig}}$ ,
 \item $N_{\mu\mu}^{\rm{predicted}} = \frac {N_{e\mu}^{\rm{trig}}} {\epsilon_{e\mu}^{\rm{trig}}} \frac {\epsilon_{\mu\mu}^{\rm{trig}} R_{\mu e}}  {2}
-= \frac {N_{e\mu}^{\rm{trig}}} {0.95} \frac {0.88 \times 1.17}{2} = (0.54\pm0.07) \times N_{e\mu}^{\rm{trig}}$,
+= \frac {N_{e\mu}^{\rm{trig}}} {0.95} \frac {0.86 \times 1.18}{2} = (0.53\pm0.07) \times N_{e\mu}^{\rm{trig}}$,
 \end{itemize}
 
 and the predicted yield in the combined ee and $\mu\mu$ channel is simply the sum of these two predictions:
 
 \begin{itemize}
-\item $N_{ee+\mu\mu}^{\rm{predicted}} = (0.98\pm0.06)\times N_{e\mu}^{\rm{trig}}$.
+\item $N_{ee+\mu\mu}^{\rm{predicted}} = (0.97\pm0.06)\times N_{e\mu}^{\rm{trig}}$.
 \end{itemize}
 
 Note that the relative uncertainty in the combined ee and $\mu\mu$ prediction is smaller than those for the individual ee and $\mu\mu$ predictions
@@ -104,11 +104,13 @@ because the uncertainty in $R_{\mu e}$ cancels when summing the ee and $\mu\mu$ 
 To improve the statistical precision of the FS background estimate, we remove the requirement that the e$\mu$ lepton pair falls in the Z mass window.
 Instead we scale the e$\mu$ yield by $K$, the efficiency for e$\mu$ events to satisfy the Z mass requirement, extracted from simulation. In Fig.~\ref{fig:K_incl}
 we display the value of $K$ in data and simulation, for a variety of \MET\ requirements, for the inclusive analysis. 
-Based on this we chose $K=0.14\pm0.02$ for the lower \MET\ regions, $K=0.14\pm0.04$ for the \MET\ $>$ 200 GeV region,and $K=0.14\pm0.09$ for \MET\ $>$ 300 GeV,
+Based on this we chose $K=0.14\pm0.02$ for the lower \MET\ regions, $K=0.14\pm0.04$ for the \MET\ $>$ 200 GeV region, and $K=0.14\pm0.08$ for \MET\ $>$ 300 GeV,
 where the larger uncertainties reflect the reduced statistical precision at large \MET.
 The corresponding plot for the targeted analysis, including the b-veto, is displayed in Fig.~\ref{fig:K_targeted}.
-Based on this we chose $K=0.13\pm0.02$
-for all \MET\ regions up to  \MET\ $>$ 150 GeV. For the \MET\ $>$ 200 GeV region we choose $K=0.13\pm0.05$, due to the reduced  statistical precision.
+Based on this we chose $K=0.13\pm0.02$ for all \MET\ regions up to  \MET\ $>$ 100 GeV. 
+For the \MET\ $>$ 150 GeV region we choose $K=0.13\pm0.03$
+and for the \MET\ $>$ 200 GeV region we choose $K=0.13\pm0.05$, 
+due to the reduced  statistical precision.
 
 \begin{figure}[!ht]
 \begin{center}
@@ -119,6 +121,7 @@ for all \MET\ regions up to  \MET\ $>$ 150 GeV. For the \MET\ $>$ 200 GeV region
 \caption{\label{fig:K_incl}
 The efficiency for e$\mu$ events to satisfy the dilepton mass requirement, $K$, in data and simulation for inclusive \MET\ intervals (left) and
 exclusive \MET\ intervals (right) for the inclusive analysis. 
+Based on this we chose $K=0.14\pm0.02$ for the lower \MET\ regions, $K=0.14\pm0.04$ for the \MET\ $>$ 200 GeV region, and $K=0.14\pm0.08$ for \MET\ $>$ 300 GeV.
 }
 
 \begin{comment}
@@ -332,7 +335,7 @@ K     : 0.06 +/- 0.023
 The efficiency for e$\mu$ events to satisfy the dilepton mass requirement, $K$, in data and simulation for inclusive \MET\ intervals (left) and
 exclusive \MET\ intervals (right) for the targeted analysis, including the b-veto. 
 Based on this we chose $K=0.13\pm0.02$ for the \MET\ regions up to \MET\ $>$ 100 GeV.
-For higher \MET\ regions we chose $K=0.13\pm0.07$.
+For \MET\ $>$ 150 we choose $K=0.13\pm0.03$, for \MET\ $>$ 200 GeV we choose $K=0.13\pm0.05$.
 %{\bf FIXME plots made with 10\% of \zjets\ MC statistics, to be remade with full statistics}
 \label{fig:K_targeted}
 }
