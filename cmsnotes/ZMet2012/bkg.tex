@@ -593,50 +593,25 @@ A pure WZ sample can be selected in data with the requirements:
 \begin{itemize}
 \item Exactly 3 $p_T>20$~GeV leptons passing analysis identication and isolation requirements,
 \item 2 of the 3 leptons must fall in the Z window 81-101 GeV,
-\item \MET $>$ 50 GeV (to suppress DY).
+\item \MET $>$ 50 GeV (to suppress DY),
+\item veto events with b-tagged jets.
 \end{itemize}
 
 The data and MC yields passing the above selection are in Table~\ref{tab:wz}. 
-The inclusive yields (without any jet requirements) agree within 16\%, which is consistent within
+The inclusive yields (without any jet requirements) in the same-flavor final states (660 observed vs. 596 $\pm$ 5.2 MC expected) 
+agree within 11\%, which is consistent within
 the $\approx$15\% uncertainty in the theory prediction for the WZ cross section. A data vs. MC comparison of kinematic
 distributions (jet multiplicity, \MET, Z \pt) is given in Fig.~\ref{fig:wz}. High \MET\ 
 values in WZ and ZZ events arise from highly boosted W or Z bosons that decay leptonically, 
 and we therefore check that the MC does a reasonable job of reproducing the \pt distributions of the 
 leptonically decaying \Z. While the inclusive WZ yields are in reasonable agreement, we observe
 an excess in data in events with at least 2 jets, corresponding to the jet multiplicity requirement
-in our preselection. We observe 200 events in data while the MC predicts $130\pm3.1$~(stat), representing an excess of 53\%,
+in our preselection. We observe 124 same-flavor events in data while the MC predicts $88\pm1.5$~(stat), representing an excess of 41\%,
 as indicated in Table~\ref{tab:wz2j}, and we therefore assess an uncertainty of 50\% on the WZ background.
 %We note that the contributions from fake leptons and from \zjets\ with mismeasured \MET\
 %is underestimated in the MC. 
 %This excess will be studied further. For the time being, based on these studies we currently assess an uncertainty of 50\% on the WZ yield.
 %A data vs. MC comparison of several kinematic quantities in the sample with 3 leptons and at least 2 jets can be found in App.~\ref{app:WZ}.
-
-\begin{comment}
-We note some possible contributions to this discrepancy:
-
-\begin{itemize}
-
-\item {\bf The following checks refer to the 5.2 fb$^{-1}$ results and will be updated.}
-
-\item The \zjets\ contribution is under-estimated here, for 2 reasons: first, because the \zjets\
-yield passing a \MET $>$ 50 GeV requirement is under-estimated in MC and second, because the fake
-rate is typically under-estimated in the MC. To get a rough idea for how much the excess depends
-on the \zjets\ yield, if the \zjets\ yield is doubled then the excess is reduced from 78\% to 55\%.
-Also note that we are currently using 10\% of the \zjets\ MC sample and there is 1 event with a weight 
-of about 5, so the plots and tables will be remade with full \zjets\ sample.
-
-\item The \ttbar\ contribution is under-estimated here because the fake
-rate is typically under-estimated in the MC. To get a rough idea for how much the excess depends
-on the \ttbar\ yield, if the \ttbar\ yield is doubled then the excess is reduced from 78\% to 57\%.
-
-\item Currently no attempt is made to reject jets from pile-up interactions, which may be responsible
-for some of the excess at large \njets. To check this, we increase the jet \pt threhsold to 40 GeV, which
-helps to suppress PU jets, and observe 39 events in data vs. an MC prediction of $25\pm5.2$~(stat),
-decreasing the excess from 78\% to 58\%. In the future this may be improved by explicitly
-requiring the jets to be consistent with originating from the signal primary vertex.
-
-\end{itemize}
-\end{comment}
 
 
 
@@ -645,27 +620,26 @@ requiring the jets to be consistent with originating from the signal primary ver
 \caption{\label{tab:wz} Data and Monte Carlo yields passing the WZ preselection. }
 \begin{tabular}{lccccc}
 
-%Loading babies at       : ../output/V00-02-00
-%Using selection         : (((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101)
-%Using weight            : weight * 19.3 * trgeff * vtxweight
+%Loading babies at       : ../output/V00-02-13
+%Using selection         : ((((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101))&&(nbcsvm==0)
+%Using weight            : weight * 19.5 * trgeff * vtxweight
 
 \hline
 \hline
          Sample   &             ee   &       $\mu\mu$   &         e$\mu$   &          total  \\
 \hline
-%SCALING ZJETS BY 111/946
-             WZ   &244.9 $\pm$ 1.6   &317.9 $\pm$ 1.8   & 17.0 $\pm$ 0.4   &579.7 $\pm$ 2.4  \\
-         \zjets   &  2.5 $\pm$ 2.0   &  6.4 $\pm$ 3.9   &  0.0 $\pm$ 0.0   &  8.9 $\pm$ 4.3  \\
-             ZZ   &  5.3 $\pm$ 0.0   &  7.1 $\pm$ 0.1   &  0.4 $\pm$ 0.0   & 12.8 $\pm$ 0.1  \\
-         \ttbar   &  2.5 $\pm$ 1.3   &  6.7 $\pm$ 2.0   &  7.5 $\pm$ 2.1   & 16.7 $\pm$ 3.2  \\
+             WZ   &244.0 $\pm$ 1.6   &301.8 $\pm$ 1.6   & 17.0 $\pm$ 0.4   &562.8 $\pm$ 2.3  \\
+             ZZ   & 10.2 $\pm$ 0.1   & 12.8 $\pm$ 0.1   &  0.8 $\pm$ 0.0   & 23.8 $\pm$ 0.1  \\
+         \zjets   &  3.3 $\pm$ 2.4   &  5.8 $\pm$ 3.4   &  0.0 $\pm$ 0.0   &  9.0 $\pm$ 4.2  \\
+         \ttbar   &  0.6 $\pm$ 0.6   &  4.5 $\pm$ 1.6   &  2.1 $\pm$ 1.1   &  7.3 $\pm$ 2.0  \\
      single top   &  0.0 $\pm$ 0.0   &  0.5 $\pm$ 0.5   &  0.0 $\pm$ 0.0   &  0.5 $\pm$ 0.5  \\
              WW   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.2 $\pm$ 0.1   &  0.3 $\pm$ 0.1  \\
-            ttV   &  8.6 $\pm$ 0.4   & 10.3 $\pm$ 0.4   &  2.5 $\pm$ 0.2   & 21.5 $\pm$ 0.7  \\
-            VVV   &  3.4 $\pm$ 0.1   &  4.3 $\pm$ 0.1   &  0.6 $\pm$ 0.1   &  8.3 $\pm$ 0.2  \\
+            ttV   &  2.3 $\pm$ 0.2   &  2.6 $\pm$ 0.2   &  0.6 $\pm$ 0.1   &  5.5 $\pm$ 0.3  \\
+            VVV   &  3.0 $\pm$ 0.1   &  3.7 $\pm$ 0.1   &  0.6 $\pm$ 0.1   &  7.4 $\pm$ 0.2  \\
 \hline
-      tot SM MC   &267.1 $\pm$ 2.9   &353.3 $\pm$ 4.7   & 28.2 $\pm$ 2.2   &648.6 $\pm$ 6.0  \\
+    total SM MC   &263.4 $\pm$ 3.0   &331.8 $\pm$ 4.2   & 21.4 $\pm$ 1.2   &616.6 $\pm$ 5.2  \\
 \hline
-           data   &            312   &            391   &             50   &            753  \\
+           data   &            288   &            372   &             36   &            696  \\
 \hline
 \hline
 
@@ -678,31 +652,26 @@ requiring the jets to be consistent with originating from the signal primary ver
 \caption{\label{tab:wz2j} Data and Monte Carlo yields passing the WZ preselection and \njets\ $\geq$ 2. }
 \begin{tabular}{lccccc}
 
-%Loading babies at       : ../output/V00-02-00
-%-------------------------------------
-%USING SKIMMED SAMPLES WITH NJETS >= 2
-%-------------------------------------
-
-%Using selection         : ((((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101))&&(njets>=2)
-%Using weight            : weight * 19.3 * trgeff * vtxweight
+%Loading babies at       : ../output/V00-02-13
+%Using selection         : (((((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101))&&(nbcsvm==0))&&(njets>=2)
+%Using weight            : weight * 19.5 * trgeff * vtxweight
 
 \hline
 \hline
          Sample   &             ee   &       $\mu\mu$   &         e$\mu$   &          total  \\
 \hline
-%SCALING ZJETS BY 111/946
-         \ttbar   &  1.6 $\pm$ 0.9   &  3.4 $\pm$ 1.5   &  1.8 $\pm$ 1.1   &  6.9 $\pm$ 2.0  \\
-         \zjets   &  1.9 $\pm$ 1.9   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  1.9 $\pm$ 1.9  \\
-             WZ   & 40.0 $\pm$ 0.7   & 51.5 $\pm$ 0.7   &  2.7 $\pm$ 0.2   & 94.3 $\pm$ 1.0  \\
-             ZZ   &  1.0 $\pm$ 0.0   &  1.4 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  2.6 $\pm$ 0.0  \\
+             WZ   & 33.0 $\pm$ 0.6   & 41.1 $\pm$ 0.6   &  2.3 $\pm$ 0.2   & 76.3 $\pm$ 0.9  \\
+             ZZ   &  1.7 $\pm$ 0.0   &  2.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  3.9 $\pm$ 0.1  \\
+         \zjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+         \ttbar   &  0.6 $\pm$ 0.6   &  1.3 $\pm$ 0.9   &  1.2 $\pm$ 0.9   &  3.1 $\pm$ 1.4  \\
      single top   &  0.0 $\pm$ 0.0   &  0.5 $\pm$ 0.5   &  0.0 $\pm$ 0.0   &  0.5 $\pm$ 0.5  \\
              WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-            ttV   &  8.0 $\pm$ 0.4   &  9.5 $\pm$ 0.4   &  2.2 $\pm$ 0.2   & 19.6 $\pm$ 0.6  \\
-            VVV   &  1.9 $\pm$ 0.1   &  2.6 $\pm$ 0.1   &  0.2 $\pm$ 0.0   &  4.6 $\pm$ 0.2  \\
+           \ttV   &  1.8 $\pm$ 0.2   &  2.1 $\pm$ 0.2   &  0.4 $\pm$ 0.1   &  4.3 $\pm$ 0.3  \\
+            VVV   &  1.5 $\pm$ 0.1   &  2.0 $\pm$ 0.1   &  0.1 $\pm$ 0.0   &  3.7 $\pm$ 0.1  \\
 \hline
-      tot SM MC   & 54.4 $\pm$ 2.2   & 69.0 $\pm$ 1.8   &  6.9 $\pm$ 1.1   &130.4 $\pm$ 3.1  \\
+    total SM MC   & 38.7 $\pm$ 0.9   & 49.1 $\pm$ 1.2   &  4.1 $\pm$ 0.9   & 91.8 $\pm$ 1.7  \\
 \hline
-           data   &             87   &             91   &             22   &            200  \\
+           data   &             61   &             63   &             11   &            135  \\
 \hline
 \hline
 
@@ -712,54 +681,64 @@ requiring the jets to be consistent with originating from the signal primary ver
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=1\linewidth]{plots/WZ_19fb.pdf}
+\includegraphics[width=1\linewidth]{plots/WZ_19p5fb.pdf}
 \caption{\label{fig:wz}\protect 
 Data vs. MC comparisons for the WZ selection discussed in the text for \lumi. 
 The number of jets, missing transverse energy, and Z boson transverse momentum are displayed.
 }
 \begin{comment}
-Loading babies at       : ../output/V00-02-00
-Using selection         : (((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101)
-Using weight            : weight * 19.3 * trgeff * vtxweight
+
+Loading babies at       : ../output/V00-02-13
+Using selection         : ((((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==3 && lep3.pt()>20.0))&&(pfmet>50))&&(dilmass>81 && dilmass<101))&&(nbcsvm==0)
+Using weight            : weight * 19.5 * trgeff * vtxweight
 Plotting var njets flavor sf
 compareDataMC : apply trigeff 1
-MC yield VVV 7.73
-MC yield ttV 18.95
-MC yield single top 0.51
+MC yield VVV 6.78
+MC yield ttV 4.94
 MC yield WW 0.09
-MC yield ZZ 12.38
-MC yield WZ 562.71
-MC yield ttbar 9.18
-SCALING ZJETS BY 111/946
-MC yield zjets 8.85
-MC total yield 620.39
-data yield 703
+MC yield single top 0.47
+MC yield ttbar 5.14
+MC yield ZZ 23.01
+MC yield WZ 545.78
+MC yield zjets 9.02
+MC total yield 595.23
+data yield 660
 Plotting var pfmet flavor sf
 compareDataMC : apply trigeff 1
-MC yield VVV 7.73
-MC yield ttV 18.95
-MC yield single top 0.51
+Warning in <TROOT::Append>: Replacing existing TH1: htemp (Potential memory leak).
+MC yield VVV 6.78
+MC yield ttV 4.94
 MC yield WW 0.09
-MC yield ZZ 12.38
-MC yield WZ 562.72
-MC yield ttbar 9.18
-SCALING ZJETS BY 111/946
-MC yield zjets 8.85
-MC total yield 620.40
-data yield 703
+MC yield single top 0.47
+MC yield ttbar 5.14
+MC yield ZZ 23.01
+MC yield WZ 545.79
+MC yield zjets 9.02
+MC total yield 595.24
+data yield 660
+Warning in <TROOT::Append>: Replacing existing TH1: datahist (Potential memory leak).
+Warning in <TROOT::Append>: Replacing existing TH1: mc_0 (Potential memory leak).
+Warning in <TROOT::Append>: Replacing existing TH1: mc_1 (Potential memory leak).
+Warning in <TROOT::Append>: Replacing existing TH1: mc_2 (Potential memory leak).
+Warning in <TROOT::Append>: Replacing existing TH1: mc_3 (Potential memory leak).
+Warning in <TROOT::Append>: Replacing existing TH1: mc_4 (Potential memory leak).
+Warning in <TROOT::Append>: Replacing existing TH1: mc_5 (Potential memory leak).
+Warning in <TROOT::Append>: Replacing existing TH1: mc_6 (Potential memory leak).
+Warning in <TROOT::Append>: Replacing existing TH1: mc_7 (Potential memory leak).
 Plotting var dileppt flavor sf
 compareDataMC : apply trigeff 1
-MC yield VVV 7.73
-MC yield ttV 18.95
-MC yield single top 0.51
+Warning in <TROOT::Append>: Replacing existing TH1: htemp (Potential memory leak).
+MC yield VVV 6.78
+MC yield ttV 4.94
 MC yield WW 0.09
-MC yield ZZ 12.38
-MC yield WZ 562.71
-MC yield ttbar 9.18
-SCALING ZJETS BY 111/946
-MC yield zjets 8.85
-MC total yield 620.38
-data yield 703
+MC yield single top 0.47
+MC yield ttbar 5.14
+MC yield ZZ 23.01
+MC yield WZ 545.78
+MC yield zjets 9.02
+MC total yield 595.23
+data yield 660
+
 \end{comment}
 
 \end{center}
@@ -779,8 +758,8 @@ A pure ZZ sample can be selected in data with the requirements:
 
 The data and MC yields passing the above selection are in Table~\ref{tab:zz}. 
 In this ZZ-dominated sample we observe good agreement between the data yield and the MC prediction.
-After requiring 2 jets (corresponding to the requirement in the analysis selection), we observe 14 events
-in data and the MC predicts $13.2\pm0.2$ events. Due to the limited statistical precision we assign an uncertainty
+After requiring 2 jets (corresponding to the requirement in the analysis selection), we observe 11 events
+in data and the MC predicts $11\pm0.2$ events. Due to the limited statistical precision we assign an uncertainty
 of 50\% on the ZZ yield.
 
 \begin{table}[htb]
@@ -788,28 +767,26 @@ of 50\% on the ZZ yield.
 \caption{\label{tab:zz} Data and Monte Carlo yields for the ZZ preselection. }
 \begin{tabular}{lccccc}
 
-%Loading babies at       : ../output/V00-02-00
+%Loading babies at       : ../output/V00-02-13
 %Using selection         : ((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==4 && lep3.pt()>20.0 && lep4.pt()>20.0))&&(dilmass>81 && dilmass<101)
-%Using weight            : weight * 19.3 * trgeff * vtxweight
+%Using weight            : weight * 19.5 * trgeff * vtxweight
 
 \hline
 \hline
          Sample   &             ee   &       $\mu\mu$   &         e$\mu$   &          total  \\
 \hline
-%SCALING ZZ BY 1.92
-             ZZ   & 52.7 $\pm$ 0.2   & 73.3 $\pm$ 0.2   &  3.4 $\pm$ 0.0   &129.4 $\pm$ 0.3  \\
-             WZ   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.3 $\pm$ 0.1  \\
-%SCALING ZJETS BY 111/946
+             ZZ   & 53.0 $\pm$ 0.2   & 70.7 $\pm$ 0.2   &  3.5 $\pm$ 0.0   &127.2 $\pm$ 0.3  \\
+           \ttV   &  1.3 $\pm$ 0.2   &  1.4 $\pm$ 0.2   &  0.3 $\pm$ 0.1   &  3.0 $\pm$ 0.2  \\
+            VVV   &  0.7 $\pm$ 0.1   &  0.9 $\pm$ 0.1   &  0.0 $\pm$ 0.0   &  1.7 $\pm$ 0.1  \\
          \zjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+             WZ   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.3 $\pm$ 0.1  \\
          \ttbar   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-             WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
      single top   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
-            ttV   &  1.3 $\pm$ 0.2   &  1.4 $\pm$ 0.2   &  0.3 $\pm$ 0.1   &  3.0 $\pm$ 0.2  \\
-            VVV   &  0.6 $\pm$ 0.1   &  0.8 $\pm$ 0.1   &  0.0 $\pm$ 0.0   &  1.4 $\pm$ 0.1  \\
+             WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
 \hline
-      tot SM MC   & 54.7 $\pm$ 0.3   & 75.6 $\pm$ 0.3   &  3.8 $\pm$ 0.1   &134.1 $\pm$ 0.4  \\
+    total SM MC   & 55.1 $\pm$ 0.3   & 73.1 $\pm$ 0.3   &  3.9 $\pm$ 0.1   &132.1 $\pm$ 0.4  \\
 \hline
-           data   &             56   &             80   &              5   &            141  \\
+           data   &             57   &             82   &              5   &            144  \\
 \hline
 \hline
 
@@ -819,7 +796,7 @@ of 50\% on the ZZ yield.
 
 \begin{figure}[tbh]
 \begin{center}
-\includegraphics[width=1\linewidth]{plots/ZZ_19fb.pdf}
+\includegraphics[width=1\linewidth]{plots/ZZ_19p5fb.pdf}
 \caption{\label{fig:zz}\protect 
 Data vs. MC comparisons for the ZZ selection discussed in the text for \lumi.
 The number of jets, missing transverse energy, and Z boson transverse momentum are displayed.
@@ -828,52 +805,48 @@ The number of jets, missing transverse energy, and Z boson transverse momentum a
 \end{figure}
 
 \begin{comment}
-Loading babies at       : ../output/V00-02-00
+
+Loading babies at       : ../output/V00-02-13
 Using selection         : ((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))||(leptype==2 && (em==1||me==1||isdata==0)))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==4 && lep3.pt()>20.0 && lep4.pt()>20.0))&&(dilmass>81 && dilmass<101)
-Using weight            : weight * 19.3 * trgeff * vtxweight
+Using weight            : weight * 19.5 * trgeff * vtxweight
 Plotting var njets flavor sf
 compareDataMC : apply trigeff 1
-
-MC yield VVV 1.40
-MC yield ttV 2.64
-MC yield single top 0.00
+MC yield VVV 1.63
+MC yield ttV 2.66
 MC yield WW 0.00
+MC yield single top 0.00
 MC yield ttbar 0.00
-SCALING ZJETS BY 111/946
+MC yield ZZ 123.68
+MC yield WZ 0.25
 MC yield zjets 0.00
-MC yield WZ 0.27
-SCALING ZJETS BY 1.92
-MC yield ZZ 125.99
-MC total yield 130.31
-data yield 136
+MC total yield 128.21
+data yield 139
 Plotting var pfmet flavor sf
 compareDataMC : apply trigeff 1
-MC yield VVV 1.40
-MC yield ttV 2.64
-MC yield single top 0.00
+MC yield VVV 1.63
+MC yield ttV 2.66
 MC yield WW 0.00
+MC yield single top 0.00
 MC yield ttbar 0.00
-SCALING ZJETS BY 111/946
+MC yield ZZ 123.66
+MC yield WZ 0.25
 MC yield zjets 0.00
-MC yield WZ 0.27
-SCALING ZJETS BY 1.92
-MC yield ZZ 126.00
-MC total yield 130.32
-data yield 136
+MC total yield 128.19
+data yield 139
 Plotting var dileppt flavor sf
 compareDataMC : apply trigeff 1
-MC yield VVV 1.40
-MC yield ttV 2.64
-MC yield single top 0.00
+MC yield VVV 1.63
+MC yield ttV 2.66
 MC yield WW 0.00
+MC yield single top 0.00
 MC yield ttbar 0.00
-SCALING ZJETS BY 111/946
+MC yield ZZ 123.67
+MC yield WZ 0.25
 MC yield zjets 0.00
-MC yield WZ 0.27
-SCALING ZJETS BY 1.92
-MC yield ZZ 126.00
-MC total yield 130.33
-data yield 136
+MC total yield 128.20
+data yield 139
+
+
 \end{comment}
 
 
