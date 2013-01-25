@@ -54,7 +54,7 @@ class FactorizedJetCorrector;
 
 const bool debug                = false;
 const float lumi                = 1.0;
-const char* iter                = "V00-02-03";
+const char* iter                = "V00-02-04";
 const char* jsonfilename        = "../jsons/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_goodruns.txt";
 
 // https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/1968.html   19.3 fb-1
@@ -786,64 +786,70 @@ void makePhotonBabies::ScanChain (TChain* chain, const char* prefix, bool isData
       sort(goodJets.begin()    , goodJets.end()    , sortByPt);
 
       if( goodJets.size()  > 0 ) {
-		jet1flav_      = isGenQGLMatched ( goodJets.at(0) , isData );
-        jet1drgen_     = dRGenJet ( goodJets.at(0) , isData );
-		jet1_   = &(goodJets.at(0));
+	jet1flav_      = isGenQGLMatched ( goodJets.at(0) , isData );
+	jet1drgen_     = dRGenJet ( goodJets.at(0) , isData );
+	jet1_   = &(goodJets.at(0));
 
-		int jetidx1 = getJetIndex( goodJets.at(0) , jet_corrector_pfL1FastJetL2L3 );
-		jet1beta1_01_  = pfjet_beta(jetidx1,1,0.1);
-		jet1beta2_01_  = pfjet_beta(jetidx1,2,0.1);
-		jet1beta1_05_  = pfjet_beta(jetidx1,1,0.5);
-		jet1beta2_05_  = pfjet_beta(jetidx1,2,0.5);
-		jet1beta1_10_  = pfjet_beta(jetidx1,1,1.0);
-		jet1beta2_10_  = pfjet_beta(jetidx1,2,1.0);
+	int jetidx1 = getJetIndex( goodJets.at(0) , jet_corrector_pfL1FastJetL2L3 );
+	jet1beta1_01_  = pfjet_beta(jetidx1,1,0.1);
+	jet1beta2_01_  = pfjet_beta(jetidx1,2,0.1);
+	jet1beta1_05_  = pfjet_beta(jetidx1,1,0.5);
+	jet1beta2_05_  = pfjet_beta(jetidx1,2,0.5);
+	jet1beta1_10_  = pfjet_beta(jetidx1,1,1.0);
+	jet1beta2_10_  = pfjet_beta(jetidx1,2,1.0);
 
-	  }
+      }
 
       if( goodJets.size()  > 1 ) {
-		jet2flav_      = isGenQGLMatched ( goodJets.at(1) , isData );
-        jet2drgen_     = dRGenJet ( goodJets.at(1) , isData );
-		jet2_   = &(goodJets.at(1));
+	jet2flav_      = isGenQGLMatched ( goodJets.at(1) , isData );
+	jet2drgen_     = dRGenJet ( goodJets.at(1) , isData );
+	jet2_   = &(goodJets.at(1));
 
-		int jetidx2 = getJetIndex( goodJets.at(1) , jet_corrector_pfL1FastJetL2L3 );
-		jet2beta1_01_  = pfjet_beta(jetidx2,1,0.1);
-		jet2beta2_01_  = pfjet_beta(jetidx2,2,0.1);
-		jet2beta1_05_  = pfjet_beta(jetidx2,1,0.5);
-		jet2beta2_05_  = pfjet_beta(jetidx2,2,0.5);
-		jet2beta1_10_  = pfjet_beta(jetidx2,1,1.0);
-		jet2beta2_10_  = pfjet_beta(jetidx2,2,1.0);
+	int jetidx2 = getJetIndex( goodJets.at(1) , jet_corrector_pfL1FastJetL2L3 );
+	jet2beta1_01_  = pfjet_beta(jetidx2,1,0.1);
+	jet2beta2_01_  = pfjet_beta(jetidx2,2,0.1);
+	jet2beta1_05_  = pfjet_beta(jetidx2,1,0.5);
+	jet2beta2_05_  = pfjet_beta(jetidx2,2,0.5);
+	jet2beta1_10_  = pfjet_beta(jetidx2,1,1.0);
+	jet2beta2_10_  = pfjet_beta(jetidx2,2,1.0);
 
-	  }
+      }
 
       if( goodJets.size()  > 2 ) {
-		jet3flav_      = isGenQGLMatched ( goodJets.at(2) , isData );
-        jet3drgen_     = dRGenJet ( goodJets.at(2) , isData );
-		jet3_   = &(goodJets.at(2));
+	jet3flav_      = isGenQGLMatched ( goodJets.at(2) , isData );
+	jet3drgen_     = dRGenJet ( goodJets.at(2) , isData );
+	jet3_   = &(goodJets.at(2));
 
-		int jetidx3 = getJetIndex( goodJets.at(2) , jet_corrector_pfL1FastJetL2L3 );
-		jet3beta1_01_  = pfjet_beta(jetidx3,1,0.1);
-		jet3beta2_01_  = pfjet_beta(jetidx3,2,0.1);
-		jet3beta1_05_  = pfjet_beta(jetidx3,1,0.5);
-		jet3beta2_05_  = pfjet_beta(jetidx3,2,0.5);
-		jet3beta1_10_  = pfjet_beta(jetidx3,1,1.0);
-		jet3beta2_10_  = pfjet_beta(jetidx3,2,1.0);
+	int jetidx3 = getJetIndex( goodJets.at(2) , jet_corrector_pfL1FastJetL2L3 );
+	jet3beta1_01_  = pfjet_beta(jetidx3,1,0.1);
+	jet3beta2_01_  = pfjet_beta(jetidx3,2,0.1);
+	jet3beta1_05_  = pfjet_beta(jetidx3,1,0.5);
+	jet3beta2_05_  = pfjet_beta(jetidx3,2,0.5);
+	jet3beta1_10_  = pfjet_beta(jetidx3,1,1.0);
+	jet3beta2_10_  = pfjet_beta(jetidx3,2,1.0);
 
-	  }
+      }
 
       if( goodJets.size()  > 3 ) {
-		jet4flav_      = isGenQGLMatched ( goodJets.at(3) , isData );
-		jet4drgen_     = dRGenJet ( goodJets.at(3) , isData );
-		jet4_   = &(goodJets.at(3));
+	jet4flav_      = isGenQGLMatched ( goodJets.at(3) , isData );
+	jet4drgen_     = dRGenJet ( goodJets.at(3) , isData );
+	jet4_   = &(goodJets.at(3));
 
-		int jetidx4 = getJetIndex( goodJets.at(3) , jet_corrector_pfL1FastJetL2L3 );
-		jet4beta1_01_  = pfjet_beta(jetidx4,1,0.1);
-		jet4beta2_01_  = pfjet_beta(jetidx4,2,0.1);
-		jet4beta1_05_  = pfjet_beta(jetidx4,1,0.5);
-		jet4beta2_05_  = pfjet_beta(jetidx4,2,0.5);
-		jet4beta1_10_  = pfjet_beta(jetidx4,1,1.0);
-		jet4beta2_10_  = pfjet_beta(jetidx4,2,1.0);
+	int jetidx4 = getJetIndex( goodJets.at(3) , jet_corrector_pfL1FastJetL2L3 );
+	jet4beta1_01_  = pfjet_beta(jetidx4,1,0.1);
+	jet4beta2_01_  = pfjet_beta(jetidx4,2,0.1);
+	jet4beta1_05_  = pfjet_beta(jetidx4,1,0.5);
+	jet4beta2_05_  = pfjet_beta(jetidx4,2,0.5);
+	jet4beta1_10_  = pfjet_beta(jetidx4,1,1.0);
+	jet4beta2_10_  = pfjet_beta(jetidx4,2,1.0);
+		
+      }      
 
-	  }      
+      mjj_ = -1;
+
+      if( goodJets.size() >= 2 ){
+	mjj_      = ( *jet1_ + *jet2_ ).mass();
+      }
 
       csc_       = cms2.evt_cscTightHaloId();
       hbhe_      = cms2.evt_hbheFilter();
@@ -1345,6 +1351,8 @@ void makePhotonBabies::MakeBabyNtuple (const char* babyFileName)
   babyTree_->Branch("ecaltp"    ,  &ecaltp_    ,  "ecaltp/I");  
   babyTree_->Branch("trkfail"   ,  &trkfail_   ,  "trkfail/I");  
   babyTree_->Branch("eebadsc"   ,  &eebadsc_   ,  "eebadsc/I");  
+
+  babyTree_->Branch("mjj"       ,  &mjj_       ,  "mjj/F");  
 
   babyTree_->Branch("pujets"    , "std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >", &pujets_ );
   babyTree_->Branch("npujets"   ,  &npujets_   ,  "npujets/I"   );
