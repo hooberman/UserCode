@@ -33,17 +33,17 @@ enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt
 bool           debug              = false;                  // debug printout statements
 bool           doVtxReweight      = true;                   // reweight templates for nVertices
 bool           pt40               = false;                  // pt>40 and HT > 100 GeV
-bool           bveto              = true;                   // b-veto
-bool           mjjcut             = true;                   // dijet mass requirement
-bool           mjjTemplates       = true;                   // dijet mass requirement in TEMPLATES
-bool           nlep2              = true;                   // 3rd lepton veto
+bool           bveto              = false;                  // b-veto
+bool           mjjcut             = false;                  // dijet mass requirement
+bool           mjjTemplates       = false;                  // dijet mass requirement in TEMPLATES
+bool           nlep2              = false;                  // 3rd lepton veto
 bool           setTemplateErrors  = true;                   // calculate template errors
 metType        myMetType          = e_pfmet;                // MET type
 templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templates
 templateType   myTemplateType     = e_njets_ht;             // bin templates in njets and HT
 bool           reweight           = false;                  // reweight for photon vs. Z pt
 char*          iter               = "_pfmet";               // label for output file
-float          lumi               = 19.3;                   // luminosity
+float          lumi               = 19.5;                   // luminosity
 //------------------------------------------------
 
 using namespace std;
@@ -122,7 +122,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
     cout << __FILE__ << " " << __LINE__ << " ERROR UNRECOGNIZED TEMPLATES" << endl;
     exit(0);
   }
-      
+
   // }else{
       
   //   if( myTemplateSource == e_QCD ){
@@ -221,12 +221,10 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
     // event loop
     unsigned int nEvents = tree->GetEntries();
- 
+
     for (unsigned int event = 0 ; event < nEvents; ++event){
 
       tree->GetEntry(event);
-
-      
 
       ++nEventsTotal;
 
@@ -715,14 +713,17 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
   // make histos rootfile
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+
   rootdir->cd();
-  
+
   // if( bveto ) saveHist( Form("../output/%s/babylooper_%s%s%s_bveto%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
   // else        saveHist( Form("../output/%s/babylooper_%s%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
-
-  saveHist( Form("../output/%s/babylooper_%s%s%s%s%s%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , bvetochar , mjjTemplatesChar , pt40char ) );
-
+  char* filename = Form("../output/%s/babylooper_%s%s%s%s%s%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , bvetochar , mjjTemplatesChar , pt40char );
+  cout << "Saving histograms to : " << filename << endl;
+  saveHist( filename );
+  cout << "Saved histos" << endl;
   deleteHistos();
+  cout << "Deleted histos" << endl;
   
 } // end ScanChain
 
