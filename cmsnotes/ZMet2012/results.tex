@@ -11,7 +11,7 @@ Good agreement is observed between the data and the predicted background over th
 \begin{figure}[!h]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=0.6\textwidth]{plots/pfmet_all_19fb.pdf}
+\includegraphics[width=0.6\textwidth]{plots/pfmet_all_19p5fb.pdf}
 \end{tabular}
 \caption{Results of the inclusive analysis. The observed \MET\ distribution (black points) is compared with the sum of the predicted \MET\
 distributions from \zjets, flavor-symmetric backgrounds, and WZ+ZZ backgrounds. The ratio of observed to predicted yields in each bin is
@@ -35,40 +35,55 @@ and total background is indicated for signal regions with at least 20 observed e
 \hline
 \hline
 
-\begin{comment}
-Using pfmet out-of-the-box
-WZ/ZZ selection : ((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))&&(ngennu>0))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(dilmass>81 && dilmass<101))&&(njets>=2))&&(lep1.pt()>20.0 && lep2.pt()>20.0)
-WZ/ZZ weight    : weight * 19.3 * vtxweight * trgeff
-Opening ../output/V00-02-00/babylooper_data_53X_2012ALL_PhotonStitchedTemplate_pfmet.root
-B-veto?   0
-K         0.14
-ee+mm channels: scale em yield by 0.98
-Yields in 0-60 GeV region
-data   : 533201
-gjets  : 537544
-OF     : 2979.3
-WZ     : 348.772
-ZZ     : 49.8729
-Rare   : 33.0953
-Scaling gjets by : 0.985576
-SF events 544614
-OF events 44581
-\end{comment}
+%Using pfmet out-of-the-box
+%DON'T Apply mjj cut in templates
+%WZ/ZZ selection : ((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))&&(ngennu>0))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(dilmass>81 && dilmass<101))&&(njets>=2))&&(lep1.pt()>20.0 && lep2.pt()>20.0)
+%WZ/ZZ weight    : weight * 19.5 * vtxweight * trgeff
+%Opening ../output/V00-02-13/babylooper_data_53X_2012ALL_PhotonStitchedTemplate_pfmet.root
+%B-veto?   0
+%K         0.14
+%ee+mm channels: scale em yield by 0.97
+%Yields in 0-60 GeV region
+%data   : 410573
+%gjets  : 414209
+%OF     : 2861.58
+%WZ     : 295.321
+%ZZ     : 38.722
+%Rare   : 31.0719
+%Scaling gjets by : 0.983432
+%SF events 419687
+%OF events 43832
 
+%ee/#mu#mu events
+
+\hline
+\hline
                       &   \MET\ 0--30 GeV   &  \MET\ 30--60 GeV   & \MET\ 60--100 GeV   &\MET\ 100--200 GeV   &\MET\ 200--300 GeV   & \MET\ $>$ 300 GeV  \\
 \hline
-        \zjets\ bkg   &399165 $\pm$ 119750   &130625 $\pm$ 39188   &   6652 $\pm$ 1996   &      266 $\pm$ 80   &    12.1 $\pm$ 3.8   &     3.0 $\pm$ 1.0  \\
-             FS bkg   &    1031 $\pm$ 160   &    1948 $\pm$ 302   &    2056 $\pm$ 319   &    1022 $\pm$ 159   &   51.0 $\pm$ 15.1   &     7.4 $\pm$ 4.4  \\
-             WZ bkg   &  128.9 $\pm$ 90.2   & 219.9 $\pm$ 153.9   & 158.2 $\pm$ 110.7   &   86.4 $\pm$ 60.5   &    11.8 $\pm$ 8.3   &     3.3 $\pm$ 3.3  \\
-             ZZ bkg   &    15.9 $\pm$ 8.0   &   34.0 $\pm$ 17.0   &   36.5 $\pm$ 18.2   &   33.8 $\pm$ 16.9   &     6.8 $\pm$ 3.4   &     2.0 $\pm$ 2.0  \\
-        rare SM bkg   &    10.6 $\pm$ 5.3   &   22.4 $\pm$ 11.2   &   21.9 $\pm$ 11.0   &    19.1 $\pm$ 9.6   &     3.5 $\pm$ 1.8   &     1.2 $\pm$ 1.2  \\
+        \zjets\ bkg   &308067 $\pm$ 92421   & 99280 $\pm$ 29785   &   5155 $\pm$ 1547   &      238 $\pm$ 72   &    11.6 $\pm$ 3.6   &     2.8 $\pm$ 1.0  \\
+             FS bkg   &     972 $\pm$ 151   &    1889 $\pm$ 293   &    2022 $\pm$ 314   &    1011 $\pm$ 157   &   50.7 $\pm$ 15.0   &     7.2 $\pm$ 4.3  \\
+             WZ bkg   &  108.9 $\pm$ 54.5   &  186.4 $\pm$ 93.2   &  137.7 $\pm$ 68.9   &   78.7 $\pm$ 39.3   &    11.1 $\pm$ 5.6   &     3.1 $\pm$ 3.1  \\
+             ZZ bkg   &    12.1 $\pm$ 6.1   &   26.6 $\pm$ 13.3   &   29.8 $\pm$ 14.9   &   29.8 $\pm$ 14.9   &     6.2 $\pm$ 3.1   &     2.0 $\pm$ 2.0  \\
+        Rare SM bkg   &    10.1 $\pm$ 5.1   &   21.0 $\pm$ 10.5   &   20.6 $\pm$ 10.3   &    17.9 $\pm$ 9.0   &     3.2 $\pm$ 1.6   &     1.1 $\pm$ 1.1  \\
 \hline
-          total bkg   &400351 $\pm$ 119750   &132850 $\pm$ 39190   &   8925 $\pm$ 2025   &    1428 $\pm$ 189   &   85.3 $\pm$ 18.1   &    17.0 $\pm$ 6.1  \\
-               data   &            398148   &            135053   &              9816   &              1507   &                83   &                 7  \\
-       significance   &      -0.0$\sigma$   &       0.1$\sigma$   &       0.4$\sigma$   &       0.4$\sigma$   &      -0.1$\sigma$   &   \\
+   Total background   &309170 $\pm$ 92421   &101403 $\pm$ 29786   &   7365 $\pm$ 1580   &    1375 $\pm$ 178   &   82.8 $\pm$ 16.8   &    16.2 $\pm$ 5.8  \\
+               Data   &            311030   &             99543   &              7578   &              1450   &                79   &                 7  \\
+%       Significance   &       0.0$\sigma$   &      -0.1$\sigma$   &       0.1$\sigma$   &       0.4$\sigma$   &      -0.2$\sigma$   &      -1.4$\sigma$  \\
+\hline
+\hline
 
-\hline
-\hline
+%float Zbkg_yield[nbins]    = { 237.6 , 11.6 ,     2.8  };
+%float Zbkg_err[nbins]      = { 71.7 ,  3.6 ,     1.0  };
+%float OFbkg_yield[nbins]   = { 1011.4 , 50.7 ,     7.2  };
+%float OFbkg_err[nbins]     = { 157.2 , 15.0 ,     4.3  };
+%float WZbkg_yield[nbins]   = { 78.7 , 11.1 ,     3.1  };
+%float WZbkg_err[nbins]     = { 39.3 ,  5.6 ,     3.1  };
+%float ZZbkg_yield[nbins]   = { 29.8 ,  6.2 ,     2.0  };
+%float ZZbkg_err[nbins]     = { 14.9 ,  3.1 ,     2.0  };
+%float rarebkg_yield[nbins] = { 17.9 ,  3.2 ,     1.1  };
+%float rarebkg_err[nbins]   = {  9.0 ,  1.6 ,     1.1  };
+%int   data_yield[nbins]    = { 1450 ,   79 ,       7  };
+
 \end{tabular}
 \end{center}
 \end{table}
@@ -83,7 +98,7 @@ Good agreement is observed between the data and the predicted background over th
 \begin{figure}[!h]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=0.5\textwidth]{plots/pfmet_bveto_all_19fb.pdf}
+\includegraphics[width=0.5\textwidth]{plots/pfmet_bveto_all_19p5fb.pdf}
 \end{tabular}
 \caption{Results of the $\rm{Z}+{dijet}$ analysis. The observed $\rm{E_{T}^{miss}}$ distribution (black points) is compared with the sum of the predicted $\rm{E_{T}^{miss}}$
 distributions from $\rm{Z}+\rm{jets}$, flavor-symmetric (FS), sum of WZ and ZZ (WZ+ZZ), and rare SM backgrounds. The ratio of observed to predicted yields in each bin is
@@ -104,55 +119,68 @@ the \MET\ templates method (\zjets\ bkg), the flavor-symmetric background predic
 and total background is indicated for signal regions with at least 20 observed events. }
 \begin{tabular}{l|c|c|c|c}
 
-
 %Using pfmet out-of-the-box
 %Apply mjj cut in templates
 %WZ/ZZ selection : ((((((((leptype==0 && (ee==1 || isdata==0))||(leptype==1 && (mm==1 || isdata==0)))&&(ngennu>0))&&(csc==0 && hbhe==1 && hcallaser==1 && ecaltp==1 && trkfail==1 && eebadsc==1 && hbhenew==1))&&(dilmass>81 && dilmass<101))&&(njets>=2))&&(lep1.pt()>20.0 && lep2.pt()>20.0))&&(nlep==2))&&(mjj>70.0 && mjj<110.0)
-%WZ/ZZ weight    : weight * 19.3 * vtxweight * trgeff
-%Opening ../output/V00-02-00/babylooper_data_53X_2012ALL_PhotonStitchedTemplate_pfmet_bveto_mjjcut.root
+%WZ/ZZ weight    : weight * 19.5 * vtxweight * trgeff
+%Opening ../output/V00-02-13/babylooper_data_53X_2012ALL_PhotonStitchedTemplate_pfmet_bveto_mjjcut.root
 %B-veto?   1
 %K         0.13
-%ee+mm channels: scale em yield by 0.98
+%ee+mm channels: scale em yield by 0.97
 %Yields in 0-60 GeV region
-%data   : 145069
-%gjets  : 145529
-%OF     : 201.547
-%WZ     : 57.8524
-%ZZ     : 13.8061
-%Rare   : 3.53803
-%Scaling gjets by : 0.994937
-%SF events 146811
-%OF events 2632
+%data   : 97293
+%gjets  : 97486.1
+%OF     : 166.578
+%WZ     : 47.4321
+%ZZ     : 9.52458
+%Rare   : 2.79426
+%Scaling gjets by : 0.995697
+%SF events 98295
+%OF events 2313
+
+%ee/#mu#mu events
 
 \hline
 \hline
-                      &   \MET\ 0--30 GeV   &  \MET\ 30--60 GeV   &  \MET\ 60--80 GeV   & \MET\ 80--100 GeV   \\
+                      &   \MET\ 0--30 GeV   &  \MET\ 30--60 GeV   &  \MET\ 60--80 GeV   & \MET\ 80--100 GeV     \\
 \hline
-        \zjets\ bkg   &111698 $\pm$ 33511   &  33094 $\pm$ 9929   &    1141 $\pm$ 343   &      106 $\pm$ 33   \\
-             FS bkg   &   88.8 $\pm$ 15.0   &      113 $\pm$ 19   &    51.5 $\pm$ 8.9   &    38.0 $\pm$ 6.6   \\
-             WZ bkg   &   21.5 $\pm$ 15.0   &   36.4 $\pm$ 25.5   &   15.2 $\pm$ 10.6   &     8.7 $\pm$ 6.1   \\
-             ZZ bkg   &     4.6 $\pm$ 2.3   &     9.2 $\pm$ 4.6   &     4.9 $\pm$ 2.5   &     4.1 $\pm$ 2.1   \\
-        rare SM bkg   &     1.0 $\pm$ 0.5   &     2.5 $\pm$ 1.3   &     1.4 $\pm$ 0.7   &     1.1 $\pm$ 0.6   \\
+        \zjets\ bkg   & 75652 $\pm$ 22696   &  21414 $\pm$ 6425   &     722 $\pm$ 217   &   68.9 $\pm$ 21.2     \\
+             FS bkg   &   69.9 $\pm$ 11.9   &   96.7 $\pm$ 16.3   &    48.3 $\pm$ 8.3   &    35.2 $\pm$ 6.2     \\
+             WZ bkg   &    17.7 $\pm$ 8.8   &   29.8 $\pm$ 14.9   &    13.0 $\pm$ 6.5   &     7.4 $\pm$ 3.7     \\
+             ZZ bkg   &     3.1 $\pm$ 1.5   &     6.4 $\pm$ 3.2   &     3.5 $\pm$ 1.8   &     3.2 $\pm$ 1.6     \\
+        Rare SM bkg   &     0.8 $\pm$ 0.4   &     2.0 $\pm$ 1.0   &     1.1 $\pm$ 0.6   &     0.9 $\pm$ 0.5     \\
 \hline
-          total bkg   &111814 $\pm$ 33511   &  33255 $\pm$ 9929   &    1214 $\pm$ 344   &      158 $\pm$ 34   \\
-               data   &            110883   &             34186   &              1478   &               178   \\
-       significance   &      -0.0$\sigma$   &       0.1$\sigma$   &       0.8$\sigma$   &       0.6$\sigma$   \\
+   Total background   & 75744 $\pm$ 22696   &  21549 $\pm$ 6425   &     788 $\pm$ 218   &      116 $\pm$ 22     \\
+               Data   &             76302   &             20991   &               809   &               115     \\
+%       Significance   &       0.0$\sigma$   &      -0.1$\sigma$   &       0.1$\sigma$   &      -0.0$\sigma$     \\
 \hline
 \hline
-
                       &\MET\ 100--120 GeV   &\MET\ 120--150 GeV   &\MET\ 150--200 GeV   & \MET\ $>$ 200 GeV  \\
+        \zjets\ bkg   &     7.8 $\pm$ 2.5   &     4.8 $\pm$ 1.5   &     2.1 $\pm$ 0.7   &     0.5 $\pm$ 0.1  \\
+             FS bkg   &    21.9 $\pm$ 4.0   &    13.2 $\pm$ 2.5   &     5.7 $\pm$ 1.6   &     0.8 $\pm$ 0.4  \\
+             WZ bkg   &     4.0 $\pm$ 2.0   &     3.3 $\pm$ 1.6   &     2.0 $\pm$ 1.0   &     0.9 $\pm$ 0.9  \\
+             ZZ bkg   &     1.9 $\pm$ 1.0   &     2.1 $\pm$ 1.1   &     1.5 $\pm$ 0.8   &     1.4 $\pm$ 1.4  \\
+        Rare SM bkg   &     0.4 $\pm$ 0.2   &     0.9 $\pm$ 0.5   &     0.6 $\pm$ 0.3   &     0.4 $\pm$ 0.4  \\
 \hline
-        \zjets\ bkg   &    10.8 $\pm$ 3.4   &     6.2 $\pm$ 2.1   &     4.5 $\pm$ 2.6   &     0.5 $\pm$ 0.2  \\
-             FS bkg   &    23.4 $\pm$ 4.2   &    14.0 $\pm$ 2.7   &     6.1 $\pm$ 2.5   &     0.8 $\pm$ 0.4  \\
-             WZ bkg   &     4.7 $\pm$ 3.3   &     3.7 $\pm$ 2.6   &     2.2 $\pm$ 1.6   &     1.0 $\pm$ 1.0  \\
-             ZZ bkg   &     2.4 $\pm$ 1.2   &     2.6 $\pm$ 1.3   &     1.8 $\pm$ 0.9   &     1.6 $\pm$ 1.6  \\
-        rare SM bkg   &     0.6 $\pm$ 0.3   &     1.1 $\pm$ 0.6   &     0.7 $\pm$ 0.4   &     0.5 $\pm$ 0.5  \\
-\hline
-          total bkg   &    41.9 $\pm$ 6.5   &    27.5 $\pm$ 4.5   &    15.4 $\pm$ 4.1   &     4.3 $\pm$ 2.0  \\
-               data   &                47   &                24   &                12   &                 3  \\
-       significance   &       0.5$\sigma$   &      -0.5$\sigma$   &                     &                    \\
+   Total background   &    36.1 $\pm$ 5.2   &    24.3 $\pm$ 3.6   &    11.8 $\pm$ 2.2   &     3.9 $\pm$ 1.8  \\
+               Data   &                36   &                25   &                13   &                 4  \\
+%       Significance   &      -0.0$\sigma$   &       0.1$\sigma$   &       0.3$\sigma$   &       0.0$\sigma$  \\
 \hline
 \hline
+
+
+%float Zbkg_yield[nbins]    = { 68.9 ,  7.8 ,  4.8 ,  2.1 ,     0.5  };
+%float Zbkg_err[nbins]      = { 21.2 ,  2.5 ,  1.5 ,  0.7 ,     0.1  };
+%float OFbkg_yield[nbins]   = { 35.2 , 21.9 , 13.2 ,  5.7 ,     0.8  };
+%float OFbkg_err[nbins]     = {  6.2 ,  4.0 ,  2.5 ,  1.6 ,     0.4  };
+%float WZbkg_yield[nbins]   = {  7.4 ,  4.0 ,  3.3 ,  2.0 ,     0.9  };
+%float WZbkg_err[nbins]     = {  3.7 ,  2.0 ,  1.6 ,  1.0 ,     0.9  };
+%float ZZbkg_yield[nbins]   = {  3.2 ,  1.9 ,  2.1 ,  1.5 ,     1.4  };
+%float ZZbkg_err[nbins]     = {  1.6 ,  1.0 ,  1.1 ,  0.8 ,     1.4  };
+%float rarebkg_yield[nbins] = {  0.9 ,  0.4 ,  0.9 ,  0.6 ,     0.4  };
+%float rarebkg_err[nbins]   = {  0.5 ,  0.2 ,  0.5 ,  0.3 ,     0.4  };
+%int   data_yield[nbins]    = {  115 ,   36 ,   25 ,   13 ,       4  };
+
 
 \end{tabular}
 \end{center}
