@@ -20,17 +20,15 @@
   gROOT->ProcessLine(".L runZLooper.C+");
 
   // runZLooper("ggmsb"                 , false );  
-  // runZLooper("ggmsb_150"             , false );  
-
+  // runZLooper("wzsms"                 , false );
   // runZLooper("zzsms"                 , false );
   // runZLooper("data"                  , true  );
   // runZLooper("zjetsS6_incomplete"    , false );
   // runZLooper("dyee"                  , false );
   // runZLooper("dymm"                  , false );
-  runZLooper("wz_summer11_madgraph"  , false );
-  runZLooper("zz_summer11_madgraph"  , false );
+  // runZLooper("wz_summer11_madgraph"  , false );
+  // runZLooper("zz_summer11_madgraph"  , false );
   // runZLooper("ttbar"                 , false );
-  // runZLooper("wzsms"                 , false );
   // runZLooper("zjets"                 , false );
   // runZLooper("LM4"                   , false );
   // runZLooper("LM4v2"                 , false );
@@ -39,12 +37,12 @@
   // runZLooper("LM8v2"                 , false );
   // runZLooper("LM9"                   , false );
   // runZLooper("singletop"             , false );
-  // runZLooper("ZZZ"                   , false );
-  // runZLooper("T5zzl"                 , false );
-  // runZLooper("T5zz"                  , false );
-  // runZLooper("T5zzh"                 , false );
-  // runZLooper("T5zzgmsb"              , false );
   // runZLooper("T5zzgmsb_hadoop"       , false );
+  // runZLooper("ZZZ"                   , false );
+  runZLooper("T5zzl"                 , false );
+  runZLooper("T5zz"                  , false );
+  runZLooper("T5zzh"                 , false );
+  runZLooper("T5zzgmsb"              , false );
   // runZLooper("wz_summer11_pythia"    , false );
   // runZLooper("zz_summer11_pythia"    , false );
 

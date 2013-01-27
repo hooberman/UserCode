@@ -20,7 +20,6 @@
 #include "ossusy_looper.h"
 #include "getMt2.C"
 #include "TTreeCache.h"
-#include "TDatabasePDG.h"
 #include "../CORE/CMS2.h"
 #include "../CORE/metSelections.h"
 #include "../CORE/trackSelections.h"
@@ -55,7 +54,7 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 //mSUGRA scan parameters-----------------------------
 
-const bool  doGenSelection    = false;
+const bool  doGenSelection    = true;
 const bool  generalLeptonVeto = true;
 const int   nm0points         = 100;
 const float m0min             = 20.;
@@ -78,59 +77,6 @@ float returnSigma(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 float returnBias(float sumJetPt, ossusy_looper::MetTypeEnum metType);
 
 //--------------------------------------------------------------------
-
-float susySubProcess(){
-
-  // determine the process
-  TDatabasePDG *pdg = new TDatabasePDG(); 
-  std::vector<int> interactions; 
- 
-  for (unsigned int j=0; j<cms2.genps_id().size(); j++) { 
-    if (cms2.genps_status().at(j) != 3) continue; 
-    int ID = abs(cms2.genps_id().at(j)); 
-    int mID = abs(cms2.genps_id_mother().at(j)); 
-    if (ID > 1000000 && ID < 2000016 && (mID < 7 || mID ==21 || mID == 22 || mID == 23 || mID == 24)) { // kept the bosons in case of screw ups 
- 
-      // Check the mother of the SM is a proton 
-      bool isProton = false;        
-      for (unsigned int k=0; k < j; k++) { 
-	int pID = abs(cms2.genps_id().at(k)); 
-	int mpID = abs(cms2.genps_id_mother().at(k)); 
-	if ((pID < 7 || pID ==21 || pID == 22 || pID == 23 || pID == 24)&&(mpID == 2212)) isProton = true;  
-      } 
-      //      if (!isProton) continue;   
-      if (!isProton) { 
-	dumpDocLines(); 
-	continue; 
-      } 
-      interactions.push_back(cms2.genps_id().at(j)); 
- 
-      if (interactions.size() > 2)  
-	cout << setw(4) << left << j << " WARNING mcSUSYkfactor: Something is wrong with " 
-	     << setw(10) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " " 
-	     << setw(10) << left << cms2.genps_id().at(j) << " " 
-	     << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  " 
-	     << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  " 
-	     << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  " 
-	     << setw(4) << right << cms2.genps_status().at(j) << " " 
-	     << setw(10) << left << pdg->GetParticle(cms2.genps_id_mother().at(j))->GetName() 
-	     << " using k=1 " << endl; 
-    } 
-  } 
- 
-  delete pdg; 
-  
-  int subprocess = -1;
-
-  if (interactions.size() == 2 ) { 
-    subprocess = sfinalState(interactions[0], interactions[1]);     
-  } else { 
-    subprocess = -2;
-  } 
- 
-  return subprocess; 
-}
-
 
 void checkElectron( int elidx ){
 
@@ -204,16 +150,6 @@ bool passesCaloJetID (const LorentzVector &jetp4)
 	  return false;
 
      return true;
-}
-
-//--------------------------------------------------------------------
-
-float ossusy_looper::gluinoPairCrossSection( float gluinomass ){
-
-  int   bin  = gg_xsec_hist->FindBin(gluinomass);
-  float xsec = gg_xsec_hist->GetBinContent(bin);
-
-  return xsec;
 }
 
 //--------------------------------------------------------------------
@@ -696,28 +632,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       exit(0);
     }
 
-    //set gluino cross section file
-    gg_xsec_file = TFile::Open("reference_xSecs.root");
-  
-    if( !gg_xsec_file->IsOpen() ){
-      cout << "Error, could not open gluino cross section TFile, quitting" << endl;
-      exit(0);
-    }
-    
-    gg_xsec_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL");
-    
-    if( gg_xsec_hist == 0 ){
-      cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
-      exit(0);
-    }
-
-    gg_xsec_unc_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL_unc");
-    
-    if( gg_xsec_unc_hist == 0 ){
-      cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
-      exit(0);
-    }
-
     initialized = true;
   }
 
@@ -988,8 +902,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	foundPair_ = 0;
 	genlep1_   = 0;
 	genlep2_   = 0;
-	genid1_    = 0;
-	genid2_    = 0;
 
 	// require >=2 leptons
 	if( leps.size() >= 2 ){
@@ -1029,14 +941,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	    if( leps.at(lep1idx).pt() > leps.at(lep2idx).pt() ){
 	      genlep1_ = &leps.at(lep1idx);
 	      genlep2_ = &leps.at(lep2idx);
-	      genid1_  = ids.at(lep1idx);
-	      genid2_  = ids.at(lep2idx);
 	    }
 	    else{
 	      genlep1_ = &leps.at(lep2idx);
 	      genlep2_ = &leps.at(lep1idx);
-	      genid1_  = ids.at(lep2idx);
-	      genid2_  = ids.at(lep1idx);
 	    }
 	  }
 	}
@@ -1101,10 +1009,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
       */
 
       if( TString(prefix).Contains("LMscan") ){
-	cout << "ERROR SPARM M0 and M12 branches turned off!!!!" << endl;
-	exit(0);
-       	//if( sparm_m12() > 700                           ) continue;	
-       	//if( sparm_m0()  > 2000.0 && sparm_m12() > 400.0 ) continue;
+       	if( sparm_m12() > 700    ) continue;	
+       	if( sparm_m0()  > 2000.0 ) continue;
       }
 
       if(strcmp(prefix,"T2tt") == 0){
@@ -2096,32 +2002,24 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	mG_ = -9999;
 	mL_ = -9999;
 
-	if( TString(prefix).Contains("T1") ){
-	  mG_ = sparm_mG();
-	  mL_ = sparm_mL();
-	  mF_ = sparm_mf();
-	  
-	  weight = lumi * gluinoPairCrossSection(mG_) * (1000./10000.);
-	  if( doTenPercent )	  weight *= 10;
+        if(strcmp(prefix,"T1lh") == 0){
+	  mG_ = -9; //sparm_mG();
+	  mL_ = -9; //sparm_mL();
 	}
 
 	else if( TString(prefix).Contains("LMscan") ){
 
-	  subp_ = susySubProcess();
-          m0    = -1;//sparm_m0();
-          m12   = -1;//sparm_m12();
+          m0  = sparm_m0();
+          m12 = sparm_m12();
 
-	  //ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012");
-	  //ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Scale20_2012");
-	  //ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Scale05_2012");
-	  ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012final");
-	  ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Up_2012final");
-	  ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Dn_2012final");
+	  ksusy_     = kfactorSUSY(m0,m12,"tanbeta10_2012");
+	  ksusyup_   = kfactorSUSY(m0,m12,"tanbeta10Scale20_2012");
+	  ksusydn_   = kfactorSUSY(m0,m12,"tanbeta10Scale05_2012");
 	  xsecsusy_  = cmssm_loxsec(m0,m12,"../data/msugra_tanb10_2012_LO.root");
 	  xsecsusy2_ = getMsugraCrossSection(m0,m12,10);
 
 	  fileff_ = 1;
-	  if( TString(prefix).Contains("dil") )  fileff_ = -999; //sparm_dilepfiltereff();
+	  if( TString(prefix).Contains("dil") )  fileff_ = sparm_dilepfiltereff();
 
 	  //cout << "m0 " << m0 << " m1/2 " << m12 << " LO xsec " << xsecsusy_ << " k " << ksusy_ << " kup " << ksusyup_ << " ksusydn " << ksusydn_ << endl << endl;
 	  weight = lumi * fileff_ * ksusy_ * xsecsusy_ * (1000. / 10000.); // k * xsec / nevents
@@ -2133,12 +2031,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
           weight = 1;
         }
 
-	else if( TString(prefix).Contains("T2") ){
-	  mG_ = sparm_mG();
-	  mL_ = sparm_mL();
-	  mF_ = sparm_mf();
+	else if(strcmp(prefix,"T2tt") == 0){
+	  mG_ = -9; //sparm_mG();
+	  mL_ = -9; //sparm_mL();
 	  
-	  weight = lumi * stopPairCrossSection(mG_) * (1000./10000.);
+	  weight = lumi * stopPairCrossSection(mG_) * (1000./50000.);
 	  if( doTenPercent )	  weight *= 10;
 	}
 
@@ -3172,10 +3069,10 @@ void ossusy_looper::BookHistos(char *prefix)
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
   
-  hel     = new TH1F(Form("%s_el"     , prefix),"",30,0,150);
-  hmu     = new TH1F(Form("%s_mu"     , prefix),"",30,0,150);
-  helpass = new TH1F(Form("%s_elpass" , prefix),"",30,0,150);
-  hmupass = new TH1F(Form("%s_mupass" , prefix),"",30,0,150);
+  hel     = new TH1F("hel"     ,"",30,0,150);
+  hmu     = new TH1F("hmu"     ,"",30,0,150);
+  helpass = new TH1F("helpass" ,"",30,0,150);
+  hmupass = new TH1F("hmupass" ,"",30,0,150);
 
   hyield = new TH1F(Form("%s_yield",prefix),Form("%s Event Yields",prefix),4,0,4);
   hyield->GetXaxis()->SetTitle("dil type");
@@ -4463,7 +4360,6 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
 
   //Set branch addresses
   //variables must be declared in ossusy_looper.h
-  outTree->Branch("subp",            &subp_,             "subp/I");
   outTree->Branch("geff",            &geff_,             "geff/F");
   outTree->Branch("geffmet",         &geffmet_,          "geffmet/F");
   outTree->Branch("geffht",          &geffht_,           "geffht/F");
@@ -4580,7 +4476,6 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("m0",              &m0_,               "m0/F");
   outTree->Branch("mg",              &mG_,               "mg/F");
   outTree->Branch("ml",              &mL_,               "ml/F");
-  outTree->Branch("mf",              &mF_,               "mf/F");
   outTree->Branch("m12",             &m12_,              "m12/F");
   outTree->Branch("id1",             &id1_,              "id1/I");
   outTree->Branch("id2",             &id2_,              "id2/I");
@@ -4637,8 +4532,6 @@ void ossusy_looper::makeTree(char *prefix, bool doFakeApp, FREnum frmode ){
   outTree->Branch("foundPair",       &foundPair_,        "foundPair/I");  
   outTree->Branch("reco1",           &reco1_,            "reco1/I");  
   outTree->Branch("reco2",           &reco2_,            "reco2/I");  
-  outTree->Branch("genid1",          &genid1_,           "genid1/I");  
-  outTree->Branch("genid2",          &genid2_,           "genid2/I");  
  
   outTree->Branch("dilep"   , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &dilep_	);
   outTree->Branch("lep1"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
@@ -5084,33 +4977,6 @@ void ossusy_looper::lepEfficiencies( bool isData ){
 float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   
   if( isData ) return 0.;
-  
-  VofP4 genjets;
-  genjets.clear();
-
-  // get ht and njets
-  float ht    = 0.;
-  int   njets = 0;
-
-  for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
-    
-    if (cms2.genps_status().at(gidx) != 3)
-      continue;
-    
-    if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
-      continue;
-    
-    if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
-      continue;
-    
-    if (cms2.genps_p4().at(gidx).pt() < 30.)
-      continue;
-    
-    njets++;
-    ht += genps_p4().at(gidx).pt(); 
-    genjets.push_back(genps_p4().at(gidx));
-  }
-
 
   //---------------------------------------------
   // does this event pass the analysis selection?
@@ -5127,12 +4993,6 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
     float pt  = cms2.genps_p4().at(i).pt();
     float eta = cms2.genps_p4().at(i).eta();
 
-    bool jetOverlap = false;
-    for( unsigned int j = 0 ; j < genjets.size() ; ++j ){
-      if( dRbetweenVectors( genps_p4().at(i) , genjets.at(j) ) < 0.4 ) jetOverlap = true;
-    }
-    if( jetOverlap ) continue;
-    
     // require e, mu, or tau
     if( !( abs(id)==11 || abs(id)==13 || abs(id)==15 ) ) continue;
 
@@ -5223,6 +5083,9 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   // cout << ids.at(lep2idx) << " " << Form("%.1f",leps.at(lep2idx).pt()) << endl;
   // cout << endl;
 
+  // get ht and njets
+  float ht    = 0.;
+  int   njets = 0;
 
   // for (size_t j = 0; j < cms2.genjets_p4().size(); ++j){
 
@@ -5240,6 +5103,25 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   //   ht += genjets_p4().at(j).pt();
     
   // }
+
+  for (unsigned int gidx = 0; gidx < cms2.genps_status().size(); gidx++){
+    
+    if (cms2.genps_status().at(gidx) != 3)
+      continue;
+    
+    if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
+      continue;
+    
+    if (fabs(cms2.genps_p4().at(gidx).eta()) > 3.0)
+      continue;
+    
+    if (cms2.genps_p4().at(gidx).pt() < 30.)
+      continue;
+    
+    njets++;
+    ht += genps_p4().at(gidx).pt(); 
+  }
+
   // if( nGoodJet < 2 ) return 0.;
 
 
@@ -5264,33 +5146,33 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
 
   // lepton1 is electron
   if( lep1id == 11 ){
-    leperf->SetParameter(0,0.78);
-    leperf->SetParameter(1,0.34);
-    leperf->SetParameter(2,18.0);
+    leperf->SetParameter(0,0.82);
+    leperf->SetParameter(1,0.40);
+    leperf->SetParameter(2,17.0);
     lep1eff = leperf->Eval(pt1);
   }
 
   // lepton1 is muon
   else if( lep1id == 13 ){
     leperf->SetParameter(0,0.89);
-    leperf->SetParameter(1,0.62);
-    leperf->SetParameter(2,30.0);
+    leperf->SetParameter(1,0.68);
+    leperf->SetParameter(2,24.0);
     lep1eff = leperf->Eval(pt1);
   }
 
   // lepton2 is electron
   if( lep2id == 11 ){
-    leperf->SetParameter(0,0.78);
-    leperf->SetParameter(1,0.34);
-    leperf->SetParameter(2,18.0);
+    leperf->SetParameter(0,0.82);
+    leperf->SetParameter(1,0.40);
+    leperf->SetParameter(2,17.0);
     lep2eff = leperf->Eval(pt2);
   }
 
   // lepton2 is muon
   else if( lep2id == 13 ){
     leperf->SetParameter(0,0.89);
-    leperf->SetParameter(1,0.62);
-    leperf->SetParameter(2,30.0);
+    leperf->SetParameter(1,0.68);
+    leperf->SetParameter(2,24.0);
     lep2eff = leperf->Eval(pt2);
   }
   
@@ -5305,7 +5187,7 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   }
 
   else if( metcut == 200 ){
-    erf->SetParameters(1.00, 211, 37);
+    erf->SetParameters(1.00, 211, 36);
     meteff = erf->Eval(cms2.gen_met());
   }
 
@@ -5328,17 +5210,27 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   }
 
   else if( htcut == 125 ){
-    erf->SetParameters(1.00, 124, 56);
+    //erf->SetParameters(1.00, 114, 42); // HT from genjets
+    //erf->SetParameters(1.00, 88, 75);  // HT from status 3 partons
+    erf->SetParameters(1.00, 123, 53);   // v1: HT from status 3 partons with reco and gen selection
+    //erf->SetParameters(2.00, 50, 53);  // v2: dummy vars
+    //erf->SetParameters(1.00, 88, 75);  // v3: AN version
     hteff = erf->Eval(ht);
   }
 
   else if( htcut == 300 ){
-    erf->SetParameters(1.00, 283, 75);
+    //erf->SetParameters(1.00, 285, 48); // HT from genjets	  
+    erf->SetParameters(0.99, 291, 69);   // v1: HT from status 3 partons with reco and gen selection
+    //erf->SetParameters(3, 91, 69);     // v2: dummy vars
+    //erf->SetParameters(1.00, 269, 88); // v3: AN version
     hteff = erf->Eval(ht);
   }
 
   else if( htcut == 600 ){
-    erf->SetParameters(0.99, 582, 93);
+    //erf->SetParameters(0.99, 591, 55); // HT from genjets	  
+    erf->SetParameters(0.99, 582, 91);   // v1: HT from status 3 partons with reco and gen selection
+    //erf->SetParameters(4, 432, 91);    // v2: dummy vars
+    //erf->SetParameters(0.99, 579, 98); // v3: AN version
     hteff = erf->Eval(ht);
   }
 
@@ -5352,6 +5244,5 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   return eff;
 
 }
-
 
 

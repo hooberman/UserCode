@@ -45,7 +45,6 @@ class Z_looper
   float getMetError(  vector<int> goodMuonIndices );
   float getMetError_claudio(  vector<int> goodMuonIndices );
   float gluinoPairCrossSection( float gluinomass );
-  void SetVZGenWeights( bool isData );
 
   bool    initialized;
   TH1D*   gg_xsec_hist;
@@ -91,12 +90,10 @@ class Z_looper
   Int_t   id2_;
   Int_t   nlep_;
   Int_t   nmu_;
-  Int_t   ngennu_;
   Int_t   nel_;
   Int_t   nbvz_;
   Int_t   nbvzres_;
   Float_t mjj_;
-  Int_t   mjjmatch_;
   Float_t mjjup_;
   Float_t mjjdn_;
   Float_t ml_;
@@ -107,10 +104,7 @@ class Z_looper
   Float_t unclustered_;
   Float_t unclustered_x_;
   Float_t unclustered_y_;
-  Float_t wpt_;
 
-  LorentzVector*  glep1_;
-  LorentzVector*  glep2_;
   LorentzVector*  lep1_;
   LorentzVector*  lep2_;
   LorentzVector*  lep3_;
@@ -128,12 +122,6 @@ class Z_looper
   LorentzVector*  bjet3_; 
   LorentzVector*  bjet4_; 
 
-  Int_t   gid1_;
-  Int_t   gid2_;
-  Int_t   gmatch1_;
-  Int_t   gmatch2_;
-  Int_t   ngenjets_;
-
   Float_t lljj_;
   Float_t jj_;
   Float_t l1jj_;
@@ -148,7 +136,6 @@ class Z_looper
 
   // genmet stuff
   Float_t genmet_;
-  Float_t genmetcustom_;
   Float_t genmetphi_;
   Float_t gensumet_;
 
@@ -250,15 +237,6 @@ class Z_looper
   Int_t   flagll_;
   Int_t   flaglt_;
 
-  Int_t   passgen_;
-  Float_t lepeff_;
-  Float_t dijeteff_;
-  Float_t drjets_;
-  Float_t bvetoeff_;
-  Float_t met60eff_;
-  Float_t met100eff_;
-  Float_t met200eff_;
-
   Int_t   bptx_;       
   Int_t   bsc_;        
   Int_t   beamhalo_;   
@@ -278,46 +256,6 @@ class Z_looper
   TH1F*   hgenps_pthat;
   TH1F*   hphotonpt;
 
-  //TH1F* hjetpt_pass02;
-  //TH1F* hjetpt_pass03;
-  //TH1F* hjetpt_pass04;
-  //TH1F* hjetpt_pass05;
-
-  TH1F* hjetpt_all;
-  TH1F* hjetpt_q_all;
-  TH1F* hjetpt_c_all;
-  TH1F* hjetpt_b_all;
-  TH1F* hjetpt_g_all;
-
-  TH1F* hjetpt_all25;
-  TH1F* hjetpt_q_all25;
-  TH1F* hjetpt_c_all25;
-  TH1F* hjetpt_b_all25;
-  TH1F* hjetpt_g_all25;
-
-  TH1F* hjetpt_pass;
-  TH1F* hjetpt_q_pass;
-  TH1F* hjetpt_c_pass;
-  TH1F* hjetpt_b_pass;
-  TH1F* hjetpt_g_pass;
- 
-  TH1F* hbtag_q_all;
-  TH1F* hbtag_c_all;
-  TH1F* hbtag_b_all;
-  TH1F* hbtag_g_all;
-
-  TH1F* hbtag_q_passM;
-  TH1F* hbtag_c_passM;
-  TH1F* hbtag_b_passM;
-  TH1F* hbtag_g_passM;
-
-  TH1F* hbtag_q_passL;
-  TH1F* hbtag_c_passL;
-  TH1F* hbtag_b_passL;
-  TH1F* hbtag_g_passL;
-
-  //TH1F* hbtag_b_pass_eta;
-  //TH1F* hbtag_b_all_eta;
 
   TH1F* hptz[5];
   TH1F* htcmet[4][4];
