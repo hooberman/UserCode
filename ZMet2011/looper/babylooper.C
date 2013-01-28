@@ -41,7 +41,6 @@ templateSource myTemplateSource   = e_PhotonJetStitched;
 templateType   myTemplateType     = e_njets_ht;
 //templateType   myTemplateType     = e_njets_ht_nvtx;
 //templateType   myTemplateType     = e_njets_ht_vecjetpt;
-char*          iter               = "njetsgeq3";
 
 //------------------------------------------------
 
@@ -56,7 +55,8 @@ inline double fround(double n, double d){
 void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* template_version, const char* prefix, 
 			    bool isData, selectionType mySelectionType, bool makeTemplate, int nEvents){
 
-  //cout << "Setting min entries to 50!" << endl;
+
+  cout << "Setting min entries to 50!" << endl;
   
   int npass = 0;
   selection_    = mySelectionType;
@@ -135,7 +135,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       else if( myTemplateSource == e_PhotonJetStitched ){
         templateFileName = Form("../templates/%s/photon_templates.root",template_version);
         cout << "Using template file " << templateFileName << endl;
-        metTemplateString = "_PhotonStitchedTemplate";
+        metTemplateString = "_EGStitchedTemplate";
         metTemplateFile = TFile::Open( templateFileName );
       }
       
@@ -152,9 +152,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       }
       
       else if( myTemplateSource == e_PhotonJet || myTemplateSource == e_PhotonJetStitched ){
-	cout << "WARNING! USING DATA TEMPLATES FOR MC" << endl;
-	templateFileName = Form("../templates/%s/photon_templates.root",template_version);
-	//templateFileName = "/tas03/home/benhoob/metTemplate/output/nov5th/babylooper_PhotonJet_templates.root";
+	templateFileName = "/tas03/home/benhoob/metTemplate/output/nov5th/babylooper_PhotonJet_templates.root";
 	cout << "Using template file " << templateFileName << endl;
         metTemplateString = "_PhotonJetTemplate";
         metTemplateFile = TFile::Open( templateFileName );
@@ -327,8 +325,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	if( leptype_ == 1 && npfmuons_ < 2 ) continue;
 	if( leptype_ == 2 && npfmuons_ < 1 ) continue;
 
-	//jetselection
-        if( nJets_ < 3 )                                                     continue; //>=2 jets
+        if( nJets_ < 2 )                                                     continue; //>=2 jets
 
 	//------------------------------
 	//fill histos before Z-veto
@@ -351,6 +348,28 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	hgenmet_all->Fill( genmet_ );
 	if( pfmet_ > 60 ) hgenmet_pass->Fill( genmet_ );
 
+        //if( dilmasscor_ < 81. || dilmasscor_ > 101. )                        continue; //Zmass
+	//I KILL 1 EVENT!
+	//if( drjet_ll_ > 0.3 ) continue;
+	//if( drjet_lt_ > 0.3 ) continue;
+	//if( acos( cos( philt_ - pfmetphi_) ) > TMath::Pi() - 0.1 ) continue;
+	//if( acos( cos( phill_ - pfmetphi_) ) > TMath::Pi() - 0.1 ) continue;
+	
+	
+	//if( failjetid_ == 1          ) continue;
+	
+	//if( drjet_ll_ > 0.3 || jetpt_ll_ - ptll_ < -5 || jetpt_ll_ < 0 ) continue; 
+	//if( drjet_lt_ > 0.3 || jetpt_lt_ - ptlt_ < -5 || jetpt_lt_ < 0 ) continue; 
+	
+        //if( dilmass_ < 81. || dilmass_ > 101. )                              continue; //Zmass
+        //if( fabs( etall_ ) < 1.474 && fabs( etalt_ ) < 1.474 ) continue;
+        //if( fabs( etall_ ) > 1.474 && fabs( etalt_ ) > 1.474 ) continue;
+        //cout << run_ << " " << lumi_ << " " << event_ << endl;
+        //if( npass > 1 )            continue;
+        //if( leptype_ == 2 )        continue;
+        //if( event_ == 55188718 )   continue;
+        //if( nvtx_ < 3 )                                                      continue;
+
         //------------------------------------------------------------
         //reweighting procedure for photon vs. Z pt
         //------------------------------------------------------------
@@ -364,7 +383,10 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
           if( randnum > ratio ) continue;
           //cout << "pass" << endl;
         }
-            
+      
+
+
+      
         fillHistos( htcmet            , tcmet_           , mcweight , leptype_ , nJets_ );
         fillHistos( htcmetNew         , tcmetNew_        , mcweight , leptype_ , nJets_ );
         fillHistos( hpfmet            , pfmet_           , mcweight , leptype_ , nJets_  );
@@ -388,6 +410,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       
       
       //fill histos and ntuple----------------------------------------------------------- 
+
+
       npass++;
 
       hyield->Fill(0.5,          mcweight);
@@ -670,7 +694,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
   if( makeTemplate ) saveHist( Form("../output/%s/babylooper_%s_templates.root" , template_version , prefix ) );
-  else               saveHist( Form("../output/%s/babylooper_%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter ) );
+  else               saveHist( Form("../output/%s/babylooper_%s%s.root"         , Z_version , prefix , metTemplateString.c_str() ) );
   deleteHistos();
   
 } // end ScanChain
@@ -974,7 +998,7 @@ void babylooper::bookHistos(){
   hgenps_pthat = new TH1F("hgenps_pthat","",100,0,100);
   hphotonpt    = new TH1F("hphotonpt","",100,0,100);
 
-  int maxmet = 250;
+  int maxmet = 200;
 
   if( !makeTemplate_ ){
     

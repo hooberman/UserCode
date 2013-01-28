@@ -23,7 +23,7 @@
 #include "../CORE/CMS2.cc"
 #ifndef __CINT__
 #include "../CORE/utilities.cc"
-//#include "../CORE/ssSelections.cc"
+#include "../CORE/ssSelections.cc"
 #include "../CORE/electronSelections.cc"
 #include "../CORE/electronSelectionsParameters.cc"
 #include "../CORE/MITConversionUtilities.cc"
@@ -41,7 +41,7 @@
 #include "../CORE/mcSUSYkfactor.cc"
 #include "../CORE/SimpleFakeRate.cc"
 #include "../Tools/goodrun.cc"
-//#include "../Tools/vtxreweight.cc"
+#include "../Tools/vtxreweight.cc"
 #include "../Tools/msugraCrossSection.cc"
 #include "../Tools/bTagEff_BTV.cc"
 #endif
@@ -77,33 +77,6 @@ int findTriggerIndex(TString trigName)
 }
 
 //--------------------------------------------------------------------
-
-int goodEventInList(char* filename , int thisrun , int thislumi , int thisevent ){
-
-  ifstream ifile( filename );
-
-  int  run;
-  int  lumi;
-  long event;
-  int  pass;
-
-  //cout << "Looking for: " << thisrun << " " << thislumi << " " << thisevent << endl;
-  while( ifile.good() ){
-
-    ifile >> run >> lumi >> event;
-
-    //cout << run << " " << lumi << " " << event << endl;
-
-    if( run==thisrun && lumi==thislumi && event==thisevent ){
-      //cout << "Found! " << run << " " << lumi << " " << event << endl;
-      ifile.close();
-      return 1;
-    }
-
-  }
-
-  return 0;
-}
 
 float getMinDeltaRBetweenObjects( TString trigname , int id1 , int id2 , bool verbose = false ){ 
   
@@ -253,31 +226,6 @@ float getTriggerObjectPt(char* trigname, int id){
   }
 
   return ptmax;
-}
-
-int numTrigObjects(char* trigname, int id){
-
-  int index = findTriggerIndex( triggerName(trigname) );
-
-  if( index < 0 ){
-    cout << "ERROR! can't find trigger " << trigname << " in run " << evt_run() << ", quitting" << endl;
-    exit(0);
-  }
-
-  std::vector<int>           trigId = cms2.hlt_trigObjs_id()[findTriggerIndex( triggerName(trigname))];
-  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex( triggerName(trigname))];
-
-  assert( trigId.size() == trigp4.size() );
-  if( trigId.size() == 0 ) return 0;
-
-  int nobjects = 0;
-
-  for (int i = 0; i < trigp4.size(); ++i){
-    if ( trigId[i] != id        ) continue;
-    nobjects++;
-  }
-
-  return nobjects;
 }
 
 //--------------------------------------------------------------------
@@ -622,10 +570,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       sort( goodLeptons.begin(), goodLeptons.end(), sortByPt);
 
-      if( ngoodlep_ > 0 ){
- 	lep1_      = &( goodLeptons.at(0) );
-	lep1_top_  = objectPassTrigger( *lep1_ , "HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v" , 20.0 , 82 , 0.2 ) ? 1 : 0;
-      }
+      if( ngoodlep_ > 0 ) 	lep1_ = &( goodLeptons.at(0) );
       if( ngoodlep_ > 1 ) 	lep2_ = &( goodLeptons.at(1) );
       if( ngoodlep_ > 2 ) 	lep3_ = &( goodLeptons.at(2) );
       if( ngoodlep_ > 3 ) 	lep4_ = &( goodLeptons.at(3) );
@@ -728,14 +673,12 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       if( nmunoiso_ > 0 ){
  	munoiso1_        = &( goodMuonsNoIso.at(0) );
-	munoiso1_mu24_   = objectPassTrigger( *munoiso1_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso1_mu30_   = objectPassTrigger( *munoiso1_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso1_mu24_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso1_mu30_   = objectPassTrigger( *munoiso1_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso1_iso_    = muonIsoValue         ( munoisoIndex.at(0) , false );
 	munoiso1_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(0) , false );
 	munoiso1_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(0) , false );
 	munoiso1_isopf_  = muonIsoValuePF       ( munoisoIndex.at(0) , 0     );
-	munoiso1_isodb03_ = muonIsoValuePF2012_deltaBeta( munoisoIndex.at(0) );
-	munoiso1_isodb04_ = muonIsoValuePF2012_dR04_deltaBeta( munoisoIndex.at(0) );
 	munoiso1_mt_     = sqrt( 2 * evt_pfmet() * (*munoiso1_).pt() * ( 1 - cos( evt_pfmetPhi() - (*munoiso1_).eta() ) ) );
 	munoiso1_d0pv_   = mud0PV_smurfV3(munoisoIndex.at(0));
 	munoiso1_d0bs_   = mus_d0corr().at(munoisoIndex.at(0));
@@ -744,14 +687,12 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nmunoiso_ > 1 ){
  	munoiso2_        = &( goodMuonsNoIso.at(1) );
-	munoiso2_mu24_   = objectPassTrigger( *munoiso2_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso2_mu30_   = objectPassTrigger( *munoiso2_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso2_mu24_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso2_mu30_   = objectPassTrigger( *munoiso2_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso2_iso_    = muonIsoValue         ( munoisoIndex.at(1) , false );
 	munoiso2_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(1) , false );
 	munoiso2_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(1) , false );
 	munoiso2_isopf_  = muonIsoValuePF       ( munoisoIndex.at(1) , 0     );
-	munoiso2_isodb03_ = muonIsoValuePF2012_deltaBeta( munoisoIndex.at(1) );
-	munoiso2_isodb04_ = muonIsoValuePF2012_dR04_deltaBeta( munoisoIndex.at(1) );
 	munoiso2_d0pv_   = mud0PV_smurfV3(munoisoIndex.at(1));
 	munoiso2_d0bs_   = mus_d0corr().at(munoisoIndex.at(1));
 	munoiso2_ev_     = mus_iso_ecalvetoDep().at(munoisoIndex.at(1));
@@ -759,8 +700,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nmunoiso_ > 2 ){
  	munoiso3_        = &( goodMuonsNoIso.at(2) );
-	munoiso3_mu24_   = objectPassTrigger( *munoiso3_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso3_mu30_   = objectPassTrigger( *munoiso3_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso3_mu24_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso3_mu30_   = objectPassTrigger( *munoiso3_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso3_iso_    = muonIsoValue         ( munoisoIndex.at(2) , false );
 	munoiso3_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(2) , false );
 	munoiso3_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(2) , false );
@@ -768,8 +709,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
       }
       if( nmunoiso_ > 3 ){
  	munoiso4_        = &( goodMuonsNoIso.at(3) );
-	munoiso4_mu24_   = objectPassTrigger( *munoiso4_ , "HLT_Mu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
-	munoiso4_mu30_   = objectPassTrigger( *munoiso4_ , "HLT_Mu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso4_mu24_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu24_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
+	munoiso4_mu30_   = objectPassTrigger( *munoiso4_ , "HLT_IsoMu30_eta2p1_v" , 20.0 , 83 , 0.2 ) ? 1 : 0;
 	munoiso4_iso_    = muonIsoValue         ( munoisoIndex.at(3) , false );
 	munoiso4_isofj_  = muonIsoValue_FastJet ( munoisoIndex.at(3) , false );
 	munoiso4_isovtx_ = muonCorIsoValue      ( munoisoIndex.at(3) , false );
@@ -1016,12 +957,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
       //  N: trigger passed, prescale N
       //-------------------------------------------
 
-      // custom triggers
-      //eltrijetcaloisovl_    = goodEventInList("CaloIsoVL_191718.txt",evt_run(),evt_lumiBlock(),evt_event());
-      //eltrijettest_         = goodEventInList("Nominal_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
-      eltrijetcaloisovl_    = goodEventInList("CaloIsoVL_191830.txt",evt_run(),evt_lumiBlock(),evt_event());
-      eltrijettest_         = goodEventInList("Nominal_191830.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
-
       // top electron+jets triggers
       eltrijet_             = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v");
       eltrijetbackup_       = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet50_Jet40_Jet30_v");
@@ -1029,8 +964,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
       eljet_                = passTriggerPrescale("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v");
       elnoisotrijet_        = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v");
       elnoisotrijetbackup_  = passTriggerPrescale("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet50_Jet40_Jet30_v");
-      
-      nelnoisotrijet_       = numTrigObjects("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralPFJet30_v",82);
 
       // top muon+jets triggers
       mutrijet_             = passTriggerPrescale("HLT_Iso10Mu20_eta2p1_TriCentralPFJet30_v");
@@ -1061,19 +994,12 @@ int looper::ScanChain(TChain* chain, char *prefix){
       isomu34_              = passTriggerPrescale("HLT_IsoMu34_eta2p1_v");
       isomu40_              = passTriggerPrescale("HLT_IsoMu40_eta2p1_v");
 
-      isomu24test_          = goodEventInList("IsoMu24_eta2p1_191718.txt"    ,evt_run(),evt_lumiBlock(),evt_event());
-      iso20mu24_            = goodEventInList("Iso20Mu24_eta2p1_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
-      iso30mu24_            = goodEventInList("Iso30Mu24_eta2p1_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
-      iso40mu24_            = goodEventInList("Iso40Mu24_eta2p1_191718.txt"  ,evt_run(),evt_lumiBlock(),evt_event());
-
       // non-isolated single muon triggers
       mu15_                 = passTriggerPrescale("HLT_Mu15_eta2p1_v");
       mu24_                 = passTriggerPrescale("HLT_Mu24_eta2p1_v");
       mu30_                 = passTriggerPrescale("HLT_Mu30_eta2p1_v");
       mu40_                 = passTriggerPrescale("HLT_Mu40_eta2p1_v");
       mu50_                 = passTriggerPrescale("HLT_Mu50_eta2p1_v");
-
-      nmu24_                = numTrigObjects("HLT_Mu24_eta2p1_v",83);
 
       mu5_                  = passTriggerPrescale("HLT_Mu5_v");
       mu8_                  = passTriggerPrescale("HLT_Mu8_v");
@@ -1312,8 +1238,6 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso3" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &munoiso3_	);
   outTree->Branch("munoiso4" , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &munoiso4_	);
 
-  outTree->Branch("lep1top"                  , &lep1_top_                ,  "lep1top/I"               );             
-
   outTree->Branch("elnoiso1mt"               , &elnoiso1_mt_             ,  "elnoiso1mt/F"            );             
   outTree->Branch("munoiso1mt"               , &munoiso1_mt_             ,  "munoiso1mt/F"            );             
 
@@ -1346,16 +1270,12 @@ void looper::makeTree(char *prefix ){
 
   // top electron+jets triggers
   outTree->Branch("eltrijet"                 , &eltrijet_                ,  "eltrijet/I"              );             
-  outTree->Branch("eltrijetcaloisovl"        , &eltrijetcaloisovl_       ,  "eltrijetcalisovl/I"      );             
-  outTree->Branch("eltrijettest"             , &eltrijettest_            ,  "eltrijettest/I"          );             
   outTree->Branch("eltrijetbackup"           , &eltrijetbackup_          ,  "eltrijetbackup/I"        );             
   outTree->Branch("eldijet"                  , &eldijet_                 ,  "eldijet/I"               );             
   outTree->Branch("eljet"                    , &eljet_                   ,  "eljet/I"                 );             
   outTree->Branch("eltrijet"                 , &eltrijet_                ,  "eltrijet/I"              );             
   outTree->Branch("elnoisotrijet"            , &elnoisotrijet_           ,  "elnoisotrijet/I"         );             
   outTree->Branch("elnoisotrijetbackup"      , &elnoisotrijetbackup_     ,  "enoisoltrijetbackup/I"   );             
-
-  outTree->Branch("nelnoisotrijet"           , &nelnoisotrijet_          ,  "nelnoisotrijet/I"        );             
 					       
   // top muon+jets triggers		       
   outTree->Branch("mutrijet"                 , &mutrijet_                ,  "mutrijet/I"              );             
@@ -1386,19 +1306,12 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("isomu30"                  , &isomu30_                 ,  "isomu30/I"               );             
   outTree->Branch("isomu34"                  , &isomu34_                 ,  "isomu34/I"               );             
   outTree->Branch("isomu40"                  , &isomu40_                 ,  "isomu40/I"               );             
-
-  outTree->Branch("isomu24test"              , &isomu24test_             ,  "isomu24test/I"           );             
-  outTree->Branch("iso20mu24"                , &iso20mu24_               ,  "iso20mu24/I"             );             
-  outTree->Branch("iso30mu24"                , &iso30mu24_               ,  "iso30mu24/I"             );             
-  outTree->Branch("iso40mu24"                , &iso40mu24_               ,  "iso40mu24/I"             );             
 					       
   // non-isolated single muon triggers
   outTree->Branch("mu24"                     , &mu24_                    ,  "mu24/I"                  );             
   outTree->Branch("mu30"                     , &mu30_                    ,  "mu30/I"                  );             
   outTree->Branch("mu40"                     , &mu40_                    ,  "mu40/I"                  );             
   outTree->Branch("mu50"                     , &mu50_                    ,  "mu50/I"                  );             
-
-  outTree->Branch("nmu24"                    , &nmu24_                   ,  "nmu24/I"                  );             
 
   outTree->Branch("mu5"                      , &mu5_                     ,  "mu5/I"                   );             
   outTree->Branch("mu8"                      , &mu8_                     ,  "mu8/I"                   );             
@@ -1479,8 +1392,6 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso1_isofj"           , &munoiso1_isofj_          ,  "munoiso1_isofj/F"        );             
   outTree->Branch("munoiso1_isovtx"          , &munoiso1_isovtx_         ,  "munoiso1_isovtx/F"       );             
   outTree->Branch("munoiso1_isopf"           , &munoiso1_isopf_          ,  "munoiso1_isopf/F"        );             
-  outTree->Branch("munoiso1_isodb03"         , &munoiso1_isodb03_        ,  "munoiso1_isodb03/F"      );             
-  outTree->Branch("munoiso1_isodb04"         , &munoiso1_isodb04_        ,  "munoiso1_isodb04/F"      );             
 					       
   outTree->Branch("munoiso2_mu24"            , &munoiso2_mu24_           ,  "munoiso2_mu24/I"         );             
   outTree->Branch("munoiso2_mu30"            , &munoiso2_mu30_           ,  "munoiso2_mu30/I"         );             
@@ -1488,8 +1399,6 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("munoiso2_isofj"           , &munoiso2_isofj_          ,  "munoiso2_isofj/F"        );             
   outTree->Branch("munoiso2_isovtx"          , &munoiso2_isovtx_         ,  "munoiso2_isovtx/F"       );             
   outTree->Branch("munoiso2_isopf"           , &munoiso2_isopf_          ,  "munoiso2_isopf/F"        );             
-  outTree->Branch("munoiso2_isodb03"         , &munoiso2_isodb03_        ,  "munoiso2_isodb03/F"      );             
-  outTree->Branch("munoiso2_isodb04"         , &munoiso2_isodb04_        ,  "munoiso2_isodb04/F"      );             
 
   
 }

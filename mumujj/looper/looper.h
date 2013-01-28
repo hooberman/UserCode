@@ -96,8 +96,6 @@ class looper
 	Float_t trkpt_;
 	Float_t trkreliso_;
 
-	Int_t   hlt1_;
-	Int_t   hlt2_;
 	Int_t   mlepid_;
 	Int_t   mleppassid_;
 	Int_t   mleppassiso_;
@@ -139,16 +137,8 @@ class looper
 	Float_t pingmass_;
 	Float_t jetcor1_;
 	Float_t jetcor2_;
-	Float_t cor1_;
-	Float_t cor2_;
 	Float_t mmjj_;
-	Float_t mmjjuncor_;
-	Float_t mmjjc_;
-	Float_t metnew_;
-	Float_t mmjjdef_;
 	Float_t mmjjtrk_;
-	Float_t mmjjtrkdef_;
-	Float_t mmjjtrkuncor_;
 	Float_t mmjjglb_;
 	Float_t mmjjsta_;
 	Float_t mjjj_;
@@ -179,8 +169,6 @@ class looper
         Int_t   proc_;
         Int_t   leptype_;
         Int_t   njets_;
-        Int_t   njetsdef_;
-        Int_t   njetsplain_;
         Int_t   ngenjets_;
         Int_t   npfjets_;
         Int_t   npfjets40_;
@@ -191,9 +179,6 @@ class looper
         Int_t   nvtx_;
         Int_t   nbtags17_;
         Int_t   nbtags20_;
-        Int_t   nbtags20_24_;
-        Int_t   nbtags20c_;
-        Int_t   nbtags20_24c_;
         Int_t   nbtags33_;
         Float_t dilmass_;
         Float_t topmass_;
@@ -274,10 +259,6 @@ class looper
 	Float_t ndavtxweight_;
 	Float_t etasc1_;
 	Float_t etasc2_;
-	Int_t   mtrg_;
-	Int_t   eetrg_;
-	Int_t   mmtrg_;
-	Int_t   emtrg_;
 
 	Float_t ksusy_;
 	Float_t ksusyup_;

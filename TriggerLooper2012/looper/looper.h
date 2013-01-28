@@ -142,14 +142,10 @@ class looper
 	Float_t munoiso1_isofj_;
 	Float_t munoiso1_isovtx_;
 	Float_t munoiso1_isopf_;
-	Float_t munoiso1_isodb03_;
-	Float_t munoiso1_isodb04_;
 	Float_t munoiso2_iso_;
 	Float_t munoiso2_isofj_;
 	Float_t munoiso2_isovtx_;
 	Float_t munoiso2_isopf_;
-	Float_t munoiso2_isodb03_;
-	Float_t munoiso2_isodb04_;
 	Float_t munoiso3_iso_;
 	Float_t munoiso3_isofj_;
 	Float_t munoiso3_isovtx_;
@@ -187,7 +183,6 @@ class looper
         LorentzVector*  munoiso2_; 
         LorentzVector*  munoiso3_; 
         LorentzVector*  munoiso4_; 
-        Int_t   lep1_top_; 
 	Float_t pjet1_res_;
 	Float_t pjet2_res_;
 	Float_t pjet3_res_;
@@ -264,17 +259,12 @@ class looper
 	Float_t mutrijet_trigdr_pjet3_;
 	Float_t mutrijet_trigdr_pjet4_;
 
-	// custom top triggers
-	Int_t eltrijetcaloisovl_;
-	Int_t eltrijettest_;
-
 	// top electron+jets triggers
 	Int_t eltrijet_;             
 	Int_t eltrijetbackup_;       
 	Int_t eldijet_;              
 	Int_t eljet_;                
 	Int_t elnoisotrijet_;        
-	Int_t nelnoisotrijet_;        
 	Int_t elnoisotrijetbackup_;  
 
 	// top muon+jets triggers
@@ -306,15 +296,8 @@ class looper
 	Int_t isomu34_;              
 	Int_t isomu40_;              
 
-	// custom isomu triggers
-	Int_t isomu24test_;              
-	Int_t iso20mu24_;              
-	Int_t iso30mu24_;              
-	Int_t iso40mu24_;              
-
 	// non-isolated single muon triggers
 	Int_t mu24_;                 
-	Int_t nmu24_;                 
 	Int_t mu30_;                 
 	Int_t mu40_;                 
 	Int_t mu50_;                 

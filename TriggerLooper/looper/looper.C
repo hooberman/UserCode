@@ -395,10 +395,6 @@ void looper::InitBaby(){
   eletrijet_hltele_ = 0; 
   mudijet_hltmu_ = 0; 
   mutrijet_hltmu_ = 0; 
-  fo1_  = 0;
-  fo2_  = 0;
-  fo3_  = 0;
-  fo4_  = 0;
   lep1_  = 0;
   lep2_  = 0;
   lep3_  = 0;
@@ -465,7 +461,7 @@ void looper::closeTree()
 int looper::ScanChain(TChain* chain, char *prefix){
 
   cout << "-------------------------------------------------------------------------------" << endl;
-  cout << "SAVING ONLY EVENTS PASSING dilepton-HT triggers!                               " << endl;
+  cout << "SAVING ONLY EVENTS PASSING HLT_Ele8_CaloIdT_TrkIdT_DiJet30_v                   " << endl;
   cout << "-------------------------------------------------------------------------------" << endl;
 
 
@@ -549,11 +545,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       cms2.GetEntry(z);
 
-      mmht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass8_HT150_v")                  ? 1 : 0;
-      emht150_       = passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_HT150_v")   ? 1 : 0;
-      eeht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_HT150_v") ? 1 : 0;
-
-      if( mmht150_ == 0 && emht150_ == 0 && eeht150_ == 0 ) continue;
+      if( !passHLTTriggerPattern("HLT_Ele8_CaloIdT_TrkIdT_DiJet30_v") ) continue;
 
       InitBaby();
 
@@ -617,20 +609,16 @@ int looper::ScanChain(TChain* chain, char *prefix){
       //---------------------------------------------
 
       VofP4 goodLeptons;
-      VofP4 goodFOs;
       vector<int> lepId;
       vector<int> lepIndex;
 
       ngoodlep_ = 0;
       ngoodel_  = 0;
       ngoodmu_  = 0;
-      nfolep_   = 0;
-      nfoel_    = 0;
-      nfomu_    = 0;
-
+            
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 10 )                                                 continue;
-	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+	if( els_p4().at(iel).pt() < 10 )                                              continue;
+	if( !pass_electronSelection( iel , electronSelection_ssV5 , false , false ) ) continue;
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepId.push_back( els_charge().at(iel) * 11 );
 	lepIndex.push_back(iel);
@@ -638,15 +626,15 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	ngoodlep_++;
       }
 
+      nosel_ = 0;
+
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 10 )                                                    continue;
-	if( !pass_electronSelection( iel , electronSelection_el_OSV3_FO , false , false ) ) continue;
-	if(  pass_electronSelection( iel , electronSelection_el_OSV3    , false , false ) ) continue;
-	goodFOs.push_back( els_p4().at(iel) );
-	nfoel_++;
-	nfolep_++;
+	if( els_p4().at(iel).pt() < 20 )                                                 continue;
+	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+	nosel_++;
       }
 
+          
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
 	if( mus_p4().at(imu).pt() < 5 )            continue;
 	if( !muonId( imu , OSGeneric_v3 ))         continue;
@@ -657,32 +645,12 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	ngoodlep_++;
       }  
 
-      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 5 )            continue;
-	if( !muonId( imu , OSGeneric_v3_FO ))      continue;
-	if(  muonId( imu , OSGeneric_v3    ))      continue;
-	goodFOs.push_back( mus_p4().at(imu) );
-	nfomu_++;
-	nfolep_++;
-      }  
-
       sort( goodLeptons.begin(), goodLeptons.end(), sortByPt);
 
       if( ngoodlep_ > 0 ) 	lep1_ = &( goodLeptons.at(0) );
       if( ngoodlep_ > 1 ) 	lep2_ = &( goodLeptons.at(1) );
       if( ngoodlep_ > 2 ) 	lep3_ = &( goodLeptons.at(2) );
       if( ngoodlep_ > 3 ) 	lep4_ = &( goodLeptons.at(3) );
-
-      dilmass_ = -1;
-      if( ngoodlep_ > 1 ) dilmass_ = (*lep1_ + *lep2_).mass();
-
-      sort( goodFOs.begin(), goodFOs.end(), sortByPt);
-
-      if( nfolep_ > 0 ) 	fo1_ = &( goodFOs.at(0) );
-      if( nfolep_ > 1 ) 	fo2_ = &( goodFOs.at(1) );
-      if( nfolep_ > 2 ) 	fo3_ = &( goodFOs.at(2) );
-      if( nfolep_ > 3 ) 	fo4_ = &( goodFOs.at(3) );
-
 
       //std::vector<int> mutrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v5")];
       //std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele27_WP80_DiCentralPFJet25_v5")];
@@ -1167,7 +1135,6 @@ void looper::makeTree(char *prefix ){
   //variables must be declared in looper.h
   outTree->Branch("ele8dijet30",     &ele8dijet30_,      "ele8dijet30/I");
   outTree->Branch("mindrej",         &mindrej_,          "mindrej/F");
-  outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
   outTree->Branch("nosel",           &nosel_,            "nosel/I");
   outTree->Branch("mindrmj",         &mindrmj_,          "mindrmj/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
@@ -1188,9 +1155,6 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
   outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
   outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
-  outTree->Branch("nfolep",          &nfolep_,           "nfolep/I");
-  outTree->Branch("nfoel",           &nfoel_,            "nfoel/I");
-  outTree->Branch("nfomu",           &nfomu_,            "nfomu/I");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
   outTree->Branch("eledijet_hg",     &eledijet_hg_,      "eledijet_hg/I");
@@ -1258,11 +1222,6 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("lep2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
   outTree->Branch("lep3"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep3_	);
   outTree->Branch("lep4"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep4_	);
-
-  outTree->Branch("fo1"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &fo1_	);
-  outTree->Branch("fo2"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &fo2_	);
-  outTree->Branch("fo3"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &fo3_	);
-  outTree->Branch("fo4"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &fo4_	);
 
 }
 
