@@ -1,10 +1,12 @@
 \clearpage
 
-
 \section{Studies of Jets from Pileup}
 \label{sec:pujets}
 
-In order to ensure the jets which pass the jet selection are from the hard collision rather than from pileup (PU), we will use MC truth information to define a method in which we can distinguish between these jets.
+In order to ensure the jets which pass the jet selection are from the hard collision rather than from pileup (PU), 
+we will require that the tracks in the jet are consistent with originating from the primary interaction vertex
+using the quantity $\beta$, defined below.
+In this section we study this quantity in MC.
 
 The following dataset is used:
 
@@ -42,9 +44,14 @@ In order to determine which jets are from the hard collision and which jets come
 Now that we've established how to distinguish between PU jets versus hard scatter jets using MC truth information, we want to be able to be able to make the same distinction in data (without the truth information). In order to do this, the variable $\beta$ is defined for each jet in equation (\ref{eqn:beta}) 
 
 \begin{equation}
-\beta = \frac{\sum_i({track~p_T^i})^2_{tracks~with~dz~>~0.5~cm}}{\sum_i ({track~p_T^i})^2_{All~Tracks}}
+\beta = \frac{\Sigma_{i}^{\rm{d_z<0.5~cm}} (p_{T}^{i})^2}{\Sigma_{i}^{\rm{all}}  (p_{T}^{i})^2}
 \label{eqn:beta}
 \end{equation}
+
+%\begin{equation}
+%\beta = \frac{\sum_i({track~p_T^i})^2_{tracks~with~dz~>~0.5~cm}}{\sum_i ({track~p_T^i})^2_{All~Tracks}}
+%\label{eqn:beta}
+%\end{equation}
 
 Jets with $\beta$ close to 1 are jets from the hard collision, whereas Jets with $\beta$ close to 0 are PU jets. By looking at the $\beta$ distribution of the two highest \pt jets in Figure.~\ref{fig:jetbeta}, we choose a cut value of $\beta$ $>$ 0.2 to remove PU jets. 
 

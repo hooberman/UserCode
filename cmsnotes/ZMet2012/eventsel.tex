@@ -130,9 +130,11 @@ We use pfmet, henceforth referred to simply as \MET.
 \item Passes loose PFJet ID
 \item \pt $ > 30$ GeV for determining the jet multiplicity, \pt $ > 15$ GeV for calculation of \Ht
 \item For the creation of photon templates, the jet matched to the photon passing the photon selection described above is vetoed
-\item For the dilepton sample, jets are vetoed if they are within $\Delta R < 0.4$ from any lepton \pt $ > 20$~GeV passing analysis selection
+\item For the dilepton sample, jets are vetoed if they are within $\Delta R < 0.4$ 
+from any lepton \pt $ > 20$~GeV passing analysis selection
 \item To reject PU jets, we require the jets to satisfy $\beta>0.2$, defined for each jet using the $d_Z$ of the tracks in the jet with
-respect to the primary vertex. To calculate $\beta$ we take the sum of the $p_{T}^{2}$ of the tracks associated to PFCandidates in the jet
+respect to the primary vertex (see App.~\ref{sec:pujets} for further details). 
+To calculate $\beta$ we take the sum of the $p_{T}^{2}$ of the tracks associated to PFCandidates in the jet
 that are consistent with originating from the primary vertex ($d_Z<0.5$~cm), and divide by the sum $p_{T}^{2}$ of all the tracks:
 \begin{equation}
 \beta = \frac{\Sigma_{i}^{\rm{d_z<0.5~cm}} (p_{T}^{i})^2}{\Sigma_{i}^{\rm{all}}  (p_{T}^{i})^2}
