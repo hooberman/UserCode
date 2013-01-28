@@ -67,14 +67,23 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-13/wzsms_baby_oldIso.root ");
-  char* version = (char*) "V00-00-06";
+  ch->Add("output/V00-02-13/wzsms_baby_oldIso.root");
+  char* version = (char*) "V00-00-08";
+
+  //---------------------------------------
+  // load denominator histogram
+  //---------------------------------------
+
+  TFile* fdenom = TFile::Open("output/V00-02-13/wzsms_ngen.root");
+  TH2F*  hdenom = (TH2F*) fdenom->Get("hmass");
+  hdenom->Scale(10.0);
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("19500.0 * trgeff * vtxweight * (1./100000.)");
+  TCut weight   ("19500.0 * trgeff * vtxweight");
+  //TCut weight   ("19500.0 * trgeff * vtxweight * (1./100000.)");
   //TCut weight   ("9.2 * trgeff * vtxweight * weight");
 
   // MEDIUM WP
@@ -148,10 +157,17 @@ void makeSMSCards(){
     ch->Draw(Form("ml:mg>>h_%i"    , ibin) , (presel    + sigcut[ibin]   ) * weight);
     ch->Draw(Form("ml:mg>>hjup_%i" , ibin) , (preseljup + sigcutup[ibin] ) * weight);
     ch->Draw(Form("ml:mg>>hjdn_%i" , ibin) , (preseljdn + sigcutdn[ibin] ) * weight);
+
+    h[ibin]->Divide(hdenom);
+    hjup[ibin]->Divide(hdenom);
+    hjdn[ibin]->Divide(hdenom);
   }
 
   ch->Draw("ml:mg>>hall"        , (presel    + sigall     ) * weight);
   ch->Draw("ml:mg>>hjdnall"     , (preseljdn + sigalldn   ) * weight);
+
+  hall->Divide(hdenom);
+  hjdnall->Divide(hdenom);
 
   delete ctemp;
 
@@ -346,7 +362,8 @@ void makeSMSCards(){
 
       cout << endl;
       cout << "----------------------------------" << endl;
-      cout << "mg " << mg << " ml " << ml << endl;
+      cout << "mg    " << mg    << " ml    " << ml    << endl;
+      cout << "mgbin " << mgbin << " mlbin " << mlbin << endl;
       cout << "----------------------------------" << endl;
 
       if( hjdnall->GetBinContent(mgbin,mlbin) < 1e-10 ) continue;
