@@ -67,14 +67,14 @@ void makeGMSBCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-01-05/gmsb_baby_oldIso.root ");
-  char* version = (char*) "V00-00-03";
+  ch->Add("output/V00-02-13/gmsb_526_v2_baby_oldIso.root");
+  char* version = (char*) "V00-00-07";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("9200 * trgeff * vtxweight * (1./300000.)");
+  TCut weight   ("19500 * trgeff * vtxweight * (1./300000.)");
   //TCut weight   ("9200 * trgeff * vtxweight * (1./100000.)");
   //TCut weight   ("9.2 * trgeff * vtxweight * weight");
 
@@ -122,8 +122,8 @@ void makeGMSBCards(){
   TH1F* hjup[nbins];
   TH1F* hjdn[nbins];
 
-  int   nx   =   15;
-  float xmin =  120;
+  int   nx   =   16;
+  float xmin =  100;
   float xmax =  420;
 
   for( unsigned int i = 0 ; i < nbins ; ++i ){
@@ -173,6 +173,20 @@ void makeGMSBCards(){
   //---------------------------------------
 
 
+  // MEDIUM WP, 19.3/fb RESULTS
+  float Zbkg_yield[nbins]    = { 68.9 ,  7.8 ,  4.8 ,  2.1 ,     0.5  };
+  float Zbkg_err[nbins]      = { 21.2 ,  2.5 ,  1.5 ,  0.7 ,     0.1  };
+  float OFbkg_yield[nbins]   = { 35.2 , 21.9 , 13.2 ,  5.7 ,     0.8  };
+  float OFbkg_err[nbins]     = {  6.2 ,  4.0 ,  2.5 ,  1.6 ,     0.4  };
+  float WZbkg_yield[nbins]   = {  7.4 ,  4.0 ,  3.3 ,  2.0 ,     0.9  };
+  float WZbkg_err[nbins]     = {  3.7 ,  2.0 ,  1.6 ,  1.0 ,     0.9  };
+  float ZZbkg_yield[nbins]   = {  3.2 ,  1.9 ,  2.1 ,  1.5 ,     1.4  };
+  float ZZbkg_err[nbins]     = {  1.6 ,  1.0 ,  1.1 ,  0.8 ,     1.4  };
+  float rarebkg_yield[nbins] = {  0.9 ,  0.4 ,  0.9 ,  0.6 ,     0.4  };
+  float rarebkg_err[nbins]   = {  0.5 ,  0.2 ,  0.5 ,  0.3 ,     0.4  };
+  int   data_yield[nbins]    = {  115 ,   36 ,   25 ,   13 ,       4  };
+
+  /*
   // MEDIUM WP
   //signal regions             80-100 100-120 120-150 150-200    >200
   float Zbkg_yield[nbins]    = { 40.9 ,  7.0 ,  3.1 ,  1.6 ,     0.8  };
@@ -186,7 +200,7 @@ void makeGMSBCards(){
   float rarebkg_yield[nbins] = {  0.3 ,  0.2 ,  0.3 ,  0.2 ,     0.2  };
   float rarebkg_err[nbins]   = {  0.2 ,  0.1 ,  0.1 ,  0.1 ,     0.2  };
   int   data_yield[nbins]    = {   56 ,   24 ,   16 ,    3 ,       1  };
-
+  */
 
   /*
   // LOOSE WP
