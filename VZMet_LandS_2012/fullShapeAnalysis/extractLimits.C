@@ -28,7 +28,7 @@
 
 using namespace std;
 
-char* version             = "V00-00-02";
+char* version             = "V00-00-05";
 
 bool fileInList(string thisfilename);
 
@@ -38,8 +38,8 @@ void extractLimits( bool print = false ){
   // create exclusion histogram
   //------------------------------------------
 
-  TH2F* hexcl    = new TH2F( "hexcl"    , "hexcl"    , 36 , -5.0 , 355.0 , 36 , -5.0 , 355.0 );
-  TH2F* hexp     = new TH2F( "hexp"     , "hexp"     , 36 , -5.0 , 355.0 , 36 , -5.0 , 355.0 );
+  TH2F* hexcl    = new TH2F( "hexcl"    , "hexcl"    , 41 , -5.0 , 405.0 , 41 , -5.0 , 405.0 );
+  TH2F* hexp     = new TH2F( "hexp"     , "hexp"     , 41 , -5.0 , 405.0 , 41 , -5.0 , 405.0 );
 
   ofstream* doScript_failed = new ofstream();
   doScript_failed->open(Form("cards/%s/doLimits_failed.sh",version));
@@ -60,10 +60,14 @@ void extractLimits( bool print = false ){
       // restrict range
       //------------------------------------------
 
+      if( mgbin > 38 ) continue;
+
       int mg = hexcl->GetXaxis()->GetBinCenter(mgbin);
       int ml = hexcl->GetXaxis()->GetBinCenter(mlbin);
 
-      //if( mgbin == 16 && mlbin == 6 ) continue;
+      //if( mgbin == 15 && mlbin == 4  ) continue;
+      //if( mgbin == 17 && mlbin == 6  ) continue;
+      //if( mgbin == 39 && mlbin == 19 ) continue;
 
       hexcl->SetBinContent(mgbin,mlbin,0);
       hexp->SetBinContent(mgbin,mlbin,0);
@@ -84,7 +88,7 @@ void extractLimits( bool print = false ){
       limitResult mylimit = run(filename,"plot");
 
       if( mylimit.obs < 1.e-10 ){
-	*doScript_failed << Form("../../../../test/lands.exe -d SMS_%i_%i.txt -M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [0.005,0.5,x1.1] -n SMS_%i_%i",mgbin,mlbin,mgbin,mlbin) << endl;
+	*doScript_failed << Form("../../../../test/lands.exe -d SMS_%i_%i.txt -M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [0.01,10.0,x1.1] -n SMS_%i_%i",mgbin,mlbin,mgbin,mlbin) << endl;
       }
       
       else{

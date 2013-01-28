@@ -49,6 +49,50 @@ TGraph* getGraph_2011(){
 
 }
 
+TGraph* getGraph_expectedHCP(){
+
+  float x[7];
+  float y[7];
+  int npoints = -1;
+
+  x[0] =  255.0;  y[0] =  -5.0;
+  x[1] =  245.0;  y[1] =  30.0;
+  x[2] =  215.0;  y[2] =  35.0;
+  x[3] =  195.0;  y[3] =  35.0;
+  x[4] =  180.0;  y[4] =  25.0;
+  x[5] =  165.0;  y[5] =   5.0;
+  x[6] =  165.0;  y[6] =  -5.0;
+  npoints = 7;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+  gr->SetLineWidth(3);
+
+  return gr;
+
+}
+
+TGraph* getGraph_observedHCP(){
+
+  float x[7];
+  float y[7];
+  int npoints = -1;
+
+  x[0] =  285.0;  y[0] =  -5.0;
+  x[1] =  275.0;  y[1] =  30.0;
+  x[2] =  235.0;  y[2] =  35.0;
+  x[3] =  215.0;  y[3] =  35.0;
+  x[4] =  200.0;  y[4] =  25.0;
+  x[5] =  185.0;  y[5] =   5.0;
+  x[6] =  185.0;  y[6] =  -5.0;
+  npoints = 7;
+
+  TGraph *gr = new TGraph(npoints,x,y);
+  gr->SetLineWidth(3);
+
+  return gr;
+
+}
+
 TGraph* getGraph_expected(){
 
   float x[7];
@@ -181,6 +225,14 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   char* xsechist;
   float denom;
 
+  if( version == "V00-00-05" ){
+    sample   = (char*) "wzsms";
+    title    = (char*) "pp#rightarrow #chi^{#pm}#chi^{0} #rightarrow WZ + E_{T}^{miss}";
+    xsectype = (char*) "C1N2_8TeV_finer";
+    xsechist = (char*) "C1N2_8TeV_NLO";
+    denom    = 100000.0;
+  } 
+
   if( version == "V00-00-02" ){
     sample   = (char*) "wzsms";
     title    = (char*) "pp#rightarrow #chi^{#pm}#chi^{0} #rightarrow WZ + E_{T}^{miss}";
@@ -237,9 +289,9 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
 
   cout << "Using selection: " << sel.GetTitle() << endl;
 
-  int   nx   =    31;
+  int   nx   =    41;
   float xmin =  -5.0;
-  float xmax = 305.0;
+  float xmax = 405.0;
 
   TH2F* heff = new TH2F("heff","heff", nx , xmin , xmax , nx , xmin , xmax );
 
@@ -314,7 +366,7 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   if( TString(sample).Contains("gmsb") && smooth ) smoothHist( heff );
 
   heff->GetYaxis()->SetRangeUser(-5,305);
-  heff->GetXaxis()->SetRangeUser(95,305);
+  heff->GetXaxis()->SetRangeUser(95,355);
   heff->GetXaxis()->SetLabelSize(0.035);
   heff->GetYaxis()->SetLabelSize(0.035);
   heff->GetZaxis()->SetLabelSize(0.035);
@@ -346,7 +398,7 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   if( TString(sample).Contains("gmsb") && smooth ) smoothHist( hexcl );
 
   hexcl->GetYaxis()->SetRangeUser(-5,305);
-  hexcl->GetXaxis()->SetRangeUser(95,305);
+  hexcl->GetXaxis()->SetRangeUser(95,355);
   gPad->SetLogz();
   hexcl->GetXaxis()->SetLabelSize(0.035);
   hexcl->GetYaxis()->SetLabelSize(0.035);
@@ -414,7 +466,7 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   gPad->SetGridy();
   hexcluded->GetXaxis()->SetTitle(xtitle);
   hexcluded->GetYaxis()->SetTitle(ytitle);
-  hexcluded->GetXaxis()->SetRangeUser(150,350);
+  hexcluded->GetXaxis()->SetRangeUser(100,400);
   hexcluded->GetYaxis()->SetRangeUser(0,100);
   hexcluded->Draw("colz");
   grobs->Draw("lp");
@@ -425,7 +477,7 @@ void combinePlots(string version = "V00-00-02" , bool print = false){
   gPad->SetGridy();
   hexcluded_exp->GetXaxis()->SetTitle(xtitle);
   hexcluded_exp->GetYaxis()->SetTitle(ytitle);
-  hexcluded_exp->GetXaxis()->SetRangeUser(150,350);
+  hexcluded_exp->GetXaxis()->SetRangeUser(100,400);
   hexcluded_exp->GetYaxis()->SetRangeUser(0,100);
   hexcluded_exp->Draw("colz");
   grexp->Draw("lp");
