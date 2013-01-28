@@ -27,103 +27,6 @@
 
 using namespace std;
 
-/*
-void printCard( char* name , float sigtot , float Ztot , float OFtot , float WZtot , float ZZtot , float raretot , int datatot , char* version ){
-
-  ofstream* ofile = new ofstream();
-
-  ofile->open(Form("cards/%s/%s.txt",version,name));
-
-  *ofile <<      "imax 1 number of channels"                                                                  << endl;
-  *ofile <<      "jmax 5 number of background"                                                                << endl;
-  *ofile <<      "kmax * number of nuisance parameters"                                                       << endl;
-  *ofile << Form("Observation %i                                                           ",datatot)         << endl;
-  *ofile << Form("shapes      *   * ../../rootfiles/%s/%s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" , version , name) << endl;
-  *ofile << Form("shapes data_obs * ../../rootfiles/%s/%s.root  histo_Data" , version , name )                << endl;
-  //*ofile << Form("shapes      *   * %s.root  histo_$PROCESS histo_$PROCESS_$SYSTEMATIC" ,  name) << endl;
-  //*ofile << Form("shapes data_obs * %s.root  histo_Data" ,  name )                << endl;
-  *ofile <<      "bin                                  1        1      1      1     1     1"                  << endl;
-  *ofile << Form("process                        %s     Zbkg  OFbkg  WZbkg  ZZbkg  rarebkg" , name )          << endl;
-  *ofile <<      "process                              0        1      2      3     4     5"                  << endl;
-  *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f   %.1f   %.1f" , sigtot,Ztot,OFtot,WZtot,ZZtot,raretot) << endl;
-  *ofile <<      "lumi                       lnN   1.040       -       -      -     -     -"                  << endl;
-  *ofile <<      "eff_leptons                lnN   1.050       -       -      -     -     -"                  << endl;
-  *ofile <<      "btagerr                    lnN   1.060       -       -      -     -     -"                  << endl;
-  *ofile <<      "JES_shape                shape     1.0       -       -      -     -     -"                  << endl;
-  *ofile <<      "errZ                     shape       -     1.0       -      -     -     -"                  << endl;
-  *ofile <<      "errOF                    shape       -       -     1.0      -     -     -"                  << endl;
-  *ofile <<      "errWZ                    shape       -       -       -    1.0     -     -"                  << endl;
-  *ofile <<      "errZZ                    shape       -       -       -      -   1.0     -"                  << endl;
-  *ofile <<      "errRARE                  shape       -       -       -      -     -   1.0"                  << endl;
-  
-  ofile->close();
-
-}
-*/
-
-/*
-# Counting experiment with multiple channels
-# Extremely simplified version of the 35/pb H->TT analysis for mA = 90 GeV
-# where shapes hardly matter as higgs has the same shape as Z->TT
-# We make the following very simplificatory assumtions:
-# - we consider only Z->TT and "everything else" (mostly QCD)
-# - systematical uncertainties are simplified
-imax 3  number of channels
-jmax *  number of backgrounds ('*' = automatic)
-kmax *  number of nuisance parameters (sources of systematical uncertainties)
-------------
-# three channels, each with it's number of observed events 
-bin          e_tau mu_tau e_mu
-observation   517   540   101     
-------------
-# now we list the expected events for signal and all backgrounds in those three bins
-# the second 'process' line must have a positive number for backgrounds, and 0 for signal
-# for the signal, we normalize the yields to an hypothetical cross section of 1/pb
-# so that we get an absolute limit in cross section in units of pb.
-# then we list the independent sources of uncertainties, and give their effect (syst. error)
-# on each process and bin
-bin           e_tau  e_tau  e_tau  mu_tau  mu_tau  mu_tau  e_mu   e_mu  e_mu
-process       higgs   ZTT   QCD    higgs    ZTT     QCD    higgs   ZTT  other
-process         0      1     2       0       1       2       0      1    2
-rate          0.34    190   327     0.57    329     259    0.15    88   14
-------------
-lumi    lnN   1.11     -     -      1.11     -       -      1.11    -   1.11   A 11% lumi uncertainty, affects signal and MC-driven background
-tauid   lnN   1.23   1.23    -      1.23    1.23     -       -      -    -     The infamous 23% tau id uncertainty from T&P, for hadronic taus
-ZtoLL   lnN     -    1.04    -       -      1.04     -       -     1.04  -      4% uncertainty on lumi*Z->ll
-effic   lnN   1.04   1.04    -      1.04    1.04     -      1.04   1.04 1.04    4% uncertainty on efficiencies (correlated just for simplicity)
-QCDel   lnN     -      -   1.20      -       -       -       -      -    -     20% uncertainty on QCD in e+tau
-QCDmu   lnN     -      -     -       -       -      1.10     -      -    -     10% uncertainty on QCD in mu+tau
-other   lnN     -      -     -       -       -       -       -      -   1.1    10% uncertainty on non-Z backgrounds in e+mu  
-*/
-
-/*
-imax 5  number of channels
-jmax *  number of backgrounds ('*' = automatic)
-kmax *  number of nuisance parameters (sources of systematical uncertainties)
-------------
-bin          e_tau mu_tau e_mu
-observation   517   540   101     
-------------
-# now we list the expected events for signal and all backgrounds in those three bins
-# the second 'process' line must have a positive number for backgrounds, and 0 for signal
-# for the signal, we normalize the yields to an hypothetical cross section of 1/pb
-# so that we get an absolute limit in cross section in units of pb.
-# then we list the independent sources of uncertainties, and give their effect (syst. error)
-# on each process and bin
-bin           e_tau  e_tau  e_tau  mu_tau  mu_tau  mu_tau  e_mu   e_mu  e_mu
-process       higgs   ZTT   QCD    higgs    ZTT     QCD    higgs   ZTT  other
-process         0      1     2       0       1       2       0      1    2
-rate          0.34    190   327     0.57    329     259    0.15    88   14
-------------
-lumi    lnN   1.11     -     -      1.11     -       -      1.11    -   1.11   A 11% lumi uncertainty, affects signal and MC-driven background
-tauid   lnN   1.23   1.23    -      1.23    1.23     -       -      -    -     The infamous 23% tau id uncertainty from T&P, for hadronic taus
-ZtoLL   lnN     -    1.04    -       -      1.04     -       -     1.04  -      4% uncertainty on lumi*Z->ll
-effic   lnN   1.04   1.04    -      1.04    1.04     -      1.04   1.04 1.04    4% uncertainty on efficiencies (correlated just for simplicity)
-QCDel   lnN     -      -   1.20      -       -       -       -      -    -     20% uncertainty on QCD in e+tau
-QCDmu   lnN     -      -     -       -       -      1.10     -      -    -     10% uncertainty on QCD in mu+tau
-other   lnN     -      -     -       -       -       -       -      -   1.1    10% uncertainty on non-Z backgrounds in e+mu  
-*/
-
 void printCard( char* name , char* version , TH1F* hsig , TH1F* hsigup , TH1F* hsigdn ){
 
   const unsigned int nbins = 5;
@@ -266,36 +169,6 @@ void printCard( char* name , char* version , TH1F* hsig , TH1F* hsigup , TH1F* h
   }
   *ofile << endl;
 
-
-
-  // *ofile <<      "lumi                       lnN   1.040       -       -      -     -     -"                  << endl;
-  // *ofile <<      "eff_leptons                lnN   1.050       -       -      -     -     -"                  << endl;
-  // *ofile <<      "btagerr                    lnN   1.060       -       -      -     -     -"                  << endl;
-  // *ofile <<      "JES_shape                shape     1.0       -       -      -     -     -"                  << endl;
-  // *ofile <<      "errZ                     shape       -     1.0       -      -     -     -"                  << endl;
-  // *ofile <<      "errOF                    shape       -       -     1.0      -     -     -"                  << endl;
-  // *ofile <<      "errWZ                    shape       -       -       -    1.0     -     -"                  << endl;
-  // *ofile <<      "errZZ                    shape       -       -       -      -   1.0     -"                  << endl;
-  // *ofile <<      "errRARE                  shape       -       -       -      -     -   1.0"                  << endl;
-
-
-
-  /*
-  *ofile <<      "bin                                  1        1      1      1     1     1"                  << endl;
-  *ofile << Form("process                        %s     Zbkg  OFbkg  WZbkg  ZZbkg  rarebkg" , name )          << endl;
-  *ofile <<      "process                              0        1      2      3     4     5"                  << endl;
-  *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f   %.1f   %.1f" , sigtot,Ztot,OFtot,WZtot,ZZtot,raretot) << endl;
-  *ofile <<      "lumi                       lnN   1.040       -       -      -     -     -"                  << endl;
-  *ofile <<      "eff_leptons                lnN   1.050       -       -      -     -     -"                  << endl;
-  *ofile <<      "btagerr                    lnN   1.060       -       -      -     -     -"                  << endl;
-  *ofile <<      "JES_shape                shape     1.0       -       -      -     -     -"                  << endl;
-  *ofile <<      "errZ                     shape       -     1.0       -      -     -     -"                  << endl;
-  *ofile <<      "errOF                    shape       -       -     1.0      -     -     -"                  << endl;
-  *ofile <<      "errWZ                    shape       -       -       -    1.0     -     -"                  << endl;
-  *ofile <<      "errZZ                    shape       -       -       -      -   1.0     -"                  << endl;
-  *ofile <<      "errRARE                  shape       -       -       -      -     -   1.0"                  << endl;
-  */
-
   ofile->close();
 
 }
@@ -308,7 +181,7 @@ void makeSMSCardsNew(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-13/wzsms_baby_oldIso_mg200_ml0.root");
+  ch->Add("output/V00-02-13/wzsms_baby_oldIso.root");
   char* version = (char*) "V00-00-09";
 
   //---------------------------------------
@@ -449,39 +322,7 @@ void makeSMSCardsNew(){
   //---------------------------------------
   // make and fill data and bkg histos
   //---------------------------------------
-
-  /*
-  // MEDIUM WP
-  //signal regions             80-100 100-120 120-150 150-200    >200
-  float Zbkg_yield[nbins]    = { 40.9 ,  7.0 ,  3.1 ,  1.6 ,     0.8  };
-  float Zbkg_err[nbins]      = { 12.4 ,  2.2 ,  0.9 ,  0.5 ,     0.3  };
-  float OFbkg_yield[nbins]   = { 17.9 , 11.3 ,  6.9 ,  2.4 ,     0.4  };
-  float OFbkg_err[nbins]     = {  3.3 ,  2.2 ,  1.5 ,  1.1 ,     0.3  };
-  float WZbkg_yield[nbins]   = {  3.9 ,  2.1 ,  1.6 ,  1.0 ,     0.5  };
-  float WZbkg_err[nbins]     = {  2.7 ,  1.5 ,  1.1 ,  0.7 ,     0.5  };
-  float ZZbkg_yield[nbins]   = {  1.8 ,  1.0 ,  1.1 ,  0.8 ,     0.7  };
-  float ZZbkg_err[nbins]     = {  0.9 ,  0.5 ,  0.6 ,  0.4 ,     0.7  };
-  float rarebkg_yield[nbins] = {  0.3 ,  0.2 ,  0.3 ,  0.2 ,     0.2  };
-  float rarebkg_err[nbins]   = {  0.2 ,  0.1 ,  0.1 ,  0.1 ,     0.2  };
-  int   data_yield[nbins]    = {   56 ,   24 ,   16 ,    3 ,       1  };
-  */
-
-  /*
-  // LOOSE WP
-  //signal regions             80-100 100-120 120-150 150-200    >200
-  float Zbkg_yield[nbins]    = { 29.7 ,  3.8 ,  2.2 ,  1.4 ,     0.5  };
-  float Zbkg_err[nbins]      = {  9.1 ,  1.2 ,  0.7 ,  0.4 ,     0.2  };
-  float OFbkg_yield[nbins]   = {  6.3 ,  5.0 ,  2.7 ,  1.4 ,     0.1  };
-  float OFbkg_err[nbins]     = {  1.4 ,  1.2 ,  0.7 ,  0.7 ,     0.1  };
-  float WZbkg_yield[nbins]   = {  2.6 ,  1.5 ,  1.0 ,  0.7 ,     0.3  };
-  float WZbkg_err[nbins]     = {  1.8 ,  1.0 ,  0.7 ,  0.5 ,     0.3  };
-  float ZZbkg_yield[nbins]   = {  1.4 ,  0.8 ,  0.8 ,  0.6 ,     0.5  };
-  float ZZbkg_err[nbins]     = {  0.7 ,  0.4 ,  0.4 ,  0.3 ,     0.5  };
-  float rarebkg_yield[nbins] = {  0.2 ,  0.1 ,  0.2 ,  0.2 ,     0.1  };
-  float rarebkg_err[nbins]   = {  0.1 ,  0.1 ,  0.1 ,  0.1 ,     0.1  };
-  int   data_yield[nbins]    = {   40 ,   10 ,   10 ,    2 ,       1  };
-  */
-  
+    
   // MEDIUM WP, 19.3/fb RESULTS
   float Zbkg_yield[nbins]    = { 68.9 ,  7.8 ,  4.8 ,  2.1 ,     0.5  };
   float Zbkg_err[nbins]      = { 21.2 ,  2.5 ,  1.5 ,  0.7 ,     0.1  };
@@ -526,54 +367,6 @@ void makeSMSCardsNew(){
   cout << "Total ZZ bkg   " << ZZbkg_tot   << endl;
   cout << "Total rare bkg " << rarebkg_tot << endl;
 
-  TH1F* histo_Data = new TH1F("histo_Data","histo_Data",nbins,0,nbins);
-
-  TH1F* histo_Zbkg               = new TH1F("histo_Zbkg"                ,"histo_Zbkg"           ,nbins,0,nbins);
-  TH1F* histo_Zbkg_errUp         = new TH1F("histo_Zbkg_errZUp"         ,"histo_Zbkg_errZUp"    ,nbins,0,nbins);
-  TH1F* histo_Zbkg_errDown       = new TH1F("histo_Zbkg_errZDown"       ,"histo_Zbkg_errZDown"  ,nbins,0,nbins);
-
-  TH1F* histo_OFbkg              = new TH1F("histo_OFbkg"               ,"histo_OFbkg"          ,nbins,0,nbins);
-  TH1F* histo_OFbkg_errUp        = new TH1F("histo_OFbkg_errOFUp"       ,"histo_OFbkg_errOFUp"  ,nbins,0,nbins);
-  TH1F* histo_OFbkg_errDown      = new TH1F("histo_OFbkg_errOFDown"     ,"histo_OFbkg_errOFDown",nbins,0,nbins);
-
-  TH1F* histo_WZbkg              = new TH1F("histo_WZbkg"               ,"histo_WZbkg"          ,nbins,0,nbins);
-  TH1F* histo_WZbkg_errUp        = new TH1F("histo_WZbkg_errWZUp"       ,"histo_WZbkg_errWZUp"  ,nbins,0,nbins);
-  TH1F* histo_WZbkg_errDown      = new TH1F("histo_WZbkg_errWZDown"     ,"histo_WZbkg_errWZDown",nbins,0,nbins);
-
-  TH1F* histo_ZZbkg              = new TH1F("histo_ZZbkg"               ,"histo_ZZbkg"          ,nbins,0,nbins);
-  TH1F* histo_ZZbkg_errUp        = new TH1F("histo_ZZbkg_errZZUp"       ,"histo_ZZbkg_errZZUp"  ,nbins,0,nbins);
-  TH1F* histo_ZZbkg_errDown      = new TH1F("histo_ZZbkg_errZZDown"     ,"histo_ZZbkg_errZZDown",nbins,0,nbins);
-            
-  TH1F* histo_rarebkg            = new TH1F("histo_rarebkg"             ,"histo_rarebkg"             ,nbins,0,nbins);
-  TH1F* histo_rarebkg_errUp      = new TH1F("histo_rarebkg_errRAREUp"   ,"histo_rarebkg_errRAREUp"   ,nbins,0,nbins);
-  TH1F* histo_rarebkg_errDown    = new TH1F("histo_rarebkg_errRAREDown" ,"histo_rarebkg_errRAREDown" ,nbins,0,nbins);
-      
-  for( unsigned int ibin = 0 ; ibin < nbins ; ibin++){
-
-    histo_Data                -> SetBinContent(ibin+1, data_yield[ibin] );
-
-    histo_Zbkg                -> SetBinContent(ibin+1, Zbkg_yield[ibin]);
-    histo_Zbkg_errUp          -> SetBinContent(ibin+1, Zbkg_yield[ibin] + Zbkg_err[ibin] );
-    histo_Zbkg_errDown        -> SetBinContent(ibin+1, TMath::Max(Zbkg_yield[ibin] - Zbkg_err[ibin],(float)0.0) );
-
-    histo_OFbkg               -> SetBinContent(ibin+1, OFbkg_yield[ibin]);
-    histo_OFbkg_errUp         -> SetBinContent(ibin+1, OFbkg_yield[ibin] + OFbkg_err[ibin] );
-    histo_OFbkg_errDown       -> SetBinContent(ibin+1, TMath::Max(OFbkg_yield[ibin] - OFbkg_err[ibin],(float)0.0) );
-
-    histo_WZbkg               -> SetBinContent(ibin+1, WZbkg_yield[ibin]);
-    histo_WZbkg_errUp         -> SetBinContent(ibin+1, WZbkg_yield[ibin] + WZbkg_err[ibin] );
-    histo_WZbkg_errDown       -> SetBinContent(ibin+1, TMath::Max(WZbkg_yield[ibin] - WZbkg_err[ibin],(float)0.0) );
-
-    histo_ZZbkg               -> SetBinContent(ibin+1, ZZbkg_yield[ibin]);
-    histo_ZZbkg_errUp         -> SetBinContent(ibin+1, ZZbkg_yield[ibin] + ZZbkg_err[ibin] );
-    histo_ZZbkg_errDown       -> SetBinContent(ibin+1, TMath::Max(ZZbkg_yield[ibin] - ZZbkg_err[ibin],(float)0.0) );
-
-    histo_rarebkg             -> SetBinContent(ibin+1, rarebkg_yield[ibin]);
-    histo_rarebkg_errUp       -> SetBinContent(ibin+1, rarebkg_yield[ibin] + rarebkg_err[ibin] );
-    histo_rarebkg_errDown     -> SetBinContent(ibin+1, TMath::Max(rarebkg_yield[ibin] - rarebkg_err[ibin],(float)0.0) );
-  }
-
-
   //------------------------------------------
   // loop over SMS points
   //------------------------------------------
@@ -583,7 +376,7 @@ void makeSMSCardsNew(){
   for( int mgbin = 1 ; mgbin <= hall->GetXaxis()->GetNbins() ; mgbin++ ){
     for( int mlbin = 1 ; mlbin <= hall->GetYaxis()->GetNbins() ; mlbin++ ){
 
-      if( !( mgbin == 21 && mlbin == 1 ) ) continue;
+      //if( !( mgbin == 21 && mlbin == 1 ) ) continue;
 
       int mg  = hall->GetXaxis()->GetBinCenter(mgbin);
       int ml  = hall->GetXaxis()->GetBinCenter(mlbin);
@@ -670,30 +463,6 @@ void makeSMSCardsNew(){
       //printCard( Form("SMS_%i_%i",mgbin,mlbin) , sigtot , Zbkg_tot , OFbkg_tot , WZbkg_tot , ZZbkg_tot , rarebkg_tot , data_tot , version );
 
       printCard( Form("SMS_%i_%i",mgbin,mlbin) , version , histo_SMS , histo_SMS_JES_shapeUp , histo_SMS_JES_shapeDown );
-
-
-      TFile *f = TFile::Open( Form("rootfiles/%s/SMS_%i_%i.root",version,mgbin,mlbin) , "RECREATE");
-      f->cd();
-      histo_Data->Write();
-      histo_Zbkg->Write();
-      histo_Zbkg_errUp->Write();
-      histo_Zbkg_errDown->Write();
-      histo_OFbkg->Write();
-      histo_OFbkg_errUp->Write();
-      histo_OFbkg_errDown->Write();
-      histo_WZbkg->Write();
-      histo_WZbkg_errUp->Write();
-      histo_WZbkg_errDown->Write();
-      histo_ZZbkg->Write();
-      histo_ZZbkg_errUp->Write();
-      histo_ZZbkg_errDown->Write();
-      histo_rarebkg->Write();
-      histo_rarebkg_errUp->Write();
-      histo_rarebkg_errDown->Write();
-      histo_SMS->Write();
-      histo_SMS_JES_shapeUp->Write();
-      histo_SMS_JES_shapeDown->Write();
-      f->Close();
 
       delete histo_SMS;
       delete histo_SMS_JES_shapeUp;
