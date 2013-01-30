@@ -37,12 +37,12 @@ and total background is indicated for signal regions with at least 20 observed e
 %ee channel: scale em yield by 0.43
 %Yields in 0-60 GeV region
 %data   : 181351
-%gjets  : 183101
+%gjets  : 183192
 %OF     : 1268.53
 %WZ     : 132.629
 %ZZ     : 17.1901
 %Rare   : 14.2168
-%Scaling gjets by : 0.98262
+%Scaling gjets by : 0.982131
 %SF events 185555
 %OF events 43832
 
@@ -50,17 +50,32 @@ and total background is indicated for signal regions with at least 20 observed e
 
                       &   \MET\ 0--30 GeV   &  \MET\ 30--60 GeV   & \MET\ 60--100 GeV   &\MET\ 100--200 GeV   &\MET\ 200--300 GeV   & \MET\ $>$ 300 GeV  \\
 \hline
-        \zjets\ bkg   &135952 $\pm$ 40791   & 43966 $\pm$ 13198   &    2302 $\pm$ 699   &      107 $\pm$ 55   &     5.2 $\pm$ 1.6   &     1.3 $\pm$ 0.4  \\
+        \zjets\ bkg   &136452 $\pm$ 40942   & 43466 $\pm$ 13049   &    2220 $\pm$ 675   &      100 $\pm$ 57   &     5.1 $\pm$ 1.6   &     1.2 $\pm$ 0.4  \\
              FS bkg   &      431 $\pm$ 81   &     838 $\pm$ 156   &     896 $\pm$ 167   &      448 $\pm$ 84   &    22.5 $\pm$ 7.1   &     3.2 $\pm$ 1.9  \\
              WZ bkg   &   49.0 $\pm$ 24.5   &   83.6 $\pm$ 41.8   &   62.6 $\pm$ 31.3   &   35.7 $\pm$ 17.9   &     5.2 $\pm$ 2.6   &     1.5 $\pm$ 1.5  \\
              ZZ bkg   &     5.3 $\pm$ 2.7   &    11.9 $\pm$ 6.0   &    13.2 $\pm$ 6.6   &    13.3 $\pm$ 6.7   &     3.0 $\pm$ 1.5   &     0.9 $\pm$ 0.9  \\
         rare SM bkg   &     4.5 $\pm$ 2.3   &     9.7 $\pm$ 4.9   &     9.2 $\pm$ 4.6   &     8.4 $\pm$ 4.2   &     1.7 $\pm$ 0.8   &     0.5 $\pm$ 0.5  \\
 \hline
-          total bkg   &136442 $\pm$ 40791   & 44909 $\pm$ 13199   &    3283 $\pm$ 719   &     613 $\pm$ 102   &    37.5 $\pm$ 7.9   &     7.4 $\pm$ 2.7  \\
+          total bkg   &136942 $\pm$ 40942   & 44409 $\pm$ 13050   &    3201 $\pm$ 696   &     606 $\pm$ 103   &    37.3 $\pm$ 7.9   &     7.3 $\pm$ 2.7  \\
                data   &            136404   &             44947   &              3508   &               651   &                42   &                 3  \\
-%       significance   &      -0.0$\sigma$   &       0.0$\sigma$   &       0.3$\sigma$   &       0.4$\sigma$   &       0.4$\sigma$   &      -1.4$\sigma$  \\
+%       significance   &      -0.0$\sigma$   &       0.0$\sigma$   &       0.4$\sigma$   &       0.4$\sigma$   &       0.5$\sigma$   &      -1.3$\sigma$  \\
 \hline
 \hline
+
+
+%float Zbkg_yield[nbins]    = { 100.4 ,  5.1 ,     1.2  };
+%float Zbkg_err[nbins]      = { 57.1 ,  1.6 ,     0.4  };
+%float OFbkg_yield[nbins]   = { 448.4 , 22.5 ,     3.2  };
+%float OFbkg_err[nbins]     = { 83.8 ,  7.1 ,     1.9  };
+%float WZbkg_yield[nbins]   = { 35.7 ,  5.2 ,     1.5  };
+%float WZbkg_err[nbins]     = { 17.9 ,  2.6 ,     1.5  };
+%float ZZbkg_yield[nbins]   = { 13.3 ,  3.0 ,     0.9  };
+%float ZZbkg_err[nbins]     = {  6.7 ,  1.5 ,     0.9  };
+%float rarebkg_yield[nbins] = {  8.4 ,  1.7 ,     0.5  };
+%float rarebkg_err[nbins]   = {  4.2 ,  0.8 ,     0.5  };
+%int   data_yield[nbins]    = {  651 ,   42 ,       3  };
+
+
 \end{tabular}
 \end{center}
 \end{table}
@@ -95,33 +110,45 @@ and total background is indicated for signal regions with at least 20 observed e
 %mm channel: scale em yield by 0.53
 %Yields in 0-60 GeV region
 %data   : 229222
-%gjets  : 231102
+%gjets  : 231217
 %OF     : 1563.54
 %WZ     : 162.693
 %ZZ     : 21.5319
 %Rare   : 16.8552
-%Scaling gjets by : 0.984227
+%Scaling gjets by : 0.983741
 %SF events 234132
 %OF events 43832
 
 %#mu#mu events
 
-\hline
-\hline
-
                       &   \MET\ 0--30 GeV   &  \MET\ 30--60 GeV   & \MET\ 60--100 GeV   &\MET\ 100--200 GeV   &\MET\ 200--300 GeV   & \MET\ $>$ 300 GeV  \\
 \hline
-        \zjets\ bkg   &172129 $\pm$ 51640   & 55328 $\pm$ 16600   &    2854 $\pm$ 858   &      130 $\pm$ 45   &     6.3 $\pm$ 2.0   &     1.5 $\pm$ 0.5  \\
+        \zjets\ bkg   &172758 $\pm$ 51829   & 54699 $\pm$ 16412   &    2752 $\pm$ 828   &      122 $\pm$ 44   &     6.2 $\pm$ 1.9   &     1.4 $\pm$ 0.5  \\
              FS bkg   &      531 $\pm$ 99   &    1032 $\pm$ 193   &    1105 $\pm$ 206   &     553 $\pm$ 103   &    27.7 $\pm$ 8.7   &     3.9 $\pm$ 2.4  \\
              WZ bkg   &   59.9 $\pm$ 30.0   &  102.8 $\pm$ 51.4   &   75.1 $\pm$ 37.6   &   43.0 $\pm$ 21.5   &     5.9 $\pm$ 3.0   &     1.6 $\pm$ 1.6  \\
              ZZ bkg   &     6.8 $\pm$ 3.4   &    14.7 $\pm$ 7.4   &    16.6 $\pm$ 8.3   &    16.5 $\pm$ 8.3   &     3.3 $\pm$ 1.6   &     1.1 $\pm$ 1.1  \\
         rare SM bkg   &     5.6 $\pm$ 2.8   &    11.3 $\pm$ 5.7   &    11.4 $\pm$ 5.7   &     9.5 $\pm$ 4.8   &     1.6 $\pm$ 0.8   &     0.6 $\pm$ 0.6  \\
 \hline
-          total bkg   &172733 $\pm$ 51640   & 56489 $\pm$ 16602   &    4062 $\pm$ 884   &     752 $\pm$ 115   &    44.8 $\pm$ 9.6   &     8.8 $\pm$ 3.2  \\
+          total bkg   &173362 $\pm$ 51829   & 55860 $\pm$ 16413   &    3959 $\pm$ 854   &     744 $\pm$ 115   &    44.6 $\pm$ 9.6   &     8.7 $\pm$ 3.2  \\
                data   &            174626   &             54596   &              4070   &               799   &                37   &                 4  \\
-%       significance   &       0.0$\sigma$   &      -0.1$\sigma$   &       0.0$\sigma$   &       0.4$\sigma$   &      -0.7$\sigma$   &      -1.3$\sigma$  \\
+%       significance   &       0.0$\sigma$   &      -0.1$\sigma$   &       0.1$\sigma$   &       0.5$\sigma$   &      -0.7$\sigma$   &      -1.2$\sigma$  \\
 \hline
 \hline
+
+
+%float Zbkg_yield[nbins]    = { 122.0 ,  6.2 ,     1.4  };
+%float Zbkg_err[nbins]      = { 44.2 ,  1.9 ,     0.5  };
+%float OFbkg_yield[nbins]   = { 552.6 , 27.7 ,     3.9  };
+%float OFbkg_err[nbins]     = { 103.3 ,  8.7 ,     2.4  };
+%float WZbkg_yield[nbins]   = { 43.0 ,  5.9 ,     1.6  };
+%float WZbkg_err[nbins]     = { 21.5 ,  3.0 ,     1.6  };
+%float ZZbkg_yield[nbins]   = { 16.5 ,  3.3 ,     1.1  };
+%float ZZbkg_err[nbins]     = {  8.3 ,  1.6 ,     1.1  };
+%float rarebkg_yield[nbins] = {  9.5 ,  1.6 ,     0.6  };
+%float rarebkg_err[nbins]   = {  4.8 ,  0.8 ,     0.6  };
+%int   data_yield[nbins]    = {  799 ,   37 ,       4  };
+
+
 \end{tabular}
 \end{center}
 \end{table}
