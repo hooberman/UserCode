@@ -86,6 +86,12 @@ class makePhotonTemplates
   TH1F* hphotonPt90;
   TH1F* hphotonAll;
 
+  TH1F* hphotonPt20_exc;
+  TH1F* hphotonPt30_exc;
+  TH1F* hphotonPt50_exc;
+  TH1F* hphotonPt70_exc;
+  TH1F* hphotonPt90_exc;
+
   TH1F* hnvtxPt20;
   TH1F* hnvtxPt30;
   TH1F* hnvtxPt50;

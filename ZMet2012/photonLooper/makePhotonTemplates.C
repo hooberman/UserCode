@@ -27,8 +27,8 @@
 
 const bool debug          =  true;
 const bool vtxreweight    =  true;
-const bool bveto          =  true;
-const bool mjjcut         =  true;
+const bool bveto          = false;
+const bool mjjcut         = false;
 const bool pt40           = false;
 
 using namespace std;
@@ -172,6 +172,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
 
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
+      //if( h20 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
 
       int iJetBin;
       int iSumJetPtBin;
@@ -217,6 +218,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
         templateWeight = h90;
         iTrigBin = 4;
 
+	fillUnderOverFlow( hphotonPt90_exc , etg_ , templateWeight );
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt90  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
@@ -235,6 +237,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
         templateWeight = h75;
         iTrigBin = 3;
 
+	fillUnderOverFlow( hphotonPt70_exc , etg_ , templateWeight );
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt70  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
@@ -251,6 +254,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
         templateWeight = h50;
         iTrigBin = 2;
 
+	fillUnderOverFlow( hphotonPt50_exc , etg_ , templateWeight );
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt50  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
@@ -264,25 +268,27 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       }
 
       else if( h30 > 0 ){
-        templateWeight = h30;
-        iTrigBin = 1;
+	templateWeight = h30;
+	iTrigBin = 1;
 
+	fillUnderOverFlow( hphotonPt30_exc , etg_ , templateWeight );
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt30  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
 
 	if( vtxreweight ) templateWeight *= reweightHist[1]->GetBinContent(vtxbin);
 
-        fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
-        fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
-        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1_       , templateWeight );
-        fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
+	fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
+	fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
+	fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1_       , templateWeight );
+	fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
 
       else if( h20 > 0 ){
         templateWeight = h20;
         iTrigBin = 0;
 
+	fillUnderOverFlow( hphotonPt20_exc , etg_ , templateWeight );
 	fillUnderOverFlow( hphotonAll , etg_  , templateWeight );
 	fillUnderOverFlow( hnvtxPt20  , nvtx_ , templateWeight );
 	fillUnderOverFlow( hnvtxAll   , nvtx_ , templateWeight );
@@ -434,6 +440,12 @@ void makePhotonTemplates::bookHistos(){
   hphotonPt70  = new TH1F("hphotonPt70", "",500,0,500);
   hphotonPt90  = new TH1F("hphotonPt90", "",500,0,500);
   hphotonAll   = new TH1F("hphotonAll" , "",500,0,500);
+
+  hphotonPt20_exc  = new TH1F("hphotonPt20_exc", "",500,0,500);
+  hphotonPt30_exc  = new TH1F("hphotonPt30_exc", "",500,0,500);
+  hphotonPt50_exc  = new TH1F("hphotonPt50_exc", "",500,0,500);
+  hphotonPt70_exc  = new TH1F("hphotonPt70_exc", "",500,0,500);
+  hphotonPt90_exc  = new TH1F("hphotonPt90_exc", "",500,0,500);
 
   hnvtxPt20  = new TH1F("hnvtxPt20", "",50,0,50);
   hnvtxPt30  = new TH1F("hnvtxPt30", "",50,0,50);
