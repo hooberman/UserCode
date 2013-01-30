@@ -27,8 +27,8 @@
 
 const bool debug          =  true;
 const bool vtxreweight    =  true;
-const bool bveto          = false;
-const bool mjjcut         = false;
+const bool bveto          =  true;
+const bool mjjcut         =  true;
 const bool pt40           = false;
 
 using namespace std;
@@ -170,9 +170,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       //if( run_ <= 196531 )                                  continue; // 2012 C
       //if( run_ >= 197556 && run_ <= 198913 )                continue; // veto 2012C-PromptReco-v1
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
-
-      if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
-      //if( h20 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
+      
+      //if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
+      if( h20 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
 
       int iJetBin;
       int iSumJetPtBin;
@@ -214,8 +214,14 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( h75 > 0 )  fillUnderOverFlow( hphotonPt70 , etg_ , h75 );
       if( h90 > 0 )  fillUnderOverFlow( hphotonPt90 , etg_ , h90 );
 
-      if( h90 > 0 ){
-        templateWeight = h90;
+      if     ( h90 > 0 )  templateWeight = h90;
+      else if( h75 > 0 )  templateWeight = h75;
+      else if( h50 > 0 )  templateWeight = h50;
+      else if( h20 > 0 )  templateWeight = h20;
+
+      if( etg_ > 90.0 ){
+	//if( h90 > 0 ){
+        //templateWeight = h90;
         iTrigBin = 4;
 
 	fillUnderOverFlow( hphotonPt90_exc , etg_ , templateWeight );
@@ -233,8 +239,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
         fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
       
-      else if( h75 > 0 ){
-        templateWeight = h75;
+      else if( etg_ > 75.0 ){
+	//else if( h75 > 0 ){
+        //templateWeight = h75;
         iTrigBin = 3;
 
 	fillUnderOverFlow( hphotonPt70_exc , etg_ , templateWeight );
@@ -250,8 +257,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
         fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
 
-      else if( h50 > 0 ){
-        templateWeight = h50;
+      else if( etg_ > 50.0 ){
+	//else if( h50 > 0 ){
+        //templateWeight = h50;
         iTrigBin = 2;
 
 	fillUnderOverFlow( hphotonPt50_exc , etg_ , templateWeight );
@@ -267,8 +275,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
         fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
 
-      else if( h30 > 0 ){
-	templateWeight = h30;
+      else if( etg_ > 36.0 ){
+	//else if( h30 > 0 ){
+	//templateWeight = h30;
 	iTrigBin = 1;
 
 	fillUnderOverFlow( hphotonPt30_exc , etg_ , templateWeight );
@@ -284,8 +293,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 	fillUnderOverFlow( t1newpfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] ,  pfmett1new_    , templateWeight );
       }
 
-      else if( h20 > 0 ){
-        templateWeight = h20;
+      else if( etg_ > 20.0 ){
+	//else if( h20 > 0 ){
+        //templateWeight = h20;
         iTrigBin = 0;
 
 	fillUnderOverFlow( hphotonPt20_exc , etg_ , templateWeight );
