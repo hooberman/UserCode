@@ -1,0 +1,70 @@
+\clearpage
+
+\section{Systematic Uncertainties in Signal Acceptance}
+
+In this section we discuss systematic uncertainties in the signal acceptance. These efficiency
+uncertainties are relevant for the interpretations in the \wzmet\ and the GMSB models, which 
+are combined with the results of the trilepton and quadlepton analysis, respectively, in AN-2012/351.
+
+\begin{table}[htb]
+\begin{center}
+\footnotesize
+\caption{\label{tab:syst} Summary of uncertainties in the signal efficiency. }
+\begin{tabular}{l|c|l}
+\hline
+\hline
+Source & Value (\%) & Method \\
+\hline
+Luminosity & 4.4 & official CMS value \\
+Trigger efficiency & 3 & efficiency measurements documented in Sec. 4, Table 9 of AN-2012/248 \\
+Lepton ID/isolation & 2 (per lepton) & Z tag-and-probe measurements in AN-2012/257 \\
+B-veto & 6 & dedicated measurement in AN-2012/248 Sec. 7.6 \\
+Z mass window requirement & 3 & see text and Table~\ref{tab:mllsyst} \\
+Jet selection, dijet mass, \MET & assessed at each model point & official JetMet POG recipe \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+A summary of the efficiency uncertainties is presented in Table~\ref{tab:syst}.
+The CMS uncertainty in the luminosity is 4.4\%. The trigger efficiency is measured in AN-2102/248 with an uncertainty of 3\%.
+The lepton identification and isolation requirements are measured in data and MC and found to be consistent within 2\%, for
+the \pt\ $>$ 20 GeV region relevant for this analysis, in AN-2012/257. The impact of the b-veto on the signal acceptance
+is quantified with a dedicated measurement performed in Sec. 7.6 of AN-2012/248. The uncertainty in the selection of dilepton
+events satisfying the Z mass window requirement 81--101 GeV is performed as follows. In both data and MC, the Z mass window
+in the inclusive preselection region (Z and at least 2 jets) is loosened to 60--120 GeV. 
+The efficiency of the events in the loose window to satisfy the analysis dilepton mass selection
+of 81--101 GeV is compared in data and MC, and found to be consistent within 3\% for both ee and $\mu\mu$ channels
+(see Table~\ref{tab:mllsyst}), and a corresponding uncertainty on the signal efficiency is assessed.
+
+The above uncertainties are the same for all SUSY model points. However the impact of the jet energy scale uncertainty, which
+affects the selection efficiencies for all jets and \MET\ objects, varies significantly across the model parameter space and
+is assessed separately at each point. The official JetMet POG recipe is used for this purpose. Each jet is assigned an uncertainty
+based on its \pt\ and $\eta$. The jet energy is varied by this uncertainty, which is propagated to the efficiencies for the jet selection, 
+dijet mass selection and \MET\ selection. In addition, for the \MET, a 10\% uncertainty on the unclustered energy is included.
+The \MET\ variation alters the shape of the signal \MET\ distribution and causes a bin-to-bin migration of events, which is 
+included in the limit setting procedure performed with LandS.
+
+\begin{table}[htb]
+\begin{center}
+\footnotesize
+\caption{\label{tab:mllsyst} Summary of the dilepton mass selection efficiency uncertainties. Loose and tight refer to dilepton
+mass windows of 60--120 GeV and 81-101 GeV, respectively.}
+\begin{tabular}{l|c|c}
+\hline
+\hline
+ & ee & $\mu\mu$ \\
+\hline
+MC loose & 200694.0 & 285462.5 \\
+MC tight & 183326.2 & 260960.0 \\  
+MC tight/loose & 0.913 $\pm$ 0.005 & 0.914 $\pm$ 0.004 \\
+\hline
+data loose & 209540 & 263747 \\
+data tight & 185555 & 234132 \\
+data tight/loose & 0.886 $\pm$ 0.003 & 0.888 $\pm$ 0.003 \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+\end{table}
