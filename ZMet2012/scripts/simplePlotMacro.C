@@ -271,8 +271,8 @@ void simplePlotMacro( bool printplots = false ){
   vector<char*> predictedHisto;
 
   observedHisto.push_back((char*)"metObserved");        predictedHisto.push_back((char*)"metPredicted");
-  observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
-  observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
+  //observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
+  //observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
 
 
   //-----------------------------------
@@ -332,8 +332,8 @@ void simplePlotMacro( bool printplots = false ){
       //h_ofpred[i]->Scale(0.5/Rem);
       //h_ofpred[i]->Scale(0.41);
       //cout << "ee channel: scale em yield by 0.41" << endl;
-      h_ofpred[i]->Scale(0.44);
-      cout << "ee channel: scale em yield by 0.44" << endl;
+      h_ofpred[i]->Scale(0.43);
+      cout << "ee channel: scale em yield by 0.43" << endl;
       title     = (char*) "ee events";
       ee_and_mm = false;
       mysel = sel + ee;
@@ -343,16 +343,16 @@ void simplePlotMacro( bool printplots = false ){
       //h_ofpred[i]->Scale(0.5*Rem);
       //h_ofpred[i]->Scale(0.58);
       //cout << "mm channel: scale em yield by 0.58" << endl;
-      h_ofpred[i]->Scale(0.54);
-      cout << "mm channel: scale em yield by 0.54" << endl;
+      h_ofpred[i]->Scale(0.53);
+      cout << "mm channel: scale em yield by 0.53" << endl;
       title     = (char*) "#mu#mu events";
       ee_and_mm = false;
       mysel = sel + mm;
     }
 
     else{
-      h_ofpred[i]->Scale(0.98);
-      cout << "ee+mm channels: scale em yield by 0.98" << endl;
+      h_ofpred[i]->Scale(0.97);
+      cout << "ee+mm channels: scale em yield by 0.97" << endl;
       mysel = sel;
     }
 
@@ -1021,6 +1021,18 @@ void simplePlotMacro( bool printplots = false ){
     hratio[i]   = (TH1F*) h_sf[i]->Clone(Form("hratio_%i",i));
     hratio[i]->Divide(htotpred[i]);
     
+    int tbin120 = h_sf[i]->FindBin(120);
+    int tbin150 = h_sf[i]->FindBin(150);
+    int tbin200 = h_sf[i]->FindBin(200);
+
+    cout << "Observed 120-150 " << h_sf[i]->Integral(tbin120,tbin150-1) << endl;
+    cout << "Observed 150-200 " << h_sf[i]->Integral(tbin150,tbin200-1) << endl;
+    cout << "Observed >200    " << h_sf[i]->Integral(tbin200,10000)    << endl;
+
+    cout << "Expected 120-150 " << htotpred[i]->Integral(tbin120,tbin150-1) << endl;
+    cout << "Expected 150-200 " << htotpred[i]->Integral(tbin150,tbin200-1) << endl;
+    cout << "Expected >200    " << htotpred[i]->Integral(tbin200,10000)    << endl;
+
     hratio[i]->GetXaxis()->SetLabelSize(0.0);
     hratio[i]->GetYaxis()->SetLabelSize(0.2);
     hratio[i]->GetYaxis()->SetTitleSize(0.25);
