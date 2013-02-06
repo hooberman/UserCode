@@ -29,6 +29,7 @@
 #include "slepton.C"
 #include "stop.C"
 #include "gluino.C"
+#include "squark.C"
 
 
 
@@ -45,27 +46,33 @@ void susyCrossSection(){
   TGraph *slepton = gr_slepton();
   TGraph *stop    = gr_stop();
   TGraph *gluino  = gr_gluino();
+  TGraph *squark  = gr_squark();
 
 
   //---------------------------------
   // create and scale histograms
   //---------------------------------
 
-  C1N2->SetLineWidth(2);
-  C1N2->SetLineColor(7);
+  C1N2->SetLineWidth(4);
+  C1N2->SetLineColor(6);
 
-  C1C1->SetLineWidth(2);
-  C1C1->SetLineColor(7);
+  C1C1->SetLineWidth(4);
+  C1C1->SetLineColor(6);
+  C1C1->SetLineStyle(9);
 
-  slepton->SetLineWidth(2);
-  slepton->SetLineColor(7);
+  slepton->SetLineWidth(4);
+  slepton->SetLineColor(6);
+  slepton->SetLineStyle(2);
 
-  stop->SetLineWidth(2);
+  stop->SetLineWidth(4);
   stop->SetLineColor(4);
 
-  stop->SetLineWidth(2);
-  stop->SetLineColor(2);
+  gluino->SetLineWidth(4);
+  gluino->SetLineColor(2);
 
+  squark->SetLineWidth(4);
+  squark->SetLineColor(2);
+  squark->SetLineStyle(9);
 
   //---------------------------------
   // make plots
@@ -77,17 +84,19 @@ void susyCrossSection(){
   gPad->SetTopMargin(0.1);
   gPad->SetLogy();
 
-  C1N2->Draw("Al");
+  TH2F* hdummy = new TH2F("hdummy","hdummy",100,100,1500,100,0.0005,100);
+
+  hdummy->Draw();
+
+  C1N2->Draw("samel");
   C1C1->Draw("samel");
   slepton->Draw("samel");
   stop->Draw("samel");
+  gluino->Draw("samel");
+  squark->Draw("samel");
 
-  // h_C1N2->GetXaxis()->SetTitle("SUSY particle mass [GeV]");
-  // h_C1N2->GetYaxis()->SetTitle("#sigma(pp#rightarrow SUSY) [pb]");
-  // h_C1N2->Draw("c");
-  // h_C1N2->SetMinimum(0.0001);
-  // h_C1N2->SetMaximum(100);
-  // h_C1N2->GetXaxis()->SetRangeUser(125,400);
+  hdummy->GetXaxis()->SetTitle("SUSY particle mass [GeV]");
+  hdummy->GetYaxis()->SetTitle("#sigma(pp#rightarrow SUSY) [pb]");
 
   TLatex *t = new TLatex();
   t->SetNDC();
@@ -95,20 +104,19 @@ void susyCrossSection(){
   t->SetTextSize(0.05);
   t->DrawLatex(0.2,0.92,"8 TeV NLO cross sections");
 
-  // TLegend *leg = new TLegend(0.6,0.57,0.85,0.858);
-  // leg->SetFillColor(0);
-  // leg->SetBorderSize(0);
-  // leg->AddEntry(h,"total","l");
-  // leg->AddEntry(h_Wlv_Hbb,"W(#font[12]{l}#nu)H(b#bar{b})","l");
-  // leg->AddEntry(h_Wlv_HWW,"W(#font[12]{l}#nu)H(WW)","l");
-  // leg->AddEntry(h_Wlv_Htt,"W(#font[12]{l}#nu)H(#tau#tau)","l");
-  // leg->AddEntry(h_Wlv_HZZ,"W(#font[12]{l}#nu)H(ZZ)","l");
-  // leg->AddEntry(h_Wjj_Hgg,"W(jj)H(#gamma#gamma)","l");
-  // leg->AddEntry(h_Wlv_Hgg,"W(#font[12]{l}#nu)H(#gamma#gamma)","l");
+  TLegend *leg = new TLegend(0.65,0.4,0.85,0.88);
+  leg->SetFillColor(0);
+  leg->SetBorderSize(0);
+  leg->AddEntry(gluino  ,"#tilde{g}#tilde{g}","l");
+  leg->AddEntry(squark  ,"#tilde{q}#bar{#tilde{q}}","l");
+  leg->AddEntry(stop    ,"#tilde{t_{1}}#bar{#tilde{t_{1}}}","l");
+  leg->AddEntry(C1N2    ,"#tilde{#chi}_{1}^{#pm}#tilde{#chi}_{2}^{0} (wino)","l");
+  leg->AddEntry(C1C1    ,"#tilde{#chi}_{1}^{+}#tilde{#chi}_{1}^{-} (wino)","l");
+  leg->AddEntry(slepton ,"#tilde{#font[12]{l}_{e}^{+}}#tilde{#font[12]{l}_{e}^{-}}","l");
+  leg->SetTextSize(0.04);
+  leg->Draw();
 
-  // leg->Draw();
-
-  c1->Print("../plots/susyCrossSection.pdf");
+  c1->Print("susyCrossSection.pdf");
 
 
 }
