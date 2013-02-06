@@ -1050,16 +1050,15 @@ void simplePlotMacro( bool printplots = false ){
     if( bveto ) h_sf[i]->SetMinimum(0.01);
     else        h_sf[i]->SetMinimum(0.1);
 
-    h_sf[i]->Draw("axis");
+    h_sf[i]->SetLineColor(0);
+    h_sf[i]->Draw("hist");
     gr_sf[i] = Asym(h_sf[i]);
-    gr_sf[i]->SetLineColor(2);
-    gr_sf[i]->SetMarkerColor(1);
-    gr_sf[i]->SetLineColor(1);
     gr_sf[i]->Draw("sameP");
     pred[i]->Draw("histsame");
     //h_sf[i]->Draw("sameE1");
-    h_sf[i]->Draw("sameaxis");
+    //h_sf[i]->Draw("sameaxis");
     gr_sf[i]->Draw("sameP");
+    h_sf[i]->Draw("axissame");
 
     TLegend* leg = new TLegend(0.65,0.6,0.93,0.9);
     leg->AddEntry(h_sf[i],"data","lp");
