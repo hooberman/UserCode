@@ -26,6 +26,10 @@
 #include "TColor.h"
 #include "TMath.h"
 
+#include "Math/QuantFuncMathCore.h"
+#include "TMath.h"
+#include "TGraphAsymmErrors.h"
+
 //#include "mycolors.h"
 
 enum metType        { e_tcmet    = 0 , e_tcmetNew      = 1 , e_pfmet             = 2 , e_t1pfmet = 3 , e_t1newpfmet = 4 };
@@ -54,6 +58,27 @@ bool     rebinRatioPlot =  true;
 //metType  myMetType  = e_t1newpfmet; 
 //metType  myMetType  = e_t1pfmet; 
 //float    Rem        =    1.18; 
+
+TGraphAsymmErrors* Asym(TH1F * h1){
+
+   const double alpha = 1 - 0.6827;
+   TGraphAsymmErrors * g=new TGraphAsymmErrors();
+   int npoints=0;
+   for (int i = 0; i < h1->GetNbinsX(); ++i) {   
+     int N = (int) h1->GetBinContent(i+1);
+     float x=h1->GetBinCenter(i+1);
+       if(N!=0){
+     g->SetPoint(npoints,x,N);
+     double L =  (N==0) ? 0  : (ROOT::Math::gamma_quantile(alpha/2,N,1.));
+     double U =  (N==0) ? (ROOT::Math::gamma_quantile_c(alpha,N+1,1) ):( ROOT::Math::gamma_quantile_c(alpha/2,N+1,1) );
+     g->SetPointEYlow(npoints, N-L);
+     g->SetPointEYhigh(npoints, U-N);
+     npoints++;
+       }
+   }
+   return g;
+
+}
 
 TH1F* getRatioPlot( TH1F* hratio , TH1F* hobs , TH1F* hpred ){
 
@@ -341,6 +366,7 @@ void simplePlotMacro( bool printplots = false ){
   TH1F*    h_vz[nplots];
   TH1F*    h_rare[nplots];
   TH1F*    hsysterr[nplots];
+  TGraphAsymmErrors* gr_sf[nplots];
 
   TLatex *t = new TLatex();
   t->SetNDC();
@@ -1024,10 +1050,16 @@ void simplePlotMacro( bool printplots = false ){
     if( bveto ) h_sf[i]->SetMinimum(0.01);
     else        h_sf[i]->SetMinimum(0.1);
 
-    h_sf[i]->Draw("E1");
+    h_sf[i]->Draw("axis");
+    gr_sf[i] = Asym(h_sf[i]);
+    gr_sf[i]->SetLineColor(2);
+    gr_sf[i]->SetMarkerColor(1);
+    gr_sf[i]->SetLineColor(1);
+    gr_sf[i]->Draw("sameP");
     pred[i]->Draw("histsame");
-    h_sf[i]->Draw("sameE1");
+    //h_sf[i]->Draw("sameE1");
     h_sf[i]->Draw("sameaxis");
+    gr_sf[i]->Draw("sameP");
 
     TLegend* leg = new TLegend(0.65,0.6,0.93,0.9);
     leg->AddEntry(h_sf[i],"data","lp");
