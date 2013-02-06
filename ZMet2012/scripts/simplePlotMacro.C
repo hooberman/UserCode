@@ -49,10 +49,56 @@ bool     exclusive    =    true;
 bool     blind        =    false;
 float    lumi         =    19.5;
 bool     printCards   =    false;
+bool     rebinRatioPlot =  true;
 
 //metType  myMetType  = e_t1newpfmet; 
 //metType  myMetType  = e_t1pfmet; 
 //float    Rem        =    1.18; 
+
+TH1F* getRatioPlot( TH1F* hratio , TH1F* hobs , TH1F* hpred ){
+
+  Double_t xbins[15]={0,10,20,30,40,50,60,70,80,90,100,120,150,200,250};
+
+  TH1F* hratio_rebinned = new TH1F(Form("%s_rebinned",hratio->GetName()),"",14,xbins);
+
+  for(int ibin = 1 ; ibin <= 10 ; ibin++ ){
+    hratio_rebinned->SetBinContent(ibin,hratio->GetBinContent(ibin));
+    hratio_rebinned->SetBinError  (ibin,hratio->GetBinError(ibin));
+  }
+
+  int bin100 = hobs->FindBin(100);
+  int bin120 = hobs->FindBin(120);
+  int bin150 = hobs->FindBin(150);
+  int bin200 = hobs->FindBin(200);
+
+  float nobs100 = hobs->Integral(bin100,bin120-1);
+  float nobs120 = hobs->Integral(bin120,bin150-1);
+  float nobs150 = hobs->Integral(bin150,bin200-1);
+  float nobs200 = hobs->Integral(bin200,10000);
+
+  float npred100 = hpred->Integral(bin100,bin120-1);
+  float npred120 = hpred->Integral(bin120,bin150-1);
+  float npred150 = hpred->Integral(bin150,bin200-1);
+  float npred200 = hpred->Integral(bin200,10000);
+
+  cout << "Rebinning ratio plot, observed and predicted yields are:" << endl;
+  cout << "nobs  " << nobs100               << " " << nobs120               << " " << nobs150               << " " << nobs200 << endl;
+  cout << "npred " << Form("%.1f",npred100) << " " << Form("%.1f",npred120) << " " << Form("%.1f",npred150) << " " << Form("%.1f",npred200) << endl;
+
+  hratio_rebinned->SetBinContent(11,nobs100/npred100);
+  hratio_rebinned->SetBinError(11,sqrt(nobs100)/npred100);
+
+  hratio_rebinned->SetBinContent(12,nobs120/npred120);
+  hratio_rebinned->SetBinError(12,sqrt(nobs120)/npred120);
+
+  hratio_rebinned->SetBinContent(13,nobs150/npred150);
+  hratio_rebinned->SetBinError(13,sqrt(nobs150)/npred150);
+
+  hratio_rebinned->SetBinContent(14,nobs200/npred200);
+  hratio_rebinned->SetBinError(14,sqrt(nobs200)/npred200);
+
+  return hratio_rebinned;
+}
 
 void printCard( char* filename , int nobs , float nbkg , float errbkg );
 
@@ -1018,20 +1064,33 @@ void simplePlotMacro( bool printplots = false ){
     hsysterr[i]->SetFillStyle(3004);
     hsysterr[i]->SetMarkerSize(0);
    
-    hratio[i]   = (TH1F*) h_sf[i]->Clone(Form("hratio_%i",i));
-    hratio[i]->Divide(htotpred[i]);
+    TH1F* hratio_temp   = (TH1F*) h_sf[i]->Clone("hratio_temp");
+    hratio_temp->Divide(htotpred[i]);
+
+    if( rebinRatioPlot ){
+      TH1F* hratio_rebinned = getRatioPlot( hratio_temp , h_sf[i] , htotpred[i] );
+      hratio[i] = (TH1F*) hratio_rebinned->Clone(Form("hratio_%i",i));
+    }
+    else{
+      hratio[i] = (TH1F*) hratio_temp->Clone(Form("hratio_%i",i));
+    }
+
+    delete hratio_temp;
+
+    // hratio[i]   = (TH1F*) h_sf[i]->Clone(Form("hratio_%i",i));
+    // hratio[i]->Divide(htotpred[i]);
     
-    int tbin120 = h_sf[i]->FindBin(120);
-    int tbin150 = h_sf[i]->FindBin(150);
-    int tbin200 = h_sf[i]->FindBin(200);
+    // int tbin120 = h_sf[i]->FindBin(120);
+    // int tbin150 = h_sf[i]->FindBin(150);
+    // int tbin200 = h_sf[i]->FindBin(200);
 
-    cout << "Observed 120-150 " << h_sf[i]->Integral(tbin120,tbin150-1) << endl;
-    cout << "Observed 150-200 " << h_sf[i]->Integral(tbin150,tbin200-1) << endl;
-    cout << "Observed >200    " << h_sf[i]->Integral(tbin200,10000)    << endl;
+    // cout << "Observed 120-150 " << h_sf[i]->Integral(tbin120,tbin150-1) << endl;
+    // cout << "Observed 150-200 " << h_sf[i]->Integral(tbin150,tbin200-1) << endl;
+    // cout << "Observed >200    " << h_sf[i]->Integral(tbin200,10000)    << endl;
 
-    cout << "Expected 120-150 " << htotpred[i]->Integral(tbin120,tbin150-1) << endl;
-    cout << "Expected 150-200 " << htotpred[i]->Integral(tbin150,tbin200-1) << endl;
-    cout << "Expected >200    " << htotpred[i]->Integral(tbin200,10000)    << endl;
+    // cout << "Expected 120-150 " << htotpred[i]->Integral(tbin120,tbin150-1) << endl;
+    // cout << "Expected 150-200 " << htotpred[i]->Integral(tbin150,tbin200-1) << endl;
+    // cout << "Expected >200    " << htotpred[i]->Integral(tbin200,10000)    << endl;
 
     hratio[i]->GetXaxis()->SetLabelSize(0.0);
     hratio[i]->GetYaxis()->SetLabelSize(0.2);
@@ -1045,7 +1104,7 @@ void simplePlotMacro( bool printplots = false ){
     if( bveto ){
       hratio[i]->SetMinimum(0.0);
       hratio[i]->SetMaximum(2.0);
-      hratio[i]->GetYaxis()->SetRangeUser(0.0,2.0);
+      hratio[i]->GetYaxis()->SetRangeUser(0.5,1.5);
     }
 
     else{
