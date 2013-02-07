@@ -342,8 +342,8 @@ void simplePlotMacro( bool printplots = false ){
   vector<char*> predictedHisto;
 
   observedHisto.push_back((char*)"metObserved");        predictedHisto.push_back((char*)"metPredicted");
-  //observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
-  //observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
+  observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
+  observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
 
 
   //-----------------------------------
@@ -768,9 +768,13 @@ void simplePlotMacro( bool printplots = false ){
 
       //cout << bins[ibin] << ": ofsyst " << ofsyst << endl;
 
+      float gjets_syst = 0.04;
+      if( bins[ibin] == 60 ) gjets_syst = 0.22;
+      if( bins[ibin] >  60 ) gjets_syst = 0.33;
+
       // syst uncertainties
       nof_syst[ibin]    = ofsyst * h_ofpred[i]->Integral(bin,binhigh);   
-      ngjets_syst[ibin] = 0.3 * h_gjets[i]->Integral(bin,binhigh);       // 30% uncertainty on Z+jets
+      ngjets_syst[ibin] = gjets_syst * h_gjets[i]->Integral(bin,binhigh);       // 30% uncertainty on Z+jets
       nwz_syst[ibin]    = 0.5 * h_wz[i]->Integral(bin,binhigh);          // 80% uncertainty on WZ
       nzz_syst[ibin]    = 0.5 * h_zz[i]->Integral(bin,binhigh);          // 50% uncertainty on ZZ
       nrare_syst[ibin]  = 0.5 * h_rare[i]->Integral(bin,binhigh);        // 50% uncertainty on rare
@@ -1135,7 +1139,8 @@ void simplePlotMacro( bool printplots = false ){
     if( bveto ){
       hratio[i]->SetMinimum(0.0);
       hratio[i]->SetMaximum(2.0);
-      hratio[i]->GetYaxis()->SetRangeUser(0.5,1.5);
+      if(ee_and_mm) hratio[i]->GetYaxis()->SetRangeUser(0.5,1.5);
+      else          hratio[i]->GetYaxis()->SetRangeUser(0.0,2.0);
     }
 
     else{
