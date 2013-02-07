@@ -202,7 +202,8 @@ The dilepton mass distributions in the preselection region of the targeted searc
 for the ee and $\mu\mu$ final states are shown in Figure~\ref{fig:dilmass_2j_targeted}. In Table~\ref{table:zyields_2j_targeted} 
 the data and MC yields in the preselection region are indicated. Good data vs. MC agreement is observed.
 We also show the distribution of dijet mass in the targeted preselection (with the requirement on this quantity removed) in Fig.~\ref{fig:mjj},
-which demonstrates that the MC does a reasonable job of modeling this quantity.
+which demonstrates that the MC does a reasonable job of modeling this quantity. The dijet mass selection efficiency for data and MC
+is quantified in Table~\ref{table:mjj}.
 
 %-------------------------------------
 % veto b-jets with CSV MEDIUM 
@@ -294,6 +295,8 @@ which demonstrates that the MC does a reasonable job of modeling this quantity.
 
 \clearpage
 
+\begin{comment}
+
 \begin{figure}[hbt]
   \begin{center}
 	\includegraphics[width=1.0\linewidth]{plots/mjj_targeted_19p5.pdf}
@@ -349,3 +352,42 @@ Distributions of dijet mass for the targeted preselection in the ee (left), $\mu
 %data yield 1363
 
 
+\end{comment}
+
+\begin{figure}[!ht]
+  \begin{center}
+	\includegraphics[width=0.3\linewidth]{plots/mjj_inclusive_19p5fb.pdf} %
+	\includegraphics[width=0.3\linewidth]{plots/mjj_targeted_19p5fb.pdf}
+	\caption{
+	  \label{fig:mjj}\protect 
+Distributions of dijet mass for the inclusive preselection (left) and targeted preselection (right), 
+in the ee (top), $\mu\mu$ (middle) and e$\mu$ (bottom) final state.
+}                   
+  \end{center}
+\end{figure}
+
+\begin{table}[!hb]
+\begin{center}
+\caption{\label{table:mjj} Data and MC selection efficiencies for the dijet mass ($m_{jj}$) requirement, with respect
+to the inclusive preselection.
+}
+\begin{tabular}{l|c|c|c}
+\hline
+\hline
+Sample & ee & $\mu\mu$ & e$\mu$ \\
+\hline
+MC (inclusive)                           &180528.1 $\pm$ 646.4   &226213.8 $\pm$ 680.2   &6357.1 $\pm$ 62.7   \\
+MC (inclusive + $m_{jj}$ requirement)   &48466.6 $\pm$ 333.3    &61162.1 $\pm$ 352.1   &1124.8 $\pm$ 26.5  \\
+MC  efficiency  &               26.8\%  &     27.0\%  & 17.7\% \\
+\hline
+Data (inclusive)                           &         185555   &         234132   &           6231    \\
+Data (inclusive + $m_{jj}$ requirement)   &          49256   &          62414   &           1131    \\
+Data efficiency                            &          26.5\%    &       26.7\%   &            18.2\%  \\
+\hline
+\hline
+
+\end{tabular}
+\end{center}
+\end{table}
+
+\clearpage
