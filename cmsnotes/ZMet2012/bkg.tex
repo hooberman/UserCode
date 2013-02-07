@@ -51,6 +51,63 @@ prediction is scaled such that the total background prediction matches the obser
 Because the non-\zjets impurity in the low \MET\ region after preselection is very small, this results in 
 scaling factors of 0.985 (0.995) for the inclusive (targeted) search.
 
+A closure test for this method was done in MC, the results of which are shown in appendix~\ref{sec:templateclosure}.
+In order to asses the uncertainties based on this we do the following. We seperate the systematic uncertainty 
+into 2 regions: \MET\ $<$ 60 GeV, and \MET\ $>$ 60 GeV. There are 3 sources of uncertainty associated with this method:
+The uncertainties from the closure test, the photon selections, and the vertex reweighting.
+
+From the results obtained in the closure test, we assign an uncertainty of 0\% to the region with \MET\ $<$ 60 GeV, and 
+30\% to the region with \MET\ $>$ 60 GeV. This is based on the largest statistically significant deviation in the \MET\ bins.
+Next, we asses the uncertainties associated with the photon selections. We vary the $H/E$ selection by tightening it to $H/E < 0.05$, 
+and $H/E < 0.01$ and recalculating the predictions from the \MET\ templates using the targeted analysis selections. We also calculate
+the change in the predictions associated with the vertex reweighting. The results from doing this are shown in table.~\ref{table:photonsystematics}.
+ From these results, we assign a 2\% systematic uncertainty to the region with \MET\ $<$ 60 GeV, and a 10\% systematic uncertainty 
+to the region with \MET\ $>$ 60 GeV for the $H/E$ selection. Additionally, we take half the difference between the nominal 
+and the reweighted predictions as the uncertainty due to the vertex reweighting. The systematic uncertainty is taken as 3\% 
+for \MET\ $<$ 60 GeV, and 10\% for \MET\ $>$ 60 GeV. Therefore, the total uncertainty is 4\% for the region with \MET\ $<$ 60 GeV, 
+and 33\% for the region with \MET\ $>$ 60 GeV.
+
+\begin{table}[htb]
+\scriptsize
+\begin{center}
+\caption{\label{table:photonsystematics} Results from varying the $H/T$ photon selection, and removing the vertex reweighting done when making the \MET\ templates. 
+The errors shown here are statistical only.}
+\begin{tabular}{l|c|c|c|c}
+\hline
+\hline
+               & $0 < \MET < 30$     & $30 < \MET < 60$  & $60 < \MET < 80$ & $80 < \MET < 100$  \\ 
+\hline
+Nominal Yields & 75834 $\pm$ 232.2 & 21232   $\pm$ 117.7 & 690 $\pm$ 19.0   & 64.5 $\pm$ 5.8 \\
+\hline
+$H/T < 0.05$   & 76246.9 $\pm$ 232.6 & 20834.8 $\pm$ 123.8 &  647.5 $\pm$ 21.6 &    60.8 $\pm$ 5.6 \\
+\% change      & 0.6 $\pm$ 0.4 &    1.8 $\pm$ 0.8 &    6.1 $\pm$ 4.46 &   5.8 $\pm$ 12.5 \\
+\hline
+$H/T < 0.01$   & 76355.1 $\pm$ 248.3 & 20730.0 $\pm$ 132.3 &  641.0 $\pm$ 23.0 &    63.5 $\pm$ 6.4 \\
+\% change      & 0.7 $\pm$ 0.5 &    2.3 $\pm$ 0.9 &    7.1 $\pm$ 4.6 &   1.4 $\pm$ 13.7 \\
+\hline
+No reweighting & 77308.5 $\pm$ 228.7 & 19869.0 $\pm$ 113.5 &  559.6 $\pm$ 16.9 &    53.0 $\pm$ 4.4 \\
+\% change      & 2.0 $\pm$ 0.4 &    6.4 $\pm$ 0.77 &   18.9 $\pm$ 3.7 &  17.8 $\pm$ 10.5 \\
+\hline
+\hline
+          & $100 < \MET < 120$  & $120 < \MET < 150$  & $150 < \MET < 200$  &    $200 < \MET$  \\ 
+\hline
+Nominal Yields & 7.8 $\pm$ 1.8 &     3.7 $\pm$ 1.1 &     2.0 $\pm$ 0.7 &     0.4 $\pm$ 0.3 \\
+\hline
+$H/T < 0.05$   & 7.5 $\pm$ 1.7 &     3.6 $\pm$ 1.1 &     2.1 $\pm$ 0.7 &     0.4 $\pm$ 0.3  \\
+\% change      & 3.6 $\pm$ 30.7 &   2.7 $\pm$ 42.0 &   3.6 $\pm$ 53.2 &   2.1 $\pm$ 99.1 \\
+\hline
+$H/T < 0.01$   & 7.8 $\pm$ 1.9 &     3.3 $\pm$ 1.2 &     2.3 $\pm$ 0.8 &     0.5 $\pm$ 0.3 \\
+\% change      & 0.2 $\pm$ 33.2 &   9.5 $\pm$ 43.4 &  17.2 $\pm$ 60.1 & 10.0 $\pm$ 111.3 \\
+\hline
+No reweighting & 7.3 $\pm$ 1.6 &     3.7 $\pm$ 1.1 &     2.1 $\pm$ 0.7 &     0.4 $\pm$ 0.3 \\
+\% change      & 6.5 $\pm$ 29.2 &   1.4 $\pm$ 43.3 &   3.4 $\pm$ 52.9 &   9.1 $\pm$ 91.8 \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+\end{table} 
+
+
 \subsection{Estimating the Flavor-Symmetric Background with e$\mu$ Events}
 \label{sec:bkg_fs}
 
