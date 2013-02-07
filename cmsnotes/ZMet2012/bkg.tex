@@ -51,21 +51,32 @@ prediction is scaled such that the total background prediction matches the obser
 Because the non-\zjets impurity in the low \MET\ region after preselection is very small, this results in 
 scaling factors of 0.985 (0.995) for the inclusive (targeted) search.
 
-A closure test for this method was done in MC, the results of which are shown in appendix~\ref{sec:templateclosure}.
-In order to asses the uncertainties based on this we do the following. We seperate the systematic uncertainty 
-into 2 regions: \MET\ $<$ 60 GeV, and \MET\ $>$ 60 GeV. There are 3 sources of uncertainty associated with this method:
-The uncertainties from the closure test, the photon selections, and the vertex reweighting.
+\subsubsection{Systematic Uncertainty in the \MET\ Templates Prediction}
 
-From the results obtained in the closure test, we assign an uncertainty of 0\% to the region with \MET\ $<$ 60 GeV, and 
-30\% to the region with \MET\ $>$ 60 GeV. This is based on the largest statistically significant deviation in the \MET\ bins.
+In this section we consider the systematic uncertainty in the \MET\ templates prediction, which comes from 3 sources:
+an MC closure study (see App.~\ref{sec:templateclosure}), variation of the photon selection criteria, and the nvtx
+reweighting procedure. We seperate the systematic uncertainty 
+into 2 regions: \MET\ $<$ 60 GeV (where the \MET\ templates prediction is normalized such that the total background
+prediction matches the data yield), and \MET\ $>$ 60 GeV. These uncertainties apply to the targeted analysis used for the ewkino analysis.
+
+From the results obtained in the closure test, we assign an uncertainty of 1\% to the \MET\ $<$ 60 GeV region, 20\% to the \MET\ 60--80 GeV region,
+and  30\% to \MET\ $>$ 80 GeV region, where the 30\% is uncertainty is based on the largest statistically significant deviation in the large \MET\ regions.
+
 Next, we asses the uncertainties associated with the photon selections. We vary the $H/E$ selection by tightening it to $H/E < 0.05$, 
-and $H/E < 0.01$ and recalculating the predictions from the \MET\ templates using the targeted analysis selections. We also calculate
-the change in the predictions associated with the vertex reweighting. The results from doing this are shown in table.~\ref{table:photonsystematics}.
- From these results, we assign a 2\% systematic uncertainty to the region with \MET\ $<$ 60 GeV, and a 10\% systematic uncertainty 
-to the region with \MET\ $>$ 60 GeV for the $H/E$ selection. Additionally, we take half the difference between the nominal 
-and the reweighted predictions as the uncertainty due to the vertex reweighting. The systematic uncertainty is taken as 3\% 
-for \MET\ $<$ 60 GeV, and 10\% for \MET\ $>$ 60 GeV. Therefore, the total uncertainty is 4\% for the region with \MET\ $<$ 60 GeV, 
-and 33\% for the region with \MET\ $>$ 60 GeV.
+and $H/E < 0.01$ and recalculating the predictions from the \MET\ templates. 
+From these results, we assign a 2\% systematic uncertainty to the region with \MET\ $<$ 60 GeV, and a 10\% systematic uncertainty 
+to the regions with \MET\ $>$ 60 GeV for the $H/E$ selection. 
+
+Although the pileup conditions in the signal \zjets\ and control \gjets\ events are the same, the photon isolation criteria introduce a bias
+which causes the nvtx distributed in the selected \zjets\ and \gjets\ events to differ. As described above, we reweight the \gjets\ sample
+to reproduce the nvtx distribution in the \zjets\ sample. To assess the corresponding uncertainty, we calculate the \MET\ templates prediction
+without reweighting, and take half the difference from the nominal prediction as the systematic uncertainty. This results in a systematic
+uncertainty of 3\% for the \MET\ $<$ 60 GeV region, and 10\% for the \MET\ $>$ 60 GeV region.
+
+A summary comparing the nominal \MET\ templates prediction to the ones obtained by varying the $H/E$ criteria and removing the nvtx reweighting
+is presented in Table~\ref{table:photonsystematics}. A summary of the assessed systematic uncertainties on the \MET\ templates prediction
+is summarized in Table~\ref{table:photonsystematicssummary}. The total systematic uncertainty on the \MET\ templates prediction is
+4\% for \MET\ $<$ 60 GeV, 22\% for \MET\ 60--80 GeV, and 33\% for \MET\ $>$ 80 GeV.
 
 \begin{table}[htb]
 \scriptsize
@@ -101,6 +112,28 @@ $H/T < 0.01$   & 7.8 $\pm$ 1.9 &     3.3 $\pm$ 1.2 &     2.3 $\pm$ 0.8 &     0.5
 \hline
 No reweighting & 7.3 $\pm$ 1.6 &     3.7 $\pm$ 1.1 &     2.1 $\pm$ 0.7 &     0.4 $\pm$ 0.3 \\
 \% change      & 6.5 $\pm$ 29.2 &   1.4 $\pm$ 43.3 &   3.4 $\pm$ 52.9 &   9.1 $\pm$ 91.8 \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+\end{table} 
+
+\begin{table}[htb]
+\scriptsize
+\begin{center}
+\caption{\label{table:photonsystematicssummary} Summary table of the systematic uncertainty in the \MET\ templates prediction.
+All values are relative uncertainties, in \%.
+}
+\begin{tabular}{l|c|c|c|c}
+\hline
+\hline
+Source               & $0 < \MET < 60$~GeV     & $60 < \MET < 80$~GeV  & $\MET > 60$ \\ 
+\hline
+MC closure           &           1             &        10             &     30      \\
+Photon selection     &           2             &        20             &     10      \\
+nvtx reweighting     &           3             &        10             &     10      \\
+\hline
+Total                &           4             &        22             &     33      \\
 \hline
 \hline
 \end{tabular}
