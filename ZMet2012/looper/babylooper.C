@@ -33,10 +33,10 @@ enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt
 bool           debug              = false;                  // debug printout statements
 bool           doVtxReweight      = true;                   // reweight templates for nVertices
 bool           pt40               = false;                  // pt>40 and HT > 100 GeV
-bool           bveto              = false;                  // b-veto
-bool           mjjcut             = false;                  // dijet mass requirement
-bool           mjjTemplates       = false;                  // dijet mass requirement in TEMPLATES
-bool           nlep2              = false;                  // 3rd lepton veto
+bool           bveto              = true;                   // b-veto
+bool           mjjcut             = true;                   // dijet mass requirement
+bool           mjjTemplates       = true;                   // dijet mass requirement in TEMPLATES
+bool           nlep2              = true;                   // 3rd lepton veto
 bool           setTemplateErrors  = true;                   // calculate template errors
 metType        myMetType          = e_pfmet;                // MET type
 templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templates
@@ -122,7 +122,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
     cout << __FILE__ << " " << __LINE__ << " ERROR UNRECOGNIZED TEMPLATES" << endl;
     exit(0);
   }
-
+  
   // }else{
       
   //   if( myTemplateSource == e_QCD ){
@@ -173,15 +173,15 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
       n_metPredicted_ee[iJetBin][iSumJetPtBin] = 0;
       n_metPredicted_mm[iJetBin][iSumJetPtBin] = 0;
       
-      for( int i = 0 ; i < 4 ; ++i ){
+      for( int i = 0 ; i < 5 ; ++i ){
 
         nphoton_metPredicted[i][iJetBin][iSumJetPtBin] = 0;
         nphoton_metPredicted_ee[i][iJetBin][iSumJetPtBin] = 0;
         nphoton_metPredicted_mm[i][iJetBin][iSumJetPtBin] = 0;
         
-        nqcd_metPredicted[i][iJetBin][iSumJetPtBin] = 0;
-        nqcd_metPredicted_ee[i][iJetBin][iSumJetPtBin] = 0;
-        nqcd_metPredicted_mm[i][iJetBin][iSumJetPtBin] = 0;
+        // nqcd_metPredicted[i][iJetBin][iSumJetPtBin] = 0;
+        // nqcd_metPredicted_ee[i][iJetBin][iSumJetPtBin] = 0;
+        // nqcd_metPredicted_mm[i][iJetBin][iSumJetPtBin] = 0;
      
       }
     }
@@ -576,14 +576,16 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	if( leptype_ == 1 ) nphoton_metPredicted_mm[ iBosonPtBin ][ iJetBin ][ iSumJetPtBin ]++;
       }
       else if( myTemplateSource   == e_QCD ){
-	nqcd_metPredicted[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]++;
-	if( leptype_ == 0 ) nqcd_metPredicted_ee[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]++;
-	if( leptype_ == 1 ) nqcd_metPredicted_mm[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]++;
+	cout << __FILE__ << " " << __LINE__ << "DEPRECATED!!!!" << endl;
+	// nqcd_metPredicted[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]++;
+	// if( leptype_ == 0 ) nqcd_metPredicted_ee[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]++;
+	// if( leptype_ == 1 ) nqcd_metPredicted_mm[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]++;
       }
       else if( myTemplateSource   == e_PhotonJet ){
-	n_metPredicted[ iJetBin ][ iSumJetPtBin ]++;
-	if( leptype_ == 0 ) n_metPredicted_ee[ iJetBin ][ iSumJetPtBin ]++;
-	if( leptype_ == 1 ) n_metPredicted_mm[ iJetBin ][ iSumJetPtBin ]++;
+	cout << __FILE__ << " " << __LINE__ << "DEPRECATED!!!!" << endl;
+	// n_metPredicted[ iJetBin ][ iSumJetPtBin ]++;
+	// if( leptype_ == 0 ) n_metPredicted_ee[ iJetBin ][ iSumJetPtBin ]++;
+	// if( leptype_ == 1 ) n_metPredicted_mm[ iJetBin ][ iSumJetPtBin ]++;
       }
       else{
 	cout << "Error unrecognized template source! " << myTemplateSource << endl;
@@ -655,9 +657,10 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   if( isData && setTemplateErrors ){
 
     if( myTemplateSource   == e_QCD ){
-      setErrors( metTemplateFile , metPredicted    , nqcd_metPredicted    );
-      setErrors( metTemplateFile , metPredicted_ee , nqcd_metPredicted_ee );
-      setErrors( metTemplateFile , metPredicted_mm , nqcd_metPredicted_mm );
+      cout << __FILE__ << " " << __LINE__ << "DEPRECATED!!!!" << endl;
+      // setErrors( metTemplateFile , metPredicted    , nqcd_metPredicted    );
+      // setErrors( metTemplateFile , metPredicted_ee , nqcd_metPredicted_ee );
+      // setErrors( metTemplateFile , metPredicted_mm , nqcd_metPredicted_mm );
     }
     
     else if( myTemplateSource   == e_PhotonJetStitched ){
@@ -667,9 +670,10 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
     }
     
     else if( myTemplateSource   == e_PhotonJet ){
-      setErrors( metTemplateFile , metPredicted    , n_metPredicted    );
-      setErrors( metTemplateFile , metPredicted_ee , n_metPredicted_ee );
-      setErrors( metTemplateFile , metPredicted_mm , n_metPredicted_mm );
+      cout << __FILE__ << " " << __LINE__ << "DEPRECATED!!!!" << endl;
+      // setErrors( metTemplateFile , metPredicted    , n_metPredicted    );
+      // setErrors( metTemplateFile , metPredicted_ee , n_metPredicted_ee );
+      // setErrors( metTemplateFile , metPredicted_mm , n_metPredicted_mm );
     }
   }
 
@@ -777,7 +781,7 @@ void babylooper::setErrors( TFile* file,  TH1F* hist , int n[3][7] ){
 
 }
 
-void babylooper::setErrors( TFile* file,  TH1F* hist , int n[4][3][7] ){
+void babylooper::setErrors( TFile* file,  TH1F* hist , int n[5][3][7] ){
 
   cout << "setErrors: " << hist->GetName() << endl;
 
@@ -792,7 +796,7 @@ void babylooper::setErrors( TFile* file,  TH1F* hist , int n[4][3][7] ){
 
   int ntemplates = 0;
 
-  for( int i = 0 ; i < 4 ; i++ ){
+  for( int i = 0 ; i < 5 ; i++ ){
     for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
       for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
         cout << i << " " << jetString(iJetBin) << " " << sumJetPtString(iSumJetPtBin) << " " << n[i][iJetBin][iSumJetPtBin] << endl; 
@@ -814,12 +818,13 @@ void babylooper::setErrors( TFile* file,  TH1F* hist , int n[4][3][7] ){
     
     float err2 = 0;
 
-    for( int i = 0 ; i < 4 ; i++ ){
+    for( int i = 0 ; i < 5 ; i++ ){
       for( int iJetBin = 0 ; iJetBin < nJetBins ; iJetBin++ ){
         for( int iSumJetPtBin = 0 ; iSumJetPtBin < nSumJetPtBins ; iSumJetPtBin++ ){
           
           if( myTemplateSource   == e_QCD ){
-            hmet     = (TH1F*) file->Get(Form("%sTemplate_qcd_%i_%i_%i",metstring,i,iJetBin,iSumJetPtBin));
+	    cout << __FILE__ << " " << __LINE__ << "DEPRECATED!!!!" << endl;
+            //hmet     = (TH1F*) file->Get(Form("%sTemplate_qcd_%i_%i_%i",metstring,i,iJetBin,iSumJetPtBin));
           }
           
           else if( myTemplateSource   == e_PhotonJetStitched ){
@@ -859,8 +864,9 @@ TH1F* babylooper::getMetTemplate( TFile* file, int iTrigBin , int iJetBin ,
   if( myTemplateType == e_njets_ht ){
     
     if( myTemplateSource   == e_QCD ){
-      TH1F* htemp     = (TH1F*) file->Get(Form("%sTemplate_qcd_%i_%i_%i",metstring,iTrigBin,iJetBin,iSumJetPtBin));
-      hmet = correctedMetTemplate( htemp , Zpt );
+      cout << __FILE__ << " " << __LINE__ << "DEPRECATED!!!!" << endl;
+      //TH1F* htemp     = (TH1F*) file->Get(Form("%sTemplate_qcd_%i_%i_%i",metstring,iTrigBin,iJetBin,iSumJetPtBin));
+      //hmet = correctedMetTemplate( htemp , Zpt );
       //hmet     = (TH1F*) file->Get(Form("%sTemplate_qcd_%i_%i_%i",metstring,iTrigBin,iJetBin,iSumJetPtBin));
       //hmet     = (TH1F*) file->Get(Form("%sTemplate_combined_%i_%i",metstring,iJetBin,iSumJetPtBin));
     }
@@ -870,7 +876,8 @@ TH1F* babylooper::getMetTemplate( TFile* file, int iTrigBin , int iJetBin ,
     }
     
     else if( myTemplateSource   == e_PhotonJet ){
-      hmet     = (TH1F*) file->Get(Form("%sTemplate_combined_%i_%i",metstring,iJetBin,iSumJetPtBin));
+      cout << __FILE__ << " " << __LINE__ << "DEPRECATED!!!!" << endl;
+      //hmet     = (TH1F*) file->Get(Form("%sTemplate_combined_%i_%i",metstring,iJetBin,iSumJetPtBin));
     }
     
     else{

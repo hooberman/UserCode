@@ -293,9 +293,9 @@ class babylooper
   int   n_metPredicted[3][7];
   int   n_metPredicted_ee[3][7];
   int   n_metPredicted_mm[3][7];
-  int   nphoton_metPredicted[4][3][7];
-  int   nphoton_metPredicted_ee[4][3][7];
-  int   nphoton_metPredicted_mm[4][3][7];
+  int   nphoton_metPredicted[5][3][7];
+  int   nphoton_metPredicted_ee[5][3][7];
+  int   nphoton_metPredicted_mm[5][3][7];
   int   nqcd_metPredicted[4][3][7];
   int   nqcd_metPredicted_ee[4][3][7];
   int   nqcd_metPredicted_mm[4][3][7];
@@ -339,19 +339,19 @@ class babylooper
   TH1F* metPredicted_njets[11];
   TH1F* metObserved_njets[11];
         
-  TH1F* tcmetTemplate[3][7][4];
-  TH1F* tcmetNewTemplate[3][7][4];
-  TH1F* pfmetTemplate[3][7][4];
+  /* TH1F* tcmetTemplate[3][7][4]; */
+  /* TH1F* tcmetNewTemplate[3][7][4]; */
+  /* TH1F* pfmetTemplate[3][7][4]; */
 
-  TH1F* tcmetTemplate_njets_ht_nvtx[3][7][3];
-  TH1F* tcmetNewTemplate_njets_ht_nvtx[3][7][3];
-  TH1F* pfmetTemplate_njets_ht_nvtx[3][7][3];
+  /* TH1F* tcmetTemplate_njets_ht_nvtx[3][7][3]; */
+  /* TH1F* tcmetNewTemplate_njets_ht_nvtx[3][7][3]; */
+  /* TH1F* pfmetTemplate_njets_ht_nvtx[3][7][3]; */
 
-  TH1F* tcmetTemplate_combined[3][7];
-  TH1F* tcmetNewTemplate_combined[3][7];
-  TH1F* pfmetTemplate_combined[3][7];
+  /* TH1F* tcmetTemplate_combined[3][7]; */
+  /* TH1F* tcmetNewTemplate_combined[3][7]; */
+  /* TH1F* pfmetTemplate_combined[3][7]; */
 
-  int nTemplate[3][7];
+  /* int nTemplate[3][7]; */
 
   ofstream ofile_tcmet;
   ofstream ofile_events;
