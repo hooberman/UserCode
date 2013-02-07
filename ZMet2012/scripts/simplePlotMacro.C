@@ -629,6 +629,9 @@ void simplePlotMacro( bool printplots = false ){
     // }
     // cout << "|" << endl;
 
+    cout << "\\hline" << endl;
+    cout << "\\hline" << endl;
+
     cout << delim_start << setw(width1) << "" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
       if( exclusive && ibin < nbins - 1 ){
@@ -642,6 +645,8 @@ void simplePlotMacro( bool printplots = false ){
       }
     }
     cout << delim_end << endl;
+
+    cout << "\\hline" << endl;
       
     int   ndata[nbins];
     float ngjets[nbins];
@@ -818,6 +823,8 @@ void simplePlotMacro( bool printplots = false ){
     // g+jets
     //-----------------------------
 
+    cout << "\\hline" << endl;
+
     cout << delim_start << setw(width1) << "\\zjets\\ bkg" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
       if( ngjets[ibin] > 100 ) cout << delim << setw(width1) << Form("%.0f %s %.0f",ngjets[ibin],pm,ngjets_toterr[ibin]) << setw(width2);
@@ -861,7 +868,7 @@ void simplePlotMacro( bool printplots = false ){
     // rare MC
     //-----------------------------
 
-    cout << delim_start << setw(width1) << "rare SM bkg" << setw(width2);
+    cout << delim_start << setw(width1) << "Rare SM bkg" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
       cout << delim << setw(width1) << Form("%.1f %s %.1f",nrare[ibin],pm,nrare_toterr[ibin]) << setw(width2);
       //cout << "|" << setw(width1) << Form("%.1f",nzz[ibin]) << setw(width2);
@@ -872,7 +879,9 @@ void simplePlotMacro( bool printplots = false ){
     // total bkg
     //-----------------------------
 
-    cout << delim_start << setw(width1) << "total bkg" << setw(width2);
+    cout << "\\hline" << endl;
+
+    cout << delim_start << setw(width1) << "Total bkg" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
       if( ntot[ibin] > 100 )   cout << delim << setw(width1) << Form("%.0f %s %.0f",ntot[ibin],pm,ntot_toterr[ibin]) << setw(width2);
       else                     cout << delim << setw(width1) << Form("%.1f %s %.1f",ntot[ibin],pm,ntot_toterr[ibin]) << setw(width2);
@@ -885,7 +894,7 @@ void simplePlotMacro( bool printplots = false ){
     // data
     //-----------------------------
 
-    cout << delim_start << setw(width1) << "data" << setw(width2);
+    cout << delim_start << setw(width1) << "Data" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
       cout << delim << setw(width1) << ndata[ibin] << setw(width2);
     }
@@ -895,14 +904,14 @@ void simplePlotMacro( bool printplots = false ){
     // significance
     //-----------------------------
 
-    cout << delim_start << setw(width1) << "significance" << setw(width2);
+    cout << delim_start << setw(width1) << "%significance" << setw(width2);
     for( unsigned int ibin = 0 ; ibin < nbins ; ibin++ ){
       cout << delim << setw(width1) << Form("%.1f$\\sigma$",excess[ibin]) << setw(width2);
     }
     cout << delim_end << endl;
 
-
-
+    cout << "\\hline" << endl;
+    cout << "\\hline" << endl;
 
     /*
   //signal regions                          60-80      80-100    100-150    150-200  >200
