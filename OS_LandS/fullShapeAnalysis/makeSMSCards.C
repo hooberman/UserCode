@@ -63,17 +63,15 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("t");
-  ch->Add("output/V00-02-24/highpt/T2blnu_smallTree.root");
-  char* version = "V00-00-17";
+  ch->Add("output/V00-02-24/highpt/T1lh_smallTree.root");
+  char* version = "V00-00-12";
   bool doSigCont = true;
-  cout << "Doing version " << version << endl;
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  //TCut weight   (" (1./10000.) * 4700.0 * ndavtxweight * trgeff * lepscale");
-  TCut weight   (" (1./50000.) * 4700.0 * ndavtxweight * trgeff * lepscale");
+  TCut weight   (" (1./10000.) * 4700.0 * ndavtxweight * trgeff * lepscale");
   //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
   //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale * ( 1 - sqrt(pow(ksusyup/ksusy-1,2)+0.2*0.2) )");
   //TCut weight("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
@@ -344,12 +342,8 @@ void makeSMSCards(){
 
       counter++;
 
-      float Rapprox = 1.0;
-      if(      h[2]->GetBinContent(mgbin,mlbin) > 1.0e-10) Rapprox =  7.0 / h[2]->GetBinContent(mgbin,mlbin);
-      else if( hall->GetBinContent(mgbin,mlbin) > 1.0e-10) Rapprox = 40.0 / hall->GetBinContent(mgbin,mlbin);
-
-      char* fitoptions = Form("-M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [%f,%f,x1.1]",Rapprox/10,Rapprox*10);
-      //char* fitoptions = "-M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -rMin 0 -rMax 100";
+      //char* fitoptions = "-M Hybrid --freq  --nToysForCLsb 1500 --nToysForCLb 500  --scanRs 1 -vR [0.2,5,x1.1]";
+      char* fitoptions = "-M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -rMin 0 -rMax 100";
       //-M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 3000 --nToysForCLb 1500 --seed 1234 -n SMS_%i_%i -rMin 0 -rMax 100
 
       *doScript << Form("../../../../test/lands.exe -M Bayesian -d SMS_%i_%i.txt",mgbin,mlbin)         << endl;
