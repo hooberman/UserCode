@@ -31,22 +31,26 @@ The above can be done with:
 source makeFileList.sh
 
 
-Step 2) Create crab jobs
+Step 2) Create, submit, retrieve, merge, and apply json
 
-./batchProcessWithCrab.sh SingleMu2012A_V00-00-01 data_test.root SingleMu_2012A_list.txt 0
-./batchProcessWithCrab.sh SingleMu2012B_V00-00-01 data_test.root SingleMu_2012B_list.txt 0
-./batchProcessWithCrab.sh SingleMu2012C_V00-00-01 data_test.root SingleMu_2012C_list.txt 0
+# make the crab cfg files
+./makeCrabCfg.sh [VERSION]
 
-./batchProcessWithCrab.sh SingleEl2012A_V00-00-01 data_test.root SingleEl_2012A_list.txt 0
-./batchProcessWithCrab.sh SingleEl2012B_V00-00-01 data_test.root SingleEl_2012B_list.txt 0
-./batchProcessWithCrab.sh SingleEl2012C_V00-00-01 data_test.root SingleEl_2012C_list.txt 0
+# submit crab jobs
+./submitCrab.sh [VERSION]
 
-./batchProcessWithCrab.sh ZJets_V00-00-01 dymm_test.root ZJets_list.txt 46
+# retrieve crab files
+./getCrabFiles.sh [VERSION]
+
+# merge files
+./mergeAllFiles.sh [VERSION]
+
+# apply json
+./skimAllFiles.sh [VERSION]
 
 
 
 
-Step 3) scripts:
 
 Skim Samples
 http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/JRibnik/CMS2/NtupleMacros/LeptonTreeLooper/scripts/skimLeptonTree.C?revision=1.3&view=markup
