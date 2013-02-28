@@ -31,8 +31,19 @@ void skim(char* path, char* cut, char* label, char* sample, char* treename);
 
 void skimSamples(){
 
-  char* path     = "../output/V00-02-02";
-  char* cut      = "( njets>=2 || njetsup>=2 || njetsdn>=2 )"; 
+  char* path     = "../output/V00-02-13";
+  char* cut      = "mg==200 && ml==0"; 
+  char* label    = "mg200_ml0";
+  char* treename = "T1";
+
+  skim(path,cut,label,"wzsms_baby_oldIso"  ,treename);
+
+  /*
+  //char* path     = "../output/V00-02-13";
+  //char* cut      = "( njets>=2 || njetsup>=2 || njetsdn>=2 )"; 
+
+  char* path     = "../photon_output/V00-02-03";
+  char* cut      = "( njets>=2 )"; 
   char* label    = "2jets";
   char* treename = "T1";
 
@@ -41,10 +52,9 @@ void skimSamples(){
   // skim(path,cut,label,"data_53X_2012C_baby"  ,treename);
   // skim(path,cut,label,"data_53X_2012D_baby"  ,treename);
 
+  // skim(path,cut,label,"zjets_53X_slim_baby"        , treename);
   // skim(path,cut,label,"zjets_small_53X_slim_baby"  , treename);
   // skim(path,cut,label,"ttbar_53X_slim_baby"        , treename);
-  // skim(path,cut,label,"wz3lnu_53X_slim_baby"       , treename);
-  // skim(path,cut,label,"wz2l2q_53X_slim_baby"       , treename);
   // skim(path,cut,label,"zz2l2q_53X_slim_baby"       , treename);
   // skim(path,cut,label,"zz2l2nu_53X_slim_baby"      , treename);
   // skim(path,cut,label,"zz4l_53X_slim_baby"         , treename);
@@ -54,7 +64,15 @@ void skimSamples(){
   // skim(path,cut,label,"tbz_53X_slim_baby"          , treename);
   // skim(path,cut,label,"vvv_53X_slim_baby"          , treename);
   // skim(path,cut,label,"ww_53X_slim_baby"           , treename);
-  skim(path,cut,label,"zjets_53X_slim_baby"  , treename);
+  // skim(path,cut,label,"wz3lnu_53X_slim_baby"       , treename);
+  // skim(path,cut,label,"wz2l2q_53X_slim_baby"       , treename);
+
+  // skim(path,cut,label,"data_53X_2012ALL_baby"      , treename);
+  skim(path,cut,label,"data_53X_2012A_baby"        , treename);
+  skim(path,cut,label,"data_53X_2012B_baby"        , treename);
+  skim(path,cut,label,"data_53X_2012C_baby"        , treename);
+  skim(path,cut,label,"data_53X_2012D_baby"        , treename);
+  */
 
   // char* path     = "../photon_output/V00-02-00";
   // char* cut      = "( njets>=2 )"; 
@@ -66,12 +84,14 @@ void skimSamples(){
   // skim(path,cut,label,"data_53X_2012C_baby"  ,treename);
   // skim(path,cut,label,"data_53X_2012D_baby"  ,treename);
 
-  // char* path     = "../photon_output/V00-02-00";
-  // char* cut      = "(sqrt(  pow(jet1->mass(),2) + pow(jet2->mass(),2) + 2 * jet1->E() * jet2->E() - 2 * jet1->Px() * jet2->Px() - 2 * jet1->Py() * jet2->Py() - 2 * jet1->Pz() * jet2->Pz() ) > 70.0 && sqrt(  pow(jet1->mass(),2) + pow(jet2->mass(),2) + 2 * jet1->E() * jet2->E() - 2 * jet1->Px() * jet2->Px() - 2 * jet1->Py() * jet2->Py() - 2 * jet1->Pz() * jet2->Pz() ) < 110.0 )";
-  // char* label    = "mjj70to110";
-  // char* treename = "T1";
+  /*
+  char* path     = "../photon_output/V00-02-03";
+  char* cut      = "(sqrt(  pow(jet1->mass(),2) + pow(jet2->mass(),2) + 2 * jet1->E() * jet2->E() - 2 * jet1->Px() * jet2->Px() - 2 * jet1->Py() * jet2->Py() - 2 * jet1->Pz() * jet2->Pz() ) > 70.0 && sqrt(  pow(jet1->mass(),2) + pow(jet2->mass(),2) + 2 * jet1->E() * jet2->E() - 2 * jet1->Px() * jet2->Px() - 2 * jet1->Py() * jet2->Py() - 2 * jet1->Pz() * jet2->Pz() ) < 110.0 )";
+  char* label    = "mjj70to110";
+  char* treename = "T1";
 
-  // skim(path,cut,label,"data_53X_2012ALL_baby_2jets"  ,treename);
+  skim(path,cut,label,"data_53X_2012ALL_baby_2jets"  ,treename);
+  */
 
   // char* path     = "../output/V00-01-07";
   // char* cut      = "( (njets>=2 || njets40>=2) && pfmet>100.0 )";
