@@ -67,83 +67,6 @@ int findTriggerIndex(TString trigName)
 
 //--------------------------------------------------------------------
 
-float getMinDeltaRBetweenObjects( TString trigname , int id1 , int id2 , bool verbose = false ){ 
-  
-  //-------------------------------------------------------------------------------------------
-  // this function returns the minimum deltaR between 2 triggers objects with ID's id1 and id2
-  //-------------------------------------------------------------------------------------------
-
-  //cout << "Checking trigger " << trigname << " " << passHLTTrigger(trigname) << endl;
-
-  // first, get p4 and ID vectors
-  int trigindex = findTriggerIndex(trigname);
-
-  if( trigindex < 0 ) return -1.0; //ERROR! didn't find this trigger
-
-  std::vector<int>           trigId = cms2.hlt_trigObjs_id()[findTriggerIndex(trigname)];
-  std::vector<LorentzVector> trigp4 = cms2.hlt_trigObjs_p4()[findTriggerIndex(trigname)];
-
-  //cout << "number of objects " << trigId.size() << endl;
-
-  assert( trigId.size() == trigp4.size() );
-  if( trigId.size() == 0 ) return -2.0;
-
-  if( verbose ){
-    cout << endl;
-    cout << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
-    cout << trigname << " pass? " << passHLTTrigger(trigname) << endl;
-    
-    cout << "|" << setw(12) << "index" << setw(4) 
-	 << "|" << setw(12) << "ID"    << setw(4) 
-	 << "|" << setw(12) << "pt"    << setw(4) 
-	 << "|" << setw(12) << "eta"   << setw(4) 
-	 << "|" << setw(12) << "phi"   << setw(4) 
-	 << "|" << endl;
-
-    for(unsigned int i = 0 ; i < trigId.size() ; ++i ){
-      
-      cout << "|" << setw(12) << i << setw(4) 
-	   << "|" << setw(12) << trigId.at(i) << setw(4) 
-	   << "|" << setw(12) << Form("%.2f",trigp4.at(i).pt())  << setw(4) 
-	   << "|" << setw(12) << Form("%.2f",trigp4.at(i).eta()) << setw(4) 
-	   << "|" << setw(12) << Form("%.2f",trigp4.at(i).phi()) << setw(4) 
-	   << "|" << endl;
-    }
-  }
-
-
-  // store p4's of objects with ID's id1 and id2  
-  VofP4 obs1;
-  VofP4 obs2;
-  
-  for (int i = 0; i < trigp4.size(); ++i){
-    if( trigId.at(i) == id1 ) obs1.push_back( trigp4.at(i) );
-    if( trigId.at(i) == id2 ) obs2.push_back( trigp4.at(i) );
-  }
-
-  // compute min deltaR between id1 and id2 objects
-  double drmin = 100.0;
-  int i1min = -1;
-  int i2min = -1;
-
-  for( unsigned int i1 = 0 ; i1 < obs1.size() ; i1++ ){
-    for( unsigned int i2 = 0 ; i2 < obs2.size() ; i2++ ){
-      float dr12 = dRbetweenVectors( obs1.at(i1) , obs2.at(i2) );
-      if( dr12 < drmin ){
-	drmin = dr12;
-	i1min = i1;
-	i2min = i2;
-      }
-    }
-  }
-
-  if( verbose ) cout << "i1min i2min dR " << i1min << " " << i2min << " " << drmin << endl;
-
-  return drmin;
-}
-
-
-
 bool objectPassTrigger(const LorentzVector &obj, const std::vector<LorentzVector> &trigObjs, float pt) 
 {
 
@@ -395,14 +318,6 @@ void looper::InitBaby(){
   eletrijet_hltele_ = 0; 
   mudijet_hltmu_ = 0; 
   mutrijet_hltmu_ = 0; 
-  fo1_  = 0;
-  fo2_  = 0;
-  fo3_  = 0;
-  fo4_  = 0;
-  lep1_  = 0;
-  lep2_  = 0;
-  lep3_  = 0;
-  lep4_  = 0;
   pjet1_ = 0;
   pjet2_ = 0;
   pjet3_ = 0;
@@ -463,11 +378,6 @@ void looper::closeTree()
 }
 
 int looper::ScanChain(TChain* chain, char *prefix){
-
-  cout << "-------------------------------------------------------------------------------" << endl;
-  cout << "SAVING ONLY EVENTS PASSING dilepton-HT triggers!                               " << endl;
-  cout << "-------------------------------------------------------------------------------" << endl;
-
 
   set_goodrun_file( g_json );
 
@@ -549,12 +459,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
 
       cms2.GetEntry(z);
 
-      mmht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass8_HT150_v")                  ? 1 : 0;
-      emht150_       = passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_HT150_v")   ? 1 : 0;
-      eeht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_HT150_v") ? 1 : 0;
-
-      if( mmht150_ == 0 && emht150_ == 0 && eeht150_ == 0 ) continue;
-
       InitBaby();
 
       if( verbose ){
@@ -565,12 +469,8 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	cout << "-------------------------------------------------------"   << endl;
       }
 
-      //ele27dijet25_  = passHLTTriggerPattern("HLT_Ele27_CaloIdVT_TrkIdT_DiCentralPFJet25_v") ? 1 : 0;
-
-      //if( ele27dijet25_ == 0 ) continue;
-
       //if( evt_run() < 178420 || evt_run() > 180291 ) continue;
-      //if( evt_run() < 179959 || evt_run() > 180291 ) continue;
+      if( evt_run() < 179959 || evt_run() > 180291 ) continue;
 
       //---------------------------------------------
       // event cleaning and good run list
@@ -617,20 +517,16 @@ int looper::ScanChain(TChain* chain, char *prefix){
       //---------------------------------------------
 
       VofP4 goodLeptons;
-      VofP4 goodFOs;
       vector<int> lepId;
       vector<int> lepIndex;
 
       ngoodlep_ = 0;
       ngoodel_  = 0;
       ngoodmu_  = 0;
-      nfolep_   = 0;
-      nfoel_    = 0;
-      nfomu_    = 0;
-
+            
       for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 10 )                                                 continue;
-	if( !pass_electronSelection( iel , electronSelection_el_OSV3 , false , false ) ) continue;
+	if( els_p4().at(iel).pt() < 10 )                                              continue;
+	if( !pass_electronSelection( iel , electronSelection_ssV5 , false , false ) ) continue;
 	goodLeptons.push_back( els_p4().at(iel) );
 	lepId.push_back( els_charge().at(iel) * 11 );
 	lepIndex.push_back(iel);
@@ -638,17 +534,9 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	ngoodlep_++;
       }
 
-      for( unsigned int iel = 0 ; iel < els_p4().size(); ++iel ){
-	if( els_p4().at(iel).pt() < 10 )                                                    continue;
-	if( !pass_electronSelection( iel , electronSelection_el_OSV3_FO , false , false ) ) continue;
-	if(  pass_electronSelection( iel , electronSelection_el_OSV3    , false , false ) ) continue;
-	goodFOs.push_back( els_p4().at(iel) );
-	nfoel_++;
-	nfolep_++;
-      }
-
+          
       for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 5 )            continue;
+	if( mus_p4().at(imu).pt() < 10 )           continue;
 	if( !muonId( imu , OSGeneric_v3 ))         continue;
 	goodLeptons.push_back( mus_p4().at(imu) );
 	lepId.push_back( mus_charge().at(imu) * 13 );
@@ -656,33 +544,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
 	ngoodmu_++;
 	ngoodlep_++;
       }  
-
-      for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-	if( mus_p4().at(imu).pt() < 5 )            continue;
-	if( !muonId( imu , OSGeneric_v3_FO ))      continue;
-	if(  muonId( imu , OSGeneric_v3    ))      continue;
-	goodFOs.push_back( mus_p4().at(imu) );
-	nfomu_++;
-	nfolep_++;
-      }  
-
-      sort( goodLeptons.begin(), goodLeptons.end(), sortByPt);
-
-      if( ngoodlep_ > 0 ) 	lep1_ = &( goodLeptons.at(0) );
-      if( ngoodlep_ > 1 ) 	lep2_ = &( goodLeptons.at(1) );
-      if( ngoodlep_ > 2 ) 	lep3_ = &( goodLeptons.at(2) );
-      if( ngoodlep_ > 3 ) 	lep4_ = &( goodLeptons.at(3) );
-
-      dilmass_ = -1;
-      if( ngoodlep_ > 1 ) dilmass_ = (*lep1_ + *lep2_).mass();
-
-      sort( goodFOs.begin(), goodFOs.end(), sortByPt);
-
-      if( nfolep_ > 0 ) 	fo1_ = &( goodFOs.at(0) );
-      if( nfolep_ > 1 ) 	fo2_ = &( goodFOs.at(1) );
-      if( nfolep_ > 2 ) 	fo3_ = &( goodFOs.at(2) );
-      if( nfolep_ > 3 ) 	fo4_ = &( goodFOs.at(3) );
-
 
       //std::vector<int> mutrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v5")];
       //std::vector<int> eltrigId = cms2.hlt_trigObjs_id()[findTriggerIndex("HLT_Ele27_WP80_DiCentralPFJet25_v5")];
@@ -837,7 +698,7 @@ int looper::ScanChain(TChain* chain, char *prefix){
           
 	if( !passesPFJetID(ijet) )     continue;
 	if( fabs( vjet.eta() ) > 2.5 ) continue;
-	if( vjet.pt() < 30 )           continue;
+	if( vjet.pt() < 20 )           continue;
 
 	njets_++;
 	ht_ += vjet.pt();
@@ -941,10 +802,6 @@ int looper::ScanChain(TChain* chain, char *prefix){
       // triggers
       //----------------------------------------
 
-      mmht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass8_HT150_v")                  ? 1 : 0;
-      emht150_       = passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_HT150_v")   ? 1 : 0;
-      eeht150_       = passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_HT150_v") ? 1 : 0;
-
       eledijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v")            		? 1 : 0; // 178420-180291
       eledijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_Ele32_WP80_DiCentralPFJet25_PFMHT25_v")            		? 1 : 0; // 178420-180291
       eledijet_hg_   = passHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_v")                               		? 1 : 0; // 178420-180291
@@ -952,18 +809,11 @@ int looper::ScanChain(TChain* chain, char *prefix){
       eletrijet_     = passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v")  	? 1 : 0; // 178420-180291 
       elequadjet_    = passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_QuadCentralPFJet30_v") 	? 1 : 0; // 178420-180291 
 
-      ele27dijet25_  = passHLTTriggerPattern("HLT_Ele27_CaloIdVT_TrkIdT_DiCentralPFJet25_v") ? 1 : 0;
-
       mudijetmht15_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT15_v")         		? 1 : 0; // 178420-180291
       mudijetmht25_ = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT25_v")         		? 1 : 0; // 178420-180291
       mudijet_      = passHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_v")                            		? 1 : 0; // 178420-180291
       mutrijet_     = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v")                           	? 1 : 0; // 178420-180291
       muquadjet_    = passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_QuadCentralPFJet30_v")                          	? 1 : 0; // 178420-180291
-
-      ele8dijet30_  = passHLTTriggerPattern("HLT_Ele8_CaloIdT_TrkIdT_DiJet30_v") ? 1 : 0;
-
-      mindrej_ = getMinDeltaRBetweenObjects( triggerName("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30") , 82 , 85 ); // 82 = electron  85 = jet 
-      mindrmj_ = getMinDeltaRBetweenObjects( triggerName("HLT_IsoMu17_eta2p1_TriCentralPFJet30")                         , 83 , 85 ); // 83 = muon      85 = jet 
 
       // store pt of electron matched to electron-dijet trigger
       elptmatch_ = -1;
@@ -1165,19 +1015,11 @@ void looper::makeTree(char *prefix ){
 
   //Set branch addresses
   //variables must be declared in looper.h
-  outTree->Branch("ele8dijet30",     &ele8dijet30_,      "ele8dijet30/I");
-  outTree->Branch("mindrej",         &mindrej_,          "mindrej/F");
-  outTree->Branch("dilmass",         &dilmass_,          "dilmass/F");
-  outTree->Branch("nosel",           &nosel_,            "nosel/I");
-  outTree->Branch("mindrmj",         &mindrmj_,          "mindrmj/F");
   outTree->Branch("njets",           &njets_,            "njets/I");
   outTree->Branch("ncjets",          &ncjets_,           "ncjets/I");
   outTree->Branch("ht",              &ht_,               "ht/F");
   outTree->Branch("htc",             &htc_,              "htc/F");
   outTree->Branch("pfmet",           &pfmet_,            "pfmet/F");
-  outTree->Branch("mmht150",         &mmht150_,          "mmht150/I");
-  outTree->Branch("eeht150",         &eeht150_,          "ht150/I");
-  outTree->Branch("emht150",         &emht150_,          "emht150/I");
   outTree->Branch("pfmetphi",        &pfmetphi_,         "pfmetphi/F");
   outTree->Branch("elptmatch",       &elptmatch_,        "elptmatch/F");
   outTree->Branch("pfsumet",         &pfsumet_,          "pfsumet/F");
@@ -1188,16 +1030,12 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("ngoodlep",        &ngoodlep_,         "ngoodlep/I");
   outTree->Branch("ngoodel",         &ngoodel_,          "ngoodel/I");
   outTree->Branch("ngoodmu",         &ngoodmu_,          "ngoodmu/I");
-  outTree->Branch("nfolep",          &nfolep_,           "nfolep/I");
-  outTree->Branch("nfoel",           &nfoel_,            "nfoel/I");
-  outTree->Branch("nfomu",           &nfomu_,            "nfomu/I");
   outTree->Branch("nvtx",            &nvtx_,             "nvtx/I");
   outTree->Branch("ndavtx",          &ndavtx_,           "ndavtx/I");
   outTree->Branch("eledijet_hg",     &eledijet_hg_,      "eledijet_hg/I");
   outTree->Branch("eledijetmht15",   &eledijetmht15_,    "eledijetmht15/I");
   outTree->Branch("eledijetmht25",   &eledijetmht25_,    "eledijetmht25/I");
   outTree->Branch("eledijet",        &eledijet_,         "eledijet/I");
-  outTree->Branch("ele27dijet25",    &ele27dijet25_,     "ele27dijet25/I");
   outTree->Branch("eletrijet",       &eletrijet_,        "eletrijet/I");
   outTree->Branch("elequadjet",      &elequadjet_,       "elequadjet/I");
   outTree->Branch("mudijet",         &mudijet_,          "mudijet/I");
@@ -1253,16 +1091,6 @@ void looper::makeTree(char *prefix ){
   outTree->Branch("pjet2"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet2_	);
   outTree->Branch("pjet3"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet3_	);
   outTree->Branch("pjet4"    , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &pjet4_	);
-
-  outTree->Branch("lep1"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep1_	);
-  outTree->Branch("lep2"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep2_	);
-  outTree->Branch("lep3"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep3_	);
-  outTree->Branch("lep4"     , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &lep4_	);
-
-  outTree->Branch("fo1"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &fo1_	);
-  outTree->Branch("fo2"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &fo2_	);
-  outTree->Branch("fo3"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &fo3_	);
-  outTree->Branch("fo4"      , "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >", &fo4_	);
 
 }
 

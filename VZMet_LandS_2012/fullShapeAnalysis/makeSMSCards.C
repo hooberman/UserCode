@@ -47,7 +47,7 @@ void printCard( char* name , float sigtot , float Ztot , float OFtot , float WZt
   *ofile << Form("rate                              %.1f    %.1f    %.1f   %.1f   %.1f   %.1f" , sigtot,Ztot,OFtot,WZtot,ZZtot,raretot) << endl;
   *ofile <<      "lumi                       lnN   1.040       -       -      -     -     -"                  << endl;
   *ofile <<      "eff_leptons                lnN   1.050       -       -      -     -     -"                  << endl;
-  *ofile <<      "btagerr                    lnN   1.100       -       -      -     -     -"                  << endl;
+  *ofile <<      "btagerr                    lnN   1.040       -       -      -     -     -"                  << endl;
   *ofile <<      "JES_shape                shape     1.0       -       -      -     -     -"                  << endl;
   *ofile <<      "errZ                     shape       -     1.0       -      -     -     -"                  << endl;
   *ofile <<      "errOF                    shape       -       -     1.0      -     -     -"                  << endl;
@@ -67,36 +67,25 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-13/wzsms_baby_oldIso.root");
-  char* version = (char*) "V00-00-11";
-
-  //---------------------------------------
-  // load denominator histogram
-  //---------------------------------------
-
-  TFile* fdenom = TFile::Open("output/V00-02-13/wzsms_ngen.root");
-  TH2F*  hdenom = (TH2F*) fdenom->Get("hmass");
-  hdenom->Scale(10.0);
+  ch->Add("output/V00-01-05/wzsms_baby_oldIso.root ");
+  char* version = (char*) "V00-00-01";
 
   //---------------------------------------
   // selection
   //---------------------------------------
 
-  TCut weight   ("19500.0 * trgeff * vtxweight");
-  //TCut weight   ("19500.0 * trgeff * vtxweight * (1./100000.)");
-  //TCut weight   ("9.2 * trgeff * vtxweight * weight");
+  //TCut weight   ("9200 * trgeff * vtxweight * (1./100000.)");
+  TCut weight   ("9.2 * trgeff * vtxweight * weight");
 
   // MEDIUM WP
-  TCut presel   ("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvm==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
-  TCut preseljup("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvm==0 && mjjup>70 && mjjup<110 && nlep==2 && njetsup>=2   && leptype<2");
-  TCut preseljdn("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvm==0 && mjjdn>70 && mjjdn<110 && nlep==2 && njetsdn>=2   && leptype<2");
+  // TCut presel   ("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvm==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
+  // TCut preseljup("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvm==0 && mjjup>70 && mjjup<110 && nlep==2 && njetsup>=2   && leptype<2");
+  // TCut preseljdn("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvm==0 && mjjdn>70 && mjjdn<110 && nlep==2 && njetsdn>=2   && leptype<2");
 
-  /*
   // LOOSE WP
   TCut presel   ("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvl==0 && mjj>70   && mjj<110   && nlep==2 && njets>=2     && leptype<2");
   TCut preseljup("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvl==0 && mjjup>70 && mjjup<110 && nlep==2 && njetsup>=2   && leptype<2");
   TCut preseljdn("lep2.pt()>20.0 && dilmass>81 && dilmass<101 && nbcsvl==0 && mjjdn>70 && mjjdn<110 && nlep==2 && njetsdn>=2   && leptype<2");
-  */
 
   const unsigned int nbins = 5;
   float metcuts[nbins+1] = {80,100,120,150,200,9999999};
@@ -130,9 +119,9 @@ void makeSMSCards(){
   TH2F* hjup[nbins];
   TH2F* hjdn[nbins];
 
-  int   nx   =    41;
+  int   nx   =    31;
   float xmin =  -5.0;
-  float xmax = 405.0;
+  float xmax = 305.0;
 
   for( unsigned int i = 0 ; i < nbins ; ++i ){
     h[i]        = new TH2F( Form("h_%i",i)        , Form("h_%i",i)           , nx,xmin,xmax,nx,xmin,xmax);
@@ -157,17 +146,10 @@ void makeSMSCards(){
     ch->Draw(Form("ml:mg>>h_%i"    , ibin) , (presel    + sigcut[ibin]   ) * weight);
     ch->Draw(Form("ml:mg>>hjup_%i" , ibin) , (preseljup + sigcutup[ibin] ) * weight);
     ch->Draw(Form("ml:mg>>hjdn_%i" , ibin) , (preseljdn + sigcutdn[ibin] ) * weight);
-
-    h[ibin]->Divide(hdenom);
-    hjup[ibin]->Divide(hdenom);
-    hjdn[ibin]->Divide(hdenom);
   }
 
   ch->Draw("ml:mg>>hall"        , (presel    + sigall     ) * weight);
   ch->Draw("ml:mg>>hjdnall"     , (preseljdn + sigalldn   ) * weight);
-
-  hall->Divide(hdenom);
-  hjdnall->Divide(hdenom);
 
   delete ctemp;
 
@@ -225,7 +207,6 @@ void makeSMSCards(){
   int   data_yield[nbins]    = {   56 ,   24 ,   16 ,    3 ,       1  };
   */
 
-  /*
   // LOOSE WP
   //signal regions             80-100 100-120 120-150 150-200    >200
   float Zbkg_yield[nbins]    = { 29.7 ,  3.8 ,  2.2 ,  1.4 ,     0.5  };
@@ -239,35 +220,7 @@ void makeSMSCards(){
   float rarebkg_yield[nbins] = {  0.2 ,  0.1 ,  0.2 ,  0.2 ,     0.1  };
   float rarebkg_err[nbins]   = {  0.1 ,  0.1 ,  0.1 ,  0.1 ,     0.1  };
   int   data_yield[nbins]    = {   40 ,   10 ,   10 ,    2 ,       1  };
-  */
 
-  /*
-  // MEDIUM WP, 19.3/fb RESULTS
-  float Zbkg_yield[nbins]    = { 68.9 ,  7.8 ,  4.8 ,  2.1 ,     0.5  };
-  float Zbkg_err[nbins]      = { 21.2 ,  2.5 ,  1.5 ,  0.7 ,     0.1  };
-  float OFbkg_yield[nbins]   = { 35.2 , 21.9 , 13.2 ,  5.7 ,     0.8  };
-  float OFbkg_err[nbins]     = {  6.2 ,  4.0 ,  2.5 ,  1.6 ,     0.4  };
-  float WZbkg_yield[nbins]   = {  7.4 ,  4.0 ,  3.3 ,  2.0 ,     0.9  };
-  float WZbkg_err[nbins]     = {  3.7 ,  2.0 ,  1.6 ,  1.0 ,     0.9  };
-  float ZZbkg_yield[nbins]   = {  3.2 ,  1.9 ,  2.1 ,  1.5 ,     1.4  };
-  float ZZbkg_err[nbins]     = {  1.6 ,  1.0 ,  1.1 ,  0.8 ,     1.4  };
-  float rarebkg_yield[nbins] = {  0.9 ,  0.4 ,  0.9 ,  0.6 ,     0.4  };
-  float rarebkg_err[nbins]   = {  0.5 ,  0.2 ,  0.5 ,  0.3 ,     0.4  };
-  int   data_yield[nbins]    = {  115 ,   36 ,   25 ,   13 ,       4  };
-  */
-
-  // MEDIUM WP, 19.5/fb RESULTS
-  float Zbkg_yield[nbins]    = { 64.5 ,  7.8 ,  3.7 ,  2.0 ,     0.4  };
-  float Zbkg_err[nbins]      = { 22.2 ,  3.1 ,  1.6 ,  1.0 ,     0.3  };
-  float OFbkg_yield[nbins]   = { 35.2 , 21.9 , 13.2 ,  5.7 ,     0.8  };
-  float OFbkg_err[nbins]     = {  6.2 ,  4.0 ,  2.5 ,  1.6 ,     0.4  };
-  float WZbkg_yield[nbins]   = {  7.4 ,  4.0 ,  3.3 ,  2.0 ,     0.9  };
-  float WZbkg_err[nbins]     = {  3.7 ,  2.0 ,  1.6 ,  1.0 ,     0.9  };
-  float ZZbkg_yield[nbins]   = {  3.2 ,  1.9 ,  2.1 ,  1.5 ,     1.4  };
-  float ZZbkg_err[nbins]     = {  1.6 ,  1.0 ,  1.1 ,  0.8 ,     1.4  };
-  float rarebkg_yield[nbins] = {  0.9 ,  0.4 ,  0.9 ,  0.6 ,     0.4  };
-  float rarebkg_err[nbins]   = {  0.5 ,  0.2 ,  0.5 ,  0.3 ,     0.4  };
-  int   data_yield[nbins]    = {  115 ,   36 ,   25 ,   13 ,       4  };
 
   int   data_tot  = 0;
   float Zbkg_tot  = 0;
@@ -362,23 +315,22 @@ void makeSMSCards(){
       int mg  = hall->GetXaxis()->GetBinCenter(mgbin);
       int ml  = hall->GetXaxis()->GetBinCenter(mlbin);
 
-      // bool pass = false;
+      bool pass = false;
 
-      // if( mg==150 && ml==0  ) pass = true;
-      // if( mg==200 && ml==0  ) pass = true;
-      // if( mg==250 && ml==0  ) pass = true;
-      // if( mg==150 && ml==25 ) pass = true;
-      // if( mg==200 && ml==50 ) pass = true;
-      // if( mg==250 && ml==50 ) pass = true;
-      // if( mg==200 && ml==80 ) pass = true;
-      // if( mg==250 && ml==80 ) pass = true;
+      if( mg==150 && ml==0  ) pass = true;
+      if( mg==200 && ml==0  ) pass = true;
+      if( mg==250 && ml==0  ) pass = true;
+      if( mg==150 && ml==25 ) pass = true;
+      if( mg==200 && ml==50 ) pass = true;
+      if( mg==250 && ml==50 ) pass = true;
+      if( mg==200 && ml==80 ) pass = true;
+      if( mg==250 && ml==80 ) pass = true;
       
-      // if( !pass ) continue;
+      if( !pass ) continue;
 
       cout << endl;
       cout << "----------------------------------" << endl;
-      cout << "mg    " << mg    << " ml    " << ml    << endl;
-      cout << "mgbin " << mgbin << " mlbin " << mlbin << endl;
+      cout << "mg " << mg << " ml " << ml << endl;
       cout << "----------------------------------" << endl;
 
       if( hjdnall->GetBinContent(mgbin,mlbin) < 1e-10 ) continue;

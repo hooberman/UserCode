@@ -26,7 +26,6 @@ using namespace std;
 
 //#ifndef __CINT__
 #include "../CORE/CMS2.h"
-#include "../CORE/trackSelections.h"
 #include "../CORE/eventSelections.h"
 #include "../CORE/electronSelections.h"
 #include "../CORE/electronSelectionsParameters.cc"
@@ -344,40 +343,8 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   // muid_    = 0;
   // muiso_   = 0;
 
-  muispf_    = 0;
-  mustahits_ = 0;
-  munsegs_   = 0;
-  munpix_    = 0;
-  munlayers_ = 0;
-  mutrk_     = 0;
-  muglb_     = 0;
-  mud0_      = 0.0;
-  mudz_      = 0.0;
-  muchi2ndf_ = 0.0;
-
-  probepassid_  = 0;
-  probepassiso_ = 0;
-
-  probepfpt_    = 0.0;
-
-  leptonTree.tree_->Branch("muispf"	       , &muispf_		        ,"muispf/i"    );
-  leptonTree.tree_->Branch("mustahits"	       , &mustahits_		        ,"mustahits/i" );
-  leptonTree.tree_->Branch("munsegs"	       , &munsegs_		        ,"munsegs/i"   );
-  leptonTree.tree_->Branch("munpix"	       , &munpix_		        ,"munpix/i"    );
-  leptonTree.tree_->Branch("munlayers"	       , &munlayers_		        ,"munlayers/i" );
-  leptonTree.tree_->Branch("mutrk"	       , &mutrk_		        ,"mutrk/i"     );
-  leptonTree.tree_->Branch("muglb"	       , &muglb_		        ,"muglb/i"     );
-  leptonTree.tree_->Branch("mud0"	       , &mud0_		        	,"mud0/F"      );
-  leptonTree.tree_->Branch("mudz"	       , &mudz_		        	,"mudz/F"      );
-  leptonTree.tree_->Branch("muchi2ndf"	       , &muchi2ndf_		        ,"muchi2ndf/F" );
-
-  leptonTree.tree_->Branch("probepassid"       , &probepassid_		        ,"probepassid/i" );
-  leptonTree.tree_->Branch("probepassiso"      , &probepassiso_		        ,"probepassiso/i");
-
-  leptonTree.tree_->Branch("probepfpt"         , &probepfpt_		        ,"probepfpt/F");
-
   leptonTree.tree_->Branch("HLT_Ele27_WP80_tag"	       , &HLT_Ele27_WP80_tag_		        	,"HLT_Ele27_WP80_tag/i");
-  leptonTree.tree_->Branch("HLT_Ele27_WP80_probe"      , &HLT_Ele27_WP80_probe_		                ,"HLT_Ele27_WP80_probe/i");
+  leptonTree.tree_->Branch("HLT_Ele27_WP80_probe"      , &HLT_Ele27_WP80_probe_		        ,"HLT_Ele27_WP80_probe/i");
 
   leptonTree.tree_->Branch("HLT_IsoMu24_tag"	       , &HLT_IsoMu24_tag_			        ,"HLT_IsoMu24_tag/i");
   leptonTree.tree_->Branch("HLT_IsoMu24_probe"         , &HLT_IsoMu24_probe_		                ,"HLT_IsoMu24_probe/i");
@@ -399,9 +366,6 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   leptonTree.tree_->Branch("tagiso"                    , &tagiso_	            	                ,"tagiso/F");
   leptonTree.tree_->Branch("probeiso"                  , &probeiso_	            	                ,"probeiso/F");
-
-
-
 
   // leptonTree.tree_->Branch("leptype"                , &leptype_	                    	        ,"leptype/I");
   // leptonTree.tree_->Branch("elid"                   , &elid_	            	                ,"elid/I");
@@ -953,47 +917,10 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       // basic probe denominator
       if (cms2.mus_p4()[probe].Pt() < 10.0)                continue; // pt cut
       if (fabs(cms2.mus_p4()[probe].Eta()) > 2.4)          continue; // eta cut
-      //if (((cms2.mus_type()[probe]) & (1<<1)) == 0)        continue; // global muon
-
-      SetCommonTreeVariables(leptonTree, weight, sample);
-
-      muispf_    = cms2.mus_pid_PFMuon().at(probe);                               // pf muon
-      muchi2ndf_ = cms2.mus_gfit_chi2().at(probe)/cms2.mus_gfit_ndof().at(probe); // chi2/ndf
-      mustahits_ = cms2.mus_gfit_validSTAHits().at(probe);                        // standalone hits
-      munsegs_   = cms2.mus_numberOfMatchedStations().at(probe);                  // muon segments
-      mutrk_     = (((cms2.mus_type()[probe]) & (1<<2)) == 0) ? 0 : 1;            // tracker muon
-      muglb_     = (((cms2.mus_type()[probe]) & (1<<1)) == 0) ? 0 : 1;            // tracker muon
-
-      // require muon has track index, and at least 1 good vertex
-      int trkidx = cms2.mus_trkidx().at(probe);
-      int vtxidx = firstGoodVertex();
-
-      //if ( trkidx < 0 ) continue;
-      //if ( vtxidx < 0 ) continue;
-
-      if( trkidx >= 0 ){
-	munpix_    = cms2.trks_valid_pixelhits().at(trkidx);                        // pixel hits
-	munlayers_ = cms2.trks_nlayers().at(trkidx);                                // nlayers
-      }
-      else{
-	munpix_    = -1;
-	munlayers_ = -1;
-      }
-
-      if( trkidx >=0 && vtxidx >= 0 ){
-	mud0_      = fabs(trks_d0_pv(trkidx, vtxidx).first);                        // d0
-	mudz_      = fabs(trks_dz_pv(trkidx, vtxidx).first);                        // dz
-      }
-      else{
-	mud0_      = -1.0;
-	mudz_      = -1.0;
-      }
-
-      probepfpt_ = -1;
-      int ipf1 = cms2.mus_pfmusidx().at(probe);
-      if( ipf1 >= 0 ) probepfpt_ = cms2.pfmus_p4().at(ipf1).pt();
+      if (((cms2.mus_type()[probe]) & (1<<2)) == 0)        continue; // tracker muon
 
       // fill the tree - event general variables
+      SetCommonTreeVariables(leptonTree, weight, sample);
       leptonTree.eventSelection_ = LeptonTree::ZmmTagAndProbe;
       //leptype_ = 1;
 
@@ -1017,6 +944,18 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 
       probeiso_                 = muonIsoValuePF2012_deltaBeta(probe);
       tagiso_                   = muonIsoValuePF2012_deltaBeta(tag);
+
+      // HLT_Mu17_TkMu8_tag_		=	cms2.mus_HLT_Mu17_TkMu8()[tag];
+      // HLT_Mu17_TkMu8_probe_		=	cms2.mus_HLT_Mu17_TkMu8()[probe];
+      // HLT_Mu17_Mu8_tag_		     = 	cms2.mus_HLT_Mu17_Mu8()[tag];
+      // HLT_Mu17_Mu8_probe_		= 	cms2.mus_HLT_Mu17_Mu8()[probe];
+
+      // fill the tree - criteria the probe passed 
+      // REWRITE WITH STOP JET SELECTION
+      // const std::vector<JetPair> &jets = getJets(jetType(), cms2.mus_p4()[tag], cms2.mus_p4()[probe], 0, 4.7, true, jet_corrector_pfL1FastJetL2L3_);
+      // if (jets.size()>0)	leptonTree.jet1_ = jets.at(0).first;
+      // if (jets.size()>1)	leptonTree.jet2_ = jets.at(1).first;
+      // if (jets.size()>2)	leptonTree.jet3_ = jets.at(2).first;
 
       //----------------------------------------------------
       // count jets
@@ -1075,21 +1014,13 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 
       // ID
       //if ( goodMuonWithoutIsolation(probe,false, muonIdMVA_leptree) )
-
-      probepassid_  = 0;
-      probepassiso_ = 0;
-
-      if( muonIdNotIsolated( probe , ZMet2012_v1 )){
+      if( muonIdNotIsolated( probe , ZMet2012_v1 )) 
 	leptonTree.leptonSelection_     |= LeptonTree::PassMuID;
-	probepassid_ = 1;
-      }
 
       // ISO
       //if ( muonIsoValue(probe,false) < 0.15 )
-      if( muonIsoValuePF2012_deltaBeta(probe) < 0.15 ){
+      if( muonIsoValuePF2012_deltaBeta(probe) < 0.15 )
 	leptonTree.leptonSelection_     |= LeptonTree::PassMuIso;
-	probepassiso_ = 1;
-      }
 
       vtxweight_ = vtxweight(isData);
 
@@ -1298,20 +1229,6 @@ void LeptonTreeMaker::SetCommonTreeVariables(LeptonTree &leptonTree, const doubl
   leptonTree.met_         = cms2.evt_pfmet();
 
   //leptonTree.rho_         = cms2.evt_ww_rho_vor();
-
-  muispf_       = -1;
-  muchi2ndf_    = -1.0;
-  mustahits_    = -1;
-  munsegs_      = -1;
-  munpix_       = -1;
-  munlayers_    = -1;
-  mutrk_        = -1;
-  muglb_        = -1;
-  mud0_         = -1.0;
-  mudz_         = -1.0;
-  probepfpt_    = -1;
-  probepassid_  = -1;
-  probepassiso_ = -1;
 
 }
 

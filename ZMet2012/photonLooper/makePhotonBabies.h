@@ -9,10 +9,8 @@
 #include "Math/LorentzVector.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
-typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 
 class TChain;
-class FactorizedJetCorrector;
 
 class makePhotonBabies
 {
@@ -27,9 +25,6 @@ class makePhotonBabies
   void InitBabyNtuple ();
   void FillBabyNtuple ();
   void CloseBabyNtuple ();
-  float dRGenJet ( LorentzVector p4, bool isData, float ptcut = 20.0 );
-  int isGenQGLMatched ( LorentzVector p4, bool isData, float dR = 0.4 );
-  int getJetIndex( LorentzVector thisJet , FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3 );
   void ScanChain (TChain*, const char*, bool isData, bool calculateTCMET = false,
                   int nEvents = -1, float kFactor = 1.);
   void  bookHistos();
@@ -45,9 +40,6 @@ class makePhotonBabies
   //ntuple, file
   TFile *babyFile_;
   TTree *babyTree_;
-
-  VofP4 pujets_;
-  Int_t npujets_;
     
   //histos
   Float_t maxleppt_;
@@ -70,9 +62,6 @@ class makePhotonBabies
   Int_t hgg90_;
 
   Float_t rho_;
-  Float_t ht30_;
-  Float_t ht40_;
-  Float_t jzb_;
 
   // event stuff
   char    dataset_[200];
@@ -95,9 +84,7 @@ class makePhotonBabies
   Float_t pfmet_;
   Float_t pfmetphi_;
   Float_t pfmett1_;
-  Float_t pfmett1phi_;
-  Float_t pfmett1new_;
-  Float_t pfmett1newphi_;
+  Float_t pfmetphit1_;
   Float_t pfsumet_;
   Float_t pfmet_type1_pt30_;
   Float_t pfmet_type1_pt15_;
@@ -210,57 +197,7 @@ class makePhotonBabies
   Float_t jet_dphimet_;       
   Float_t jet_dpt_;           
   Float_t jet_drgen_;  
-
-  Int_t   csc_;      
-  Int_t   hbhe_;   
-  Int_t   hbhenew_;   
-  Int_t   hcallaser_;
-  Int_t   ecaltp_;
-  Int_t   trkfail_;
-  Int_t   eebadsc_;
   
-  Float_t jet1beta1_01_;
-  Float_t jet2beta1_01_;
-  Float_t jet3beta1_01_;
-  Float_t jet4beta1_01_;
-
-  Float_t jet1beta2_01_;
-  Float_t jet2beta2_01_;
-  Float_t jet3beta2_01_;
-  Float_t jet4beta2_01_;
-
-  Float_t jet1beta1_05_;
-  Float_t jet2beta1_05_;
-  Float_t jet3beta1_05_;
-  Float_t jet4beta1_05_;
-
-  Float_t jet1beta2_05_;
-  Float_t jet2beta2_05_;
-  Float_t jet3beta2_05_;
-  Float_t jet4beta2_05_;
-
-  Float_t jet1beta1_10_;
-  Float_t jet2beta1_10_;
-  Float_t jet3beta1_10_;
-  Float_t jet4beta1_10_;
-
-  Float_t jet1beta2_10_;
-  Float_t jet2beta2_10_;
-  Float_t jet3beta2_10_;
-  Float_t jet4beta2_10_;
-
-  Int_t   vtxidx_;
-
-  Int_t   jet1flav_;
-  Int_t   jet2flav_;
-  Int_t   jet3flav_;
-  Int_t   jet4flav_;
-
-  Float_t jet1drgen_;
-  Float_t jet2drgen_;
-  Float_t jet3drgen_;
-  Float_t jet4drgen_;
-
   TH1F* tcmetTemplate[3][7][4];
   TH1F* pfmetTemplate[3][7][4];
   TH1F* tcmetNewTemplate[3][7][4];
@@ -283,7 +220,8 @@ class makePhotonBabies
   TH1F*   hphotonpt;
   
   ofstream ofile_tcmet;
-  ofstream ofile_events;  
+  ofstream ofile_events;
+  
 };
 
 

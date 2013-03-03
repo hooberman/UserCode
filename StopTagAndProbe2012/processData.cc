@@ -66,10 +66,5 @@ int main(int argc, char *argv[])
     processLeptonTree("test",SmurfTree::dymm,"/hadoop/cms/store/group/snt/papers2012/Summer12_53X_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12_DR53X-PU_S10_START53_V7A-v1/V05-03-13/SingleOrDiLepton/merged_ntuple*root",false,"",prescale);
   }
 
-  if( ijob == 4 ){
-    cout << "Processing bad muons" << endl;
-    processLeptonTree("badmuons",SmurfTree::data,"badmuons_2012*root",true, goodrunlist,prescale);
-  }
-
   return 0; 
 }

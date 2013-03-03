@@ -117,22 +117,6 @@ class LeptonTreeMaker {
 	Float_t vtxweight_;
 	Float_t isoch_;
 
-	Int_t   muispf_;
-	Int_t   mustahits_;
-	Int_t   munsegs_;
-	Int_t   munpix_;
-	Int_t   munlayers_;
-	Int_t   mutrk_;
-	Int_t   muglb_;
-	Float_t mud0_;
-	Float_t mudz_;
-	Float_t muchi2ndf_;
-
-	Int_t   probepassid_;
-	Int_t   probepassiso_;
-
-	Float_t probepfpt_;
-
 	unsigned int nbl_;
 	unsigned int nbm_;
 	
