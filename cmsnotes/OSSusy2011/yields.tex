@@ -1,28 +1,22 @@
-\section{Preselection yields: Data/MC Comparison}
+\section{Preselection yields}
 \label{sec:yields}
 
-The data yields and the MC predictions for the dilepton trigger sample are given in Table~\ref{tab:yields1}. 
-As anticipated, the MC predicts that the preselection is dominated by $t\bar{t}$.  
-We observe a slight excess in data with respect to MC expectations, which may be
-related to a possible under-estimate of the luminosity at the level of 5--10\%.
-We also look for an excess of low lepton \pt\ events using the dilepton-\Ht\ trigger sample.
-In this sample the leptons are required have \pt\ $>$ (10,5) GeV and not to have \pt\ $>$ (20,10) GeV.
-This is done to remove overlap with the dilepton trigger sample, as summarized in Table~\ref{tab:yields3}. 
-We observe reasonable agreement between the data and MC yields in this region.
-Finally, we compare in Table~\ref{tab:yields4} the data samples collected with high \pt\ dilepton
-triggers and lepton-\Ht\ cross triggers, including the requirements
-\Ht\ $>$ 200 GeV and lepton \pt\ $>$ (20,10) GeV. 
-The yields in the high-\pt\ dilepton and dilepton-\Ht\ trigger samples are very similar.
+The data yields and the MC predictions for the dilepton trigger sample are given in Table~\ref{tab:yields1}.
+We also look for an excess of low lepton \pt\ events using the dilepton-\Ht\ trigger sample, and
+requiring the leptons to pass lepton \pt\ $>$ (10,5) GeV but not pass lepton \pt\ $>$ (20,10) GeV
+(to remove overlap with the dilepton trigger sample). 
+Finally, we verify in Table~\ref{tab:yields4} that the data samples collected with high \pt\ dilepton
+triggers and lepton-\Ht\ cross triggers give consistent yields, after including the requirements
+\Ht\ $>$ 200 GeV and lepton \pt\ $>$ (20,10) GeV.
 
 The MC yields are normalized to \lumi\ using the cross-sections
-from Reference~\cite{ref:xsec}. 
-The MC is scaled by the approximate trigger efficiency (100\% for $ee$,
+from Reference~\cite{ref:xsec}. The MC is scaled by the approximate trigger efficiency (100\% for $ee$,
 95\% for $\mu\mu$, and 95\% for $e\mu$) and has been reweighted such that the distribution of 
-reconstructed DA vertices matches that in data. 
-%Contributions for \ttfake\ and \wjets\  
-%with 1 lepton not originating from $W/Z$ decay (fake lepton) and the contributions from QCD% multijet events 
-%with 2 fake leptons (single fakes and double fakes, respectively) are estimated with the data-driven
-%fake rate method~\cite{ref:top}. 
+reconstructed DA vertices matches that in data. Contributions for \ttfake\ and \wjets\  
+with 1 lepton not originating from $W/Z$ decay (fake lepton) and the contributions from QCD multijet events 
+with 2 fake leptons (single fakes and double fakes, respectively) are estimated with the data-driven
+fake rate method~\cite{ref:top}. 
+{\bf NO CORRECTION FOR TRUE LEPTON CONTAMINATION APPLIED HERE, TO BE FIXED}.
 The DY contribution is dominated by DY$\rightarrow \tau^+\tau^-$,
 and we have verified with the data-driven $R_{out/in}$ method~\cite{ref:top} that the
 contributions from DY$\to e^{+}e^{-}$ and DY$\to \mu^{+}\mu^{-}$ are negligible.
@@ -30,35 +24,39 @@ Also shown are the yields for LM1 and LM3, two of the LM
 points which are benchmarks for SUSY analyses at CMS. The LM yields
 are calculated at NLO using process-dependent k-factors computed from Prospino.
 
+As anticipated, the MC predicts that the preselection is dominated by $t\bar{t}$.  
+We observe a slight excess in data with respect to MC expectations.
 
 \begin{table}[htb]
 \begin{center}
 \caption{\label{tab:yields1}
 High \pt\ dilepton trigger data and Monte Carlo yields for the preselection 
 (njets $\geq$ 2, \Ht$>$100 GeV, \met\ $>$ 50 GeV, lepton \pt\ $>$ (20,10) GeV).
+For \ttll\ and \tttau\, $\ell=e,\mu$.
+{\bf NEED TO APPLY SPILLAGE CORRECTION. SUBTRACT 2 X DOUBLE FAKES FROM SINGLE FAKES. PUT 50\% SYST}
 }
-\vspace{.25cm}
 \begin{tabular}{l|cccc}
+
+%official json 204/pb, 42X data, Spring11 MC
 \hline
-         Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot        \\
+         Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
-           \ttll   &335.8 $\pm$ 8.0   &372.3 $\pm$ 8.0   &895.7 $\pm$ 12.8  & 1603.8 $\pm$ 17.1    \\
-          \tttau   & 77.0 $\pm$ 3.9   & 93.0 $\pm$ 4.0   &199.9 $\pm$ 6.1   &  369.9 $\pm$ 8.3     \\
-         \ttfake   & 12.6 $\pm$ 1.6   &  3.7 $\pm$ 0.8   & 22.7 $\pm$ 2.0   &   39.0 $\pm$ 2.7     \\
-              DY   & 18.6 $\pm$ 5.0   & 26.6 $\pm$ 6.0   & 37.6 $\pm$ 7.1   &   82.8 $\pm$ 10.6    \\
-             \WW   &  4.0 $\pm$ 0.5   &  4.3 $\pm$ 0.4   &  9.5 $\pm$ 0.7   &   17.7 $\pm$ 0.9     \\
-             \WZ   &  0.8 $\pm$ 0.1   &  1.0 $\pm$ 0.1   &  1.9 $\pm$ 0.1   &    3.8 $\pm$ 0.2     \\
-             \ZZ   &  0.3 $\pm$ 0.0   &  0.4 $\pm$ 0.0   &  0.4 $\pm$ 0.0   &    1.2 $\pm$ 0.1     \\
-      single top   & 12.6 $\pm$ 0.6   & 14.0 $\pm$ 0.6   & 33.2 $\pm$ 1.0   &   59.9 $\pm$ 1.3     \\
-          \wjets   & 12.6 $\pm$ 5.4   &  0.0 $\pm$ 0.0   &  7.8 $\pm$ 4.6   &   20.5 $\pm$ 7.1     \\
+          \ttll   & 70.3 $\pm$ 1.7   & 77.8 $\pm$ 1.7   &187.3 $\pm$ 2.7   &335.4 $\pm$ 3.6  \\
+         \tttau   & 16.1 $\pm$ 0.8   & 19.5 $\pm$ 0.9   & 42.0 $\pm$ 1.3   & 77.7 $\pm$ 1.8  \\
+   single fakes   &  8.5 $\pm$ 2.2   & 17.0 $\pm$ 3.1   & 22.7 $\pm$ 3.7   & 48.3 $\pm$ 5.3  \\
+   double fakes   &  0.0 $\pm$ 0.0   &  0.4 $\pm$ 0.3   &  1.0 $\pm$ 0.6   &  1.5 $\pm$ 0.6  \\
+             DY   &  3.8 $\pm$ 1.0   &  5.7 $\pm$ 1.3   &  7.9 $\pm$ 1.5   & 17.4 $\pm$ 2.2  \\
+            \WW   &  0.8 $\pm$ 0.1   &  0.9 $\pm$ 0.1   &  2.0 $\pm$ 0.1   &  3.7 $\pm$ 0.2  \\
+            \WZ   &  0.2 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.4 $\pm$ 0.0   &  0.8 $\pm$ 0.0  \\
+            \ZZ   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.2 $\pm$ 0.0  \\
+     single top   &  2.6 $\pm$ 0.1   &  2.9 $\pm$ 0.1   &  6.9 $\pm$ 0.2   & 12.5 $\pm$ 0.3  \\
 \hline
-      tot SM MC   &474.5 $\pm$ 11.7   &515.4 $\pm$ 10.8   &1208.6 $\pm$ 16.7   &2198.5 $\pm$ 23.1  \\
+      tot SM MC   &102.5 $\pm$ 3.1   &124.5 $\pm$ 3.9   &270.4 $\pm$ 5.0   &497.3 $\pm$ 7.1  \\
 \hline
-           data   &            524   &            576   &           1381   &           2481        \\
+           data   &            113   &            122   &            313   &            548  \\
 \hline
-            LM1   & 62.3 $\pm$ 1.6   & 69.5 $\pm$ 1.6   & 35.8 $\pm$ 1.2   &   167.5 $\pm$ 2.6     \\
-            LM3   & 22.1 $\pm$ 0.8   & 26.9 $\pm$ 0.9   & 39.7 $\pm$ 1.1   &    88.6 $\pm$ 1.7     \\
-            LM6   &  4.5 $\pm$ 0.1   &  5.0 $\pm$ 0.1   &  5.7 $\pm$ 0.1   &    15.3 $\pm$ 0.2     \\
+            LM1   & 13.1 $\pm$ 0.3   & 14.6 $\pm$ 0.3   &  7.5 $\pm$ 0.3   & 35.1 $\pm$ 0.6  \\
+            LM3   &  3.0 $\pm$ 0.1   &  3.7 $\pm$ 0.1   &  5.3 $\pm$ 0.1   & 12.0 $\pm$ 0.2  \\
 \hline
 \end{tabular}
 \end{center}
@@ -107,33 +105,33 @@ High \pt\ dilepton trigger data and Monte Carlo yields for the preselection
 \begin{center}
 \caption{\label{tab:yields3} 
 Dilepton-\Ht\ trigger data and Monte Carlo yields for the preselection 
-(njets $\geq$ 2, \Ht\ $>$ 200 GeV, \met\ $>$ 50 GeV, lepton \pt\ $>$ (10,5) GeV and not 
+(njets $\geq$ 2, \Ht\ $>$ 200 GeV, \met\ $>$ 50 GeV, lepton \pt $>$ (10,5) GeV and not 
 lepton \pt\ $>$ (20,10) GeV).
+For \ttll\ and \tttau\, $\ell=e,\mu$.
+{\bf NEED TO APPLY SPILLAGE CORRECTION. SUBTRACT 2 X DOUBLE FAKES FROM SINGLE FAKES. PUT 50\% SYST}
 }
-\vspace{.25cm}
 \begin{tabular}{l|cccc}
 
-
+%official json 204/pb, 42X data, Spring11 MC
 \hline
          Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
-          \ttll   &  1.6 $\pm$ 0.6   & 10.5 $\pm$ 1.4   & 11.4 $\pm$ 1.5   & 23.4 $\pm$ 2.1  \\
-         \tttau   &  1.7 $\pm$ 0.6   & 10.8 $\pm$ 1.4   &  9.7 $\pm$ 1.3   & 22.2 $\pm$ 2.0  \\
-        \ttfake   &  0.4 $\pm$ 0.3   &  3.6 $\pm$ 0.8   &  4.1 $\pm$ 0.9   &  8.1 $\pm$ 1.2  \\
-             DY   &  0.0 $\pm$ 0.0   & 10.3 $\pm$ 4.0   &  1.8 $\pm$ 1.6   & 12.1 $\pm$ 4.3  \\
-            \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.1   &  0.1 $\pm$ 0.1  \\
-            \WZ   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
-            \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.1 $\pm$ 0.0  \\
-     single top   &  0.1 $\pm$ 0.0   &  0.7 $\pm$ 0.1   &  1.0 $\pm$ 0.2   &  1.8 $\pm$ 0.2  \\
-         \wjets   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+          \ttll   &  0.3 $\pm$ 0.1   &  2.2 $\pm$ 0.3   &  2.4 $\pm$ 0.3   &  4.9 $\pm$ 0.4  \\
+         \tttau   &  0.4 $\pm$ 0.1   &  2.3 $\pm$ 0.3   &  2.1 $\pm$ 0.3   &  4.7 $\pm$ 0.4  \\
+   single fakes   &  0.0 $\pm$ 0.0   &  3.0 $\pm$ 1.2   &  3.0 $\pm$ 1.2   &  6.0 $\pm$ 1.6  \\
+   double fakes   &  0.0 $\pm$ 0.0   &  0.6 $\pm$ 0.4   &  0.0 $\pm$ 0.0   &  0.6 $\pm$ 0.4  \\
+             DY   &  0.0 $\pm$ 0.0   &  2.2 $\pm$ 0.8   &  0.4 $\pm$ 0.4   &  2.6 $\pm$ 0.9  \\
+            \WW   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+            \WZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+            \ZZ   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0   &  0.0 $\pm$ 0.0  \\
+     single top   &  0.0 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.2 $\pm$ 0.0   &  0.4 $\pm$ 0.1  \\
 \hline
-      tot SM MC   &  3.7 $\pm$ 0.9   & 36.0 $\pm$ 4.5   & 28.1 $\pm$ 2.7   & 67.9 $\pm$ 5.3  \\
+      tot SM MC   &  0.7 $\pm$ 0.2   & 10.4 $\pm$ 1.5   &  8.1 $\pm$ 1.3   & 19.3 $\pm$ 2.0  \\
 \hline
-           data   &              1   &             26   &             34   &             61  \\
+           data   &              1   &              7   &              5   &             13  \\
 \hline
-            LM1   &  1.5 $\pm$ 0.3   & 13.8 $\pm$ 0.7   & 11.0 $\pm$ 0.7   & 26.3 $\pm$ 1.0  \\
-            LM3   &  0.3 $\pm$ 0.1   &  2.6 $\pm$ 0.3   &  2.3 $\pm$ 0.3   &  5.2 $\pm$ 0.4  \\
-            LM6   &  0.0 $\pm$ 0.0   &  0.5 $\pm$ 0.0   &  0.3 $\pm$ 0.0   &  0.8 $\pm$ 0.0  \\
+            LM1   &  0.3 $\pm$ 0.1   &  2.9 $\pm$ 0.2   &  2.3 $\pm$ 0.1   &  5.5 $\pm$ 0.2  \\
+            LM3   &  0.0 $\pm$ 0.0   &  0.4 $\pm$ 0.0   &  0.3 $\pm$ 0.0   &  0.7 $\pm$ 0.1  \\
 \hline
 \end{tabular}
 \end{center}
@@ -142,15 +140,14 @@ lepton \pt\ $>$ (20,10) GeV).
 \begin{table}[htb]
 \begin{center}
 \caption{\label{tab:yields4} Comparison of data yields in the high-\pt\ dilepton and dilepton-\Ht\ 
-trigger samples, passing the selection njets $\geq$ 2, \met\ $>$ 50 GeV, \Ht$>$200 GeV,  lepton \pt $>$ (20,10) GeV.
-}
-\vspace{.25cm}
+trigger samples, passing the selection njets $\geq$ 2, \met\ $>$ 50 GeV, \Ht$>$200 GeV,  lepton \pt $>$ (20,10) GeV.}
 \begin{tabular}{l|cccc}
 \hline
                     Sample   &           $ee$   &       $\mu\mu$   &         $e\mu$   &            tot  \\
 \hline
-high-\pt\ dilepton trigger   &            218   &            212   &            537   &            967  \\
-dilepton-\Ht\ trigger        &            210   &            214   &            531   &            955  \\
+high-\pt\ dilepton trigger   &             50   &             49   &            124   &            223  \\
+
+dilepton-\Ht\ trigger        &             50   &             48   &            117   &            215  \\
 \hline
 \end{tabular}
 \end{center}

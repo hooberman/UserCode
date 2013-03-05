@@ -9,21 +9,21 @@ The preselection is based on the
 $t\bar{t}$ analysis~\cite{ref:top}.  
 We select events with two opposite sign, well-identified and isolated
 leptons ($ee$, $e\mu$, or $\mu\mu$); one of the leptons must 
-have $p_T > 20$ GeV,
-the other one must have $p_T > 10$ GeV. Events with dilepton mass
+have $P_T > 20$ GeV,
+the other one must have $P_T > 10$ GeV. Events with dilepton mass
 consistent with $Z \to ee/\mu\mu$ are rejected.
 In case of events with 
 more than two such leptons, we select the pair that maximizes the scalar 
-sum of lepton $p_T$'s.
+sum of lepton $P_T$'s.
 There must be at least two 
-pfjets of $p_T > 30$ GeV and $|\eta| < 3.0$;  jets must pass
+pfjets of $P_T > 30$ GeV and $|\eta| < 3.0$;  jets must pass
 loose {\tt pfJetId} and be separated by $\Delta R >$ 0.4 from any 
-lepton with $p_T > 10$~GeV passing the selection.
+lepton with $P_T > 10$~GeV passing the selection.
 The scalar sum \Ht\ of the 
-$p_T$ of all such jets must exceed 100 GeV, for the dilepton-\Ht\ sample
+$P_T$ of all such jets must exceed 100 GeV, for the dilepton-\Ht\ sample
 this requirement is increased to 200 GeV since these triggers have large inefficiency
 below this threshold.
-Finally, we require $\met > 50$ GeV (pfmet). More details are given in the subsections below.
+Finally $\met > 50$ GeV (we use pfmet). More details are given in the subsections below.
 
 \subsection{Event Cleanup}
 \label{sec:cleanup}
@@ -63,7 +63,9 @@ transverse energy/momentum deposits in ecal, hcal, and tracker, in a cone of 0.3
 \item At least one of the hits from the 
 standalone muon must be used in the global fit
 
-\item Tracker $\Delta p_T/p_T < 0.1$
+\item Require tracker $\Delta p_T/p_T < 0.1$. This cut was not in the original top analysis.
+It is motivated by the observation of poorly measured muons in data with large
+relative $p_T$ uncertainty, giving significant contributions to the \met
 
 \end{itemize}
 
@@ -105,17 +107,16 @@ go negative.
 two~\cite{ref:conv}.
 
 \item Conversion removal via partner track finding: any electron
-where an additional GeneralTrack is found with dist $< 0.02$ cm 
-and $\Delta\cot\theta < 0.02$ is vetoed~\cite{ref:conv}.
+where an additional GeneralTrack is found with $Dist < 0.02$ cm 
+and $\Delta \cot \theta < 0.02$ is vetoed~\cite{ref:conv}.
 
 %\item Cleaning for ECAL spike (aka Swiss-Cross cleaning) has been applied
 %at the reconstruction level (CMSSW 38x).
 
 \end{itemize}
 
-We estimate the contributions from fake leptons using the data-driven
-fake rate (FR) method~\cite{ref:FR}. The requirements defining the fakeable objects 
-are listed in App.~\ref{sec:appendix_fo}.
+The requirements defining the fakeable objects used to estimate the
+contributions from fake leptons are listed in App.~\ref{sec:appendix_fo}.
 
 
 \subsection{Invariant mass requirement}
@@ -124,7 +125,7 @@ are listed in App.~\ref{sec:appendix_fo}.
 We remove $e^+e^-$ and $\mu^+ \mu^-$ events with invariant 
 mass between 76 and 106 GeV.  We also remove events
 with invariant mass $<$ 12 GeV, since this kinematical region is 
-not well reproduced in CMS Monte Carlo and to remove events with Upsilons.
+not well reproduced in CMS Monte Carlo and to remove Upsilons.
 
 In addition, we remove $Z \to \mu\mu\gamma$
 candidates with the $\gamma$ collinear with one of the muons.  This is
@@ -152,7 +153,7 @@ DoubleMu trigger, and an event in the $e\mu$ channel is required to pass a Ele-M
          \item \verb=HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL=
          %\item {\footnotesize \verb=HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL=}
          \item \verb=HLT_DoubleMu7=
-         \item \verb=HLT_Mu13_Mu8=
+         \item \verb=HLT_Mu13_Mu7=
          \item \verb=HLT_Mu17_Ele8_CaloIdL=
          \item \verb=HLT_Mu8_Ele17_CaloIdL=
       \end{itemize}
