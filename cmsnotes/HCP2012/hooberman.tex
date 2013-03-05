@@ -1,0 +1,104 @@
+%%%%%%%%%%%%%%%%%%%%%%% file template.tex %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This is a template file for Web of Conferences Journal
+%
+% Copy it to a new file with a new name and use it as the basis
+% for your article
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%% EDP Science %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\documentclass[epj,twocolumn]{webofc}
+\usepackage[varg]{txfonts}   % Web of Conferences font
+\woctitle{Hadron Collider Physics symposium 2012}
+
+%\newcommand{\met}{\mbox{$\raisebox{.3ex}{$\not$}E_T$\hspace*{0.5ex}}} 
+\newcommand{\met}{\ensuremath{\rm{E_{T}^{miss}}}}
+\newcommand{\lsp}{\ensuremath{\tilde{\chi}_{1}^{0}}}
+\newcommand{\chip}{\ensuremath{\tilde{\chi}_{1}^{\pm}}}
+\newcommand{\pt}{\ensuremath{p_T}}
+\newcommand{\mt}{\ensuremath{M_T}}
+\newcommand{\wjets}{\ensuremath{\rm{W+jets}}}
+\newcommand{\ttljets}{\ensuremath{t\bar{t}\to\ell+\rm{jets}}}
+\newcommand{\ttll}{\ensuremath{t\bar{t}\to\ell\ell}}
+\newcommand{\alphat}{\ensuremath{\alpha_{T}}}
+%
+%
+\begin{document}
+%
+\title{Searches for Top and Bottom Squarks at CMS}
+%
+% subtitle is optionnal
+%
+%%%\subtitle{Do you have a subtitle?\\ If so, write it here}
+
+\author{Benjamin Hooberman\inst{1,3}\fnsep\thanks{\email{benhoob@fnal.gov}}
+%        Second author\inst{2}\fnsep\thanks{\email{Mail address for second
+%             author if necessary}} \and
+%        Third author\inst{3}\fnsep\thanks{\email{Mail address for last
+%             author if necessary}}
+        % etc.
+}
+
+\institute{Fermi National Accelerator Laboratory
+%\and
+%           the second here 
+%\and
+%           Last address
+          }
+
+\abstract{%
+  Supersymmetry is a popular extension to the standard problem, which may solve the hierarchy
+  problem in a natural (not fine-tuned) way if it introduces top and bottom squarks with masses
+  not more than several hundred GeV. This note presents the results from three searches for these particles, either
+  produced directly in pairs or in the decays of gluinos. The searches are performed
+  in the single lepton final state focusing on events with large transverse mass, the same-sign final state,
+  and the all-hadronic final state. No evidence for the production of top and bottom squarks is observed.
+  The results are used to place stringent constraints on the masses of these particles.
+}
+%
+\maketitle
+%
+
+\input{introduction}
+\input{stop}
+\input{ss}
+\input{alphat}
+\input{summary}
+
+%\section{Introduction}
+%\label{intro}
+%Your text comes here. Separate text sections with
+
+%
+% BibTeX or Biber users please use (the style is already called in the class, ensure that the "woc.bst" style is in your local directory)
+% \bibliography{name or your bibliography database}
+%
+% Non-BibTeX users please use
+%
+\begin{thebibliography}{}
+%
+% and use \bibitem to create references.
+%
+\bibitem{RefJ}
+% Format for Journal Reference
+Journal Author, Journal \textbf{Volume}, page numbers (year)
+% Format for books
+\bibitem{RefB}
+Book Author, \textit{Book title} (Publisher, place, year) page numbers
+% etc
+
+\bibitem{ref:stop}
+``Search for direct top squark pair production in events with a single isolated lepton, jets and missing transverse energy at $\sqrt{s} = 8$ TeV'', CMS-PAS-SUS-12-023.
+
+\bibitem{ref:ss}
+``Search for new physics in events with same-sign dileptons and b jets in pp collisions at $\sqrt{s} = 8$ TeV'', CMS-PAS-SUS-12-029, arXiv:1212.6194 [hep-ex].
+
+\bibitem{ref:alphat}
+``Search for supersymmetry in final states with missing transverse energy and 0, 1, 2, 3, or $\geq$4 b jets in 8 TeV pp collisions'', CMS-PAS-SUS-12-028.
+
+\end{thebibliography}
+
+\end{document}
+
+% end of file template.tex
+
