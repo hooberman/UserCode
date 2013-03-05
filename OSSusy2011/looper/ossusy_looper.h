@@ -86,11 +86,8 @@ class ossusy_looper
 	void lepEfficiencies( bool isData );
 
 	float stopPairCrossSection( float stopmass );
-	float gluinoPairCrossSection( float gluinomass );
 	TH1D*   stop_xsec_hist;
 	TFile*  stop_xsec_file;
-	TH1D*   gg_xsec_hist;
-	TFile*  gg_xsec_file;
 
 	bool initialized;
 
@@ -129,7 +126,6 @@ class ossusy_looper
 	Float_t mG_;
 	Float_t mlljj_;
 	Float_t mL_;
-	Float_t mF_;
 	Float_t ecalveto1_;
 	Float_t ecalveto2_;
 	Float_t hcalveto1_;
