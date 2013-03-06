@@ -490,26 +490,26 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   // Files
   //----------------------------------------
 
-  char* version = (char*) "V00-00-00";
-
   TChain *chmc   = new TChain("leptons");
   TChain *chdata = new TChain("leptons");
 
+  char* version = (char*) "V00-00-03";
   char* suffix = "";
   //char* suffix = "_2jets";
+  //char* suffix = "_probept100";
 
-  //chmc->  Add("smurf/ZJets_V00-00-01/dymm_test_tenPercent.root");
-  chmc->  Add("smurf/ZJets_V00-00-01/merged.root");
+  //chmc->  Add(Form("smurf/ZJets_V00-00-01/dymm_test_tenPercent.root");
+  chmc->  Add(Form("smurf/ZJets_%s/merged%s.root",version,suffix));
 
   if( leptype == 1 ){
-    chdata->Add("smurf/SingleMu2012A_V00-00-01/merged.root");
-    chdata->Add("smurf/SingleMu2012B_V00-00-01/merged.root");
-    chdata->Add("smurf/SingleMu2012C_V00-00-01/merged.root");
+    chdata->Add(Form("smurf/SingleMu2012A_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleMu2012B_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleMu2012C_%s/merged_json%s.root",version,suffix));
   }
   else{
-    chdata->Add("smurf/SingleEl2012A_V00-00-01/merged.root");
-    chdata->Add("smurf/SingleEl2012B_V00-00-01/merged.root");
-    chdata->Add("smurf/SingleEl2012C_V00-00-01/merged.root");
+    chdata->Add(Form("smurf/SingleEl2012A_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleEl2012B_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleEl2012C_%s/merged_json%s.root",version,suffix));
   }
 
   //----------------------------------------
@@ -525,9 +525,11 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0, 10000.0};
   int   nptbin  = 10;
 
+  //cout << "DOING MUON ETA BINS" << endl;
   // float etabin[] = {0, 0.8, 1.5, 2.1};
   // int   netabin=3;
-
+  
+  cout << "DOING ELECTRON ETA BINS" << endl;
   float etabin[] = {0, 1.5, 2.1};
   int   netabin=2;
 
@@ -576,6 +578,7 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   TCut eliso("(leptonSelection&16)==16");           // ele iso
 
   TCut zmass("abs(tagAndProbeMass-91)<15");
+  TCut tightzmass("abs(tagAndProbeMass-91)<5");
   TCut os("qProbe*qTag<0");
 
   TCut mutnp("(eventSelection&2)==2");
@@ -591,16 +594,22 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   TCut nbl0("nbl==0");
   TCut probe_eta21("abs(probe->eta())<2.1");
 
+  TCut mutrk("mutrk==1");
+
   TCut njets0("njets>=0");
   TCut njets1("njets>=1");
   TCut njets2("njets>=2");
   TCut njets3("njets>=3");
   TCut njets4("njets>=4");
 
+  TCut mud0("mud0 < 0.02");
+  TCut mudz("mudz < 0.5");
+
   //TCut tnpcut   = "abs(tagAndProbeMass-91)<15 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && tag->pt()>30.0"; 
 
   TCut tnpcut;
   tnpcut += zmass;
+  //tnpcut += tightzmass;
   tnpcut += os;
   tnpcut += tag_eta21;
   tnpcut += tag_pt30;
@@ -620,6 +629,9 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
     lepchar = "el";
   }
   else if( leptype == 1 ){
+    tnpcut += mutrk;
+    tnpcut += mud0;
+    tnpcut += mudz;
     tnpcut += mutnp;
     tnpcut += mutnptrig;
     lepid   = TCut(muid);
@@ -704,7 +716,7 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
 
   TCanvas *c_iso[10];
   TCanvas *c_id[10];
-
+  /*
   for( int i = 0 ; i < 5 ; i++ ){
 
     TCut mysel;
@@ -725,7 +737,7 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
     if( printplot ) c_id[i]->Print(Form("plots/%s_id_njets%i.pdf",lepchar,i));
 
   }
-
+  */
   /*
 
   //---------------------------
