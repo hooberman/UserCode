@@ -12,8 +12,8 @@ the invisible LSPs.
 We focus on the single lepton final state, which has a significant branching fraction due to the presence of two W bosons
 in the final state,
 and smaller SM backgrounds than the all-hadronic final state.
-We thus select events with a single lepton and jets and discriminate between
-signal and background using \met\ and the transverse mass \mt, discussed below.
+%We thus select events with a single lepton and jets and discriminate between
+%signal and background using \met\ and the transverse mass \mt, discussed below.
 
 %\subsection{Event Selection}
 
@@ -22,7 +22,7 @@ momentum \pt\ $>$ 30 GeV.
 We select events with at least four jets with \pt\ $>$ 30 GeV,
 which must be well-separated from the selected leptons.
 At least one of these jets is required to be consistent with coming from the decay of heavy flavor hadrons, as
-identified by the Combined Secondary Vertex Medium Point (CSVM) b-tagging algorithm~\cite{ref:btag}.
+identified by the Combined Secondary Vertex medium working point (CSVM) b-tagging algorithm~\cite{ref:btag}.
 The jet requirements suppress SM backgrounds from W bosons produced in association with jets from initial state
 radiation (ISR), referred to as the \wjets\ background. 
 The \met\ is required to exceed 50 GeV, suppressing the background from QCD multijet production.
@@ -43,7 +43,7 @@ M_T = \sqrt{ 2 p_{T}^{\ell} \met ( 1-cos(\Delta\phi))},
 
 where $p_{T}^{\ell}$ is the lepton transverse momentum and $\Delta\phi$ is the difference in azimuthal angles between the lepton
 and \met. This requirement strongly suppresses the background from \ttljets\ and \wjets, which have a kinematic endpoint
-at \mt\ $=$ $M_W$ since the lepton and neutrino (which produces the \met) are produced together in the decay of the W.
+at \mt\ $\approx$ $M_W$ since the lepton and neutrino (which produces the \met) are produced together in the decay of the W.
 For signal events, as well as for the \ttll\ background, the presence of more than one invisible
 particle in the final state leads to events with \mt\ $>>$ $M_W$. 
 In addition to the \mt\ requirement, we make several 
@@ -51,14 +51,14 @@ In addition to the \mt\ requirement, we make several
 Signal regions with large (small) \met\ requirements are more sensitive to signals with large (small) values of $\Delta m$.
 
 The dominant background in our signal regions is \ttll, which may produce events with large \met\ and \mt\ due to the presence of
-two invisible neutrinos. In order for \ttll\ events to pass the signal region selection, one of the two W leptons must not be identified,
+more than one invisible neutrino. In order for \ttll\ events to pass the signal region selection, one of the two W leptons must not be identified,
 which occurs if it is outside the acceptance, is a hadronic $\tau$ decaying to three charged particles (3-prong decay),
 is a hadronic $\tau$ decaying to a single charged particle (1-prong decay), or is an electron or muon that fails the lepton identification
 requirements. The latter two categories are suppressed by vetoing events that contain, in addition to the selected lepton, 
 a charged particle with \pt\ $>$ 10 GeV that is isolated in space from other energetic charged particles. Furthermore, additional jets 
 from initial state or final state radiation (ISR/FSR) are required to satisfy the jet multiplicity requirement $n_{jets}\geq4$. 
 To validate and correct the MC modeling of jets from radiation, the MC is compared to data in a dilepton control region dominated by \ttll. 
-The MC distribution of $n_{jets}$ is reweighted to match the corresponding data distribution, resulting in small corrections of (1--7)\%.
+The MC distribution of $n_{jets}$ is reweighted to match the corresponding data distribution, resulting in small corrections of a few \%.
 
 The SM backgrounds are estimated from events simulated with Monte Carlo (MC) techniques, which are validated and 
 (if necessary) corrected using comparisons to data in control regions. The MC expectation is normalized to data in the \mt\ peak region,
@@ -85,7 +85,8 @@ for the pair production of top squarks.
 \includegraphics[width=0.4\textwidth]{HCPPlots/stopmet.pdf}
 %\includegraphics[width=7cm,clip]{HCPPlots/stopmet.pdf}
 \caption{The \met\ distribution in data, compared to the sum of expected backgrounds, for the top squark pair search.
-Two example signal models are also indicated.}
+Two example signal models with $m_{\tilde{t}}=450$ GeV and $m_{\lsp}=50$ GeV are also indicated. For the $\tilde{t}\to b\chip$
+decay, the chargino mass is set by $m_{\chipm}=0.75~m_{\tilde{t}}+0.25~m_{\lsp}$.}
 \label{fig:stop}       % Give a unique label
 \end{figure}
 
@@ -108,8 +109,8 @@ for the signal cross section.
 %accuracy (NLO+NLL)~\cite{ref:nlonll}. 
 Our results probe top squarks with masses up to 430 GeV. For comparison, the requirement that SUSY
 provides a natural solution to the hierarchy problem suggests top squarks with masses not exceeding 500--700 GeV~\cite{ref:naturalsusy}.
-We also interpret our results assuming the top squark decays according to $\tilde{t}\to b\chip\to b W \lsp$,
-as depicted in Fig.~\ref{fig:diagrams}(b); see Ref.~\cite{ref:stop}.
+We also interpret our results in the $\tilde{t}\to b\chip\to b W \lsp$ scenario
+depicted in Fig.~\ref{fig:diagrams}(b), probing top squarks with masses up to 420 GeV~\cite{ref:stop}.
 
 The ATLAS experiment has presented a similar search for top squark pairs in the single lepton final state~\cite{ref:atlasstop}.
 The constraints from ATLAS on the top squark mass are more stringent than those presented here. The ATLAS model assumes large 
@@ -123,7 +124,7 @@ resulting in a lower signal selection efficiency in our analysis.
 \includegraphics[width=0.5\textwidth]{HCPPlots/stop_interpretation.pdf}
 %\includegraphics[width=7cm,clip]{HCPPlots/stop_interpretation.pdf}
 \caption{Interpretation of the results of the top squark pair search in the $\tilde{t}\to t\lsp$ scenario of 
-Fig.~\ref{fig:diagrams}(a). The color scale indicates the cross section upper limits. The solid black contour 
+Fig.~\ref{fig:diagrams}(a). The color scale indicates the cross section upper limits at 95\% confidence level. The solid black contour 
 and dashed black contours indicate the observed excluded region and variation in this
 excluded region due to the $\pm1\sigma$ uncertainties in the theoretical prediction of the signal cross section. The dashed blue
 and dotted blue contours indicate the median and $\pm1\sigma$ expected excluded regions. }
