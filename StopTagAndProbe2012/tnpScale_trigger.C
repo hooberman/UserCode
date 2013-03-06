@@ -522,13 +522,13 @@ void tnpScale_trigger( int leptype = 1 , bool printplot = false ) {
   float ptbin[]  = {20., 22., 24., 26., 28., 30., 32., 34., 36., 38., 40., 50., 60. , 80. , 100. , 150. , 200. , 10000.};
   int   nptbin=17;
 
-  // cout << "USING MUON ETA BINS" << endl;
-  // float etabin[] = {0, 0.8 , 1.5 , 2.1};
-  // int   netabin=3;
+  cout << "USING MUON ETA BINS" << endl;
+  float etabin[] = {0, 0.8 , 1.5 , 2.1};
+  int   netabin=3;
 
-  cout << "USING ELECTRON ETA BINS" << endl;
-  float etabin[] = {0, 1.5 , 2.1};
-  int   netabin=2;
+  // cout << "USING ELECTRON ETA BINS" << endl;
+  // float etabin[] = {0, 1.5 , 2.1};
+  // int   netabin=2;
 
   //----------------------------------------------------
   // values used for stop trigger efficiency weights
