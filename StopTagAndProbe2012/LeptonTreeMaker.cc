@@ -41,6 +41,40 @@ MuonMVAEstimator* muonMVAEstimator_leptree = 0;
 
 bool verbose = true;
 
+struct myTrackIso {
+
+  //defaultValue 
+  float iso_dr03_dz005_pt00;
+
+  // iso sum options
+  float isoDir_dr03_dz005_pt00;
+
+  // r04 cone option
+  float iso_dr04_dz005_pt00;
+
+  // veto cone
+  float iso_dr01503_dz005_pt00;
+  float iso_dr0503_dz005_pt00;
+
+  // dz variation
+  float iso_dr03_dz000_pt00;
+  float iso_dr03_dz010_pt00;
+  float iso_dr03_dz020_pt00;
+
+  //pt Variation
+  float iso_dr03_dz005_pt01;
+  float iso_dr03_dz005_pt02;
+  float iso_dr03_dz005_pt03;
+  float iso_dr03_dz005_pt04;
+  float iso_dr03_dz005_pt05;
+  float iso_dr03_dz005_pt06;
+  float iso_dr03_dz005_pt07;
+  float iso_dr03_dz005_pt08;
+  float iso_dr03_dz005_pt09;
+  float iso_dr03_dz005_pt10;
+
+};
+
 typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 //
 // constructor and destructor
@@ -64,6 +98,157 @@ float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx ){
   
 }
 
+struct myTrackIso trackIso_struct( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut=false , float pt_thresh = 0.0 ){
+
+  dovtxcut=false;
+
+  struct myTrackIso iso;
+
+  // no cuts  
+  iso.iso_dr03_dz005_pt00=0.; // this one will be the default
+  
+  // dz variation                                                                                                                         
+  iso.iso_dr03_dz020_pt00=0.;
+  iso.iso_dr03_dz010_pt00=0.;
+  iso.iso_dr03_dz000_pt00=0.;
+  
+  // isolation sum option
+  iso.isoDir_dr03_dz005_pt00=0.;
+
+  // cone04
+  iso.iso_dr04_dz005_pt00=0.;
+
+  // veto cone
+  iso.iso_dr01503_dz005_pt00=0.; 
+  iso.iso_dr0503_dz005_pt00=0.;
+
+  //pt Variation                                                                                                                      
+  iso.iso_dr03_dz005_pt01=0.;
+  iso.iso_dr03_dz005_pt02=0.;
+  iso.iso_dr03_dz005_pt03=0.;
+  iso.iso_dr03_dz005_pt04=0.;
+  iso.iso_dr03_dz005_pt05=0.;
+  iso.iso_dr03_dz005_pt06=0.;
+  iso.iso_dr03_dz005_pt07=0.;
+  iso.iso_dr03_dz005_pt08=0.;
+  iso.iso_dr03_dz005_pt09=0.;
+  iso.iso_dr03_dz005_pt10=0.;
+  
+
+
+  for (int ipf = 0; ipf < (int)cms2.pfcands_p4().size(); ipf++) {
+
+    if( ipf == thisPf                 ) continue; // skip this PFCandidate
+                                                                                                               
+    if(cms2.pfcands_charge().at(ipf) == 0 ) continue; // skip neutrals                                                                                                                          
+    // when we want to find the second isolated muon and electron
+    // we do not use the electron and muon in the isolation sum,                                                                                              
+    // to avoid overlap with the other lepton in the event  
+    if((abs(cms2.pfcands_particleId().at(thisPf))==13 || abs(cms2.pfcands_particleId().at(thisPf))==11) && abs(cms2.pfcands_particleId().at(ipf))==13) continue;                                                                                         
+    if((abs(cms2.pfcands_particleId().at(thisPf))==13 || abs(cms2.pfcands_particleId().at(thisPf))==11) && abs(cms2.pfcands_particleId().at(ipf))==11) continue;                                                                                         
+
+    //----------------------------------------                                                                                                                                                   
+    // find closest PV and dz w.r.t. that PV                                                                                                                                                     
+   //----------------------------------------                                                                                                                                                   
+
+    float mindz = 999.;
+    int vtxi    = -1;
+
+    if (dovtxcut) {
+      for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
+
+
+	int itrk = cms2.pfcands_trkidx().at(ipf);
+
+	if( itrk >= (int)cms2.trks_trk_p4().size() || itrk < 0 ){
+	  //note: this should only happen for electrons which do not have a matched track                                                                                                            
+	  //currently we are just ignoring these guys                                                                                                                                                
+	  continue;
+	}
+
+	////////
+
+        if(!isGoodVertex(ivtx)) continue;
+
+        float mydz = trks_dz_pv(itrk,ivtx).first;
+	//        fillOverFlow( h_dz_vtx_trk , mydz );
+
+        if (fabs(mydz) < fabs(mindz)) {
+          mindz = mydz;
+          vtxi = ivtx;
+        }
+
+      }
+
+      //----------------------------------------------------------------------------                                                                                                               
+      // require closest PV is signal PV, dz cut, exclude tracks near hyp leptons                                                                                                                  
+      //----------------------------------------------------------------------------                                                                                                               
+
+      if ( vtxi != 0 )     continue;
+    } else {
+      //      mindz = trks_dz_pv(itrk,0).first;
+
+      int itrk = -1;
+
+      if (abs(cms2.pfcands_particleId().at(ipf))!=11) {
+        itrk = cms2.pfcands_trkidx().at(ipf);
+        if( itrk >= (int)cms2.trks_trk_p4().size() || itrk < 0 ) continue;
+        mindz=trks_dz_pv(itrk,0).first;
+      }
+
+      if (abs(cms2.pfcands_particleId().at(ipf))==11 && cms2.pfcands_pfelsidx().at(ipf)>=0) {
+        itrk = cms2.els_gsftrkidx().at(cms2.pfcands_pfelsidx().at(ipf));
+        if( itrk >= (int)cms2.gsftrks_p4().size() || itrk < 0 ) continue;
+        mindz=gsftrks_dz_pv(itrk,0).first;
+      }
+
+
+    }
+
+    //---------------------------------------                                                                                                                                     
+    // passes cuts, add up isolation value                                                                                                                                        
+    //---------------------------------------                                                                                                                                                    
+
+    coneR=0.3;    
+    double dr=ROOT::Math::VectorUtil::DeltaR( cms2.pfcands_p4().at(ipf) , cms2.pfcands_p4().at(thisPf) );
+    if( dr > coneR ) continue; // skip pfcands outside the cone                                     
+
+    // this is the default
+    if( cms2.pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt00+= cms2.pfcands_p4().at(ipf).pt();
+
+    // cone 04
+    //    if( pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt00+= pfcands_p4().at(ipf).pt();
+
+    // veto Cone 0.05 // this hould be ok for the taus
+    if(cms2.pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.05 && dr >= 0.05) iso.iso_dr0503_dz005_pt00 += cms2.pfcands_p4().at(ipf).pt();
+
+    // veto Cone 0.015 // this should be ok for the electron in the endcap
+    if(cms2.pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.05 && dr >= 0.015) iso.iso_dr01503_dz005_pt00 += cms2.pfcands_p4().at(ipf).pt();
+
+    // this is the iso-sum option
+    if( cms2.pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.05) iso.isoDir_dr03_dz005_pt00 +=cms2.pfcands_p4().at(ipf).pt()*(1-3*dr);
+
+    // some dz variation
+    if( cms2.pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.00) iso.iso_dr03_dz000_pt00+= cms2.pfcands_p4().at(ipf).pt(); 
+    if( cms2.pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.10) iso.iso_dr03_dz010_pt00+= cms2.pfcands_p4().at(ipf).pt();     
+    if( cms2.pfcands_p4().at(ipf).pt()>=0.0 && fabs(mindz) <= 0.20) iso.iso_dr03_dz020_pt00+= cms2.pfcands_p4().at(ipf).pt();
+    
+    // some pt variation
+    if(cms2.pfcands_p4().at(ipf).pt() >= 0.1 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt01+= cms2.pfcands_p4().at(ipf).pt();
+    if(cms2.pfcands_p4().at(ipf).pt() >= 0.2 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt02+= cms2.pfcands_p4().at(ipf).pt();
+    if(cms2.pfcands_p4().at(ipf).pt() >= 0.3 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt03+= cms2.pfcands_p4().at(ipf).pt();
+    if(cms2.pfcands_p4().at(ipf).pt() >= 0.4 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt04+= cms2.pfcands_p4().at(ipf).pt();
+    if(cms2.pfcands_p4().at(ipf).pt() >= 0.5 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt05+= cms2.pfcands_p4().at(ipf).pt();
+    if(cms2.pfcands_p4().at(ipf).pt() >= 0.6 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt06+= cms2.pfcands_p4().at(ipf).pt();
+    if(cms2.pfcands_p4().at(ipf).pt() >= 0.7 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt07+= cms2.pfcands_p4().at(ipf).pt();
+    if(cms2.pfcands_p4().at(ipf).pt() >= 0.8 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt08+= cms2.pfcands_p4().at(ipf).pt();
+    if(cms2.pfcands_p4().at(ipf).pt() >= 0.9 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt09+= cms2.pfcands_p4().at(ipf).pt();
+    if(cms2.pfcands_p4().at(ipf).pt() >= 1.0 && fabs(mindz) <= 0.05) iso.iso_dr03_dz005_pt10+= cms2.pfcands_p4().at(ipf).pt();    
+      
+  } // end loop of the cand 
+
+  return iso;
+}
 
 
 float trackIso( int thisPf , float coneR = 0.3 , float dz_thresh = 0.05 , bool dovtxcut = false , float minpt = 0.0 , float dRveto = 0.0 , float detaveto = 0.0 ){
@@ -253,9 +438,9 @@ LeptonTreeMaker::LeptonTreeMaker(bool lockToCoreSelectors, bool useLHeleId, bool
   // set up jet corrections
   //
 
-  // new 52X
-  char* dataJEC = "GR_R_52_V9";
-  char* mcJEC   = "START52_V9B";
+  // new 53X
+  char* dataJEC = (char*) "GR_P_V39_AN3";
+  char* mcJEC   = (char*) "DESIGN53_V15";
 
   std::vector<std::string> jetcorr_filenames_pfL1FastJetL2L3;
   try {
@@ -393,6 +578,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
   leptonTree.tree_->Branch("tkisonewpt4"               , &tkiso_new_pt4_	            	        ,"tkisonewpt4/F");
   leptonTree.tree_->Branch("tkisonewpt5"               , &tkiso_new_pt5_	            	        ,"tkisonewpt5/F");
   leptonTree.tree_->Branch("isoch"                     , &isoch_	                	        ,"isoch/F");
+  leptonTree.tree_->Branch("tkisov4"                   , &tkisov4_	                 	        ,"tkisov4/F");
 
   leptonTree.tree_->Branch("nbl"                       , &nbl_	            	                        ,"nbl/I");
   leptonTree.tree_->Branch("nbm"                       , &nbm_	            	                        ,"nbm/I");
@@ -431,7 +617,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
     }
   }
 
-  set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS10_9p7fb_Zselection.root",true);
+  set_vtxreweight_rootfile("vtxreweight_Summer12MC_PUS10_19fb_Zselection.root",true);
 
   // vector<TH2D*>     fDYNNLOKFactorHists;           //vector of hist for Drell-Yan NNLO Kfactor
   // if (doDYNNLOw_ && (sample==SmurfTree::dyee || sample==SmurfTree::dymm || sample==SmurfTree::dytt) ) {
@@ -709,7 +895,7 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
             
   for( unsigned int iel = 0 ; iel < cms2.els_p4().size(); ++iel ){
     if( cms2.els_p4().at(iel).pt() < 10 )                                         continue;
-    if( !passElectronSelection_Stop2012_v2(iel,true,true,false) )                 continue; // stop 2012 ID/iso
+    if( !passElectronSelection_Stop2012_v3(iel,true,true,false) )                 continue; // stop 2012 ID/iso
     goodLeptons.push_back( cms2.els_p4().at(iel) );
   }
 
@@ -732,9 +918,9 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
     //if (! goodElectronIsolated(tag, useLHeleId_, useMVAeleId_, egammaMvaEleEstimator_leptree, lockToCoreSelectors_)) continue;
     //if( !pass_electronSelection( tag , electronSelection_ssV5 , false , false ) ) continue;
 
-    if( !passElectronSelection_Stop2012_v2_NoIso( tag , true , true , false ) )   continue;
-    if (cms2.els_p4()[tag].Pt() < 20.)                                            continue;
-    if (fabs(cms2.els_etaSC()[tag]) > 2.4)                                        continue;
+    if( !passElectronSelection_Stop2012_v3( tag , true , true , false ) )   continue;
+    if (cms2.els_p4()[tag].Pt() < 20.)                                      continue;
+    if (fabs(cms2.els_etaSC()[tag]) > 2.4)                                  continue;
     
     // loop on probes
     for (unsigned int probe = 0; probe < cms2.els_p4().size(); ++probe) {
@@ -743,7 +929,7 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       if (tag == probe) continue;
 
       // basic probe denominator
-      if (cms2.els_p4()[probe].Pt() < 10.)      continue;
+      if (cms2.els_p4()[probe].Pt() < 5.0)      continue;
       if (fabs(cms2.els_etaSC()[probe]) > 2.5)  continue;
 
       // fill the tree - event general variables
@@ -762,8 +948,8 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       HLT_Ele27_WP80_tag_	  = isData ? cms2.els_HLT_Ele27_WP80()[tag]   : 1;
       HLT_Ele27_WP80_probe_       = isData ? cms2.els_HLT_Ele27_WP80()[probe] : 1;
 
-      probeiso_                   = electronIsoValuePF2012_FastJetEffArea_v2( probe , 0.3 , 0 );
-      tagiso_                     = electronIsoValuePF2012_FastJetEffArea_v2( tag   , 0.3 , 0 );
+      probeiso_                   = electronIsoValuePF2012_FastJetEffArea_v3( probe , 0.3 , 0 , false );
+      tagiso_                     = electronIsoValuePF2012_FastJetEffArea_v3( tag   , 0.3 , 0 , false );
 
       // fill the tree - criteria the probe passed 
       // const std::vector<JetPair> &jets = getJets(jetType(), cms2.els_p4()[tag], cms2.els_p4()[probe], 0, 4.7, true, jet_corrector_pfL1FastJetL2L3_);
@@ -829,13 +1015,13 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       // ID
       //if (goodElectronWithoutIsolation(probe, useLHeleId_, useMVAeleId_, egammaMvaEleEstimator_leptree))
       //if( pass_electronSelection( probe , electronSelection_ssV5_noIso , false , false ) ) 
-      if( passElectronSelection_Stop2012_v2_NoIso( probe , true , true , false ) )
+      if( passElectronSelection_Stop2012_v3_NoIso( probe , true , true , false ) )
 	leptonTree.leptonSelection_     |= LeptonTree::PassEleID;
 
       // ISO
       //if (ww_elIso(probe))
       //if( pass_electronSelection( probe , electronSelection_ssV5_iso , false , false ) ) 
-      if( passElectronSelection_Stop2012_v2_Iso( probe , true , true , false ) )
+      if( passElectronSelection_Stop2012_v3_Iso( probe , true , true , false ) )
 	leptonTree.leptonSelection_     |= LeptonTree::PassEleIso;
 
       vtxweight_ = vtxweight(isData);
@@ -846,7 +1032,7 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       // find pfcandidate index matching probe muon
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
 
-	if( cms2.pfcands_p4().at(ipf).pt() < 10.0        ) continue;
+	if( cms2.pfcands_p4().at(ipf).pt() < 5.0         ) continue;
 	if( cms2.pfcands_charge().at(ipf) == 0           ) continue;
 	
 	float dr = dRbetweenVectors( cms2.pfcands_p4().at(ipf) , cms2.els_p4()[probe] );
@@ -871,6 +1057,9 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
 	tkiso_new_pt3_   = trackIso(pfindex, 0.3, 0.05, false , 0.3 , 0.07 , 0.025 );
 	tkiso_new_pt4_   = trackIso(pfindex, 0.3, 0.05, false , 0.4 , 0.07 , 0.025 );
 	tkiso_new_pt5_   = trackIso(pfindex, 0.3, 0.05, false , 0.5 , 0.07 , 0.025 );
+
+	struct myTrackIso myTrackIso=trackIso_struct(pfindex);
+	tkisov4_         = myTrackIso.iso_dr03_dz010_pt00;
       }
       else{
 	tkiso_old_       =  -1;
@@ -881,6 +1070,7 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
 	tkiso_new_pt3_   =  -1;
 	tkiso_new_pt4_   =  -1;
 	tkiso_new_pt5_   =  -1;
+	tkisov4_         =  -1;
       }
 
       isoch_           = electronIsoValuePF( probe , 0 , 0.3, 99999. , 0.1 , 0.07 , 0.025 , 0.025 , 0 );
@@ -911,7 +1101,7 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
             
   for( unsigned int iel = 0 ; iel < cms2.els_p4().size(); ++iel ){
     if( cms2.els_p4().at(iel).pt() < 10 )                                         continue;
-    if( !passElectronSelection_Stop2012_v2(iel,true,true,false) )                 continue;
+    if( !passElectronSelection_Stop2012_v3(iel,true,true,false) )                 continue;
     goodLeptons.push_back( cms2.els_p4().at(iel) );
   }
 
@@ -951,7 +1141,7 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       if (tag == probe) continue;
 
       // basic probe denominator
-      if (cms2.mus_p4()[probe].Pt() < 10.0)                continue; // pt cut
+      if (cms2.mus_p4()[probe].Pt() < 5.0)                 continue; // pt cut
       if (fabs(cms2.mus_p4()[probe].Eta()) > 2.4)          continue; // eta cut
       //if (((cms2.mus_type()[probe]) & (1<<1)) == 0)        continue; // global muon
 
@@ -1098,7 +1288,7 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 
       // find pfcandidate index matching probe muon
       for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
-	if( cms2.pfcands_p4().at(ipf).pt() < 10.0        ) continue;
+	if( cms2.pfcands_p4().at(ipf).pt() < 5.0         ) continue;
 	if( cms2.pfcands_charge().at(ipf) == 0           ) continue;
 
 	float dr = dRbetweenVectors( cms2.pfcands_p4().at(ipf) , cms2.mus_p4()[probe] );
@@ -1120,6 +1310,9 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 	tkiso_new_pt3_   = trackIso(pfindex, 0.3, 0.05, false , 0.3);
 	tkiso_new_pt4_   = trackIso(pfindex, 0.3, 0.05, false , 0.4);
 	tkiso_new_pt5_   = trackIso(pfindex, 0.3, 0.05, false , 0.5);
+
+	struct myTrackIso myTrackIso=trackIso_struct(pfindex);
+	tkisov4_         = myTrackIso.iso_dr03_dz010_pt00;
       }
       else{
 	tkiso_old_       =  -1;
@@ -1130,6 +1323,7 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 	tkiso_new_pt3_   =  -1;
 	tkiso_new_pt4_   =  -1;
 	tkiso_new_pt5_   =  -1;
+	tkisov4_         =  -1;
       }
 
       isoch_           = muonIsoValuePF( probe , 0 , 0.3, 1.0, 0.1, 0);
@@ -1321,3 +1515,5 @@ float LeptonTreeMaker::GetAwayJetPt(LorentzVector lep1, LorentzVector lep2)
   if (jets.size() > 0 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(lep1,jets[0].first))>1.0) return jets[0].first.Pt();
   else return -999.9;
 }
+
+

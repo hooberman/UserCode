@@ -48,6 +48,7 @@ class LeptonTreeMaker {
                 bool realData = false,
                 TString cms2_json_file = "");
 
+
     private:
 
         bool loosefo(unsigned int index);
@@ -114,6 +115,7 @@ class LeptonTreeMaker {
 	Float_t tkiso_new_pt3_;
 	Float_t tkiso_new_pt4_;
 	Float_t tkiso_new_pt5_;
+	Float_t tkisov4_;
 	Float_t vtxweight_;
 	Float_t isoch_;
 
