@@ -208,16 +208,6 @@ bool passesCaloJetID (const LorentzVector &jetp4)
 
 //--------------------------------------------------------------------
 
-float ossusy_looper::gluinoPairCrossSection( float gluinomass ){
-
-  int   bin  = gg_xsec_hist->FindBin(gluinomass);
-  float xsec = gg_xsec_hist->GetBinContent(bin);
-
-  return xsec;
-}
-
-//--------------------------------------------------------------------
-
 float ossusy_looper::stopPairCrossSection( float stopmass ){
 
   // stop mass divisible by 10
@@ -693,28 +683,6 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     
     if( stop_xsec_hist == 0 ){
       cout << "Error, could not retrieve stop cross section hist, quitting" << endl;
-      exit(0);
-    }
-
-    //set gluino cross section file
-    gg_xsec_file = TFile::Open("reference_xSecs.root");
-  
-    if( !gg_xsec_file->IsOpen() ){
-      cout << "Error, could not open gluino cross section TFile, quitting" << endl;
-      exit(0);
-    }
-    
-    gg_xsec_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL");
-    
-    if( gg_xsec_hist == 0 ){
-      cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
-      exit(0);
-    }
-
-    gg_xsec_unc_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL_unc");
-    
-    if( gg_xsec_unc_hist == 0 ){
-      cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
       exit(0);
     }
 
@@ -2096,13 +2064,9 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	mG_ = -9999;
 	mL_ = -9999;
 
-	if( TString(prefix).Contains("T1") ){
-	  mG_ = sparm_mG();
-	  mL_ = sparm_mL();
-	  mF_ = sparm_mf();
-	  
-	  weight = lumi * gluinoPairCrossSection(mG_) * (1000./10000.);
-	  if( doTenPercent )	  weight *= 10;
+        if(strcmp(prefix,"T1lh") == 0){
+	  mG_ = -9; //sparm_mG();
+	  mL_ = -9; //sparm_mL();
 	}
 
 	else if( TString(prefix).Contains("LMscan") ){
@@ -2138,7 +2102,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  mL_ = sparm_mL();
 	  mF_ = sparm_mf();
 	  
-	  weight = lumi * stopPairCrossSection(mG_) * (1000./10000.);
+	  weight = lumi * stopPairCrossSection(mG_) * (1000./50000.);
 	  if( doTenPercent )	  weight *= 10;
 	}
 
@@ -5352,6 +5316,5 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   return eff;
 
 }
-
 
 
