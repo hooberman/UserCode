@@ -134,6 +134,7 @@ class LeptonTreeMaker {
 	Int_t   probepassiso_;
 
 	Float_t probepfpt_;
+	Float_t eoverpin_;
 
 	unsigned int nbl_;
 	unsigned int nbm_;

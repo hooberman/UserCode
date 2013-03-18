@@ -561,6 +561,8 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
   leptonTree.tree_->Branch("probepfpt"         , &probepfpt_		        ,"probepfpt/F");
 
+  leptonTree.tree_->Branch("probe_eoverpin"    , &eoverpin_		        ,"probe_eoverpin/F");
+
   leptonTree.tree_->Branch("HLT_Ele27_WP80_tag"	       , &HLT_Ele27_WP80_tag_		        	,"HLT_Ele27_WP80_tag/i");
   leptonTree.tree_->Branch("HLT_Ele27_WP80_probe"      , &HLT_Ele27_WP80_probe_		                ,"HLT_Ele27_WP80_probe/i");
 
@@ -951,6 +953,12 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
       probeiso_                   = electronIsoValuePF2012_FastJetEffArea_v3( probe , 0.3 , 0 , false );
       tagiso_                     = electronIsoValuePF2012_FastJetEffArea_v3( tag   , 0.3 , 0 , false );
 
+      probepfpt_ = -1;
+      int ipf1 = cms2.els_pfelsidx().at(probe);
+      if( ipf1 >= 0 ) probepfpt_ = cms2.pfels_p4().at(ipf1).pt();
+
+      eoverpin_  = cms2.els_eOverPIn ()[probe];
+
       // fill the tree - criteria the probe passed 
       // const std::vector<JetPair> &jets = getJets(jetType(), cms2.els_p4()[tag], cms2.els_p4()[probe], 0, 4.7, true, jet_corrector_pfL1FastJetL2L3_);
       // if (jets.size()>0)	leptonTree.jet1_ = jets.at(0).first;
@@ -1182,6 +1190,8 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
       probepfpt_ = -1;
       int ipf1 = cms2.mus_pfmusidx().at(probe);
       if( ipf1 >= 0 ) probepfpt_ = cms2.pfmus_p4().at(ipf1).pt();
+
+      eoverpin_  = -1;
 
       // fill the tree - event general variables
       leptonTree.eventSelection_ = LeptonTree::ZmmTagAndProbe;
@@ -1506,7 +1516,7 @@ void LeptonTreeMaker::SetCommonTreeVariables(LeptonTree &leptonTree, const doubl
   probepfpt_    = -1;
   probepassid_  = -1;
   probepassiso_ = -1;
-
+  eoverpin_     = -1;
 }
 
 float LeptonTreeMaker::GetAwayJetPt(LorentzVector lep1, LorentzVector lep2)
