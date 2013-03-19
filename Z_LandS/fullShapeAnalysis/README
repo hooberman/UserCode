@@ -1,23 +1,11 @@
-V00-03-07
-T5zzh: correct lumi, turn off vtx-reweighting FINAL RESULTS
-
-V00-03-06
-T5zzgmsb: correct lumi, turn off vtx-reweighting
-
-V00-03-05
-T5zzl: correct lumi, turn off vtx-reweighting
-
-V00-03-04
-T5zz: correct lumi, turn off vtx-reweighting
-
 V00-03-03
-T5zzgmsb: correct lumi, FINAL RESULTS
+T5zzgmsb: correct lumi, final results
 
 V00-03-02
-T5zzl: correct lumi, FINAL RESULTS
+T5zzl: correct lumi, final results
 
 V00-03-01
-T5zz: correct lumi, FINAL RESULTS
+T5zz: correct lumi, final results
 
 V00-03-00
 T5zz: correct lumi, final results
@@ -87,5 +75,3 @@ T5zz, njets >= 2
 
 ***V00-00-00***
 Initial try using T5zz and njets >= 2. Syst uncertainties were wrong --> DO NOT USE
-
-
