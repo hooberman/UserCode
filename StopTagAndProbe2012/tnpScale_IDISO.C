@@ -30,6 +30,29 @@ using namespace std;
 
 int iplot = 0;
 
+//------------------------------
+// print header for tables
+//------------------------------
+
+void printHeader( int leptype , char* type ){
+
+  cout << endl << endl;
+  cout << "\\hline" << endl << "\\hline" << endl;
+  if( leptype == 0 ){
+    cout << type << " & & \\\\" << endl;
+    cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.4442$ \\\\" << endl;
+  }
+  if( leptype == 1 ){
+    cout << type << "& & & \\\\" << endl;
+    cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
+  }
+  cout << "\\hline" << endl;
+}
+
+//------------------------------
+// print line in tables
+//------------------------------
+
 void printline(TH2F* h2)
 {
   for (int x = 1; x <= h2->GetXaxis()->GetNbins(); ++x) {
@@ -51,296 +74,9 @@ void printline(TH2F* h2)
   }
 }
 
-float getBinomialError( float num , float den ){
-
-  TGraphAsymmErrors* grtemp = new TGraphAsymmErrors();
-
-  TH1F* hnum = new TH1F("hnum","",1,0,1);
-  TH1F* hden = new TH1F("hden","",1,0,1);
-
-  hnum->SetBinContent(1,num);
-  hden->SetBinContent(1,den);
-
-  grtemp->BayesDivide(hnum,hden);
-
-  float err = 0.5 * ( grtemp->GetErrorYlow(0) + grtemp->GetErrorYhigh(0) );
-
-  delete hnum;
-  delete hden;
-
-  return err;
-}
-
-
-void plotDistribution( TChain* data , TChain *mc , TCut sel , TCut vtxweight , char* var , int nbins , float xmin , float xmax , char* xtitle , char* plottitle = "" , bool printplot = false , bool residual = false , bool log = false ){
-
-  //--------------------------------------
-  // define histograms and TGraphs
-  //--------------------------------------
-
-  TH1F* hdata      = new TH1F(Form("hdata_%i"     , iplot),Form("hdata_%i"    , iplot),nbins,xmin,xmax);
-  TH1F* hmc        = new TH1F(Form("hmc_%i"       , iplot),Form("hmc_%i"      , iplot),nbins,xmin,xmax);
-  TH1F* hmc_novtx  = new TH1F(Form("hmc_novtx_%i" , iplot),Form("hmc_novtx%i" , iplot),nbins,xmin,xmax);
-
-  hdata->Sumw2();
-  hmc->Sumw2();
-
-  TGraphAsymmErrors* grdata = new TGraphAsymmErrors();
-  TGraphAsymmErrors* grmc   = new TGraphAsymmErrors();
-
-  TH1F* hdata_denom = new TH1F(Form("hdata_denom_%i",iplot),"",nbins,xmin,xmax);
-  TH1F* hmc_denom   = new TH1F(Form("hmc_denom_%i"  ,iplot),"",nbins,xmin,xmax);
-
-  //--------------------------------------
-  // set up canvas and pads
-  //--------------------------------------
-
-  TCanvas *can = new TCanvas(Form("can_%i",iplot),Form("can_%i",iplot),600,600);
-  can->cd();
-  if( log ) gPad->SetLogy();
-
-  TPad *mainpad = new TPad("mainpad","mainpad",0.0,0.0,1.0,0.8);
-
-  if( residual ){
-    mainpad->Draw();
-    mainpad->cd();
-    if( log ) mainpad->SetLogy();
-  }
-
-  //--------------------------------------
-  // fill histos and TGraphs
-  //--------------------------------------
-
-  data->Draw(Form("min(%s,%f)>>hdata_%i"     , var,xmax-0.0001,iplot),sel);
-  mc  ->Draw(Form("min(%s,%f)>>hmc_%i"       , var,xmax-0.0001,iplot),sel*vtxweight);
-  mc  ->Draw(Form("min(%s,%f)>>hmc_novtx_%i" , var,xmax-0.0001,iplot),sel);
-
-  for( int ibin = 1 ; ibin <= nbins ; ibin++ ){
-    hdata_denom->SetBinContent(ibin,hdata->Integral());
-    hmc_denom->SetBinContent(ibin,hmc->Integral());
-  }
-
-  grdata->BayesDivide(hdata,hdata_denom);
-  grmc->BayesDivide(hmc_novtx,hmc_denom);
-
-  //--------------------------------------
-  // get efficiencies and errors
-  //--------------------------------------
-
-  /*
-  float ndata1     = (float) hdata->GetBinContent(1);
-  float ndata      = (float) hdata->Integral();
-  float effdata    = 1-ndata1 / ndata;
-
-  // TGraphAsymmErrors* grdata_temp = new TGraphAsymmErrors();
-  // TH1F* hdata_num_temp = new TH1F(Form("hdata_num_temp_%i",iplot),"",1,0,1);
-  // TH1F* hdata_den_temp = new TH1F(Form("hdata_den_temp_%i",iplot),"",1,0,1);
-  // hdata_num_temp->SetBinContent(1,ndata-ndata1);
-  // hdata_den_temp->SetBinContent(1,ndata);
-  // grdata_temp->BayesDivide(hdata_num_temp,hdata_den_temp);
-
-  //float effdataerr = sqrt(ndata1) / ndata;
-  float effdataerr = 0.5 * ( grdata->GetErrorYlow(0) + grdata->GetErrorYhigh(0) );
-  //float effdataerr = 0.5 * ( grdata_temp->GetErrorYlow(0) + grdata_temp->GetErrorYhigh(0) );
-
-  float nmc1       = (float) hmc->GetBinContent(1);
-  float nmc        = (float) hmc->Integral();
-  float effmc      = 1-nmc1 / nmc;
-  //float effmcerr   = hmc->GetBinError(1) / nmc;
-  float effmcerr   = 0.5 * ( grmc->GetErrorYlow(0) + grmc->GetErrorYhigh(0) );
-
-
-  float datatot = hdata->Integral();
-  float mctot   = hmc->Integral();
-  
-  cout << endl;
-  cout << plottitle << endl;
-
-  cout << "Data eff  " << Form("%.2f +/- %.3f",effdata,effdataerr) << endl;
-  cout << "MC   eff  " << Form("%.2f +/- %.3f",effmc  ,effmcerr)   << endl;
-  cout << "Data/MC   " << Form("%.2f +/- %.2f",ratio  ,ratioerr)   << endl;
-  */
-
-  float ndata    = hdata->Integral();
-  float ndata1   = hdata->Integral(2,20);
-  float ndata2   = hdata->Integral(3,20);
-  float ndata3   = hdata->Integral(4,20);
-  float ndata4   = hdata->Integral(5,20);
-  float ndata5   = hdata->Integral(6,20);
-
-  float nmc      = hmc->Integral();
-  float nmc1     = hmc->Integral(2,20);
-  float nmc2     = hmc->Integral(3,20);
-  float nmc3     = hmc->Integral(4,20);
-  float nmc4     = hmc->Integral(5,20);
-  float nmc5     = hmc->Integral(6,20);
-
-  float effdata1 = ndata1/ndata;
-  float effdata2 = ndata2/ndata;
-  float effdata3 = ndata3/ndata;
-  float effdata4 = ndata4/ndata;
-  float effdata5 = ndata5/ndata;
-
-  float effmc1   = nmc1/nmc;
-  float effmc2   = nmc2/nmc;
-  float effmc3   = nmc3/nmc;
-  float effmc4   = nmc4/nmc;
-  float effmc5   = nmc5/nmc;
-
-  float effdata1err = getBinomialError(ndata1,ndata);
-  float effdata2err = getBinomialError(ndata2,ndata);
-  float effdata3err = getBinomialError(ndata3,ndata);
-  float effdata4err = getBinomialError(ndata4,ndata);
-  float effdata5err = getBinomialError(ndata5,ndata);
-
-  float effmc1err   = getBinomialError(nmc1,nmc);
-  float effmc2err   = getBinomialError(nmc2,nmc);
-  float effmc3err   = getBinomialError(nmc3,nmc);
-  float effmc4err   = getBinomialError(nmc4,nmc);
-  float effmc5err   = getBinomialError(nmc5,nmc);
-
-  float ratio1      = effdata1/effmc1;
-  float ratio2      = effdata2/effmc2;
-  float ratio3      = effdata3/effmc3;
-  float ratio4      = effdata4/effmc4;
-  float ratio5      = effdata5/effmc5;
-
-  float ratio1err   = ratio1 * sqrt(pow(effdata1err/effdata1,2)+pow(effmc1err/effmc1,2));
-  float ratio2err   = ratio2 * sqrt(pow(effdata2err/effdata2,2)+pow(effmc2err/effmc2,2));
-  float ratio3err   = ratio3 * sqrt(pow(effdata3err/effdata3,2)+pow(effmc3err/effmc3,2));
-  float ratio4err   = ratio4 * sqrt(pow(effdata4err/effdata4,2)+pow(effmc4err/effmc4,2));
-  float ratio5err   = ratio5 * sqrt(pow(effdata5err/effdata5,2)+pow(effmc5err/effmc5,2));
-
-  cout << endl << endl << plottitle << endl;
-
-  int left = 20;
-
-
-  // char* delimstart = "|";
-  // char* delim      = "|";
-  // char* delimend   = "|";
-  // char* pm         = "+/-";
-
-  char* delimstart = "";
-  char* delim      = "&";
-  char* delimend   = "\\\\";
-  char* pm         = "$\\pm$";
-
-  cout << delimstart << setw(10) << "" << setw(4)
-       << delim << setw(left) << "$>$ 1 GeV" << setw(4)
-       << delim << setw(left) << "$>$ 2 GeV" << setw(4)
-       << delim << setw(left) << "$>$ 3 GeV" << setw(4) 
-       << delim << setw(left) << "$>$ 4 GeV" << setw(4)
-       << delim << setw(left) << "$>$ 5 GeV" << setw(4) 
-       << delimend << endl;
-
-  cout << delimstart << setw(10) << "data" << setw(4)
-       << delim << setw(left) << Form("%.3f %s %.4f",effdata1,pm,effdata1err) << setw(4)
-       << delim << setw(left) << Form("%.3f %s %.4f",effdata2,pm,effdata2err) << setw(4)
-       << delim << setw(left) << Form("%.3f %s %.4f",effdata3,pm,effdata3err) << setw(4) 
-       << delim << setw(left) << Form("%.3f %s %.4f",effdata4,pm,effdata4err) << setw(4)
-       << delim << setw(left) << Form("%.3f %s %.4f",effdata5,pm,effdata5err) << setw(4) 
-       << delimend << endl;
-
-  cout << delimstart << setw(10) << "mc" << setw(4)
-       << delim << setw(left) << Form("%.3f %s %.4f",effmc1,pm,effmc1err) << setw(4)
-       << delim << setw(left) << Form("%.3f %s %.4f",effmc2,pm,effmc2err) << setw(4)
-       << delim << setw(left) << Form("%.3f %s %.4f",effmc3,pm,effmc3err) << setw(4) 
-       << delim << setw(left) << Form("%.3f %s %.4f",effmc4,pm,effmc4err) << setw(4)
-       << delim << setw(left) << Form("%.3f %s %.4f",effmc5,pm,effmc5err) << setw(4) 
-       << delimend << endl;
-
-  cout << delimstart << setw(10) << "data/mc" << setw(4)
-       << delim << setw(left) << Form("%.2f %s %.2f",ratio1,pm,ratio1err) << setw(4)
-       << delim << setw(left) << Form("%.2f %s %.2f",ratio2,pm,ratio2err) << setw(4)
-       << delim << setw(left) << Form("%.2f %s %.2f",ratio3,pm,ratio3err) << setw(4) 
-       << delim << setw(left) << Form("%.2f %s %.2f",ratio4,pm,ratio4err) << setw(4)
-       << delim << setw(left) << Form("%.2f %s %.2f",ratio5,pm,ratio5err) << setw(4) 
-       << delimend << endl;
-
-  //--------------------------------------
-  // draw stuff
-  //--------------------------------------
-
-  hdata->Scale(1.0/hdata->Integral());
-  hmc->Scale(1.0/hmc->Integral());
-
-  if( log ) hmc->GetYaxis()->SetRangeUser(0.0001,5);  
-  else      hmc->GetYaxis()->SetRangeUser(0.0,1);  
-
-  hmc->GetXaxis()->SetTitle(xtitle);
-  hmc->SetLineColor(2);
-  hmc->SetMarkerColor(2);
-  hmc->DrawNormalized("hist");
-  hmc->DrawNormalized("sameE1");
-  hdata->SetLineColor(4);
-  hdata->SetMarkerColor(4);
-  hdata->Draw("sameE1");
-
-  grdata->SetLineColor(6);
-  grmc->SetLineColor(7);
-  //grdata->Draw("sameP");
-  //grmc->Draw("sameP");
-
-  TLegend *leg = new TLegend(0.5,0.7,0.7,0.9);
-  leg->AddEntry(hdata , "data" , "lp");
-  leg->AddEntry(hmc   , "MC"   , "lp");
-  leg->SetBorderSize(0);
-  leg->SetFillColor(0);			       
-  leg->Draw();
-
-  TLatex *t = new TLatex();
-  t->SetNDC();
-
-  if( TString(plottitle).Contains("el") ) t->DrawLatex(0.6,0.6,"electrons");
-  if( TString(plottitle).Contains("mu") ) t->DrawLatex(0.6,0.6,"muons");
-
-  if( TString(plottitle).Contains("0j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 0");
-  if( TString(plottitle).Contains("1j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 1");
-  if( TString(plottitle).Contains("2j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 2");
-  if( TString(plottitle).Contains("3j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 3");
-  if( TString(plottitle).Contains("4j") ) t->DrawLatex(0.6,0.5,"n_{jets} #geq 4");
-
-  //--------------------------------------
-  // draw residual plots
-  //--------------------------------------
-
-  if( residual ){
-    can->cd();
-  
-    TPad *respad = new TPad("respad","respad",0.0,0.8,1.0,1.0);
-    respad->Draw();
-    respad->cd();
-    respad->SetGridy();
-
-    TH1F* hratio = (TH1F*) hdata->Clone(Form("hratio_%i",iplot));
-    hratio->Divide(hmc);
-
-    hratio->SetMarkerColor(1);
-    hratio->SetLineColor(1);
-    hratio->Draw();
-    hratio->GetYaxis()->SetRangeUser(0.5,1.5);
-    hratio->GetYaxis()->SetNdivisions(5);
-    hratio->GetYaxis()->SetLabelSize(0.2);
-    hratio->GetXaxis()->SetLabelSize(0.0);
-  
-    TLine line;
-    line.DrawLine(xmin,1.0,xmax,1.0);
-  }
-  
-  //data->Scan("run:lumi:event:probe->pt():probe->eta():tkisonew:met:mt:njets:nbl:nbm",sel+"tkisonew>20");
-  //data->Scan("run:lumi:event:probe->pt():probe->eta():tkisonew:met:mt:njets:nbl:nbm",sel);
-
-  if( printplot ) can->Print(Form("plots/%s.pdf",plottitle));
-
-  iplot++;
-
-  // TCanvas *c2 = new TCanvas();
-  // c2->cd();
-  // grdata->Draw("AP");
-
-}
-
+//------------------------------
+// make data/MC comparison plot
+//------------------------------
 
 void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut denom , char* var , int nbins , float xmin , float xmax , char* xtitle , char* ytitle){
 
@@ -401,22 +137,22 @@ void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut deno
   TGraphAsymmErrors *grmc = new TGraphAsymmErrors();
   grmc->BayesDivide(hpass_mc,hall_mc);
 
-  cout << "data all  " << hall_data->GetBinContent(10) << endl;
-  cout << "data pass " << hpass_data->GetBinContent(10) << endl;
-  cout << "data eff  " << hpass_data->GetBinContent(10) / hall_data->GetBinContent(10) << endl;
+  cout << "data all  " << hall_data->GetBinContent(2) << endl;
+  cout << "data pass " << hpass_data->GetBinContent(2) << endl;
+  cout << "data eff  " << hpass_data->GetBinContent(2) / hall_data->GetBinContent(2) << endl;
 
   Double_t x;
   Double_t y;
-  grdata->GetPoint(9,x,y);
+  grdata->GetPoint(1,x,y);
   cout << "data eff2 " << y << endl;
 
-  cout << "MC all  " << hall_mc->GetBinContent(10) << endl;
-  cout << "MC pass " << hpass_mc->GetBinContent(10) << endl;
-  cout << "MC eff  " << hpass_mc->GetBinContent(10) / hall_mc->GetBinContent(10) << endl;
+  cout << "MC all  " << hall_mc->GetBinContent(2) << endl;
+  cout << "MC pass " << hpass_mc->GetBinContent(2) << endl;
+  cout << "MC eff  " << hpass_mc->GetBinContent(2) / hall_mc->GetBinContent(2) << endl;
 
   Double_t xmc;
   Double_t ymc;
-  grmc->GetPoint(9,xmc,ymc);
+  grmc->GetPoint(1,xmc,ymc);
   cout << "MC eff2 " << ymc << endl;
 
   gPad->SetGridx();
@@ -480,6 +216,9 @@ void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut deno
   iplot ++;
 }
 
+//------------------------------
+// main function
+//------------------------------
 
 void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
 
@@ -505,19 +244,6 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   //char* suffix = "_2jets";
   //char* suffix = "_probept100";
 
-  //chmc->  Add(Form("smurf/ZJets_V00-00-01/dymm_test_tenPercent.root");
-  // chmc->  Add(Form("smurf/ZJets_%s/merged%s.root",version,suffix));
-
-  // if( leptype == 1 ){
-  //   chdata->Add(Form("smurf/SingleMu2012A_%s/merged_json%s.root",version,suffix));
-  //   chdata->Add(Form("smurf/SingleMu2012B_%s/merged_json%s.root",version,suffix));
-  //   chdata->Add(Form("smurf/SingleMu2012C_%s/merged_json%s.root",version,suffix));
-  // }
-  // else{
-  //   chdata->Add(Form("smurf/SingleEl2012A_%s/merged_json%s.root",version,suffix));
-  //   chdata->Add(Form("smurf/SingleEl2012B_%s/merged_json%s.root",version,suffix));
-  //   chdata->Add(Form("smurf/SingleEl2012C_%s/merged_json%s.root",version,suffix));
-  // }
 
   chmc->  Add(Form("smurf/ZJetsFull_%s/merged%s.root",version,suffix));
 
@@ -538,71 +264,83 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   // bins 
   //----------------------------------------
 
-  //float ptbin[] = {10., 15., 20., 30., 40., 50., 7000.};
-  // float ptbin[] = { 30. , 40. , 50. , 60. , 80.0 , 100.0 , 120.0 , 150.0 , 7000.};
+  // float ptbin[]  = {10., 15., 20., 30., 40., 50., 7000.};
+  // float ptbin[]  = { 30. , 40. , 50. , 60. , 80.0 , 100.0 , 120.0 , 150.0 , 7000.};
   // float etabin[] = {0, 0.8, 1.5, 2.1};
   // int nptbin=8;
   // int netabin=3;
 
+  // float ptbin[]  = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0 , 500.0 , 1000.0 , 10000000.0};
+  // int   nptbin   = 12;
+
+  // float etabin[] = {0,2.1};
+  // int   netabin  = 1;
+
   float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0, 10000.0};
   int   nptbin  = 10;
 
-  // float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0 , 500.0 , 1000.0 , 10000000.0};
-  // int   nptbin  = 12;
-  
   float etabin[4];
   int   netabin = 0;
 
   if( leptype == 1 ){
     cout << "DOING MUON ETA BINS" << endl;
     netabin=3;
-    etabin[] = {0, 0.8, 1.5, 2.1};
-
+    etabin[0] = 0.0;
+    etabin[1] = 0.8;
+    etabin[2] = 1.5;
+    etabin[3] = 2.1;
   }
 
-  cout << "DOING ELECTRON ETA BINS" << endl;
-  float etabin[] = {0, 0.8, 1.4442};
-  int   netabin=2;
+  if( leptype == 0 ){
+    cout << "DOING ELECTRON ETA BINS" << endl;
+    netabin=2;
+    etabin[0] = 0.0;
+    etabin[1] = 0.8;
+    etabin[2] = 1.4442;
 
-  // float etabin[] = {0,2.1};
-  // int   netabin=1;
+    // netabin=1;
+    // etabin[0] = 0.0;
+    // etabin[1] = 1.4442;
+  }
 
-  //
-  // histogram
-  //
+
   //deno
-  TH2F *hmcid_deno 	= new TH2F("hmcid_deno", "hmcid_deno", nptbin, ptbin, netabin, etabin);
-  TH2F *hmciso_deno 	= new TH2F("hmciso_deno", "hmciso_deno", nptbin, ptbin, netabin, etabin);
-  TH2F *hdataid_deno 	= new TH2F("hdataid_deno", "hdataid_deno", nptbin, ptbin, netabin, etabin);
+  TH2F *hmcid_deno 	= new TH2F("hmcid_deno"   , "hmcid_deno"   , nptbin, ptbin, netabin, etabin);
+  TH2F *hmciso_deno 	= new TH2F("hmciso_deno"  , "hmciso_deno"  , nptbin, ptbin, netabin, etabin);
+  TH2F *hdataid_deno 	= new TH2F("hdataid_deno" , "hdataid_deno" , nptbin, ptbin, netabin, etabin);
   TH2F *hdataiso_deno	= new TH2F("hdataiso_deno", "hdataiso_deno", nptbin, ptbin, netabin, etabin);
   hmcid_deno->Sumw2();
   hmciso_deno->Sumw2();
   hdataid_deno->Sumw2();
   hdataiso_deno->Sumw2();
+
   //num
-  TH2F *hmcid_num 	= new TH2F("hmcid_num", "hmcid_num", nptbin, ptbin, netabin, etabin);
-  TH2F *hmciso_num 	= new TH2F("hmciso_num", "hmciso_num", nptbin, ptbin, netabin, etabin);
-  TH2F *hdataid_num 	= new TH2F("hdataid_num", "hdataid_num", nptbin, ptbin, netabin, etabin);
-  TH2F *hdataiso_num 	= new TH2F("hdataiso_num", "hdataiso_num", nptbin, ptbin, netabin, etabin);
+  TH2F *hmcid_num 	= new TH2F("hmcid_num"    , "hmcid_num"    , nptbin, ptbin, netabin, etabin);
+  TH2F *hmciso_num 	= new TH2F("hmciso_num"   , "hmciso_num"   , nptbin, ptbin, netabin, etabin);
+  TH2F *hdataid_num 	= new TH2F("hdataid_num"  , "hdataid_num"  , nptbin, ptbin, netabin, etabin);
+  TH2F *hdataiso_num 	= new TH2F("hdataiso_num" , "hdataiso_num" , nptbin, ptbin, netabin, etabin);
   hmcid_num->Sumw2();
   hmciso_num->Sumw2();
   hdataid_num->Sumw2();
   hdataiso_num->Sumw2();
+
   // eff
-  TH2F *hmcid 	= new TH2F("hmcid", "hmcid", nptbin, ptbin, netabin, etabin);
-  TH2F *hmciso 	= new TH2F("hmciso", "hmciso", nptbin, ptbin, netabin, etabin);
-  TH2F *hdataid 	= new TH2F("hdataid", "hdataid", nptbin, ptbin, netabin, etabin);
-  TH2F *hdataiso 	= new TH2F("hdataiso", "hdataiso", nptbin, ptbin, netabin, etabin);
+  TH2F *hmcid 	        = new TH2F("hmcid"        , "hmcid"        , nptbin, ptbin, netabin, etabin);
+  TH2F *hmciso 	        = new TH2F("hmciso"       , "hmciso"       , nptbin, ptbin, netabin, etabin);
+  TH2F *hdataid 	= new TH2F("hdataid"      , "hdataid"      , nptbin, ptbin, netabin, etabin);
+  TH2F *hdataiso 	= new TH2F("hdataiso"     , "hdataiso"     , nptbin, ptbin, netabin, etabin);
   hmcid->Sumw2();
   hmciso->Sumw2();
   hdataid->Sumw2();
   hdataiso->Sumw2();
+
   // SF
-  TH2F *hsfid 	= new TH2F("hsfid", "hsfid", nptbin, ptbin, netabin, etabin);
-  TH2F *hsfiso 	= new TH2F("hsfiso", "hsfiso", nptbin, ptbin, netabin, etabin);
+  TH2F *hsfid 	= new TH2F("hsfid"  , "hsfid" , nptbin, ptbin, netabin, etabin);
+  TH2F *hsfiso 	= new TH2F("hsfiso" , "hsfiso", nptbin, ptbin, netabin, etabin);
   hsfid->Sumw2();
   hsfiso->Sumw2();
 
+  // TCuts
   TCut muid ("(leptonSelection&65536)==65536");     // mu id 
   TCut muiso("(leptonSelection&131072)==131072");   // mu iso 
   TCut elid ("(leptonSelection&8)==8");             // ele id 
@@ -619,13 +357,15 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   TCut eltnptrig("HLT_Ele27_WP80_tag > 0");
 
   TCut tag_eta21("abs(tag->eta())<2.1");
+  TCut tag_eta14("abs(tag->eta())<1.4442");
   TCut tag_pt30("tag->pt()>30.0");
+  TCut probe_eta21("abs(probe->eta())<2.1");
+  TCut probe_eta14("abs(probe->eta())<1.4442");
+
+  TCut mutrk("mutrk==1");
 
   TCut met30("met<30");
   TCut nbl0("nbl==0");
-  TCut probe_eta21("abs(probe->eta())<2.1");
-
-  TCut mutrk("mutrk==1");
 
   TCut njets0("njets>=0");
   TCut njets1("njets>=1");
@@ -645,9 +385,8 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   tnpcut += zmass;
   //tnpcut += tightzmass;
   tnpcut += os;
-  tnpcut += tag_eta21;
   tnpcut += tag_pt30;
-  tnpcut += probe_eta21;
+
   tnpcut += met30;
   tnpcut += nbl0;
 
@@ -656,6 +395,8 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   char* lepchar = "";
 
   if( leptype == 0 ){
+    tnpcut += tag_eta14;
+    tnpcut += probe_eta14;
     tnpcut += eltnp;
     tnpcut += eltnptrig;
     lepid   = TCut(elid);
@@ -663,6 +404,8 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
     lepchar = "el";
   }
   else if( leptype == 1 ){
+    tnpcut += tag_eta21;
+    tnpcut += probe_eta21;
     //tnpcut += mutrk;
     //tnpcut += mud0;
     //tnpcut += mudz;
@@ -708,45 +451,25 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   //hmcid->Draw("text");
 
 
-  // print table
-  cout << "\\hline" << endl << "\\hline" << endl;
-  cout << "MC ID & & & \\\\" << endl;
-  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
-  cout << "\\hline" << endl;
+  printHeader( leptype , "MC ID" );
   printline(hmcid);
 
-  cout << "\\hline" << endl << "\\hline" << endl;
-  cout << "MC ISO  & & & \\\\" << endl;
-  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
-  cout << "\\hline" << endl;
+  printHeader( leptype , "MC ISO" );
   printline(hmciso);
 
-  cout << "\\hline" << endl << "\\hline" << endl;
-  cout << "DATA ID & & & \\\\" << endl;
-  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
-  cout << "\\hline" << endl;
+  printHeader( leptype , "DATA ID" );
   printline(hdataid);
 
-  cout << "\\hline" << endl << "\\hline" << endl;
-  cout << "DATA ISO  & & & \\\\" << endl;
-  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
-  cout << "\\hline" << endl;
+  printHeader( leptype , "DATA ISO" );
   printline(hdataiso);
 
-  cout << "\\hline" << endl << "\\hline" << endl;
-  cout << " Scale Factor ID  & & & \\\\" << endl;
-  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
-  cout << "\\hline" << endl;
+  printHeader( leptype , "Scale Factor ID" );
   printline(hsfid);
 
-  cout << "\\hline" << endl << "\\hline" << endl;
-  cout << "Scale Factor ISO & & & \\\\" << endl;
-  cout <<  "\\pt\\ range [GeV] & $|\\eta|<0.8$ & $0.8<|\\eta|<1.5$ & $1.5<|\\eta|<2.1$ \\\\" << endl;
-  cout << "\\hline" << endl;
+  printHeader( leptype , "Scale Factor ISO" );
   printline(hsfiso);
 
   cout << "\\hline" << endl << "\\hline" << endl;
-
 
   TCanvas *c_iso[10];
   TCanvas *c_id[10];
