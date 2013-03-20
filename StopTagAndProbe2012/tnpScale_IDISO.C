@@ -356,6 +356,13 @@ void printHisto( TCanvas *can , TChain *data , TChain *mc , TCut num , TCut deno
   float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0 , 350.0 };
   int   nptbin  = 10;
 
+  // float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0 , 500.0 , 1000.0 , 1100.0 };
+  // int   nptbin  = 12;
+
+  xmax=ptbin[nptbin];
+
+  cout << "Using xmax " << xmax << endl;
+
   //TH1F* hpass   = new TH1F(Form("hpass_%i",iplot),Form("hpass_%i",iplot),nptbin,ptbin);
   //TH1F* hall    = new TH1F(Form("hall_%i" ,iplot),Form("hall_%i" ,iplot),nptbin,ptbin);
 
@@ -493,23 +500,38 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   TChain *chmc   = new TChain("leptons");
   TChain *chdata = new TChain("leptons");
 
-  char* version = (char*) "V00-00-03";
+  char* version = (char*) "V00-00-06";
   char* suffix = "";
   //char* suffix = "_2jets";
   //char* suffix = "_probept100";
 
   //chmc->  Add(Form("smurf/ZJets_V00-00-01/dymm_test_tenPercent.root");
-  chmc->  Add(Form("smurf/ZJets_%s/merged%s.root",version,suffix));
+  // chmc->  Add(Form("smurf/ZJets_%s/merged%s.root",version,suffix));
+
+  // if( leptype == 1 ){
+  //   chdata->Add(Form("smurf/SingleMu2012A_%s/merged_json%s.root",version,suffix));
+  //   chdata->Add(Form("smurf/SingleMu2012B_%s/merged_json%s.root",version,suffix));
+  //   chdata->Add(Form("smurf/SingleMu2012C_%s/merged_json%s.root",version,suffix));
+  // }
+  // else{
+  //   chdata->Add(Form("smurf/SingleEl2012A_%s/merged_json%s.root",version,suffix));
+  //   chdata->Add(Form("smurf/SingleEl2012B_%s/merged_json%s.root",version,suffix));
+  //   chdata->Add(Form("smurf/SingleEl2012C_%s/merged_json%s.root",version,suffix));
+  // }
+
+  chmc->  Add(Form("smurf/ZJetsFull_%s/merged%s.root",version,suffix));
 
   if( leptype == 1 ){
-    chdata->Add(Form("smurf/SingleMu2012A_%s/merged_json%s.root",version,suffix));
-    chdata->Add(Form("smurf/SingleMu2012B_%s/merged_json%s.root",version,suffix));
-    chdata->Add(Form("smurf/SingleMu2012C_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleMu2012AFull_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleMu2012BFull_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleMu2012CFull_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleMu2012DFull_%s/merged_json%s.root",version,suffix));
   }
   else{
-    chdata->Add(Form("smurf/SingleEl2012A_%s/merged_json%s.root",version,suffix));
-    chdata->Add(Form("smurf/SingleEl2012B_%s/merged_json%s.root",version,suffix));
-    chdata->Add(Form("smurf/SingleEl2012C_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleEl2012AFull_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleEl2012BFull_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleEl2012CFull_%s/merged_json%s.root",version,suffix));
+    chdata->Add(Form("smurf/SingleEl2012DFull_%s/merged_json%s.root",version,suffix));
   }
 
   //----------------------------------------
@@ -525,12 +547,21 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0, 10000.0};
   int   nptbin  = 10;
 
-  //cout << "DOING MUON ETA BINS" << endl;
-  // float etabin[] = {0, 0.8, 1.5, 2.1};
-  // int   netabin=3;
+  // float ptbin[] = { 20., 30. , 40. , 50. , 60. , 80.0 , 100.0 , 150.0 , 200.0 , 300.0 , 500.0 , 1000.0 , 10000000.0};
+  // int   nptbin  = 12;
   
+  float etabin[4];
+  int   netabin = 0;
+
+  if( leptype == 1 ){
+    cout << "DOING MUON ETA BINS" << endl;
+    netabin=3;
+    etabin[] = {0, 0.8, 1.5, 2.1};
+
+  }
+
   cout << "DOING ELECTRON ETA BINS" << endl;
-  float etabin[] = {0, 1.5, 2.1};
+  float etabin[] = {0, 0.8, 1.4442};
   int   netabin=2;
 
   // float etabin[] = {0,2.1};
@@ -605,6 +636,9 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
   TCut mud0("mud0 < 0.02");
   TCut mudz("mudz < 0.5");
 
+  // TCut mud0("mud0 < 0.2");
+  // TCut mudz("mudz < 1.0");
+
   //TCut tnpcut   = "abs(tagAndProbeMass-91)<15 && (eventSelection&2)==2 && HLT_IsoMu30_eta2p1_tag>0 && qProbe*qTag<0 && abs(tag->eta())<2.1 && tag->pt()>30.0"; 
 
   TCut tnpcut;
@@ -629,9 +663,9 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
     lepchar = "el";
   }
   else if( leptype == 1 ){
-    tnpcut += mutrk;
-    tnpcut += mud0;
-    tnpcut += mudz;
+    //tnpcut += mutrk;
+    //tnpcut += mud0;
+    //tnpcut += mudz;
     tnpcut += mutnp;
     tnpcut += mutnptrig;
     lepid   = TCut(muid);
@@ -716,8 +750,8 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
 
   TCanvas *c_iso[10];
   TCanvas *c_id[10];
-  /*
-  for( int i = 0 ; i < 5 ; i++ ){
+
+  for( int i = 0 ; i < 1 ; i++ ){
 
     TCut mysel;
     if     ( i==0 ) mysel = TCut(tnpcut+njets0);
@@ -737,7 +771,7 @@ void tnpScale_IDISO( int leptype = 1, bool printplot = false ) {
     if( printplot ) c_id[i]->Print(Form("plots/%s_id_njets%i.pdf",lepchar,i));
 
   }
-  */
+
   /*
 
   //---------------------------
