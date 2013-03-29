@@ -648,6 +648,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
                              JetTypeEnum jetType, MetTypeEnum metType, ZVetoEnum zveto, FREnum frmode, bool doFakeApp, bool calculateTCMET)
 {
 
+  cout << "-----------------------------------------------------------------------------------------" << endl;
+  cout << "REDUCE LEPTON PT TO 5 GEV, MIN MASS 8 SAVING T1lh dm < 100 GeV!!!!!!!!!!!!!!!!!!" << endl;
+  cout << "-----------------------------------------------------------------------------------------" << endl;
+
   bool isData = false;
   if( TString(prefix).Contains("data")  ){
     cout << "DATA!!!" << endl;
@@ -697,23 +701,16 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     }
 
     //set gluino cross section file
-    gg_xsec_file = TFile::Open("reference_xSecs.root");
+    gg_xsec_file = TFile::Open("reference_xSec_mg2TeV.root");
   
     if( !gg_xsec_file->IsOpen() ){
       cout << "Error, could not open gluino cross section TFile, quitting" << endl;
       exit(0);
     }
     
-    gg_xsec_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL");
+    gg_xsec_hist        = (TH1D*) gg_xsec_file->Get("gluino");
     
     if( gg_xsec_hist == 0 ){
-      cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
-      exit(0);
-    }
-
-    gg_xsec_unc_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL_unc");
-    
-    if( gg_xsec_unc_hist == 0 ){
       cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
       exit(0);
     }
@@ -737,8 +734,10 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
   else if( g_trig == e_highpt ){
     cout << "Doing 20,10 selection" << endl;
-    minpt = 10.;
-    maxpt = 20.;
+    //minpt = 10.;
+    minpt = 5.; //CHANGED
+    //maxpt = 20.;
+    maxpt = 5.; //CHANGED
     htcut = 100.;
     dir   = "highpt";
     highpt = true;
@@ -882,6 +881,11 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 
       cms2.GetEntry(z);
       InitBaby();
+
+      //CHANGED
+      if(strcmp(prefix,"T1lh") == 0){
+	if( sparm_mG() - sparm_mL() > 100 ) continue;
+      }
 
       if( doGenSelection ){
 
@@ -1218,7 +1222,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         }
           
         for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
-          if( mus_p4().at(imu).pt() < 10 )           continue;
+          //if( mus_p4().at(imu).pt() < 10 )           continue;
+          if( mus_p4().at(imu).pt() < 5 )           continue; // CHANGED
           if( !muonId( imu , OSGeneric_v3 ))         continue;
           goodLeptons.push_back( mus_p4().at(imu) );
           ngoodmu_++;
@@ -1245,7 +1250,8 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
         if( hyp_lt_id()[i] * hyp_ll_id()[i] > 0 )                               continue;
         if( TMath::Max( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < maxpt )   continue;
         if( TMath::Min( hyp_ll_p4()[i].pt() , hyp_lt_p4()[i].pt() ) < minpt )   continue;
-        if( hyp_p4()[i].mass() < 12 )                                           continue;
+        //if( hyp_p4()[i].mass() < 12 )                                           continue;
+        if( hyp_p4()[i].mass() < 8 )                                            continue; //CHANGED
 
         float FRweight = 1;
 
@@ -2096,7 +2102,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	mG_ = -9999;
 	mL_ = -9999;
 
-	if( TString(prefix).Contains("T1") ){
+        if(strcmp(prefix,"T1lh") == 0){
 	  mG_ = sparm_mG();
 	  mL_ = sparm_mL();
 	  mF_ = sparm_mf();
@@ -2138,7 +2144,7 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
 	  mL_ = sparm_mL();
 	  mF_ = sparm_mf();
 	  
-	  weight = lumi * stopPairCrossSection(mG_) * (1000./10000.);
+	  weight = lumi * stopPairCrossSection(mG_) * (1000./50000.);
 	  if( doTenPercent )	  weight *= 10;
 	}
 
@@ -5352,6 +5358,5 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   return eff;
 
 }
-
 
 
