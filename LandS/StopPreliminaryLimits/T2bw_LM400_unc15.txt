@@ -3,12 +3,12 @@ jmax 1  number of backgrounds
 kmax 2  number of nuisance parameters (sources of systematical uncertainties)
 ------------
 bin         1
-observation 11
+observation 4
 ------------
 bin             1      1
 process       signal  background
 process         0      1
-rate            1    11.0
+rate            1    4.2
 ------------
 deltaS  lnN   1.10    -     uncertainty on signal
-deltaB  lnN     -   1.38    uncertainty on background
+deltaB  lnN     -   1.15    uncertainty on background
