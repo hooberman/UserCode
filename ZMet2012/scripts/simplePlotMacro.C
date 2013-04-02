@@ -227,8 +227,9 @@ void simplePlotMacro( bool printplots = false ){
   TCut nu("ngennu>0");
   //TCut bvetocut("nbm==0");
   TCut bvetocut;
-  if( TString(bvetochar).Contains("Loose")  ) bvetocut = TCut("nbcsvl==0");
-  if( TString(bvetochar).Contains("Medium") ) bvetocut = TCut("nbcsvm==0");
+  //if( TString(bvetochar).Contains("Loose")  ) bvetocut = TCut("nbcsvl==0");
+  //if( TString(bvetochar).Contains("Medium") ) bvetocut = TCut("nbcsvm==0");
+  bvetocut = TCut("nbcsvm==0");
   
   TCut njets3_40("njets40>=3");
   TCut njets2_40("njets40>=2");
@@ -342,8 +343,8 @@ void simplePlotMacro( bool printplots = false ){
   vector<char*> predictedHisto;
 
   observedHisto.push_back((char*)"metObserved");        predictedHisto.push_back((char*)"metPredicted");
-  observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
-  observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
+  // observedHisto.push_back((char*)"metObserved_ee");     predictedHisto.push_back((char*)"metPredicted_ee");
+  // observedHisto.push_back((char*)"metObserved_mm");     predictedHisto.push_back((char*)"metPredicted_mm");
 
 
   //-----------------------------------
