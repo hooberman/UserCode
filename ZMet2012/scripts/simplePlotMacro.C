@@ -457,9 +457,12 @@ void simplePlotMacro( bool printplots = false ){
 
     TCanvas *ctemp = new TCanvas();
     ctemp->cd();
-    chwz->  Draw(Form("%s>>h_wz_%i"   , metvar,i),mysel*weight);
-    chzz->  Draw(Form("%s>>h_zz_%i"   , metvar,i),mysel*weight*zzxsecweight);
-    chrare->Draw(Form("%s>>h_rare_%i" , metvar,i),(mysel+zdilep)*weight);
+    //chwz->  Draw(Form("%s>>h_wz_%i"   , metvar,i),mysel*weight);
+    //chzz->  Draw(Form("%s>>h_zz_%i"   , metvar,i),mysel*weight*zzxsecweight);
+    //chrare->Draw(Form("%s>>h_rare_%i" , metvar,i),(mysel+zdilep)*weight);
+    chwz->  Draw(Form("min(%s,%f)>>h_wz_%i"   , metvar,metmax-0.001,i),mysel*weight);
+    chzz->  Draw(Form("min(%s,%f)>>h_zz_%i"   , metvar,metmax-0.001,i),mysel*weight*zzxsecweight);
+    chrare->Draw(Form("min(%s,%f)>>h_rare_%i" , metvar,metmax-0.001,i),(mysel+zdilep)*weight);
     delete ctemp;
 
     h_vz[i]     = (TH1F*) h_wz[i]->Clone(Form("h_vz_%i",i));
@@ -684,6 +687,7 @@ void simplePlotMacro( bool printplots = false ){
     hsysterr[i] = new TH1F(Form("hsysterr_%i",i),Form("hsysterr_%i",i),nbins,xbins);
 
     for( unsigned int ibin = 0 ; ibin < nbins ; ++ibin ){
+
       int bin      = h_sf[i]->FindBin(bins[ibin]);
       int binhigh  = 1000;
 
