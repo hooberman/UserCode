@@ -27,6 +27,7 @@
 
 const bool debug          = true;
 const bool vtxreweight    = true;
+const bool bveto          = false;
 
 using namespace std;
 
@@ -46,6 +47,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
   if( vtxreweight ) cout << "Doing vtx reweighting" << endl;
   else              cout << "NO vtx reweighting"    << endl;
 
+  if( bveto )       cout << "Doing b-veto" << endl;
+  else              cout << "NO b-veto"    << endl;
+
   int npass = 0;
   bookHistos();
   
@@ -62,7 +66,13 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
   TH1F* reweightHist[5];
 
   if( vtxreweight ){ 
-    TFile *reweightFile = reweightFile = TFile::Open("vtxreweight_24fb.root");
+
+    char* vtxfile = (char*) "vtxreweight_Photon_5p1fb.root";
+    if( TString(sample).Contains("DoubleElectron") ) vtxfile = (char*) "vtxreweight_DoubleElectron_5p1fb.root";
+
+    cout << "Using vtx reweighting file " << vtxfile << endl;
+
+    TFile *reweightFile = reweightFile = TFile::Open(vtxfile);
     reweightHist[0] = (TH1F*) reweightFile->Get("hratio20");
     reweightHist[1] = (TH1F*) reweightFile->Get("hratio30");
     reweightHist[2] = (TH1F*) reweightFile->Get("hratio50");
@@ -138,7 +148,7 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
       if( elveto_ == 1 )                                    continue; // remove photons with nearby electrons
       if( maxleppt_ > 20.0 )                                continue; // veto leptons pt > 20 GeV
       if( acos( cos( phig_ - pfmetphi_ ) ) < 0.14 )         continue; // kill photons aligned with MET
-      //if( nbm_ < 1 )                                        continue; // >=2 b-jets
+      if( bveto && nbm_ > 0 )                               continue; // apply b-veto 
       
       // //if( pfjetid_ != 1 )                                                     continue; // pass PFJetID
       if( h20 < 1 && h30 < 1 && h50 < 1 && h75 < 1 && h90 < 1 )                    continue; // require trig
@@ -185,8 +195,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
 	//cout << "nvtx vtxbin weight " << nvtx_ << " " << vtxbin << " " << reweightHist[4]->GetBinContent(vtxbin) << endl;
 
-        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
-        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+        fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
+        fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
       }
       
       else if( h75 > 0 ){
@@ -199,8 +210,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
 	if( vtxreweight ) templateWeight *= reweightHist[3]->GetBinContent(vtxbin);
 
-        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
-        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+        fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
+        fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
       }
 
       else if( h50 > 0 ){
@@ -213,8 +225,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
 	if( vtxreweight ) templateWeight *= reweightHist[2]->GetBinContent(vtxbin);
 
-        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
-        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+        fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
+        fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
       }
 
       else if( h30 > 0 ){
@@ -227,8 +240,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
 	if( vtxreweight ) templateWeight *= reweightHist[1]->GetBinContent(vtxbin);
 
-        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
-        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+        fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
+        fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
       }
 
       else if( h20 > 0 ){
@@ -241,8 +255,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
 
 	if( vtxreweight ) templateWeight *= reweightHist[0]->GetBinContent(vtxbin);
 
-        fillUnderOverFlow( tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_    , templateWeight );
-        fillUnderOverFlow( pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_    , templateWeight );
+        fillUnderOverFlow(   tcmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  tcmet_         , templateWeight );
+        fillUnderOverFlow(   pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmet_         , templateWeight );
+        fillUnderOverFlow( t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ]    ,  pfmett1new_    , templateWeight );
       }
 
       else{
@@ -313,6 +328,9 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
           
           scale = pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Integral();
           if( scale > 0 )  pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
+
+          scale = t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Integral();
+          if( scale > 0 )  t1pfmetTemplate_photon[ iTrigBin ][ iJetBin ][ iSumJetPtBin ] -> Scale ( 1. / scale );
           
         }
       }
@@ -326,9 +344,11 @@ void makePhotonTemplates::ScanChain ( TChain* chain , char* iter , char* sample 
     char* vtxchar = "";
     if( vtxreweight ) vtxchar = "_vtxreweight";
 
-    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s.root",iter,sample,vtxchar) << endl;
-    saveHist(Form("../photon_output/%s/%s_templates%s.root",iter,sample,vtxchar));
+    char* bvetochar = "";
+    if( bveto ) bvetochar = "_bveto";
 
+    cout << "Writing templates to " << Form("../photon_output/%s/%s_templates%s%s.root",iter,sample,vtxchar,bvetochar) << endl;
+    saveHist(Form("../photon_output/%s/%s_templates%s%s.root",iter,sample,vtxchar,bvetochar));
 
     //deleteHistos();
 
@@ -456,12 +476,18 @@ void makePhotonTemplates::bookHistos(){
         pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin] = new TH1F(Form("pfmetTemplate_photon_%i_%i_%i",iTrigBin,iJetBin,iSumJetPtBin),
 									 Form("%s, %s, %s",trigName[iTrigBin],
 									      jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
+
+        t1pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin] = new TH1F(Form("t1pfmetTemplate_photon_%i_%i_%i",iTrigBin,iJetBin,iSumJetPtBin),
+									   Form("%s, %s, %s",trigName[iTrigBin],
+										jetString(iJetBin).c_str(),sumJetPtString(iSumJetPtBin).c_str()),maxmet,0,maxmet);
         
         tcmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
         pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
+        t1pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->Sumw2();
         
         tcmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("tcmet (GeV)");
         pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("pfmet (GeV)");          
+        t1pfmetTemplate_photon[iTrigBin][iJetBin][iSumJetPtBin]->GetXaxis()->SetTitle("type1 pfmet (GeV)");          
         
       }
     }
@@ -474,6 +500,7 @@ void makePhotonTemplates::setBranches (TTree* tree){
   
   tree->SetBranchAddress("tcmet"	       ,        &tcmet_                 );
   tree->SetBranchAddress("pfmet"	       ,        &pfmet_                 );
+  tree->SetBranchAddress("pfmett1new"	       ,        &pfmett1new_            );
   tree->SetBranchAddress("pfmetphi"	       ,        &pfmetphi_              );
   tree->SetBranchAddress("njets"	       ,        &nJets_                 );
   tree->SetBranchAddress("nbl"	               ,        &nbl_                   );

@@ -46,6 +46,7 @@ class makePhotonTemplates
   Float_t   maxleppt_;
   Int_t     elveto_;
   Float_t   jetneutralemfrac_;
+  Float_t   pfmett1new_;
 
   Int_t     hlt20_;
   Int_t     hlt30_;
@@ -85,6 +86,7 @@ class makePhotonTemplates
 
   TH1F* tcmetTemplate_photon[5][3][7];
   TH1F* pfmetTemplate_photon[5][3][7];
+  TH1F* t1pfmetTemplate_photon[5][3][7];
   
 };
 
