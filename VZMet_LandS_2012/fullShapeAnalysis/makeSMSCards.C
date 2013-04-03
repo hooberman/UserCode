@@ -68,7 +68,7 @@ void makeSMSCards(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-02-13/wzsms_baby_oldIso.root");
-  char* version = (char*) "V00-00-11";
+  char* version = (char*) "V00-00-14";
 
   //---------------------------------------
   // load denominator histogram
@@ -257,16 +257,29 @@ void makeSMSCards(){
   */
 
   // MEDIUM WP, 19.5/fb RESULTS
+  // float Zbkg_yield[nbins]    = { 64.5 ,  7.8 ,  3.7 ,  2.0 ,     0.4  };
+  // float Zbkg_err[nbins]      = { 22.2 ,  3.1 ,  1.6 ,  1.0 ,     0.3  };
+  // float OFbkg_yield[nbins]   = { 35.2 , 21.9 , 13.2 ,  5.7 ,     0.8  };
+  // float OFbkg_err[nbins]     = {  6.2 ,  4.0 ,  2.5 ,  1.6 ,     0.4  };
+  // float WZbkg_yield[nbins]   = {  7.4 ,  4.0 ,  3.3 ,  2.0 ,     0.9  };
+  // float WZbkg_err[nbins]     = {  3.7 ,  2.0 ,  1.6 ,  1.0 ,     0.9  };
+  // float ZZbkg_yield[nbins]   = {  3.2 ,  1.9 ,  2.1 ,  1.5 ,     1.4  };
+  // float ZZbkg_err[nbins]     = {  1.6 ,  1.0 ,  1.1 ,  0.8 ,     1.4  };
+  // float rarebkg_yield[nbins] = {  0.9 ,  0.4 ,  0.9 ,  0.6 ,     0.4  };
+  // float rarebkg_err[nbins]   = {  0.5 ,  0.2 ,  0.5 ,  0.3 ,     0.4  };
+  // int   data_yield[nbins]    = {  115 ,   36 ,   25 ,   13 ,       4  };
+
+  // MEDIUM WP, 19.5/fb RESULTS (fix b-veto)
   float Zbkg_yield[nbins]    = { 64.5 ,  7.8 ,  3.7 ,  2.0 ,     0.4  };
   float Zbkg_err[nbins]      = { 22.2 ,  3.1 ,  1.6 ,  1.0 ,     0.3  };
   float OFbkg_yield[nbins]   = { 35.2 , 21.9 , 13.2 ,  5.7 ,     0.8  };
   float OFbkg_err[nbins]     = {  6.2 ,  4.0 ,  2.5 ,  1.6 ,     0.4  };
-  float WZbkg_yield[nbins]   = {  7.4 ,  4.0 ,  3.3 ,  2.0 ,     0.9  };
-  float WZbkg_err[nbins]     = {  3.7 ,  2.0 ,  1.6 ,  1.0 ,     0.9  };
-  float ZZbkg_yield[nbins]   = {  3.2 ,  1.9 ,  2.1 ,  1.5 ,     1.4  };
-  float ZZbkg_err[nbins]     = {  1.6 ,  1.0 ,  1.1 ,  0.8 ,     1.4  };
-  float rarebkg_yield[nbins] = {  0.9 ,  0.4 ,  0.9 ,  0.6 ,     0.4  };
-  float rarebkg_err[nbins]   = {  0.5 ,  0.2 ,  0.5 ,  0.3 ,     0.4  };
+  float WZbkg_yield[nbins]   = {  6.8 ,  3.7 ,  2.9 ,  1.9 ,     0.9  };
+  float WZbkg_err[nbins]     = {  3.4 ,  1.9 ,  1.5 ,  0.9 ,     0.4  };
+  float ZZbkg_yield[nbins]   = {  2.8 ,  1.8 ,  1.9 ,  1.4 ,     1.3  };
+  float ZZbkg_err[nbins]     = {  1.4 ,  0.9 ,  0.9 ,  0.7 ,     0.7  };
+  float rarebkg_yield[nbins] = {  0.5 ,  0.2 ,  0.4 ,  0.4 ,     0.3  };
+  float rarebkg_err[nbins]   = {  0.2 ,  0.1 ,  0.2 ,  0.2 ,     0.1  };
   int   data_yield[nbins]    = {  115 ,   36 ,   25 ,   13 ,       4  };
 
   int   data_tot  = 0;
