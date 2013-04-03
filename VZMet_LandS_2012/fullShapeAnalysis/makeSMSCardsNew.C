@@ -31,8 +31,8 @@ void printCard( char* name , char* version , TH1F* hsig , TH1F* hsigup , TH1F* h
 
   const unsigned int nbins = 5;
 
-  float Zbkg_yield[nbins]    = { 68.9 ,  7.8 ,  4.8 ,  2.1 ,     0.5  };
-  float Zbkg_err[nbins]      = { 21.2 ,  2.5 ,  1.5 ,  0.7 ,     0.1  };
+  float Zbkg_yield[nbins]    = { 64.5 ,  7.8 ,  3.7 ,  2.0 ,     0.4  };
+  float Zbkg_err[nbins]      = { 22.2 ,  3.1 ,  1.6 ,  1.0 ,     0.3  };
   float OFbkg_yield[nbins]   = { 35.2 , 21.9 , 13.2 ,  5.7 ,     0.8  };
   float OFbkg_err[nbins]     = {  6.2 ,  4.0 ,  2.5 ,  1.6 ,     0.4  };
   float WZbkg_yield[nbins]   = {  7.4 ,  4.0 ,  3.3 ,  2.0 ,     0.9  };
@@ -42,8 +42,6 @@ void printCard( char* name , char* version , TH1F* hsig , TH1F* hsigup , TH1F* h
   float rarebkg_yield[nbins] = {  0.9 ,  0.4 ,  0.9 ,  0.6 ,     0.4  };
   float rarebkg_err[nbins]   = {  0.5 ,  0.2 ,  0.5 ,  0.3 ,     0.4  };
   int   data_yield[nbins]    = {  115 ,   36 ,   25 ,   13 ,       4  };
-
-  float sig_yield[nbins]     = {  1.0 ,  2.0 ,  3.0 ,  4.0 ,     5.0  };
 
   ofstream* ofile = new ofstream();
 
@@ -128,7 +126,7 @@ void printCard( char* name , char* version , TH1F* hsig , TH1F* hsigup , TH1F* h
   // btagging
   *ofile << "btag    lnN  ";
   for( int i = 0 ; i < nbins ; ++i ){
-    *ofile << setw(5) << "1.06" << setw(5) << "-" << setw(5) << "-" << setw(5) << "-" << setw(5) << "-" << setw(5) << "-";
+    *ofile << setw(5) << "1.10" << setw(5) << "-" << setw(5) << "-" << setw(5) << "-" << setw(5) << "-" << setw(5) << "-";
   }
   *ofile << endl;
 
@@ -182,7 +180,7 @@ void makeSMSCardsNew(){
   
   TChain *ch = new TChain("T1");
   ch->Add("output/V00-02-13/wzsms_baby_oldIso.root");
-  char* version = (char*) "V00-00-09";
+  char* version = (char*) "V00-00-13";
 
   //---------------------------------------
   // load denominator histogram
@@ -324,8 +322,8 @@ void makeSMSCardsNew(){
   //---------------------------------------
     
   // MEDIUM WP, 19.3/fb RESULTS
-  float Zbkg_yield[nbins]    = { 68.9 ,  7.8 ,  4.8 ,  2.1 ,     0.5  };
-  float Zbkg_err[nbins]      = { 21.2 ,  2.5 ,  1.5 ,  0.7 ,     0.1  };
+  float Zbkg_yield[nbins]    = { 64.5 ,  7.8 ,  3.7 ,  2.0 ,     0.4  };
+  float Zbkg_err[nbins]      = { 22.2 ,  3.1 ,  1.6 ,  1.0 ,     0.3  };
   float OFbkg_yield[nbins]   = { 35.2 , 21.9 , 13.2 ,  5.7 ,     0.8  };
   float OFbkg_err[nbins]     = {  6.2 ,  4.0 ,  2.5 ,  1.6 ,     0.4  };
   float WZbkg_yield[nbins]   = {  7.4 ,  4.0 ,  3.3 ,  2.0 ,     0.9  };
