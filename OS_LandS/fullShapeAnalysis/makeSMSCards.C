@@ -63,8 +63,8 @@ void makeSMSCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("t");
-  ch->Add("output/V00-02-24/highpt/T2blnu_smallTree.root");
-  char* version = "V00-00-17";
+  ch->Add("output/V00-02-24/highpt/T1lh_smallTree.root");
+  char* version = "V00-00-14";
   bool doSigCont = true;
   cout << "Doing version " << version << endl;
 
@@ -72,8 +72,7 @@ void makeSMSCards(){
   // selection
   //---------------------------------------
 
-  //TCut weight   (" (1./10000.) * 4700.0 * ndavtxweight * trgeff * lepscale");
-  TCut weight   (" (1./50000.) * 4700.0 * ndavtxweight * trgeff * lepscale");
+  TCut weight   (" (1./10000.) * 4700.0 * ndavtxweight * trgeff * lepscale");
   //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale");
   //TCut weight   ("weight * 4.7 * ndavtxweight * trgeff * lepscale * ( 1 - sqrt(pow(ksusyup/ksusy-1,2)+0.2*0.2) )");
   //TCut weight("weight * 4.7 * ndavtxweight * trgeff * lepscale * ksusyup/ksusy");
