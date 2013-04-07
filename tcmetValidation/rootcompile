@@ -1,5 +1,0 @@
-#!/bin/bash
-g++ -g -Wno-deprecated `${ROOTSYS}/bin/root-config --cflags --libs` -I./  -o tcmetValidation tcmetValidation.cc
-
-
-
