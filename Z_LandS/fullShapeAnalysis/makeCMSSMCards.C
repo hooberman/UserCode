@@ -68,8 +68,8 @@ void makeCMSSMCards(){
   //---------------------------------------
   
   TChain *ch = new TChain("T1");
-  ch->Add("output/V00-02-05/T5zzh_baby.root");
-  char* version = "temp";
+  ch->Add("output/V00-02-04/T5zzl_baby.root");
+  char* version = "V00-03-05";
 
   bool do3jets = false;
 
@@ -216,10 +216,8 @@ void makeCMSSMCards(){
 	sigtotjdn += yieldjdn;
 
 	histo_SMS->SetBinContent              ( ibin + 1 , yieldnom );
-	//histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , yieldjup );
-	//histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , yieldjdn );
-	histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , 1.3 * yieldnom );
-	histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , 0.7 * yieldnom );
+	histo_SMS_JES_shapeUp->SetBinContent  ( ibin + 1 , yieldjup );
+	histo_SMS_JES_shapeDown->SetBinContent( ibin + 1 , yieldjdn );
       }
 
       if( sigtotjdn < 1e-10 ) continue;
