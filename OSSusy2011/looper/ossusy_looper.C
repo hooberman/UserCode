@@ -697,23 +697,16 @@ int ossusy_looper::ScanChain(TChain* chain, char *prefix, float kFactor, int pre
     }
 
     //set gluino cross section file
-    gg_xsec_file = TFile::Open("reference_xSecs.root");
+    gg_xsec_file = TFile::Open("reference_xSec_mg2TeV.root");
   
     if( !gg_xsec_file->IsOpen() ){
       cout << "Error, could not open gluino cross section TFile, quitting" << endl;
       exit(0);
     }
     
-    gg_xsec_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL");
+    gg_xsec_hist        = (TH1D*) gg_xsec_file->Get("gluino");
     
     if( gg_xsec_hist == 0 ){
-      cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
-      exit(0);
-    }
-
-    gg_xsec_unc_hist        = (TH1D*) gg_xsec_file->Get("gluino_NLONLL_unc");
-    
-    if( gg_xsec_unc_hist == 0 ){
       cout << "Error, could not retrieve gg cross section hist, quitting" << endl;
       exit(0);
     }
@@ -5352,6 +5345,5 @@ float ossusy_looper::GenWeight( bool isData , int metcut, int htcut ){
   return eff;
 
 }
-
 
 
