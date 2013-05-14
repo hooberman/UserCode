@@ -36,15 +36,16 @@ using namespace std;
 bool     doKscaling   =    true;
 float    K            =    0.14;
 int      rebin        =      10;
-bool     bveto        =    true;
+bool     bveto        =   false;
 char*    mybvetochar  = "_bvetoMedium";
-bool     pt40         =   false;
-char*    signalRegion = "highMet";
+bool     pt40         =    true;
+char*    signalRegion = "lowMet";
+//char*    signalRegion = "highMet";
 float    xmin         =      -1;
 bool     latex        =   false;
 metType  myMetType    = e_pfmet; 
 bool     normToLowMet =    true;
-bool     exclusive    =    true;
+bool     exclusive    =   false;
 bool     blind        =   false;
 float    lumi         =     9.2;
 bool     printCards   =   false;
@@ -67,7 +68,7 @@ float histError( TH1F* hist , int lowbin , int binhigh ){
 }
 
 
-void simplePlotMacro( bool printplots = false ){
+void simplePlotMacro_edge( bool printplots = false ){
 
   char* metvar = "";
   
@@ -96,16 +97,16 @@ void simplePlotMacro( bool printplots = false ){
   if( pt40 ){
     if( TString(signalRegion).Contains("lowMet") ){
       cout << "Using pT > 40 GeV jets, low MET signal region" << endl;
-      //pt40char = "_pt40_lowMet";
+      pt40char = "_pt40_lowMet";
       //pt40char = "_pt40_2012AB_lowMet";
-      pt40char = "_pt40_2012C_lowMet";
+      //pt40char = "_pt40_2012C_lowMet";
       K = 0.14;
     }
     else if( TString(signalRegion).Contains("highMet") ){
       cout << "Using pT > 40 GeV jets, high MET signal region" << endl;
-      //pt40char = "_pt40_highMet";
+      pt40char = "_pt40_highMet";
       //pt40char = "_pt40_2012AB_highMet";
-      pt40char = "_pt40_2012C_highMet";
+      //pt40char = "_pt40_2012C_highMet";
       K = 0.13;
     }
   }
@@ -195,7 +196,8 @@ void simplePlotMacro( bool printplots = false ){
   cout << "WZ/ZZ weight    : " << weight.GetTitle() << endl;
 
   //char* datafilename = (char*) Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s%s%s_HT100.root",iter,metvar,bvetochar,pt40char);
-  char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s.root",iter,metvar,bvetochar,pt40char);
+  //char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s.root",iter,metvar,bvetochar,pt40char);
+  char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s_ANv1.root",iter,metvar,bvetochar,pt40char);
 
   cout << "Opening " << datafilename << endl;
   f   = TFile::Open(datafilename);
@@ -913,9 +915,9 @@ void simplePlotMacro( bool printplots = false ){
     char* lep[3] = {"_all","_ee" ,"_mm"};
 
     if( printplots ){
-      can[i]->Print(Form("../plots/%s%s%s%s.pdf" ,metvar,bvetochar,pt40char,lep[i]));
-      can[i]->Print(Form("../plots/%s%s%s%s.C"   ,metvar,bvetochar,pt40char,lep[i]));
-      can[i]->Print(Form("../plots/%s%s%s%s.root",metvar,bvetochar,pt40char,lep[i]));
+      can[i]->Print(Form("../plots/edge_%s%s%s%s.pdf" ,metvar,bvetochar,pt40char,lep[i]));
+      can[i]->Print(Form("../plots/edge_%s%s%s%s.C"   ,metvar,bvetochar,pt40char,lep[i]));
+      can[i]->Print(Form("../plots/edge_%s%s%s%s.root",metvar,bvetochar,pt40char,lep[i]));
     }
 
 
