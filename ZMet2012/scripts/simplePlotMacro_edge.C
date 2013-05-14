@@ -39,10 +39,12 @@ int      rebin        =      10;
 bool     bveto        =   false;
 char*    mybvetochar  = "_bvetoMedium";
 bool     pt40         =    true;
-char*    signalRegion = "lowMet";
+//char*    signalRegion = "lowMet";
 //char*    signalRegion = "highMet";
+char*    signalRegion = "highMet_central";
+//char*    signalRegion = "lowMet_central";
 float    xmin         =      -1;
-bool     latex        =   false;
+bool     latex        =    true;
 metType  myMetType    = e_pfmet; 
 bool     normToLowMet =    true;
 bool     exclusive    =   false;
@@ -93,22 +95,53 @@ void simplePlotMacro_edge( bool printplots = false ){
     K = 0.13;
   }
 
+  cout << "NEED TO RE-EVALUATE K!!!!!!!!!!!!!!!!!" << endl;
+
   char* pt40char = "";
   if( pt40 ){
-    if( TString(signalRegion).Contains("lowMet") ){
-      cout << "Using pT > 40 GeV jets, low MET signal region" << endl;
-      pt40char = "_pt40_lowMet";
-      //pt40char = "_pt40_2012AB_lowMet";
-      //pt40char = "_pt40_2012C_lowMet";
-      K = 0.14;
+
+    if( TString(signalRegion).Contains("central") ){
+
+      if( TString(signalRegion).Contains("lowMet") ){
+	cout << "Using pT > 40 GeV jets, low MET signal region, central leptons" << endl;
+	pt40char = "_pt40_lowMet_central";
+	//pt40char = "_pt40_2012AB_lowMet";
+	//pt40char = "_pt40_2012C_lowMet";
+	K = 0.14;
+      }
+
+      else if( TString(signalRegion).Contains("highMet") ){
+	cout << "Using pT > 40 GeV jets, high MET signal region, central leptons" << endl;
+	pt40char = "_pt40_highMet_central";
+	//pt40char = "_pt40_2012AB_highMet";
+	//pt40char = "_pt40_2012C_highMet";
+	//K = 0.13;
+	K = 0.14;
+      }
+
     }
-    else if( TString(signalRegion).Contains("highMet") ){
-      cout << "Using pT > 40 GeV jets, high MET signal region" << endl;
-      pt40char = "_pt40_highMet";
-      //pt40char = "_pt40_2012AB_highMet";
-      //pt40char = "_pt40_2012C_highMet";
-      K = 0.13;
+
+    else{
+
+      if( TString(signalRegion).Contains("lowMet") ){
+	cout << "Using pT > 40 GeV jets, low MET signal region" << endl;
+	pt40char = "_pt40_lowMet";
+	//pt40char = "_pt40_2012AB_lowMet";
+	//pt40char = "_pt40_2012C_lowMet";
+	K = 0.14;
+      }
+
+      else if( TString(signalRegion).Contains("highMet") ){
+	cout << "Using pT > 40 GeV jets, high MET signal region" << endl;
+	pt40char = "_pt40_highMet";
+	//pt40char = "_pt40_2012AB_highMet";
+	//pt40char = "_pt40_2012C_highMet";
+	//K = 0.13;
+	K = 0.14;
+      }
+
     }
+
   }
 
   //-----------------------------------
@@ -134,6 +167,7 @@ void simplePlotMacro_edge( bool printplots = false ){
   // selection
   //-----------------------------------
 
+  TCut eta14("abs(lep1.eta()) < 1.4 && abs(lep2.eta()) < 1.4");
   TCut pfleptons("pflep1.pt() > 20 && pflep2.pt() > 20 && abs(lep1.pt()-pflep1.pt())<5.0 && abs(lep2.pt()-pflep2.pt())<5.0 ");
   TCut Zmass("dilmass>81 && dilmass<101");
   TCut Zmasspf("dilmasspf>81 && dilmasspf<101");
@@ -172,9 +206,13 @@ void simplePlotMacro_edge( bool printplots = false ){
       sel += njets3_40;
     }
     else if( TString(signalRegion).Contains("highMet") ){
-      sel += pt2010;
+      sel += pt2020;
       sel += njets2_40;
       sel += ht100_40;
+    }
+
+    if( TString(signalRegion).Contains("central") ){
+      sel += eta14;
     }
   }
 
@@ -197,7 +235,12 @@ void simplePlotMacro_edge( bool printplots = false ){
 
   //char* datafilename = (char*) Form("../output/%s/babylooper_dataskim2010_PhotonStitchedTemplate_%s%s%s_HT100.root",iter,metvar,bvetochar,pt40char);
   //char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s.root",iter,metvar,bvetochar,pt40char);
-  char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s_ANv1.root",iter,metvar,bvetochar,pt40char);
+
+  // OLD BACKUP
+  //char* datafilename = (char*) Form("../output/%s/babylooper_data_ALL_53X_PhotonStitchedTemplate_%s%s%s_ANv1.root",iter,metvar,bvetochar,pt40char);
+
+  // NEW
+  char* datafilename = (char*) Form("../output/%s/babylooper_edge_data_ALL_53X_PhotonStitchedTemplate_%s%s%s.root",iter,metvar,bvetochar,pt40char);
 
   cout << "Opening " << datafilename << endl;
   f   = TFile::Open(datafilename);
@@ -842,10 +885,16 @@ void simplePlotMacro_edge( bool printplots = false ){
     leg->Draw();
 
     t->SetTextSize(0.04);
-    t->DrawLatex(0.4,0.85,"CMS Preliminary");
+    t->DrawLatex(0.4,0.89,"CMS Preliminary");
     //t->DrawLatex(0.4,0.79,"#sqrt{s} = 8 TeV, L_{int} = 9.2 fb^{-1}");
-    t->DrawLatex(0.4,0.79,Form("#sqrt{s} = 8 TeV, L_{int} = %.1f fb^{-1}",lumi));
-    t->DrawLatex(0.4,0.73,title);
+    t->DrawLatex(0.4,0.83,Form("#sqrt{s} = 8 TeV, L_{int} = %.1f fb^{-1}",lumi));
+    t->DrawLatex(0.4,0.77,title);
+
+    if( TString(signalRegion).Contains("lowMet") )  t->DrawLatex(0.4,0.71,"low E_{T}^{miss} signal region");
+    if( TString(signalRegion).Contains("highMet") ) t->DrawLatex(0.4,0.71,"high E_{T}^{miss} signal region");
+
+    if( TString(signalRegion).Contains("central") )  t->DrawLatex(0.4,0.64,"central leptons");
+    else                                             t->DrawLatex(0.4,0.64,"inclusive leptons");
 
     can[i]->cd();
 
