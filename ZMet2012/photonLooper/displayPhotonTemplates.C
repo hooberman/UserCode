@@ -33,8 +33,8 @@ const int      nSumJetPtBins    = 7;
 const metType  myMetType        = e_pfmet;
 const float    maxmet           = 200;
 const int      rebin            = 10;
-const bool     twoTemplates     = true;
-const bool     vertical         = true;
+const bool     twoTemplates     = false;
+const bool     vertical         = false;
 
 //const char*    filename1        = "../photon_output/V00-00-07/Photon_templates.root";
 //const char*    filename2        = "../photon_output/V00-00-07/DoubleElectron_templates.root";
@@ -57,8 +57,20 @@ const bool     vertical         = true;
 //const char*    filename1        = "../photon_output/V00-01-00/DoubleElectron_templates_vtxreweight_bvetoMedium.root";
 //const char*    filename2        = "../photon_output/V00-02-00/data_53X_2012ALL_templates_vtxreweight_bveto.root";
 
-const char*    filename1        = "../photon_output/V00-02-00/data_53X_2012ALL_templates_vtxreweight_bveto.root";
-const char*    filename2        = "../photon_output/V00-02-00/data_53X_2012ALL_templates_vtxreweight_bveto_mjjcut.root";
+// const char*    filename1        = "../photon_output/V00-02-00/data_53X_2012ALL_templates_vtxreweight_bveto.root";
+// const char*    filename2        = "../photon_output/V00-02-00/data_53X_2012ALL_templates_vtxreweight_bveto_mjjcut.root";
+
+// const char*    filename1        = "../photon_output/V00-02-00/data_53X_2012ALL_templates_vtxreweight_bveto_mjjcut.root";
+// const char*    filename2        = "../photon_output/V00-02-03/data_53X_2012ALL_templates_vtxreweight_bveto_mjjcut.root";
+
+const char*    filename1        = "../photon_output/V00-02-03/data_53X_2012ALL_templates_vtxreweight_bveto_mjjcut.root";
+const char*    filename2        = "../photon_output/V00-02-03/data_53X_2012ALL_templates_vtxreweight.root";
+
+// const char*    filename1        = "../photon_output/V00-02-03/data_53X_2012ALL_templates_vtxreweight.root";
+// const char*    filename2        = "../photon_output/V00-02-03/BACKUP/data_53X_2012ALL_templates_vtxreweight.root";
+
+// const char*    filename1        = "../photon_output/V00-02-03/data_53X_2012ALL_templates_vtxreweight_bveto_mjjcut.root";
+// const char*    filename2        = "../photon_output/V00-02-03/BACKUP/data_53X_2012ALL_templates_vtxreweight_bveto_mjjcut.root";
 
 //----------------------------------------------------------------------------------------
 
@@ -117,7 +129,12 @@ void displayPhotonTemplates( bool printgif = false ){
         hmet1[iT][iJ][iS]->SetLineColor(2);
         hmet1[iT][iJ][iS]->SetMarkerColor(2);
         hmet1[iT][iJ][iS]->SetMarkerSize(0.5);
-        hmet1[iT][iJ][iS]->Draw("E1");
+        hmet1[iT][iJ][iS]->GetXaxis()->SetTitleSize(0.075);
+        hmet1[iT][iJ][iS]->GetXaxis()->SetTitleOffset(0.75);
+        hmet1[iT][iJ][iS]->GetXaxis()->SetNdivisions(5);
+        hmet1[iT][iJ][iS]->GetXaxis()->SetTitle("E_{T}^{miss} [GeV]");
+        hmet1[iT][iJ][iS]->Draw("hist");
+        hmet1[iT][iJ][iS]->Draw("sameE1");
         
         hmet1[iT][iJ][iS]->SetMinimum(1e-4);
         hmet1[iT][iJ][iS]->SetMaximum(1.0);
@@ -147,6 +164,7 @@ void displayPhotonTemplates( bool printgif = false ){
       }
     }
     if( printgif) can[iT]->Print(Form("../plots/template_targeted_%i.pdf",iT));
+    if( printgif) can[iT]->Print(Form("../plots/template_targeted_%i.C",iT));
   }
 
   cout << "nentries1 " << nentries1 << endl;
