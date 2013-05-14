@@ -1,8 +1,8 @@
 #include "TChain.h"
-#include "babylooper.C"
+#include "babylooper_edge.C"
 
-void runBabyLooper(char* Z_version, char* template_version, char* prefix , bool isData = true, 
-                   babylooper::selectionType sel = babylooper::e_QCDSelection, 
+void runBabyLooper_edge(char* Z_version, char* template_version, char* prefix , bool isData = true, 
+                   babylooper_edge::selectionType sel = babylooper_edge::e_QCDSelection, 
                    bool makeTemplate = false){
 
   TChain* ch = new TChain("T1");
@@ -13,7 +13,7 @@ void runBabyLooper(char* Z_version, char* template_version, char* prefix , bool 
 
   ch->Add( file.c_str() );
 
-  babylooper* myLooper = new babylooper();
+  babylooper_edge* myLooper = new babylooper_edge();
   
   cout << "Running on sample " << prefix << endl;
   myLooper->ScanChain(ch, Z_version, template_version, prefix, isData, sel, makeTemplate);

@@ -2,15 +2,15 @@
 
   //gSystem->Load("../../MiniFWLite/libMiniFWLite.so");
 
-  #include "babylooper.h"
+  #include "babylooper_edge.h"
 
   gROOT->ProcessLine(".L histtools.C+");
-  gROOT->ProcessLine(".L runBabyLooper.C+");
+  gROOT->ProcessLine(".L runBabyLooper_edge.C+");
 
-  char* Z_version        = "V00-02-13";
-  char* template_version = "V00-02-03";
+  char* Z_version        = "V00-01-04";
+  char* template_version = "V00-01-00";
   
-  runBabyLooper(Z_version,template_version, "data_53X_2012ALL" , true , babylooper::e_ZSelection  );
+  runBabyLooper_edge(Z_version,template_version, "data_ALL_53X" , true , babylooper_edge::e_ZSelection  );
   //runBabyLooper(Z_version,template_version, "wz"          , false  , babylooper::e_ZSelection  );
   //runBabyLooper(Z_version,template_version, "zz"          , false  , babylooper::e_ZSelection  );
   //runBabyLooper(Z_version,template_version, "wz"          , false  , babylooper::e_ZSelection  );

@@ -1,5 +1,5 @@
-#ifndef babylooper_h
-#define babylooper_h
+#ifndef babylooper_edge_h
+#define babylooper_edge_h
 
 #include "TFile.h"
 #include "TTree.h"
@@ -13,10 +13,10 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 class TChain;
 
-class babylooper
+class babylooper_edge
 {
  public:
-  babylooper() {
+  babylooper_edge() {
     lep1_   = new LorentzVector();
     lep2_   = new LorentzVector();
     lep3_   = new LorentzVector();
@@ -25,7 +25,7 @@ class babylooper
     bjet1_  = new LorentzVector();
     bjet2_  = new LorentzVector();
   };
-  ~babylooper() {
+  ~babylooper_edge() {
     delete lep1_;
     delete lep2_;
     delete lep3_;

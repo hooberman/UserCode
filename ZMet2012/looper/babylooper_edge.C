@@ -1,11 +1,11 @@
-#include "babylooper.h"
+#include "babylooper_edge.h"
 #include <algorithm>
 #include <iostream>
 #include <vector>
 #include <math.h>
 #include <fstream>
 
-#include "../CORE/metTemplatesSelections.cc"
+#include "../CORE/metTemplatesSelections_edge.cc"
 #include "TChain.h"
 #include "TRandom3.h"
 #include "TDirectory.h"
@@ -32,11 +32,12 @@ enum templateType   { e_njets_ht = 0 , e_njets_ht_nvtx = 1 , e_njets_ht_vecjetpt
 //------------------------------------------------
 bool           debug              = false;                  // debug printout statements
 bool           doVtxReweight      = true;                   // reweight templates for nVertices
-bool           pt40               = false;                  // pt>40 and HT > 100 GeV
-bool           bveto              = true;                   // b-veto
-bool           mjjcut             = true;                   // dijet mass requirement
-bool           mjjTemplates       = true;                   // dijet mass requirement in TEMPLATES
-bool           nlep2              = true;                   // 3rd lepton veto
+bool           pt40               = true;                   // pt>40 and HT > 100 GeV
+char*          signalRegion       = "highMet";               // lowMet or HighMet
+bool           bveto              = false;                  // b-veto
+bool           mjjcut             = false;                  // dijet mass requirement
+bool           mjjTemplates       = false;                  // dijet mass requirement in TEMPLATES
+bool           nlep2              = false;                  // 3rd lepton veto
 bool           setTemplateErrors  = true;                   // calculate template errors
 metType        myMetType          = e_pfmet;                // MET type
 templateSource myTemplateSource   = e_PhotonJetStitched;    // source of templates
@@ -52,7 +53,7 @@ inline double fround(double n, double d){
   return floor(n * pow(10., d) + .5) / pow(10., d);
 }
 
-void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* template_version, const char* prefix, 
+void babylooper_edge::ScanChain (TChain* chain, const char* Z_version, const char* template_version, const char* prefix, 
 			    bool isData, selectionType mySelectionType, bool makeTemplate, int nEvents){
 
   int npass = 0;
@@ -71,7 +72,17 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   if ( nlep2 ) cout << "Third lepton veto"      << endl;
   else         cout << "NO third lepton veto"   << endl;
 
-  if( pt40 )   cout << "Require >=2 40 GeV jets with HT > 100 GeV"        << endl;
+  if( pt40 ){
+    if     ( TString(signalRegion).Contains("lowMet") )  cout << "Using low-MET signal region" << endl;
+    else if( TString(signalRegion).Contains("highMet") ) cout << "Using high-MET signal region" << endl;
+    else { 
+      cout << "Unrecognized signal region " << signalRegion << ", quitting" << endl; 
+      exit(0);
+    }
+
+    if( TString(signalRegion).Contains("central") ) cout << "Doing central leptons" << endl;
+  }
+  
   else         cout << "DO NOT require >=2 40 GeV jets with HT > 100 GeV" << endl;
 
   // if( !isData && myTemplateSource == e_PhotonJetStitched ){
@@ -108,8 +119,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   
   if( myTemplateSource == e_PhotonJetStitched ){
 
-    //templateFileName =  Form("../photon_output/%s/DoubleElectron_templates%s%s%s.root",template_version,vtxchar,bvetochar,pt40char);
-    templateFileName =  Form("../photon_output/%s/data_53X_2012ALL_templates%s%s%s%s.root",template_version,vtxchar,bvetochar,mjjTemplatesChar,pt40char);
+    templateFileName =  Form("../photon_output/%s/DoubleElectron_templates%s%s%s_offlinePhotonPt.root",template_version,vtxchar,bvetochar,pt40char);
+    //templateFileName =  Form("../photon_output/%s/data_53X_2012ALL_templates%s%s%s%s.root",template_version,vtxchar,bvetochar,mjjTemplatesChar,pt40char);
 
     //templateFileName =  Form("../photon_output/%s/Photon_templates%s%s.root",template_version,vtxchar,bvetochar);
     //if( doVtxReweight ) templateFileName = Form("../photon_output/%s/DoubleElectron_templates_vtxreweight.root",template_version);
@@ -138,7 +149,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   //   else if( myTemplateSource == e_PhotonJet || myTemplateSource == e_PhotonJetStitched ){
   //     cout << "WARNING! USING DATA TEMPLATES FOR MC" << endl;
   //     templateFileName = Form("../templates/%s/photon_templates.root",template_version);
-  //     //templateFileName = "/tas03/home/benhoob/metTemplate/output/nov5th/babylooper_PhotonJet_templates.root";
+  //     //templateFileName = "/tas03/home/benhoob/metTemplate/output/nov5th/babylooper_edge_PhotonJet_templates.root";
   //     cout << "Using template file " << templateFileName << endl;
   //     metTemplateString = "_PhotonJetTemplate";
   //     metTemplateFile = TFile::Open( templateFileName );
@@ -148,8 +159,8 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
   
   if( isData ){
   
-    ofile_tcmet.open(  Form( "../output/%s/babylooper_%s_tcmetprintout.txt" , Z_version , prefix ) );
-    ofile_events.open( Form( "../output/%s/babylooper_%s_highmetevents.txt" , Z_version , prefix ) );
+    ofile_tcmet.open(  Form( "../output/%s/babylooper_edge_%s_tcmetprintout.txt" , Z_version , prefix ) );
+    ofile_events.open( Form( "../output/%s/babylooper_edge_%s_highmetevents.txt" , Z_version , prefix ) );
     
     ofile_events << "|" << setw(8)  << "run"          << setw(4) 
                  << "|" << setw(6)  << "lumi"         << setw(4) 
@@ -281,13 +292,18 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
         // event selection
         //------------------------------------------------------------
 
-	//if( run_ >= 197556 && run_ <= 198913 )          continue; // veto 2012C-PromptReco-v1
+	if( run_ >= 197556 && run_ <= 198913 )          continue; // veto 2012C-PromptReco-v1
 	if( !(csc_==0 && hbhe_==1 && hcallaser_==1 && ecaltp_==1 && trkfail_==1 && eebadsc_==1 && hbhenew_==1) ) continue; // MET filters
 
 	// if( pflep1_->pt() < 20 )                        continue; // PF lepton 1 pt > 20 GeV
 	// if( pflep2_->pt() < 10 )                        continue; // PF lepton 2 pt > 20 GeV
 	if( lep1_->pt()   < 20 )                        continue; // lepton 1 pt > 20 GeV
 	if( lep2_->pt()   < 20 )                        continue; // lepton 2 pt > 20 GeV
+
+	if( TString(signalRegion).Contains("central") ){
+	  if( fabs( lep1_->eta() ) > 1.4 ) continue;
+	  if( fabs( lep2_->eta() ) > 1.4 ) continue;
+	}
 
 	// if( lep1_->pt() < 20 )                          continue; // PF lepton 1 pt > 20 GeV
 	// if( lep2_->pt() < 10 )                          continue; // PF lepton 2 pt > 20 GeV
@@ -398,8 +414,14 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 	}
 
 	if( pt40 ){
-	  if( nJets40_ < 2     ) continue;
-	  if( ht40_    < 100.0 ) continue;
+	  if  ( TString(signalRegion).Contains("lowMet") ){
+	    if( nJets40_ < 3     ) continue;
+	  }
+
+	  else if( TString(signalRegion).Contains("highMet") ){
+	    if( nJets40_ < 2     ) continue;
+	    if( ht40_    < 100.0 ) continue;
+	  }
 	}
 	else{
 	  if( nJets_ < 2 )                 continue; // >=2 jets
@@ -720,9 +742,19 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
   rootdir->cd();
 
-  // if( bveto ) saveHist( Form("../output/%s/babylooper_%s%s%s_bveto%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
-  // else        saveHist( Form("../output/%s/babylooper_%s%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
-  char* filename = Form("../output/%s/babylooper_%s%s%s%s%s%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , bvetochar , mjjTemplatesChar , pt40char );
+  if( TString(signalRegion).Contains("central")){
+    if( TString(signalRegion).Contains("lowMet") )  pt40char = "_pt40_lowMet_central";
+    if( TString(signalRegion).Contains("highMet") ) pt40char = "_pt40_highMet_central";
+  }
+
+  else{
+    if( TString(signalRegion).Contains("lowMet") )  pt40char = "_pt40_lowMet";
+    if( TString(signalRegion).Contains("highMet") ) pt40char = "_pt40_highMet";
+  }
+
+  // if( bveto ) saveHist( Form("../output/%s/babylooper_edge_%s%s%s_bveto%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
+  // else        saveHist( Form("../output/%s/babylooper_edge_%s%s%s%s.root"         , Z_version , prefix , metTemplateString.c_str() , iter , pt40char ) );
+  char* filename = Form("../output/%s/babylooper_edge_%s%s%s%s%s%s.root"   , Z_version , prefix , metTemplateString.c_str() , iter , bvetochar , mjjTemplatesChar , pt40char );
   cout << "Saving histograms to : " << filename << endl;
   saveHist( filename );
   cout << "Saved histos" << endl;
@@ -733,7 +765,7 @@ void babylooper::ScanChain (TChain* chain, const char* Z_version, const char* te
 
 
 
-void babylooper::setErrors( TFile* file,  TH1F* hist , int n[3][7] ){
+void babylooper_edge::setErrors( TFile* file,  TH1F* hist , int n[3][7] ){
 
   char* metstring = "";
   if     ( myMetType == e_tcmet       ) metstring = "tcmet";
@@ -781,7 +813,7 @@ void babylooper::setErrors( TFile* file,  TH1F* hist , int n[3][7] ){
 
 }
 
-void babylooper::setErrors( TFile* file,  TH1F* hist , int n[5][3][7] ){
+void babylooper_edge::setErrors( TFile* file,  TH1F* hist , int n[5][3][7] ){
 
   cout << "setErrors: " << hist->GetName() << endl;
 
@@ -848,7 +880,7 @@ void babylooper::setErrors( TFile* file,  TH1F* hist , int n[5][3][7] ){
 }
 
 
-TH1F* babylooper::getMetTemplate( TFile* file, int iTrigBin , int iJetBin , 
+TH1F* babylooper_edge::getMetTemplate( TFile* file, int iTrigBin , int iJetBin , 
                                   int iSumJetPtBin , int iBosonPtBin , int iVtxBin, float Zpt , float weight ){
   
   char* metstring = "";
@@ -902,14 +934,14 @@ TH1F* babylooper::getMetTemplate( TFile* file, int iTrigBin , int iJetBin ,
 }
 
 
-float babylooper::deltaPhi( float phi1 , float phi2){
+float babylooper_edge::deltaPhi( float phi1 , float phi2){
   float dphi = fabs( phi1 - phi2 );
   if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
   return dphi;
 }
 
 
-void babylooper::fillUnderOverFlow(TH1F *h1, float value, float weight){
+void babylooper_edge::fillUnderOverFlow(TH1F *h1, float value, float weight){
 
   float min = h1->GetXaxis()->GetXmin();
   float max = h1->GetXaxis()->GetXmax();
@@ -921,7 +953,7 @@ void babylooper::fillUnderOverFlow(TH1F *h1, float value, float weight){
 
 }
 
-void babylooper::bookHistos(){
+void babylooper_edge::bookHistos(){
 
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
@@ -1136,7 +1168,7 @@ void babylooper::bookHistos(){
 }
 
 
-void babylooper::setBranches (TTree* tree){
+void babylooper_edge::setBranches (TTree* tree){
   tree->SetBranchAddress("run",          &run_          );
   tree->SetBranchAddress("weight",       &weight_       );
   tree->SetBranchAddress("vtxweight",    &vtxweight_    );
@@ -1339,7 +1371,7 @@ void babylooper::setBranches (TTree* tree){
 
 //--------------------------------------------------------------------
 
-void babylooper::fillHistos(TH1F *h1[4],float value, float weight, int myType)
+void babylooper_edge::fillHistos(TH1F *h1[4],float value, float weight, int myType)
 {
 
   fillUnderOverFlow(h1[myType], value, weight);      
@@ -1348,7 +1380,7 @@ void babylooper::fillHistos(TH1F *h1[4],float value, float weight, int myType)
 
 //--------------------------------------------------------------------
 
-void babylooper::fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsIdx)
+void babylooper_edge::fillHistos(TH1F *h1[4][4],float value, float weight, int myType, int nJetsIdx)
 {
 
   if( nJetsIdx > 2 ) nJetsIdx = 2;
@@ -1361,7 +1393,7 @@ void babylooper::fillHistos(TH1F *h1[4][4],float value, float weight, int myType
 
 //--------------------------------------------------------------------
 
-TH1F* babylooper::correctedMetTemplate( TH1F* h_metTemplate , float ptZ ){
+TH1F* babylooper_edge::correctedMetTemplate( TH1F* h_metTemplate , float ptZ ){
 
   TH1F* h_metEstimate = (TH1F*) h_metTemplate->Clone();
   h_metEstimate->Reset();
