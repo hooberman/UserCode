@@ -73,8 +73,8 @@ expected background yields within $\pm1\sigma$. No evidence of a signal-like exc
 \begin{figure}[!h]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=0.45\textwidth]{plots/edge_pfmet_pt40_lowMet_all.pdf}
-\includegraphics[width=0.45\textwidth]{plots/edge_pfmet_pt40_highMet_all.pdf}
+\includegraphics[width=0.4\textwidth]{plots/edge_pfmet_pt40_lowMet_all.pdf}
+\includegraphics[width=0.4\textwidth]{plots/edge_pfmet_pt40_highMet_all.pdf}
 %\includegraphics[width=0.48\textwidth]{plots/pfmet_pt40_2012AB_highMet_all_linear.pdf}
 \end{tabular}
 \caption{\footnotesize {\bf Results for the low \MET\ (left) and high \MET\ (right) signal regions with the inclusive lepton selection.}
@@ -90,7 +90,7 @@ indicated. The error bars indicate the statistical uncertainty in the data and t
 \begin{table}[htb]
 \begin{center}
 \footnotesize
-\caption{\label{tab:results_inclusive}\footnotesize {\bf Results for the low \MET\ signal region (top table) and high \MET\ signal region (bottom table) with the inclusive lepton selection.} 
+\caption{\label{tab:results_inclusive}\footnotesize {\bf Results for $n_{jets}\geq3$ corresponding to the low \MET\ signal region (top table) and $n_{jets}\geq2$ corresponding to the high \MET\ signal region (bottom table) with the inclusive lepton selection.} 
 The total background is the sum of the \zjets\ background predicted from
 the \MET\ templates method (\zjets\ bkg), the flavor-symmetric background predicted from e$\mu$ events (FS bkg), the WZ and ZZ backgrounds predicted from MC
 (WZ bkg and ZZ bkg) and the rare SM backgrounds. All uncertainties include both the statistical and systematic components. The Gaussian significance of the deviation between the data 
@@ -189,8 +189,8 @@ ee/#mu#mu events
 \begin{figure}[!h]
 \begin{center}
 \begin{tabular}{cc}
-\includegraphics[width=0.45\textwidth]{plots/edge_pfmet_pt40_lowMet_central_all.pdf}
-\includegraphics[width=0.45\textwidth]{plots/edge_pfmet_pt40_highMet_central_all.pdf}
+\includegraphics[width=0.4\textwidth]{plots/edge_pfmet_pt40_lowMet_central_all.pdf}
+\includegraphics[width=0.4\textwidth]{plots/edge_pfmet_pt40_highMet_central_all.pdf}
 %\includegraphics[width=0.48\textwidth]{plots/pfmet_pt40_2012AB_highMet_all_linear.pdf}
 \end{tabular}
 \caption{\footnotesize {\bf Results for the low \MET\ (left) and high \MET\ (right) signal regions with the central lepton selection.}
@@ -206,7 +206,7 @@ indicated. The error bars indicate the statistical uncertainty in the data and t
 \begin{table}[htb]
 \begin{center}
 \footnotesize
-\caption{\label{tab:results_central}\footnotesize {\bf Results for the low \MET\ signal region (top table) and high \MET\ signal region (bottom table) with the central lepton selection.} 
+\caption{\label{tab:results_central}\footnotesize {\bf  Results for $n_{jets}\geq3$ corresponding to the low \MET\ signal region (top table) and $n_{jets}\geq2$ corresponding to the high \MET\ signal region (bottom table) with the central lepton selection.} 
 The total background is the sum of the \zjets\ background predicted from
 the \MET\ templates method (\zjets\ bkg), the flavor-symmetric background predicted from e$\mu$ events (FS bkg), the WZ and ZZ backgrounds predicted from MC
 (WZ bkg and ZZ bkg) and the rare SM backgrounds. All uncertainties include both the statistical and systematic components. The Gaussian significance of the deviation between the data 
@@ -340,9 +340,12 @@ four signal regions. The results are summarized in Table~\ref{tab:results}.
 Assummary of the results in presented in Table~\ref{tab:results}. The observed data yields in the on-Z regions for the four signal regions
 (low-\MET\ and high-\MET, inclusive and central leptons) are in good agreement with the predicted backgrounds. 
 The last 2 rows of Table~\ref{tab:results} present the total Z background in the on-Z region, and the extrapolation to the low-mass region.
-These can be directly compared with Table 3 of SUS-12-019 v9, which is included below for reference.
-The predicted Z backgrounds in the on-Z and low-mass regions are consistent with those presented in SUS-12-019, which have been derived
-with the jet-Z balance (JZB) method. The low-mass $\gamma^*$/Z background contributions are small, typically a few events.
+
+The Z background predictions in the on-Z region are compared with the corresponding predictions from the JZB method in Table~\ref{tab:comparison}.
+The predictions are consistent in all four signal regions.
+%These can be directly compared with Table 3 of SUS-12-019 v9, which is included below for reference.
+%The predicted Z backgrounds in the on-Z and low-mass regions are consistent with those presented in SUS-12-019, which have been derived
+%with the jet-Z balance (JZB) method. The low-mass $\gamma^*$/Z background contributions are small, typically a few events.
 
 \begin{table}[htb]
 \begin{center}
@@ -371,21 +374,19 @@ $\gamma^*$/Z Bkg       &   3.0 $\pm$ 1.2     & 4.9 $\pm$ 1.9         & 2.3 $\pm$
 \begin{table}[!htbp]
  \renewcommand{\arraystretch}{1.2}
  \begin{center}
-  \caption{{\bf This table has been cut-and-pasted from SUS-12-019 v9 Table 3 and is included here for easy comparison with Table~\ref{tab:results}.}
-    Prediction for the number of \zjets events in the \Z peak region and the extrapolation of the \zjets background to the signal mass region.}
+  \caption{Comparison of the Z background predictions in the on-Z region obtained with the \MET\ templates and JZB methods.}
   \begin{tabular}{l|c|c|c|c}
    \hline
    \hline
                                   & \multicolumn{2}{c|}{Low \MET} &\multicolumn{2}{c}{High \MET} \\
                                    &  central         & inclusive              & central                 & inclusive \\
    \hline
-   \zjets in \Z peak region       &  $32\pm8\pm6.4$   &    $45\pm9\pm9$    &    $24\pm6.9\pm7.2$     &   $60.8\pm15.7$       \\
-   \hline
-   Extrapolation to signal region & $2.2\pm0.9$       & $3.2\pm1.2$            &     $1.7\pm1.0$         &  $4.2 \pm 1.5$ \\
+   JZB             &  $32\pm8\pm6.4$   &    $45\pm9\pm9$    &    $24\pm6.9\pm7.2$     &   $30\pm8\pm9$       \\
+   \MET\ templates &  $43\pm11$        &    $70\pm18$       &     $33\pm9.1$          &    $51\pm14$         \\
    \hline
    \hline
  \end{tabular}
- \label{tab:dyResults}
+ \label{tab:comparison}
  \end{center}
 \end{table}
 
