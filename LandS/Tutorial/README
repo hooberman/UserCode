@@ -1,0 +1,43 @@
+Set up LandS using:
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideLandS
+
+Process Limits by doing:
+source do.sh
+
+This will produce an output root file (card_m2lnQ.root).  You extract the limits by doing:
+
+root -b
+.L ../test/fitRvsCLs.C+
+run("card_m2lnQ.root","plot")
+
+
+This is the output:
+
+EXPECTED LIMIT BANDS from(obs, -2s,-1s,median,1s,2s) mass= -1: 6.48307+/-0.0416654, 3.40693+/-0.0820709, 4.41193+/-0.056423, 5.99546+/-0.0385255, 8.38478+/-0.0378183, 11.7169+/-0.0584737
+Observed data limit: 6.48307 +/- 0.0416654
+expected median limit: 5.99546 +/- 0.0385255
+
+
+
+
+
+
+You can make additional cards with makeCards.C.
+
+Open the file and add line like this.
+makeThisCard(dofile,"MET100_MT200" , 5 , 4.7 , 1.27);
+
+The arguements are:
+output script to run limits (i.e. do.sh)
+name of card
+data yield
+background expectation
+uncertainty on background expectation in form 1+relative_uncertainty
+
+Make cards by doing:
+root -b makeCards.C+
+
+This outputs the cards and a script. To run the limits do:
+source doLimits.sh
+
+Then you get a bunch of output root files, you get the limits with the procedure above.
