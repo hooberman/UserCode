@@ -1,0 +1,57 @@
+Step 1) Set up LandS using:
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideLandS
+
+
+Step 2) Process limits with an example data card (which is provided in this directory).
+
+The card is called 'card.txt.' Open it and have a look.
+
+Limits are calculated in a 2-step process. First, you run the lands.exe program to produce a root file from the data card.
+
+You can do this with:
+../test/lands.exe -d card.txt -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -n card
+
+This tells lands to run on the specified data card, using a bunch of options which state with type of limit-setting procedure to use, what nuissance models, etc.
+
+Alternative you can just do:
+source do.sh
+
+This will produce an output root file called card_m2lnQ.root.  
+
+
+The second step is to extract the limits by doing:
+
+root -b
+.L ../test/fitRvsCLs.C+
+run("card_m2lnQ.root","plot")
+
+This is the output:
+
+EXPECTED LIMIT BANDS from(obs, -2s,-1s,median,1s,2s) mass= -1: 6.48307+/-0.0416654, 3.40693+/-0.0820709, 4.41193+/-0.056423, 5.99546+/-0.0385255, 8.38478+/-0.0378183, 11.7169+/-0.0584737
+Observed data limit: 6.48307 +/- 0.0416654
+expected median limit: 5.99546 +/- 0.0385255
+
+This tells you that the observed limit is 6.5 events, expected limit is 6.0 events, etc. 
+
+
+Step 3) Follow this if you want to produce a bunch of data cards to run different limits. This only covers single bin counting experiments.
+
+You can make additional cards with makeCards.C.
+
+Open the file and add lines like this.
+makeThisCard(dofile,"MET100_MT200" , 5 , 4.7 , 1.27);
+
+The arguements are:
+output script to run limits (i.e. doLimits.sh)
+name of card to produce
+data yield 
+background expectation
+uncertainty on background expectation in form '1+relative_uncertainty'.
+
+Make the cards by doing:
+root -b makeCards.C+
+
+This outputs the cards and a script. To run the limits do:
+source doLimits.sh
+
+Then you get a bunch of output root files, and you extract the limits with the procedure above.
